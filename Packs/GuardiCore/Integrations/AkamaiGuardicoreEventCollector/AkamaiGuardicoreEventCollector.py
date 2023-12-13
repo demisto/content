@@ -1,10 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
-import urllib3
-from typing import Any, Dict, Optional
+from typing import Any
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -94,7 +91,7 @@ class Client(BaseClient):
         new_token = new_token.get('access_token')
         return new_token
 
-    def get_events(self, start_time, end_time, limit, offset) -> List[Dict[str, Any]]:
+    def get_events(self, start_time, end_time, limit, offset) -> List[dict[str, Any]]:
         """
         Get events from Guardicore API using the modelbreaches endpoint and the start and end time.
         """
@@ -106,7 +103,7 @@ class Client(BaseClient):
         }
         data = self._http_request(
             method='GET',
-            url_suffix=f'/incidents',
+            url_suffix='/incidents',
             params=params
         )
         return data['objects']
@@ -120,13 +117,7 @@ def get_jwt_expiration(token: str):
     return jwt_token.get("exp")
 
 
-def generate_new_token(self):
-    token = self.authenticate()
-    self.save_jwt_token(token)
-    self._set_access_token(token)
-
-
-def test_module(client: Client, params: Dict[str, Any]) -> str:
+def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -161,17 +152,16 @@ def add_time_to_events(events):
         list: The events with the _time key.
     """
     if events:
-        [event.update({'_time': event['start_time']}) for event in events if 'start_time' in event]
+        [event.update({'_time': timestamp_to_datestring(event['start_time'])}) for event in events if 'start_time' in event]
 
 
-def get_events(client, args):
+def get_events(client: Client, args: dict):
     """
        Gets events from Guardicore API.
     """
     start_time = date_to_timestamp(
-        arg_to_datetime(args.get('from_date', '1 second ago')))
-    end_time = date_to_timestamp(
-        arg_to_datetime(args.get('to_time'))) if "to_time" in args else int(datetime.now().timestamp() * 1000)
+        arg_to_datetime(args.get('from_date', '3 days')))
+    end_time = int(datetime.now().timestamp() * 1000)
     limit = arg_to_number(args.get("limit", 1000))
     offset = int(args.get('offset', 0))
     events = client.get_events(start_time, end_time, limit, offset)
@@ -179,11 +169,11 @@ def get_events(client, args):
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, params: dict, last_run: dict) -> List[dict]:
+def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[List[dict], dict]:
     """
        Fetches events from Guardicore API.
     """
-    start_time = date_to_timestamp(arg_to_datetime(last_run.get('from_ts', '1 second')))
+    start_time = date_to_timestamp(arg_to_datetime(last_run.get('from_ts', '3 days')))
     end_time = int(datetime.now().timestamp() * 1000)
     demisto.debug(f'Getting events from: {timestamp_to_datestring(start_time)}, till: {timestamp_to_datestring(end_time)}')
     offset = arg_to_number(last_run.get('offset')) or 0
@@ -192,11 +182,9 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> List[dict]:
     retrieve_events = client.get_events(start_time, end_time, limit, offset)
     demisto.debug(f'Fetched {len(retrieve_events)} events.')
 
-    demisto.setLastRun(
-        {'from_ts': end_time} if len(retrieve_events) < limit else {'from_ts': start_time, 'offset': offset + limit}
-    )
+    last_run = {'from_ts': end_time} if len(retrieve_events) < limit else {'from_ts': start_time, 'offset': offset + limit}
 
-    return retrieve_events
+    return retrieve_events, last_run
 
 ''' MAIN FUNCTION '''
 
@@ -209,8 +197,8 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     base_url = urljoin(params.get('url'), '/api/v3.0')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get("proxy", False)
@@ -218,18 +206,19 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(username=username, password=password,
-                        base_url=base_url, proxy=proxy, verify=(not verify_certificate))
+                        base_url=base_url, proxy=proxy, verify=verify_certificate)
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params)
+            result = test_module(client)
             return_results(result)
 
         client.login()
         if command == f'{PRODUCT}-get-events':
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            events, results = get_events(client, args)  # type: ignore
+            events, results = get_events(client, args)
             return_results(results)
             if should_push_events:
+                add_time_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
@@ -238,7 +227,7 @@ def main() -> None:
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun() or {}
-            events = fetch_events(
+            events, new_last_run = fetch_events(
                 client,
                 params,
                 last_run
@@ -250,6 +239,8 @@ def main() -> None:
                 vendor=VENDOR,
                 product=PRODUCT
             )
+            demisto.debug(f'Set new last run with: {new_last_run}')
+            demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
     except Exception as e:

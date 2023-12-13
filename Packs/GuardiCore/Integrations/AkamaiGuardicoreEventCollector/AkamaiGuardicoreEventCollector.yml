@@ -3,10 +3,10 @@ ectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: AkamaiGuardicoreEventCollector
+  id: Akamai Guardicore Event Collector
   version: -1
 configuration:
-- defaultvalue: https://example.guardicore.com/api/v3.0/
+- defaultvalue: https://example.guardicore.com
   display: Server URL (e.g. https://some_url.com)
   name: url
   required: true
@@ -34,7 +34,7 @@ configuration:
   section: Connect
 description: This is the Akamai Guardicore event collector integration for XSIAM.
 display: Akamai Guardicore Event Collector
-name: AkamaiGuardicoreEventCollector
+name: Akamai Guardicore Event Collector
 script:
   commands:
   - arguments:
