@@ -2,7 +2,7 @@ id: Identity Analytics - Alert Handling
 version: -1
 name: Identity Analytics - Alert Handling
 description: |-
-  The `Identity Analytics - Alert Handling` playbook is triggered by Identity Analytics alerts and executes the following:
+  The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
 
   Analysis:
   - Enriches the IP and the account, providing additional context and information about these indicators.
