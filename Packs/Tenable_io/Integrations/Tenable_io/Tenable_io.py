@@ -166,6 +166,7 @@ MAX_CHUNKS_PER_FETCH = 10
 ASSETS_FETCH_FROM = '90 days'
 MIN_ASSETS_INTERVAL = 60
 
+
 class Client(BaseClient):
 
     def list_scan_filters(self):
@@ -731,7 +732,7 @@ def call_send_data_to_xsiam(assets, vulnerabilities):
 def test_module(client: Client, params):
     client.list_scan_filters()
     if int(params.get('assetsFetchInterval')) < 60:
-        return_error(f"Assets Fetch Interval is supposed to be 1 hour minimum")
+        return_error("Assets Fetch Interval is supposed to be 1 hour minimum")
     return 'ok'
 
 
@@ -1416,6 +1417,8 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         if status == 'FINISHED':
             chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'vulns')
             command_results = export_vulnerabilities_build_command_result(chunks_details_list)
+            if args.get("should_push_events"):
+                send_data_to_xsiam(command_results.outputs, product=f'{PRODUCT}_vulnerabilities', vendor=VENDOR)
             return PollResult(command_results)
         elif status in ('PROCESSING', 'QUEUED'):
             return PollResult(
@@ -1739,48 +1742,6 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     return audit_logs, last_run
 
 
-@polling_function('tenable-get-vulnerabilities', requires_polling_arg=False)
-def get_vulnerabilities_command(args: dict[str, Any], client: Client) -> CommandResults | PollResult:
-    """
-    Getting vulnerabilities from Tenable. Polling as long as the report is not ready (status FINISHED or failed)
-    Args:
-        args: arguments from user (last_found, severity and num_assets)
-        client: Client class object.
-
-    Returns: Vulnerabilities from API.
-
-    """
-    vulnerabilities = []
-    last_found = arg_to_number(args.get('last_found'))
-    num_assets = arg_to_number(args.get('num_assets')) or 5000
-    severity = argToList(args.get('severity'))
-    export_uuid = args.get('export_uuid')
-    if not export_uuid:
-        export_uuid = client.get_export_uuid(num_assets=num_assets, last_found=last_found,
-                                             severity=severity)  # type: ignore
-
-    status, chunks_available = client.get_export_status(export_uuid=export_uuid)
-    if status == 'FINISHED':
-        for chunk_id in chunks_available:
-            vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
-        readable_output = tableToMarkdown('Vulnerabilities List:', vulnerabilities,
-                                          removeNull=True,
-                                          headerTransform=string_to_table_header)
-
-        results = CommandResults(readable_output=readable_output,
-                                 raw_response=vulnerabilities)
-        return PollResult(response=results)
-    elif status in ['CANCELLED', 'ERROR']:
-        results = CommandResults(readable_output='Export job failed',
-                                 entry_type=entryTypes['error'])
-        return PollResult(response=results)
-    else:
-        results = CommandResults(readable_output='Export job failed',
-                                 entry_type=entryTypes['error'])
-        return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid, **args},
-                          response=results)
-
-
 def fetch_assets_command(client: Client, assets_last_run):
     """
     Fetches assets.
@@ -1868,140 +1829,6 @@ def run_vulnerabilities_fetch(client, last_run, severity):
     return fetch_vulnerabilities(client, last_run, severity)
 
 
-ASSETS = 'assets'
-EVENTS = 'events'
-DATA_TYPES = [ASSETS, EVENTS]
-
-
-def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type="events"):
-    """
-    Send the fetched events or assets into the XDR data-collector private api.
-
-    :type data: ``Union[str, list]``
-    :param data: The data to send to XSIAM server. Should be of the following:
-        1. List of strings or dicts where each string or dict represents an event or asset.
-        2. String containing raw events separated by a new line.
-
-    :type vendor: ``str``
-    :param vendor: The vendor corresponding to the integration that originated the events.
-
-    :type product: ``str``
-    :param product: The product corresponding to the integration that originated the events.
-
-    :type data_format: ``str``
-    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
-        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
-
-    :type url_key: ``str``
-    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
-
-    :type num_of_attempts: ``int``
-    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
-
-    :type chunk_size: ``int``
-    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
-
-    :type data_type: ``str``
-    :param data_type: Type of events to send to Xsiam, events, assets or assets_snapshots.
-
-    :return: None
-    :rtype: ``None``
-    """
-    data_size = 0
-    params = demisto.params()
-    url = params.get(url_key)
-    calling_context = demisto.callingContext.get('context', {})
-    instance_name = calling_context.get('IntegrationInstance', '')
-    collector_name = calling_context.get('IntegrationBrand', '')
-    items_count = len(data) if isinstance(data, list) else 1
-    if data_type not in DATA_TYPES:
-        demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
-        return
-
-    if not data:
-        demisto.debug('send_data_to_xsiam function received no {data_type}, '
-                      'skipping the API call to send {data} to XSIAM'.format(data_type=data_type, data=data_type))
-        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
-        return
-
-    # only in case we have data to send to XSIAM we continue with this flow.
-    # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
-    if isinstance(data, list):
-        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        if isinstance(data[0], dict):
-            data = [json.dumps(item) for item in data]
-            data_format = 'json'
-        # Separating each event with a new line
-        data = '\n'.join(data)
-    elif not isinstance(data, str):
-        raise DemistoException('Unsupported type: {data} for the {data_type} parameter.'
-                               ' Should be a string or list.'.format(data=type(data), data_type=data_type))
-    if not data_format:
-        data_format = 'text'
-
-    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
-    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
-    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
-    headers = {
-        'authorization': xsiam_api_token,
-        'format': data_format,
-        'product': product,
-        'vendor': vendor,
-        'content-encoding': 'gzip',
-        'collector-name': collector_name,
-        'instance-name': instance_name,
-        'final-reporting-device': url,
-        'collector-type': ASSETS if data_type == ASSETS else EVENTS
-    }
-    if data_type == ASSETS:
-        headers['snapshot-id'] = str(round(time.time() * 1000))
-        headers['total-items-count'] = str(items_count)
-
-    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
-
-    def data_error_handler(res):
-        """
-        Internal function to parse the XSIAM API errors
-        """
-        try:
-            response = res.json()
-            error = res.reason
-            if response.get('error').lower() == 'false':
-                xsiam_server_err_msg = response.get('error')
-                error += ": " + xsiam_server_err_msg
-
-        except ValueError:
-            if res.text:
-                error = '\n{}'.format(res.text)
-            else:
-                error = "Received empty response from the server"
-
-        api_call_info = (
-            'Parameters used:\n'
-            '\tURL: {xsiam_url}\n'
-            '\tHeaders: {headers}\n\n'
-            'Response status code: {status_code}\n'
-            'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
-
-        demisto.error(header_msg + api_call_info)
-        raise DemistoException(header_msg + error, DemistoException)
-
-    client = BaseClient(base_url=xsiam_url)
-    data_chunks = split_data_to_chunks(data, chunk_size)
-    for data_chunk in data_chunks:
-        data_size += len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
-                                    error_msg=header_msg, headers=headers,
-                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True)
-
-    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
-
-
 def skip_fetch_assets(last_run):
     time_to_check = last_run.get("assets_last_fetch")
     if not time_to_check:
@@ -2085,15 +1912,6 @@ def main():  # pragma: no cover
 
             if argToBoolean(args.get('should_push_events', 'true')):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-        elif command == 'tenable-get-vulnerabilities':
-            results = get_vulnerabilities_command(args, client)
-            if isinstance(results, CommandResults) and results.raw_response:
-                vulnerabilities = results.raw_response  # type: ignore
-            return_results(results)
-
-            if argToBoolean(args.get('should_push_events', 'true')):
-                send_events_to_xsiam(vulnerabilities, vendor=VENDOR, product=PRODUCT)
-
         # Fetch Commands
         elif command == 'fetch-events':
 
