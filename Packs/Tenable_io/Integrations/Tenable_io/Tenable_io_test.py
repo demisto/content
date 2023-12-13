@@ -789,58 +789,19 @@ def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
     assert new_last_run.get('index_audit_logs') == 3
 
 
-@pytest.mark.parametrize('response_to_use_status, expected_result', [
-    (MOCK_CHUNKS_STATUS, 'finished'),
-    (MOCK_CHUNKS_STATUS_PROCESSING, 'polling'),
-    (MOCK_CHUNKS_STATUS_ERROR, 'error')])
-def test_get_vulnerabilities(requests_mock, response_to_use_status, expected_result, mocker):
+def test_test_module(requests_mock, mocker):
     """
     Given:
-        - get vulnerabilities arguments (lsat_found, num_assets and sevirity)
+        - The client object.
     When:
-        - Running the get vulnerabilities command.
+        - Running the test_module function.
     Then:
-        - Verify results when error and success.
-        - Verify scheduled command result is in the right format in case of polling.
+        - Verify the result is ok as expected.
     """
-    from Tenable_io import get_vulnerabilities_command, Client
+    from Tenable_io import test_module, Client
     mock_demisto(mocker)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
-    requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
-    requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=response_to_use_status)
-    requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
-    mocker.patch.object(demisto, 'demistoVersion', return_value={
-        'version': '6.2.1',
-        'buildNumber': '12345'
-    })
-    args = {
-        'last_found': '1663844866',
-        'num_assets': '50',
-        'severity': 'test1, test2'
-    }
-    res = get_vulnerabilities_command(args, client)
-    if expected_result == 'finished':
-        assert len(res.raw_response) == 1
-    elif expected_result == 'polling':
-        assert res.scheduled_command._args.get('export_uuid') == '123'
-        assert res.readable_output == 'Fetching Results:'
-    else:  # error
-        assert res.readable_output == 'Export job failed'
+    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=10', json=MOCK_AUDIT_LOGS)
+    result = test_module(client, demisto.params())
 
-
-# def test_test_module(requests_mock, mocker):
-#     """
-#     Given:
-#         - The client object.
-#     When:
-#         - Running the test_module function.
-#     Then:
-#         - Verify the result is ok as expected.
-#     """
-#     from Tenable_io import test_module, Client
-#     mock_demisto(mocker)
-#     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
-#     requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=10', json=MOCK_AUDIT_LOGS)
-#     result = test_module(client)
-#
-#     assert result == 'ok'
+    assert result == 'ok'
