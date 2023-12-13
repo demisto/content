@@ -681,17 +681,17 @@ def handle_assets_chunks(client: Client, assets_last_run):
     return assets, assets_last_run
 
 
-def try_get_assets_chunks(client: Client, export_uuid: str, assets_last_run):
+def try_get_assets_chunks(client: Client, assets_last_run):
     """
     If job has succeeded (status FINISHED) get all information from all chunks available.
     Args:
         client: Client class object.
-        export_uuid: The UUID of the assets export job.
+        assets_last_run: The last run.
 
     Returns: All information from all chunks available.
 
     """
-    status, chunks_available = client.get_export_assets_status(export_uuid=export_uuid)
+    status, chunks_available = client.get_export_assets_status(export_uuid=assets_last_run.get("assets_export_uuid"))
     demisto.info(f'Assets report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
         assets_last_run.update({'assets_available_chunks': chunks_available})
@@ -1651,29 +1651,29 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
     status_response = client.check_export_scan_status(scan_id, file_id)
     demisto.debug(f'{status_response=}')
 
-    match status_response.get('status'):
-        case 'ready':
-            return PollResult(
-                client.download_export_scan(
-                    scan_id, file_id, args['format']),
-                continue_to_poll=False)
-
-        case 'loading':
-            return PollResult(
-                None,
-                continue_to_poll=True,
-                args_for_next_run={
-                    'fileId': file_id,
-                    'scanId': scan_id,
-                    'format': args['format'],  # not necessary but avoids confusion
-                })
-
-        case _:
-            raise DemistoException(
-                'Tenable IO encountered an error while exporting the scan report file.\n'
-                f'Scan ID: {scan_id}\n'
-                f'File ID: {file_id}\n')
-
+    # match status_response.get('status'):
+    #     case 'ready':
+    #         return PollResult(
+    #             client.download_export_scan(
+    #                 scan_id, file_id, args['format']),
+    #             continue_to_poll=False)
+    #
+    #     case 'loading':
+    #         return PollResult(
+    #             None,
+    #             continue_to_poll=True,
+    #             args_for_next_run={
+    #                 'fileId': file_id,
+    #                 'scanId': scan_id,
+    #                 'format': args['format'],  # not necessary but avoids confusion
+    #             })
+    #
+    #     case _:
+    #         raise DemistoException(
+    #             'Tenable IO encountered an error while exporting the scan report file.\n'
+    #             f'Scan ID: {scan_id}\n'
+    #             f'File ID: {file_id}\n')
+    #
 
 def get_audit_logs_command(client: Client, from_date: Optional[str] = None, to_date: Optional[str] = None,
                            actor_id: Optional[str] = None, target_id: Optional[str] = None,
@@ -1760,7 +1760,7 @@ def fetch_assets_command(client: Client, assets_last_run):
     if available_chunks:
         assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
     elif export_uuid:
-        status = try_get_assets_chunks(client=client, export_uuid=export_uuid, assets_last_run=assets_last_run)
+        status = try_get_assets_chunks(client=client, assets_last_run=assets_last_run)
 
         if status in ['PROCESSING', 'QUEUED']:
             assets_last_run.update({'nextTrigger': '30', "type": 1})
