@@ -716,6 +716,11 @@ def create_group_command(client, args):
     )
 
 
+def reset_auth_command(client, args):
+    reset_integration_context()
+    return CommandResults(readable_output='Authentication data cleared successfully.')
+
+
 def get_after_tag(url):
     """retrieve the after param from the url
 
@@ -795,6 +800,7 @@ def main():
             'okta-create-zone': create_zone_command,
             'okta-create-group': create_group_command,
             'okta-assign-group-to-app': assign_group_to_app_command,
+            'okta-auth-reset': reset_auth_command,
         }
 
         command = demisto.command()
@@ -818,8 +824,14 @@ def main():
         )
 
         if command in commands:
-            human_readable, outputs, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+            result = commands[command](client, demisto.args())
+
+            if isinstance(result, (CommandResults, str, dict)):
+                return_results(result)
+
+            else:
+                human_readable, outputs, raw_response = result
+                return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')

@@ -2549,3 +2549,19 @@ Expires a password for an existing Okta user.
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| suspend: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/suspend", "method": "POST"}<br/>schema: {"href": "https://test.oktapreview.com/api/v1/meta/schemas/user/osc66lckcvDyVcGzS0h7"}<br/>resetPassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/reset_password", "method": "POST"}<br/>forgotPassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/forgot_password", "method": "POST"}<br/>expirePassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/expire_password", "method": "POST"}<br/>changeRecoveryQuestion: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/change_recovery_question", "method": "POST"}<br/>self: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8"}<br/>type: {"href": "https://test.oktapreview.com/api/v1/meta/types/user/oty66lckcvDyVcGzS0h7"}<br/>changePassword: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/credentials/change_password", "method": "POST"}<br/>deactivate: {"href": "https://test.oktapreview.com/api/v1/users/00u19cr5qv91HjELI0h8/lifecycle/deactivate", "method": "POST"} | 2022-06-20T04:48:04.000Z | 2022-06-20T04:47:59.000Z | password: {}<br/>recovery_question: {"question": "whats the first school?"}<br/>provider: {"type": "OKTA", "name": "OKTA"} | 00u19cr5qv91HjELI0h8 | 2023-09-10T12:56:04.000Z | 2022-06-20T04:48:07.000Z | firstName: Test 1 <br/>lastName: Test1<br/>preferredLanguage: en<br/>mobilePhone: null<br/>city: Tel-Aviv<br/>displayName: Test 1 that<br/>nickName: Testush<br/>secondEmail: null<br/>login: 4x1xh5rl@test.com<br/>email: 4x1xh5rl@test.com<br/>employeeNumber: 12345 | PASSWORD_EXPIRED | 2023-09-10T12:56:04.000Z | id: oty66lckcvDyVcGzS0h7 |
 
+### okta-auth-reset
+
+***
+Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
+
+#### Base Command
+
+`okta-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

@@ -225,3 +225,15 @@ class OktaClient(BaseClient):
         kwargs['headers'] = {**auth_headers, **original_headers}
         demisto.debug('kwargs: ' + str(kwargs))
         return super()._http_request(**kwargs)
+
+
+def reset_integration_context():
+    """
+    Reset the integration context.
+    """
+    integration_context = get_integration_context()
+    integration_context["token"] = "XXX"
+
+    set_integration_context({})
+    demisto.debug('Integration context reset successfully.\n'
+                  f'Integration context before reset: {integration_context=}')

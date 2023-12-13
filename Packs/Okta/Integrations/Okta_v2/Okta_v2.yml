@@ -1483,6 +1483,8 @@ script:
     - contextPath: Account.Username
       description: Okta account usernames returned by the search.
       type: String
+  - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
+    name: okta-auth-reset
   dockerimage: demisto/crypto:1.0.0.83343
   runonce: false
   script: ""
