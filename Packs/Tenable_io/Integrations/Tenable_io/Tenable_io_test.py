@@ -805,3 +805,32 @@ def test_test_module(requests_mock, mocker):
     result = test_module(client, demisto.params())
 
     assert result == 'ok'
+
+
+def test_fetch_assets(requests_mock):
+    """
+    Given:
+        - vulnerabilities fetch interval.
+    When:
+        - Running the fetch vulnerabilities process running.
+    Then:
+        - Verify that fetch should run
+        - Verify export uuid being updated in the integration context
+        - Verify vulnerabilities returned and finished flag is up.
+    """
+    from Tenable_io import generate_assets_export_uuid, handle_assets_chunks, try_get_assets_chunks, Client
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.post(f'{BASE_URL}/assets/export', json={"export_uuid": "123"})
+    requests_mock.get(f'{BASE_URL}/assets/export/123/status', json={"status": "FINISHED", "chunks_available": [1]})
+    requests_mock.get(f'{BASE_URL}/assets/export/123/chunks/1', json=util_load_json('test_data/mock_assets_chunk.json'))
+    last_run = {}
+
+    generate_assets_export_uuid(client, last_run)
+    assert last_run.get('assets_export_uuid') == '123'
+    status = try_get_assets_chunks(client, last_run)
+    assert status == "FINISHED"
+    assert last_run.get("assets_available_chunks")
+    assets, last_run = handle_assets_chunks(client, last_run)
+
+    assert len(assets) == 2
+
