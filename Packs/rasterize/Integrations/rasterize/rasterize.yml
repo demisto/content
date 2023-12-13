@@ -34,6 +34,7 @@ configuration:
   - Headless CLI - Only
   additionalinfo: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. A "Preferred" rasterizing mode will fall back to the other rasterizing mode if it fails.
   required: false
+  deprecated: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -73,16 +74,18 @@ script:
       - WebDriver - Only
       - Headless CLI - Preferred
       - Headless CLI - Only
+      deprecated: true
     - defaultValue: url
       description: The name the file will be saved as.
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Deprecated. Use width and height. Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       name: full_screen
       predefined:
       - 'True'
       - 'False'
+      deprecated: true
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Whether to include the URL bar in the returned screenshot. (Only for WebDriver mode. Ignored in Headless CLI mode).
@@ -144,16 +147,18 @@ script:
       - WebDriver - Only
       - Headless CLI - Preferred
       - Headless CLI - Only
+      deprecated: true
     - defaultValue: email
       description: The name the file will be saved as.
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Deprecated. Use width and height. Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       name: full_screen
       predefined:
       - 'True'
       - 'False'
+      deprecated: true
     description: Converts the body of an email to an image file or a PDF file.
     name: rasterize-email
     outputs:
@@ -196,13 +201,15 @@ script:
       - WebDriver - Only
       - Headless CLI - Preferred
       - Headless CLI - Only
+      deprecated: true
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Deprecated. Use width and height. Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       name: full_screen
       predefined:
       - 'True'
       - 'False'
+      deprecated: true
     description: Converts an image file to a PDF file.
     name: rasterize-image
     outputs:
@@ -241,6 +248,7 @@ script:
       predefined:
       - 'true'
       - 'false'
+      deprecated: true
     - defaultValue: image
       description: The name the file will be saved as.
       name: file_name
@@ -283,11 +291,12 @@ script:
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Deprecated. Use width and height. Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       name: full_screen
       predefined:
       - 'True'
       - 'False'
+      deprecated: true
     - description: Time in seconds to wait before taking a screenshot.
       name: wait_time
     description: Converts an html file to an image file or a PDF file.
