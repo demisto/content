@@ -214,7 +214,7 @@ def update_last_fetch(client, ioc_lst):
     last_ids = []
     for ioc in reversed(ioc_lst):
         calculate_time = dateparser.parse(ioc.get(client.time_field))
-        if calculate_time and (not last_calculated_time or calculate_time > last_calculated_time):
+        if calculate_time and (not last_calculated_time or calculate_time >= last_calculated_time):
             last_calculated_time = calculate_time
             last_ids.append(ioc.get('id'))
         else:
