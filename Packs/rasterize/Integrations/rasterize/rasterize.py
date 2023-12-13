@@ -35,6 +35,8 @@ WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 
+USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
+
 # Used it in several places
 DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
@@ -270,7 +272,8 @@ def ensure_chrome_running():  # pragma: no cover
     try:
         process = subprocess.run(['bash', '/start_chrome_headless.sh',
                                  '--port', str(chrome_port),
-                                  '--chrome-binary', CHROME_EXE],
+                                 '--chrome-binary', CHROME_EXE,
+                                 '--user-options', USER_CHROME_OPTIONS],
                                  text=True, stdout=subprocess.DEVNULL,
                                  stderr=subprocess.DEVNULL)
 
