@@ -1,4 +1,4 @@
-[INGEST:vendor="siemems", product="sipass", target_dataset="siemens_sipass_raw", no_hit=keep]
+[INGEST:vendor="siemens", product="sipass", target_dataset="siemens_sipass_raw", no_hit=keep]
 alter log_array = split(_raw_log,"    ")
 | alter time_zone = concat("UTC", to_string(divide(to_integer(arrayindex(log_array,41)), 60)))
 | alter tmp_time = concat(arrayindex(log_array,6)," ",arrayindex(log_array,7)," ", time_zone)
