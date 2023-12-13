@@ -3369,7 +3369,6 @@ def fetch_relevant_tickets_by_ticket_type(
             if all((alert_property := alert.get(key)) is None
                    or properties == ['All'] or alert_property in properties
                    for key, properties in alert_properties):
-                demisto.debug(f'')
                 # fetch task for each ticket if true
                 if fetch_ticket_task:
                     freshservice_request = get_command_request(
@@ -3472,7 +3471,6 @@ def fetch_incidents(client: Client, params: dict):
             'order_type': 'asc'
         }
         response = freshservice_request(**request_args)
-        demisto.debug(f'after api response: {response=}')
 
         alert_list = convert_response_properties(
             response.get(f'{ticket_type}s'),
