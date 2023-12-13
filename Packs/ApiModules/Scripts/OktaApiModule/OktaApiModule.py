@@ -49,18 +49,23 @@ class OktaClient(BaseClient):
         self.private_key = private_key
         self.jwt_algorithm = jwt_algorithm
 
+        missing_required_params = []
+
         if self.auth_type == AuthType.OAUTH:
             if not self.client_id:
-                raise ValueError('Client ID must be provided when using OAuth authentication.')
+                missing_required_params.append('Client ID')
 
             if not scopes:
-                raise ValueError('Scopes must be provided when using OAuth authentication.')
+                missing_required_params.append('Scopes')
 
             if not jwt_algorithm:
-                raise ValueError('JWT algorithm must be provided when using OAuth authentication.')
+                missing_required_params.append('JWT algorithm')
 
             if not private_key:
-                raise ValueError('Private key must be provided when using OAuth authentication.')
+                missing_required_params.append('Private key')
+
+            if missing_required_params:
+                raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
 
         self.initial_setup()
 
@@ -165,8 +170,9 @@ class OktaClient(BaseClient):
             demisto.debug('No existing token was found. A new token will be generated.')
 
         token_generation_response = self.generate_oauth_token(scopes=self.scopes)
-        token = token_generation_response['access_token']
-        token_expiration = datetime.utcnow() + timedelta(minutes=TOKEN_EXPIRATION_TIME)
+        token: str = token_generation_response['access_token']
+        expires_in: int = token_generation_response['expires_in']
+        token_expiration = datetime.utcnow() + timedelta(seconds=expires_in)
 
         integration_context['token'] = token
         integration_context['token_expiration'] = token_expiration.strftime(expiration_time_format)
