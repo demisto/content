@@ -12,7 +12,8 @@ MOCK_PARAMS = {
     'secret-key': 'fake_access_key',
     'url': 'http://123-fake-api.com/',
     'unsecure': True,
-    'proxy': True
+    'proxy': True,
+    'assetsFetchInterval': '1440'
 }
 
 MOCK_RAW_VULN_BY_ASSET = {
@@ -801,7 +802,7 @@ def test_test_module(requests_mock, mocker):
     from Tenable_io import test_module, Client
     mock_demisto(mocker)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
-    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=10', json=MOCK_AUDIT_LOGS)
+    requests_mock.get(f'{BASE_URL}/filters/scans/reports', json={})
     result = test_module(client, demisto.params())
 
     assert result == 'ok'
