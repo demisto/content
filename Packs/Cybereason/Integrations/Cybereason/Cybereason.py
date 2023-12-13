@@ -852,8 +852,8 @@ def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = str(args.get('machineName'))
     date_time = str(args.get('dateTime'))
-    startTime = args.get('startTime', 0)
-    endTime = args.get('endTime', 9007199254740991)
+    start_time = args.get('startTime', 0)
+    end_time = args.get('endTime', 9007199254740991)
 
     filter_input = []
     if date_time != 'None':
