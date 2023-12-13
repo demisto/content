@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Entry point for the playbook'
     nexttasks:
       '#none#':
       - "1"
@@ -85,6 +85,7 @@ tasks:
       name: Conditional Task as a Pause
       type: condition
       iscommand: false
+      description: "This task will be closed by a Slack response"
       brand: ""
     nexttasks:
       '#default#':
@@ -117,6 +118,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: "This task will parse the JSON from the response and update the context."
     separatecontext: false
     continueonerrortype: ""
     view: |-
