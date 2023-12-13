@@ -24,7 +24,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.common import get_pipelines_and_commits, is_pivot, shame, get_github_pr_info, get_slack_user_name
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, shame, get_reviewer, get_slack_user_name
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -322,13 +322,13 @@ def construct_slack_msg(triggering_workflow: str,
                         shame_message: tuple[str, str] | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
-    if shame_message:
-        shame_title, shame_value = shame_message
-        content_fields.append({
-            "title": shame_title,
-            "value": shame_value,
-            "short": False
-        })
+    # if shame_message:
+    #     shame_title, shame_value = shame_message
+    #     content_fields.append({
+    #         "title": shame_title,
+    #         "value": shame_value,
+    #         "short": False
+    #     })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
@@ -405,7 +405,15 @@ def construct_slack_msg(triggering_workflow: str,
 
     title += title_append
     title += f' - @{CI_SERVER_HOST}' if CI_SERVER_HOST else ''
-    return [{
+    #title += shame_message[0]
+    slack_msg_start = []
+    if shame_message:
+        shame_title, shame_value, shame_color = shame_message
+        slack_msg_start.append({
+            "title": shame_title + "\n" + shame_value,
+            "color": shame_color
+        })
+    return slack_msg_start +[{
         'fallback': title,
         'color': color,
         'title': title,
@@ -531,10 +539,12 @@ def main():
         if pipeline_changed_status is not None:
             name, email, pr = shame(pivot_commit)
             if name == 'content-bot':
-                name = get_github_pr_info(pr)
+                name = get_reviewer(pr)
             name = get_slack_user_name(name)
-            msg = "broke" if pipeline_changed_status else "fixed"  
-            shame_message = (f"Hi @{name}, You {msg} the build.", f" That was done in this {slack_link(pr,'PR.')}")
+            msg = "broke" if pipeline_changed_status else "fixed" 
+            color = "danger" if pipeline_changed_status else "good"  
+            emoji = ":cry:" if pipeline_changed_status else ":muscle:"
+            shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ", f" That was done in this {slack_link(pr,'PR.')}", color)
 
             computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
@@ -550,7 +560,7 @@ def main():
 
     try:
         response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
+            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
         )
         link = build_link_to_message(response)
         logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
