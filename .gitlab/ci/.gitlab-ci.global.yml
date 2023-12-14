@@ -294,6 +294,7 @@
   needs:
     - job: cloning-content-repo-last-upload-commit
       optional: true
+    - job: init
 
 .trigger-slack-notification:
   stage: .post
@@ -547,3 +548,16 @@ cloning-content-repo-last-upload-commit:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
     - !reference [.add-content-production-to-artifacts]
+
+init:
+  stage: .pre
+  rules:
+    - if: '$SLACK_JOB == "true"'
+      when: never
+    - when: always
+  script:
+    - source .gitlab/helper_functions.sh
+    - *create_artifacts_and_server_type_instance_folders
+    - *setup-artifactory
+    - *stop_contrib_external_build
+    - *check_build_files_are_up_to_date
