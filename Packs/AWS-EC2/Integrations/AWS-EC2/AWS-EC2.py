@@ -7,7 +7,6 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 """CONSTANTS"""
-ROLE_NAME = (demisto.getParam('access_role_name') or '').removeprefix('role/')
 MAX_WORKERS = arg_to_number(demisto.getParam('max_workers'))
 
 """HELPER FUNCTIONS"""
@@ -135,10 +134,13 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
     """
     def account_runner(args: dict) -> list[CommandResults | dict]:
 
+        role_name = (demisto.getParam('access_role_name') or '').removeprefix('role/')
+        accounts = argToList(demisto.getParam('accounts_to_access'))
+
         def run_command(account_id: str) -> CommandResults | dict:
             new_args = args | {
                 #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
-                'roleArn': f'arn:aws:iam::{account_id}:role/{ROLE_NAME}',
+                'roleArn': f'arn:aws:iam::{account_id}:role/{role_name}',
                 'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             }
@@ -161,8 +163,6 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                     'ContentsFormat': formats['markdown'],
                     'Contents': f'#### Error in command call for account `{account_id}`\n{e}'
                 }
-
-        accounts = argToList(demisto.getParam('accounts_to_access'))
 
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             results = executor.map(run_command, accounts)
@@ -2274,6 +2274,7 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
     except ValueError as err_msg:
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
     return CommandResults(
+        # TODO check if single key override is really needed
         outputs={'AWS.EC2.Fleet(val.FleetId === obj.FleetId).ActiveInstances': raw},
         readable_output=tableToMarkdown('AWS EC2 Fleets Instances', data)
     )
