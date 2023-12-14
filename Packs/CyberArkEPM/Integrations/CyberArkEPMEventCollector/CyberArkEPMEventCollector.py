@@ -303,7 +303,8 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
             last_run[set_id]['policy_audits']['next_cursor'] = policy_audits_last_run.get('next_cursor')
             if policy_audits_last_run.get('next_cursor') == 'start':
                 latest_event = max(policy_audits, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
-                last_run[set_id]['policy_audits']['from_date'] = prepare_datetime(latest_event.get('_time'), increase=True)
+                from_date_next_fetch = prepare_datetime(latest_event.get('_time'), increase=True)  # type: ignore
+                last_run[set_id]['policy_audits']['from_date'] = from_date_next_fetch
             events.extend(policy_audits)
 
     for set_id, detailed_events_last_run in get_detailed_events(client, last_run, max_fetch).items():
@@ -311,7 +312,8 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
             last_run[set_id]['detailed_events']['next_cursor'] = detailed_events_last_run.get('next_cursor')
             if detailed_events_last_run.get('next_cursor') == 'start':
                 latest_event = max(detailed_events, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
-                last_run[set_id]['detailed_events']['from_date'] = prepare_datetime(latest_event.get('_time'), increase=True)
+                from_date_next_fetch = prepare_datetime(latest_event.get('_time'), increase=True)  # type: ignore
+                last_run[set_id]['detailed_events']['from_date'] = from_date_next_fetch
             events.extend(detailed_events)
 
     demisto.info(f'Sending len {len(events)} to XSIAM. updated_next_run={last_run}.')
