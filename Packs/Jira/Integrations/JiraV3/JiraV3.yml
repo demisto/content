@@ -563,7 +563,7 @@ script:
       hidden: true
     - description: The summary of the issue.
       name: summary
-      required: true
+      required: false
     - description: The project key with which to associate the issue (Project Key or name is required).
       name: project_key
     - description: Deprecated. Please use project_key.
