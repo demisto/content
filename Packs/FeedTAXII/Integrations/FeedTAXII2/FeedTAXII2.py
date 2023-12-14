@@ -70,6 +70,7 @@ def fetch_indicators_command(
             initial_interval, date_format=TAXII_TIME_FORMAT
         )
 
+    now = f"{datetime.utcnow().isoformat()}Z"
     last_fetch_time = (
         last_run_ctx.get(client.collection_to_fetch.id)
         if client.collection_to_fetch
@@ -88,9 +89,7 @@ def fetch_indicators_command(
             )
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
-                if client.last_fetched_indicator__modified \
-                else added_after
+            last_run_ctx[collection.id] = now
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
@@ -99,11 +98,7 @@ def fetch_indicators_command(
         # fetch from a single collection
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
         indicators = client.build_iterator(limit, added_after=added_after)
-        last_run_ctx[client.collection_to_fetch.id] = (
-            client.last_fetched_indicator__modified
-            if client.last_fetched_indicator__modified
-            else added_after
-        )
+        last_run_ctx[client.collection_to_fetch.id] = now
     demisto.debug(f'{indicators=}')
     return indicators, last_run_ctx
 
