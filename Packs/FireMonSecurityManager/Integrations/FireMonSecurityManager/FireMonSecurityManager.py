@@ -531,7 +531,7 @@ def collector_get_status_byid_command(client: Client, args: Dict[str, Any]):
     results = client.get_collector_status_byid(auth_token, payload)
 
     return CommandResults(
-        outputs_prefix="FireMonSecurityManager.Collector",
+        outputs_prefix="FireMonSecurityManager.CollectorStatus",
         outputs_key_field="id",
         outputs=results,
         readable_output=tableToMarkdown(
