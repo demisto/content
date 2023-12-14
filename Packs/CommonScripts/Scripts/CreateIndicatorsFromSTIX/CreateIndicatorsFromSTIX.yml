@@ -4,7 +4,7 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: "false"
-  description: Adds Indicators to context.
+  description: Adds indicators to context.
   name: add_context
   predefined:
   - "true"
