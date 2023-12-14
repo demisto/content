@@ -11,6 +11,13 @@ args:
   - "false"
 - description: Adds tags to Indicators. Comma separated.
   name: tags
+outputs:
+- contextPath: StixIndicators.type
+  description: Type of the Indicator
+- contextPath: StixIndicators.value
+  description: Value of the Indicator
+- contextPath: StixIndicators.tags
+  description: Tags of the Indicator
 comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.x. This automation creates indicators and adds an indicator's relationships if available.
 commonfields:
   id: CreateIndicatorsFromSTIX
