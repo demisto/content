@@ -59,8 +59,16 @@ def test_create_last_run():
     from_date = '2023-01-01T00:00:00Z'
     result = create_last_run(set_ids, from_date)
     expected_result = {
-        '123': {'admin_audits': {'from_date': from_date}, 'policy_audits': {'from_date': from_date, 'next_cursor': 'start'}, 'detailed_events': {'from_date': from_date, 'next_cursor': 'start'}},
-        '456': {'admin_audits': {'from_date': from_date}, 'policy_audits': {'from_date': from_date, 'next_cursor': 'start'}, 'detailed_events': {'from_date': from_date, 'next_cursor': 'start'}}
+        '123': {
+            'admin_audits': {'from_date': from_date},
+            'policy_audits': {'from_date': from_date, 'next_cursor': 'start'},
+            'detailed_events': {'from_date': from_date, 'next_cursor': 'start'},
+        },
+        '456': {
+            'admin_audits': {'from_date': from_date},
+            'policy_audits': {'from_date': from_date, 'next_cursor': 'start'},
+            'detailed_events': {'from_date': from_date, 'next_cursor': 'start'},
+        }
     }
     assert result == expected_result
 
