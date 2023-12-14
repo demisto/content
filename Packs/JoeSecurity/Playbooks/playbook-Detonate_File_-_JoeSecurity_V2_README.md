@@ -18,9 +18,9 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* joe-analysis-info
-* joe-submit-sample
 * joe-download-report
+* joe-submit-sample
+* joe-analysis-info
 
 ## Playbook Inputs
 
