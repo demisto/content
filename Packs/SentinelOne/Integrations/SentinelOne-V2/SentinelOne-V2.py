@@ -280,7 +280,7 @@ class Client(BaseClient):
             createdAt__lte=created_until_parsed,
             createdAt__gte=created_from_parsed,
             updatedAt__gte=updated_from_parsed,
-            resolved=argToBoolean(resolved) if include_resolved_param else None,
+            resolved=argToBoolean(resolved) if argToBoolean(include_resolved_param) else None,
             displayName__like=display_name,
             displayName=display_name,
             query=query,

@@ -570,21 +570,23 @@ Sends commands to hosts.
 | target | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch". | Optional | 
 | queue_offline | Any commands run against an offline-queued session will be queued up and executed when the host comes online. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
+| batch_id | A batch ID to execute the command on. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Command.HostID | String | The ID of the host for which the command was running. | 
-| CrowdStrike.Command.SessionID | string | The ID of the session of the host. | 
-| CrowdStrike.Command.Stdout | String | The standard output of the command. | 
-| CrowdStrike.Command.Stderr | String | The standard error of the command. | 
-| CrowdStrike.Command.BaseCommand | String | The base command. | 
-| CrowdStrike.Command.FullCommand | String | The full command. | 
-| CrowdStrike.Command.TaskID | string | \(For single host\) The ID of the command request which has been accepted. | 
-| CrowdStrike.Command.Complete | boolean | \(For single host\) True if the command completed. | 
-| CrowdStrike.Command.NextSequenceID | number | \(For single host\) The next sequence ID. | 
+| --- |----------| --- |
+| CrowdStrike.Command.HostID | String   | The ID of the host for which the command was running. | 
+| CrowdStrike.Command.SessionID | string   | The ID of the session of the host. | 
+| CrowdStrike.Command.Stdout | String   | The standard output of the command. | 
+| CrowdStrike.Command.Stderr | String   | The standard error of the command. | 
+| CrowdStrike.Command.BaseCommand | String   | The base command. | 
+| CrowdStrike.Command.FullCommand | String   | The full command. | 
+| CrowdStrike.Command.TaskID | string   | \(For single host\) The ID of the command request which has been accepted. | 
+| CrowdStrike.Command.Complete | boolean  | \(For single host\) True if the command completed. | 
+| CrowdStrike.Command.NextSequenceID | number   | \(For single host\) The next sequence ID. | 
+| CrowdStrike.Command.BatchID | string   | The Batch ID that the command was executed on. | 
 
 
 #### Command Example
@@ -599,6 +601,7 @@ Sends commands to hosts.
         'Command': [{
             'HostID': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
             'Stdout': 'Directory listing for C:\\ -\n\n'
+            'BatchID': 'batch_id'
             'Name                                     Type         Size (bytes)    Size (MB)       '
             'Last Modified (UTC-5)     Created (UTC-5)          \n----                             '
             '        ----         ------------    ---------       ---------------------     -------'
@@ -617,9 +620,9 @@ Sends commands to hosts.
 
 >### Command ls C:\\ results
 
->|BaseCommand|Command|HostID|Stderr|Stdout|
->|---|---|---|---|---|
->| ls | ls C:\ | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
+>|BaseCommand|Command|HostID|Stderr|Stdout|BatchID|
+>|---|---|---|---|---|---|
+>| ls | ls C:\ | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     | batch_id |
 
 ### 8. cs-falcon-upload-script
 

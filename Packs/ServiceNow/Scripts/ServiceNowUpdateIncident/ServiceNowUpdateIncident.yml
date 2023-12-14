@@ -1,22 +1,22 @@
 args:
 - auto: PREDEFINED
-  description: Incident severity
+  description: Incident severity.
   name: severity
   predefined:
   - 1 - High
   - 2 - Medium
   - 3 - Low
-- description: Incident assigne name (e.g John Smith)
+- description: Incident assigne name (e.g John Smith).
   name: assignee
-- description: Incident description
+- description: Incident description.
   name: description
-- description: Incident assigned group name (e.g Incident Management Group)
+- description: Incident assigned group name (e.g Incident Management Group).
   name: assigned_group
-- description: Incident ID to update
+- description: Incident ID to update.
   name: id
-- description: Incident number to update
+- description: Incident number to update.
   name: number
-- description: 'Query to use '
+- description: 'Query to use.'
   name: query
 comment: |-
   This script is used to wrap the generic update-record command in ServiceNow.
@@ -29,10 +29,10 @@ enabled: true
 name: ServiceNowUpdateIncident
 outputs:
 - contextPath: ServiceNow.Incident.ID
-  description: Incident ID
+  description: Incident ID.
   type: string
 - contextPath: ServiceNow.Incident.Number
-  description: Incident number
+  description: Incident number.
   type: string
 script: '-'
 tags:
@@ -48,6 +48,6 @@ dependson:
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 skipprepare:
 - script-name-incident-to-alert

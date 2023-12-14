@@ -14,16 +14,16 @@ comment: |-
   Output: { "United States" }
   Another Example:
   Input: { "country_name": "United States" }
-  Output: { "US" }
+  Output: { "US" }.
 enabled: true
 args:
 - name: country_code
-  description: 'Country Code Alpha 2 (Example: US)'
+  description: 'Country Code Alpha 2 (Example: US).'
 - name: country_name
-  description: Country Name
+  description: Country Name.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

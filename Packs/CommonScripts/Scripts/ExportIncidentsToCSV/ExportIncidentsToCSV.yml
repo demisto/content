@@ -5,7 +5,7 @@ args:
 - defaultValue: "7"
   description: Number of days you want to fetch back for (default is 7).  Needs to be a number.
   name: fetchdays
-- description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,name,type,severity,status,owner,roles,playbookId,occurred,created,modified,closed)'
+- description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,name,type,severity,status,owner,roles,playbookId,occurred,created,modified,closed).'
   name: columns
 comment: This automation uses the Demisto REST API Integration to batch export Incidents to CSV and return the resulting CSV file to the war room.
 commonfields:
@@ -18,7 +18,7 @@ dependson:
   must:
   - demisto-api-post
   - demisto-api-get
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: ExportIncidentsToCSV
 runas: DBotWeakRole

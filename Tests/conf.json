@@ -1861,7 +1861,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 1000,
+            "timeout": 5000,
             "is_mockable": false
         },
         {

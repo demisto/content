@@ -2,7 +2,7 @@ commonfields:
   id: ShowLocationOnMap
   version: -1
 name: ShowLocationOnMap
-comment: Show indicator geo location on map
+comment: Show indicator geo location on map.
 script: '-'
 type: python
 tags:
@@ -10,7 +10,7 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

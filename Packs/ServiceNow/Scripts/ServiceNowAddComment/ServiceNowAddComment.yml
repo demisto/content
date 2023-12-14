@@ -1,10 +1,10 @@
 args:
-- description: Note to be added as comment or worknote to servicenow
+- description: Note to be added as comment or worknote to servicenow.
   name: note
   required: true
 - auto: PREDEFINED
   defaultValue: comment
-  description: Tag as a comment or a work_notes. Default is "comment"
+  description: Tag as a comment or a work_notes. Default is "comment".
   name: tag
   predefined:
   - comment
@@ -25,7 +25,7 @@ contentitemexportablefields:
 dependson:
   must:
   - '|||servicenow-add-comment'
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: ServiceNowAddComment
 runas: DBotWeakRole
