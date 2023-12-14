@@ -901,6 +901,8 @@ class Client(BaseClient):
                             ]
                     elif field_type == "8":
                         field_value = json.dumps(field)
+                    elif field_type == "9":
+                        field_value = field["Reference"]["#text"]
                     else:
                         field_value = field.get("#text")
 
