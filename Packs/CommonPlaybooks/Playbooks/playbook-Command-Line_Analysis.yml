@@ -1672,6 +1672,7 @@ tasks:
       id: 3212780f-1634-43cd-8a59-39af8883e672
       version: -1
       name: Found suspicious LOLBIN execution?
+      description: "Found suspicious LOLBIN execution?"
       type: condition
       iscommand: false
       brand: ""
