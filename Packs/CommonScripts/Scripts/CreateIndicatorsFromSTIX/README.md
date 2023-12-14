@@ -17,8 +17,8 @@ Wrapper for the **StixParser** automation. This automation creates indicators an
 | **Argument Name** | **Description** |
 | --- | --- |
 | entry_id | The entry ID of the STIX file. |
-| add_context | Adds Indicators to context. |
-| tags | Adds tags to Indicators. Comma separated. |
+| add_context | Adds indicators to context. |
+| tags | A comma-separated list of tags to add to indicators.  |
 
 ## Outputs
 
