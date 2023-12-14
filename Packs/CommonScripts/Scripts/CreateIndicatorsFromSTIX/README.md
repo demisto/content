@@ -26,6 +26,6 @@ Wrapper for the **StixParser** automation. This automation creates indicators an
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| StixIndicators.type | Type of the Indicator | Unknown |
-| StixIndicators.value | Value of the Indicator | Unknown |
+| StixIndicators.type | Type of the Indicator | String |
+| StixIndicators.value | Value of the Indicator | String |
 | StixIndicators.tags | Tags of the Indicator | Unknown |
