@@ -111,9 +111,10 @@ def run_on_all_accounts(func: Callable[[dict, AWSClient], CommandResults]):
             })
             try:
                 result = func(args, aws_client)
-                result.readable_output = f'#### Result for account *{account_id}*:\n{result.readable_output}'
+                result.readable_output = f'#### Result for account `{account_id}`:\n{result.readable_output}'
                 if result.outputs:
-                    # if no outputs_prefix is present, the outputs must be a dict with one DT key and the outputs are in the value.
+                    # if no outputs_prefix is present, the outputs must be a dict with one DT key
+                    # and the outputs are in the value
                     outputs = result.outputs if result.outputs_prefix else list(result.outputs.values())[0]
                     if isinstance(outputs, list):
                         for obj in outputs:
@@ -121,10 +122,10 @@ def run_on_all_accounts(func: Callable[[dict, AWSClient], CommandResults]):
                     elif isinstance(outputs, dict):
                         outputs['AccountId'] = account_id
             except Exception as e:  # catch any errors raised from "func" so that it can be run for other accounts
-                result = {  # TODO test
+                result = {
                     'Type': entryTypes['error'],
                     'ContentsFormat': formats['markdown'],
-                    'Contents': f'#### Error in command call for account *{account_id}*:\n{e}'
+                    'Contents': f'#### Error in command call for account `{account_id}`\n{e}'
                 }
             results.append(result)
         return results
@@ -132,13 +133,13 @@ def run_on_all_accounts(func: Callable[[dict, AWSClient], CommandResults]):
 
 
 # if a roleArn is specified in the command args, ignore the parameter config.
-run_per_account = run_on_all_accounts if (ROLE_NAME and not demisto.getArg('roleArn')) else (lambda x: x)
+run_for_given_accounts = run_on_all_accounts if (ROLE_NAME and not demisto.getArg('roleArn')) else (lambda x: x)
 
 
 """MAIN FUNCTIONS"""
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_regions_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -167,7 +168,7 @@ def describe_regions_command(args: dict, aws_client: AWSClient) -> CommandResult
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -230,7 +231,7 @@ def describe_instances_command(args: dict, aws_client: AWSClient) -> CommandResu
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_iam_instance_profile_associations_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -277,7 +278,7 @@ def describe_iam_instance_profile_associations_command(args: dict, aws_client: A
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_images_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -337,7 +338,7 @@ def describe_images_command(args: dict, aws_client: AWSClient) -> CommandResults
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_addresses_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -394,7 +395,7 @@ def describe_addresses_command(args: dict, aws_client: AWSClient) -> CommandResu
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_snapshots_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -458,7 +459,7 @@ def describe_snapshots_command(args: dict, aws_client: AWSClient) -> CommandResu
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_volumes_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -513,7 +514,7 @@ def describe_volumes_command(args: dict, aws_client: AWSClient) -> CommandResult
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_launch_templates_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -573,7 +574,7 @@ def describe_launch_templates_command(args: dict, aws_client: AWSClient) -> Comm
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_key_pairs_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -609,7 +610,7 @@ def describe_key_pairs_command(args: dict, aws_client: AWSClient) -> CommandResu
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_vpcs_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -663,7 +664,7 @@ def describe_vpcs_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_subnets_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -718,7 +719,7 @@ def describe_subnets_command(args: dict, aws_client: AWSClient) -> CommandResult
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_security_groups_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -773,7 +774,7 @@ def describe_security_groups_command(args: dict, aws_client: AWSClient) -> Comma
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def allocate_address_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -799,7 +800,7 @@ def allocate_address_command(args: dict, aws_client: AWSClient) -> CommandResult
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def associate_address_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -836,7 +837,7 @@ def associate_address_command(args: dict, aws_client: AWSClient) -> CommandResul
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def create_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -896,7 +897,7 @@ def create_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def delete_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -910,7 +911,7 @@ def delete_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults
         return CommandResults(readable_output="The Snapshot with ID: {snapshot_id} was deleted".format(snapshot_id=args.get('snapshotId')))
 
 
-@run_per_account
+@run_for_given_accounts
 def create_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -946,7 +947,7 @@ def create_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def deregister_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -961,7 +962,7 @@ def deregister_image_command(args: dict, aws_client: AWSClient) -> CommandResult
         return CommandResults(readable_output="The AMI with ID: {image_id} was deregistered".format(image_id=args.get('imageId')))
 
 
-@run_per_account
+@run_for_given_accounts
 def modify_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1013,7 +1014,7 @@ def modify_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def create_tags_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1031,7 +1032,7 @@ def create_tags_command(args: dict, aws_client: AWSClient) -> CommandResults:
         return CommandResults(readable_output="The recources where taged successfully")
 
 
-@run_per_account
+@run_for_given_accounts
 def disassociate_address_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1046,7 +1047,7 @@ def disassociate_address_command(args: dict, aws_client: AWSClient) -> CommandRe
         return CommandResults(readable_output="The Elastic IP was disassociated")
 
 
-@run_per_account
+@run_for_given_accounts
 def release_address_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1061,7 +1062,7 @@ def release_address_command(args: dict, aws_client: AWSClient) -> CommandResults
         return CommandResults(readable_output="The Elastic IP was released")
 
 
-@run_per_account
+@run_for_given_accounts
 def start_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1076,7 +1077,7 @@ def start_instances_command(args: dict, aws_client: AWSClient) -> CommandResults
         return CommandResults(readable_output="The Instances were started")
 
 
-@run_per_account
+@run_for_given_accounts
 def stop_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1091,7 +1092,7 @@ def stop_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
         return CommandResults(readable_output="The Instances were stopped")
 
 
-@run_per_account
+@run_for_given_accounts
 def terminate_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1106,7 +1107,7 @@ def terminate_instances_command(args: dict, aws_client: AWSClient) -> CommandRes
         return CommandResults(readable_output="The Instances were terminated")
 
 
-@run_per_account
+@run_for_given_accounts
 def create_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1174,7 +1175,7 @@ def create_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def attach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1210,7 +1211,7 @@ def attach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def detach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1250,7 +1251,7 @@ def detach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def delete_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1264,7 +1265,7 @@ def delete_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
         return CommandResults(readable_output="The Volume was deleted")
 
 
-@run_per_account
+@run_for_given_accounts
 def run_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1393,7 +1394,7 @@ def run_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def waiter_instance_running_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1417,7 +1418,7 @@ def waiter_instance_running_command(args: dict, aws_client: AWSClient) -> Comman
     return CommandResults(readable_output="success")
 
 
-@run_per_account
+@run_for_given_accounts
 def waiter_instance_status_ok_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1441,7 +1442,7 @@ def waiter_instance_status_ok_command(args: dict, aws_client: AWSClient) -> Comm
     return CommandResults(readable_output="success")
 
 
-@run_per_account
+@run_for_given_accounts
 def waiter_instance_stopped_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1465,7 +1466,7 @@ def waiter_instance_stopped_command(args: dict, aws_client: AWSClient) -> Comman
     return CommandResults(readable_output="success")
 
 
-@run_per_account
+@run_for_given_accounts
 def waiter_instance_terminated_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1489,7 +1490,7 @@ def waiter_instance_terminated_command(args: dict, aws_client: AWSClient) -> Com
     return CommandResults(readable_output="success")
 
 
-@run_per_account
+@run_for_given_accounts
 def waiter_image_available_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1517,7 +1518,7 @@ def waiter_image_available_command(args: dict, aws_client: AWSClient) -> Command
     return CommandResults(readable_output="success")
 
 
-@run_per_account
+@run_for_given_accounts
 def waiter_snapshot_completed_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1545,7 +1546,7 @@ def waiter_snapshot_completed_command(args: dict, aws_client: AWSClient) -> Comm
     return CommandResults(readable_output="Success")
 
 
-@run_per_account
+@run_for_given_accounts
 def get_latest_ami_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1599,7 +1600,7 @@ def get_latest_ami_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def create_security_group_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1627,7 +1628,7 @@ def create_security_group_command(args: dict, aws_client: AWSClient) -> CommandR
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def delete_security_group_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1647,7 +1648,7 @@ def delete_security_group_command(args: dict, aws_client: AWSClient) -> CommandR
         return CommandResults(readable_output="The Security Group was Deleted")
 
 
-@run_per_account
+@run_for_given_accounts
 def authorize_security_group_ingress_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1678,7 +1679,7 @@ def authorize_security_group_ingress_command(args: dict, aws_client: AWSClient) 
         return CommandResults(readable_output="The Security Group ingress rule was created")
 
 
-@run_per_account
+@run_for_given_accounts
 def authorize_security_group_egress_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1766,7 +1767,7 @@ def create_user_id_group_pairs_dict(args):
     return UserIdGroupPairs_dict
 
 
-@run_per_account
+@run_for_given_accounts
 def revoke_security_group_ingress_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1789,7 +1790,7 @@ def revoke_security_group_ingress_command(args: dict, aws_client: AWSClient) -> 
         return CommandResults(readable_output="The Security Group ingress rule was revoked")
 
 
-@run_per_account
+@run_for_given_accounts
 def revoke_security_group_egress_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1823,7 +1824,7 @@ def revoke_security_group_egress_command(args: dict, aws_client: AWSClient) -> C
         raise DemistoException(f"An error has occurred: {response}")
 
 
-@run_per_account
+@run_for_given_accounts
 def copy_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1861,7 +1862,7 @@ def copy_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def copy_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1896,7 +1897,7 @@ def copy_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_reserved_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1958,7 +1959,7 @@ def describe_reserved_instances_command(args: dict, aws_client: AWSClient) -> Co
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def monitor_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1984,7 +1985,7 @@ def monitor_instances_command(args: dict, aws_client: AWSClient) -> CommandResul
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def unmonitor_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2010,7 +2011,7 @@ def unmonitor_instances_command(args: dict, aws_client: AWSClient) -> CommandRes
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def reboot_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2025,7 +2026,7 @@ def reboot_instances_command(args: dict, aws_client: AWSClient) -> CommandResult
         return CommandResults(readable_output="The Instances were rebooted")
 
 
-@run_per_account
+@run_for_given_accounts
 def get_password_data_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2052,7 +2053,7 @@ def get_password_data_command(args: dict, aws_client: AWSClient) -> CommandResul
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def modify_network_interface_attribute_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2081,7 +2082,7 @@ def modify_network_interface_attribute_command(args: dict, aws_client: AWSClient
         return CommandResults(readable_output="The Network Interface Atttribute was successfully modified")
 
 
-@run_per_account
+@run_for_given_accounts
 def modify_instance_attribute_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2114,7 +2115,7 @@ def modify_instance_attribute_command(args: dict, aws_client: AWSClient) -> Comm
         return CommandResults(readable_output="The Instance attribute was successfully modified")
 
 
-@run_per_account
+@run_for_given_accounts
 def create_network_acl_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2148,7 +2149,7 @@ def create_network_acl_command(args: dict, aws_client: AWSClient) -> CommandResu
     return_results(human_readable, ec)
 
 
-@run_per_account
+@run_for_given_accounts
 def create_network_acl_entry_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2185,7 +2186,7 @@ def create_network_acl_entry_command(args: dict, aws_client: AWSClient) -> Comma
         return CommandResults(readable_output="The Instance ACL was successfully modified")
 
 
-@run_per_account
+@run_for_given_accounts
 def create_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2394,7 +2395,7 @@ def create_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def delete_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2447,7 +2448,7 @@ def delete_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_fleets_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2511,7 +2512,7 @@ def describe_fleets_command(args: dict, aws_client: AWSClient) -> CommandResults
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_fleet_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2561,7 +2562,7 @@ def describe_fleet_instances_command(args: dict, aws_client: AWSClient) -> Comma
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def modify_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2603,7 +2604,7 @@ def modify_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
         return CommandResults(readable_output="AWS EC2 Fleet was not successfully modified: " + response['Return'])
 
 
-@run_per_account
+@run_for_given_accounts
 def create_launch_template_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2842,7 +2843,7 @@ def create_launch_template_command(args: dict, aws_client: AWSClient) -> Command
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def delete_launch_template_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2883,7 +2884,7 @@ def delete_launch_template_command(args: dict, aws_client: AWSClient) -> Command
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def modify_image_attribute_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2932,7 +2933,7 @@ def modify_image_attribute_command(args: dict, aws_client: AWSClient) -> Command
         return CommandResults(readable_output='Image attribute sucessfully modified')
 
 
-@run_per_account
+@run_for_given_accounts
 def detach_internet_gateway_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2952,7 +2953,7 @@ def detach_internet_gateway_command(args: dict, aws_client: AWSClient) -> Comman
         return CommandResults(readable_output='Internet gateway sucessfully detached')
 
 
-@run_per_account
+@run_for_given_accounts
 def delete_subnet_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2970,7 +2971,7 @@ def delete_subnet_command(args: dict, aws_client: AWSClient) -> CommandResults:
         return CommandResults(readable_output='Subnet sucessfully deleted')
 
 
-@run_per_account
+@run_for_given_accounts
 def delete_vpc_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -2988,7 +2989,7 @@ def delete_vpc_command(args: dict, aws_client: AWSClient) -> CommandResults:
         return CommandResults(readable_output='VPC sucessfully deleted')
 
 
-@run_per_account
+@run_for_given_accounts
 def delete_internet_gateway_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -3006,7 +3007,7 @@ def delete_internet_gateway_command(args: dict, aws_client: AWSClient) -> Comman
         return CommandResults(readable_output='Internet gateway sucessfully deleted')
 
 
-@run_per_account
+@run_for_given_accounts
 def describe_internet_gateway_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -3059,7 +3060,7 @@ def describe_internet_gateway_command(args: dict, aws_client: AWSClient) -> Comm
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def create_traffic_mirror_session_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -3126,14 +3127,14 @@ def create_traffic_mirror_session_command(args: dict, aws_client: AWSClient) -> 
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def allocate_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'))
+        role_session_duration=args.get('roleSessionDuration'))
 
     availability_zone = args.get('availability_zone')
     quantity = int(args.get('quantity'))
@@ -3151,9 +3152,8 @@ def allocate_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
         kwargs.update({'HostRecovery': args.get('host_recovery')})
 
     response = client.allocate_hosts(AvailabilityZone=availability_zone, Quantity=quantity, **kwargs)
-    data = ({
-        'HostId': response.get('HostIds')
-    })
+    data = {'HostId': response.get('HostIds')}
+
     return CommandResults(
         outputs=data,
         outputs_prefix='AWS.EC2.Host',
@@ -3161,7 +3161,7 @@ def allocate_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
 
-@run_per_account
+@run_for_given_accounts
 def release_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(
         service=SERVICE,
@@ -3172,8 +3172,9 @@ def release_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
     host_id = argToList(args.get('host_id'))
     response = client.release_hosts(HostIds=host_id)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The host was successfully released.")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The host was successfully released.")
 
 
 def main():
