@@ -6,7 +6,6 @@ from collections.abc import Callable
 
 
 """CONSTANTS"""
-SERVICE = 'ec2'
 ROLE_NAME = demisto.getParam('access_role_name')
 
 
@@ -79,7 +78,38 @@ def parse_date(dt):
     return parsed_date
 
 
-def run_on_all_accounts(func: Callable[[dict, AWSClient], CommandResults]):
+def build_client(args: dict) -> AWSClient:
+
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
+    sts_endpoint_url = params.get('sts_endpoint_url') or None
+    endpoint_url = params.get('endpoint_url') or None
+
+    validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                    aws_secret_access_key)
+    return AWSClient(
+        aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+        aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+        retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url
+    ).aws_session(
+        service='ec2',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+
+def run_on_all_accounts(func: Callable[[dict], CommandResults]):
     """Decorator that runs the given command function on all AWS accounts configured in the params.
 
     Args:
@@ -99,7 +129,7 @@ def run_on_all_accounts(func: Callable[[dict, AWSClient], CommandResults]):
     Returns either a list of CommandResults for each accounts,
     or a single CommandResults if a role name is not specified.
     """
-    def account_runner(args: dict, aws_client: AWSClient) -> list[CommandResults]:
+    def account_runner(args: dict) -> list[CommandResults]:
         accounts = argToList(demisto.getParam('accounts_to_access'))
         results = []
         for account_id in accounts:
@@ -110,7 +140,7 @@ def run_on_all_accounts(func: Callable[[dict, AWSClient], CommandResults]):
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             })
             try:
-                result = func(args, aws_client)
+                result = func(args)
                 result.readable_output = f'#### Result for account `{account_id}`:\n{result.readable_output}'
                 if result.outputs:
                     # if no outputs_prefix is present, the outputs must be a dict with one DT key
@@ -139,15 +169,16 @@ run_for_given_accounts = run_on_all_accounts if (ROLE_NAME and not demisto.getAr
 """MAIN FUNCTIONS"""
 
 
+def test_module() -> str:
+    client = build_client({})
+    response = client.describe_regions()
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return 'ok'
+    return 'Test Module failed'
+
 @run_for_given_accounts
-def describe_regions_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_regions_command(args: dict) -> CommandResults:
+    client = build_client(args)
     data = []
     kwargs = {}
     if args.get('regionNames') is not None:
@@ -169,14 +200,8 @@ def describe_regions_command(args: dict, aws_client: AWSClient) -> CommandResult
 
 
 @run_for_given_accounts
-def describe_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     data = []
     kwargs = {}
@@ -232,14 +257,8 @@ def describe_instances_command(args: dict, aws_client: AWSClient) -> CommandResu
 
 
 @run_for_given_accounts
-def describe_iam_instance_profile_associations_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_iam_instance_profile_associations_command(args: dict) -> CommandResults:
+    client = build_client(args)
     data = []
     kwargs = {}
     output = []
@@ -279,14 +298,8 @@ def describe_iam_instance_profile_associations_command(args: dict, aws_client: A
 
 
 @run_for_given_accounts
-def describe_images_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_images_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {}
     data = []
@@ -339,14 +352,8 @@ def describe_images_command(args: dict, aws_client: AWSClient) -> CommandResults
 
 
 @run_for_given_accounts
-def describe_addresses_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_addresses_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -396,14 +403,8 @@ def describe_addresses_command(args: dict, aws_client: AWSClient) -> CommandResu
 
 
 @run_for_given_accounts
-def describe_snapshots_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_snapshots_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -460,14 +461,8 @@ def describe_snapshots_command(args: dict, aws_client: AWSClient) -> CommandResu
 
 
 @run_for_given_accounts
-def describe_volumes_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_volumes_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -515,14 +510,8 @@ def describe_volumes_command(args: dict, aws_client: AWSClient) -> CommandResult
 
 
 @run_for_given_accounts
-def describe_launch_templates_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_launch_templates_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -575,14 +564,8 @@ def describe_launch_templates_command(args: dict, aws_client: AWSClient) -> Comm
 
 
 @run_for_given_accounts
-def describe_key_pairs_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_key_pairs_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -611,14 +594,8 @@ def describe_key_pairs_command(args: dict, aws_client: AWSClient) -> CommandResu
 
 
 @run_for_given_accounts
-def describe_vpcs_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_vpcs_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -665,14 +642,8 @@ def describe_vpcs_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def describe_subnets_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_subnets_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -720,14 +691,8 @@ def describe_subnets_command(args: dict, aws_client: AWSClient) -> CommandResult
 
 
 @run_for_given_accounts
-def describe_security_groups_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def describe_security_groups_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -775,14 +740,8 @@ def describe_security_groups_command(args: dict, aws_client: AWSClient) -> Comma
 
 
 @run_for_given_accounts
-def allocate_address_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def allocate_address_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
 
@@ -801,14 +760,8 @@ def allocate_address_command(args: dict, aws_client: AWSClient) -> CommandResult
 
 
 @run_for_given_accounts
-def associate_address_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+def associate_address_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {'AllocationId': args.get('allocationId')}
@@ -838,14 +791,8 @@ def associate_address_command(args: dict, aws_client: AWSClient) -> CommandResul
 
 
 @run_for_given_accounts
-def create_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_snapshot_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {'VolumeId': args.get('volumeId')}
 
@@ -898,14 +845,8 @@ def create_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults
 
 
 @run_for_given_accounts
-def delete_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def delete_snapshot_command(args: dict) -> CommandResults:
+    client = build_client(args)
     response = client.delete_snapshot(SnapshotId=args.get('snapshotId'))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
@@ -913,14 +854,8 @@ def delete_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults
 
 
 @run_for_given_accounts
-def create_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_image_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {
         'Name': args.get('name'),
@@ -949,14 +884,8 @@ def create_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def deregister_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def deregister_image_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     response = client.deregister_image(ImageId=args.get('imageId'))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -965,14 +894,8 @@ def deregister_image_command(args: dict, aws_client: AWSClient) -> CommandResult
 
 
 @run_for_given_accounts
-def modify_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def modify_volume_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     obj = vars(client._client_config)
     kwargs = {'VolumeId': args.get('volumeId')}
@@ -1017,14 +940,8 @@ def modify_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def create_tags_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_tags_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {
         'Resources': parse_resource_ids(args.get('resources')),
         'Tags': parse_tag_field(args.get('tags'))
@@ -1036,14 +953,8 @@ def create_tags_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def disassociate_address_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def disassociate_address_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     response = client.disassociate_address(AssociationId=args.get('associationId'))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -1052,14 +963,8 @@ def disassociate_address_command(args: dict, aws_client: AWSClient) -> CommandRe
 
 
 @run_for_given_accounts
-def release_address_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def release_address_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     response = client.release_address(AllocationId=args.get('allocationId'))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -1068,14 +973,8 @@ def release_address_command(args: dict, aws_client: AWSClient) -> CommandResults
 
 
 @run_for_given_accounts
-def start_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def start_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     response = client.start_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -1084,14 +983,8 @@ def start_instances_command(args: dict, aws_client: AWSClient) -> CommandResults
 
 
 @run_for_given_accounts
-def stop_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def stop_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     response = client.stop_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -1100,14 +993,8 @@ def stop_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def terminate_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def terminate_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     response = client.terminate_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -1116,14 +1003,8 @@ def terminate_instances_command(args: dict, aws_client: AWSClient) -> CommandRes
 
 
 @run_for_given_accounts
-def create_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_volume_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {'AvailabilityZone': args.get('availabilityZone')}
 
@@ -1184,14 +1065,8 @@ def create_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def attach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def attach_volume_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     kwargs = {
         'Device': args.get('device'),
@@ -1220,14 +1095,8 @@ def attach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def detach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def detach_volume_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     kwargs = {'VolumeId': args.get('volumeId')}
 
@@ -1260,14 +1129,8 @@ def detach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def delete_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def delete_volume_command(args: dict) -> CommandResults:
+    client = build_client(args)
     response = client.delete_volume(VolumeId=args.get('volumeId'))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
@@ -1275,14 +1138,8 @@ def delete_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def run_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def run_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {
         'MinCount': int(args.get('count')),
@@ -1404,14 +1261,8 @@ def run_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def waiter_instance_running_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def waiter_instance_running_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('filters') is not None:
         kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
@@ -1428,14 +1279,8 @@ def waiter_instance_running_command(args: dict, aws_client: AWSClient) -> Comman
 
 
 @run_for_given_accounts
-def waiter_instance_status_ok_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def waiter_instance_status_ok_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('filters') is not None:
         kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
@@ -1452,14 +1297,8 @@ def waiter_instance_status_ok_command(args: dict, aws_client: AWSClient) -> Comm
 
 
 @run_for_given_accounts
-def waiter_instance_stopped_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def waiter_instance_stopped_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('filters') is not None:
         kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
@@ -1476,14 +1315,8 @@ def waiter_instance_stopped_command(args: dict, aws_client: AWSClient) -> Comman
 
 
 @run_for_given_accounts
-def waiter_instance_terminated_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def waiter_instance_terminated_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('filters') is not None:
         kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
@@ -1500,14 +1333,8 @@ def waiter_instance_terminated_command(args: dict, aws_client: AWSClient) -> Com
 
 
 @run_for_given_accounts
-def waiter_image_available_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def waiter_image_available_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('filters') is not None:
         kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
@@ -1528,14 +1355,8 @@ def waiter_image_available_command(args: dict, aws_client: AWSClient) -> Command
 
 
 @run_for_given_accounts
-def waiter_snapshot_completed_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def waiter_snapshot_completed_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('filters') is not None:
         kwargs.update({'Filters': parse_filter_field(args.get('filters'))})
@@ -1556,14 +1377,8 @@ def waiter_snapshot_completed_command(args: dict, aws_client: AWSClient) -> Comm
 
 
 @run_for_given_accounts
-def get_latest_ami_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def get_latest_ami_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {}
     data = {}  # type: dict
@@ -1610,14 +1425,8 @@ def get_latest_ami_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def create_security_group_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_security_group_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {
         'GroupName': args.get('groupName'),
         'Description': args.get('description', ''),
@@ -1638,14 +1447,8 @@ def create_security_group_command(args: dict, aws_client: AWSClient) -> CommandR
 
 
 @run_for_given_accounts
-def delete_security_group_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def delete_security_group_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('groupId') is not None:
         kwargs.update({'GroupId': args.get('groupId')})
@@ -1659,14 +1462,8 @@ def delete_security_group_command(args: dict, aws_client: AWSClient) -> CommandR
 
 
 @run_for_given_accounts
-def authorize_security_group_ingress_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def authorize_security_group_ingress_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
     if IpPermissionsFull := args.get('IpPermissionsFull', None):
         IpPermissions = json.loads(IpPermissionsFull)
@@ -1691,14 +1488,8 @@ def authorize_security_group_ingress_command(args: dict, aws_client: AWSClient) 
 
 
 @run_for_given_accounts
-def authorize_security_group_egress_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def authorize_security_group_egress_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
     if IpPermissionsFull := args.get('IpPermissionsFull', None):
         IpPermissions = json.loads(IpPermissionsFull)
@@ -1780,14 +1571,8 @@ def create_user_id_group_pairs_dict(args):
 
 
 @run_for_given_accounts
-def revoke_security_group_ingress_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def revoke_security_group_ingress_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
     if IpPermissionsFull := args.get('IpPermissionsFull', None):
         IpPermissions = json.loads(IpPermissionsFull)
@@ -1805,14 +1590,8 @@ def revoke_security_group_ingress_command(args: dict, aws_client: AWSClient) -> 
 
 
 @run_for_given_accounts
-def revoke_security_group_egress_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def revoke_security_group_egress_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     kwargs = {
         'GroupId': args.get('groupId')
@@ -1839,14 +1618,8 @@ def revoke_security_group_egress_command(args: dict, aws_client: AWSClient) -> C
 
 
 @run_for_given_accounts
-def copy_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def copy_image_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {
         'Name': args.get('name'),
@@ -1877,14 +1650,8 @@ def copy_image_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def copy_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def copy_snapshot_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {
         'SourceSnapshotId': args.get('sourceSnapshotId'),
@@ -1912,14 +1679,8 @@ def copy_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def describe_reserved_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def describe_reserved_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {}
     data = []
@@ -1974,14 +1735,8 @@ def describe_reserved_instances_command(args: dict, aws_client: AWSClient) -> Co
 
 
 @run_for_given_accounts
-def monitor_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def monitor_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
     data = []
     response = client.monitor_instances(InstanceIds=parse_resource_ids(args.get('instancesIds')))
 
@@ -2000,14 +1755,8 @@ def monitor_instances_command(args: dict, aws_client: AWSClient) -> CommandResul
 
 
 @run_for_given_accounts
-def unmonitor_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def unmonitor_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
     data = []
     response = client.unmonitor_instances(InstanceIds=parse_resource_ids(args.get('instancesIds')))
 
@@ -2026,14 +1775,8 @@ def unmonitor_instances_command(args: dict, aws_client: AWSClient) -> CommandRes
 
 
 @run_for_given_accounts
-def reboot_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def reboot_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     response = client.reboot_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -2042,14 +1785,8 @@ def reboot_instances_command(args: dict, aws_client: AWSClient) -> CommandResult
 
 
 @run_for_given_accounts
-def get_password_data_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def get_password_data_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     response = client.get_password_data(InstanceId=args.get('instanceId'))
     try:
@@ -2069,14 +1806,8 @@ def get_password_data_command(args: dict, aws_client: AWSClient) -> CommandResul
 
 
 @run_for_given_accounts
-def modify_network_interface_attribute_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def modify_network_interface_attribute_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {'NetworkInterfaceId': args.get('networkInterfaceId')}
 
     if args.get('sourceDestCheck') is not None:
@@ -2099,14 +1830,8 @@ def modify_network_interface_attribute_command(args: dict, aws_client: AWSClient
 
 
 @run_for_given_accounts
-def modify_instance_attribute_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def modify_instance_attribute_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {'InstanceId': args.get('instanceId')}
 
     if args.get('sourceDestCheck') is not None:
@@ -2133,14 +1858,8 @@ def modify_instance_attribute_command(args: dict, aws_client: AWSClient) -> Comm
 
 
 @run_for_given_accounts
-def create_network_acl_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_network_acl_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {'VpcId': args.get('VpcId')}
 
     if args.get('DryRun') is not None:
@@ -2167,14 +1886,8 @@ def create_network_acl_command(args: dict, aws_client: AWSClient) -> CommandResu
 
 
 @run_for_given_accounts
-def create_network_acl_entry_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_network_acl_entry_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {
         'Egress': argToBoolean(args.get('Egress')),
         'NetworkAclId': args.get('NetworkAclId'),
@@ -2205,14 +1918,8 @@ def create_network_acl_entry_command(args: dict, aws_client: AWSClient) -> Comma
 
 
 @run_for_given_accounts
-def create_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_fleet_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}  # type: dict
 
     if args.get('DryRun') is not None:
@@ -2414,14 +2121,8 @@ def create_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def delete_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def delete_fleet_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     data = []
     kwargs = {}
@@ -2467,14 +2168,8 @@ def delete_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def describe_fleets_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def describe_fleets_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)  # noqa:F841
     data = []
     kwargs = {}
@@ -2531,14 +2226,8 @@ def describe_fleets_command(args: dict, aws_client: AWSClient) -> CommandResults
 
 
 @run_for_given_accounts
-def describe_fleet_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def describe_fleet_instances_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     data = []
     kwargs = {}
@@ -2581,14 +2270,8 @@ def describe_fleet_instances_command(args: dict, aws_client: AWSClient) -> Comma
 
 
 @run_for_given_accounts
-def modify_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def modify_fleet_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('FleetId') is not None:
         kwargs.update({'FleetIds': args.get('FleetId')})
@@ -2623,14 +2306,8 @@ def modify_fleet_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def create_launch_template_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_launch_template_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)  # noqa:F841
     kwargs = {}
 
@@ -2862,14 +2539,8 @@ def create_launch_template_command(args: dict, aws_client: AWSClient) -> Command
 
 
 @run_for_given_accounts
-def delete_launch_template_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def delete_launch_template_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)  # noqa:F841
     data = []
     kwargs = {}
@@ -2903,14 +2574,8 @@ def delete_launch_template_command(args: dict, aws_client: AWSClient) -> Command
 
 
 @run_for_given_accounts
-def modify_image_attribute_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def modify_image_attribute_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)  # noqa:F841
     kwargs = {}
 
@@ -2953,14 +2618,8 @@ def modify_image_attribute_command(args: dict, aws_client: AWSClient) -> Command
 
 
 @run_for_given_accounts
-def detach_internet_gateway_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def detach_internet_gateway_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('InternetGatewayId') is not None:
         kwargs.update({'InternetGatewayId': args.get('InternetGatewayId')})
@@ -2974,14 +2633,8 @@ def detach_internet_gateway_command(args: dict, aws_client: AWSClient) -> Comman
 
 
 @run_for_given_accounts
-def delete_subnet_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def delete_subnet_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('SubnetId') is not None:
         kwargs.update({'SubnetId': args.get('SubnetId')})
@@ -2993,14 +2646,8 @@ def delete_subnet_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def delete_vpc_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def delete_vpc_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('VpcId') is not None:
         kwargs.update({'VpcId': args.get('VpcId')})
@@ -3012,14 +2659,8 @@ def delete_vpc_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def delete_internet_gateway_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def delete_internet_gateway_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('InternetGatewayId') is not None:
         kwargs.update({'InternetGatewayId': args.get('InternetGatewayId')})
@@ -3031,14 +2672,8 @@ def delete_internet_gateway_command(args: dict, aws_client: AWSClient) -> Comman
 
 
 @run_for_given_accounts
-def describe_internet_gateway_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def describe_internet_gateway_command(args: dict) -> CommandResults:
+    client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {}
     data = []
@@ -3084,14 +2719,8 @@ def describe_internet_gateway_command(args: dict, aws_client: AWSClient) -> Comm
 
 
 @run_for_given_accounts
-def create_traffic_mirror_session_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def create_traffic_mirror_session_command(args: dict) -> CommandResults:
+    client = build_client(args)
     kwargs = {}
     if args.get('NetworkInterfaceId') is not None:
         kwargs.update({'NetworkInterfaceId': args.get('NetworkInterfaceId')})
@@ -3151,13 +2780,8 @@ def create_traffic_mirror_session_command(args: dict, aws_client: AWSClient) -> 
 
 
 @run_for_given_accounts
-def allocate_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'))
+def allocate_hosts_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     availability_zone = args.get('availability_zone')
     quantity = int(args.get('quantity'))
@@ -3185,14 +2809,8 @@ def allocate_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 
 @run_for_given_accounts
-def release_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def release_hosts_command(args: dict) -> CommandResults:
+    client = build_client(args)
     host_id = argToList(args.get('host_id'))
     response = client.release_hosts(HostIds=host_id)
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
@@ -3202,250 +2820,226 @@ def release_hosts_command(args: dict, aws_client: AWSClient) -> CommandResults:
 
 def main():
     try:
-        params = demisto.params()
-        aws_default_region = params.get('defaultRegion')
-        aws_role_arn = params.get('roleArn')
-        aws_role_session_name = params.get('roleSessionName')
-        aws_role_session_duration = params.get('sessionDuration')
-        aws_role_policy = None
-        aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
-        aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
-        verify_certificate = not params.get('insecure', True)
-        timeout = params.get('timeout')
-        retries = params.get('retries') or 5
-        sts_endpoint_url = params.get('sts_endpoint_url') or None
-        endpoint_url = params.get('endpoint_url') or None
-
-        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
-                        aws_secret_access_key)
-        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                               retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
-
         command = demisto.command()
         args = demisto.args()
 
         LOG(f'Command being called is {command}')
 
         if command == 'test-module':
-            # This is the call made when pressing the integration test button.
-            client = aws_client.aws_session(service=SERVICE)
-            response = client.describe_regions()
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                demisto.results('ok')
+            return_results(test_module())
 
         elif command == 'aws-ec2-describe-regions':
-            return_results(describe_regions_command(args, aws_client))
+            return_results(describe_regions_command(args))
 
         elif command == 'aws-ec2-describe-instances':
-            return_results(describe_instances_command(args, aws_client))
+            return_results(describe_instances_command(args))
 
         elif command == 'aws-ec2-describe-iam-instance-profile-associations':
-            return_results(describe_iam_instance_profile_associations_command(args, aws_client))
+            return_results(describe_iam_instance_profile_associations_command(args))
 
         elif command == 'aws-ec2-describe-images':
-            return_results(describe_images_command(args, aws_client))
+            return_results(describe_images_command(args))
 
         elif command == 'aws-ec2-describe-addresses':
-            return_results(describe_addresses_command(args, aws_client))
+            return_results(describe_addresses_command(args))
 
         elif command == 'aws-ec2-describe-snapshots':
-            return_results(describe_snapshots_command(args, aws_client))
+            return_results(describe_snapshots_command(args))
 
         elif command == 'aws-ec2-describe-volumes':
-            return_results(describe_volumes_command(args, aws_client))
+            return_results(describe_volumes_command(args))
 
         elif command == 'aws-ec2-describe-launch-templates':
-            return_results(describe_launch_templates_command(args, aws_client))
+            return_results(describe_launch_templates_command(args))
 
         elif command == 'aws-ec2-describe-key-pairs':
-            return_results(describe_key_pairs_command(args, aws_client))
+            return_results(describe_key_pairs_command(args))
 
         elif command == 'aws-ec2-describe-vpcs':
-            return_results(describe_vpcs_command(args, aws_client))
+            return_results(describe_vpcs_command(args))
 
         elif command == 'aws-ec2-describe-subnets':
-            return_results(describe_subnets_command(args, aws_client))
+            return_results(describe_subnets_command(args))
 
         elif command == 'aws-ec2-describe-security-groups':
-            return_results(describe_security_groups_command(args, aws_client))
+            return_results(describe_security_groups_command(args))
 
         elif command == 'aws-ec2-allocate-address':
-            return_results(allocate_address_command(args, aws_client))
+            return_results(allocate_address_command(args))
 
         elif command == 'aws-ec2-associate-address':
-            return_results(associate_address_command(args, aws_client))
+            return_results(associate_address_command(args))
 
         elif command == 'aws-ec2-create-snapshot':
-            return_results(create_snapshot_command(args, aws_client))
+            return_results(create_snapshot_command(args))
 
         elif command == 'aws-ec2-delete-snapshot':
-            return_results(delete_snapshot_command(args, aws_client))
+            return_results(delete_snapshot_command(args))
 
         elif command == 'aws-ec2-create-image':
-            return_results(create_image_command(args, aws_client))
+            return_results(create_image_command(args))
 
         elif command == 'aws-ec2-deregister-image':
-            return_results(deregister_image_command(args, aws_client))
+            return_results(deregister_image_command(args))
 
         elif command == 'aws-ec2-modify-volume':
-            return_results(modify_volume_command(args, aws_client))
+            return_results(modify_volume_command(args))
 
         elif command == 'aws-ec2-create-tags':
-            return_results(create_tags_command(args, aws_client))
+            return_results(create_tags_command(args))
 
         elif command == 'aws-ec2-disassociate-address':
-            return_results(disassociate_address_command(args, aws_client))
+            return_results(disassociate_address_command(args))
 
         elif command == 'aws-ec2-release-address':
-            return_results(release_address_command(args, aws_client))
+            return_results(release_address_command(args))
 
         elif command == 'aws-ec2-start-instances':
-            return_results(start_instances_command(args, aws_client))
+            return_results(start_instances_command(args))
 
         elif command == 'aws-ec2-stop-instances':
-            return_results(stop_instances_command(args, aws_client))
+            return_results(stop_instances_command(args))
 
         elif command == 'aws-ec2-terminate-instances':
-            return_results(terminate_instances_command(args, aws_client))
+            return_results(terminate_instances_command(args))
 
         elif command == 'aws-ec2-create-volume':
-            return_results(create_volume_command(args, aws_client))
+            return_results(create_volume_command(args))
 
         elif command == 'aws-ec2-attach-volume':
-            return_results(attach_volume_command(args, aws_client))
+            return_results(attach_volume_command(args))
 
         elif command == 'aws-ec2-detach-volume':
-            return_results(detach_volume_command(args, aws_client))
+            return_results(detach_volume_command(args))
 
         elif command == 'aws-ec2-delete-volume':
-            return_results(delete_volume_command(args, aws_client))
+            return_results(delete_volume_command(args))
 
         elif command == 'aws-ec2-run-instances':
-            return_results(run_instances_command(args, aws_client))
+            return_results(run_instances_command(args))
 
         elif command == 'aws-ec2-waiter-instance-running':
-            return_results(waiter_instance_running_command(args, aws_client))
+            return_results(waiter_instance_running_command(args))
 
         elif command == 'aws-ec2-waiter-instance-status-ok':
-            return_results(waiter_instance_status_ok_command(args, aws_client))
+            return_results(waiter_instance_status_ok_command(args))
 
         elif command == 'aws-ec2-waiter-instance-stopped':
-            return_results(waiter_instance_stopped_command(args, aws_client))
+            return_results(waiter_instance_stopped_command(args))
 
         elif command == 'aws-ec2-waiter-instance-terminated':
-            return_results(waiter_instance_terminated_command(args, aws_client))
+            return_results(waiter_instance_terminated_command(args))
 
         elif command == 'aws-ec2-waiter-image-available':
-            return_results(waiter_image_available_command(args, aws_client))
+            return_results(waiter_image_available_command(args))
 
         elif command == 'aws-ec2-waiter-snapshot_completed':
-            return_results(waiter_snapshot_completed_command(args, aws_client))
+            return_results(waiter_snapshot_completed_command(args))
 
         elif command == 'aws-ec2-get-latest-ami':
-            return_results(get_latest_ami_command(args, aws_client))
+            return_results(get_latest_ami_command(args))
 
         elif command == 'aws-ec2-create-security-group':
-            return_results(create_security_group_command(args, aws_client))
+            return_results(create_security_group_command(args))
 
         elif command == 'aws-ec2-delete-security-group':
-            return_results(delete_security_group_command(args, aws_client))
+            return_results(delete_security_group_command(args))
 
         elif command == 'aws-ec2-authorize-security-group-ingress-rule':
-            return_results(authorize_security_group_ingress_command(args, aws_client))
+            return_results(authorize_security_group_ingress_command(args))
 
         elif command == 'aws-ec2-authorize-security-group-egress-rule':
-            return_results(authorize_security_group_egress_command(args, aws_client))
+            return_results(authorize_security_group_egress_command(args))
 
         elif command == 'aws-ec2-revoke-security-group-ingress-rule':
-            return_results(revoke_security_group_ingress_command(args, aws_client))
+            return_results(revoke_security_group_ingress_command(args))
 
         elif command == 'aws-ec2-revoke-security-group-egress-rule':
-            return_results(revoke_security_group_egress_command(args, aws_client))
+            return_results(revoke_security_group_egress_command(args))
 
         elif command == 'aws-ec2-copy-image':
-            return_results(copy_image_command(args, aws_client))
+            return_results(copy_image_command(args))
 
         elif command == 'aws-ec2-copy-snapshot':
-            return_results(copy_snapshot_command(args, aws_client))
+            return_results(copy_snapshot_command(args))
 
         elif command == 'aws-ec2-describe-reserved-instances':
-            return_results(describe_reserved_instances_command(args, aws_client))
+            return_results(describe_reserved_instances_command(args))
 
         elif command == 'aws-ec2-monitor-instances':
-            return_results(monitor_instances_command(args, aws_client))
+            return_results(monitor_instances_command(args))
 
         elif command == 'aws-ec2-unmonitor-instances':
-            return_results(unmonitor_instances_command(args, aws_client))
+            return_results(unmonitor_instances_command(args))
 
         elif command == 'aws-ec2-reboot-instances':
-            return_results(reboot_instances_command(args, aws_client))
+            return_results(reboot_instances_command(args))
 
         elif command == 'aws-ec2-get-password-data':
-            return_results(get_password_data_command(args, aws_client))
+            return_results(get_password_data_command(args))
 
         elif command == 'aws-ec2-modify-network-interface-attribute':
-            return_results(modify_network_interface_attribute_command(args, aws_client))
+            return_results(modify_network_interface_attribute_command(args))
 
         elif command == 'aws-ec2-modify-instance-attribute':
-            return_results(modify_instance_attribute_command(args, aws_client))
+            return_results(modify_instance_attribute_command(args))
 
         elif command == 'aws-ec2-create-network-acl':
-            return_results(create_network_acl_command(args, aws_client))
+            return_results(create_network_acl_command(args))
 
         elif command == 'aws-ec2-create-network-acl-entry':
-            return_results(create_network_acl_entry_command(args, aws_client))
+            return_results(create_network_acl_entry_command(args))
 
         elif command == 'aws-ec2-create-fleet':
-            return_results(create_fleet_command(args, aws_client))
+            return_results(create_fleet_command(args))
 
         elif command == 'aws-ec2-delete-fleet':
-            return_results(delete_fleet_command(args, aws_client))
+            return_results(delete_fleet_command(args))
 
         elif command == 'aws-ec2-describe-fleets':
-            return_results(describe_fleets_command(args, aws_client))
+            return_results(describe_fleets_command(args))
 
         elif command == 'aws-ec2-describe-fleet-instances':
-            return_results(describe_fleet_instances_command(args, aws_client))
+            return_results(describe_fleet_instances_command(args))
 
         elif command == 'aws-ec2-modify-fleet':
-            return_results(modify_fleet_command(args, aws_client))
+            return_results(modify_fleet_command(args))
 
         elif command == 'aws-ec2-create-launch-template':
-            return_results(create_launch_template_command(args, aws_client))
+            return_results(create_launch_template_command(args))
 
         elif command == 'aws-ec2-delete-launch-template':
-            return_results(delete_launch_template_command(args, aws_client))
+            return_results(delete_launch_template_command(args))
 
         elif command == 'aws-ec2-modify-image-attribute':
-            return_results(modify_image_attribute_command(args, aws_client))
+            return_results(modify_image_attribute_command(args))
 
         elif command == 'aws-ec2-modify-instance-attribute':
-            return_results(modify_instance_attribute_command(args, aws_client))
+            return_results(modify_instance_attribute_command(args))
 
         elif command == 'aws-ec2-detach-internet-gateway':
-            return_results(detach_internet_gateway_command(args, aws_client))
+            return_results(detach_internet_gateway_command(args))
 
         elif command == 'aws-ec2-delete-internet-gateway':
-            return_results(delete_internet_gateway_command(args, aws_client))
+            return_results(delete_internet_gateway_command(args))
 
         elif command == 'aws-ec2-describe-internet-gateway':
-            return_results(describe_internet_gateway_command(args, aws_client))
+            return_results(describe_internet_gateway_command(args))
 
         elif command == 'aws-ec2-delete-subnet':
-            return_results(delete_subnet_command(args, aws_client))
+            return_results(delete_subnet_command(args))
 
         elif command == 'aws-ec2-delete-vpc':
-            return_results(delete_vpc_command(args, aws_client))
+            return_results(delete_vpc_command(args))
 
         elif command == 'aws-ec2-create-traffic-mirror-session':
-            return_results(create_traffic_mirror_session_command(args, aws_client))
+            return_results(create_traffic_mirror_session_command(args))
 
         elif command == 'aws-ec2-allocate-hosts':
-            return_results(allocate_hosts_command(args, aws_client))
+            return_results(allocate_hosts_command(args))
 
         elif command == 'aws-ec2-release-hosts':
-            return_results(release_hosts_command(args, aws_client))
+            return_results(release_hosts_command(args))
 
     except Exception as e:
         LOG(e)
