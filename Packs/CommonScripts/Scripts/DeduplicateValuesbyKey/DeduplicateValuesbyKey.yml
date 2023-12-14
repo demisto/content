@@ -3,13 +3,13 @@ args:
   isArray: true
   name: object_list
   required: true
-- description: String representing key from which unique values should be retrieved. Use dot notation to access subkeys (e.g. 'key.subkey')
+- description: String representing key from which unique values should be retrieved. Use dot notation to access subkeys (e.g. 'key.subkey').
   name: key_of_interest
   required: true
 - auto: PREDEFINED
   default: true
   defaultValue: "False"
-  description: Default is False. If set to True, will return None in the unique list if the key is not found
+  description: Default is False. If set to True, will return None in the unique list if the key is not found.
   name: keep_none
   predefined:
   - "True"
@@ -21,12 +21,12 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: DeduplicateValuesbyKey
 outputs:
 - contextPath: DeduplicatedValues
-  description: List of unique values for the specified key
+  description: List of unique values for the specified key.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
