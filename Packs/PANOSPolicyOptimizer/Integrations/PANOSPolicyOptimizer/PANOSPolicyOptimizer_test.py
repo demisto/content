@@ -368,3 +368,40 @@ def test_isCmsSelected(version, is_panorama, res):
         case 3: PAN-OS 10.3 should return True.
     """
     assert is_cms_selected(version=version, is_panorama=is_panorama) == res
+
+
+def test_policy_optimizer_get_rules_pagination(mocker):
+    """
+    Given: a client instance and a valid mocked security rules response.
+    When: Calling 'policy_optimizer_get_rules' using pagination parameters.
+    Then: Ensure the request is sent with the correct parameters.
+    """
+    client = get_firewall_instance_client()
+    mocker.patch.object(client, 'token_generator', return_value='123')
+    kwargs = {'timeframe': 'all', 'usage': 'Unused', 'exclude': False, 'position': 'both', 'rule_type': 'security'}
+
+    session_post_mock = mocker.patch.object(client, 'session_post')
+    client.policy_optimizer_get_rules(limit=50, page_size=200, **kwargs)
+    assert session_post_mock.call_args.kwargs['json_cmd']['data'][2][0]['start'] == 0
+    assert session_post_mock.call_args.kwargs['json_cmd']['data'][2][0]['limit'] == 50
+
+    session_post_mock = mocker.patch.object(client, 'session_post',
+                                            side_effect=[{'result': {'result': {'@count': 30, '@total-count': 100, 'entry': []}}},
+                                                         {'result': {'result': {'@count': 30, '@total-count': 100, 'entry': []}}},
+                                                         {'result': {'result': {'@count': 20, '@total-count': 100, 'entry': []}}}]
+                                            )
+    client.policy_optimizer_get_rules(limit=80, page_size=30, **kwargs)
+    assert session_post_mock.call_count == 3
+    assert session_post_mock.call_args_list[0].kwargs['json_cmd']['data'][2][0]['start'] == 0
+    assert session_post_mock.call_args_list[0].kwargs['json_cmd']['data'][2][0]['limit'] == 30
+    assert session_post_mock.call_args_list[1].kwargs['json_cmd']['data'][2][0]['start'] == 30
+    assert session_post_mock.call_args_list[1].kwargs['json_cmd']['data'][2][0]['limit'] == 30
+    assert session_post_mock.call_args_list[2].kwargs['json_cmd']['data'][2][0]['start'] == 60
+    assert session_post_mock.call_args_list[2].kwargs['json_cmd']['data'][2][0]['limit'] == 20
+
+    session_post_mock = mocker.patch.object(client, 'session_post',
+                                            return_value={'result': {'result': {'@count': 10, '@total-count': 100, 'entry': []}}})
+    client.policy_optimizer_get_rules(limit=50, page_size=10, page=3, **kwargs)
+    assert session_post_mock.call_count == 1
+    assert session_post_mock.call_args.kwargs['json_cmd']['data'][2][0]['start'] == 20
+    assert session_post_mock.call_args.kwargs['json_cmd']['data'][2][0]['limit'] == 10
