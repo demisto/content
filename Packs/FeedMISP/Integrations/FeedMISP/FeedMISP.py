@@ -166,6 +166,7 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
     except KeyError as err:
         demisto.debug(str(err))
         raise KeyError(f'Could not parse returned data as attributes list. \nError massage: {err}')
+    demisto.debug(f' Number of indicators: {len(indicators_iterator)}')
     return indicators_iterator
 
 
@@ -318,6 +319,7 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
     Returns: Sorted list of new indicators
     """
     last_run = demisto.getLastRun()
+    demisto.debug(f"{last_run}")
     indicators_iterator.sort(key=lambda indicator: indicator['value']['timestamp'])
 
     if last_run is None:
@@ -351,6 +353,9 @@ def fetch_indicators(client: Client,
         params_dict['limit'] = limit
 
     response = client.search_query(params_dict)
+    demisto.debug(f'response of search_query from fetch indicators command:/n{response}')
+    if error_message := response.get('Error'):
+        raise DemistoException(error_message)
     indicators_iterator = build_indicators_iterator(response, url)
     added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, is_fetch)
     indicators = []
@@ -380,7 +385,7 @@ def fetch_indicators(client: Client,
         create_and_add_relationships(indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)
-
+    demisto.debug(f'{indicators}')
     return indicators
 
 
@@ -524,10 +529,10 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     feed_tags = argToList(params.get("feedTags", []))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
-
+    demisto.debug("fetch_indicators starts")
     indicators = fetch_indicators(client, tags, attribute_type,
                                   query, tlp_color, params.get('url'), reputation, feed_tags, limit, False)
-
+    demisto.debug("fetch_indicators finished")
     hr_indicators = []
     for indicator in indicators:
         hr_indicators.append({
@@ -561,9 +566,11 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-
+    # XSUP-31078: adding limit to fetch since large amount of indicators may cause the docker to fail.
+    demisto.debug("fetch_indicators starts")
     indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color,
                                   params.get('url'), reputation, feed_tags)
+    demisto.debug(f"fetch indicator results: {indicators} /n/n fetch_indicators finished")
     return indicators
 
 
@@ -594,7 +601,6 @@ def main():
             indicators = fetch_attributes_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
-        else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
     except Exception as e:
