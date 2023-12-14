@@ -7,10 +7,10 @@ def detect_qrcode_image(path):
 
     img = cv2.imread(path)
     detect = cv2.QRCodeDetector()
-    value, points, straight_qrcode = detect.detectAndDecode(img)
+    c,v = detect.detectAndDecodeMulti(img)[0:2]
 
-    if points is not None:
-        result = {"Detected": True, "Value": str(value)}
+    if c :
+        result = {"Detected": True, "Value": str(v)}
     else:
         result = {"Detected": False}
 
