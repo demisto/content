@@ -57,9 +57,11 @@ def create_indicators_loop(args, indicators):
                 if 'tags' in indicator.get('customFields'):
                     [indicator['customFields']['tags'].append(ntag) for ntag in tags]
 
-        res = demisto.executeCommand("createNewIndicator", indicator)
-
         context = {'value': indicator['value'], 'type': indicator['type']}
+        if 'tags' in indicator.get('customFields'):
+            context['tags'] = indicator['customFields']['tags']
+
+        res = demisto.executeCommand("createNewIndicator", indicator)
         context_data.append(context)
 
         if is_error(res[0]):
