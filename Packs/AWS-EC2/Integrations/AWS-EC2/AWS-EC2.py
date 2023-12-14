@@ -2991,9 +2991,6 @@ def main():
         elif command == 'aws-ec2-modify-network-interface-attribute':
             return_results(modify_network_interface_attribute_command(args))
 
-        elif command == 'aws-ec2-modify-instance-attribute':
-            return_results(modify_instance_attribute_command(args))
-
         elif command == 'aws-ec2-create-network-acl':
             return_results(create_network_acl_command(args))
 
