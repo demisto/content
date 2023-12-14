@@ -1847,13 +1847,11 @@ def main():  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     params = demisto.params()
-    events = []
-    vulnerabilities: list = []
 
     access_key = params.get('credentials_access_key', {}).get('password') or params.get('access-key')
     secret_key = params.get('credentials_secret_key', {}).get('password') or params.get('secret-key')
     url = params.get('url')
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get('insecure', False) or not params.get('unsecure', False)
     proxy = params.get('proxy', False)
 
     # Events Params
@@ -1917,7 +1915,6 @@ def main():  # pragma: no cover
 
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
-            # send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             demisto.setLastRun(new_last_run)
