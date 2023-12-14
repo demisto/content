@@ -594,5 +594,5 @@ outputs:
 - contextPath: Panorama.Push.Details
   description: The job ID details.
 tests:
-- PAN-OS Create Or Edit Rule Test
+  - no tests
 fromversion: 6.10.0

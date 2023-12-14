@@ -5621,8 +5621,6 @@
             "playbookID": "Test - Netcraft"
         },
         {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "PAN-OS Create Or Edit Rule Test"
         }
     ],
