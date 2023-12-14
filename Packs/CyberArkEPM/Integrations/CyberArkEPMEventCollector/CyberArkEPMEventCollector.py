@@ -204,7 +204,7 @@ def get_policy_audits(client: Client, last_run_per_id: dict, limit: int) -> dict
         policy_audits[set_id]['events'] = results.get('events', [])
 
         while (next_cursor := results.get('nextCursor')) and len(policy_audits[set_id]['events']) < limit:
-            results = client.get_policy_audits(set_id, from_date, limit,  next_cursor)
+            results = client.get_policy_audits(set_id, from_date, limit, next_cursor)
             policy_audits[set_id]['events'].extend(results.get('events', []))
 
         add_fields_to_events(policy_audits[set_id]['events'], 'arrivalTime', 'policy_audits')
@@ -234,7 +234,7 @@ def get_detailed_events(client: Client, last_run_per_id: dict, limit: int) -> di
         detailed_events[set_id]['events'] = results.get('events', [])
 
         while (next_cursor := results.get('nextCursor')) and len(detailed_events[set_id]['events']) < limit:
-            results = client.get_events(set_id, from_date, limit,  next_cursor)
+            results = client.get_events(set_id, from_date, limit, next_cursor)
             detailed_events[set_id]['events'].extend(results.get('events', []))
 
         add_fields_to_events(detailed_events[set_id]['events'], 'arrivalTime', 'detailed_events')

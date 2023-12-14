@@ -1,6 +1,4 @@
 import json
-from unittest.mock import Mock
-import pytest
 from freezegun import freeze_time
 from CyberArkEPMEventCollector import *
 
@@ -22,16 +20,28 @@ def mocked_client(requests_mock):
 
     requests_mock.post('https://url.com/EPM/API/Auth/EPM/Logon', json={'ManagerURL': 'https://mock.com', 'Authorization': '123'})
     requests_mock.get('https://mock.com/EPM/API/Sets', json=mock_response_sets)
-    requests_mock.get('https://mock.com/EPM/API/Sets/id1/AdminAudit?dateFrom=2023-01-01T00:00:00Z&limit=10', json=mock_response_admin_audits)
-    requests_mock.get('https://mock.com/EPM/API/Sets/id2/AdminAudit?dateFrom=2023-01-01T00:00:00Z&limit=10', json=mock_response_admin_audits)
-    requests_mock.post('https://mock.com/EPM/API/Sets/id1/policyaudits/search?nextCursor=start&limit=10', json=mock_response_policy_audits)
-    requests_mock.post('https://mock.com/EPM/API/Sets/id1/policyaudits/search?nextCursor=1700097106000&limit=10', json=mock_response_no_more_events)
-    requests_mock.post('https://mock.com/EPM/API/Sets/id2/policyaudits/search?nextCursor=start&limit=10', json=mock_response_policy_audits)
-    requests_mock.post('https://mock.com/EPM/API/Sets/id2/policyaudits/search?nextCursor=1700097106000&limit=10', json=mock_response_no_more_events)
+    requests_mock.get('https://mock.com/EPM/API/Sets/id1/AdminAudit?dateFrom=2023-01-01T00:00:00Z&limit=10',
+                      json=mock_response_admin_audits)
+    requests_mock.get('https://mock.com/EPM/API/Sets/id2/AdminAudit?dateFrom=2023-01-01T00:00:00Z&limit=10',
+                      json=mock_response_admin_audits)
+    requests_mock.get('https://mock.com/EPM/API/Sets/id1/AdminAudit?dateFrom=2023-12-12T07:45:27.141Z&limit=10',
+                      json=mock_response_admin_audits)
+    requests_mock.get('https://mock.com/EPM/API/Sets/id2/AdminAudit?dateFrom=2023-12-12T07:45:27.141Z&limit=10',
+                      json=mock_response_admin_audits)
+    requests_mock.post('https://mock.com/EPM/API/Sets/id1/policyaudits/search?nextCursor=start&limit=10',
+                       json=mock_response_policy_audits)
+    requests_mock.post('https://mock.com/EPM/API/Sets/id1/policyaudits/search?nextCursor=1700097106000&limit=10',
+                       json=mock_response_no_more_events)
+    requests_mock.post('https://mock.com/EPM/API/Sets/id2/policyaudits/search?nextCursor=start&limit=10',
+                       json=mock_response_policy_audits)
+    requests_mock.post('https://mock.com/EPM/API/Sets/id2/policyaudits/search?nextCursor=1700097106000&limit=10',
+                       json=mock_response_no_more_events)
     requests_mock.post('https://mock.com/EPM/API/Sets/id1/Events/Search?nextCursor=start&limit=10', json=mock_response_events)
-    requests_mock.post('https://mock.com/EPM/API/Sets/id1/Events/Search?nextCursor=1702360757618&limit=10', json=mock_response_no_more_events)
+    requests_mock.post('https://mock.com/EPM/API/Sets/id1/Events/Search?nextCursor=1702360757618&limit=10',
+                       json=mock_response_no_more_events)
     requests_mock.post('https://mock.com/EPM/API/Sets/id2/Events/Search?nextCursor=start&limit=10', json=mock_response_events)
-    requests_mock.post('https://mock.com/EPM/API/Sets/id2/Events/Search?nextCursor=1702360757618&limit=10', json=mock_response_no_more_events)
+    requests_mock.post('https://mock.com/EPM/API/Sets/id2/Events/Search?nextCursor=1702360757618&limit=10',
+                       json=mock_response_no_more_events)
 
     return Client(
         'https://url.com',
@@ -123,15 +133,18 @@ def test_get_detailed_events_command(requests_mock):
     assert len(events) == 6
 
 
-def test_fetch_events(mocker, requests_mock):
-    mocker.patch.object(demisto, 'command', return_value='fetch-events')
-    mocker.patch.object(demisto, 'params', return_value={'credentials': {}, 'max_fetch': 10})
-    mocker.patch('CyberArkEPMEventCollector.Client', return_value=mocked_client(requests_mock))
-    mocker.patch.object(demisto, 'getLastRun', return_value=create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z'))
-    next_run = mocker.patch.object(demisto, 'setLastRun')
-    events = mocker.patch('CyberArkEPMEventCollector.send_events_to_xsiam', side_effect=lambda x: x)
+def test_fetch_events(requests_mock):
+    last_run = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
+    events, next_run = fetch_events(mocked_client(requests_mock), last_run, 10)
 
-    main()
+    assert len(events) == 18
+    assert next_run['id1'] == next_run['id1'] == {
+        'admin_audits': {'from_date': '2023-12-12T07:45:27.141Z'},
+        'detailed_events': {'from_date': '2023-12-12T06:59:18.141Z', 'next_cursor': 'start'},
+        'policy_audits': {'from_date': '2023-12-11T13:09:56.056Z', 'next_cursor': 'start'}
+    }
+
+    fetch_events(mocked_client(requests_mock), next_run, 10)
 
     assert len(events) == 18
     assert next_run['id1'] == next_run['id1'] == {
