@@ -25,10 +25,12 @@ CONTENT_NIGHTLY_JOBS = [
     'xsiam-test_playbooks_results',
     'xsiam-test_modeling_rule_results',
     'cloning-content-repo-last-upload-commit',
+    'init',
     'xsoar-saas_test_e2e_results',
 ]
 
 SDK_NIGHTLY_JOBS = [
+    'init',
     'demisto-sdk-nightly:run-unittests-and-lint',
     'demisto-sdk-nightly:run-validations',
     'demisto_sdk_nightly:check_idset_dependent_commands',
@@ -41,6 +43,7 @@ SDK_NIGHTLY_JOBS = [
 ]
 
 BUCKET_UPLOAD_JOBS = [
+    'init',
     'run-unittests-and-lint-upload-flow: [native:dev,from-yml]',
     'run-unittests-and-lint-upload-flow: [native:ga,native:maintenance,native:candidate]',
     'run-validations-upload-flow',
@@ -60,6 +63,7 @@ BUCKET_UPLOAD_JOBS = [
 ]
 
 CONTENT_COMMON_JOBS = [
+    'init',
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'run-validations',

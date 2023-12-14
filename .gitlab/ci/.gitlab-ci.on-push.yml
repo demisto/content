@@ -388,6 +388,7 @@ jobs-done-check-nightly:
     - .jobs-done-check
   needs:
     - cloning-content-repo-last-upload-commit
+    - init
     - run-unittests-and-lint
     - run-validations
     - trigger-private-build
@@ -430,6 +431,7 @@ jobs-done-check-on-push:
     - .push-rule
     - .jobs-done-check
   needs:
+    - init
     - run-unittests-and-lint
     - run-validations
     - stop-running-pipelines
@@ -473,6 +475,7 @@ jobs-done-check-on-merge:
     - .push-rule
     - .jobs-done-check
   needs:
+    - init
     - merge-dev-secrets
     - run-unittests-and-lint
     - run-validations
