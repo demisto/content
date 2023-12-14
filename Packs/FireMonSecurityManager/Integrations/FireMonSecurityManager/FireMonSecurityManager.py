@@ -524,10 +524,7 @@ def collector_get_status_byid_command(client: Client, args: Dict[str, Any]):
     auth_token = auth_token_cmd_result.outputs
 
     collector_id = int(args.get("id", 0))
-    payload = dict(
-        id=collector_id,
-    )
-    results = client.get_collector_status_byid(auth_token, payload)
+    results = client.get_collector_status_byid(auth_token, collector_id)
 
     return CommandResults(
         outputs_prefix="FireMonSecurityManager.CollectorStatus",
