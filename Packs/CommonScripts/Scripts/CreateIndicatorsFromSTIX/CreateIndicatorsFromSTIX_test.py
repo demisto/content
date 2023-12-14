@@ -17,6 +17,7 @@ def test_create_indicators_loop_wo_args(mocker):
         indicators = json.load(json_f)
     mocker.patch.object(demisto, 'executeCommand', return_value=[None])
     results, errors = create_indicators_loop(args, indicators)
+
     assert errors == []
     assert results.readable_output == 'Create Indicators From STIX: 2 indicators were created.'
 
@@ -41,8 +42,10 @@ def test_create_indicators_loop_w_args(mocker):
         indicators = json.load(json_f)
     mocker.patch.object(demisto, 'executeCommand', return_value=[None])
     results, errors = create_indicators_loop(args, indicators)
+
     assert errors == []
     assert results.readable_output == 'Create Indicators From STIX: 2 indicators were created.'
+    assert results.outputs[0]['tags'] == ['tag1', 'tag2']
 
 
 def test_parse_indicators_using_stix_parser(mocker):
