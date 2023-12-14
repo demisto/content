@@ -97,39 +97,35 @@ repos:
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
-    entry: python
+    entry: pwsh
     args:
-      - /src/Tests/scripts/script_runner.py
-      - pwsh
       - -Command
       - Invoke-Pester
       - -Output
       - Detailed
       - -CI
       - -Path
-      - --files
-    files: .*\.Tests\.ps1$
+    files: .Tests.ps1$
     copy_files:
       - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
       - Tests/demistomock/demistomock.ps1
   - id: pwsh-analyze-in-docker
     name: pwsh-analyze-in-docker
     description: Run powershell analyze
-    entry: python
+    entry: pwsh
     args:
-      - /src/Tests/scripts/script_runner.py
-      - pwsh
       - -Command
       - Invoke-ScriptAnalyzer
       - -EnableExit
       - -Severity
       - Error
       - -Path
-      - --files
-    files: .*\.ps1$
+    files: .ps1$
+    exclude: .Tests.ps1$
     copy_files:
       - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
       - Tests/demistomock/demistomock.ps1
+    split_by_object: true  # this commands doesn't allow multiple paths
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.

@@ -92,6 +92,7 @@ Packs/**/Scripts/**/.pytest.ini
 pytest_report.json
 test_runner.sh
 .sourcery_tmp.yaml
+testResults.xml
 
 # log files
 demisto_sdk_debug.log
