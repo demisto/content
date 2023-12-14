@@ -52,7 +52,8 @@ class TestGetSlackBlockBuilderResponseScript(unittest.TestCase):
         GetSlackBlockBuilderResponse.parse_entry(entry)
 
         # Then: The return_error function is called with a specific error message
-        mock_return_error.assert_called_once_with("The response is not a valid JSON format.")
+        mock_return_error.assert_called_once_with("The response is not a valid JSON format. Received the following "
+                                                  "response: not a valid json")
 
     @patch('GetSlackBlockBuilderResponse.demisto.executeCommand')
     @patch('GetSlackBlockBuilderResponse.return_error')
