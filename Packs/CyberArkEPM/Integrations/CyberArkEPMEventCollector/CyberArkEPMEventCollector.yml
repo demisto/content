@@ -23,7 +23,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'.
+- additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
   display: Application ID
   name: application_id
   required: false
