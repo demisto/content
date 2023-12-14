@@ -3,11 +3,12 @@ from CommonServerPython import *  # noqa: F401
 from datetime import date
 from AWSApiModule import *  # noqa: E402
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 
 
 """CONSTANTS"""
-ROLE_NAME = demisto.getParam('access_role_name')
-
+ROLE_NAME = (demisto.getParam('access_role_name') or '').removeprefix('role/')
+MAX_WORKERS = arg_to_number(demisto.getParam('max_workers'))
 
 """HELPER FUNCTIONS"""
 
@@ -78,7 +79,7 @@ def parse_date(dt):
     return parsed_date
 
 
-def build_client(args: dict) -> AWSClient:
+def build_client(args: dict):
 
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
@@ -94,8 +95,11 @@ def build_client(args: dict) -> AWSClient:
     sts_endpoint_url = params.get('sts_endpoint_url') or None
     endpoint_url = params.get('endpoint_url') or None
 
-    validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
-                    aws_secret_access_key)
+    validate_params(
+        aws_default_region, aws_role_arn, aws_role_session_name,
+        aws_access_key_id, aws_secret_access_key
+    )
+
     return AWSClient(
         aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
         aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
@@ -129,18 +133,17 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
     Returns either a list of CommandResults for each accounts,
     or a single CommandResults if a role name is not specified.
     """
-    def account_runner(args: dict) -> list[CommandResults]:
-        accounts = argToList(demisto.getParam('accounts_to_access'))
-        results = []
-        for account_id in accounts:
-            args.update({
+    def account_runner(args: dict) -> list[CommandResults | dict]:
+
+        def run_command(account_id: str) -> CommandResults | dict:
+            new_args = args | {
                 #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
-                'roleArn': f'arn:aws:iam::{account_id}:role/{ROLE_NAME.removeprefix("role/")}',
+                'roleArn': f'arn:aws:iam::{account_id}:role/{ROLE_NAME}',
                 'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
-            })
+            }
             try:
-                result = func(args)
+                result = func(new_args)
                 result.readable_output = f'#### Result for account `{account_id}`:\n{result.readable_output}'
                 if result.outputs:
                     # if no outputs_prefix is present, the outputs must be a dict with one DT key
@@ -151,14 +154,20 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                             obj['AccountId'] = account_id
                     elif isinstance(outputs, dict):
                         outputs['AccountId'] = account_id
-            except Exception as e:  # catch any errors raised from "func" so that it can be run for other accounts
-                result = {
+                return result
+            except Exception as e:  # catch any errors raised from "func" so that they can be tagged with the account and shown
+                return {
                     'Type': entryTypes['error'],
                     'ContentsFormat': formats['markdown'],
                     'Contents': f'#### Error in command call for account `{account_id}`\n{e}'
                 }
-            results.append(result)
-        return results
+
+        accounts = argToList(demisto.getParam('accounts_to_access'))
+
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            results = executor.map(run_command, accounts)
+
+        return list(results)
     return account_runner
 
 
@@ -175,6 +184,7 @@ def test_module() -> str:
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return 'ok'
     return 'Test Module failed'
+
 
 @run_for_given_accounts
 def describe_regions_command(args: dict) -> CommandResults:
