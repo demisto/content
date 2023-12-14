@@ -183,7 +183,7 @@ def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[
     return admin_audits
 
 
-def get_policy_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, dict[str, Any]]:
+def get_policy_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, dict[str, str | list]]:
     """
     Args:
         client (Client): CyberArkEPM client to use.
@@ -205,15 +205,15 @@ def get_policy_audits(client: Client, last_run_per_id: dict, limit: int) -> dict
 
         while (next_cursor := results.get('nextCursor')) and len(policy_audits[set_id]['events']) < limit:
             results = client.get_policy_audits(set_id, from_date, limit, next_cursor)
-            policy_audits[set_id]['events'].extend(results.get('events', []))
+            policy_audits[set_id]['events'].extend(results.get('events', []))  # type: ignore
 
-        add_fields_to_events(policy_audits[set_id]['events'], 'arrivalTime', 'policy_audits')
+        add_fields_to_events(policy_audits[set_id]['events'], 'arrivalTime', 'policy_audits')  # type: ignore
         policy_audits[set_id]['next_cursor'] = next_cursor or 'start'
 
     return policy_audits
 
 
-def get_detailed_events(client: Client, last_run_per_id: dict, limit: int) -> dict[str, dict[str, Any]]:
+def get_detailed_events(client: Client, last_run_per_id: dict, limit: int) -> dict[str, dict[str, str | list]]:
     """
     Args:
         client (Client): CyberArkEPM client to use.
@@ -235,9 +235,9 @@ def get_detailed_events(client: Client, last_run_per_id: dict, limit: int) -> di
 
         while (next_cursor := results.get('nextCursor')) and len(detailed_events[set_id]['events']) < limit:
             results = client.get_events(set_id, from_date, limit, next_cursor)
-            detailed_events[set_id]['events'].extend(results.get('events', []))
+            detailed_events[set_id]['events'].extend(results.get('events', []))  # type: ignore
 
-        add_fields_to_events(detailed_events[set_id]['events'], 'arrivalTime', 'detailed_events')
+        add_fields_to_events(detailed_events[set_id]['events'], 'arrivalTime', 'detailed_events')  # type: ignore
         detailed_events[set_id]['next_cursor'] = next_cursor or 'start'
 
     return detailed_events
@@ -260,7 +260,7 @@ def get_policy_audits_command(client: Client, last_run: dict, args: dict) -> tup
     limit = arg_to_number(args.get('limit', 5))
 
     results = get_policy_audits(client, last_run, limit)  # type: ignore
-    events_list_of_lists = [value.get('events') for value in results.values()]
+    events_list_of_lists = [value.get('events', []) for value in results.values()]
     events_list = list(chain(*events_list_of_lists))
     human_readable = tableToMarkdown('Policy Audits', events_list)
 
@@ -271,7 +271,7 @@ def get_detailed_events_command(client: Client, last_run: dict, args: dict) -> t
     limit = arg_to_number(args.get('limit', 5))
 
     results = get_detailed_events(client, last_run, limit)  # type: ignore
-    events_list_of_lists = [value.get('events') for value in results.values()]
+    events_list_of_lists = [value.get('events', []) for value in results.values()]
     events_list = list(chain(*events_list_of_lists))
     human_readable = tableToMarkdown('Events', events_list)
 
@@ -299,7 +299,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
             events.extend(admin_audits)
 
     for set_id, policy_audits_last_run in get_policy_audits(client, last_run, max_fetch).items():
-        if policy_audits := policy_audits_last_run.get('events'):
+        if policy_audits := policy_audits_last_run.get('events', []):
             last_run[set_id]['policy_audits']['next_cursor'] = policy_audits_last_run.get('next_cursor')
             if policy_audits_last_run.get('next_cursor') == 'start':
                 latest_event = max(policy_audits, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
@@ -307,7 +307,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
             events.extend(policy_audits)
 
     for set_id, detailed_events_last_run in get_detailed_events(client, last_run, max_fetch).items():
-        if detailed_events := detailed_events_last_run.get('events'):
+        if detailed_events := detailed_events_last_run.get('events', []):
             last_run[set_id]['detailed_events']['next_cursor'] = detailed_events_last_run.get('next_cursor')
             if detailed_events_last_run.get('next_cursor') == 'start':
                 latest_event = max(detailed_events, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
