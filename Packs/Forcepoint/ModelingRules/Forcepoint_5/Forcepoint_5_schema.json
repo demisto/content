@@ -1,5 +1,5 @@
 {
-    "forcepoint_firewall_raw": {
+    "forcepoint_firewall_check_raw": {
       "dvchost": {
         "type": "string",
         "is_array": false
