@@ -18,7 +18,3 @@ ignore=MR108
 
 [file:SlackModelingRules.yml]
 ignore=MR108
-
-[file:playbook-Slack_BlockBuilderExample.yml]
-ignore=PB125
-

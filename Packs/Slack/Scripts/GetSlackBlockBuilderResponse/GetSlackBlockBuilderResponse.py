@@ -41,7 +41,7 @@ def parse_entry(entry: dict[str, Any]) -> None:
             "EntryContext": {"SlackBlockState": json_content}
         })
     except json.JSONDecodeError:
-        return_error("The response is not a valid JSON format.")
+        return_error(f"The response is not a valid JSON format. Received the following response: {entry['Contents']}")
 
 
 def main() -> None:
