@@ -737,7 +737,7 @@ def generate_threat_incidents(client, threats):
         incident = {
             "dbotMirrorId": str(threat["threatId"]),
             "name": "Threat",
-            "occurred": threat_details["messages"][0]["receivedTime"],
+            "occurred": threat_details["messages"][0].get("receivedTime"),
             "details": "Threat",
             "rawJSON": json.dumps(threat_details) if threat_details else {}
         }
