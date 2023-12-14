@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Forcepoint_NGFW_1
-name: Forcepoint NGFW 1
+id: Forcepoint_NGFW_5
+name: Forcepoint NGFW 5
 rules: ''
 schema: ''
 tags: ''
