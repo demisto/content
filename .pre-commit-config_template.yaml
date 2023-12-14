@@ -109,6 +109,7 @@ repos:
     copy_files:
       - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
       - Tests/demistomock/demistomock.ps1
+    split_by_object: true
   - id: pwsh-analyze-in-docker
     name: pwsh-analyze-in-docker
     description: Run powershell analyze
@@ -121,7 +122,7 @@ repos:
       - Error
       - -Path
     files: .ps1$
-    exclude: .Tests.ps1$
+    exclude: .Tests.ps1$|test_data
     copy_files:
       - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
       - Tests/demistomock/demistomock.ps1
