@@ -23,7 +23,7 @@ XSIAM_EVENT_TYPE = {
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, application_id, authentication_url, application_url,
+    def __init__(self, base_url, username, password, application_id, authentication_url=None, application_url=None,
                  verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {

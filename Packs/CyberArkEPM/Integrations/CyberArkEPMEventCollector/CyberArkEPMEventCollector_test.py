@@ -1,3 +1,4 @@
+import json
 from unittest.mock import Mock
 import pytest
 from freezegun import freeze_time
@@ -13,9 +14,13 @@ def util_load_json(path: str) -> dict:
 
 
 # Mocking Client class for testing HTTP requests
-@pytest.fixture
 def mocked_client():
-    return Mock(spec=Client)
+    return Client(
+        'https://url.com',
+        'test',
+        '123456',
+        '1',
+    )
 
 
 """ TEST HELPER FUNCTION """
@@ -27,8 +32,8 @@ def test_create_last_run():
     from_date = '2023-01-01T00:00:00Z'
     result = create_last_run(set_ids, from_date)
     expected_result = {
-        '123': {'policy_audits': from_date, 'admin_audits': from_date, 'detailed_events': from_date},
-        '456': {'policy_audits': from_date, 'admin_audits': from_date, 'detailed_events': from_date}
+        '123': {'admin_audits': {'from_date': from_date}, 'policy_audits': {'from_date': from_date, 'next_cursor': 'start'}, 'detailed_events': {'from_date': from_date, 'next_cursor': 'start'}},
+        '456': {'admin_audits': {'from_date': from_date}, 'policy_audits': {'from_date': from_date, 'next_cursor': 'start'}, 'detailed_events': {'from_date': from_date, 'next_cursor': 'start'}}
     }
     assert result == expected_result
 
@@ -61,8 +66,15 @@ def test_add_fields_to_events():
     assert events[0]['eventTypeXsiam'] == XSIAM_EVENT_TYPE.get('detailed_events')
 
 
-def test_get_set_ids_by_set_names():
-    ...
+def test_get_set_ids_by_set_names(mocker, requests_mock):
+    mocker.patch('CyberArkEPMEventCollector.get_integration_context', return_value={})
+    requests_mock.post('https://url.com/EPM/API/Auth/EPM/Logon', json={'ManagerURL': 'https://manage.com', 'Authorization': '123456'})
+    requests_mock.get('https://url.com/sets', json=[{'Id': 'id1', 'Name': 'set_name1'}, {'Id': 'id2', 'Name': 'set_name2'}])
+
+    client = mocked_client()
+    ids = get_set_ids_by_set_names(client, ['set_name1', 'set_name2'])
+
+    assert ids == ['id1', 'id2']
 
 
 def test_get_policy_audits():
