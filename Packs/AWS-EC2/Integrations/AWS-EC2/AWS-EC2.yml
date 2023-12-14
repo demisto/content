@@ -106,6 +106,14 @@ configuration:
   advanced: true
   required: false
   additionalinfo: The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts to access" and be assumable with the credentials provided.
+- display: Max concurrent command calls
+  name: max_workers
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: 5
+  additionalinfo: The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts to access".
 - display: Use system proxy settings
   name: proxy
   type: 8
