@@ -157,19 +157,19 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     return list(context_set_items.values())
 
 
-def get_admin_audits(client: Client, set_ids_with_from_date: dict, limit: int) -> dict[str, list]:
+def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, list]:
     """
     Args:
         client (Client): CyberArkEPM client to use.
-        set_ids_with_from_date (dict): A dict of set_ids and dates form where to get the events. {'123': '01-02-2023T23:20:50Z'}.
+        last_run_per_id (dict): A dict of set_ids and dates form where to get the events. {'123': '01-02-2023T23:20:50Z'}.
         limit (int): The sum of events to get.
     Returns:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
     admin_audits = {}
 
-    for set_id, from_date in set_ids_with_from_date.items():
-        result = client.get_admin_audits(set_id, from_date.get('admin_audits'), limit)
+    for set_id, last_run in last_run_per_id.items():
+        result = client.get_admin_audits(set_id, last_run.get('admin_audits', {}).get('from_date'), limit)
         admin_audits[set_id] = result.get('AdminAudits', [])
         total_events = arg_to_number(result.get('TotalCount', 0))
 
@@ -179,7 +179,6 @@ def get_admin_audits(client: Client, set_ids_with_from_date: dict, limit: int) -
             admin_audits[set_id].extend(result.get('AdminAudits', []))
 
         add_fields_to_events(admin_audits[set_id], 'EventTime', 'admin_audits')
-        admin_audits[set_id] = admin_audits[set_id]
 
     return admin_audits
 
@@ -247,10 +246,10 @@ def get_detailed_events(client: Client, last_run_per_id: dict, limit: int) -> di
 """ COMMAND FUNCTIONS """
 
 
-def get_admin_audits_command(client: Client, set_ids_with_from_date: dict, args: dict) -> tuple[list, CommandResults]:
+def get_admin_audits_command(client: Client, last_run: dict, args: dict) -> tuple[list, CommandResults]:
     limit = arg_to_number(args.get('limit', 5))
 
-    results = get_admin_audits(client, set_ids_with_from_date, limit)  # type: ignore
+    results = get_admin_audits(client, last_run, limit)  # type: ignore
     events_list = list(chain(*results.values()))
     human_readable = tableToMarkdown('Admin Audits', events_list)
 
@@ -268,7 +267,7 @@ def get_policy_audits_command(client: Client, last_run: dict, args: dict) -> tup
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def get_detailed_events_command(client: Client, set_ids_with_from_date: dict, args: dict) -> tuple[list, CommandResults]:
+def get_detailed_events_command(client: Client, last_run: dict, args: dict) -> tuple[list, CommandResults]:
     limit = arg_to_number(args.get('limit', 5))
 
     results = get_detailed_events(client, last_run, limit)  # type: ignore
@@ -296,21 +295,24 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
 
     for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
         if admin_audits:
-            last_run[set_id]['admin_audits'] = prepare_datetime(admin_audits[-1].get('EventTime'))
+            last_run[set_id]['admin_audits']['from_date'] = prepare_datetime(admin_audits[-1].get('EventTime'), increase=True)
             events.extend(admin_audits)
 
     for set_id, policy_audits_last_run in get_policy_audits(client, last_run, max_fetch).items():
         if policy_audits := policy_audits_last_run.get('events'):
             last_run[set_id]['policy_audits']['next_cursor'] = policy_audits_last_run.get('next_cursor')
             if policy_audits_last_run.get('next_cursor') == 'start':
-                latest_event = max(policy_audits, key=lambda x: parser.parse(x.get('arrivalTime'), ignoretz=True))
-                last_run[set_id]['policy_audits']['from_date'] = prepare_datetime(latest_event)
+                latest_event = max(policy_audits, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
+                last_run[set_id]['policy_audits']['from_date'] = prepare_datetime(latest_event.get('_time'), increase=True)
             events.extend(policy_audits)
 
-    for set_id, detailed_events in get_detailed_events(client, last_run, max_fetch).items():
-        if detailed_events:
-            last_run[set_id]['detailed_events'] = prepare_datetime(detailed_events[-1].get('arrivalTime'))
-        events.extend(detailed_events)
+    for set_id, detailed_events_last_run in get_detailed_events(client, last_run, max_fetch).items():
+        if detailed_events := detailed_events_last_run.get('events'):
+            last_run[set_id]['detailed_events']['next_cursor'] = detailed_events_last_run.get('next_cursor')
+            if detailed_events_last_run.get('next_cursor') == 'start':
+                latest_event = max(detailed_events, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
+                last_run[set_id]['detailed_events']['from_date'] = prepare_datetime(latest_event.get('_time'), increase=True)
+            events.extend(detailed_events)
 
     demisto.info(f'Sending len {len(events)} to XSIAM. updated_next_run={last_run}.')
 
