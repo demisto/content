@@ -104,33 +104,35 @@ def run_on_all_accounts(func: Callable[[dict, AWSClient], CommandResults]):
         results = []
         for account_id in accounts:
             args.update({
-                #  the role ARN must be in the format: arn:aws:iam::<account_id>:role/<role_name>
+                #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
                 'roleArn': f'arn:aws:iam::{account_id}:role/{ROLE_NAME.removeprefix("role/")}',
                 'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             })
             try:
                 result = func(args, aws_client)
-            except Exception as e:
-                return_results({  # TODO test
+                result.readable_output = f'#### Result for account *{account_id}*:\n{result.readable_output}'
+                if result.outputs:
+                    # if no outputs_prefix is present, the outputs must be a dict with one DT key and the outputs are in the value.
+                    outputs = result.outputs if result.outputs_prefix else list(result.outputs.values())[0]
+                    if isinstance(outputs, list):
+                        for obj in outputs:
+                            obj['AccountId'] = account_id
+                    elif isinstance(outputs, dict):
+                        outputs['AccountId'] = account_id
+            except Exception as e:  # catch any errors raised from "func" so that it can be run for other accounts
+                result = {  # TODO test
                     'Type': entryTypes['error'],
                     'ContentsFormat': formats['markdown'],
                     'Contents': f'#### Error in command call for account *{account_id}*:\n{e}'
-                })
-                continue
-            result.readable_output = f'#### Result for account *{account_id}*:\n{result.readable_output}'
-            if isinstance(result.outputs, list):
-                for obj in result.outputs:
-                    obj['AccountId'] = account_id
-            elif isinstance(result.outputs, dict):
-                result.outputs['AccountId'] = account_id
+                }
             results.append(result)
         return results
     return account_runner
 
 
 # if a roleArn is specified in the command args, ignore the parameter config.
-run_per_account = run_on_all_accounts if (ROLE_NAME and not demisto.getArg('roleArn')) else lambda x: x
+run_per_account = run_on_all_accounts if (ROLE_NAME and not demisto.getArg('roleArn')) else (lambda x: x)
 
 
 """MAIN FUNCTIONS"""
@@ -1005,9 +1007,10 @@ def modify_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     raw = json.loads(output)
     raw.update({'Region': obj['_user_provided_options']['region_name']})
 
-    ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Modification': raw}
-    human_readable = tableToMarkdown('AWS EC2 Volume Modification', data)
-    return_results(human_readable, ec)
+    return CommandResults(
+        outputs={'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Modification': raw},
+        readable_output=tableToMarkdown('AWS EC2 Volume Modification', data)
+    )
 
 
 @run_per_account
@@ -1201,9 +1204,10 @@ def attach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     if 'DeleteOnTermination' in response:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
-    ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data}
-    human_readable = tableToMarkdown('AWS EC2 Volume Attachments', data)
-    return_results(human_readable, ec)
+    return CommandResults(
+        outputs={'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data},
+        readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
+    )
 
 
 @run_per_account
@@ -1240,9 +1244,10 @@ def detach_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
     if 'DeleteOnTermination' in response:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
-    ec = {'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data}
-    human_readable = tableToMarkdown('AWS EC2 Volume Attachments', data)
-    return_results(human_readable, ec)
+    return CommandResults(
+        outputs={'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data},
+        readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
+    )
 
 
 @run_per_account
@@ -2041,9 +2046,10 @@ def get_password_data_command(args: dict, aws_client: AWSClient) -> CommandResul
         'Timestamp': time_stamp
     }
 
-    ec = {'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data}
-    human_readable = tableToMarkdown('AWS EC2 Instances', data)
-    return_results(human_readable, ec)
+    return CommandResults(
+        outputs={'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data},
+        readable_output=tableToMarkdown('AWS EC2 Instances', data)
+    )
 
 
 @run_per_account
@@ -2549,9 +2555,10 @@ def describe_fleet_instances_command(args: dict, aws_client: AWSClient) -> Comma
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as err_msg:
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    ec = {'AWS.EC2.Fleet(val.FleetId === obj.FleetId).ActiveInstances': raw}
-    human_readable = tableToMarkdown('AWS EC2 Fleets Instances', data)
-    return_results(human_readable, ec)
+    return CommandResults(
+        outputs={'AWS.EC2.Fleet(val.FleetId === obj.FleetId).ActiveInstances': raw},
+        readable_output=tableToMarkdown('AWS EC2 Fleets Instances', data)
+    )
 
 
 @run_per_account
