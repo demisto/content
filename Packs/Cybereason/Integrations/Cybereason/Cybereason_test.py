@@ -72,7 +72,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -141,6 +141,30 @@ def test_malop_processes_command(mocker):
     mocker.patch.object(demisto, 'results')
     with pytest.raises(Exception) as exc_info:
         command_output = malop_processes_command(client, args)
+    assert exc_info.match(r"malopGuids must be array of strings")
+
+
+def test_malop_connection_command(mocker):
+    from Cybereason import malop_connection_command
+    from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://integration.cybereason.net:8443",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {"malopGuids": "AAAA05CrEqfYf9SS", "dateTime": "2023/12/04 12:00:00"}
+    raw_response = json.loads(load_mock_response('malop_connection_raw_response.json'))
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
+    mocker.patch.object(demisto, 'results')
+    command_output = malop_connection_command(client, args)
+    assert command_output.outputs[0].get('PortType', '') == 'SERVICE'
+    assert command_output.outputs[0].get('OwnerProcess', '') == 'microsoft.tri.sensor.exe'
+
+    args = {"malopGuids": None, "dateTime": "2023/12/04 12:00:00"}
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(Exception) as exc_info:
+        command_output = malop_connection_command(client, args)
     assert exc_info.match(r"malopGuids must be array of strings")
 
 
