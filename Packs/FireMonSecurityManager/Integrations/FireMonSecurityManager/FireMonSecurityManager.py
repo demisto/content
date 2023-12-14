@@ -251,7 +251,7 @@ class Client(BaseClient):
         )
         return paged_all_collectors_response
 
-    def get_collector_status_byid(self, auth_token: str, payload: Dict[str, Any]):
+    def get_collector_status_byid(self, auth_token: str, collector_id: int):
         """Calling get collector status api by collector id
 
         Args:
