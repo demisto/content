@@ -1,7 +1,7 @@
-Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.x. This automation creates indicators and adds an indicator's relationships if available.
+Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.x.
+Wrapper for the **StixParser** automation. This automation creates indicators and adds an indicator's relationships if available. 
 
 ## Script Data
-
 ---
 
 | **Name** | **Description** |
@@ -10,24 +10,8 @@ Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.x.
 | Tags | stix, ioc |
 | Cortex XSOAR Version | 5.0.0 |
 
-## Dependencies
-
----
-This script uses the following commands and scripts.
-
-* StixParser
-
-## Used In
-
----
-This script is used in the following playbooks and scripts.
-
-* SolarStorm and SUNBURST Hunting and Response Playbook
-* CreateIndicatorFromSTIXTest
-* SolarStorm and SUNBURST Hunting and Response Playbook
 
 ## Inputs
-
 ---
 
 | **Argument Name** | **Description** |
