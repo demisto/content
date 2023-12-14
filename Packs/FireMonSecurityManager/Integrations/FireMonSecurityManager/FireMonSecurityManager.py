@@ -258,7 +258,6 @@ class Client(BaseClient):
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        collector_id = payload["id"]
         collector_status_response = self._http_request(
             method="GET",
             url_suffix=f'{COLLECTOR_URL}/status/{collector_id}',
