@@ -34,6 +34,7 @@ from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                find_yml_content_type, to_tuple, hotfix_detect_old_script_yml,
                                                FilesToCollect)
 from Tests.scripts.collect_tests.version_range import VersionRange
+from packaging.version import Version
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
@@ -1308,7 +1309,15 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         """
         result = []
         for modeling_rule in self.id_set.modeling_rules:
+            if modeling_rule.version_range.max_version in VersionRange(min_version=Version('6.0.0'),
+                                                                       max_version=Version('8.3.0')):
+                logger.info(f'modeling rule with id: {modeling_rule.id_}, and name: {modeling_rule.name}, has a lower'
+                            'toVersion than the tenant version. Skipping.')
+                continue
             try:
+                # TODO We should add the condition of the toVersion here
+                logger.info(f'modeling rule with id: {modeling_rule.id_}, and name: {modeling_rule.name}, is good'
+                            'Collecting.')
                 logger.debug(f'collecting modeling rule with id: {modeling_rule.id_}, with name: {modeling_rule.name}')
                 path = PATHS.content_path / modeling_rule.file_path_str
                 pack_id = modeling_rule.pack_id
