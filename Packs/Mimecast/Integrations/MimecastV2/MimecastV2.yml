@@ -936,6 +936,9 @@ script:
     - description: The Mimecast ID of the message attachment to return. (Can be retrieved from mimecast-get-message).
       name: attachmentID
       required: true
+    - description: The Mimecast attachment name, use this argument in order for the extension value to be included in the context data. (Can be retrieved from mimecast-get-message).
+      name: attachmentName
+      required: false
     description: Download attachments from a specified message. This is an archive search command.
     name: mimecast-download-attachments
     outputs:

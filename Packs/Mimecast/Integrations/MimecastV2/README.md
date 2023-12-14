@@ -599,6 +599,7 @@ The following permissions are required for this command.
 | **Argument Name** | **Description**                                                                                   | **Required** |
 |-------------------|---------------------------------------------------------------------------------------------------|--------------|
 | attachmentID      | The Mimecast ID of the message attachment to return. (Can be retrieved from mimecast-get-message) | Required     |
+| attachmentName      | The Mimecast attachment name, use this argument in order for the extension value to be included in the context data. (Can be retrieved from mimecast-get-message). | Optional    |
 
 #### Context Output
 

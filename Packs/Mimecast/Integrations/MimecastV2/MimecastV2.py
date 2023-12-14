@@ -2067,8 +2067,9 @@ def get_message_metadata_request(message_id):
 
 def download_attachment():
     attachment_id = demisto.args().get('attachmentID')
+    attachment_name = demisto.args().get('attachmentName')
     attachment_file = download_attachment_request(attachment_id)
-    return fileResult(attachment_id, attachment_file)
+    return fileResult(attachment_name if attachment_name else attachment_id, attachment_file)
 
 
 def download_attachment_request(attachment_id):
