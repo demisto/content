@@ -826,7 +826,7 @@ def main():
         if command in commands:
             result = commands[command](client, demisto.args())
 
-            if isinstance(result, (CommandResults, str, dict)):
+            if isinstance(result, CommandResults | str | dict):
                 return_results(result)
 
             else:

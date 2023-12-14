@@ -34,7 +34,7 @@ def test_okta_client_required_params():
             auth_type=AuthType.OAUTH,
         )
 
-    assert 'Required OAuth parameters are missing: Client ID, Scopes, JWT algorithm, Private key' == str(e.value)
+    assert str(e.value) == 'Required OAuth parameters are missing: Client ID, Scopes, JWT algorithm, Private key'
 
 
 def test_okta_client_no_required_params():

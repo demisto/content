@@ -44,15 +44,11 @@ class OktaClient(BaseClient):
         super().__init__(*args, **kwargs)
         self.api_token = api_token
         self.auth_type = auth_type
-        self.client_id = client_id
-        self.scopes = scopes
-        self.private_key = private_key
-        self.jwt_algorithm = jwt_algorithm
 
         missing_required_params = []
 
         if self.auth_type == AuthType.OAUTH:
-            if not self.client_id:
+            if not client_id:
                 missing_required_params.append('Client ID')
 
             if not scopes:
@@ -66,6 +62,12 @@ class OktaClient(BaseClient):
 
             if missing_required_params:
                 raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
+
+            # Set type of variables non-optional after we assured they're assigned for mypy
+            self.client_id: str = client_id  # type: ignore
+            self.scopes: list[str] = scopes  # type: ignore
+            self.private_key: str = private_key  # type: ignore
+            self.jwt_algorithm: JWTAlgorithm = jwt_algorithm  # type: ignore
 
         self.initial_setup()
 
@@ -211,7 +213,12 @@ class OktaClient(BaseClient):
         integration_context['initialized'] = True
         set_integration_context(integration_context)
 
-    def _http_request(self, auth_type: AuthType | None = None, **kwargs):
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
+                      params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
+                      return_empty_response=False, retries=0, status_list_to_retry=None,
+                      backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                      error_handler=None, empty_valid_codes=None, params_parser=None,
+                      auth_type: AuthType | None = None, **kwargs):
         """
         Override BaseClient._http_request() to automatically add authentication headers.
 
