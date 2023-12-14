@@ -749,8 +749,9 @@ def generate_abuse_campaign_incidents(client, campaigns):
     incidents = []
     for campaign in campaigns:
         campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
-        incident = {"dbotMirrorId": str(campaign["campaignId"]), "name": "Abuse Campaign", "occurred": campaign_details["firstReported"],
-                    'details': "Abuse Campaign", "rawJSON": json.dumps(campaign_details) if campaign_details else {}}
+        incident = {"dbotMirrorId": str(campaign["campaignId"]), "name": "Abuse Campaign",
+                    "occurred": campaign_details["firstReported"],'details': "Abuse Campaign",
+                    "rawJSON": json.dumps(campaign_details) if campaign_details else {}}
         incidents.append(incident)
     return incidents
 
@@ -759,8 +760,9 @@ def generate_account_takeover_cases_incidents(client, cases):
     incidents = []
     for case in cases:
         case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
-        incident = {"dbotMirrorId": str(case["caseId"]), "name": "Account Takeover Case", "occurred": case_details["firstObserved"],
-                    'details': case['description'], "rawJSON": json.dumps(case_details) if case_details else {}}
+        incident = {"dbotMirrorId": str(case["caseId"]), "name": "Account Takeover Case",
+                    "occurred": case_details["firstObserved"],'details': case['description'],
+                    "rawJSON": json.dumps(case_details) if case_details else {}}
         incidents.append(incident)
     return incidents
 
