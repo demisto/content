@@ -907,8 +907,9 @@ def delete_snapshot_command(args: dict, aws_client: AWSClient) -> CommandResults
         role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_snapshot(SnapshotId=args.get('snapshotId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Snapshot with ID: {snapshot_id} was deleted".format(snapshot_id=args.get('snapshotId')))
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Snapshot with ID: {snapshot_id} was deleted".format(snapshot_id=args.get('snapshotId')))
 
 
 @run_for_given_accounts
@@ -958,8 +959,9 @@ def deregister_image_command(args: dict, aws_client: AWSClient) -> CommandResult
     )
 
     response = client.deregister_image(ImageId=args.get('imageId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The AMI with ID: {image_id} was deregistered".format(image_id=args.get('imageId')))
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The AMI with ID: {image_id} was deregistered".format(image_id=args.get('imageId')))
 
 
 @run_for_given_accounts
@@ -1028,8 +1030,9 @@ def create_tags_command(args: dict, aws_client: AWSClient) -> CommandResults:
         'Tags': parse_tag_field(args.get('tags'))
     }
     response = client.create_tags(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The recources where taged successfully")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The recources where taged successfully")
 
 
 @run_for_given_accounts
@@ -1043,8 +1046,9 @@ def disassociate_address_command(args: dict, aws_client: AWSClient) -> CommandRe
     )
 
     response = client.disassociate_address(AssociationId=args.get('associationId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Elastic IP was disassociated")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Elastic IP was disassociated")
 
 
 @run_for_given_accounts
@@ -1058,8 +1062,9 @@ def release_address_command(args: dict, aws_client: AWSClient) -> CommandResults
     )
 
     response = client.release_address(AllocationId=args.get('allocationId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Elastic IP was released")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Elastic IP was released")
 
 
 @run_for_given_accounts
@@ -1073,8 +1078,9 @@ def start_instances_command(args: dict, aws_client: AWSClient) -> CommandResults
     )
 
     response = client.start_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Instances were started")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Instances were started")
 
 
 @run_for_given_accounts
@@ -1088,8 +1094,9 @@ def stop_instances_command(args: dict, aws_client: AWSClient) -> CommandResults:
     )
 
     response = client.stop_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Instances were stopped")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Instances were stopped")
 
 
 @run_for_given_accounts
@@ -1103,8 +1110,9 @@ def terminate_instances_command(args: dict, aws_client: AWSClient) -> CommandRes
     )
 
     response = client.terminate_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Instances were terminated")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Instances were terminated")
 
 
 @run_for_given_accounts
@@ -1261,8 +1269,9 @@ def delete_volume_command(args: dict, aws_client: AWSClient) -> CommandResults:
         role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_volume(VolumeId=args.get('volumeId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Volume was deleted")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Volume was deleted")
 
 
 @run_for_given_accounts
@@ -1644,8 +1653,9 @@ def delete_security_group_command(args: dict, aws_client: AWSClient) -> CommandR
         kwargs.update({'GroupName': args.get('groupName')})
 
     response = client.delete_security_group(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Security Group was Deleted")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Security Group was Deleted")
 
 
 @run_for_given_accounts
@@ -1675,8 +1685,9 @@ def authorize_security_group_ingress_command(args: dict, aws_client: AWSClient) 
     kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_ingress(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
-        return CommandResults(readable_output="The Security Group ingress rule was created")
+    if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Security Group ingress rule was created")
 
 
 @run_for_given_accounts
@@ -1703,8 +1714,9 @@ def authorize_security_group_egress_command(args: dict, aws_client: AWSClient) -
     kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_egress(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
-        return CommandResults(readable_output="The Security Group egress rule was created")
+    if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Security Group egress rule was created")
 
 
 def create_ip_permissions_dict(args):
@@ -1788,6 +1800,8 @@ def revoke_security_group_ingress_command(args: dict, aws_client: AWSClient) -> 
         if 'UnknownIpPermissions' in response:
             raise DemistoException("Security Group ingress rule not found.")
         return CommandResults(readable_output="The Security Group ingress rule was revoked")
+    else:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
 
 
 @run_for_given_accounts
@@ -2022,8 +2036,9 @@ def reboot_instances_command(args: dict, aws_client: AWSClient) -> CommandResult
     )
 
     response = client.reboot_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Instances were rebooted")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Instances were rebooted")
 
 
 @run_for_given_accounts
@@ -2078,8 +2093,9 @@ def modify_network_interface_attribute_command(args: dict, aws_client: AWSClient
         kwargs.update({'Groups': parse_resource_ids(args.get('groups'))})
 
     response = client.modify_network_interface_attribute(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Network Interface Atttribute was successfully modified")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Network Interface Atttribute was successfully modified")
 
 
 @run_for_given_accounts
@@ -2111,8 +2127,9 @@ def modify_instance_attribute_command(args: dict, aws_client: AWSClient) -> Comm
         kwargs.update({'Groups': parse_resource_ids(args.get('groups'))})
 
     response = client.modify_instance_attribute(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Instance attribute was successfully modified")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Instance attribute was successfully modified")
 
 
 @run_for_given_accounts
@@ -2182,8 +2199,9 @@ def create_network_acl_entry_command(args: dict, aws_client: AWSClient) -> Comma
         kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl_entry(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output="The Instance ACL was successfully modified")
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output="The Instance ACL was successfully modified")
 
 
 @run_for_given_accounts
@@ -2929,8 +2947,9 @@ def modify_image_attribute_command(args: dict, aws_client: AWSClient) -> Command
         kwargs.update({'Value': args.get('Value')})
 
     response = client.modify_image_attribute(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output='Image attribute sucessfully modified')
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output='Image attribute sucessfully modified')
 
 
 @run_for_given_accounts
@@ -2949,8 +2968,9 @@ def detach_internet_gateway_command(args: dict, aws_client: AWSClient) -> Comman
         kwargs.update({'VpcId': args.get('VpcId')})
 
     response = client.detach_internet_gateway(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output='Internet gateway sucessfully detached')
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output='Internet gateway sucessfully detached')
 
 
 @run_for_given_accounts
@@ -2967,8 +2987,9 @@ def delete_subnet_command(args: dict, aws_client: AWSClient) -> CommandResults:
         kwargs.update({'SubnetId': args.get('SubnetId')})
 
     response = client.delete_subnet(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output='Subnet sucessfully deleted')
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output='Subnet sucessfully deleted')
 
 
 @run_for_given_accounts
@@ -2985,8 +3006,9 @@ def delete_vpc_command(args: dict, aws_client: AWSClient) -> CommandResults:
         kwargs.update({'VpcId': args.get('VpcId')})
 
     response = client.delete_vpc(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output='VPC sucessfully deleted')
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output='VPC sucessfully deleted')
 
 
 @run_for_given_accounts
@@ -3003,8 +3025,9 @@ def delete_internet_gateway_command(args: dict, aws_client: AWSClient) -> Comman
         kwargs.update({'InternetGatewayId': args.get('InternetGatewayId')})
 
     response = client.delete_internet_gateway(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return CommandResults(readable_output='Internet gateway sucessfully deleted')
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output='Internet gateway sucessfully deleted')
 
 
 @run_for_given_accounts
