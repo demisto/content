@@ -115,9 +115,9 @@ script:
       description: Resposne for the SIQL query.
       type: Unknown
   - arguments:
-    - description: Page in which to retrieve results
+    - description: Page in which to retrieve results.
       name: page
-    - description: Number of results in the page      
+    - description: Number of results in the page. 
     - name: pageSize
     description: Get all the collectors in the inventory.
     name: firemon-collector-get-all
