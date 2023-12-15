@@ -59,17 +59,17 @@ script:
       description: Name of model to use. For Azure OpenAI, this should be the name of the DEPLOYMENT, not the generic model name.
       defaultValue: gpt-3.5-turbo
     outputs:
-    - contextPath: OpenAI.ChatGPTResponse.ChatGPT Response
+    - contextPath: OpenAI.ChatGPTResponse.ChatGPTResponse
       description: ChatGPT response.
-    - contextPath: OpenAI.ChatGPTResponse.Created Time
+    - contextPath: OpenAI.ChatGPTResponse.CreatedTime
       description: Response created time as Unix timestamp.
     - contextPath: OpenAI.ChatGPTResponse.Model
       description: Model that generated the response.
-    - contextPath: OpenAI.ChatGPTResponse.Number of Completion Tokens
+    - contextPath: OpenAI.ChatGPTResponse.NumberOfCompletionTokens
       description: Number of tokens in the completion (response).
-    - contextPath: OpenAI.ChatGPTResponse.Number of Prompt Tokens
+    - contextPath: OpenAI.ChatGPTResponse.NumberOfPromptTokens
       description: Number of tokens in the prompt (input).
-    - contextPath: OpenAI.ChatGPTResponse.Number of Total Tokens
+    - contextPath: OpenAI.ChatGPTResponse.NumberOfTotalTokens
       description: Total number of tokens in the completion and prompt.
     - contextPath: OpenAI.ChatGPTResponse.id
       description: ChatGPT response ID.

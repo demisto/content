@@ -133,10 +133,10 @@ def chatgpt_output(response) -> CommandResults:
         completionTokens = response.get('usage', {}).get('completion_tokens')
         totalTokens = response.get('usage', {}).get('total_tokens')
         context = [{'id': id, 'Model': model,
-                    'ChatGPT Response': choices, 'Created Time': createdTime,
-                    'Number of Prompt Tokens': promptTokens,
-                    'Number of Completion Tokens': completionTokens,
-                    'Number of Total Tokens': totalTokens
+                    'ChatGPTResponse': choices, 'CreatedTime': createdTime,
+                    'NumberOfPromptTokens': promptTokens,
+                    'NumberOfCompletionTokens': completionTokens,
+                    'NumberOfTotalTokens': totalTokens
                     }]
 
         markdown = tableToMarkdown(
