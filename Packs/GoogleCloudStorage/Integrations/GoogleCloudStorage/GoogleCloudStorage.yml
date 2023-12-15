@@ -117,7 +117,7 @@ script:
     name: gcs-delete-bucket
   - arguments:
       defaultValue: None
-      description: use a delimeter if you want to limit results within a specific "folder", default is None
+      description: use a delimiter if you want to limit results within a specific "folder", default is None
       name: delimiter
       description: specify to limit blobs within a "folder" i.e. "folder-1/" if blob is "folder-1/file.txt"
       name: prefix
