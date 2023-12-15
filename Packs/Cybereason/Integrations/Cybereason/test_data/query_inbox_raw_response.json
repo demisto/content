@@ -1,0 +1,62 @@
+[
+    {
+        "AffectedMachine": [
+            "demo-gmt01"
+        ],
+        "CreationTime": "2023-12-04T04:04:59.005000",
+        "DecisionFailure": "maliciousToolByHashReputation",
+        "GUID": "AAAA0ws7O-hugDmr",
+        "InvolvedHash": [
+            1
+        ],
+        "LastUpdateTime": "2023-12-04T04:04:59.008000",
+        "Link": "https://integration.cybereason.net/#/malop/AAAA0ws7O-hugDmr",
+        "Status": "UNREAD",
+        "Suspects": "Process: xkpkmvkd2380319126246621955.exe"
+    },
+    {
+        "AffectedMachine": [
+            "demo-gmt01"
+        ],
+        "CreationTime": "2023-12-04T00:05:00.929000",
+        "DecisionFailure": "maliciousToolByHashReputation",
+        "GUID": "AAAA0-D0-yn9x5tt",
+        "InvolvedHash": [
+            1
+        ],
+        "LastUpdateTime": "2023-12-04T00:05:00.932000",
+        "Link": "https://integration.cybereason.net/#/malop/AAAA0-D0-yn9x5tt",
+        "Status": "UNREAD",
+        "Suspects": "Process: hby4588089278214839835.exe"
+    },
+    {
+        "AffectedMachine": [
+            "demo-gmt01"
+        ],
+        "CreationTime": "2023-12-04T00:05:00.933000",
+        "DecisionFailure": "maliciousMeterpreterAgent",
+        "GUID": "AAAA08z5qeblAsRg",
+        "InvolvedHash": [
+            1
+        ],
+        "LastUpdateTime": "2023-12-04T00:05:00.944000",
+        "Link": "https://integration.cybereason.net/#/malop/AAAA08z5qeblAsRg",
+        "Status": "UNREAD",
+        "Suspects": "Process: hby4588089278214839835.exe"
+    },
+    {
+        "AffectedMachine": [
+            "demo-gmt01"
+        ],
+        "CreationTime": "2023-12-04T04:04:58.800000",
+        "DecisionFailure": "maliciousMeterpreterAgent",
+        "GUID": "AAAA08_pc_amdkVu",
+        "InvolvedHash": [
+            1
+        ],
+        "LastUpdateTime": "2023-12-04T04:04:58.819000",
+        "Link": "https://integration.cybereason.net/#/malop/AAAA08_pc_amdkVu",
+        "Status": "UNREAD",
+        "Suspects": "Process: xkpkmvkd2380319126246621955.exe"
+    }
+]

@@ -168,6 +168,30 @@ def test_malop_connection_command(mocker):
     assert exc_info.match(r"malopGuids must be array of strings")
 
 
+def test_query_inbox_command(mocker):
+    from Cybereason import query_inbox_command
+    from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://integration.cybereason.net:8443",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {"guid": "AAAA05CrEqfYf9SS", "rangeTime": "11 days"}
+    raw_response = json.loads(load_mock_response('query_inbox_raw_response.json'))
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
+    mocker.patch.object(demisto, 'results')
+    command_output = query_inbox_command(client, args)
+    assert command_output.outputs[0].get('malopDetectionType', '') == 'KNOWN_MALWARE'
+    assert command_output.outputs[0].get('detectionEngines', '') == 'EDR'
+
+    args = {"malopGuids": None, "rangeTime": "11 days"}
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(Exception) as exc_info:
+        command_output = query_inbox_command(client, args)
+    assert exc_info.match(r"malopGuids must be array of strings")
+
+
 def test_is_probe_connected_command(mocker):
     from Cybereason import is_probe_connected_command
     from Cybereason import Client
