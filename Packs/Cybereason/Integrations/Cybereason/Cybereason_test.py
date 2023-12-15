@@ -177,7 +177,7 @@ def test_query_inbox_command(mocker):
         verify=False,
         headers=HEADERS,
         proxy=True)
-    args = {"guid": "AAAA05CrEqfYf9SS", "rangeTime": "11 days"}
+    args = {"guid": "AAAA0ws7O-MUgDmB", "rangeTime": "11 days"}
     raw_response = json.loads(load_mock_response('query_inbox_raw_response.json'))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     mocker.patch.object(demisto, 'results')

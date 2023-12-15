@@ -1,62 +1,60 @@
 [
     {
-        "AffectedMachine": [
-            "demo-gmt01"
+        "@class": ".MalopInboxModel",
+        "closed": false,
+        "closerName": null,
+        "containers": [],
+        "creationTime": 1701662699005,
+        "decisionStatuses": [],
+        "detectionEngines": [
+            "EDR"
         ],
-        "CreationTime": "2023-12-04T04:04:59.005000",
-        "DecisionFailure": "maliciousToolByHashReputation",
-        "GUID": "AAAA0ws7O-hugDmr",
-        "InvolvedHash": [
-            1
+        "detectionTypes": [
+            "Cybereason Threat Intelligence identified a malicious tool"
         ],
-        "LastUpdateTime": "2023-12-04T04:04:59.008000",
-        "Link": "https://integration.cybereason.net/#/malop/AAAA0ws7O-hugDmr",
-        "Status": "UNREAD",
-        "Suspects": "Process: xkpkmvkd2380319126246621955.exe"
-    },
-    {
-        "AffectedMachine": [
-            "demo-gmt01"
+        "displayName": "xkpkmvkd2380319126246621955.exe",
+        "edr": true,
+        "empty": true,
+        "escalated": false,
+        "group": "",
+        "guid": "AAAA0ws7O-MUgDmB",
+        "iconBase64": "",
+        "labels": [],
+        "lastUpdateTime": 1701662699008,
+        "machines": [
+            {
+                "@class": ".MachineInboxModel",
+                "connected": false,
+                "displayName": "mgmt01",
+                "empty": true,
+                "guid": "KSSdyRCi55eyTiwX",
+                "isolated": false,
+                "lastConnected": 1701713197123,
+                "lastConnectedDate": "2023-12-04 18:06:37",
+                "osType": "WINDOWS"
+            }
         ],
-        "CreationTime": "2023-12-04T00:05:00.929000",
-        "DecisionFailure": "maliciousToolByHashReputation",
-        "GUID": "AAAA0-D0-yn9x5tt",
-        "InvolvedHash": [
-            1
-        ],
-        "LastUpdateTime": "2023-12-04T00:05:00.932000",
-        "Link": "https://integration.cybereason.net/#/malop/AAAA0-D0-yn9x5tt",
-        "Status": "UNREAD",
-        "Suspects": "Process: hby4588089278214839835.exe"
-    },
-    {
-        "AffectedMachine": [
-            "demo-gmt01"
-        ],
-        "CreationTime": "2023-12-04T00:05:00.933000",
-        "DecisionFailure": "maliciousMeterpreterAgent",
-        "GUID": "AAAA08z5qeblAsRg",
-        "InvolvedHash": [
-            1
-        ],
-        "LastUpdateTime": "2023-12-04T00:05:00.944000",
-        "Link": "https://integration.cybereason.net/#/malop/AAAA08z5qeblAsRg",
-        "Status": "UNREAD",
-        "Suspects": "Process: hby4588089278214839835.exe"
-    },
-    {
-        "AffectedMachine": [
-            "demo-gmt01"
-        ],
-        "CreationTime": "2023-12-04T04:04:58.800000",
-        "DecisionFailure": "maliciousMeterpreterAgent",
-        "GUID": "AAAA08_pc_amdkVu",
-        "InvolvedHash": [
-            1
-        ],
-        "LastUpdateTime": "2023-12-04T04:04:58.819000",
-        "Link": "https://integration.cybereason.net/#/malop/AAAA08_pc_amdkVu",
-        "Status": "UNREAD",
-        "Suspects": "Process: xkpkmvkd2380319126246621955.exe"
+        "malopCloseTime": null,
+        "malopDetectionType": "KNOWN_MALWARE",
+        "malopPriority": "",
+        "malopSeverity": "High",
+        "malopStatus": "Active",
+        "malopType": "KNOWN_MALWARE",
+        "primaryRootCauseName": "xkpkmvkd2380319126246621955.exe",
+        "priority": null,
+        "rootCauseElementHashes": "",
+        "rootCauseElementNamesCount": 1,
+        "rootCauseElementType": "File",
+        "severity": "High",
+        "status": "Active",
+        "users": [
+            {
+                "admin": false,
+                "displayName": "mgmt01\\system",
+                "domainUser": false,
+                "guid": "AAAAGBCBcimP-R8p",
+                "localSystem": true
+            }
+        ]
     }
 ]
