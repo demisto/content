@@ -7,7 +7,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 """CONSTANTS"""
-MAX_WORKERS = arg_to_number(demisto.getParam('max_workers'))
+PARAMS = demisto.params()
+MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
+ROLE_NAME: str = PARAMS.get('access_role_name', '')
 
 """HELPER FUNCTIONS"""
 
@@ -80,19 +82,18 @@ def parse_date(dt):
 
 def build_client(args: dict):
 
-    params = demisto.params()
-    aws_default_region = params.get('defaultRegion')
-    aws_role_arn = params.get('roleArn')
-    aws_role_session_name = params.get('roleSessionName')
-    aws_role_session_duration = params.get('sessionDuration')
+    aws_default_region = PARAMS.get('defaultRegion')
+    aws_role_arn = PARAMS.get('roleArn')
+    aws_role_session_name = PARAMS.get('roleSessionName')
+    aws_role_session_duration = PARAMS.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
-    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
-    verify_certificate = not params.get('insecure', True)
-    timeout = params.get('timeout')
-    retries = params.get('retries') or 5
-    sts_endpoint_url = params.get('sts_endpoint_url') or None
-    endpoint_url = params.get('endpoint_url') or None
+    aws_access_key_id = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('access_key')
+    aws_secret_access_key = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret_key')
+    verify_certificate = not PARAMS.get('insecure', True)
+    timeout = PARAMS.get('timeout')
+    retries = PARAMS.get('retries') or 5
+    sts_endpoint_url = PARAMS.get('sts_endpoint_url') or None
+    endpoint_url = PARAMS.get('endpoint_url') or None
 
     validate_params(
         aws_default_region, aws_role_arn, aws_role_session_name,
@@ -134,8 +135,8 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
     """
     def account_runner(args: dict) -> list[CommandResults | dict]:
 
-        role_name = (demisto.getParam('access_role_name') or '').removeprefix('role/')
-        accounts = argToList(demisto.getParam('accounts_to_access'))
+        role_name = ROLE_NAME.removeprefix('role/')
+        accounts = argToList(PARAMS.get('accounts_to_access'))
 
         def run_command(account_id: str) -> CommandResults | dict:
             new_args = args | {
@@ -171,19 +172,39 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
     return account_runner
 
 
-# if a roleArn is specified in the command args, ignore the parameter config.
-run_for_given_accounts = run_on_all_accounts if (ROLE_NAME and not demisto.getArg('roleArn')) else (lambda x: x)
+run_for_given_accounts = (
+    run_on_all_accounts
+    if ROLE_NAME and not demisto.getArg('roleArn')
+    else lambda x: x
+)
 
 
 """MAIN FUNCTIONS"""
 
 
 def test_module() -> str:
-    client = build_client({})
-    response = client.describe_regions()
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return 'ok'
-    return 'Test Module failed'
+    if ROLE_NAME:
+        if not PARAMS.get('accounts_to_access'):
+            raise DemistoException("'AWS organization accounts to access' must not be empty when an access role is provided.")
+
+        def test_account(args: dict) -> CommandResults:
+            build_client(args)
+            return CommandResults(readable_output='ok')
+        fails = [
+            re.search('`(.+)`', result['Contents'])[1]
+            for result in run_on_all_accounts(test_account)({})
+            if isinstance(result, dict)
+        ]
+        if fails:
+            raise DemistoException(
+                f'AssumeRole with role name {ROLE_NAME!r} failed for the following accounts: {", ".join(fails)}'
+            )
+    else:
+        client = build_client({})
+        response = client.describe_regions()
+        if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+            raise DemistoException('Test Module failed')
+    return 'ok'
 
 
 @run_for_given_accounts
@@ -3051,7 +3072,7 @@ def main():
 
     except Exception as e:
         LOG(e)
-        return_error(f'Error has occurred in the AWS EC2 Integration: {type(e)}\n {e}')
+        return_error(f'Error occurred in the AWS EC2 Integration:\n{e}')
 
 
 if __name__ in ['__builtin__', 'builtins', '__main__']:
