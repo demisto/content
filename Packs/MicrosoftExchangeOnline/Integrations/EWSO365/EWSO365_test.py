@@ -607,6 +607,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
               b'Content-Type: text/plain; charset="us-ascii"\r\n' \
               b'X-FAKE-Header: HVALue\r\n' \
               b'X-Who-header: whovALUE\r\n' \
+              b'DATE: 2023-12-16T12:04:45\r\n' \
               b'\r\nHello'
     # headers set in the Item
     item_headers = [
@@ -615,17 +616,19 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
         MessageHeader(name="Content-Type", value="text/plain; charset=\"us-ascii\""),
         MessageHeader(name="X-Fake-Header", value="HVALue"),
         MessageHeader(name="X-WHO-header", value="whovALUE"),
+        # this is a header whose value is different. The field is limited to 1 by RFC
+        MessageHeader(name="Date", value="2023-12-16 12:04:45"),
         # This is an extra header logged by exchange in the item -> add to the output
         MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
     ]
 
     # sent to "fileResult", original headers from content with matched casing, with additional header
     expected_data = 'MIME-Version: 1.0\r\n' \
-                    'Message-ID:  <message-test-idRANDOMVALUES@testing.com>' \
-                    '\r\nX-FAKE-Header: HVALue\r\n' \
+                    'Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n' \
+                    'X-FAKE-Header: HVALue\r\n' \
                     'X-Who-header: whovALUE\r\n' \
-                    'X-EXTRA-Missed-Header: EXTRA' \
-                    '\r\n' \
+                    'DATE: 2023-12-16T12:04:45\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
                     '\r\nHello'
 
     message = Message(
@@ -744,15 +747,18 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
               b'Content-Type: text/plain; charset="us-ascii"\r\n' \
               b'X-FAKE-Header: HVALue\r\n' \
               b'X-Who-header: whovALUE\r\n' \
+              b'DATE: 2023-12-16T12:04:45\r\n' \
               b'\r\nHello'
 
     # headers set in the Item
     item_headers = [
-        # these headers may have different casing than what exists in the raw content
+        # these header keys may have different casing than what exists in the raw content
         MessageHeader(name="Mime-Version", value="1.0"),
         MessageHeader(name="Content-Type", value="text/plain; charset=\"us-ascii\""),
         MessageHeader(name="X-Fake-Header", value="HVALue"),
         MessageHeader(name="X-WHO-header", value="whovALUE"),
+        # this is a header whose value is different. The field is limited to 1 by RFC
+        MessageHeader(name="Date", value="2023-12-16 12:04:45"),
         # This is an extra header logged by exchange in the item -> add to the output
         MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
     ]
@@ -760,8 +766,8 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
                     'Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n' \
                     'X-FAKE-Header: HVALue\r\n' \
                     'X-Who-header: whovALUE\r\n' \
-                    'X-EXTRA-Missed-Header: EXTRA' \
-                    '\r\n' \
+                    'DATE: 2023-12-16T12:04:45\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
                     '\r\nHello'
 
     class MockEWSClient:
