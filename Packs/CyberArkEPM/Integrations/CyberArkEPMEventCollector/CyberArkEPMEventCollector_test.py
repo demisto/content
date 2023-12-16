@@ -1,6 +1,5 @@
-from freezegun import freeze_time
-from CyberArkEPMEventCollector import *
-
+import json
+import datetime
 
 """ UTILS """
 
@@ -11,6 +10,7 @@ def util_load_json(path: str) -> dict:
 
 
 def mocked_client(requests_mock):
+    from CyberArkEPMEventCollector import Client
     mock_response_sets = {'Sets': [{'Id': 'id1', 'Name': 'set_name1'}, {'Id': 'id2', 'Name': 'set_name2'}]}
     mock_response_admin_audits = util_load_json('test_data/admin_audits.json')
     mock_response_policy_audits = util_load_json('test_data/policy_audits.json')
@@ -53,11 +53,21 @@ def mocked_client(requests_mock):
 """ TEST HELPER FUNCTION """
 
 
-@freeze_time('2023-12-01 03:20:00')
 def test_create_last_run():
+    """
+        Given:
+            - A list of set_ids.
+
+        When:
+            - create_last_run function is running.
+
+        Then:
+            - Validates that the function works as expected.
+    """
+    from CyberArkEPMEventCollector import create_last_run
+
     set_ids = ['123', '456']
     from_date = '2023-01-01T00:00:00Z'
-    result = create_last_run(set_ids, from_date)
     expected_result = {
         '123': {
             'admin_audits': {'from_date': from_date},
@@ -70,17 +80,53 @@ def test_create_last_run():
             'detailed_events': {'from_date': from_date, 'next_cursor': 'start'},
         }
     }
-    assert result == expected_result
+
+    assert create_last_run(set_ids, from_date) == expected_result
 
 
 def test_prepare_datetime():
-    from_date = '2023-01-01T00:00:00'
-    assert prepare_datetime(datetime.strptime(from_date, '%Y-%m-%dT%H:%M:%S')) == '2023-01-01T00:00:00.000Z'
-    assert prepare_datetime(from_date) == '2023-01-01T00:00:00.000Z'
-    assert prepare_datetime(from_date, increase=True) == '2023-01-01T00:00:00.001Z'
+    """
+        Given:
+            - A datetime presentation
+                1. in str
+                2. in datetime object
+
+        When:
+            - prepare_datetime function is running.
+                1. with increase set to false.
+                2. with increase set to true.
+
+        Then:
+            - Validates that the function works as expected.
+    """
+    from CyberArkEPMEventCollector import prepare_datetime
+
+    str_from_date = '2023-01-01T00:00:00'
+    datetime_from_date = datetime.datetime.strptime(str_from_date, '%Y-%m-%dT%H:%M:%S')
+    expected_from_date = '2023-01-01T00:00:00.000Z'
+    expected_increase_from_date = '2023-01-01T00:00:00.001Z'
+
+    assert prepare_datetime(datetime_from_date) == expected_from_date
+    assert prepare_datetime(str_from_date) == expected_from_date
+    assert prepare_datetime(str_from_date, increase=True) == expected_increase_from_date
 
 
 def test_add_fields_to_events():
+    """
+        Given:
+            - lists of events
+                1. admin audits.
+                2. policy audits.
+                3. events.
+
+        When:
+            - add_fields_to_events function is running.
+
+        Then:
+            - Validates that the function works as expected.
+    """
+    from CyberArkEPMEventCollector import add_fields_to_events, XSIAM_EVENT_TYPE
+
     policy_audits = util_load_json('test_data/policy_audits.json').get('events')
     admin_audits = util_load_json('test_data/admin_audits.json').get('AdminAudits')
     events = util_load_json('test_data/events.json').get('events')
@@ -102,45 +148,100 @@ def test_add_fields_to_events():
 
 
 def test_get_set_ids_by_set_names(mocker, requests_mock):
+    """
+        Given:
+            - A list of set_names.
+
+        When:
+            - get_set_ids_by_set_names function is running.
+
+        Then:
+            - Validates that the function works as expected.
+    """
+    from CyberArkEPMEventCollector import get_set_ids_by_set_names
     mocker.patch('CyberArkEPMEventCollector.get_integration_context', return_value={})
 
+    set_names = ['set_name1', 'set_name2']
     client = mocked_client(requests_mock)
-    ids = get_set_ids_by_set_names(client, ['set_name1', 'set_name2'])
 
-    assert ids == ['id1', 'id2']
+    assert get_set_ids_by_set_names(client, set_names) == ['id1', 'id2']
 
 
 """ TEST COMMAND FUNCTION """
 
 
 def test_get_admin_audits_command(requests_mock):
+    """
+        Given:
+            - A list of set_ids and a date form where to fetch with a CyberArkEPM (mock) client.
+
+        When:
+            - get_admin_audits_command command is running.
+
+        Then:
+            - Validates that the function works as expected.
+    """
+    from CyberArkEPMEventCollector import create_last_run, get_admin_audits_command
     client = mocked_client(requests_mock)
     last_run_per_id = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
 
-    events, _ = get_admin_audits_command(client, last_run_per_id, {'limit': 10})
+    events, _ = get_admin_audits_command(client, last_run_per_id, 10)
 
     assert len(events) == 6
 
 
 def test_get_policy_command(requests_mock):
+    """
+        Given:
+            - A list of set_ids and a date form where to fetch with a CyberArkEPM (mock) client.
+
+        When:
+            - get_policy_audits_command command is running.
+
+        Then:
+            - Validates that the function works as expected.
+    """
+    from CyberArkEPMEventCollector import create_last_run, get_policy_audits_command
     client = mocked_client(requests_mock)
     last_run_per_id = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
 
-    events, _ = get_policy_audits_command(client, last_run_per_id, {'limit': 10})
+    events, _ = get_policy_audits_command(client, last_run_per_id, 10)
 
     assert len(events) == 6
 
 
 def test_get_detailed_events_command(requests_mock):
+    """
+        Given:
+            - A list of set_ids and a date form where to fetch with a CyberArkEPM (mock) client.
+
+        When:
+            - get_detailed_events_command command is running.
+
+        Then:
+            - Validates that the function works as expected.
+    """
+    from CyberArkEPMEventCollector import create_last_run, get_detailed_events_command
     client = mocked_client(requests_mock)
     last_run_per_id = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
 
-    events, _ = get_detailed_events_command(client, last_run_per_id, {'limit': 10})
+    events, _ = get_detailed_events_command(client, last_run_per_id, 10)
 
     assert len(events) == 6
 
 
 def test_fetch_events(requests_mock):
+    """
+        Given:
+            - A cyberArk client.
+
+        When:
+            - fetch-events command is running.
+
+        Then:
+            - Validates that the function works as expected.
+    """
+    from CyberArkEPMEventCollector import create_last_run, fetch_events
     last_run = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
     events, next_run = fetch_events(mocked_client(requests_mock), last_run, 10)
 

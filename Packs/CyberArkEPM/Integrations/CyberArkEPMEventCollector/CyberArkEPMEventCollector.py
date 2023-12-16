@@ -110,6 +110,27 @@ class Client(BaseClient):
 
 
 def create_last_run(set_ids: list, from_date: str) -> dict:
+    """
+    Gets a list of set_ids and a datetime presentation in str.
+    Args:
+        set_ids (Any): A datetime presentation in str or as a datetime object.
+        from_date (bool): either to increase the datetime with a millisecond (useful for next fetch).
+    Returns:
+        (dict) A dict with a set_id as a key and a dict with the event type (admin_audits, policy_audits, detailed_events)
+            as a key and a dict with `from_date` (from which date the get the event) and `next_cursor` (for the next_fetch)
+            for example {
+                '123': {
+                    'admin_audits': {'from_date': '01-02-2023T23:20:50Z'},
+                    'policy_audits': {'from_date': '01-02-2023T23:20:50Z', 'next_cursor': 'start'},
+                    'detailed_events': {'from_date': '01-02-2023T23:20:50Z', 'next_cursor': 'start'},
+                }
+                '456': {
+                    'admin_audits': {'from_date': '01-02-2023T23:20:50Z'},
+                    'policy_audits': {'from_date': '01-02-2023T23:20:50Z', 'next_cursor': 'start'},
+                    'detailed_events': {'from_date': '01-02-2023T23:20:50Z', 'next_cursor': 'start'},
+                }
+            }
+    """
     return {
         set_id: {
             'admin_audits': {'from_date': from_date},
@@ -120,6 +141,14 @@ def create_last_run(set_ids: list, from_date: str) -> dict:
 
 
 def prepare_datetime(date_time: Any, increase: bool = False) -> str:
+    """
+    Gets a datetime (string or datetime object) and returns a str in ISO format with milliseconds and Z suffix.
+    Args:
+        date_time (Any): A datetime presentation in str or as a datetime object.
+        increase (bool): either to increase the datetime with a millisecond (useful for next fetch).
+    Returns:
+        (str) A datetime presentation in str with milliseconds and Z suffix. 01-02-2023T23:20:50.123Z.
+    """
     if isinstance(date_time, str):
         date_time = parser.parse(date_time, ignoretz=True)
     if increase:
@@ -129,6 +158,13 @@ def prepare_datetime(date_time: Any, increase: bool = False) -> str:
 
 
 def add_fields_to_events(events: list, date_field: str, event_type: str):
+    """
+    Gets a list of events and adds the `_time` and the `eventTypeXsiam` keys.
+    Args:
+        events (list): A list of events.
+        date_field (str): The date field from which the _time field is taken.
+        event_type (str): The event type to set in the eventTypeXsiam field.
+    """
     for event in events:
         event['_time'] = event.get(date_field)
         event['eventTypeXsiam'] = XSIAM_EVENT_TYPE.get(event_type)
@@ -162,7 +198,7 @@ def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[
     Args:
         client (Client): CyberArkEPM client to use.
         last_run_per_id (dict): A dict of set_ids and dates form where to get the events. {'123': '01-02-2023T23:20:50Z'}.
-        limit (int): The sum of events to get.
+        limit (int): The maximum events to get.
     Returns:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
@@ -187,9 +223,9 @@ def get_policy_audits(client: Client, last_run_per_id: dict, limit: int) -> dict
     """
     Args:
         client (Client): CyberArkEPM client to use.
-        last_run_per_id (dict): A dict of set_ids and dates or next_cursor from where to get the events.
+        last_run_per_id (dict): A dict of set_ids and a dict of dates and next_cursor from where to get the events.
             {'123': {'from_date': '01-02-2023T23:20:50Z', 'next_cursor': '123465'}}.
-        limit (int): The sum of events to get.
+        limit (int): The maximum events to get.
     Returns:
         (dict) A dict of {'set_id': {'events' [list events associated with a list of set names], 'next_cursor': '123456'}}.
     """
@@ -217,9 +253,9 @@ def get_detailed_events(client: Client, last_run_per_id: dict, limit: int) -> di
     """
     Args:
         client (Client): CyberArkEPM client to use.
-        last_run_per_id (dict): A dict of set_ids and dates or next_cursor from where to get the events.
+        last_run_per_id (dict): A dict of set_ids and a dict of dates and next_cursor from where to get the events.
             {'123': {'from_date': '01-02-2023T23:20:50Z', 'next_cursor': '123465'}}.
-        limit (int): The sum of events to get.
+        limit (int): The maximum events to get.
     Returns:
         (dict) A dict of {'set_id': {'events' [list events associated with a list of set names], 'next_cursor': '123456'}}.
     """
@@ -246,9 +282,15 @@ def get_detailed_events(client: Client, last_run_per_id: dict, limit: int) -> di
 """ COMMAND FUNCTIONS """
 
 
-def get_admin_audits_command(client: Client, last_run: dict, args: dict) -> tuple[list, CommandResults]:
-    limit = arg_to_number(args.get('limit', 5))
-
+def get_admin_audits_command(client: Client, last_run: dict, limit: int | None = 5) -> tuple[list, CommandResults]:
+    """ Fetches admin audits from CyberArkEPM
+    Args:
+        client (Client): CyberArkEPM client to use.
+        last_run (dict): The last run {set_id: {from_date: 01-01-2023T00:00:00.123Z}}.
+        limit (int): The maximum admin audits to return per set_id default is 5.
+    Return:
+        (list, CommandResults) A list of admin audits to push to XSIAM, A CommandResults object.
+    """
     results = get_admin_audits(client, last_run, limit)  # type: ignore
     events_list = list(chain(*results.values()))
     human_readable = tableToMarkdown('Admin Audits', events_list)
@@ -256,9 +298,15 @@ def get_admin_audits_command(client: Client, last_run: dict, args: dict) -> tupl
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def get_policy_audits_command(client: Client, last_run: dict, args: dict) -> tuple[list, CommandResults]:
-    limit = arg_to_number(args.get('limit', 5))
-
+def get_policy_audits_command(client: Client, last_run: dict, limit: int | None) -> tuple[list, CommandResults]:
+    """ Fetches policy audits from CyberArkEPM
+    Args:
+        client (Client): CyberArkEPM client to use.
+        last_run (dict): The last run {set_id: {from_date: 01-01-2023T00:00:00.123Z, next_cursor: 123456}}.
+        limit (int): The maximum policy audits to return per set_id default is 5.
+    Return:
+        (list, CommandResults) A list of policy audits to push to XSIAM, A CommandResults object.
+    """
     results = get_policy_audits(client, last_run, limit)  # type: ignore
     events_list_of_lists = [value.get('events', []) for value in results.values()]
     events_list = list(chain(*events_list_of_lists))
@@ -267,9 +315,15 @@ def get_policy_audits_command(client: Client, last_run: dict, args: dict) -> tup
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def get_detailed_events_command(client: Client, last_run: dict, args: dict) -> tuple[list, CommandResults]:
-    limit = arg_to_number(args.get('limit', 5))
-
+def get_detailed_events_command(client: Client, last_run: dict, limit: int | None = 5) -> tuple[list, CommandResults]:
+    """ Fetches evens from CyberArkEPM
+    Args:
+        client (Client): CyberArkEPM client to use.
+        last_run (dict): The last run {set_id: {from_date: 01-01-2023T00:00:00.123Z, next_cursor: 123456}}.
+        limit (int): The maximum events to return per set_id default is 5.
+    Return:
+        (list, CommandResults) A list of events to push to XSIAM, A CommandResults object.
+    """
     results = get_detailed_events(client, last_run, limit)  # type: ignore
     events_list_of_lists = [value.get('events', []) for value in results.values()]
     events_list = list(chain(*events_list_of_lists))
@@ -285,10 +339,10 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
         - events
     Args:
         client (Client): CyberArkEPM client to use.
-        last_run (dict): The last run
-        max_fetch (int): The max events to return per fetch default is 5000
+        last_run (dict): The last run information.
+        max_fetch (int): The max events to return per fetch default is 250.
     Return:
-        (list) A list of events to push to XSIAM
+        (list, dict) A list of events to push to XSIAM, A dict with information for next fetch.
     """
     events: list = []
     demisto.info(f'Start fetching last run: {last_run}')
@@ -386,19 +440,19 @@ def main():  # pragma: no cover
             return_results(result)
 
         elif command == 'cyberarkepm-get-admin-audits':
-            events, command_result = get_admin_audits_command(client, last_run, args)
+            events, command_result = get_admin_audits_command(client, last_run, arg_to_number(args.get('limit', 5)))
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         elif command == 'cyberarkepm-get-policy-audits':
-            events, command_result = get_policy_audits_command(client, last_run, args)
+            events, command_result = get_policy_audits_command(client, last_run, arg_to_number(args.get('limit', 5)))
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         elif command == 'cyberarkepm-get-events':
-            events, command_result = get_detailed_events_command(client, last_run, args)
+            events, command_result = get_detailed_events_command(client, last_run, arg_to_number(args.get('limit', 5)))
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
