@@ -410,7 +410,7 @@ class BucketVerifier:
         # Case 12: Verify hidden dependency not in metadata.json
         self.verify_hidden_dependency('MicrosoftAdvancedThreatAnalytics', 'Microsoft365Defender')
 
-        # Case 13+14: Verify that content items related only to specific mp exist only on the related mp. 
+        # Case 13+14: Verify that content items related only to specific mp exist only on the related mp.
         if self.bucket_name == XSIAM_TESTING_BUCKET:
             self.run_xsiam_bucket_validations()
 
