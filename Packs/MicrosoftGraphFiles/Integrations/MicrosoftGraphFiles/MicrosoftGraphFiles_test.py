@@ -767,7 +767,7 @@ def test_list_site_permissions_with_permission_id(requests_mock: MockerCore) -> 
         "### Site Permission\n"
         "|Application ID|Application Name|ID|Roles|\n"
         "|---|---|---|---|\n"
-        "| new-app-id | CExample1 App | 1 | read |\n"
+        "| new-app-id | Example1 App | 1 | read |\n"
     )
 
 
