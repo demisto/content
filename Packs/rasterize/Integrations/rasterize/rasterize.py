@@ -470,12 +470,12 @@ def rasterize_email_command():  # pragma: no cover
 
     path = f'file://{os.path.realpath(f.name)}'
 
-    output, _ = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height, offline_mode=offline,
-                          navigation_timeout=navigation_timeout)
+    rasterize_output, _ = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
+                          offline_mode=offline, navigation_timeout=navigation_timeout)
 
-    res = fileResult(filename=file_name, data=output)
+    res = fileResult(filename=file_name, data=rasterize_output)
 
-    if rasterize_type == RasterizeType.PNG:
+    if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
         res['Type'] = entryTypes['image']
 
     demisto.results(res)
@@ -581,7 +581,10 @@ def rasterize_command():  # pragma: no cover
 
     if not (url.startswith('http')):
         url = f'http://{url}'
-    file_name = f'{file_name}.{"pdf" if rasterize_type == RasterizeType.PDF else "png"}'  # type: ignore
+    file_extension = "png"
+    if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
+        file_extension = "pdf"
+    file_name = f'{file_name}.{file_extension}'  # type: ignore
 
     rasterize_output, response_body = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
                                                 navigation_timeout=navigation_timeout, include_url=include_url)
