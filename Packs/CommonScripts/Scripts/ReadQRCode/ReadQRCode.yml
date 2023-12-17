@@ -1,0 +1,32 @@
+args:
+- description: The entry ID of the QR code image.
+  name: entry_id
+  required: true
+  default: true
+comment: Extracts the text from a QR code. This script uses the open-source library OpenCV and is restricted to it's capabilities. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
+commonfields:
+  id: ReadQRCode
+  version: -1
+name: ReadQRCode
+outputs:
+- contextPath: QRCodeReader.Text
+  description: The raw text extracted from the QR code image.
+  type: String
+- contextPath: QRCodeReader.Domain
+  description: The domains extracted from the QR code image if they are present.
+  type: String
+- contextPath: QRCodeReader.URL
+  description: The URLs extracted from the QR code image if they are present.
+  type: String
+- contextPath: QRCodeReader.IP
+  description: The IPs extracted from the QR code image if they are present.
+  type: String
+script: '-'
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/opencv:1.0.0.82635
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

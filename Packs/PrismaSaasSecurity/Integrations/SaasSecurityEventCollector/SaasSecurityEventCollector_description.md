@@ -8,6 +8,7 @@
 6) In some rare cases more than ```max_fetch``` events could be fetched.
 7) The maximum recommended max fetch is 5000 to avoid fetch timeouts.
 8) In case not providing the ```max_fetch``` argument, the default will be 1000.
+9) The maximum recommended amount of ```max_iterations``` is 50 to avoid fetch timeouts
 
 
 Creating the Client ID and Client Secret in the SaaS Security UI:

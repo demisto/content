@@ -88,10 +88,25 @@ events_dict = {
         "expected_data": '{"name": "Event 10", "data": "In three words I can sum up everything I\'ve learned about life: it goes on. - Robert Frost"}',
         "expected_format": "json",
         "XSIAM_FILE_SIZE": 300
+    },
+    "json_assets": {
+        "assets": [
+            {
+                "name": "my asset 1",
+                "data": "some data 1"
+            },
+            {
+                "name": "my asset 2",
+                "data": "some data 2"
+            }
+        ],
+        "number_of_events": 2,
+        "expected_format": "json",
+        "expected_data": '{"name": "my asset 1", "data": "some data 1"}\n{"name": "my asset 2", "data": "some data 2"}'
     }
 }
 
-log_error = \
+events_log_error = \
     """Error sending new events into XSIAM.
 Parameters used:
 \tURL: https://api-url
@@ -103,7 +118,30 @@ Parameters used:
         "content-encoding": "gzip",
         "collector-name": "test_brand",
         "instance-name": "test_integration_instance",
-        "final-reporting-device": "www.test_url.com"
+        "final-reporting-device": "www.test_url.com",
+        "collector-type": "events"
+}}
+
+Response status code: {status_code}
+Error received:
+\t{error_received}"""
+
+assets_log_error = \
+    """Error sending new assets into XSIAM.
+Parameters used:
+\tURL: https://api-url
+\tHeaders: {{
+        "authorization": "TOKEN",
+        "format": "json",
+        "product": "some product",
+        "vendor": "some vendor",
+        "content-encoding": "gzip",
+        "collector-name": "test_brand",
+        "instance-name": "test_integration_instance",
+        "final-reporting-device": "www.test_url.com",
+        "collector-type": "assets",
+        "snapshot-id": "123000",
+        "total-items-count": "2"
 }}
 
 Response status code: {status_code}

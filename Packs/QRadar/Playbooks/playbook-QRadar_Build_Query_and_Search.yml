@@ -40,49 +40,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
-    taskid: 7196833d-8b25-46d8-89a4-fd337b275f01
-    type: playbook
-    task:
-      id: 7196833d-8b25-46d8-89a4-fd337b275f01
-      version: -1
-      name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the context.
-      playbookName: QRadarFullSearch
-      type: playbook
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '7'
-    scriptarguments:
-      interval:
-        simple: '1'
-      query_expression:
-        simple: ${QRadarQuery}
-      timeout:
-        simple: '600'
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '3':
     id: '3'
     taskid: 78da1d78-a6bc-4d0f-8f72-15d89f3d89a5
@@ -98,7 +56,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '2'
+      - "9"
     scriptarguments:
       base_field_match:
         simple: ${inputs.BaseFieldMatch}
@@ -143,6 +101,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '4':
     id: '4'
     taskid: 111c651c-5335-40d6-8222-c9466407b062
@@ -161,7 +120,7 @@ tasks:
       - '6'
     scriptarguments:
       SearchResults:
-        simple: ${QRadar.Search.Result}
+        simple: ${QRadar.SearchEvents}
     separatecontext: true
     loop:
       iscommand: false
@@ -182,6 +141,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '5':
     id: '5'
     taskid: 359cdad3-32d5-4567-8f22-031b29b653d7
@@ -193,7 +153,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: ''
+      description: "Use hunting results?"
     nexttasks:
       '#default#':
       - '6'
@@ -226,6 +186,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '6':
     id: '6'
     taskid: 5821881c-e6bf-434e-8083-dff50e033291
@@ -253,6 +214,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '7':
     id: '7'
     taskid: 6495339d-e834-4a62-85a3-f1ea7ce69570
@@ -264,7 +226,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: ''
+      description: "Are there search results?"
     nexttasks:
       '#default#':
       - '6'
@@ -277,7 +239,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: QRadar.Search.Result
+              simple: QRadar.SearchEvents
             iscontext: true
           right:
             value:
@@ -296,6 +258,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '8':
     id: '8'
     taskid: 0087cb56-87db-48de-88db-818d93628828
@@ -307,7 +270,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: ''
+      description: "Are there values to search?"
     nexttasks:
       '#default#':
       - '6'
@@ -337,6 +300,49 @@ tasks:
         "position": {
           "x": 660,
           "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "9":
+    id: "9"
+    taskid: 127dc2fd-bff9-4043-845b-20a32e005be6
+    type: regular
+    task:
+      id: 127dc2fd-bff9-4043-845b-20a32e005be6
+      version: -1
+      name: Run Qradar Query
+      description: Polling command to search for events of a specific offense.
+      script: '|||qradar-search-retrieve-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      interval_in_seconds:
+        simple: "1"
+      polling:
+        simple: "true"
+      query_expression:
+        complex:
+          root: QRadarQuery
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
         }
       }
     note: false
@@ -453,7 +459,7 @@ inputs:
   description: The QRadar Get Hunting Results playbook outputs the detected hosts, users, and IP addresses detected in the QRadar search results.
   playbookInputQuery:
 outputs:
-- contextPath: QRadar.Search.Result
+- contextPath: QRadar.SearchEvents
   description: The result of the search.
   type: string
 - contextPath: QRadar.DetectedUsers
@@ -474,3 +480,5 @@ outputs:
 tests:
 - no test
 fromversion: 6.2.0
+contentitemexportablefields:
+  contentitemfields: {}

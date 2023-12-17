@@ -1,0 +1,15 @@
+{
+    "QueryExecutionId": "b3c194e7-6580-421c-81fa-4b409e1ba04f",
+    "ResponseMetadata": {
+        "RequestId": "90cd1f51-4cf6-4992-a435-11bf8bd791df",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "date": "Wed, 08 Nov 2023 09:07:39 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "59",
+            "connection": "keep-alive",
+            "x-amzn-requestid": "90cd1f51-4cf6-4992-a435-11bf8bd791df"
+        },
+        "RetryAttempts": 0
+    }
+}

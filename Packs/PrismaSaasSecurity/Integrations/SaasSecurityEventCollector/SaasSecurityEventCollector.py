@@ -231,17 +231,19 @@ def fetch_events_from_saas_security(
 
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     try:
-        iteration_num = 0  # this is done in order to prevent timeouts
-        while under_max_fetch and iteration_num < max_iterations:
+        iteration_num = 1  # this is done in order to prevent timeouts
+        while under_max_fetch and iteration_num < max_iterations + 1:
             response = client.get_events_request()
             if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
                 break
             fetched_events = response.json().get('events') or []
-            demisto.info(f'fetched events length: ({len(fetched_events)})')
-            demisto.info(f'fetched the following events: {fetched_events}')
+            demisto.info(f'fetched events length: ({len(fetched_events)}) in iteration {iteration_num}')
+            demisto.info(f'fetched the following events: {fetched_events} in iteration {iteration_num}')
             events.extend(fetched_events)
+            events_len = len(events)
             if max_fetch:
-                under_max_fetch = len(events) < max_fetch
+                under_max_fetch = events_len < max_fetch
+            demisto.info(f'Collected already {events_len} events until iteration {iteration_num}')
             iteration_num += 1
     except Exception as exc:
         demisto.info(f'Got error get_events: {exc}')
@@ -285,9 +287,9 @@ def main() -> None:  # pragma: no cover
                     demisto.info(f'got exception when trying to fetch events: [{exception}]')
             else:
                 events = integration_context.get('events')
-                demisto.info('fetching events from integration context')
+                demisto.info('Fetching events from integration context')
             try:
-                demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
+                demisto.info(f'Sending the following amount of events into XSIAM: {len(events)}')
                 send_events_to_xsiam(
                     events=events,
                     vendor=VENDOR,
@@ -295,9 +297,9 @@ def main() -> None:  # pragma: no cover
                 )
                 demisto.setIntegrationContext({})
             except Exception as e:
-                demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
+                demisto.info(f'Received error when trying to send events to XSIAM: [{e}]')
                 demisto.setIntegrationContext({'events': events})
-                demisto.info(f'set the following events into integration context: {events}')
+                demisto.info(f'Successfully set the following events into integration context: {events}')
         elif command == 'saas-security-get-events':
             return_results(get_events_command(client, args, max_fetch=max_fetch, max_iterations=max_iterations))
         else:
