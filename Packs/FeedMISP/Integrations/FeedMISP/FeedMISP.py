@@ -601,6 +601,7 @@ def main():
             indicators = fetch_attributes_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
+        else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
     except Exception as e:

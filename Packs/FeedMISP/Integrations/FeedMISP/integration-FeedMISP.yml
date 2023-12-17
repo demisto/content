@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: MISP Feed - Test_FeedMISP
+  id: MISP Feed - Test_FeedMISP_fix
   version: -1
 configuration:
 - defaultvalue: https://example.com/
@@ -119,8 +119,8 @@ configuration:
   type: 8
   required: false
 description: Indicators feed from MISP
-display: MISP Feed - Test_FeedMISP
-name: MISP Feed - Test_FeedMISP
+display: MISP Feed - Test_FeedMISP_fix
+name: MISP Feed - Test_FeedMISP_fix
 script:
   commands:
   - arguments:
@@ -754,6 +754,7 @@ script:
                 indicators = fetch_attributes_command(client, params)
                 for iter_ in batch(indicators, batch_size=2000):
                     demisto.createIndicators(iter_)
+            else:
                 raise NotImplementedError(f'Command {command} is not implemented.')
 
         except Exception as e:
