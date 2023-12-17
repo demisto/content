@@ -83,11 +83,11 @@ def test_download_markdown_images_from_artifacts(mocker):
                                        ('', '')])
 def test_decode_before_upload(name, res):
     """
-    Given: 
-        - A name of a file or path 
+    Given:
+        - A name of a file or path
     When:
         - Uploaing the file path or file name to GCP
-    Then: 
+    Then:
         - Decode the path/name before upload to prevent double encoding.
     """
     assert decode_before_upload(name) == res
