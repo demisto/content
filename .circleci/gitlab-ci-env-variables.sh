@@ -1,4 +1,4 @@
-echo 'export CI_BUILD_ID="$CIRCLE_BUILD_NUM"' >> $BASH_ENV
+echo 'export CI_JOB_ID="$CIRCLE_BUILD_NUM"' >> $BASH_ENV
 echo 'export CI_PIPELINE_ID="$CIRCLE_WORKFLOW_ID"' >> $BASH_ENV
 echo 'export CI_COMMIT_BRANCH="$CIRCLE_BRANCH"' >> $BASH_ENV
 echo 'export ARTIFACTS_FOLDER=/home/circleci/project/artifacts' >> $BASH_ENV
