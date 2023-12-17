@@ -74,6 +74,7 @@ def test_download_markdown_images_from_artifacts(mocker):
     }
     assert pack_images_names == expected_res
 
+
 @pytest.mark.parametrize("name, res", [('%26%20%25', '& %'),
                                        ('ABC', 'ABC'),
                                        ('A B C', 'A B C'),
@@ -81,4 +82,12 @@ def test_download_markdown_images_from_artifacts(mocker):
                                        ('%24%24%20%24%24', '$$ $$'),
                                        ('', '')])
 def test_decode_before_upload(name, res):
+    """
+    Given: 
+        - A name of a file or path 
+    When:
+        - Uploaing the file path or file name to GCP
+    Then: 
+        - Decode the path/name before upload to prevent double encoding.
+    """
     assert decode_before_upload(name) == res
