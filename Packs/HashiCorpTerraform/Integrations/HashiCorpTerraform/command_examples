@@ -1,7 +1,7 @@
 !terraform-runs-list
 !terraform-policy-set-list
 !terraform-policies-list
-!terraform-run-action run_id=run-Q2kS54r6pJjdyYfk action="apply" comment="comment from TPB"
-!terraform-policies-checks-list run_id=run-Q2kS54r6pJjdyYfk
+!terraform-run-action run_id=run-8wpCneWr4TLSzfat action="discard" comment="test comment"
+!terraform-policies-checks-list run_id=run-8wpCneWr4TLSzfat
 !terraform-plan-get plan_id=plan-V4fvpvCzGQrsZikD
 !terraform-plan-get plan_id=plan-V4fvpvCzGQrsZikD json_output="true"

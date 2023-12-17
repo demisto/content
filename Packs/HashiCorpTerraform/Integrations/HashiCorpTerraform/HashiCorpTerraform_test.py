@@ -1,14 +1,13 @@
 import pytest
-from pytest import raises
-import io
 from CommonServerPython import *
-from HashiCorpTerraform import Client, runs_list_command, run_action_command, plan_get_command, policies_list_command, policy_set_list_command, policies_checks_list_command
+from HashiCorpTerraform import Client, runs_list_command, test_module, \
+    run_action_command, plan_get_command, policies_list_command, policy_set_list_command, policies_checks_list_command
 import re
 SERVER_URL = 'https://test_url.com'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -27,14 +26,14 @@ def test_runs_list_command(client, requests_mock):
         When:
             - run the list runs command.
         Then:
-            - validate the results are as expected. 
+            - validate the results are as expected.
     """
     mock_response = util_load_json('./test_data/runs_list_request.json')['mock_response']
     requests_mock.get(re.compile(f'{SERVER_URL}.*'), json=mock_response)
     expected_results = util_load_json('./test_data/runs_list_request.json')['expected_results']
-    
+
     results = runs_list_command(client=client, args={'workspace_id': 'workspace_id'})
-    
+
     assert results.to_context() == expected_results
 
 
@@ -45,13 +44,13 @@ def test_run_action_command(client, requests_mock):
         When:
             - error occurred when run the run action command.
         Then:
-            - validate the exception raised as expected. 
+            - validate the exception raised as expected.
     """
     mock_response = util_load_json('./test_data/run_action_request.json')['mock_response']
     requests_mock.post(re.compile(f'{SERVER_URL}.*'), json=mock_response, status_code=409)
-    
+
     run_id = 'run-ABCABCABCABCABCa'
-    with raises(DemistoException) as err:
+    with pytest.raises(DemistoException) as err:
         run_action_command(client=client, args={
             'run_id': run_id,
             'action': 'apply', 'comment': 'comment'
@@ -64,77 +63,96 @@ def test_plan_get_command(client, requests_mock):
         Given:
             - Client object.
         When:
-            - run the list runs command.
+            - run the get plan command to get the plan meta data.
         Then:
-            - validate the results are as expected. 
+            - validate the results are as expected.
     """
-    args = {'plan_id': 'plan-V4fvpvCzGQrsZikD', 'json_output': None}
-    mock_response_get_plan = util_load_json('./test_data/outputs/get_plan.json'
-                                            )
-    mock_results = util_load_json('./test_data/outputs/plan_get_command.json')
-    requests_mock.post(SERVER_URL, json=mock_response_get_plan)
+    args = {'plan_id': 'plan-Abcabcabcabcabc4'}
+
+    mock_response = util_load_json('./test_data/plan_get_request.json')['mock_response']
+    expected_results = util_load_json('./test_data/plan_get_request.json')['expected_results']
+
+    requests_mock.get(re.compile(f'{SERVER_URL}.*'), json=mock_response)
     results = plan_get_command(client=client, args=args)
+    assert results.to_context() == expected_results
 
 
-def test_policies_list_command(client, requests_mock):
+def test_policies_list_command(client, requests_mock, mocker):
     """
-        When:
         Given:
+            - Client object.
+        When:
+            - run the get policies list command.
         Then:
-        """
-    args = {'organization_name': None, 'policy_kind': None, 'policy_name':
-            None, 'policy_id': None}
-    mock_response_list_policies = util_load_json(
-        './test_data/outputs/list_policies.json')
-    mock_results = util_load_json(
-        './test_data/outputs/policies_list_command.json')
-    requests_mock.post(SERVER_URL, json=mock_response_list_policies)
+            - validate the results are as expected.
+    """
+    organization_name = 'organization_name'
+    args = {'organization_name': organization_name}
+
+    mock_response = util_load_json('./test_data/policies_list_request.json')['mock_response']
+    expected_results = util_load_json('./test_data/policies_list_request.json')['expected_results']
+
+    requests_mock.get(f'{SERVER_URL}/organizations/{organization_name}/policies', json=mock_response)
+    mocker.patch.object(demisto, 'dt', side_effect=lambda _, key: key)
+
     results = policies_list_command(client=client, args=args)
-    assert results.outputs_prefix == 'Terraform.Policy'
-    assert results.outputs_key_field == 'id'
-    assert results.outputs == mock_results.get('outputs')
-    assert results.raw_response == mock_response_list_policies
-    assert results.readable_output == mock_results.get('readable_output')
+    assert results.to_context() == expected_results
 
 
-def test_policy_set_list_command(client, requests_mock):
+def test_policy_set_list_command(client, requests_mock, mocker):
     """
-        When:
         Given:
+            - Client object.
+        When:
+            - run the get policy set list command.
         Then:
-        """
-    args = {'organization_name': None, 'policy_set_id': None, 'versioned':
-            None, 'policy_set_kind': None, 'include': None, 'policy_set_name':
-            None, 'page_number': None, 'page_size': None}
-    mock_response_list_policy_sets = util_load_json(
-        './test_data/outputs/list_policy_sets.json')
-    mock_results = util_load_json(
-        './test_data/outputs/policy_set_list_command.json')
-    requests_mock.post(SERVER_URL, json=mock_response_list_policy_sets)
+            - validate the results are as expected.
+    """
+
+    organization_name = 'organization_name'
+    args = {'organization_name': organization_name}
+
+    mock_response = util_load_json('./test_data/policy_set_list_request.json')['mock_response']
+    expected_results = util_load_json('./test_data/policy_set_list_request.json')['expected_results']
+
+    requests_mock.get(f'{SERVER_URL}/organizations/{organization_name}/policy-sets', json=mock_response)
+    mocker.patch.object(demisto, 'dt', side_effect=lambda _, key: key)
     results = policy_set_list_command(client=client, args=args)
-    assert results.outputs_prefix == 'Terraform.PolicySet'
-    assert results.outputs_key_field == 'id'
-    assert results.outputs == mock_results.get('outputs')
-    assert results.raw_response == mock_response_list_policy_sets
-    assert results.readable_output == mock_results.get('readable_output')
+    assert results.to_context() == expected_results
 
 
 def test_policies_checks_list_command(client, requests_mock):
     """
-        When:
         Given:
+            - Client object.
+        When:
+            - run the get policies checks list command.
         Then:
-        """
-    args = {'run_id': 'run-Q2kS54r6pJjdyYfk', 'policy_check_id': None,
-            'page_number': None, 'page_size': None}
-    mock_response_list_policy_checks = util_load_json(
-        './test_data/outputs/list_policy_checks.json')
-    mock_results = util_load_json(
-        './test_data/outputs/policies_checks_list_command.json')
-    requests_mock.post(SERVER_URL, json=mock_response_list_policy_checks)
+            - validate the results are as expected.
+    """
+    run_id = 'run-abcabcabcabcabc1'
+    args = {'run_id': run_id}
+
+    mock_response = util_load_json('./test_data/policies_check_list_request.json')['mock_response']
+    expected_results = util_load_json('./test_data/policies_check_list_request.json')['expected_results']
+
+    requests_mock.get(f'{SERVER_URL}/runs/{run_id}/policy-checks', json=mock_response)
     results = policies_checks_list_command(client=client, args=args)
-    assert results.outputs_prefix == 'Terraform.PolicyCheck'
-    assert results.outputs_key_field == 'id'
-    assert results.outputs == mock_results.get('outputs')
-    assert results.raw_response == mock_response_list_policy_checks
-    assert results.readable_output == mock_results.get('readable_output')
+    assert results.to_context() == expected_results
+
+
+def test_test_module_command(client, mocker):
+    """
+        Given:
+            - Client object with error occurred in test_connection.
+        When:
+            - run the test module command.
+        Then:
+            - validate the expected exception.
+    """
+    mocker.patch.object(client, 'test_connection', side_effect=Exception('Unauthorized'))
+
+    with pytest.raises(DemistoException) as err:
+        test_module(client)
+
+    assert 'Unauthorized: Please be sure you put a valid API Token' in str(err)
