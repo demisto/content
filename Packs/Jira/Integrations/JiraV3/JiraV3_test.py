@@ -699,7 +699,7 @@ class TestJiraCreateIssueCommand:
                         'self': 'dummy_link'}
         expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
         mocker.patch.object(client, 'create_issue', return_value=raw_response)
-        command_result = create_issue_command(client=client, args={})
+        command_result = create_issue_command(client=client, args={"summary": "test"})
         assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
 
 
