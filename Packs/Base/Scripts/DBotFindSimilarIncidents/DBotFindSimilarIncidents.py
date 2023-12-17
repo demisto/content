@@ -14,26 +14,29 @@ from typing import Any
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
 
+INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion().get('platform') == 'xsoar') else 'alert'
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
-                         " 2) Selected field are empty for this incident  3) Fields are misspelled"
+                         f" 2) Selected field are empty for this {INCIDENT_ALIAS}  3) Fields are misspelled"
 
-MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
+MESSAGE_NO_INCIDENT_FETCHED = f"- 0 {INCIDENT_ALIAS}s fetched with these exact match for the given dates."
 
-MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either add incident fields in " \
+MESSAGE_WARNING_TRUNCATED = f"- {INCIDENT_ALIAS.capitalize()} fetched have been truncated to "\
+                            "%s" \
+                            f", please either add {INCIDENT_ALIAS} fields in " \
                             "fieldExactMatch, enlarge the time period or increase the limit argument " \
                             "to more than %s."
 
-MESSAGE_NO_CURRENT_INCIDENT = "- Incident %s does not exist within the given time range. " \
-                              "Please check incidentId value or that you are running the command within an incident."
-MESSAGE_NO_FIELD = "- %s field(s) does not exist in the current incident."
-MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
+MESSAGE_NO_CURRENT_INCIDENT = f"- {INCIDENT_ALIAS.capitalize()} %s does not exist within the given time range. " \
+                              f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."
+MESSAGE_NO_FIELD = f"- %s field(s) does not exist in the current {INCIDENT_ALIAS}."
+MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched {INCIDENT_ALIAS}s."
 
-SIMILARITY_COLUNM_NAME = 'similarity incident'
+SIMILARITY_COLUNM_NAME = f'similarity {INCIDENT_ALIAS}'
 SIMILARITY_COLUNM_NAME_INDICATOR = 'similarity indicators'
 IDENTICAL_INDICATOR = 'Identical indicators'
 ORDER_SCORE_WITH_INDICATORS = [SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_INDICATOR]
 ORDER_SCORE_NO_INDICATORS = [SIMILARITY_COLUNM_NAME]
-COLUMN_ID = 'incident ID'
+COLUMN_ID = f'{INCIDENT_ALIAS} ID'
 FIRST_COLUMNS_INCIDENTS_DISPLAY = [COLUMN_ID, 'created', 'name', SIMILARITY_COLUNM_NAME,
                                    SIMILARITY_COLUNM_NAME_INDICATOR,
                                    IDENTICAL_INDICATOR]
@@ -728,8 +731,8 @@ def return_outputs_summary(confidence: float, number_incident_fetched: int, numb
     """
     summary = {
         'Confidence': str(confidence),
-        'Number of incidents fetched with exact match ': number_incident_fetched,
-        'Number of similar incidents found ': number_incidents_found,
+        f'Number of {INCIDENT_ALIAS}s fetched with exact match ': number_incident_fetched,
+        f'Number of similar {INCIDENT_ALIAS}s found ': number_incidents_found,
         'Valid fields used for similarity': ', '.join(fields_used),
     }
     return_outputs(readable_output=global_msg + tableToMarkdown("Summary", summary))
@@ -792,8 +795,9 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
 
     if show_actual_incident == 'True':
         return_outputs(
-            readable_output=tableToMarkdown("Current Incident", incident_json, col_current_incident_to_display))
-    readable_output = tableToMarkdown("Similar incidents", similar_incidents_json, colums_to_display)
+            readable_output=tableToMarkdown(
+                f"Current {INCIDENT_ALIAS.capitalize()}", incident_json, col_current_incident_to_display))
+    readable_output = tableToMarkdown(f"Similar {INCIDENT_ALIAS.capitalize()}s", similar_incidents_json, colums_to_display)
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
@@ -837,10 +841,10 @@ def return_outputs_similar_incidents_empty():
     Return entry and context for similar incidents if no similar incidents were found
     :return:
     """
-    hr = '### Similar Incident' + '\n'
-    hr += 'No Similar incident were found.'
-    return_outputs(readable_output=hr,
-                   outputs={'DBotFindSimilarIncidents': create_context_for_incidents()})
+    return_outputs(
+        readable_output=f'### Similar {INCIDENT_ALIAS.capitalize()}\nNo Similar {INCIDENT_ALIAS}s were found.',
+        outputs={'DBotFindSimilarIncidents': create_context_for_incidents()}
+    )
 
 
 def enriched_with_indicators_similarity(full_args_indicators_script: dict, similar_incidents: pd.DataFrame):
@@ -928,9 +932,9 @@ def main():
     global_msg += "%s \n" % msg
 
     if incidents:
-        demisto.debug(f'Found {len(incidents)} incidents for {incident_id=}')
+        demisto.debug(f'Found {len(incidents)} {INCIDENT_ALIAS}s for {incident_id=}')
     else:
-        demisto.debug(f'No incidents found for {incident_id=}')
+        demisto.debug(f'No {INCIDENT_ALIAS}s found for {incident_id=}')
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg
