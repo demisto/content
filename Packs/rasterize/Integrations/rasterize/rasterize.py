@@ -122,7 +122,7 @@ class TabLifecycleManager:
             try:
                 demisto.debug(
                     f'TabLifecycleManager, __exit__, {threading.current_thread().name=}, stopping tab {tab_id},'
-                    ' active tabs len: {len(self.browser.list_tab())}')
+                    f' active tabs len: {len(self.browser.list_tab())}')
                 tab_stop_response = self.tab.stop()
                 demisto.debug(f"TabLifecycleManager, __exit__, {tab_stop_response=}")
             except Exception as ex:
