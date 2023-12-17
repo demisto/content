@@ -25,6 +25,6 @@ outputs:
 - contextPath: no
   description: if there is no instance for the given brand.
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.80593
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - No tests (auto formatted)
