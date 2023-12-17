@@ -65,7 +65,7 @@ def validate_email_sent(incident_id, email_subject, subject_include_incident_id,
                                      email_latest_message, email_code, mail_sender_instance)
 
     if is_error(email_reply):
-        return f'Error:\n {get_error(email_reply)}'
+        return_error(f'Error:\n {get_error(email_reply)}')
 
     msg = f'Mail sent successfully. To: {email_to}'
     if email_cc:
@@ -248,7 +248,7 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
                                          new_attachment_names, email_code, mail_sender_instance)
 
     if is_error(email_result):
-        return f'Error:\n {get_error(email_result)}'
+        return_error(f'Error:\n {get_error(email_result)}')
 
     msg = f'Mail sent successfully. To: {email_to}'
     if email_cc:
