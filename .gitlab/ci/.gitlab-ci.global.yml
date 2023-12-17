@@ -1,16 +1,23 @@
 .default-cache:
   cache:
-    key:
-      files:
-        - "poetry.lock"
-        - "package-lock.json"
-      prefix: dev-content
-    paths:
-      - $PIP_CACHE_DIR
-      - .venv/
-      - node_modules/
-      - .npm/
-    policy: pull
+    - key: ci-repos-$CI_COMMIT_BRANCH
+      paths:
+        - content-test-conf
+        - infra
+        - content-test-conf.txt
+        - infra.txt
+      policy: pull
+    - key:
+        files:
+          - "poetry.lock"
+          - "package-lock.json"
+        prefix: dev-content
+      paths:
+        - $PIP_CACHE_DIR
+        - .venv/
+        - node_modules/
+        - .npm/
+      policy: pull
 
 
 .setup-network-certs: &setup-network-certs
@@ -57,10 +64,6 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
-.download-demisto-conf:
-  - section_start "Download content-test-conf and infra" --collapsed
-  - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-  - section_end "Download content-test-conf and infra"
 
 .secrets-fetch:
   - section_start "Secrets Fetch" --collapsed
@@ -251,10 +254,8 @@
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
     - *setup-artifactory
-    - *stop_contrib_external_build
     - *create_artifacts_and_server_type_instance_folders
     - *clone_and_export_variables
-    - *check_build_files_are_up_to_date
     - *install_node_modules
     - *install_venv
     - *get_contribution_pack
@@ -294,6 +295,7 @@
   needs:
     - job: cloning-content-repo-last-upload-commit
       optional: true
+    - job: init
 
 .trigger-slack-notification:
   stage: .post
@@ -489,6 +491,7 @@
     - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json"
     - section_end "Copy conf.json To Server Type Artifacts Folder"
     - section_start "Validate Files and Yaml"
+    - !reference [.remove_cached_gitlab_repos]
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
         echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
@@ -547,3 +550,54 @@ cloning-content-repo-last-upload-commit:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
     - !reference [.add-content-production-to-artifacts]
+
+
+.clone_and_cache_gitlab_repos: &clone_and_cache_gitlab_repos
+  - section_start "Git clone and cache gitlab repos" --collapsed
+  - ./Tests/scripts/clone_and_cache_gitlab_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/clone_and_cache_gitlab_repos.log"
+  - section_end "Git clone and cache gitlab repos"
+
+.use_cached_gitlab_repos:
+  - section_start "Use gitlab cached repos" --collapsed
+  - ./Tests/scripts/use_cached_gitlab_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/use_cached_gitlab_repos.log"
+  - section_end "Use gitlab cached repos"
+
+.remove_cached_gitlab_repos:
+  - section_start "Remove gitlab cached repos" --collapsed
+  - rm -rf ./content-test-conf
+  - rm -rf ./infra
+  - section_end "Remove gitlab cached repos"
+
+init:
+  stage: .pre
+  cache:
+    - key: ci-repos-$CI_COMMIT_BRANCH
+      paths:
+        - content-test-conf
+        - infra
+        - content-test-conf.txt
+        - infra.txt
+      policy: pull-push
+    - key:
+        files:
+          - "poetry.lock"
+          - "package-lock.json"
+        prefix: dev-content
+      paths:
+        - $PIP_CACHE_DIR
+        - .venv/
+        - node_modules/
+        - .npm/
+      policy: pull-push
+  rules:
+    - if: '$SLACK_JOB == "true"'
+      when: never
+    - when: always
+  script:
+    - source .gitlab/helper_functions.sh
+    - *create_artifacts_and_server_type_instance_folders
+    - *setup-artifactory
+    - *stop_contrib_external_build
+    - *check_build_files_are_up_to_date
+    - *clone_and_cache_gitlab_repos
+    - job-done

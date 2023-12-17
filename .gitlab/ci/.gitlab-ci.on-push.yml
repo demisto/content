@@ -54,7 +54,7 @@ merge-dev-secrets:
   stage: unittests-and-validations
   script:
     - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
+    - !reference [.use_cached_gitlab_repos]
     - section_start "Merging and deleting dev secrets"
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log" 2>&1 || EXIT_CODE=$?
     - job-done
@@ -127,14 +127,12 @@ validate-content-conf:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
     - if: "$NIGHTLY"
-  cache:
-    policy: pull-push
   variables:
     KUBERNETES_CPU_REQUEST: 2000m
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
-    - !reference [.download-demisto-conf]
+    - !reference [.use_cached_gitlab_repos]
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
@@ -305,7 +303,7 @@ xpanse-prepare-testing-bucket:
         exit 0
       fi
     - section_end "Check if should run Instance role"
-    - !reference [.download-demisto-conf]
+    - !reference [ .use_cached_gitlab_repos ]
     - !reference [.secrets-fetch]
     - !reference [.ssh-config-setup]
     - section_start "Wait Until Server Ready"
@@ -388,6 +386,7 @@ jobs-done-check-nightly:
     - .jobs-done-check
   needs:
     - cloning-content-repo-last-upload-commit
+    - init
     - run-unittests-and-lint
     - run-validations
     - trigger-private-build
@@ -431,6 +430,7 @@ jobs-done-check-on-push:
     - .push-rule
     - .jobs-done-check
   needs:
+    - init
     - run-unittests-and-lint
     - run-validations
     - stop-running-pipelines
@@ -474,6 +474,7 @@ jobs-done-check-on-merge:
     - .push-rule
     - .jobs-done-check
   needs:
+    - init
     - merge-dev-secrets
     - run-unittests-and-lint
     - run-validations
@@ -569,7 +570,7 @@ slack-notify-on-merge:
   stage: run-instances
   script:
     - EXIT_CODE=0
-    - !reference [.download-demisto-conf]
+    - !reference [.use_cached_gitlab_repos]
     - !reference [.secrets-fetch]
     - section_start "Are there tests to run?" --collapsed
     - |
