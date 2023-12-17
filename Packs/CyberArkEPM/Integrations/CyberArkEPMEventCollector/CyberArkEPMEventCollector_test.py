@@ -1,5 +1,6 @@
 import json
 import datetime
+import pytest
 
 """ UTILS """
 
@@ -84,7 +85,15 @@ def test_create_last_run():
     assert create_last_run(set_ids, from_date) == expected_result
 
 
-def test_prepare_datetime():
+@pytest.mark.parametrize(
+    'date_time, increase, expected_date_time',
+    [
+        ('2023-01-01T00:00:00', False, '2023-01-01T00:00:00.000Z'),
+        (datetime.datetime.strptime('2023-01-01T00:00:00', '%Y-%m-%dT%H:%M:%S'), False, '2023-01-01T00:00:00.000Z'),
+        ('2023-01-01T00:00:00', True, '2023-01-01T00:00:00.001Z'),
+    ]
+)
+def test_prepare_datetime(date_time, increase, expected_date_time):
     """
         Given:
             - A datetime presentation
@@ -100,15 +109,7 @@ def test_prepare_datetime():
             - Validates that the function works as expected.
     """
     from CyberArkEPMEventCollector import prepare_datetime
-
-    str_from_date = '2023-01-01T00:00:00'
-    datetime_from_date = datetime.datetime.strptime(str_from_date, '%Y-%m-%dT%H:%M:%S')
-    expected_from_date = '2023-01-01T00:00:00.000Z'
-    expected_increase_from_date = '2023-01-01T00:00:00.001Z'
-
-    assert prepare_datetime(datetime_from_date) == expected_from_date
-    assert prepare_datetime(str_from_date) == expected_from_date
-    assert prepare_datetime(str_from_date, increase=True) == expected_increase_from_date
+    assert prepare_datetime(date_time, increase) == expected_date_time
 
 
 def test_add_fields_to_events():

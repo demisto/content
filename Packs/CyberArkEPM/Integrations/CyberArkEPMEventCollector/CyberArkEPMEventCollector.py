@@ -157,6 +157,25 @@ def prepare_datetime(date_time: Any, increase: bool = False) -> str:
     return f'{date_time_str}Z'
 
 
+def prepare_next_run(set_id: str, event_type: str, last_run: dict, last_fetch: dict):
+    """
+    Gets a list of events and adds the `_time` and the `eventTypeXsiam` keys.
+    Args:
+        set_id (str): The set_id that the events are related with.
+        event_type (str): The evnet type, (possible values: policy_audits, detailed_events).
+        last_run (dict): The last run information should be updated with the last fetch information.
+        last_fetch (dict): The last fetch information.
+    """
+    events = last_fetch.get('events')
+    next_cursor = last_fetch.get('next_cursor')
+
+    last_run[set_id][event_type]['next_cursor'] = next_cursor
+    if last_fetch.get('next_cursor') == 'start':
+        latest_event = max(events, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
+        from_date_next_fetch = prepare_datetime(latest_event.get('_time'), increase=True)  # type: ignore
+        last_run[set_id][event_type]['from_date'] = from_date_next_fetch
+
+
 def add_fields_to_events(events: list, date_field: str, event_type: str):
     """
     Gets a list of events and adds the `_time` and the `eventTypeXsiam` keys.
@@ -219,64 +238,35 @@ def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[
     return admin_audits
 
 
-def get_policy_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, dict[str, str | list]]:
+def get_events(client_function: callable, event_type: str, last_run_per_id: dict, limit: int) -> dict[str, dict[str, str | list]]:
     """
     Args:
-        client (Client): CyberArkEPM client to use.
+        client_function (callable): CyberArkEPM client function to use to get the events.
+        event_type (str): The events type to fetch.
         last_run_per_id (dict): A dict of set_ids and a dict of dates and next_cursor from where to get the events.
             {'123': {'from_date': '01-02-2023T23:20:50Z', 'next_cursor': '123465'}}.
         limit (int): The maximum events to get.
     Returns:
         (dict) A dict of {'set_id': {'events' [list events associated with a list of set names], 'next_cursor': '123456'}}.
     """
-    policy_audits: dict[str, dict[str, str | list]] = {}
+    events: dict[str, dict[str, str | list]] = {}
 
     for set_id, last_run in last_run_per_id.items():
-        policy_audits[set_id] = {'events': [], 'next_cursor': ''}
-        from_date = last_run.get('policy_audits').get('from_date')
-        next_cursor = last_run.get('policy_audits').get('next_cursor')
+        events[set_id]: dict = {}
+        from_date = last_run.get(event_type).get('from_date')
+        next_cursor = last_run.get(event_type).get('next_cursor')
 
-        results = client.get_policy_audits(set_id, from_date, limit, next_cursor)
-        policy_audits[set_id]['events'] = results.get('events', [])
+        results = client_function(set_id, from_date, limit, next_cursor)
+        events[set_id]['events'] = results.get('events', [])
 
-        while (next_cursor := results.get('nextCursor')) and len(policy_audits[set_id]['events']) < limit:
-            results = client.get_policy_audits(set_id, from_date, limit, next_cursor)
+        while (next_cursor := results.get('nextCursor')) and len(events[set_id]['events']) < limit:
+            results = client_function(set_id, from_date, limit, next_cursor)
             policy_audits[set_id]['events'].extend(results.get('events', []))  # type: ignore
 
-        add_fields_to_events(policy_audits[set_id]['events'], 'arrivalTime', 'policy_audits')  # type: ignore
-        policy_audits[set_id]['next_cursor'] = next_cursor or 'start'
+        add_fields_to_events(policy_audits[set_id]['events'], 'arrivalTime', event_type)  # type: ignore
+        events[set_id]['next_cursor'] = next_cursor or 'start'
 
-    return policy_audits
-
-
-def get_detailed_events(client: Client, last_run_per_id: dict, limit: int) -> dict[str, dict[str, str | list]]:
-    """
-    Args:
-        client (Client): CyberArkEPM client to use.
-        last_run_per_id (dict): A dict of set_ids and a dict of dates and next_cursor from where to get the events.
-            {'123': {'from_date': '01-02-2023T23:20:50Z', 'next_cursor': '123465'}}.
-        limit (int): The maximum events to get.
-    Returns:
-        (dict) A dict of {'set_id': {'events' [list events associated with a list of set names], 'next_cursor': '123456'}}.
-    """
-    detailed_events: dict[str, dict[str, str | list]] = {}
-
-    for set_id, last_run in last_run_per_id.items():
-        detailed_events[set_id] = {'events': [], 'next_cursor': ''}
-        from_date = last_run.get('detailed_events').get('from_date')
-        next_cursor = last_run.get('detailed_events').get('next_cursor')
-
-        results = client.get_events(set_id, from_date, limit, next_cursor)
-        detailed_events[set_id]['events'] = results.get('events', [])
-
-        while (next_cursor := results.get('nextCursor')) and len(detailed_events[set_id]['events']) < limit:
-            results = client.get_events(set_id, from_date, limit, next_cursor)
-            detailed_events[set_id]['events'].extend(results.get('events', []))  # type: ignore
-
-        add_fields_to_events(detailed_events[set_id]['events'], 'arrivalTime', 'detailed_events')  # type: ignore
-        detailed_events[set_id]['next_cursor'] = next_cursor or 'start'
-
-    return detailed_events
+    return events
 
 
 """ COMMAND FUNCTIONS """
@@ -307,7 +297,7 @@ def get_policy_audits_command(client: Client, last_run: dict, limit: int | None)
     Return:
         (list, CommandResults) A list of policy audits to push to XSIAM, A CommandResults object.
     """
-    results = get_policy_audits(client, last_run, limit)  # type: ignore
+    results = get_events(client.get_policy_audits, last_run, limit)  # type: ignore
     events_list_of_lists = [value.get('events', []) for value in results.values()]
     events_list = list(chain(*events_list_of_lists))
     human_readable = tableToMarkdown('Policy Audits', events_list)
@@ -324,7 +314,7 @@ def get_detailed_events_command(client: Client, last_run: dict, limit: int | Non
     Return:
         (list, CommandResults) A list of events to push to XSIAM, A CommandResults object.
     """
-    results = get_detailed_events(client, last_run, limit)  # type: ignore
+    results = get_events(client.get_events, last_run, limit)  # type: ignore
     events_list_of_lists = [value.get('events', []) for value in results.values()]
     events_list = list(chain(*events_list_of_lists))
     human_readable = tableToMarkdown('Events', events_list)
@@ -352,22 +342,14 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
             last_run[set_id]['admin_audits']['from_date'] = prepare_datetime(admin_audits[-1].get('EventTime'), increase=True)
             events.extend(admin_audits)
 
-    for set_id, policy_audits_last_run in get_policy_audits(client, last_run, max_fetch).items():
+    for set_id, policy_audits_last_run in get_events(client.get_policy_audits, 'policy_audits', last_run, max_fetch).items():
         if policy_audits := policy_audits_last_run.get('events', []):
-            last_run[set_id]['policy_audits']['next_cursor'] = policy_audits_last_run.get('next_cursor')
-            if policy_audits_last_run.get('next_cursor') == 'start':
-                latest_event = max(policy_audits, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
-                from_date_next_fetch = prepare_datetime(latest_event.get('_time'), increase=True)  # type: ignore
-                last_run[set_id]['policy_audits']['from_date'] = from_date_next_fetch
+            prepare_next_run(set_id, 'policy_audits', last_run, policy_audits_last_run)
             events.extend(policy_audits)
 
-    for set_id, detailed_events_last_run in get_detailed_events(client, last_run, max_fetch).items():
+    for set_id, detailed_events_last_run in get_events(client.get_events, 'detailed_events', last_run, max_fetch).items():
         if detailed_events := detailed_events_last_run.get('events', []):
-            last_run[set_id]['detailed_events']['next_cursor'] = detailed_events_last_run.get('next_cursor')
-            if detailed_events_last_run.get('next_cursor') == 'start':
-                latest_event = max(detailed_events, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
-                from_date_next_fetch = prepare_datetime(latest_event.get('_time'), increase=True)  # type: ignore
-                last_run[set_id]['detailed_events']['from_date'] = from_date_next_fetch
+            prepare_next_run(set_id, 'detailed_events', last_run, detailed_events)
             events.extend(detailed_events)
 
     demisto.info(f'Sending len {len(events)} to XSIAM. updated_next_run={last_run}.')
