@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The Demisto REST API integration has been deprecated. Use the Core REST API integration in its place. The functionalities are the same."
+    "breakingChangesNotes": "The automation will now throw an error and exit when failing to send mail."
 }
