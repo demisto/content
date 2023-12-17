@@ -78,7 +78,7 @@ class OktaClient(BaseClient):
         Args:
             client_id (str): The ID of the client application.
             role (str): The role to assign to the client application.
-            auth_type (bool | None, optional): Authentication type to use for the request. Defaults to AuthType.API_TOKEN.
+            auth_type (AuthType, optional): Authentication type to use for the request. Defaults to AuthType.API_TOKEN.
 
         Returns:
             dict: The response from the API.
@@ -163,7 +163,7 @@ class OktaClient(BaseClient):
 
             token_expiration = datetime.strptime(integration_context['token_expiration'], expiration_time_format)
 
-            if token_expiration > datetime.utcnow() + timedelta(seconds=TOKEN_RENEWAL_TIME_LIMIT):
+            if datetime.utcnow() + timedelta(seconds=TOKEN_RENEWAL_TIME_LIMIT) < token_expiration:
                 return token
 
             demisto.debug('An existing token was found, but expired. A new token will be generated.')
