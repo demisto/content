@@ -5,8 +5,8 @@ import cv2
 
 def detect_qrcode_image(path):
 
-    img = cv2.imread(path)
-    detect = cv2.QRCodeDetector()
+    img = cv2.imread(path)  # pylint: disable=no-member
+    detect = cv2.QRCodeDetector()  # pylint: disable=no-member
     c, v = detect.detectAndDecodeMulti(img)[0:2]
 
     if c:
