@@ -2,8 +2,7 @@ id: PAN-OS Commit Configuration
 version: -1
 name: PAN-OS Commit Configuration
 fromversion: 5.0.0
-description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as
-  Panorama, it also pushes the Policies to the specified Device Group in the instance.
+description: Deprecated. Use PAN-OS Commit Configuration v2 instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -44,8 +43,7 @@ tasks:
       id: 3cdca23e-0cc3-4d3f-8f27-aef7c980e40d
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS
-        enabled.
+      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -233,8 +231,7 @@ tasks:
       id: 73cbf069-2f98-42f8-8ed2-7780618b954c
       version: -1
       name: Push rules to the Panorama device group
-      description: Push rules from Palo Alto Panorama to the Palo Alto configured
-        device group.
+      description: Push rules from Palo Alto Panorama to the Palo Alto configured device group.
       script: '|||pan-os-push-to-device-group'
       type: regular
       iscommand: true
@@ -818,13 +815,13 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Panorama.Commit.Warnings
-  description: Job ID warnings
+  description: Job ID warnings.
   type: string
 - contextPath: Panorama.Push.Warnings
-  description: Job ID warnings
-sourceplaybookid: PAN-OS Commit Configuration
+  description: Job ID warnings.
 tests:
-- No test
+- No tests (deprecated)
+deprecated: true
