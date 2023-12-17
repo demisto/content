@@ -1,0 +1,17 @@
+{
+    "mailMsgSubject": "test sample",
+    "mailMsgId": "<BL0PR01MB4178833793C138CE3414D53B997A0@BL0PR01MB4178.prod.example.com>",
+    "msgUuid": "AAMkAGRhODQyZDAzLWNmNjEtNDY2OS1iOWM3LWVmODUxMDk4ZjE1ZgBGAAAAAAABcyFCsOdnTohKgA0TJdjUBwAYbtU+cD0jRZmfu0kuMtvEAAAAAAEMAAAYbtU+cD0jRZmfu0kuMtvEAAF/JGRaAAA=",
+    "mailbox": "user2@example2.com",
+    "mailSenderIp": "xx.yy.zz.ww",
+    "mailFromAddresses": ["user3@example3.com"],
+    "mailWholeHeader": ["Microsoft Azure<azure-noreply@xxxxx.com>"],
+    "mailToAddresses": ["user2@example2.com"],
+    "mailSourceDomain": "example3.com",
+    "searchDL": "CAS",
+    "scanType": "exchange",
+    "eventTime": 1601249307000,
+    "org_id": "8d23a000-9a4c-11ea-80f5-1de879102030",
+    "mailUrlsVisibleLink": ["http://xxxxxx.com"],
+    "mailUrlsRealLink": ["http://xxxxxx.com"]
+}
