@@ -401,6 +401,7 @@ jobs-done-check-nightly:
     - xsoar-test_playbooks_results
     - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
+    - xsoar-saas_test_e2e_results
   tags:
     - gke
   rules:
