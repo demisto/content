@@ -92,6 +92,7 @@ tasks:
           root: Classification.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -267,6 +268,7 @@ tasks:
           root: Check if there are any errors in the playbook?.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -375,7 +377,7 @@ tasks:
       id: da0e26b8-3acd-4ddd-8336-2fbb9339f26e
       version: -1
       name: 'Check your answer #2'
-      description: "Question #2:\nAre there any playbook errors? "
+      description: "Question #2:\nWhat is the type of the malicious indicator? "
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -391,6 +393,7 @@ tasks:
           root: Check the various indicators that are extracted from the incident.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -434,6 +437,7 @@ tasks:
           root: Check the various indicators that are extracted from the incident.Answers
           accessor: "1"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -570,6 +574,7 @@ tasks:
           root: Threat Campaign.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -838,6 +843,7 @@ tasks:
           root: Threat Campaign.Answers
           accessor: "1"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -983,6 +989,7 @@ tasks:
           root: Check the tag associated with the malicious indicator.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""

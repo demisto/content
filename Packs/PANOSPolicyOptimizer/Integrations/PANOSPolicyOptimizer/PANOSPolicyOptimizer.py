@@ -1,5 +1,4 @@
 import hashlib
-from typing import Tuple
 
 from CommonServerPython import *
 
@@ -91,9 +90,8 @@ class Client:
         # Use RegEx to parse the ServerToken string from the JavaScript variable
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
         # Fix to login validation for version 9
-        if LooseVersion(self.version) >= LooseVersion('9'):
-            if 'window.Pan.staticMOTD' not in response.text:
-                match = None
+        if LooseVersion(self.version) >= LooseVersion('9') and 'window.Pan.staticMOTD' not in response.text:
+            match = None
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
         # The "data" field is the MD5 calculation of "cookie" + "TID"
         if not match:
@@ -201,37 +199,78 @@ class Client:
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
             json_cmd=json_cmd)
 
-    def policy_optimizer_get_rules(
-            self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str
-    ) -> dict:
-        self.session_metadata['tid'] += 1  # Increment TID
-        json_cmd = {
-            "action": "PanDirect", "method": "run",
-            "data": [
-                self.token_generator(),
-                "PoliciesDirect.getPoliciesByUsage",
-                [
-                    {
-                        "type": rule_type,
-                        "position": position,
-                        "vsysName": self.machine,
-                        "isCmsSelected": self.is_cms_selected,
-                        "isMultiVsys": False,
-                        "showGrouped": False,
-                        "usageAttributes": {
-                            "timeframe": timeframe,
-                            "usage": usage, "exclude": exclude,
-                            "exclude-reset-text": "90"
-                        },
-                        "pageContext": "rule_usage"
-                    }
-                ]
-            ], "type": "rpc",
-            "tid": self.session_metadata['tid']}
+    def policy_optimizer_get_rules(self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str,
+                                   page_size: int = 200, limit: int = 200, page: int | None = None) -> dict:
+        def generate_paginated_request(_start: int, _limit: int) -> dict:
+            return {
+                "action": "PanDirect", "method": "run",
+                "data": [
+                    self.token_generator(),
+                    "PoliciesDirect.getPoliciesByUsage",
+                    [
+                        {
+                            "type": rule_type,
+                            "position": position,
+                            "vsysName": self.machine,
+                            "isCmsSelected": self.is_cms_selected,
+                            "isMultiVsys": False,
+                            "showGrouped": False,
+                            "usageAttributes": {
+                                "timeframe": timeframe,
+                                "usage": usage, "exclude": exclude,
+                                "exclude-reset-text": "90"
+                            },
+                            "pageContext": "rule_usage",
+                            "start": _start,
+                            "limit": _limit,
+                        }
+                    ]
+                ],
+                "type": "rpc",
+                "tid": self.session_metadata['tid'],
+            }
 
-        return self.session_post(
+        self.session_metadata['tid'] += 1  # Increment TID
+
+        start = page_size * (page - 1) if page else 0
+
+        response = self.session_post(
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
-            json_cmd=json_cmd)
+            json_cmd=generate_paginated_request(_start=start, _limit=min(page_size, limit)),
+        )
+
+        if page:  # If returning a specific page, we don't need to handle pagination
+            return response
+
+        # Handle pagination
+        total_results_count = int(response.get('result', {}).get('result', {}).get('@total-count', 0))
+        collected_results_count = int(response.get('result', {}).get('result', {}).get('@count', 0))
+
+        while collected_results_count < limit and collected_results_count < total_results_count:
+            offset = collected_results_count
+            remaining_results_count = min(total_results_count - collected_results_count, limit - collected_results_count)
+
+            if remaining_results_count > page_size:  # If we have more than 'page_size' results left to fetch
+                current_limit = page_size
+
+            else:  # If we have less than 'page_size' results left, we'll set the limit to the amount of the remaining results
+                current_limit = remaining_results_count
+
+            current_response = self.session_post(
+                url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
+                json_cmd=generate_paginated_request(_start=offset, _limit=current_limit),
+            )
+
+            # Update collected results
+            current_entry_data = current_response.get('result', {}).get('result', {}).get('entry', [])
+            response['result']['result']['entry'].extend(current_entry_data)
+
+            # Update collected results count
+            current_results_count = int(current_response.get('result', {}).get('result', {}).get('@count', 0))
+            collected_results_count += current_results_count
+            response['result']['result']['@count'] = str(collected_results_count)
+
+        return response
 
     def policy_optimizer_app_and_usage(self, rule_uuid: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
@@ -282,20 +321,21 @@ class Client:
             json_cmd=json_cmd)
 
 
-def get_unused_rules_by_position(client: Client, position, exclude, rule_type, usage, timeframe) -> Tuple[Dict, List]:
+def get_unused_rules_by_position(client: Client, position: str, exclude: bool, rule_type: str, usage: str,
+                                 timeframe: str, page_size: int, limit: int, page: int | None = None) -> tuple[Dict, List]:
     """
-
     Get unused rules from panorama based on user defined arguments.
-
     """
     raw_response = client.policy_optimizer_get_rules(
-        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
+        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type,
+        page_size=page_size, limit=limit, page=page,
     )
 
-    stats = raw_response.get('result') or {}
-    if (stats.get('@status') or '') == 'error':
-        raise Exception(f'Operation Failed with: {stats}')
-    return raw_response, (stats.get('result') or {}).get('entry') or []
+    stats = raw_response.get('result', {})
+    if stats.get('@status') == 'error':
+        raise Exception(f'Operation failed: {stats}')
+
+    return raw_response, stats.get('result', {}).get('entry', [])
 
 
 def get_policy_optimizer_statistics_command(client: Client, args: dict) -> CommandResults:
@@ -398,31 +438,52 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     """
     Get rules information from Panorama/Firewall instances.
     """
-    timeframe = args.get('timeframe')
-    usage = args.get('usage')
-    exclude = argToBoolean(args.get('exclude'))
-    position = args.get('position')
-    rule_type = args.get('rule_type') or 'security'
-    position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
+    timeframe: str = args['timeframe']
+    usage: str = args['usage']
+    exclude: bool = argToBoolean(args.get('exclude', False))
+    position: str = args['position'] if client.is_cms_selected else 'main'  # Firewall instances have only main position
+    rule_type: str = args.get('rule_type', 'security')
+    page_size: int = arg_to_number(args.get('page_size')) or 200
+    limit: int = arg_to_number(args.get('limit')) or 200
+    page: int | None = arg_to_number(args.get('page'))
+
+    if page_size > 200:
+        raise ValueError('The maximum page size is 200.')
+
+    params: dict[str, Any] = {  # All params without the 'position' param
+        'client': client,
+        'exclude': exclude,
+        'rule_type': rule_type,
+        'usage': usage,
+        'timeframe': timeframe,
+        'page_size': page_size,
+        'limit': limit,
+        'page': page,
+    }
+
     rules = []
 
     if position == 'both':
-        post_raw, post_rules = get_unused_rules_by_position(client, 'post', exclude, rule_type, usage, timeframe)
-        pre_raw, pre_rules = get_unused_rules_by_position(client, 'pre', exclude, rule_type, usage, timeframe)
-        raw_response = {'post': post_raw,
-                        'pre': pre_raw}
+        post_raw, post_rules = get_unused_rules_by_position(position='post', **params)
+        pre_raw, pre_rules = get_unused_rules_by_position(position='pre', **params)
+        raw_response = {
+            'post': post_raw,
+            'pre': pre_raw,
+        }
         rules.extend(post_rules)
         rules.extend(pre_rules)
+
     else:
-        raw_response, rules = get_unused_rules_by_position(client, position, exclude, rule_type, usage, timeframe)
+        raw_response, rules = get_unused_rules_by_position(position=position, **params)
 
     if rules:
         headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
         table = tableToMarkdown(
-            name=f'PolicyOptimizer {usage}-{rule_type}-rules:', t=rules, headers=headers, removeNull=True
+            name=f'PolicyOptimizer {usage.capitalize()} {rule_type.capitalize()} Rules: ({len(rules)} Results)',
+            t=rules, headers=headers, removeNull=True
         )
     else:
-        table = f'No {usage} {rule_type} rules were found.'
+        table = f'No {usage.lower()} {rule_type.lower()} rules were found.'
 
     return CommandResults(
         outputs_prefix=f'PanOS.PolicyOptimizer.{usage}Rules',
