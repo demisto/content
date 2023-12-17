@@ -1,6 +1,6 @@
 import pytest
 from CommonServerPython import *
-from HashiCorpTerraform import Client, runs_list_command, test_module, \
+from HashiCorpTerraform import Client, runs_list_command, \
     run_action_command, plan_get_command, policies_list_command, policy_set_list_command, policies_checks_list_command
 import re
 SERVER_URL = 'https://test_url.com'
@@ -150,9 +150,10 @@ def test_test_module_command(client, mocker):
         Then:
             - validate the expected exception.
     """
+    import HashiCorpTerraform
     mocker.patch.object(client, 'test_connection', side_effect=Exception('Unauthorized'))
 
     with pytest.raises(DemistoException) as err:
-        test_module(client)
+        HashiCorpTerraform.test_module(client)
 
     assert 'Unauthorized: Please be sure you put a valid API Token' in str(err)
