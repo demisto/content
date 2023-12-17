@@ -106,10 +106,11 @@ def test_validate_email_sent_fails(mocker):
     from SendEmailReply import validate_email_sent
     reply_mail_error = util_load_json('test_data/reply_mail_error.json')
     mocker.patch('SendEmailReply.execute_reply_mail', return_value=reply_mail_error)
-
-    result = validate_email_sent('', '', False, '', '', '', '', '', '', {}, '', '', '')
-    assert result == 'Error:\n Command reply-mail in module EWS Mail ' \
-                     'Sender requires argument inReplyTo that is missing (7)'
+    return_error_mock = mocker.patch("SendEmailReply.return_error")
+    validate_email_sent('', '', False, '', '', '', '', '', '', {}, '', '', '')
+    assert return_error_mock.call_count == 1
+    assert return_error_mock.call_args[0][
+        0] == 'Error:\n Command reply-mail in module EWS Mail Sender requires argument inReplyTo that is missing (7)'
 
 
 @pytest.mark.parametrize(
