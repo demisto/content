@@ -171,64 +171,31 @@ def test_get_set_ids_by_set_names(mocker, requests_mock):
 """ TEST COMMAND FUNCTION """
 
 
-def test_get_admin_audits_command(requests_mock):
+@pytest.mark.parametrize('event_type', ['admin_audits', 'policy_audits', 'detailed_events'])
+def test_get_events_command(requests_mock, event_type):
     """
         Given:
             - A list of set_ids and a date form where to fetch with a CyberArkEPM (mock) client.
 
         When:
-            - get_admin_audits_command command is running.
+            - get_events_command function is running.
+                1. with event type `admin_audits`
+                2. with event type `policy_audits`
+                3. with event type `detailed_events`
 
         Then:
             - Validates that the function works as expected.
     """
-    from CyberArkEPMEventCollector import create_last_run, get_admin_audits_command
+    from CyberArkEPMEventCollector import create_last_run, get_events_command
+    from CommonServerPython import string_to_table_header
+
     client = mocked_client(requests_mock)
     last_run_per_id = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
 
-    events, _ = get_admin_audits_command(client, last_run_per_id, 10)
+    events, command_results = get_events_command(client, event_type, last_run_per_id, 10)
 
     assert len(events) == 6
-
-
-def test_get_policy_command(requests_mock):
-    """
-        Given:
-            - A list of set_ids and a date form where to fetch with a CyberArkEPM (mock) client.
-
-        When:
-            - get_policy_audits_command command is running.
-
-        Then:
-            - Validates that the function works as expected.
-    """
-    from CyberArkEPMEventCollector import create_last_run, get_policy_audits_command
-    client = mocked_client(requests_mock)
-    last_run_per_id = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
-
-    events, _ = get_policy_audits_command(client, last_run_per_id, 10)
-
-    assert len(events) == 6
-
-
-def test_get_detailed_events_command(requests_mock):
-    """
-        Given:
-            - A list of set_ids and a date form where to fetch with a CyberArkEPM (mock) client.
-
-        When:
-            - get_detailed_events_command command is running.
-
-        Then:
-            - Validates that the function works as expected.
-    """
-    from CyberArkEPMEventCollector import create_last_run, get_detailed_events_command
-    client = mocked_client(requests_mock)
-    last_run_per_id = create_last_run(['id1', 'id2'], '2023-01-01T00:00:00Z')
-
-    events, _ = get_detailed_events_command(client, last_run_per_id, 10)
-
-    assert len(events) == 6
+    assert string_to_table_header(event_type) in command_results.readable_output
 
 
 def test_fetch_events(requests_mock):

@@ -280,7 +280,7 @@ def get_events_command(client: Client, event_type: str, last_run: dict, limit: i
         results: dict = {}
         if event_type == 'policy_audits':
             results = get_events(client.get_policy_audits, 'policy_audits', last_run, limit)
-        if event_type == 'detailed_evens':
+        if event_type == 'detailed_events':
             results = get_events(client.get_events, 'detailed_events', last_run, limit)
         events_list_of_lists = [value.get('events', []) for value in results.values()]
         events_list = list(chain(*events_list_of_lists))
