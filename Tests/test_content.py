@@ -34,7 +34,6 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, p
 LOCKS_PATH = 'content-locks'
 BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
 BUILD_NUM = os.environ.get('CI_JOB_ID')
-logging_manager.warning(f"{BUILD_NUM=}")
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
@@ -546,6 +545,8 @@ def lock_integrations(integrations_details: list,
         workflow_id, build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
         if not lock_expired(lock_file, lock_timeout) and workflow_still_running(workflow_id):
             # there is a locked integration for which the lock is not expired - test cannot be executed at the moment
+            logging_manager.warning(f"{BUILD_NUM=}")
+            logging_manager.warning(f"{os.environ.get('CI_JOB_ID')=}")
             logging_manager.warning(
                 f'Could not lock integration {integration}, another lock file was exist with '
                 f'build number: {build_number}, timeout: {lock_timeout}, last update at {lock_file.updated}.\n'
