@@ -1,4 +1,4 @@
-Decodes an QR Code using opencv, returns the value to Context or False
+Decodes an QR Code offline using opencv, returns the value to Context or False
 
 ## Script Data
 
