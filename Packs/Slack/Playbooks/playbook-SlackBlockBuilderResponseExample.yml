@@ -1,6 +1,6 @@
 id: SlackBlockBuilderResponseExample
 version: -1
-name: SlackBlockBuilder Response Example
+name: SlackBlockBuilderResponseExample
 description: This is an example of how to use the SlackBlockBuilder within a playbook.
 starttaskid: "0"
 tasks:
