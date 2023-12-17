@@ -2141,6 +2141,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
+                    demisto.info(f"[test]: {attached_email=}")
                     if attachment.item.headers:
                         # compare header keys case-insensitive
                         attached_email_headers = []
@@ -2154,12 +2155,15 @@ def parse_incident_from_item(item):     # pragma: no cover
 
                             v = ' '.join(map(str.strip, v.split('\r\n')))
                             attached_email_headers.append((h.lower(), v))
+                        demisto.info(f"[test]: {attached_email_headers=}")
                         for header in attachment.item.headers:
+                            demisto.info(f"[test]: current header is {header.name}, and value is {header.value}")
                             if (
                                     (header.name.lower(), header.value)
                                     not in attached_email_headers
                                     and header.name.lower() != "content-type"
                             ):
+                                demisto.info(f"[test2]: current header is {header.name}, and value is {header.value}")
                                 attached_email.add_header(header.name, header.value)
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
