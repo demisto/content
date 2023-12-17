@@ -647,10 +647,10 @@ script:
       name: limit
       defaultValue: 50
     - description: |-
-        The ID of the site. Must provide either site_id or site_name.
+        The ID of the site. Required if site_name is not provided.
         To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       name: site_id
-    - description: The name of the site. Must provide either site_id or site_name.
+    - description: The name of the site. Required if site_id is not provided.
       name: site_name
     - description: The ID of the permission.
       name: permission_id
@@ -678,10 +678,10 @@ script:
       type: String
   - arguments:
     - description: |-
-        The ID of the site. Must provide either site_id or site_name.
+        The ID of the site. Required if site_name is not provided.
         To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       name: site_id
-    - description: The name of the site. Must provide either site_id or site_name.
+    - description: The name of the site. Required if site_id is not provided.
       name: site_name
     - auto: PREDEFINED
       predefined:
@@ -703,10 +703,10 @@ script:
     name: msgraph-create-site-permissions
     description: Create a new application permission for a site.
   - arguments:
-    - description: The name of the site. Must provide either site_name or site_id.
+    - description: The name of the site. Required if site_id is not provided.
       name: site_name
     - description: |-
-        The ID of the site. Must provide either site_id or site_name.
+        The ID of the site. Required if site_name is not provided.
         To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       name: site_id
     - description: The unique identifier of the permission to update.
@@ -727,10 +727,10 @@ script:
     description: Updates an existing permission for a site.
   - arguments:
     - description: |-
-        Unique identifier for SharePoint site. Must provide either site_id or site_name.
+        Unique identifier for SharePoint site. Required if site_name is not provided.
         To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       name: site_id
-    - description: The name of the site. Must provide either site_id or site_name.
+    - description: The name of the site. Required if site_id is not provided.
       name: site_name
     - description: The unique identifier of the permission to delete.
       name: permission_id
