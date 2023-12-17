@@ -97,7 +97,7 @@ references:
           sudo apt-get update
           apt list -a neo4j
           # The neo4j version should be consistent with APOC version below!
-          sudo apt-get install neo4j==5.13.0
+          sudo apt-get install neo4j=5.13.0
           sudo chown -R circleci /var/log/neo4j
           sudo chown -R circleci /var/lib/neo4j
           sudo chown -R circleci /etc/neo4j
