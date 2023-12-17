@@ -671,10 +671,10 @@ script:
       description: The type of permission, for example, read.
       type: List
     - contextPath: MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.id
-      description: Unique identifier for the identity.
+      description: Unique identifier for the application.
       type: String
     - contextPath: MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.displayName
-      description: The display name of the identity. The display name might not always be available or up to date.
+      description: The display name of the application. The display name might not always be available or up to date.
       type: String
   - arguments:
     - description: |-

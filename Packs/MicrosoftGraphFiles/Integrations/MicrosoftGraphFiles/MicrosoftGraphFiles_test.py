@@ -643,7 +643,7 @@ def test_get_site_id_raise_error_site_name_or_site_id_required(
         - Ensure DemistoException is raised with expected error message
     """
     with pytest.raises(
-        DemistoException, match="Either 'site_id' or 'site_name' parameter is required."
+        DemistoException, match="Please provide 'site_id' or 'site_name' parameter."
     ):
         func_to_test(CLIENT_MOCKER, args)
 

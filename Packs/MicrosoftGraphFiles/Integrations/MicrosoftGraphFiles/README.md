@@ -772,8 +772,8 @@ The command only runs from admin instance.
 | --- | --- | --- |
 | MsGraphFiles.SitePermission.id | String | The unique identifier of the permission among all permissions on the item. | 
 | MsGraphFiles.SitePermission.roles | List | The type of permission, for example, read. | 
-| MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.id | String | Unique identifier for the identity. | 
-| MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.displayName | String | The display name of the identity. The display name might not always be available or up to date. | 
+| MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.id | String | Unique identifier for the application. | 
+| MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.displayName | String | The display name of the application. The display name might not always be available or up to date. | 
 
 #### Command example
 

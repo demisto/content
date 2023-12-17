@@ -153,8 +153,22 @@ class MsGraphClient:
         url_suffix = f"sites/{site_id}/drives"
         return self.ms_client.http_request(method="GET", params=params, url_suffix=url_suffix)
 
-    def list_site_permissions(self, site_id: str | None, permission_id: str | None) -> dict:
+    def list_site_permissions(self, site_id: str, permission_id: str | None) -> dict:
+        """Lists permissions for a SharePoint site.
 
+        Args:
+            site_id: The ID of the site to list permissions for.
+            permission_id: The unique identifier for the permission to retrieve. 
+                When not provided, a list of all permissions is returned.
+
+        Returns:
+            dict: The raw response from the Graph API.
+
+        Note:
+            When the permission_id parameter is not provided in the command,
+            a list of permissions is returned, but the `roles` field is not included in each permission object.
+            To get the `roles` field, you must provide the permission_id parameter.
+        """
         url_suffix = f"sites/{site_id}/permissions"
         if permission_id:
             url_suffix += f"/{permission_id}"
@@ -181,7 +195,11 @@ class MsGraphClient:
         }
         return self.ms_client.http_request(method="PATCH", url_suffix=url_suffix, json_data=body)
 
-    def delete_site_permission(self, site_id: str, permission_id: str):
+    def delete_site_permission(self, site_id: str, permission_id: str) -> requests.Response:
+        """
+        We will always receive a 204 status code when attempting to remove a permission, 
+        even if the specified permission ID does not exist in the permission list.
+        """
         url_suffix = f"/sites/{site_id}/permissions/{permission_id}"
         return self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
@@ -862,10 +880,41 @@ def get_site_id_from_site_name(client: MsGraphClient, site_name: str | None) -> 
         else:
             raise DemistoException(f"Site '{site_name}' not found. Please provide a valid site name.")
 
-    raise DemistoException("Either 'site_id' or 'site_name' parameter is required.")
+    raise DemistoException("Please provide 'site_id' or 'site_name' parameter.")
 
 
-def _parse_permission(permission: dict):
+def _md_parse_permission(permission: dict) -> dict:
+    """Parses a permission dictionary into an output format.
+
+    Args:
+        permission: (dict) The permission dictionary to parse.
+
+    Returns:
+        dict: The parsed permission dictionary.
+
+    Example:
+    ```
+    >>> permission =  {
+                "id": "123",
+                "roles": ["role1", "role2"],
+                "grantedToIdentitiesV2": [{
+                    "application": {
+                        "displayName": "app1",
+                        "id": "456"
+                    }
+                }]
+            }
+    >>> permission_md = _md_parse_permission(permission)
+    >>> permission_md
+        {
+            "ID": "123",
+            "Roles": ["role1", "role2"],
+            "Application Name": ["app1"], 
+            "Application ID": ["456"]
+        }
+    ```
+
+    """
     identities: list[dict[str, dict[str, str]]] = permission.get("grantedToIdentitiesV2", [{}])
     return {
         "ID": permission.get("id"),
@@ -902,7 +951,7 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
             outputs=results,
             readable_output=tableToMarkdown(
                 name="Site Permission",
-                t=_parse_permission(results)
+                t=_md_parse_permission(results)
             )
         )
 
@@ -913,8 +962,7 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
         outputs=list_permissions if all_results else list_permissions[:limit],
         readable_output=tableToMarkdown(
             name="Site Permission",
-            t=[_parse_permission(permission) for permission in list_permissions],
-            # when the permission_id is not provided, return a list of permissions, and the Roles field is empty.
+            t=[_md_parse_permission(permission) for permission in list_permissions],
             removeNull=True
         )
     )
@@ -948,7 +996,7 @@ def create_site_permissions_command(client: MsGraphClient, args: dict[str, str])
         outputs_prefix="MsGraphFiles.SitePermission",
         outputs_key_field="id",
         outputs=results,
-        readable_output=tableToMarkdown("Site Permission", t=_parse_permission(results))
+        readable_output=tableToMarkdown("Site Permission", t=_md_parse_permission(results))
     )
 
 
