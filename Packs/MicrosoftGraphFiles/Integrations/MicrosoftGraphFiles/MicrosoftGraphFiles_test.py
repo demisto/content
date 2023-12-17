@@ -737,8 +737,8 @@ def test_list_site_permissions(requests_mock: MockerCore) -> None:
         "### Site Permission\n"
         "|Application ID|Application Name|ID|Roles|\n"
         "|---|---|---|---|\n"
-        "| new-app-id | Contoso Time Manager App | 1 | read |\n"
-        "| new-app-id | Fabrikam Dashboard App | 2 | write |\n"
+        "| new-app-id | Example1 App | 1 | read |\n"
+        "| new-app-id | Example2 App | 2 | write |\n"
     )
 
 
@@ -767,7 +767,7 @@ def test_list_site_permissions_with_permission_id(requests_mock: MockerCore) -> 
         "### Site Permission\n"
         "|Application ID|Application Name|ID|Roles|\n"
         "|---|---|---|---|\n"
-        "| new-app-id | Contoso Time Manager App | 1 | read |\n"
+        "| new-app-id | CExample1 App | 1 | read |\n"
     )
 
 
@@ -798,7 +798,7 @@ def test_create_permissions_success(requests_mock: MockerCore) -> None:
         "### Site Permission\n"
         "|Application ID|Application Name|ID|Roles|\n"
         "|---|---|---|---|\n"
-        "| new-app-id | Contoso Time Manager App | 1 | read |\n"
+        "| new-app-id | Example1 App | 1 | read |\n"
     )
 
 

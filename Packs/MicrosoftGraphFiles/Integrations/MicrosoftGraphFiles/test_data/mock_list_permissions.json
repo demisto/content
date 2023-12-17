@@ -7,13 +7,13 @@
       "grantedToIdentities": [{
         "application": {
           "id": "new-app-id",
-          "displayName": "Contoso Time Manager App"
+          "displayName": "Example1 App"
         }
       }],
       "grantedToIdentitiesV2": [{
         "application": {
           "id": "new-app-id",
-          "displayName": "Contoso Time Manager App"
+          "displayName": "Example1 App"
         }
       }]
     },
@@ -24,13 +24,13 @@
       "grantedToIdentities": [{
         "application": {
           "id": "new-app-id",
-          "displayName": "Fabrikam Dashboard App"
+          "displayName": "Example2 App"
         }
       }],
       "grantedToIdentitiesV2": [{
         "application": {
           "id": "new-app-id",
-          "displayName": "Fabrikam Dashboard App"
+          "displayName": "Example2 App"
         }
       }]
     }

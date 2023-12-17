@@ -15,32 +15,32 @@ OR
 
 Note: Using `Site.Selected` requires additional configuration steps outlined below.
 
-#### Steps to use the Site.Selected permission:
+### Steps to use the Site.Selected permission:
 
-1. Requirement: Two applications are required, one for the administrator and one for the user.
-2. Admin application:
-    - Add the `Sites.FullControl.All - Application` permission.
-3. User application:
-    - Add the `Site.Selected - Application` permission.
-4. Configuration:
-    - Navigate to **Settings** > **Integrations**.
-    - Search for O365 File Management (Onedrive/Sharepoint/Teams).
-    - Admin application
-        - Click **Add instance** to create and configure a new integration instance.
-        - Enter the admin application credentials.
-        - Click **Test** to validate the connection.
-        - Use commands to give the user application access to specific sites:
-            - `msgraph-list-site-permissions` - Get permissions for a site
-            - `msgraph-create-site-permissions` - Add permissions for a site
-            - `msgraph-update-site-permissions` - Update permissions for a site
-            - `msgraph-delete-site-permissions` - Delete permissions for a site
-        - Delete the admin instance after configuring user access.
-    - User application:
-        - Create and configure a new integration instance.
-        - Enter the user application credentials.
-        - Click **Test** to validate the connection.
+Two applications and two instances are required, one for the administrator and one for the user.
 
-5. Note: The `msgraph-list-sharepoint-sites` command cannot be run, as it requires the `Sites.Read.All - Application` permission.
+Configuration:
+
+- Create "Admin" application with the `Sites.FullControl.All - Application` permission.
+- Create "User" application with the `Site.Selected - Application` permission.
+- Navigate to **Settings** > **Integrations**.
+- Search for O365 File Management (Onedrive/Sharepoint/Teams).
+- Admin Instance:
+    - Click **Add instance** to create and configure a new integration instance.
+    - Enter the admin application credentials.
+    - Click **Test** to validate the connection.
+    - Use commands to give the user application access to specific sites:
+        - `msgraph-list-site-permissions` - Get permissions for a site
+        - `msgraph-create-site-permissions` - Add permissions for a site
+        - `msgraph-update-site-permissions` - Update permissions for a site
+        - `msgraph-delete-site-permissions` - Delete permissions for a site
+    - Delete the admin instance after configuring user access.
+- User Instance:
+    - Click **Add instance** to create and configure a new integration instance.
+    - Enter the user application credentials.
+    - Click **Test** to validate the connection.
+
+Note: The `msgraph-list-sharepoint-sites` command cannot be run, as it requires the `Sites.Read.All - Application` permission.
 
 - [YouTube tutorial](https://www.youtube.com/watch?v=pPfxHvugnTA) from Microsoft.
 - [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/permission?view=graph-rest-1.0).
