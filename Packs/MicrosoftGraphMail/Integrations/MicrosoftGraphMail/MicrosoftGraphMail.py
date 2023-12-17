@@ -107,6 +107,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
 
         demisto.info(f"fetched {len(incidents)} incidents")
         demisto.debug(f"{next_run=}")
+        demisto.debug(f"{next_run=}")
 
         return next_run, incidents
 
