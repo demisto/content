@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from dateutil import parser
 from bs4 import BeautifulSoup
 from itertools import chain
+from collections.abc import Callable
 
 
 """ CONSTANTS """
@@ -171,7 +172,7 @@ def prepare_next_run(set_id: str, event_type: str, last_run: dict, last_fetch: d
 
     last_run[set_id][event_type]['next_cursor'] = next_cursor
     if last_fetch.get('next_cursor') == 'start':
-        latest_event = max(events, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))
+        latest_event = max(events, key=lambda x: parser.parse(x.get('_time'), ignoretz=True))  # type: ignore
         from_date_next_fetch = prepare_datetime(latest_event.get('_time'), increase=True)  # type: ignore
         last_run[set_id][event_type]['from_date'] = from_date_next_fetch
 
@@ -238,7 +239,7 @@ def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[
     return admin_audits
 
 
-def get_events(client_function: callable, event_type: str, last_run_per_id: dict, limit: int) -> dict[str, dict[str, str | list]]:
+def get_events(client_function: Callable, event_type: str, last_run_per_id: dict, limit: int) -> dict[str, dict[str, str | list]]:
     """
     Args:
         client_function (callable): CyberArkEPM client function to use to get the events.
@@ -252,7 +253,7 @@ def get_events(client_function: callable, event_type: str, last_run_per_id: dict
     events: dict[str, dict[str, str | list]] = {}
 
     for set_id, last_run in last_run_per_id.items():
-        events[set_id]: dict = {}
+        events[set_id] = {}
         from_date = last_run.get(event_type).get('from_date')
         next_cursor = last_run.get(event_type).get('next_cursor')
 
@@ -272,17 +273,16 @@ def get_events(client_function: callable, event_type: str, last_run_per_id: dict
 """ COMMAND FUNCTIONS """
 
 
-def get_events_command(client: Client, event_type: str, last_run: dict, limit: int | None = 5) -> tuple[list, CommandResults]:
+def get_events_command(client: Client, event_type: str, last_run: dict, limit: int) -> tuple[list, CommandResults]:
     if event_type == 'admin_audits':
         results = get_admin_audits(client, last_run, limit)  # type: ignore
         events_list = list(chain(*results.values()))
     else:
-        results: dict = {}
         if event_type == 'policy_audits':
-            results = get_events(client.get_policy_audits, 'policy_audits', last_run, limit)
+            results = get_events(client.get_policy_audits, 'policy_audits', last_run, limit)  # type: ignore
         if event_type == 'detailed_events':
-            results = get_events(client.get_events, 'detailed_events', last_run, limit)
-        events_list_of_lists = [value.get('events', []) for value in results.values()]
+            results = get_events(client.get_events, 'detailed_events', last_run, limit)  # type: ignore
+        events_list_of_lists = [value.get('events', []) for value in results.values()]  # type: ignore
         events_list = list(chain(*events_list_of_lists))
 
     human_readable = tableToMarkdown(string_to_table_header(event_type), events_list)
@@ -358,6 +358,7 @@ def main():  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch') or DEFAULT_LIMIT)
+    max_limit = arg_to_number(args.get('limit', 5))
 
     if not 0 < max_fetch <= MAX_FETCH:  # type: ignore
         demisto.debug(f'`max_fetch` is not in the correct value, setting it to {DEFAULT_LIMIT}.')
@@ -390,19 +391,19 @@ def main():  # pragma: no cover
             return_results(result)
 
         elif command == 'cyberarkepm-get-admin-audits':
-            events, command_result = get_events_command(client, 'admin_audits', last_run, arg_to_number(args.get('limit', 5)))
+            events, command_result = get_events_command(client, 'admin_audits', last_run, max_limit)  # type: ignore
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         elif command == 'cyberarkepm-get-policy-audits':
-            events, command_result = get_events_command(client, 'policy_audits', last_run, arg_to_number(args.get('limit', 5)))
+            events, command_result = get_events_command(client, 'policy_audits', last_run, max_limit)  # type: ignore
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         elif command == 'cyberarkepm-get-events':
-            events, command_result = get_events_command(client, 'detailed_evens', last_run, arg_to_number(args.get('limit', 5)))
+            events, command_result = get_events_command(client, 'detailed_evens', last_run, max_limit)  # type: ignore
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
