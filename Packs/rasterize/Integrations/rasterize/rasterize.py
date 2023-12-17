@@ -68,11 +68,8 @@ class RasterizeType(Enum):
 
 def except_hook_recv_loop(args):
     if '(_recv_loop)' in args.thread.name \
-            and type(args.exc_value) == json.decoder.JSONDecodeError \
-            and str(args.exc_value) == "Expecting value: line 1 column 1 (char 0)":
-        demisto.debug("Caught a JSONDecodeError exception in _recv_loop, suppressing")
-    else:
-        raise args.exc_value
+            and type(args.exc_value) == json.decoder.JSONDecodeError:
+        demisto.debug("Caught a JSONDecodeError exception in _recv_loop, suppressing, {args.exc_value}")
 
 
 class TabLifecycleManager:
