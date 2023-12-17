@@ -432,9 +432,11 @@ def install_packs(client: demisto_client,
 
     def should_try_handler():
         nonlocal packs_to_install
+        logging.info(f"{packs_to_install} in should_try_handler")
         for pack_id in packs_to_install:
             pack_installed, _ = check_if_pack_installed(client=client,
                                                         pack_id=pack_id)
+            logging.info(f"{pack_installed} for {pack_id} in for loop")
             if pack_installed:
                 packs_to_install.remove(pack_id)
                 logging.info(f"{pack_id} already install removed from retry")
