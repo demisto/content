@@ -193,17 +193,16 @@ def test_module() -> str:
         fails = [
             re.search('`(.+)`', result['Contents'])[1]
             for result in run_on_all_accounts(test_account)({})
-            if isinstance(result, dict)
+            if isinstance(result, dict) and result['Type'] == entryTypes['error']
         ]
         if fails:
             raise DemistoException(
                 f'AssumeRole with role name {ROLE_NAME!r} failed for the following accounts: {", ".join(fails)}'
             )
-    else:
-        client = build_client({})
-        response = client.describe_regions()
-        if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-            raise DemistoException('Test Module failed')
+    client = build_client({})
+    response = client.describe_regions()
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Test Module failed. Response: {response}')
     return 'ok'
 
 
