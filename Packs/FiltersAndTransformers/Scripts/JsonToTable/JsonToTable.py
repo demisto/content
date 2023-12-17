@@ -24,6 +24,7 @@ def main():
 
     return_results(CommandResults(
         readable_output=markdown,
+        raw_response=markdown,
     ))
 
 
