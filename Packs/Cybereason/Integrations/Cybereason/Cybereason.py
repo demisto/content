@@ -69,6 +69,8 @@ DOMAIN_HEADERS = [
 
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
+SENSOR_HEADERS = ['MachineID', 'MachineName', 'MachineFQDN', 'GroupID', 'GroupName']
+
 CONNECTION_INFO = [
     {'field': 'elementDisplayName', 'header': 'Name', 'type': 'simple'},
     {'field': 'direction', 'header': 'Direction', 'type': 'simple'},
@@ -551,7 +553,7 @@ def poll_malops(client: Client, start_time):
 
 def get_non_edr_malop_data(client, start_time):
     malop_data = poll_malops(client, start_time)
-    non_edr_malop_data = list()
+    non_edr_malop_data = []
     for malops in malop_data['malops']:
         if not malops.get('edr'):
             non_edr_malop_data.append(malops)
@@ -1177,7 +1179,7 @@ def query_file_command(client: Client, args: dict) -> Any:
 
                 is_signed = None
                 if 'isSigned' in simple_values:
-                    is_signed = True if dict_safe_get(simple_values, ['isSigned', 'values', 0]) == 'true' else False
+                    is_signed = dict_safe_get(simple_values, ['isSigned', 'values', 0]) == 'true'
 
                 cybereason_outputs.append({
                     'Name': file_name,
@@ -1337,7 +1339,7 @@ def query_user_command(client: Client, args: dict):
                 element_values = dict_safe_get(user, ['elementValues'], default_return_value={}, return_type=dict)
 
                 domain = dict_safe_get(simple_values, ['domain', 'values', 0])
-                local_system = True if dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true' else False
+                local_system = dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true'
                 machine = dict_safe_get(element_values, ['ownerMachine', 'elementValues', 0, 'name'])
                 organization = dict_safe_get(element_values, ['ownerOrganization', 'elementValues', 0, 'name'])
 
@@ -1693,10 +1695,10 @@ def fetch_imagefile_guids(client: Client, processes: list) -> dict:
             "integrity", "isHidden", "logonSession", "remoteSession", "isWhiteListClassification", "matchedWhiteListRuleIds"]
     }
     response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
-    img_file_guids = dict()
+    img_file_guids = {}
     result = response['data']['resultIdToElementDataMap']
     try:
-        for process, details in list(result.items()):
+        for _process, details in list(result.items()):
             image_files = ('' if details['elementValues']['imageFile']['elementValues'] is None else details[
                 'elementValues']['imageFile']['elementValues'])
             for image_file in image_files:
@@ -1710,7 +1712,7 @@ def start_fetchfile_command(client: Client, args: dict):
     malop_id = str(args.get('malopGUID'))
     user_name = str(args.get('userName'))
     response = get_file_guids(client, malop_id)
-    for filename, file_guid in list(response.items()):
+    for _filename, file_guid in list(response.items()):
         api_response = start_fetchfile(client, file_guid, user_name)
         try:
             if api_response['status'] == "SUCCESS":
@@ -1910,6 +1912,67 @@ def get_sensor_id_command(client: Client, args: dict):
         return CommandResults(readable_output=f"Available Sensor IDs are {output}")
 
 
+def get_machine_details_command(client: Client, args: dict):
+    machine_name = str(args.get('machineName'))
+    json_body = get_machine_details_command_pagination_params(args)
+    json_body["filters"] = [{"fieldName": "machineName", "operator": "Equals", "values": [machine_name]}]
+    response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
+    empty_output_message = f'No Machine Details found for the given Machine Name: {machine_name}'
+
+    if dict_safe_get(response, ['sensors']) == []:
+        return CommandResults(readable_output=empty_output_message)
+    else:
+        outputs = []
+        for single_sensor in response.get('sensors'):
+            outputs.append({
+                "MachineID": single_sensor.get("sensorId"),
+                "MachineName": single_sensor.get("machineName"),
+                "MachineFQDN": single_sensor.get("fqdn"),
+                "GroupID": single_sensor.get("groupId"),
+                "GroupName": single_sensor.get("groupName")
+            })
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                'Machine Details', outputs, headers=SENSOR_HEADERS) if outputs else empty_output_message,
+            outputs_prefix='Cybereason.Sensor',
+            outputs_key_field='MachineID',
+            outputs=outputs)
+
+
+def get_machine_details_command_pagination_params(args: dict) -> dict:
+    '''
+        Generate pagination parameters for fetching machine details based on the given arguments.
+
+        This function calculates the 'limit' and 'offset' parameters for pagination
+        based on the provided 'page' and 'pageSize' arguments. If 'page' and 'pageSize'
+        are valid integer values, the function returns a dictionary containing 'limit'
+        and 'offset' calculated accordingly. If 'page' or 'pageSize' are not valid integers,
+        the function falls back to using the 'limit' argument or defaults to 50 with an
+        'offset' of 0.
+
+        Args:
+            args (dict): The demisto.args() dictionary containing the optional arguments for
+            pagination: 'page', 'pageSize', 'limit'.
+
+        Returns:
+            dict: A dictionary containing the calculated 'limit' and 'offset' parameters
+                for pagination.
+    '''
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('pageSize'))
+    if isinstance(page, int) and isinstance(page_size, int):
+        return {
+            'limit': page_size,
+            'offset': (page - 1) * page_size
+        }
+
+    else:
+        return {
+            'limit': arg_to_number(args.get('limit', 50)),
+            'offset': 0
+        }
+
+
 def main():
     auth = ''
     params = demisto.params()
@@ -2040,6 +2103,9 @@ def main():
 
         elif demisto.command() == 'cybereason-get-sensor-id':
             return_results(get_sensor_id_command(client, args))
+
+        elif demisto.command() == 'cybereason-get-machine-details':
+            return_results(get_machine_details_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented.')

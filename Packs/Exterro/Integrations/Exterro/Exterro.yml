@@ -48,7 +48,7 @@ script:
       description: The filepath of the evidence.
     - name: target_ips
       isArray: true
-      description: Targetips for the collection
+      description: Targetips for the collection.
     - name: search_tag_path
       description: The filepath of the search and tag .
     - name: export_path
@@ -58,7 +58,7 @@ script:
       description: The Status of the of workflow trigger.
       type: string
     description: Returns a boolean value.
-  dockerimage: demisto/accessdata:1.1.0.33872
+  dockerimage: demisto/accessdata:1.1.0.82671
   script: '-'
   type: python
   subtype: python3
