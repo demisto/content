@@ -21,6 +21,7 @@ EMAIL_TO_FIELD = 'emailto'
 EMAIL_CC_FIELD = 'emailcc'
 EMAIL_BCC_FIELD = 'emailbcc'
 RECIPIENTS_COLUMNS = [EMAIL_TO_FIELD, EMAIL_CC_FIELD, EMAIL_BCC_FIELD]
+
 # Helper Function
 
 
@@ -44,7 +45,8 @@ def _add_incidents_to_campaign(campaign_id: str, incidents_context: Any):
     res = demisto.executeCommand('SetByIncidentId', {
         'id': campaign_id,
         'key': 'EmailCampaign.incidents',
-        'value': incidents_context})
+        'value': incidents_context
+    })
     if is_error(res):
         return_error(f'Failed to change current context. Error details:\n{get_error(res)}')
 
@@ -63,7 +65,8 @@ def _parse_incident_context_to_valid_incident_campaign_context(incident_id, fiel
     incident_context = _get_context(incident_id)
     recipients = get_recipients(incident_context)
     recipientsdomain = extract_domain_from_recipients(recipients)
-    return {"similarity": None,
+    return {
+            "similarity": 0,
             "occurred": demisto.dt(incident_context, "incident.occurred"),
             "emailfrom": demisto.dt(incident_context, "incident.emailfrom"),
             "emailfromdomain": demisto.dt(incident_context, "incident.emailfrom").split('@')[1],
@@ -209,7 +212,7 @@ def perform_add_to_campaign(ids, action):
     return COMMAND_SUCCESS.format(action=action, ids=','.join(ids))
 
 
-def set_incident_owners(incident_ids, action, user_name):
+def set_incident_owners(incident_ids: list, action: str, user_name):
 
     incident_ids.append(demisto.incident()["id"])
 
@@ -220,7 +223,7 @@ def set_incident_owners(incident_ids, action, user_name):
             return_error(COMMAND_ERROR_MSG.format(action=action, ids=','.join(incident_ids), error=get_error(res)))
 
 
-def perform_take_ownership(ids, action):
+def perform_take_ownership(ids: list, action: str) -> str:
 
     current_user_name = demisto.callingContext.get("context", {}).get("ParentEntry", {}).get("user")
 
@@ -246,7 +249,7 @@ ACTIONS_MAPPER = {
 
 def main():
     try:
-        similarity = demisto.args().get('similarity', 'High')
+        similarity: str = demisto.args().get('similarity', 'High')
 
         action_field_name = ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME if similarity.lower() == 'low' \
             else ACTION_ON_CAMPAIGN_FIELD_NAME
