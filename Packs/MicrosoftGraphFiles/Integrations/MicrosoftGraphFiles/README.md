@@ -26,19 +26,19 @@ Configuration:
 - Navigate to **Settings** > **Integrations**.
 - Search for O365 File Management (Onedrive/Sharepoint/Teams).
 - Admin Instance:
-    - Click **Add instance** to create and configure a new integration instance.
-    - Enter the admin application credentials.
-    - Click **Test** to validate the connection.
-    - Use commands to give the user application access to specific sites:
-        - `msgraph-list-site-permissions` - Get permissions for a site
-        - `msgraph-create-site-permissions` - Add permissions for a site
-        - `msgraph-update-site-permissions` - Update permissions for a site
-        - `msgraph-delete-site-permissions` - Delete permissions for a site
-    - Delete the admin instance after configuring user access.
+  - Click **Add instance** to create and configure a new integration instance.
+  - Enter the admin application credentials.
+  - Click **Test** to validate the connection.
+  - Use commands to give the user application access to specific sites:
+    - `msgraph-list-site-permissions` - Get permissions for a site
+    - `msgraph-create-site-permissions` - Add permissions for a site
+    - `msgraph-update-site-permissions` - Update permissions for a site
+    - `msgraph-delete-site-permissions` - Delete permissions for a site
+  - Delete the admin instance after configuring user access.
 - User Instance:
-    - Click **Add instance** to create and configure a new integration instance.
-    - Enter the user application credentials.
-    - Click **Test** to validate the connection.
+  - Click **Add instance** to create and configure a new integration instance.
+  - Enter the user application credentials.
+  - Click **Test** to validate the connection.
 
 Note: The `msgraph-list-sharepoint-sites` command cannot be run, as it requires the `Sites.Read.All - Application` permission.
 
