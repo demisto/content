@@ -256,7 +256,7 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
-        elif integration['name'] == 'Core REST API':
+        elif integration['name'] == 'Demisto REST API':
             integration['params'] = {
                 'url': 'https://localhost',
                 'apikey': demisto_api_key,
