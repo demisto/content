@@ -1,7 +1,9 @@
 id: QRadarFullSearch
 version: -1
 name: QRadarFullSearch
-description: This playbook runs a QRadar query and return its results to the context.
+description: |-
+  Deprecated.Use the following command instead `qradar-search-retrieve-results`.
+  This playbook runs a QRadar query and return its results to the context.
 starttaskid: "0"
 tasks:
   "0":
@@ -450,6 +452,7 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+deprecated: true
 contentitemexportablefields:
   contentitemfields: {}
 system: true
