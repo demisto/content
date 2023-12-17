@@ -368,7 +368,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>gcs-list-bucket-objects bucket_name=my-bucket</pre>
+<pre>gcs-list-bucket-objects bucket_name=my-bucket prefix="some/path/" delimiter="/"</pre>
 <h5>Human Readable Output</h5>
 <h3>Objects in bucket my-bucket</h3>
 <table style="width: 750px;" border="2" cellpadding="6">
