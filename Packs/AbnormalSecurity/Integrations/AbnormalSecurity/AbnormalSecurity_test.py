@@ -516,4 +516,3 @@ def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_sub
         fetch_threats=False
     )
     assert len(incidents) == 1
-    
