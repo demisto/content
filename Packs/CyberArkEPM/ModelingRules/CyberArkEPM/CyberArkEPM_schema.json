@@ -21,7 +21,7 @@
             "is_array": false
         },
         "InternalSessionId": {
-            "type": "number",
+            "type": "int",
             "is_array": false
         },
         "Feature": {
