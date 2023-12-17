@@ -1,11 +1,8 @@
 import argparse
-from ctypes.wintypes import MSG
 import functools
 import json
 import os
 from pathlib import Path
-from re import M
-from socket import MsgFlag
 import sys
 import tempfile
 from zipfile import ZipFile
@@ -33,9 +30,9 @@ MSG_DICT = {
     "verify_new_image": "verified the new image was uploaded",
     "verify_hidden_dependency": "verified the hidden dependency pack not in metadata.json",
     "verify_pack_not_in_marketplace": "verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT exists "
-                             "under the pack path in {} bucket",
+    "under the pack path in {} bucket",
     "verify_pack_in_marketplace": "verified the pack {} is in the index and that version 1.0.0 zip exists under"
-                             "the pack path in {} bucket",
+    "the pack path in {} bucket",
 }
 XSOAR_TESTING_BUCKET = 'marketplace-dist-dev'
 XSOAR_SAAS_TESTING_BUCKET = 'marketplace-saas-dist-dev'
@@ -43,6 +40,7 @@ XSIAM_TESTING_BUCKET = 'marketplace-v2-dist-dev'
 
 TestUploadFlowXSOAR = 'TestUploadFlowXSOAR'
 TestUploadFlowXsoarSaaS = 'TestUploadFlowXsoarSaaS'
+
 
 def read_json(path):
     with open(path) as file:
@@ -208,6 +206,7 @@ class BucketVerifier:
         expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note"""
         rn_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         return all(version_exists) and all(items_exists) and rn_as_expected, pack_id, MSG_DICT['verify_new_pack']
+
     @logger
     def verify_pack_not_in_marketplace(self, pack_id, narketplace):
         """
@@ -411,6 +410,7 @@ class BucketVerifier:
         # Case 12: Verify hidden dependency not in metadata.json
         self.verify_hidden_dependency('MicrosoftAdvancedThreatAnalytics', 'Microsoft365Defender')
 
+        # Case 13+14: Verify that content items related only to specific mp exist only on the related mp. 
         if self.bucket_name == XSIAM_TESTING_BUCKET:
             self.run_xsiam_bucket_validations()
 

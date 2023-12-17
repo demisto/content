@@ -325,6 +325,9 @@ def do_changes_on_branch(packs_path: Path):
     # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket - TestUploadFlowXSOAR
     create_new_pack(pack_id='TestUploadFlowXSOAR')
 
+    # case 14: Verify new only-XSOAR-SaaS pack uploaded only to XSOAR SAAS bucket - TestUploadFlowXsoarSaaS
+    create_new_pack(pack_id='TestUploadFlowXsoarSaaS')
+
     logging.info("Finished making test changes on the branch")
 
 
