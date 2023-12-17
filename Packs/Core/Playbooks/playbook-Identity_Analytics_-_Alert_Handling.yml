@@ -154,7 +154,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -623,7 +623,7 @@ tasks:
     task:
       id: 0189f824-8ed1-4912-8dae-d3f174a8bffc
       version: -1
-      name: Set close reason
+      name: Set Incident Verdict
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1157,7 +1157,7 @@ tasks:
     task:
       id: 0179032e-abe1-479a-882c-475b213fb9dc
       version: -1
-      name: Set close reason
+      name: Set Incident Verdict
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
