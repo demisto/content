@@ -261,9 +261,9 @@ def get_events(client_function: callable, event_type: str, last_run_per_id: dict
 
         while (next_cursor := results.get('nextCursor')) and len(events[set_id]['events']) < limit:
             results = client_function(set_id, from_date, limit, next_cursor)
-            policy_audits[set_id]['events'].extend(results.get('events', []))  # type: ignore
+            events[set_id]['events'].extend(results.get('events', []))  # type: ignore
 
-        add_fields_to_events(policy_audits[set_id]['events'], 'arrivalTime', event_type)  # type: ignore
+        add_fields_to_events(events[set_id]['events'], 'arrivalTime', event_type)  # type: ignore
         events[set_id]['next_cursor'] = next_cursor or 'start'
 
     return events
@@ -297,7 +297,7 @@ def get_policy_audits_command(client: Client, last_run: dict, limit: int | None)
     Return:
         (list, CommandResults) A list of policy audits to push to XSIAM, A CommandResults object.
     """
-    results = get_events(client.get_policy_audits, last_run, limit)  # type: ignore
+    results = get_events(client.get_policy_audits, 'policy_audits', last_run, limit)  # type: ignore
     events_list_of_lists = [value.get('events', []) for value in results.values()]
     events_list = list(chain(*events_list_of_lists))
     human_readable = tableToMarkdown('Policy Audits', events_list)
@@ -314,7 +314,7 @@ def get_detailed_events_command(client: Client, last_run: dict, limit: int | Non
     Return:
         (list, CommandResults) A list of events to push to XSIAM, A CommandResults object.
     """
-    results = get_events(client.get_events, last_run, limit)  # type: ignore
+    results = get_events(client.get_events, 'detailed_events', last_run, limit)  # type: ignore
     events_list_of_lists = [value.get('events', []) for value in results.values()]
     events_list = list(chain(*events_list_of_lists))
     human_readable = tableToMarkdown('Events', events_list)
@@ -349,7 +349,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
 
     for set_id, detailed_events_last_run in get_events(client.get_events, 'detailed_events', last_run, max_fetch).items():
         if detailed_events := detailed_events_last_run.get('events', []):
-            prepare_next_run(set_id, 'detailed_events', last_run, detailed_events)
+            prepare_next_run(set_id, 'detailed_events', last_run, detailed_events_last_run)
             events.extend(detailed_events)
 
     demisto.info(f'Sending len {len(events)} to XSIAM. updated_next_run={last_run}.')

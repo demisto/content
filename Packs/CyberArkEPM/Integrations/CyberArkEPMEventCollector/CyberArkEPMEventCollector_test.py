@@ -247,16 +247,7 @@ def test_fetch_events(requests_mock):
     events, next_run = fetch_events(mocked_client(requests_mock), last_run, 10)
 
     assert len(events) == 18
-    assert next_run['id1'] == next_run['id1'] == {
-        'admin_audits': {'from_date': '2023-12-12T07:45:27.141Z'},
-        'detailed_events': {'from_date': '2023-12-12T06:59:18.141Z', 'next_cursor': 'start'},
-        'policy_audits': {'from_date': '2023-12-11T13:09:56.056Z', 'next_cursor': 'start'}
-    }
-
-    fetch_events(mocked_client(requests_mock), next_run, 10)
-
-    assert len(events) == 18
-    assert next_run['id1'] == next_run['id1'] == {
+    assert next_run['id1'] == next_run['id2'] == {
         'admin_audits': {'from_date': '2023-12-12T07:45:27.141Z'},
         'detailed_events': {'from_date': '2023-12-12T06:59:18.141Z', 'next_cursor': 'start'},
         'policy_audits': {'from_date': '2023-12-11T13:09:56.056Z', 'next_cursor': 'start'}
