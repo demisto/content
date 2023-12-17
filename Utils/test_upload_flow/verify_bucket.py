@@ -1,8 +1,11 @@
 import argparse
+from ctypes.wintypes import MSG
 import functools
 import json
 import os
 from pathlib import Path
+from re import M
+from socket import MsgFlag
 import sys
 import tempfile
 from zipfile import ZipFile
@@ -29,13 +32,17 @@ MSG_DICT = {
     "verify_dependency": "verified the new dependency is in the pack metadata",
     "verify_new_image": "verified the new image was uploaded",
     "verify_hidden_dependency": "verified the hidden dependency pack not in metadata.json",
-    "verify_new_xsoar_pack": "verified the new XSOAR only pack is NOT in the index and that version 1.0.0 zip DOES NOT exists "
-                             "under the pack path in XSIAM bucket",
+    "verify_pack_not_in_marketplace": "verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT exists "
+                             "under the pack path in {} bucket",
+    "verify_pack_in_marketplace": "verified the pack {} is in the index and that version 1.0.0 zip exists under"
+                             "the pack path in {} bucket",
 }
 XSOAR_TESTING_BUCKET = 'marketplace-dist-dev'
 XSOAR_SAAS_TESTING_BUCKET = 'marketplace-saas-dist-dev'
 XSIAM_TESTING_BUCKET = 'marketplace-v2-dist-dev'
 
+TestUploadFlowXSOAR = 'TestUploadFlowXSOAR'
+TestUploadFlowXsoarSaaS = 'TestUploadFlowXsoarSaaS'
 
 def read_json(path):
     with open(path) as file:
@@ -49,13 +56,13 @@ def logger(func):
         pack_id = args[0]
         logging.info(f"Starting validation - {func.__name__} for pack '{pack_id}'")
         try:
-            result, pack_id = func(self, *args, **kwargs)
+            result, pack_id, message = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
 
             if not result:
                 raise Exception(f"Failed when running validation - {func.__name__}")
 
-            logging.info(f"[{pack_id}] Successfully {MSG_DICT[func.__name__]}")
+            logging.info(f"[{pack_id}] Successfully {message}")
 
         except FileNotFoundError as e:
             logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
@@ -200,15 +207,27 @@ class BucketVerifier:
                         in pack_items.values()]
         expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note"""
         rn_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
-        return all(version_exists) and all(items_exists) and rn_as_expected, pack_id
-
+        return all(version_exists) and all(items_exists) and rn_as_expected, pack_id, MSG_DICT['verify_new_pack']
     @logger
-    def verify_new_xsoar_pack(self, pack_id):
+    def verify_pack_not_in_marketplace(self, pack_id, narketplace):
         """
         Verify the new XSOAR pack is NOT in the index, verify version 1.0.0 zip DOES NOT exists under the pack's path
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
-        return not any(version_exists), pack_id
+        return (not any(version_exists),
+                pack_id,
+                MSG_DICT['verify_pack_not_in_marketplace'].format(pack_id, narketplace)
+                )
+
+    @logger
+    def verify_pack_in_marketplace(self, pack_id, marketplace, version, pack_items):
+        version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, version)]
+        items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
+                        in pack_items.values()]
+        return (all(version_exists) and all(items_exists),
+                pack_id,
+                MSG_DICT['verify_new_pack'].format(pack_id, marketplace)
+                )
 
     @logger
     def verify_modified_pack(self, pack_id, pack_items, expected_rn):
@@ -222,7 +241,7 @@ class BucketVerifier:
         changelog_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
-        return changelog_as_expected and all(items_exists), pack_id
+        return changelog_as_expected and all(items_exists), pack_id, MSG_DICT['verify_modified_pack']
 
     @logger
     def verify_new_version(self, pack_id, rn):
@@ -234,21 +253,24 @@ class BucketVerifier:
             return False, pack_id
         new_version_exists_in_changelog = rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         new_version_exists_in_metadata = self.gcp.get_pack_metadata(pack_id).get('currentVersion') == self.versions[pack_id]
-        return all([new_version_exists, new_version_exists_in_changelog, new_version_exists_in_metadata]), pack_id
+        return (all
+                ([new_version_exists, new_version_exists_in_changelog, new_version_exists_in_metadata]),
+                pack_id,
+                MSG_DICT['verify_new_version'])
 
     @logger
     def verify_rn(self, pack_id, rn):
         """
         Verify the content of the RN is in the changelog under the right version
         """
-        return rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id]), pack_id
+        return rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id]), pack_id, MSG_DICT['verify_rn']
 
     @logger
     def verify_hidden(self, pack_id):
         """
         Verify the pack does not exist in index
         """
-        return not self.gcp.is_in_index(pack_id), pack_id
+        return not self.gcp.is_in_index(pack_id), pack_id, MSG_DICT['verify_hidden']
 
     @logger
     def verify_readme(self, pack_id, readme):
@@ -260,14 +282,17 @@ class BucketVerifier:
             return False, pack_id
 
         return self.gcp.get_max_version(pack_id) == self.versions[pack_id] and \
-            readme in self.gcp.get_pack_readme(pack_id), pack_id
+            readme in self.gcp.get_pack_readme(pack_id), pack_id, MSG_DICT['verify_readme']
 
     @logger
     def verify_failed_pack(self, pack_id):
         """
         Verify commit hash is not updated in the pack's metadata in the index.zip
         """
-        return self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'), pack_id
+        return (self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'),
+                pack_id,
+                MSG_DICT['verify_failed_pack']
+                )
 
     @logger
     def verify_modified_item_path(self, pack_id, modified_item_path, pack_items):
@@ -281,7 +306,7 @@ class BucketVerifier:
         modified_item_exist = self.gcp.is_items_in_pack([modified_item_path], pack_id)
         items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
-        return modified_item_exist and all(items_exists), pack_id
+        return modified_item_exist and all(items_exists), pack_id, MSG_DICT['verify_modified_item_path']
 
     @logger
     def verify_dependency(self, pack_id, dependency_id):
@@ -289,7 +314,10 @@ class BucketVerifier:
         Verify the new dependency is in the metadata
         """
         # TODO: Should verify the dependency in the pack zip metadata as well - after CIAC-4686 is fixed
-        return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}), pack_id
+        return (dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}),
+                pack_id,
+                MSG_DICT['verify_dependency']
+                )
 
     @logger
     def verify_new_image(self, pack_id, new_image_path):
@@ -297,36 +325,52 @@ class BucketVerifier:
         Verify the new image was uploaded
         """
         image_in_bucket_path = self.gcp.download_image(pack_id)
-        return open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read(), pack_id
+        return (open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read(),
+                pack_id,
+                MSG_DICT['verify_new_image']
+                )
 
     @logger
     def verify_hidden_dependency(self, pack_id, dependency_id):
         """
         Verify hidden dependency pack doesn't was added to the metadata
         """
-        return dependency_id not in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}).keys(), pack_id
+        return (dependency_id not in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}).keys(),
+                pack_id,
+                MSG_DICT['verify_hidden_dependency']
+                )
 
     def run_xsiam_bucket_validations(self):
         """
         Runs the only XSIAM bucket verifications.
+        - Checks both xsoar/xsoar_saas non related packs are not in the xsiam marketplace
         """
         self.verify_modified_item_path('AlibabaActionTrail', 'ModelingRules/modelingrule-Alibaba.yml',
                                        self.items_dict.get('AlibabaActionTrail'))
 
-        self.verify_new_xsoar_pack('TestUploadFlowXSOAR')
+        self.verify_pack_not_in_marketplace(TestUploadFlowXSOAR, XSIAM_TESTING_BUCKET)
+        self.verify_pack_not_in_marketplace(TestUploadFlowXsoarSaaS, XSIAM_TESTING_BUCKET)
 
     def run_xsoar_bucket_validations(self):
         """
         Runs the only XSOAR bucket verifications.
+        - Checks that TestUploadFlowXSOAR xsoar bucket pack is in xsoar marketplace
+        - Checks that TestUploadFlowXsoarSaaS xsoar_saas bucket pack is not in xsoar marketplace
         """
         self.verify_modified_item_path('CortexXDR', 'Scripts/script-XDRSyncScript_new_name.yml',
                                        self.items_dict.get('CortexXDR'))
+        self.verify_pack_not_in_marketplace(TestUploadFlowXsoarSaaS, XSOAR_TESTING_BUCKET)
+        self.verify_pack_in_marketplace(TestUploadFlowXSOAR, XSOAR_TESTING_BUCKET, '1.0.0',
+                                        self.items_dict.get(TestUploadFlowXSOAR))
 
     def run_xsoar_saas_bucket_validation(self):
         """
         Runs the XSOAR SaaS bucket verifications.
+        - Checks that TestUploadFlowXsoarSaaS xsoar bucket pack is in xsoar_saas marketplace
         """
-        
+        self.verify_pack_in_marketplace(TestUploadFlowXsoarSaaS, XSOAR_SAAS_TESTING_BUCKET, '1.0.0',
+                                        self.items_dict.get(TestUploadFlowXsoarSaaS))
+
     def run_validations(self):
         """
         Runs the basic verifications for both buckets.
@@ -372,7 +416,7 @@ class BucketVerifier:
 
         if self.bucket_name == XSOAR_TESTING_BUCKET:
             self.run_xsoar_bucket_validations()
-        
+
         if self.bucket_name == XSOAR_SAAS_TESTING_BUCKET:
             self.run_xsoar_saas_bucket_validation()
 
