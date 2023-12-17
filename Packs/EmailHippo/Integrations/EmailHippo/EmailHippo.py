@@ -14,9 +14,9 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TRUST_LEVEL_TO_DBOT_SCORE_MAPPING = {
     'None': Common.DBotScore.NONE,
-    'High': Common.DBotScore.BAD,
+    'High': Common.DBotScore.GOOD,
     'Medium': Common.DBotScore.SUSPICIOUS,
-    'Low': Common.DBotScore.GOOD
+    'Low': Common.DBotScore.BAD
 }
 
 
@@ -143,7 +143,7 @@ def test_module(client: Client) -> str:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     test_methods: dict[str, Any] = {
-        'MORE': client.get_email_quota,
+        'MORE': partial(client.get_email_reputation, 'test@test.com'),
         'WHOIS': partial(client.get_domain_reputation, 'google.com')
     }
 
