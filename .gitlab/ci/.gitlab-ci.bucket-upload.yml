@@ -391,7 +391,10 @@ upload-packs-to-marketplace:
 
     - section_start "Validate Premium Packs"
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
+    - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
+    - |
+      echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE} Instances created for role:${INSTANCES_CREATED_FOR_ROLE}"
+      if [[ "${INSTANCES_CREATED_FOR_ROLE}" -ne 0 ]] && {[[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]}  ; then
         ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
       else
         echo "Skipping Premium Packs Validation"
