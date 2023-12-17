@@ -1,8 +1,9 @@
-id: PAN-OS Commit Configuration
+id: PAN-OS Commit Configuration v2
 version: -1
-name: PAN-OS Commit Configuration
-fromversion: 5.0.0
-description: Deprecated. Use PAN-OS Commit Configuration v2 instead.
+contentitemexportablefields:
+  contentitemfields: {}
+name: PAN-OS Commit Configuration v2
+description: Commit the PAN-OS Panorama or Firewall configuration. If specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,7 +25,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 370,
           "y": -250
         }
       }
@@ -37,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3cdca23e-0cc3-4d3f-8f27-aef7c980e40d
+    taskid: 9c71e52d-9168-48c7-85bf-c1ed81ed2c16
     type: condition
     task:
-      id: 3cdca23e-0cc3-4d3f-8f27-aef7c980e40d
+      id: 9c71e52d-9168-48c7-85bf-c1ed81ed2c16
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
       description: Verify that there is a valid instance of Palo Alto Networks PAN-OS enabled.
@@ -80,12 +81,14 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": -30
+          "x": 370,
+          "y": -100
         }
       }
     note: false
@@ -97,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 589c547f-febf-4966-8f03-92b3510be974
+    taskid: ba35b0ca-2a3c-4a01-8554-7599c67c8d6a
     type: regular
     task:
-      id: 589c547f-febf-4966-8f03-92b3510be974
+      id: ba35b0ca-2a3c-4a01-8554-7599c67c8d6a
       version: -1
       name: Commit to Panorama
       description: Commit Palo Alto Firewall or Panorama
@@ -110,82 +113,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "8"
+    scriptarguments:
+      interval_in_seconds:
+        simple: "60"
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 16b55e1b-edf4-4495-8acd-ec822793a904
-    type: playbook
-    task:
-      id: 16b55e1b-edf4-4495-8acd-ec822793a904
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Ids:
-        complex:
-          root: Panorama
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Commit.Status
-                iscontext: true
-              right:
-                value:
-                  simple: Pending
-          accessor: Commit.JobID
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: job_id
-      PollingCommandName:
-        simple: pan-os-commit-status
-      Timeout:
-        simple: "60"
-      dt:
-        simple: Panorama.Commit(val.Status != 'Completed' && val.Status != 'Failed').JobID
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 150,
-          "y": 1075
+          "x": 710,
+          "y": 70
         }
       }
     note: false
@@ -212,8 +154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 4100
+          "x": 370,
+          "y": 1960
         }
       }
     note: false
@@ -225,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 73cbf069-2f98-42f8-8ed2-7780618b954c
+    taskid: cbf70090-8353-41e4-8efb-3290bfd04bcb
     type: regular
     task:
-      id: 73cbf069-2f98-42f8-8ed2-7780618b954c
+      id: cbf70090-8353-41e4-8efb-3290bfd04bcb
       version: -1
       name: Push rules to the Panorama device group
       description: Push rules from Palo Alto Panorama to the Palo Alto configured device group.
@@ -238,85 +180,24 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "15"
     scriptarguments:
       device-group:
-        simple: ${inputs.device-group}
+        complex:
+          root: inputs.device-group
+      interval_in_seconds:
+        simple: "60"
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 2430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: d7c1b22b-2529-494e-8959-dd33edd07e6e
-    type: playbook
-    task:
-      id: d7c1b22b-2529-494e-8959-dd33edd07e6e
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      Ids:
-        complex:
-          root: Panorama
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Push.Status
-                iscontext: true
-              right:
-                value:
-                  simple: Pending
-          accessor: Push.JobID
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: job_id
-      PollingCommandName:
-        simple: pan-os-push-status
-      Timeout:
-        simple: "60"
-      dt:
-        simple: Panorama.Push(val.Status != 'Completed' && val.Status != 'Failed').JobID
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -190,
-          "y": 3050
+          "x": 910,
+          "y": 1260
         }
       }
     note: false
@@ -352,142 +233,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 1310
+          "x": 710,
+          "y": 230
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: f3cb81ed-446f-4a55-87ed-866a5acc3be0
-    type: regular
-    task:
-      id: f3cb81ed-446f-4a55-87ed-866a5acc3be0
-      version: -1
-      name: Get Panorama push status
-      description: Get push status
-      script: '|||pan-os-push-status'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      job_id:
-        complex:
-          root: Panorama
-          accessor: Push.JobID
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -190,
-          "y": 3230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 9af18cb1-8e90-40a7-88aa-30ee4ef8a796
-    type: condition
-    task:
-      id: 9af18cb1-8e90-40a7-88aa-30ee4ef8a796
-      version: -1
-      name: Filter JobID
-      description: Filter JobID to validate only new push configuration JobIDs.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Panorama.Commit(val.Status != 'Completed' && val.Status != 'Failed').JobID
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 270,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 3123d9ad-2650-478e-8746-3401631faa14
-    type: condition
-    task:
-      id: 3123d9ad-2650-478e-8746-3401631faa14
-      version: -1
-      name: Filter JobID
-      description: Filters by JobID to validate only the new push configuration JobIDs.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Panorama.Push(val.Status != 'Completed' && val.Status != 'Failed').JobID
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -60,
-          "y": 2740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b319325d-4649-4d0a-85b6-ca86878fe32f
+    taskid: 326d59a9-9554-4d3a-89f5-b5774735b095
     type: regular
     task:
-      id: b319325d-4649-4d0a-85b6-ca86878fe32f
+      id: 326d59a9-9554-4d3a-89f5-b5774735b095
       version: -1
       name: Fetch instance info
       description: Run any command supported in the API.
@@ -510,8 +272,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 2000
+          "x": 710,
+          "y": 910
         }
       }
     note: false
@@ -523,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 831a19ea-d385-4c53-8cc0-c6f871658a0d
+    taskid: 0a67cd5e-291c-4cbf-8cf6-1898cd23ef39
     type: condition
     task:
-      id: 831a19ea-d385-4c53-8cc0-c6f871658a0d
+      id: 0a67cd5e-291c-4cbf-8cf6-1898cd23ef39
       version: -1
       name: Identify the instance type
       description: Automatically detects the product (Panorama/Firewall).
@@ -554,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 2160
+          "x": 710,
+          "y": 1080
         }
       }
     note: false
@@ -567,10 +329,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 658af397-af4e-4589-8cc5-e5d22d67fb7b
+    taskid: db94418c-0822-4d35-8bdc-6a323ac302d4
     type: condition
     task:
-      id: 658af397-af4e-4589-8cc5-e5d22d67fb7b
+      id: db94418c-0822-4d35-8bdc-6a323ac302d4
       version: -1
       name: Was Panorama commit successful?
       description: '-'
@@ -598,8 +360,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 1470
+          "x": 710,
+          "y": 400
         }
       }
     note: false
@@ -642,8 +404,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 3440
+          "x": 910,
+          "y": 1430
         }
       }
     note: false
@@ -655,12 +417,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 1312dacc-0f37-48ba-884d-e8fa9697e965
+    taskid: 516e84d7-3bf1-4af1-821d-c7d930835966
     type: regular
     task:
-      id: 1312dacc-0f37-48ba-884d-e8fa9697e965
+      id: 516e84d7-3bf1-4af1-821d-c7d930835966
       version: -1
-      name: Print Commit Error
+      name: Print commit error
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
@@ -678,8 +440,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 1660
+          "x": 940,
+          "y": 570
         }
       }
     note: false
@@ -691,12 +453,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 0de2ff3e-cdac-4477-8939-cc6722a78b99
+    taskid: 58e98f40-8373-4cc1-8346-fe35fd176373
     type: regular
     task:
-      id: 0de2ff3e-cdac-4477-8939-cc6722a78b99
+      id: 58e98f40-8373-4cc1-8346-fe35fd176373
       version: -1
-      name: Print Push Error
+      name: Print push error
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
@@ -714,8 +476,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
-          "y": 3610
+          "x": 1140,
+          "y": 1610
         }
       }
     note: false
@@ -745,8 +507,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 1825
+          "x": 940,
+          "y": 735
         }
       }
     note: false
@@ -758,10 +520,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: c1b6bfd6-729d-4c47-8f96-f9a7527b3c9b
+    taskid: 6e3293ac-bae0-4627-8b89-b25f67466c9f
     type: regular
     task:
-      id: c1b6bfd6-729d-4c47-8f96-f9a7527b3c9b
+      id: 6e3293ac-bae0-4627-8b89-b25f67466c9f
       version: -1
       name: Fix errors and push manually
       description: '-'
@@ -776,8 +538,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
-          "y": 3790
+          "x": 1140,
+          "y": 1780
         }
       }
     note: false
@@ -787,13 +549,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "10_3_yes": 0.82,
-      "10_5_#default#": 0.1,
-      "11_5_#default#": 0.1,
       "13_5_#default#": 0.1,
       "13_6_Panorama": 0.73,
       "14_12_yes": 0.24,
@@ -803,9 +561,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4415,
-        "width": 1780,
-        "x": -190,
+        "height": 2275,
+        "width": 1150,
+        "x": 370,
         "y": -250
       }
     }
@@ -817,11 +575,24 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs:
-- contextPath: Panorama.Commit.Warnings
-  description: Job ID warnings.
-  type: string
+- contextPath: Panorama.Commit.JobID
+  description: The job ID to commit.
+- contextPath: Panorama.Commit.Status
+  description: The commit status.
+- contextPath: Panorama.Commit.Description
+  description: The commit description from the the command input.
+- contextPath: Panorama.Push.DeviceGroup
+  description: The device group in which the policies were pushed.
+- contextPath: Panorama.Push.JobID
+  description: The job ID of the policies that were pushed.
+- contextPath: Panorama.Push.Status
+  description: The push status.
 - contextPath: Panorama.Push.Warnings
-  description: Job ID warnings.
+  description: The push warnings.
+- contextPath: Panorama.Push.Errors
+  description: The push errors.
+- contextPath: Panorama.Push.Details
+  description: The job ID details.
 tests:
-- No tests (deprecated)
-deprecated: true
+  - no tests
+fromversion: 6.10.0
