@@ -674,20 +674,6 @@ def get_indicator_context_command(client: Client, args: dict[str, str]) -> list[
     return command_results_list
 
 
-def ip_command(client: Client, args: dict[str, str]) -> list[CommandResults]:
-    """ip command: Returns IP reputation for a list of IPs
-
-    This command is a wrapper around the `get_indicator_context_command`
-    """
-    ips = argToList(args["ip"])
-    results: list[CommandResults] = []
-
-    for ip in ips:
-        indicator = {"value": ip, "type": ip_version(ip)}
-        results += get_indicator_context_command(client=client, args=indicator)
-    return results
-
-
 def get_stix_type(indicator: str, indicator_type) -> str | None:
     """Convert Demisto reputation command type to STIX (ex. email = email-addr)"""
     if indicator_type == "ip":
