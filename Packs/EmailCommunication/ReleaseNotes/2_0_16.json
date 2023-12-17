@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The automation will now throw an error and exit when failing to send mail."
+}
