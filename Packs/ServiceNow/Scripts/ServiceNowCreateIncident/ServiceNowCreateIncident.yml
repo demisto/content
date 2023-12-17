@@ -5,14 +5,14 @@ args:
   - 1 - High
   - 2 - Medium
   - 3 - Low
-  description: Incident severity
+  description: Incident severity.
 - name: assignee
-  description: Incident assigne name (e.g John Smith)
+  description: Incident assigne name (e.g John Smith).
 - name: description
   required: true
-  description: Incident description
+  description: Incident description.
 - name: assigned_group
-  description: Incident assigned group name (e.g Incident Management Group)
+  description: Incident assigned group name (e.g Incident Management Group).
 commonfields:
   id: ServiceNowCreateIncident
   version: -1
@@ -23,10 +23,10 @@ comment: |-
   code and work with the records easily.
 outputs:
 - contextPath: ServiceNow.Incident.ID
-  description: Incident ID
+  description: Incident ID.
   type: string
 - contextPath: ServiceNow.Incident.Number
-  description: Incident number
+  description: Incident number.
   type: string
 enabled: true
 script: '-'
@@ -43,6 +43,6 @@ dependson:
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 skipprepare:
 - script-name-incident-to-alert
