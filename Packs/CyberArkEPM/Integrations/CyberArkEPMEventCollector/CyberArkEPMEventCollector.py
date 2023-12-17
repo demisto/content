@@ -272,52 +272,20 @@ def get_events(client_function: callable, event_type: str, last_run_per_id: dict
 """ COMMAND FUNCTIONS """
 
 
-def get_admin_audits_command(client: Client, last_run: dict, limit: int | None = 5) -> tuple[list, CommandResults]:
-    """ Fetches admin audits from CyberArkEPM
-    Args:
-        client (Client): CyberArkEPM client to use.
-        last_run (dict): The last run {set_id: {from_date: 01-01-2023T00:00:00.123Z}}.
-        limit (int): The maximum admin audits to return per set_id default is 5.
-    Return:
-        (list, CommandResults) A list of admin audits to push to XSIAM, A CommandResults object.
-    """
-    results = get_admin_audits(client, last_run, limit)  # type: ignore
-    events_list = list(chain(*results.values()))
-    human_readable = tableToMarkdown('Admin Audits', events_list)
+def get_events_command(client: Client, event_type: str, last_run: dict, limit: int | None = 5) -> tuple[list, CommandResults]:
+    if event_type == 'admin_audits':
+        results = get_admin_audits(client, last_run, limit)  # type: ignore
+        events_list = list(chain(*results.values()))
+    else:
+        results: dict = {}
+        if event_type == 'policy_audits':
+            results = get_events(client.get_policy_audits, 'policy_audits', last_run, limit)
+        if event_type == 'detailed_evens':
+            results = get_events(client.get_events, 'detailed_events', last_run, limit)
+        events_list_of_lists = [value.get('events', []) for value in results.values()]
+        events_list = list(chain(*events_list_of_lists))
 
-    return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
-
-
-def get_policy_audits_command(client: Client, last_run: dict, limit: int | None) -> tuple[list, CommandResults]:
-    """ Fetches policy audits from CyberArkEPM
-    Args:
-        client (Client): CyberArkEPM client to use.
-        last_run (dict): The last run {set_id: {from_date: 01-01-2023T00:00:00.123Z, next_cursor: 123456}}.
-        limit (int): The maximum policy audits to return per set_id default is 5.
-    Return:
-        (list, CommandResults) A list of policy audits to push to XSIAM, A CommandResults object.
-    """
-    results = get_events(client.get_policy_audits, 'policy_audits', last_run, limit)  # type: ignore
-    events_list_of_lists = [value.get('events', []) for value in results.values()]
-    events_list = list(chain(*events_list_of_lists))
-    human_readable = tableToMarkdown('Policy Audits', events_list)
-
-    return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
-
-
-def get_detailed_events_command(client: Client, last_run: dict, limit: int | None = 5) -> tuple[list, CommandResults]:
-    """ Fetches evens from CyberArkEPM
-    Args:
-        client (Client): CyberArkEPM client to use.
-        last_run (dict): The last run {set_id: {from_date: 01-01-2023T00:00:00.123Z, next_cursor: 123456}}.
-        limit (int): The maximum events to return per set_id default is 5.
-    Return:
-        (list, CommandResults) A list of events to push to XSIAM, A CommandResults object.
-    """
-    results = get_events(client.get_events, 'detailed_events', last_run, limit)  # type: ignore
-    events_list_of_lists = [value.get('events', []) for value in results.values()]
-    events_list = list(chain(*events_list_of_lists))
-    human_readable = tableToMarkdown('Events', events_list)
+    human_readable = tableToMarkdown(string_to_table_header(event_type), events_list)
 
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
@@ -422,19 +390,19 @@ def main():  # pragma: no cover
             return_results(result)
 
         elif command == 'cyberarkepm-get-admin-audits':
-            events, command_result = get_admin_audits_command(client, last_run, arg_to_number(args.get('limit', 5)))
+            events, command_result = get_events_command(client, 'admin_audits', last_run, arg_to_number(args.get('limit', 5)))
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         elif command == 'cyberarkepm-get-policy-audits':
-            events, command_result = get_policy_audits_command(client, last_run, arg_to_number(args.get('limit', 5)))
+            events, command_result = get_events_command(client, 'policy_audits', last_run, arg_to_number(args.get('limit', 5)))
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
 
         elif command == 'cyberarkepm-get-events':
-            events, command_result = get_detailed_events_command(client, last_run, arg_to_number(args.get('limit', 5)))
+            events, command_result = get_events_command(client, 'detailed_evens', last_run, arg_to_number(args.get('limit', 5)))
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
