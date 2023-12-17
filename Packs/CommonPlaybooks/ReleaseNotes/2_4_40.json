@@ -1,4 +1,1 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The Demisto REST API integration has been deprecated. Use the Core REST API integration in its place. The functionalities are the same."
-}
+{"breakingChanges":true,"breakingChangesNotes":"The \"SIEM- Search for Failed logins\" playbook output context path was changed from QRadar.Search.Result.events to QRadar.SearchEvents.Events."}
