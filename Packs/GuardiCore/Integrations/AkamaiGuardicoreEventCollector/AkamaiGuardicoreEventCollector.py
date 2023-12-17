@@ -12,6 +12,7 @@ INTEGRATION_NAME = 'Akamai GuardiCore Event Collector'
 
 ''' CLIENT CLASS '''
 
+
 class Client(BaseClient):
     """
        Client for GuardiCoreV2
@@ -160,8 +161,9 @@ def get_events(client: Client, args: dict):
        Gets events from Guardicore API.
     """
     start_time = date_to_timestamp(
-        arg_to_datetime(args.get('from_date', '3 days')))
-    end_time = int(datetime.now().timestamp() * 1000)
+        arg_to_datetime(args.get('from_date', '1 minute ago')))
+    end_time = date_to_timestamp(
+        arg_to_datetime(args.get('to_time'))) if "to_time" in args else int(datetime.now().timestamp() * 1000)
     limit = arg_to_number(args.get("limit", 1000))
     offset = int(args.get('offset', 0))
     events = client.get_events(start_time, end_time, limit, offset)
@@ -173,7 +175,7 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[List[dic
     """
        Fetches events from Guardicore API.
     """
-    start_time = date_to_timestamp(arg_to_datetime(last_run.get('from_ts', '3 days')))
+    start_time = date_to_timestamp(arg_to_datetime(last_run.get('from_ts', '1 minute ago')))
     end_time = int(datetime.now().timestamp() * 1000)
     demisto.debug(f'Getting events from: {timestamp_to_datestring(start_time)}, till: {timestamp_to_datestring(end_time)}')
     offset = arg_to_number(last_run.get('offset')) or 0
@@ -182,9 +184,10 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[List[dic
     retrieve_events = client.get_events(start_time, end_time, limit, offset)
     demisto.debug(f'Fetched {len(retrieve_events)} events.')
 
-    last_run = {'from_ts': end_time} if len(retrieve_events) < limit else {'from_ts': start_time, 'offset': offset + limit}
+    last_run = {'from_ts': end_time} if len(retrieve_events) <= limit else {'from_ts': start_time, 'offset': offset + limit}
 
     return retrieve_events, last_run
+
 
 ''' MAIN FUNCTION '''
 

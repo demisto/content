@@ -57,6 +57,10 @@ script:
       description: From date to get events from.
       name: from_date
       required: false
+    - default: false
+      description: To date to get events to.
+      name: to_time
+      required: false
     deprecated: false
     description: Gets events from Akamai Guardicore.
     execution: false
