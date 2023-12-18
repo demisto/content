@@ -223,7 +223,7 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
 
 def get_pipelines_and_commits(gitlab_url:str, gitlab_access_token:str, project_id:str, look_back_hours:int):
     """
-    Get all pipelines and commits on the master branch in the last X hours,
+     Get finished pipelines and commits on the master branch in the last X hours,
     pipelines are filtered to only include successful and failed pipelines.
     Args:
         gitlab_url - the url of the gitlab instance
@@ -251,7 +251,7 @@ def get_pipelines_and_commits(gitlab_url:str, gitlab_access_token:str, project_i
     return filtered_pipelines, commits
 
 
-def shame(commit):
+def person_in_charge(commit):
     """
     Returns the name, email, and PR link for the author of the provided commit.
 
