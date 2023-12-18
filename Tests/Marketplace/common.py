@@ -63,7 +63,7 @@ def generic_request_with_retries(client: demisto_client,
 
                 # should_try_handler return True, we are trying to send request.
                 logging.info(f"{prior_message}, attempt: {attempts_count - attempts_left}/{attempts_count}")
-                logging.info(f'####### TESTING ########' + body)
+                logging.info(f'####### TESTING ######## {body=}')
                 
                 response, status_code, headers = demisto_client.generic_request_func(client,
                                                                                      path=path,
@@ -73,9 +73,9 @@ def generic_request_with_retries(client: demisto_client,
                                                                                      response_type=response_type,
                                                                                      _request_timeout=request_timeout)
 
-                logging.info(f'####### TESTING ########' + response)
-                logging.info(f'####### TESTING ########' + response.body)
-                logging.info(f'####### TESTING ########' + status_code)
+                logging.info(f'####### TESTING ########' + str(response))
+                logging.info(f'####### TESTING ########' + str(response.body))
+                logging.info(f'####### TESTING ########' + str(status_code))
                 
 
                 if 200 <= status_code < 300 and status_code != 204:
