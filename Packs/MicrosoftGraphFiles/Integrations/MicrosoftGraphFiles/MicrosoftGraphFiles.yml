@@ -662,7 +662,7 @@ script:
       name: all_results
       defaultValue: "false"
     name: msgraph-list-site-permissions
-    description: List of apps with permissions for the site, if permission_id is provide it will return the details of that permission.
+    description: List of apps with permissions for the site. if permission_id is provided, it will return the details of that permission.
     outputs:
     - contextPath: MsGraphFiles.SitePermission.id
       description: The unique identifier of the permission among all permissions on the item.
@@ -736,7 +736,7 @@ script:
       name: permission_id
       required: true
     name: msgraph-delete-site-permissions
-    description: Deletes a app permission from a site.
+    description: Deletes an app permission from a site.
   dockerimage: demisto/python_pancloud:1.0.0.77747
   script: ''
   subtype: python3
