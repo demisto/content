@@ -4,7 +4,7 @@ pwd
 ls -la
 echo "-----------------------------------------"
 chmod +x ./Packs/Whois/Integrations/Whois/test_data/microsocks_darwin # grant permissions to execute
-./Packs/Whois/Integrations/Whois/test_data/microsocks_darwin -p 9980 &pid=$!
+./Packs/Whois/Integrations/Whois/test_data/microsocks -p 9980 &pid=$!
 echo "running darwin on pid: $pid"
 sleep 5
 echo "running command: netstat -p tcp -l -n | grep 9980"
