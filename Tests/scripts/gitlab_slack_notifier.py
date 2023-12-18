@@ -252,7 +252,7 @@ def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str)
     test_playbook_slack_msg = []
     for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
         succeeded_tests, failed_tests, skipped_tests, skipped_integrations = get_playbook_tests_data(instance_directory)
-        if succeeded_tests or failed_tests:  # Handling case of no playbooks had run
+        if succeeded_tests or failed_tests:  # Handling case where no playbooks had run
             instance_slack_msg, instance_has_failed_tests = test_playbooks_results_to_slack_msg(instance_role,
                                                                                                 succeeded_tests,
                                                                                                 failed_tests,

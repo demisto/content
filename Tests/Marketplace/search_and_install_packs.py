@@ -216,9 +216,10 @@ def get_pack_dependencies(client: demisto_client,
     """
     api_endpoint = "/contentpacks/marketplace/search/dependencies"
     body = [{"id": pack_id}]  # Not specifying a "version" key will return the latest version of the pack.
-
+    logging.info(f'####### TESTING ######## {body=}')
     def success_handler(response):
         logging.success(f"Succeeded to fetch dependencies for pack '{pack_id}'")
+        
         return True, response
 
     failure_massage = f"Failed to fetch dependencies for pack: {pack_id}"
