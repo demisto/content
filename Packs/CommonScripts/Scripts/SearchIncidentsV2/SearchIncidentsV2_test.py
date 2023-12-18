@@ -36,7 +36,7 @@ def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
                 {
                     'Contents': {
                         'data': create_sample_incidents(start, end, incident_type),
-                        'total': amount_of_mocked_incidents
+                        'total': 0
                     }
                 }
             ]
