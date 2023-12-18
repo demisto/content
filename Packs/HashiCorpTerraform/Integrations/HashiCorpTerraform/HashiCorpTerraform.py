@@ -1,9 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import urllib3
 from requests import Response
 
-urllib3.disable_warnings()
 
 RUN_HR_KEY_TO_RES_KEY = {
     'Run id': 'id',
@@ -42,7 +40,11 @@ CHECK_HR_KEY_TO_RES_KEY = {
 
 
 class Client(BaseClient):
-    def __init__(self, url, token, default_organization_name, default_workspace_id, verify, proxy):
+    def __init__(
+            self, url: str, token: str,
+            default_organization_name: str | None = None,
+            default_workspace_id: str | None = None,
+            verify: bool = True, proxy: bool = False):
         self._default_organization_name = default_organization_name
         self._default_workspace_id = default_workspace_id
 
