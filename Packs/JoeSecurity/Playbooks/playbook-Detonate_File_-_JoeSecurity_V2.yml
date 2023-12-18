@@ -291,8 +291,8 @@ tasks:
     scriptarguments:
       webid:
         complex:
-          root: Joe.Submission
-          accessor: submission_id
+          root: Joe.Analysis
+          accessor: webid
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -428,9 +428,9 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "600"
+    simple: "900"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in seconds)
+  description: The default duration after which to stop pooling and to resume the playbook (in seconds).
   playbookInputQuery:
 - key: Systems
   value: {}
