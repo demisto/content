@@ -2055,6 +2055,35 @@ script:
       description: The value of the entry that was removed
       type: string
     description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+  - name: ews-rules-list
+    arguments:
+    - name: mailbox
+      description: The mailbox that contains the Inbox rule.
+      required: true
+    - defaultValue: 50
+      description: Maximum number of users to get. A value of 0 means to get all users.
+      name: limit
+    - name: display_all
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Display all properties of the rule as a list .
+      defaultValue: 'false'
+    outputs:
+    - contextPath: MSGraphMail.Rule.RuleIdentity
+      description: The rule identity.
+      type: string
+    - contextPath: MSGraphMail.Rule.Name
+      description: The rule name.
+      type: string
+    - contextPath: MSGraphMail.Rule.Enabled
+      description: Wheather the rule is enabled or not.
+      type: string
+    - contextPath: MSGraphMail.Rule.Priority
+      description: The priorty of the rule.
+      type: string
+    description: Retrieve information about the Inbox rule properties.
   script: ''
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
