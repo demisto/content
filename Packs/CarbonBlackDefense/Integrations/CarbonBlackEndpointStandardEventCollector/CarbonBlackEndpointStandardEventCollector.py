@@ -7,14 +7,14 @@ import concurrent.futures
 
 # Constants used in last_run
 LAST_ALERT_TIME = 'last_time'
+LAST_AUDIT_TIME = 'last_audit_time'
 LAST_ALERT_IDS = 'last_alert_ids'
-LAST_AUDIT_IDS = 'last_audit_logs_ids'
 
 # Constants used in fetch-events
 MAX_ALERTS_IN_PAGE = 10000
-MAX_ALERTS = 10 * MAX_ALERTS_IN_PAGE
-MAX_AUDITS = 25000
 MAX_ALERTS_LOOP = 10
+MAX_ALERTS = MAX_ALERTS_LOOP * MAX_ALERTS_IN_PAGE
+MAX_AUDITS = 25000
 
 # Constants used by Response Objects
 ALERT_TIMESTAMP = 'backend_timestamp'
@@ -33,8 +33,8 @@ class Client(BaseClient):
     Carbon Black Endpoint Standard Event Collector client class for fetching alerts and audit logs
     """
 
-    def __init__(self, url: str, proxy: bool, insecure: bool, credentials: dict, org_key: str,
-                 max_alerts: int | None, max_audit_logs: int | None):
+    def __init__(self, url: str, org_key: str, credentials: dict, proxy: bool = False, insecure: bool = False,
+                 max_alerts: int | None = None, max_audit_logs: int | None = None):
         api_id = credentials.get('identifier')
         api_secret_key = credentials.get('password')
         auth_headers = {'X-Auth-Token': f'{api_secret_key}/{api_id}', 'Content-Type': 'application/json'}
@@ -84,11 +84,6 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def is_audit_interval(run, interval):
-    # TODO: finish implementation
-    return True
-
-
 def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: dict):
     """
     Fetches alerts and audit logs from CarbonBlack server using multi-threading
@@ -97,12 +92,12 @@ def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: di
     audit_logs = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
         if add_audit_logs:
-            audit_logs_future = executor.submit(client.get_audit_logs)
+            audit_logs_future = executor.submit(get_audit_logs_to_limit, client)
         alerts, last_run = get_alerts_to_limit(client, last_run)
         if add_audit_logs:
             try:
                 audit_logs = prepare_audit_logs_result(
-                    audit_logs_future.result(), last_run.get(LAST_AUDIT_IDS), client.max_audit_logs)
+                    audit_logs_future.result(), last_run.get(LAST_AUDIT_TIME))
             except Exception as e:
                 demisto.error(f'Failed getting audit logs. Error: {e}')
     return alerts, audit_logs
@@ -130,6 +125,19 @@ def get_alerts_to_limit(client: Client, last_run: dict):
     return alerts, last_run
 
 
+def get_audit_logs_to_limit(client: Client):
+    audit_logs: list[dict] = []
+    audit_loop_counter = MAX_ALERTS_LOOP
+    while audit_loop_counter and len(audit_logs) < client.max_audit_logs:
+        next_batch_audit_logs = client.get_audit_logs()
+        if not next_batch_audit_logs:
+            break
+        audit_logs.extend(next_batch_audit_logs)
+        audit_loop_counter = audit_loop_counter - 1
+
+    return audit_logs
+
+
 def update_last_run(last_run, alerts=None, audit_logs=None):
     """
     Update the last run object with the latest timestamp and IDs fetched
@@ -138,25 +146,25 @@ def update_last_run(last_run, alerts=None, audit_logs=None):
         last_run[LAST_ALERT_TIME] = last_alert_time = alerts[-1][ALERT_TIMESTAMP]
         last_run[LAST_ALERT_IDS] = [alert[ALERT_ID] for alert in alerts if alert[ALERT_TIMESTAMP] == last_alert_time]
     if audit_logs:
-        last_run[LAST_AUDIT_IDS] = [audit[AUDIT_ID] for audit in audit_logs]
+        last_run[LAST_AUDIT_TIME] = audit_logs[:-1]['_time']
     return last_run
 
 
-def prepare_audit_logs_result(audit_logs, last_audit_ids, max_audit_logs):
+def prepare_audit_logs_result(audit_logs, last_audit_time):
     """
     Filters audit logs to return only new logs since the last run, and add _time field.
     """
     if not audit_logs:
         return audit_logs
 
-    last_run_ids = set(last_audit_ids)
     new_audits = []
     for audit in audit_logs:
-        if audit[AUDIT_ID] not in last_run_ids:
-            audit['_time'] = timestamp_to_datestring(audit[AUDIT_TIMESTAMP], is_utc=True)
+        audit_time = timestamp_to_datestring(audit[AUDIT_TIMESTAMP], is_utc=True)
+        if not last_audit_time or last_audit_time > audit_time:
+            audit['_time'] = audit_time
             new_audits.append(audit)
     audit_logs = new_audits
-    return audit_logs[:max_audit_logs]
+    return audit_logs
 
 
 def prepare_alerts_result(alerts, last_run):
@@ -179,9 +187,7 @@ def prepare_alerts_result(alerts, last_run):
 ''' COMMAND FUNCTIONS '''
 
 
-def get_events(client: Client, last_run: dict, add_audit_logs: bool,
-               audit_fetch_interval: str):
-    add_audit_logs = add_audit_logs and is_audit_interval(last_run, audit_fetch_interval)
+def get_events(client: Client, last_run: dict, add_audit_logs: bool):
     alerts, audit_logs = get_alerts_and_audit_logs(
         client=client,
         last_run=last_run,
@@ -203,9 +209,9 @@ def test_module(client: Client) -> str:
 def init_last_run(last_run: dict) -> dict:
     if not last_run:
         last_run = {
-            LAST_ALERT_TIME: (datetime.now() - timedelta(days=3)).strftime(DATE_FORMAT),
+            LAST_ALERT_TIME: datetime.now().strftime(DATE_FORMAT),
             LAST_ALERT_IDS: [],
-            LAST_AUDIT_IDS: [],
+            LAST_AUDIT_TIME: None,
         }
     return last_run
 
@@ -221,7 +227,7 @@ def main() -> None:  # pragma: no cover
         add_audit_logs = params.get('add_audit_logs')
         max_alerts = min(arg_to_number(params.get('max_alerts') or MAX_ALERTS), MAX_ALERTS)  # type: ignore
         max_audit_logs = min(arg_to_number(params.get('max_audit_logs') or MAX_AUDITS), MAX_AUDITS)  # type: ignore
-        audit_fetch_interval = params.get('audit_fetch_interval')
+
         client = Client(
             url=params.get('url'),
             proxy=params.get('proxy'),
@@ -240,7 +246,6 @@ def main() -> None:  # pragma: no cover
                 client=client,
                 last_run=last_run,
                 add_audit_logs=add_audit_logs,
-                audit_fetch_interval=audit_fetch_interval,
             )
             demisto.debug(f'sending {len(events)} to xsiam')
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
