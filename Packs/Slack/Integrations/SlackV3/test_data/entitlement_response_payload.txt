@@ -1,0 +1,146 @@
+{
+    "type": "block_actions",
+    "user": {
+            "id": "UAALZT5D2",
+            "username": "andrew",
+            "name": "andrew",
+            "team_id": "TABQMPKP0"
+    },
+    "api_app_id": "A067C0HKQGG",
+    "token": "ImaFakeToken",
+    "container": {
+        "type": "message",
+        "message_ts": "1702470027.519239",
+        "channel_id": "CAA78KABS",
+        "is_ephemeral": false
+    },
+    "trigger_id": "6324138653431.351837801782.0cf0f8fd0f082c98e35d700950f291b4",
+    "team": {
+        "id": "TABQMPKP0",
+        "domain": "lexiapplications"
+    },
+    "channel": {
+        "id": "CAA78KABS",
+        "name": "general"
+    },
+    "message": {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "New message from SOC Bot",
+        "ts": "1702470027.519239",
+        "username": "Cortex XSOAR",
+        "icons": {
+                "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2021-06-29\/2227534346388_48.png"
+        },
+        "bot_id": "B066NTXKT5Z",
+        "app_id": "A067C0HKQGG",
+        "blocks": [{
+            "type": "header",
+            "block_id": "Pl4fr",
+            "text": {
+                    "type": "plain_text",
+                    "text": "This is a test of the SlackBlockBuilder Automation"
+            }
+        }, {
+            "type": "input",
+            "block_id": "checkboxes_0",
+            "label": {
+                    "type": "plain_text",
+                    "text": "Please Select Some Option"
+            },
+            "element": {
+                "type": "checkboxes",
+                "action_id": "checkboxes-action",
+                "options": [{
+                        "text": {
+                            "type": "plain_text",
+                            "text": "*Option 1*",
+                            "emoji": true
+                        },
+                    "value": "value-0"
+                }, {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "*Option 2*",
+                        "emoji": true
+                    },
+                    "value": "value-1"
+                }, {
+                    "text": {
+                        "type": "plain_text",
+                        "text": "*Option 3*",
+                        "emoji": true
+                    },
+                    "value": "value-2"
+                }]
+            }
+        }, {
+            "type": "section",
+            "block_id": "timepicker_1",
+            "text": {
+                    "type": "mrkdwn",
+                    "text": "Also Pick a Time",
+                    "verbatim": true
+            },
+            "accessory": {
+                "type": "timepicker",
+                "action_id": "timepicker1",
+                "initial_time": "13:37",
+                "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select time",
+                        "emoji": true
+                }
+            }
+        }, {
+            "type": "actions",
+            "block_id": "button_2",
+            "elements": [{
+                    "type": "button",
+                    "action_id": "xsoar-button-submit",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Submit",
+                        "emoji": true
+                    },
+                "value": "{\"entitlement\": \"326a8a51-3dbd-4b07-8662-d36bfa9509fb@3|4\", \"reply\": \"reply to 3\"}"
+            }]
+        }]
+    },
+    "state": {
+        "values": {
+            "checkboxes_0": {
+                "checkboxes-action": {
+                    "type": "checkboxes",
+                    "selected_options": [{
+                            "text": {
+                                "type": "plain_text",
+                                "text": "*Option 3*",
+                                "emoji": true
+                            },
+                        "value": "value-2"
+                    }]
+                }
+            },
+            "timepicker_1": {
+                "timepicker1": {
+                    "type": "timepicker",
+                    "selected_time": "06:00"
+                }
+            }
+        }
+    },
+    "response_url": "https:\/\/hooks.slack.com\/actions\/TABQMPKP0\/6338568051731\/GgysWcvYua3VFLfhPrrreost",
+    "actions": [{
+        "action_id": "xsoar-button-submit",
+        "block_id": "button_2",
+        "text": {
+                "type": "plain_text",
+                "text": "Submit",
+                "emoji": true
+                },
+        "value": "{\"entitlement\": \"326a8a51-3dbd-4b07-8662-d36bfa9509fb@3|4\", \"reply\": \"reply to 3\"}",
+        "type": "button",
+        "action_ts": "1702470035.432402"
+    }]
+}
