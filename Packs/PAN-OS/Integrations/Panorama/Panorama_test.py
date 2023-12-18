@@ -3246,6 +3246,7 @@ class TestPanoramaCommand:
         assert result[0].connected
         assert result[0].serial
         assert result[0].last_commit_all_state_tpl
+
     @patch("Panorama.run_op_command")
     def test_get_template_stacks_without_hostname(self, patched_run_op_command, mock_topology):
         """Given the output XML for show template-stacks without hostname, assert it is parsed into the dataclasses correctly."""
