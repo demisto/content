@@ -19,7 +19,7 @@ def test_main(mocker):
 def test_main_error(mocker):
     side_effect = iter(
         [[{'Contents': {'response': {'test': 'test'}}}], Exception("error")])
-    mocker.patch.object(demisto, 'args', return_value={'query': 'html', 'fetchdays': '6', 'columns': 'id,name'})
+    mocker.patch.object(demisto, 'args', return_value={'query': 'html', 'fetchdays': '6'})
     mocker.patch.object(demisto, 'results', return_value={})
     mocker.patch('ExportIncidentsToCSV.is_error', return_value=True)
     mocker.patch('ExportIncidentsToCSV.get_error', return_value="error")
