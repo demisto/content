@@ -577,8 +577,9 @@ def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> t
     )
 
     title = f"{INTEGRATION_NAME} - drivesItems information:"
-
-    parsed_drive_items = [parse_key_to_context(item) for item in result["value"]]
+    if result.get("@odata.null"):
+        ...
+    parsed_drive_items = [parse_key_to_context(item) for item in result.get("value", [{}])]
     human_readable_content = [
         list_drive_content_human_readable_object(item) for item in parsed_drive_items
     ]
@@ -944,6 +945,7 @@ def list_site_permissions_command(client: MsGraphClient, args: dict[str, str]) -
     all_results = argToBoolean(args.get("all_results", False))
     site_id = args.get("site_id") or get_site_id_from_site_name(client, args.get("site_name"))
     results = client.list_site_permissions(site_id, permission_id)
+
     if permission_id:
         return CommandResults(
             outputs_prefix="MsGraphFiles.SitePermission",

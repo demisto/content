@@ -643,7 +643,7 @@ script:
     name: msgraph-files-auth-reset
     arguments: []
   - arguments:
-    - description: The maximum number of results to return. Default is 50.
+    - description: The maximum number of results to return.
       name: limit
       defaultValue: 50
     - description: |-
