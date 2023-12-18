@@ -25,7 +25,7 @@ Aditionally, [a list of integrations used for the Active Response playbook can b
 
 ### Demo Video
 
-[![Active Response in Cortex Xpanse](https://raw.githubusercontent.com/demisto/content/1885085df5c55246c25e3395779c69b942f69dbf/Packs/CortexAttackSurfaceManagement/doc_files/Active_Response_in_Cortex_Xpanse.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
+[![Active Response in Cortex Xpanse](https://raw.githubusercontent.com/demisto/content/98ead849e9e32921f64f7ac07fda2bff1b5f7c0b/Packs/CortexAttackSurfaceManagement/doc_files/Active_Response_in_Cortex_Xpanse.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
 
 ### Automated Remediation Requirements
 
