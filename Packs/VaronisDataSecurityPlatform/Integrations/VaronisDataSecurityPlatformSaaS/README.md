@@ -180,7 +180,7 @@ Get alerts from Varonis DA
     "Alert.Location.AbnormalLocation": "",
     "Alert.User.SidID": "971",
     "Alert.IngestTime": "2023-12-11T03:52:46",
-    "Url": "https://intaf6fb.varonis-preprod.com/#/app/analytics/entity/Alert/A5F4B69A-F5C0-494F-B5B4-185185BC3FBE"
+    "Url": "/#/app/analytics/entity/Alert/A5F4B69A-F5C0-494F-B5B4-185185BC3FBE"
   }
 ]
 ```

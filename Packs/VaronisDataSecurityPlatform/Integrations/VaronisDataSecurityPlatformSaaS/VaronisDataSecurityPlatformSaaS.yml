@@ -156,8 +156,7 @@ script:
       description: Alert severity.
       type: String
     - contextPath: Varonis.Alert.Rule.Category.Name
-      description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion\
-        \ \n- Exploitation \n- Privilege Escalation \n- Lateral Movement ".
+      description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion \n- Exploitation \n- Privilege Escalation \n- Lateral Movement."
       type: String
     - contextPath: Varonis.Alert.Location.CountryName
       description: Name of the country from which the event occurred.
