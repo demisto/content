@@ -1,25 +1,32 @@
+Deprecated.Use the following command instead `qradar-search-retrieve-results`.
 This playbook runs a QRadar query and return its results to the context.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * GenericPolling
 
 ### Integrations
-* QRadar_v2
+
 * QRadar
 * QRadar_v3
+* QRadar_v2
 
 ### Scripts
-This playbook does not use any scripts.
+
+* PrintErrorEntry
 
 ### Commands
+
 * qradar-get-search
-* qradar-get-search-results
 * qradar-searches
+* qradar-get-search-results
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -31,6 +38,7 @@ This playbook does not use any scripts.
 | headers | Table headers |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -38,5 +46,7 @@ This playbook does not use any scripts.
 | QRadar.Search.Result | The result of the search | unknown |
 
 ## Playbook Image
+
 ---
+
 ![QRadarFullSearch](../doc_files/QRadarFullSearch.png)
