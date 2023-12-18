@@ -26,19 +26,19 @@ Configuration:
 2. In Cortex XSOAR, navigate to **Settings** > **Integrations**.
 3. Search for O365 File Management (Onedrive/Sharepoint/Teams).
 4. Create an admin instance:
-  1. Click **Add instance** to create and configure a new integration instance.
-  2. Enter the admin application credentials.
-  3. Click **Test** to validate the connection.
-  4. Use the following commands to give the user application access to specific sites:
-    - `msgraph-list-site-permissions` - Get permissions for a site
-    - `msgraph-create-site-permissions` - Add permissions for a site
-    - `msgraph-update-site-permissions` - Update permissions for a site
-    - `msgraph-delete-site-permissions` - Delete permissions for a site
-  5. Delete the admin instance after configuring user access.
+    1. Click **Add instance** to create and configure a new integration instance.
+    2. Enter the admin application credentials.
+    3. Click **Test** to validate the connection.
+    4. Use the following commands to give the user application access to specific sites:
+        - `msgraph-list-site-permissions` - Get permissions for a site
+        - `msgraph-create-site-permissions` - Add permissions for a site
+        - `msgraph-update-site-permissions` - Update permissions for a site
+        - `msgraph-delete-site-permissions` - Delete permissions for a site
+    5. Delete the admin instance after configuring user access.
 5. Create a user instance:
-  1. Click **Add instance** to create and configure a new integration instance.
-  2. Enter the user application credentials.
-  3. Click **Test** to validate the connection.
+    1. Click **Add instance** to create and configure a new integration instance.
+    2. Enter the user application credentials.
+    3. Click **Test** to validate the connection.
 
 Note: The `msgraph-list-sharepoint-sites` command cannot be run, as it requires the `Sites.Read.All - Application` permission.
 
