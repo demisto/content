@@ -560,6 +560,10 @@ def list_drive_content_human_readable_object(parsed_drive_items: dict) -> dict:
 def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     This function runs list drive children command
+    Note:
+        If the response does not contain results,
+        the Microsoft Graph API returns a dict with the key `@odata.null` set to true, indicating no data was found.
+
     :return: human_readable, context, result
     """
     object_type = args["object_type"]
@@ -577,8 +581,7 @@ def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> t
     )
 
     title = f"{INTEGRATION_NAME} - drivesItems information:"
-    if result.get("@odata.null"):
-        ...
+
     parsed_drive_items = [parse_key_to_context(item) for item in result.get("value", [{}])]
     human_readable_content = [
         list_drive_content_human_readable_object(item) for item in parsed_drive_items
