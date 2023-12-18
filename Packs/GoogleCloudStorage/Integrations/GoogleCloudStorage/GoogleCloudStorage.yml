@@ -116,13 +116,13 @@ script:
     description: Deletes a bucket.
     name: gcs-delete-bucket
   - arguments:
-       description: Use a delimiter if you want to limit results within a specific "folder" and without any nested blobs i.e. "/"
-    - name: delimiter
-       description: Specify to limit blobs within a "folder" i.e. "folder-1/" if blob is "folder-1/file.txt"
-    - name: prefix
     - default: true
       description: Name of the bucket in which to list objects. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
+    - description: Specify to limit blobs within a "folder" i.e. "folder-1/" if blob is "folder-1/file.txt".
+      name: prefix
+    - description: Use a delimiter if you want to limit results within a specific "folder" and without any nested blobs i.e. "/".
+      name: delimiter
     description: Retrieves the list of objects in a bucket.
     name: gcs-list-bucket-objects
     outputs:
