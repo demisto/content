@@ -253,6 +253,7 @@ def ensure_chrome_running():  # pragma: no cover
         else:
             # There's no Chrome listening on that port
             demisto.debug(f"No Chrome found on port {chrome_port}")
+            break
         demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
 
     if chrome_port == ports_list[-1]:
