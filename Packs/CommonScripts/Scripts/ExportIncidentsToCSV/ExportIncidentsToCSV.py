@@ -35,7 +35,7 @@ def main():
     )
     demisto.debug(f'{export_to_csv_result=}')
     if is_error(export_to_csv_result):
-        demisto.debug(
+        demisto.error(
             f'Error {get_error(export_to_csv_result)} when trying to export incident(s) with query {incident_query} to CSV'
         )
 
@@ -45,7 +45,7 @@ def main():
     incident_csv_result = demisto.executeCommand("demisto-api-get", {"uri": f"/incident/csv/{csv_file_name}"})
     demisto.debug(f'{incident_csv_result=}')
     if is_error(incident_csv_result):
-        demisto.debug(
+        demisto.error(
             f'Error {get_error(incident_csv_result)} when trying to retrieve the CSV'
         )
 
