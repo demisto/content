@@ -93,7 +93,7 @@ class AlertAttributes:
         Alert_Time
     ]
 
-    def get_fields(self, extra_fields: list[str]) -> list[str]:
+    def get_fields(self, extra_fields: Optional[List[str]]) -> list[str]:
         output = self.Columns.copy()
 
         if extra_fields:
@@ -994,7 +994,7 @@ class EventAttributes:
         Event_IsAlerted
     ]
 
-    def get_fields(self, extra_fields: list[str]) -> list[str]:
+    def get_fields(self, extra_fields: Optional[List[str]]) -> list[str]:
         output = self.Columns.copy()
 
         if extra_fields:
@@ -1041,6 +1041,7 @@ class FilterCondition:
 class FilterValue:
     def __init__(self, value):
         self = value
+        self.value = value
         # self.displayValue = value.get("displayValue", None)
 
     def __repr__(self):
@@ -1247,7 +1248,7 @@ class ThreatModelObjectMapper(BaseMapper):
 
     def map_item(self, row: dict) -> ThreatModelItem:
         threat_model_item = ThreatModelItem()
-        threat_model_item.ID = row[ThreatModelAttributes.Id]
+        threat_model_item.Id = row[ThreatModelAttributes.Id]
         threat_model_item.Name = row[ThreatModelAttributes.Name]
         threat_model_item.Category = row[ThreatModelAttributes.Category]
         threat_model_item.Source = row[ThreatModelAttributes.Source]
@@ -1259,9 +1260,6 @@ class ThreatModelObjectMapper(BaseMapper):
 """
 
 
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''
@@ -1415,7 +1413,7 @@ def get_rule_ids(client: Client, values: List[str]) -> List[int]:
     return ruleIds
 
 
-def varonis_update_alert(client: Client, close_reason_id: int, status_id: int, alert_ids: list, note: str) -> bool:
+def varonis_update_alert(client: Client, close_reason_id: int, status_id: Optional[int], alert_ids: list, note: str) -> bool:
     """Update Varonis alert. It creates request and pass it to http client
 
     :type client: ``Client``
@@ -1548,7 +1546,7 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module_command(client: Client) -> str:
+def test_module_command(client: Client) -> CommandResults:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -1571,7 +1569,7 @@ def test_module_command(client: Client) -> str:
             message = 'Authorization Error: token is incorrect or expired.'
         else:
             raise e
-    return message
+    return CommandResults(readable_output=message)
 
 
 def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1665,7 +1663,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first_fetch_time: Optional[datetime],
+def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first_fetch_time: datetime,
                             alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
                             ) -> Tuple[Dict[str, Optional[datetime]], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
