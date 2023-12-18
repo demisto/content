@@ -208,14 +208,14 @@ class BucketVerifier:
         return all(version_exists) and all(items_exists) and rn_as_expected, pack_id, MSG_DICT['verify_new_pack']
 
     @logger
-    def verify_pack_not_in_marketplace(self, pack_id, narketplace):
+    def verify_pack_not_in_marketplace(self, pack_id, marketplace):
         """
         Verify the new XSOAR pack is NOT in the index, verify version 1.0.0 zip DOES NOT exists under the pack's path
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
         return (not any(version_exists),
                 pack_id,
-                MSG_DICT['verify_pack_not_in_marketplace'].format(pack_id, narketplace)
+                MSG_DICT['verify_pack_not_in_marketplace'].format(pack_id, marketplace)
                 )
 
     @logger
@@ -367,8 +367,8 @@ class BucketVerifier:
         Runs the XSOAR SaaS bucket verifications.
         - Checks that TestUploadFlowXsoarSaaS xsoar bucket pack is in xsoar_saas marketplace
         """
-        self.verify_pack_in_marketplace(TestUploadFlowXsoarSaaS, XSOAR_SAAS_TESTING_BUCKET, '1.0.0',
-                                        self.items_dict.get(TestUploadFlowXsoarSaaS))
+        self.verify_pack_in_marketplace(TestUploadFlowXsoarSaaS, XSOAR_SAAS_TESTING_BUCKET,
+                                        '1.0.0', self.items_dict.get(TestUploadFlowXsoarSaaS))
 
     def run_validations(self):
         """
