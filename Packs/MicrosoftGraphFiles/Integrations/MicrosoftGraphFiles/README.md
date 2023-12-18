@@ -20,24 +20,25 @@ Two applications and two instances are required, one for the administrator and o
 
 Configuration:
 
-- Create "Admin" application with the `Sites.FullControl.All - Application` permission.
-- Create "User" application with the `Site.Selected - Application` permission.
-- Navigate to **Settings** > **Integrations**.
-- Search for O365 File Management (Onedrive/Sharepoint/Teams).
-- Admin Instance:
-  - Click **Add instance** to create and configure a new integration instance.
-  - Enter the admin application credentials.
-  - Click **Test** to validate the connection.
-  - Use commands to give the user application access to specific sites:
+1. In the Microsoft website:
+   1. Create "Admin" application with the `Sites.FullControl.All - Application` permission.
+   2. Create "User" application with the `Site.Selected - Application` permission.
+2. In Cortex XSOAR, navigate to **Settings** > **Integrations**.
+3. Search for O365 File Management (Onedrive/Sharepoint/Teams).
+4. Create an admin instance:
+  1. Click **Add instance** to create and configure a new integration instance.
+  2. Enter the admin application credentials.
+  3. Click **Test** to validate the connection.
+  4. Use the following commands to give the user application access to specific sites:
     - `msgraph-list-site-permissions` - Get permissions for a site
     - `msgraph-create-site-permissions` - Add permissions for a site
     - `msgraph-update-site-permissions` - Update permissions for a site
     - `msgraph-delete-site-permissions` - Delete permissions for a site
-  - Delete the admin instance after configuring user access.
-- User Instance:
-  - Click **Add instance** to create and configure a new integration instance.
-  - Enter the user application credentials.
-  - Click **Test** to validate the connection.
+  5. Delete the admin instance after configuring user access.
+5. Create a user instance:
+  1. Click **Add instance** to create and configure a new integration instance.
+  2. Enter the user application credentials.
+  3. Click **Test** to validate the connection.
 
 Note: The `msgraph-list-sharepoint-sites` command cannot be run, as it requires the `Sites.Read.All - Application` permission.
 
@@ -948,7 +949,7 @@ There is no context output for this command.
 ### msgraph-delete-site-permissions
 
 ***
-Deletes a app permission from a site.
+Deletes an app permission from a site.
 
 #### Permission required
 
