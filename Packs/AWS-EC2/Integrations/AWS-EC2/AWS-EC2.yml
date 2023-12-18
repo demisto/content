@@ -3830,8 +3830,6 @@ script:
       name: region
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-    - description: An identifier for the assumed role session.
-      name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Adds or removes permission settings for the specified snapshot.

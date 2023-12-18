@@ -2985,7 +2985,6 @@ def modify_snapshot_permission_command(args, aws_client):
         service='ec2',
         region=args.get('region'),
         role_arn=args.get('roleArn'),
-        # role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
 
