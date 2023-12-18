@@ -32,9 +32,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| file_id | File to detonate | File.EntryID | Optional |
-| Interval | Report requests frequency \(minutes\) | 1 | Required |
-| Timeout | Report waiting timeout \(minutes\) | 60 | Required |
+| file_id | File to detonate. | File.EntryID | Optional |
+| Interval | Report requests frequency \(minutes\). | 1 | Required |
+| Timeout | Report waiting timeout \(minutes\). | 60 | Required |
 
 ## Playbook Outputs
 
