@@ -9,7 +9,7 @@ configuration:
   defaultvalue: https://app.terraform.io/api/v2
   section: Connect
 - displaypassword: API Token
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API Key to use for connection.
   name: credentials
   required: true
   hiddenusername: true
@@ -20,13 +20,13 @@ configuration:
   type: 0
   required: false
   section: Connect
-  additionalinfo: There is an option to override with a command input parameter. If not provided, policies commands should require the Org name.
-- display: Default Workspace Id
+  additionalinfo: There is an option to override with a command input parameter. If not provided, policy commands should require the organization name.
+- display: Default Workspace ID
   name: default_workspace_id
   type: 0
   required: false
   section: Collect
-  additionalinfo: There is an option to override with an input parameter. If not provided, some commands should require the workspace id.
+  additionalinfo: There is an option to override with an input parameter. If not provided, some commands should require the workspace ID.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -42,12 +42,12 @@ description: Hashicorp Terraform provide infrastructure automation to provision 
 script:
   commands:
   - name: terraform-runs-list
-    description: List Runs in a Workspace.
+    description: List runs in a workspace.
     arguments:
     - name: workspace_id
       description: The workspace ID to list runs for.
     - name: run_id
-      description: The run id to get a specific run.
+      description: The run ID to get a specific run.
     - name: filter_status
       description: The run status to filter by.
       auto: PREDEFINED
@@ -86,16 +86,16 @@ script:
     outputs:
     - contextPath: Terraform.Run.data.id
       type: String      
-      description: The run id.
+      description: The run ID.
     - contextPath: Terraform.Run.data.attributes.status
       type: String
       description: The run status.
     - contextPath: Terraform.Run.data.relationships.plan.data.id
       type: String
-      description: The Plan id.
+      description: The plan ID.
     - contextPath: Terraform.Run.data.attributes.status-timestamps.planned-at
       type: Date
-      description: The date time the plan was planned.
+      description: The datetime the plan was planned.
     - contextPath: Terraform.Run.data.type
       description: THe run type.
       type: String
@@ -186,8 +186,8 @@ script:
     - contextPath: Terraform.Run.data.attributes.variables
       description: 'Variables associated with the Terraform run.'
       type: Unknown
-    - contextPath: Terraform.Run.data.relationships.apply
-      description: 'Relationship information for the Terraform run apply.'
+    - contextPath: Terraform.Run.data.relationships.apply.data.id
+      description: The apply ID of the run.
       type: String
     - contextPath: Terraform.Run.data.relationships.comments
       description: 'Relationship information for comments associated with the Terraform run.'
