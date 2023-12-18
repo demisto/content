@@ -2130,6 +2130,7 @@ script:
     - name: identity
       description: The Inbox rule that you want to remove.
       required: true
+    description: Remove an Inbox rule.
   script: ''
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
