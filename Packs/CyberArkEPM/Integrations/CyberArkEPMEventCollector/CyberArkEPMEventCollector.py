@@ -42,7 +42,6 @@ class Client(BaseClient):
             self.epm_auth_to_cyber_ark()
         else:
             return_error('Either the application id or the authentication url and application url is required to authenticate')
-            raise
 
     def epm_auth_to_cyber_ark(self):
         data = {
