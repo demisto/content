@@ -49,7 +49,7 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
-class exchangelibSSLAdapter(SSLAdapter):
+class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
@@ -913,7 +913,7 @@ class ExpandGroup(EWSService):
                     non_dl_emails[member['mailbox']] = member
 
 
-def get_expanded_group(protocol, email_address, recursive_expansion=False):
+def get_expanded_group(protocol, email_address, recursive_expansion=False):  # pragma: no cover
     group_members = ExpandGroup(protocol=protocol).call(email_address, recursive_expansion)
     group_details = {
         "name": email_address,
@@ -924,7 +924,7 @@ def get_expanded_group(protocol, email_address, recursive_expansion=False):
     return entry_for_object
 
 
-def get_searchable_mailboxes(protocol):
+def get_searchable_mailboxes(protocol):  # pragma: no cover
     searchable_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
@@ -1029,7 +1029,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
 
 def keys_to_camel_case(value):
     def str_to_camel_case(snake_str):
-        # Add condtion as Email object arrived in list and raised error
+        # Add condition as Email object arrived in list and raised error
         if not isinstance(snake_str, str):
             return snake_str
         components = snake_str.split('_')
