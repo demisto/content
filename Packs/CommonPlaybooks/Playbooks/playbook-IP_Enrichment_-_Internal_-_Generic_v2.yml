@@ -397,10 +397,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 6c875c0b-ef7d-42c5-82c1-e99cc62e3f2d
+    taskid: 955e1140-bb51-446f-86e3-754d5119635b
     type: playbook
     task:
-      id: 6c875c0b-ef7d-42c5-82c1-e99cc62e3f2d
+      id: 955e1140-bb51-446f-86e3-754d5119635b
       version: -1
       name: Endpoint Enrichment - Generic v2.1
       playbookName: Endpoint Enrichment - Generic v2.1
@@ -445,8 +445,33 @@ tasks:
                 iscontext: true
               raw: {}
           - operator: uniq
+      IPAddress:
+        complex:
+          root: IP.Address
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+              ignorecase: true
+          - - operator: in
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
       UseReputationCommand:
-        simple: "False"
+        simple: "True"
     separatecontext: true
     loop:
       iscommand: false
@@ -529,13 +554,14 @@ inputs:
   playbookInputQuery:
 - key: InternalRange
   value:
-    simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+    simple: inputs.InternalRange
   required: false
   description: "A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. \nFor example: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If no list is provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges)."
   playbookInputQuery:
 - key: ResolveIP
   value:
-    simple: "True"
+    complex:
+      root: inputs.ResolveIP
   required: true
   description: |-
     Whether to convert the IP address to a hostname using a DNS query (True/False).
