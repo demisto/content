@@ -784,7 +784,7 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://int2a26a.varonis-preprod.com/'
+        url = ''
         apiKey = 'vkey1_17944a55aa824cfbb472ce2256bb9417_luHz5L/2ul2tGuiibpgSVDjcz/K8CC/HPyujFyieT18='
         command = 'varonis-get-alerted-events'
         # 'test-module'|
