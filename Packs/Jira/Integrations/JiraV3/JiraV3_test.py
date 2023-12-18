@@ -736,6 +736,7 @@ class TestJiraCreateIssueCommand:
             create_issue_command(client=client, args={})
         assert 'The summary argument must be provided' in str(e)
 
+
 class TestJiraDeleteIssueCommand:
     def test_delete_issue_command(self, mocker):
         """
