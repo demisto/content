@@ -293,12 +293,12 @@
 </tr>
 <tr>
 <td style="width: 184px;">prefix</td>
-<td style="width: 421px;">Specify to limit blobs within a "folder" i.e. "folder-1/" if blob is "folder-1/file.txt".</td>
+<td style="width: 421px;">Specify to limit blobs within a "folder" i.e., "folder-1/" if blob is "folder-1/file.txt".</td>
 <td style="width: 103px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 184px;">delimiter</td>
-<td style="width: 421px;">Use a delimiter if you want to limit results within a specific "folder" and without any nested blobs i.e. "/".</td>
+<td style="width: 421px;">Use a delimiter if you want to limit results within a specific "folder" and without any nested blobs i.e., "/".</td>
 <td style="width: 103px;">Optional</td>
 </tr>
 </tbody>
