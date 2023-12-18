@@ -702,6 +702,39 @@ class TestJiraCreateIssueCommand:
         command_result = create_issue_command(client=client, args={"summary": "test"})
         assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
 
+    def test_create_issue_command_with_issue_json(self, mocker):
+        """
+        Given:
+            - A Jira client
+            - Jira summary from issue_json
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that the issue id and key of the newly created issue is returned.
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        raw_response = {'id': "1234", 'key': 'dummy_key', 'self': 'dummy_link'}
+        expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
+        mocker.patch.object(client, 'create_issue', return_value=raw_response)
+        command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
+        assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+    def test_create_issue_command_no_summary(self):
+        """
+        Given:
+            - A Jira client
+            - no Jira summary from issue_json / args
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that DemistoException is raised
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(DemistoException):
+            create_issue_command(client=client, args={})
+
 
 class TestJiraDeleteIssueCommand:
     def test_delete_issue_command(self, mocker):
