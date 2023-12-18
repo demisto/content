@@ -65,25 +65,18 @@ def item_to_incidents(item_info, sixgill_alerts_client):
 
 
 def add_sub_alerts_shared_fields(incident, item_info):
-    incident["name"] = item_info.get("title", "Cybersixgill Alert")
-    incident_date = datetime.strptime(item_info.get("date"), DATETIME_FORMAT)
-    incident["occurred"] = incident_date.strftime(DEMISTO_DATETIME_FORMAT)
-    incident["severity"] = THREAT_LEVEL_TO_SEVERITY[
-        item_info.get("threat_level", "unknown")
-    ]
-    incident["CustomFields"] = {
-        "cybersixgillthreatlevel": item_info.get("threat_level", "unknown"),
-        "cybersixgillthreattype": item_info.get("threats", []),
-        "cybersixgillassessment": item_info.get("assessment", None),
-        "cybersixgillrecommendations": "\n\n-----------\n\n".join(
-            item_info.get("recommendations", [])
-        ),
-        "incidentlink": f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}",
-        "cybersixgillcvss31": -1,
-        "cybersixgillcvss20": -1,
-        "cybersixgilldvescore": -1,
-        "cve": None,
-        "cybersixgillattributes": None,
+    incident['name'] = item_info.get('title', 'Cybersixgill Alert')
+    incident_date = datetime.strptime(item_info.get('date'), DATETIME_FORMAT)
+    incident['occurred'] = incident_date.strftime(DEMISTO_DATETIME_FORMAT)
+    incident['severity'] = THREAT_LEVEL_TO_SEVERITY[item_info.get('threat_level', 'unknown')]
+    incident['CustomFields'] = {
+        'cybersixgillthreatlevel': item_info.get('threat_level', 'unknown'),
+        'cybersixgillthreattype': item_info.get('threats', []),
+        'cybersixgillassessment': item_info.get('assessment', None),
+        'cybersixgillrecommendations': '\n\n-----------\n\n'.join(item_info.get('recommendations', [])),
+        'incidentlink': f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}",
+        'cve': None,
+        'cybersixgillattributes': None
     }
 
 
@@ -145,10 +138,11 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
         }
     )
     if item_info.get("sub_alerts_length"):
-        post_url = f"https://portal.cybersixgill.com/#/alerts?\
-        actionable_alert_content_id={item_info.get('id')}&\
-        aggregatedIndex={item_info.get('aggregate_alert_id')}\
-        &filters.alert_id={item_info.get('id')}"
+        url = "https://portal.cybersixgill.com/#/alerts?"
+        content = f"actionable_alert_content_id={item_info.get('id')}&"
+        index = f"aggregatedIndex={item_info.get('aggregate_alert_id')}&"
+        aleid = f"filters.alert_id={item_info.get('id')}"
+        post_url = f"{url}{content}{index}{aleid}"
         incident["CustomFields"].update({"cybersixgillposturl": post_url})
 
 
@@ -159,14 +153,7 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
     if cve_id:
         content_item["content"] = f"https://portal.cybersixgill.com/#/cve/{cve_id}"
         additional_info = item_info.get("additional_info", {})
-        incident["CustomFields"]["cve"] = cve_id
-        cybersixgillcvss31 = additional_info.get("nvd", {}).get("v3", {}).get("current")
-        cybersixgillcvss20 = additional_info.get("nvd", {}).get("v2", {}).get("current")
-        incident["CustomFields"]["cybersixgillcvss31"] = cybersixgillcvss31 or -1
-        incident["CustomFields"]["cybersixgillcvss20"] = cybersixgillcvss20 or -1
-        incident["CustomFields"]["cybersixgilldvescore"] = additional_info.get(
-            "score", {}
-        ).get("current")
+        incident['CustomFields']['cve'] = cve_id
         attributes = []
         for attribute in additional_info.get("attributes", []):
             if attribute.get("value", False):
