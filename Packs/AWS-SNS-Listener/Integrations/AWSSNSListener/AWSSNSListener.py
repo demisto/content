@@ -17,6 +17,7 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
+
 @app.post('/incident/aws/sns')
 async def handle_post(request: Request):
     data = ''
