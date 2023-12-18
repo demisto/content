@@ -164,7 +164,8 @@ def search_incidents(args: Dict):   # pragma: no cover
     )
     page_size = args.get('size') or DEFAULT_PAGE_SIZE
     page = STARTING_PAGE_NUMBER
-    more_pages = True
+
+    more_pages = len(all_found_incidents) == page_size
     while more_pages and len(all_found_incidents) < limit:
         args['page'] = page
         current_page_found_incidents = execute_command('getIncidents', args).get('data') or []

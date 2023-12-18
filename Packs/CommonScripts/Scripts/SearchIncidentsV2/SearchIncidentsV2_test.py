@@ -168,7 +168,7 @@ def test_apply_filters(args, expected_incident_ids):
     assert [incident['id'] for incident in incidents] == expected_incident_ids
 
 
-def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True):
+def get_incidents_mock(_, args, extract_contents=True, fail_on_error=True):
     ids = args.get('id', '').split(',')
     incidents_list = [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]
     if not extract_contents:
