@@ -237,6 +237,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
         "PublicFolderLocationExclusion" = $search_action.PublicFolderLocationExclusion
         "Retry" = $search_action.Retry
         "RunspaceId" = $search_action.RunspaceId
+        "SearchStatus" = "Success"
         "SharePointLocation" = $search_action.SharePointLocation
         "SharePointLocationExclusion" = $search_action.SharePointLocationExclusion
         "Name" = $search_action.Name
@@ -924,12 +925,6 @@ class SecurityAndComplianceClient {
             throw "New action must include valid action - Preview/Purge"
         }
         $response = New-ComplianceSearchAction @cmd_params
-        if (-not $response){
-            # Close session to remote
-            $this.DisconnectSession()
-
-            throw "The search action didn't return any results. Please check the search_name and consider running the o365-sc-start-search command before."
-        }
 
         # Close session to remote
         $this.DisconnectSession()
@@ -1627,6 +1622,20 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
 function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type)
+
+    if ($null -eq $raw_response) {
+        # Handle the scenario if a search is not found:
+        $human_readable = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        $entry_context = @{
+            $script:SEARCH_ACTION_ENTRY_CONTEXT = @{
+                "SearchStatus" = "NotFound"
+                "Name" = $kwargs.search_name
+            }
+        }
+        $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        return $human_readable, $entry_context, $raw_response
+    }
+
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
