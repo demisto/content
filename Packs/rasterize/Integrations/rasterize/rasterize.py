@@ -42,7 +42,9 @@ DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
 
-MAX_CHROMES_COUNT =  int(demisto.params().get('max_chromes_count', "32"))
+MAX_CHROMES_COUNT = int(demisto.params().get('max_chromes_count', "32"))
+# Max number of tabs each Chrome will open before not responding for more requests
+MAX_CHROME_TABS_COUNT = int(demisto.params().get('max_chrome_tabs_count', "10"))
 
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
@@ -69,16 +71,17 @@ class RasterizeType(Enum):
 def except_hook_recv_loop(args):
     if '(_recv_loop)' in args.thread.name \
             and type(args.exc_value) == json.decoder.JSONDecodeError:
-        demisto.debug("Caught a JSONDecodeError exception in _recv_loop, suppressing, {args.exc_value}")
+        demisto.debug(f"Caught a JSONDecodeError exception in _recv_loop, suppressing, {args.exc_value}")
 
 
 class TabLifecycleManager:
-    def __init__(self, browser, offline_mode):
+    def __init__(self, browser, chrome_port, offline_mode):
         self.browser = browser
+        self.chrome_port = chrome_port
         self.offline_mode = offline_mode
         self.tab = None
 
-        demisto.debug(f'TabLifecycleManager, __init__, active tabs len: {len(self.browser.list_tab())}')
+        demisto.debug(f'TabLifecycleManager, __init__, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
 
     def __enter__(self):
         self.tab = self.browser.new_tab()
@@ -90,12 +93,13 @@ class TabLifecycleManager:
             self.tab.Network.emulateNetworkConditions(offline=False, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
 
         self.tab.Page.enable()
-        demisto.debug(f'TabLifecycleManager, entering tab {self.tab.id}, tabs len: {len(self.browser.list_tab())}')
+        demisto.debug(f'TabLifecycleManager, {self.chrome_port=}, entering tab {self.tab.id},' \
+                      f' tabs len: {len(self.browser.list_tab())}')
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
         if exc_type or exc_val or exc_tb:
-            demisto.info(f'TabLifecycleManager, __exit__ with exception, {exc_type=}, {exc_val=}, {exc_tb=}')
+            demisto.info(f'TabLifecycleManager, __exit__ with exception, {self.chrome_port=}, {exc_type=}, {exc_val=}, {exc_tb=}')
 
         if self.tab and self.tab.id:
             tab_id = self.tab.id
@@ -103,40 +107,43 @@ class TabLifecycleManager:
 
             try:
                 time.sleep(1)  # pylint: disable=E9003
-                demisto.debug('TabLifecycleManager, __exit__, disabling page')
+                demisto.debug('TabLifecycleManager, __exit__, {self.chrome_port=}, disabling page')
                 self.tab.Page.disable()
             except Exception as ex:
-                demisto.info(f'TabLifecycleManager, failed to disable page due to {ex}')
+                demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to disable page due to {ex}')
 
             try:
                 demisto.debug(
-                    f'TabLifecycleManager, __exit__, waiting for tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
-                tab_wait_response = self.tab.wait(timeout=1)
-                demisto.debug(f"TabLifecycleManager, __exit__, {tab_wait_response=}")
-            except Exception as ex:
-                demisto.info(f'TabLifecycleManager, failed to stop tab {tab_id} due to {ex}')
-
-            try:
-                demisto.debug(
-                    f'TabLifecycleManager, __exit__, {threading.current_thread().name=}, stopping tab {tab_id},'
+                    f'TabLifecycleManager, __exit__, {self.chrome_port=}, waiting for tab {tab_id}, '
                     f' active tabs len: {len(self.browser.list_tab())}')
-                tab_stop_response = self.tab.stop()
-                demisto.debug(f"TabLifecycleManager, __exit__, {tab_stop_response=}")
+                tab_wait_response = self.tab.wait(timeout=1)
+                demisto.debug(f"TabLifecycleManager, __exit__, {self.chrome_port=}, {tab_wait_response=}")
             except Exception as ex:
-                demisto.info(f'TabLifecycleManager, failed to stop tab {tab_id} due to {ex}')
+                demisto.info(f'TabLifecycleManager, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}')
 
             try:
                 demisto.debug(
-                    f'TabLifecycleManager, __exit__, closing tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
+                    f'TabLifecycleManager, __exit__, {self.chrome_port=}, {threading.current_thread().name=}, ' \
+                    f' stopping tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
+                tab_stop_response = self.tab.stop()
+                demisto.debug(f"TabLifecycleManager, __exit__, {self.chrome_port=}, {tab_stop_response=}, " \
+                              f" active tabs len: {len(self.browser.list_tab())}")
+            except Exception as ex:
+                demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}')
+
+            try:
+                demisto.debug(
+                    f'TabLifecycleManager, __exit__, {self.chrome_port=}, closing tab {tab_id}, ' \
+                    f' active tabs len: {len(self.browser.list_tab())}')
                 self.browser.close_tab(tab_id)
             except Exception as ex:
-                demisto.info(f'TabLifecycleManager, failed to close tab {tab_id} due to {ex}')
+                demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to close tab {tab_id} due to {ex}')
 
             demisto.debug(
-                          'TabLifecycleManager, __exit__, sleeping, allowing the tab to close,'
+                          'TabLifecycleManager, __exit__, {self.chrome_port=}, sleeping, allowing the tab to close,'
                           f' active tabs len: {len(self.browser.list_tab())}')
             time.sleep(1)  # pylint: disable=E9003
-            demisto.debug(f'TabLifecycleManager, __exit__, active tabs len: {len(self.browser.list_tab())}')
+            demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
 
 
 class PychromeEventHandler:
@@ -205,8 +212,14 @@ def is_chrome_running_locally(port):
             browser = pychrome.Browser(url=browser_url)
 
             # Use list_tab to ping the browser and make sure it's available
-            browser.list_tab()
-            return browser
+            tabs_count = len(browser.list_tab())
+            demisto.debug(f"is_chrome_running_locally, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
+            if tabs_count < MAX_CHROME_TABS_COUNT:
+                return browser
+            else:
+                demisto.debug(f"Connected to Chrome on port {port=} with {tabs_count} tabs, but {MAX_CHROME_TABS_COUNT=}," \
+                              " so not using it")
+                return None
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
             connection_refused = 'connection refused'
@@ -233,14 +246,13 @@ def ensure_chrome_running():  # pragma: no cover
         if chrome_is_running and browser:
             # There's a Chrome listening on that port, and we're connected to it
             demisto.debug(f'Connected to Chrome running on port {chrome_port}')
-            return browser
+            return browser, chrome_port
         elif chrome_is_running:
             # There's a Chrome listening on that port, but we couldn't connect to it
             demisto.debug(f"Found Chrome running on port {chrome_port}, but couldn't connect to it")
         else:
             # There's no Chrome listening on that port
             demisto.debug(f"No Chrome found on port {chrome_port}")
-            break
         demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
 
     if chrome_port == ports_list[-1]:
@@ -262,7 +274,7 @@ def ensure_chrome_running():  # pragma: no cover
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = is_chrome_running_locally(chrome_port)
-            return browser
+            return browser, chrome_port
         else:
             demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
     except subprocess.SubprocessError as ex:
@@ -400,8 +412,9 @@ def rasterize(path: str,
     :param height: window height
     """
     demisto.debug(f"rasterize, {path=}")
-    if browser := ensure_chrome_running():
-        with TabLifecycleManager(browser, offline_mode) as tab:
+    browser, chrome_port = ensure_chrome_running()
+    if browser:
+        with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
             tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:

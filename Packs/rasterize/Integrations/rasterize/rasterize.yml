@@ -28,6 +28,11 @@ configuration:
   name: max_chromes_count
   type: 0
   required: false
+- defaultvalue: '10'
+  display: Number of maximum tabs each Chrome will be allowed to open.
+  name: max_chrome_tabs_count
+  type: 0
+  required: false
 - display: Rasterize Mode
   name: rasterize_mode
   type: 15
