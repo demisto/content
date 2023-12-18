@@ -644,6 +644,8 @@ def main():
 
     # get the service API url
     base_url = params.get('url')
+    if 'api/v1' not in base_url:
+        base_url = urljoin(base_url, '/api/v1/')
     verify = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
