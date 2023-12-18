@@ -42,7 +42,7 @@ DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
 
-MAX_CHROMES_COUNT = int(demisto.params().get('max_chromes_count', "32"))
+MAX_CHROMES_COUNT = int(demisto.params().get('max_chromes_count', "64"))
 # Max number of tabs each Chrome will open before not responding for more requests
 MAX_CHROME_TABS_COUNT = int(demisto.params().get('max_chrome_tabs_count', "10"))
 
