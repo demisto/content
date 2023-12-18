@@ -52,4 +52,4 @@ script:
   isFetchSamples: true
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- AWS SNS Listener - Test
