@@ -2122,6 +2122,14 @@ script:
       description: wheather the rule is valid or not.
       type: string
     description: Retrieve information about the Inbox rule properties.
+  - name: ews-remove-rule
+    arguments:
+    - name: mailbox
+      description: The mailbox that contains the Inbox rule.
+      required: true
+    - name: identity
+      description: The Inbox rule that you want to remove.
+      required: true
   script: ''
   type: powershell
   dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
