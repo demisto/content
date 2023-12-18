@@ -6,7 +6,6 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 
-- `Files.ReadWrite.All - Application`
 - `Sites.ReadWrite.All - Application`
 
 OR

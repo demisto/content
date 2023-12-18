@@ -86,7 +86,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       isArray: true
       name: object_type
       predefined:
@@ -112,7 +112,7 @@ script:
     name: msgraph-delete-file
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -210,7 +210,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -305,7 +305,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -445,7 +445,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -584,7 +584,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
