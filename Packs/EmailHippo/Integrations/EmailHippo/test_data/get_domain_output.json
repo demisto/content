@@ -1,0 +1,369 @@
+{
+    "api_result": {
+        "meta": {
+            "recordCreatedDate": "2018-07-20T13:27:00Z",
+            "recordUpdatedDate": "2023-11-05T14:28:35Z",
+            "recordAge": "0 year(s), 0 months, 3 week(s), 0 day(s), 18 hour(s), 37 minute(s)",
+            "recordAgeIso8601": "P21DT18H37M20.4673999S",
+            "timeToExpiry": "4 year(s), 9 months, 2 week(s), 3 day(s)",
+            "timeToExpirySeconds": 151365244,
+            "timeToExpiryIso8601": "P4Y9M17D",
+            "tld": "com",
+            "domain": "example.com",
+            "domainAge": "26 year(s), 2 month(s), 1 week(s), 5 day(s)",
+            "domainAgeSeconds": 826769155,
+            "domainAgeIso8601": "P26Y2M12D",
+            "parseCode": "Success",
+            "executionTime": 354
+        },
+        "whoisServerRecord": {
+            "recordFound": true,
+            "registrar": {
+                "registrarId": "000",
+                "name": "example",
+                "whois": "whois.example.com",
+                "url": "http://www.example.com",
+                "abuseEmail": "test@example.com",
+                "abusePhone": "+1.00000000"
+            },
+            "dnsSec": "unsigned",
+            "domainName": "example.com",
+            "tld": "com",
+            "domainHandle": "XXXXX",
+            "domainOwnerContact": {
+                "userId": "",
+                "name": "",
+                "organization": "example",
+                "street1": "",
+                "street2": null,
+                "street3": null,
+                "street4": null,
+                "city": "",
+                "state": "CA",
+                "postalCode": "",
+                "country": "US",
+                "phoneNumber": "",
+                "phoneNumberExt": "",
+                "faxNumber": "",
+                "faxNumberExt": "",
+                "email": ""
+            },
+            "adminContact": {
+                "userId": "",
+                "name": "",
+                "organization": "example",
+                "street1": "",
+                "street2": null,
+                "street3": null,
+                "street4": null,
+                "city": "",
+                "state": "CA",
+                "postalCode": "",
+                "country": "US",
+                "phoneNumber": "",
+                "phoneNumberExt": "",
+                "faxNumber": "",
+                "faxNumberExt": "",
+                "email": "test@example.com"
+            },
+            "billingContact": {
+                "userId": null,
+                "name": null,
+                "organization": null,
+                "street1": null,
+                "street2": null,
+                "street3": null,
+                "street4": null,
+                "city": null,
+                "state": null,
+                "postalCode": null,
+                "country": null,
+                "phoneNumber": null,
+                "phoneNumberExt": null,
+                "faxNumber": null,
+                "faxNumberExt": null,
+                "email": null
+            },
+            "techContact": {
+                "userId": "",
+                "name": "",
+                "organization": "example",
+                "street1": "",
+                "street2": null,
+                "street3": null,
+                "street4": null,
+                "city": "",
+                "state": "CA",
+                "postalCode": "",
+                "country": "US",
+                "phoneNumber": "",
+                "phoneNumberExt": "",
+                "faxNumber": "",
+                "faxNumberExt": "",
+                "email": "test@example.com"
+            },
+            "registrarContact": {
+                "userId": null,
+                "name": null,
+                "organization": null,
+                "street1": null,
+                "street2": null,
+                "street3": null,
+                "street4": null,
+                "city": null,
+                "state": null,
+                "postalCode": null,
+                "country": null,
+                "phoneNumber": null,
+                "phoneNumberExt": null,
+                "faxNumber": null,
+                "faxNumberExt": null,
+                "email": null
+            },
+            "zoneContact": {
+                "userId": null,
+                "name": null,
+                "organization": null,
+                "street1": null,
+                "street2": null,
+                "street3": null,
+                "street4": null,
+                "city": null,
+                "state": null,
+                "postalCode": null,
+                "country": null,
+                "phoneNumber": null,
+                "phoneNumberExt": null,
+                "faxNumber": null,
+                "faxNumberExt": null,
+                "email": null
+            },
+            "nameServers": [
+                {
+                    "Address": "example.com"
+                }
+            ],
+            "domainStati": [],
+            "remarks": null,
+            "reseller": "",
+            "created": "1997-09-15T07:00:00Z",
+            "changed": "2019-09-09T15:39:04Z",
+            "expiry": "2028-09-13T07:00:00Z",
+            "customFields": null
+        }
+    },
+    "expected_context": {
+        "Domain(val.Name && val.Name == obj.Name)": [
+            {
+                "Name": "example.com",
+                "Registrar": {
+                    "Name": "example",
+                    "AbuseEmail": "test@example.com",
+                    "AbusePhone": "+1.00000000"
+                },
+                "Admin": {
+                    "Name": "",
+                    "Email": "test@example.com",
+                    "Phone": "",
+                    "Country": "US"
+                },
+                "CreationDate": "2018-07-20T13:27:00.000Z",
+                "UpdatedDate": "2023-11-05T14:28:35.000Z",
+                "NameServers": [
+                    {
+                        "Address": "example.com"
+                    }
+                ],
+                "Tech": {
+                    "Country": "US",
+                    "Organization": "example",
+                    "Email": "test@example.com"
+                },
+                "WHOIS": {
+                    "Registrar": {
+                        "Name": "example",
+                        "AbuseEmail": "test@example.com",
+                        "AbusePhone": "+1.00000000"
+                    },
+                    "Admin": {
+                        "Name": "",
+                        "Email": "test@example.com",
+                        "Phone": "",
+                        "Country": "US"
+                    },
+                    "CreationDate": "2018-07-20T13:27:00.000Z",
+                    "UpdatedDate": "2023-11-05T14:28:35.000Z",
+                    "NameServers": [
+                        {
+                            "Address": "example.com"
+                        }
+                    ]
+                }
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "example.com",
+                "Type": "domain",
+                "Vendor": "Email Hippo",
+                "Score": 0
+            }
+        ],
+        "EmailHippo.Domain(val.domain && val.domain == obj.domain)": {
+            "meta": {
+                "recordCreatedDate": "2018-07-20T13:27:00Z",
+                "recordUpdatedDate": "2023-11-05T14:28:35Z",
+                "recordAge": "0 year(s), 0 months, 3 week(s), 0 day(s), 18 hour(s), 37 minute(s)",
+                "recordAgeIso8601": "P21DT18H37M20.4673999S",
+                "timeToExpiry": "4 year(s), 9 months, 2 week(s), 3 day(s)",
+                "timeToExpirySeconds": 151365244,
+                "timeToExpiryIso8601": "P4Y9M17D",
+                "tld": "com",
+                "domain": "example.com",
+                "domainAge": "26 year(s), 2 month(s), 1 week(s), 5 day(s)",
+                "domainAgeSeconds": 826769155,
+                "domainAgeIso8601": "P26Y2M12D",
+                "parseCode": "Success",
+                "executionTime": 354
+            },
+            "whoisServerRecord": {
+                "recordFound": true,
+                "registrar": {
+                    "registrarId": "000",
+                    "name": "example",
+                    "whois": "whois.example.com",
+                    "url": "http://www.example.com",
+                    "abuseEmail": "test@example.com",
+                    "abusePhone": "+1.00000000"
+                },
+                "dnsSec": "unsigned",
+                "domainName": "example.com",
+                "tld": "com",
+                "domainHandle": "XXXXX",
+                "domainOwnerContact": {
+                    "userId": "",
+                    "name": "",
+                    "organization": "example",
+                    "street1": "",
+                    "street2": null,
+                    "street3": null,
+                    "street4": null,
+                    "city": "",
+                    "state": "CA",
+                    "postalCode": "",
+                    "country": "US",
+                    "phoneNumber": "",
+                    "phoneNumberExt": "",
+                    "faxNumber": "",
+                    "faxNumberExt": "",
+                    "email": ""
+                },
+                "adminContact": {
+                    "userId": "",
+                    "name": "",
+                    "organization": "example",
+                    "street1": "",
+                    "street2": null,
+                    "street3": null,
+                    "street4": null,
+                    "city": "",
+                    "state": "CA",
+                    "postalCode": "",
+                    "country": "US",
+                    "phoneNumber": "",
+                    "phoneNumberExt": "",
+                    "faxNumber": "",
+                    "faxNumberExt": "",
+                    "email": "test@example.com"
+                },
+                "billingContact": {
+                    "userId": null,
+                    "name": null,
+                    "organization": null,
+                    "street1": null,
+                    "street2": null,
+                    "street3": null,
+                    "street4": null,
+                    "city": null,
+                    "state": null,
+                    "postalCode": null,
+                    "country": null,
+                    "phoneNumber": null,
+                    "phoneNumberExt": null,
+                    "faxNumber": null,
+                    "faxNumberExt": null,
+                    "email": null
+                },
+                "techContact": {
+                    "userId": "",
+                    "name": "",
+                    "organization": "example",
+                    "street1": "",
+                    "street2": null,
+                    "street3": null,
+                    "street4": null,
+                    "city": "",
+                    "state": "CA",
+                    "postalCode": "",
+                    "country": "US",
+                    "phoneNumber": "",
+                    "phoneNumberExt": "",
+                    "faxNumber": "",
+                    "faxNumberExt": "",
+                    "email": "test@example.com"
+                },
+                "registrarContact": {
+                    "userId": null,
+                    "name": null,
+                    "organization": null,
+                    "street1": null,
+                    "street2": null,
+                    "street3": null,
+                    "street4": null,
+                    "city": null,
+                    "state": null,
+                    "postalCode": null,
+                    "country": null,
+                    "phoneNumber": null,
+                    "phoneNumberExt": null,
+                    "faxNumber": null,
+                    "faxNumberExt": null,
+                    "email": null
+                },
+                "zoneContact": {
+                    "userId": null,
+                    "name": null,
+                    "organization": null,
+                    "street1": null,
+                    "street2": null,
+                    "street3": null,
+                    "street4": null,
+                    "city": null,
+                    "state": null,
+                    "postalCode": null,
+                    "country": null,
+                    "phoneNumber": null,
+                    "phoneNumberExt": null,
+                    "faxNumber": null,
+                    "faxNumberExt": null,
+                    "email": null
+                },
+                "nameServers": [
+                    {
+                        "Address": "example.com"
+                    }
+                ],
+                "domainStati": [],
+                "remarks": null,
+                "reseller": "",
+                "created": "1997-09-15T07:00:00Z",
+                "changed": "2019-09-09T15:39:04Z",
+                "expiry": "2028-09-13T07:00:00Z",
+                "customFields": null
+            },
+            "domain": "example.com",
+            "creation_date": "2018-07-20T13:27:00.000Z",
+            "updated_date": "2023-11-05T14:28:35.000Z"
+        }
+    }
+}
