@@ -264,7 +264,7 @@ tasks:
     task:
       id: b0780516-7728-4d8b-899a-44cf52479091
       version: -1
-      name: Set Alert Verdict
+      name: Verdict
       type: title
       iscommand: false
       brand: ""
@@ -623,7 +623,7 @@ tasks:
     task:
       id: 0189f824-8ed1-4912-8dae-d3f174a8bffc
       version: -1
-      name: Set Incident Verdict
+      name: Set Alert Verdict
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1157,7 +1157,7 @@ tasks:
     task:
       id: 0179032e-abe1-479a-882c-475b213fb9dc
       version: -1
-      name: Set Incident Verdict
+      name: Set Alert Verdict
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
