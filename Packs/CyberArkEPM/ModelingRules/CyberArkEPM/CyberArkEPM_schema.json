@@ -167,6 +167,10 @@
         "commandInfo": {
             "type": "string",
             "is_array": false
+        },
+        "eventTypeXsiam": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
