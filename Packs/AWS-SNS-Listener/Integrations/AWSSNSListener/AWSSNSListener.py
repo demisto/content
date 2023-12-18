@@ -106,6 +106,8 @@ def main():
                     if private_key_path:
                         os.unlink(private_key_path)
                     time.sleep(5)
+        else:
+            raise NotImplementedError(f'Command {demisto.command()} is not implemented.')
     except Exception as e:
         demisto.error(format_exc())
         return_error(f'Failed to execute {demisto.command()} command. Error: {e}')

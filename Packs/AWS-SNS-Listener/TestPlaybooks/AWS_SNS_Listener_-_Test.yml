@@ -1,6 +1,5 @@
 id: AWS SNS Listener - Test
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: AWS SNS Listener - Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -350,3 +350,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.10.0
+description: ''
