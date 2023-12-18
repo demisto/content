@@ -3096,7 +3096,7 @@ def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_clien
     response = client.get_ipam_discovered_public_addresses(**kwargs)
 
     if len(response['IpamDiscoveredPublicAddresses']) == 0:
-        return CommandResults(readable_output='No Ipam Discovered Public Addresseses were found.')
+        return CommandResults(readable_output='No Ipam Discovered Public Addresses were found.')
 
     output = json.dumps(response, cls=DatetimeEncoder)
 
