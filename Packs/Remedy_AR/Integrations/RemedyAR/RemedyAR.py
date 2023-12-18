@@ -74,7 +74,6 @@ def logout():
 def get_server_details(args):
     fields = args.get('fields')
     qualification = args.get('qualification', '')
-    form_name = args.get('form_name', 'AST:ComputerSystem')
 
     # Adds fields to filter by
     if isinstance(fields, list):
@@ -84,7 +83,7 @@ def get_server_details(args):
     # URL Encodes qualification
     qualification = quote_plus(qualification)
 
-    cmd_url = f'/arsys/v1/entry/{form_name}/?q={qualification}&{fields}'
+    cmd_url = f'/arsys/v1/entry/AST:ComputerSystem/?q={qualification}&{fields}'
     result = http_request('GET', cmd_url, None, DEFAULT_HEADERS).json()
 
     entries = result['entries']
