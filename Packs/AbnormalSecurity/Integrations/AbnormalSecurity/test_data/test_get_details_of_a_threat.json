@@ -1,0 +1,49 @@
+{
+    "threatId": "asdf097sdf907",
+    "messages": [
+        {
+            "abxMessageId": -123456789,
+            "abxPortalUrl": "https://someurl.com",
+            "attachmentCount": 0,
+            "attachmentNames": [],
+            "attackStrategy": "Some attack strategy",
+            "attackType": "Some attack type",
+            "attackVector": "Some attack vector",
+            "attackedParty": "Some attacked party",
+            "autoRemediated": false,
+            "fromAddress": "some@test.com",
+            "fromName": "some name",
+            "impersonatedParty": "Some impersonated party",
+            "internetMessageId": "Some internet message id",
+            "isRead": false,
+            "postRemediated": false,
+            "receivedTime": "2023-12-03T19:26:36Z",
+            "recipientAddress": "some recipient address",
+            "remediationStatus": "some remediation status",
+            "remediationTimestamp": "2023-12-09T23:06:16.066762Z",
+            "sentTime": "2023-12-03T19:26:36Z",
+            "subject": "some subject",
+            "threatId": "asdf097sdf907",
+            "toAddresses": ["some@test.com"],
+            "ccEmails": [],
+            "replyToEmails": [],
+            "returnPath": null,
+            "senderDomain": "some.com",
+            "senderIpAddress": null,
+            "summaryInsights": [
+                "Insight #1",
+                "Insight #2",
+                "Insight #3",
+                "Insight #4"
+            ],
+            "urlCount": 10,
+            "urls": [
+                "https://someurl.com",
+                "https://someurl.com",
+                "https://someurl.com",
+                "https://someurl.com",
+                "https://someurl.com"
+            ]
+        }
+    ]
+}
