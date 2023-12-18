@@ -105,6 +105,7 @@ def fetch_indicators_command(
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
         demisto.info(f"in the else statement, after get_added_after, {added_after=}")
         indicators = client.build_iterator(limit, added_after=added_after)
+        demisto.info(f"in the else statement, after indicators, {indicators=}")
         demisto.info(f"in the else statement, after indicators, {client.last_fetched_indicator__modified}")
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
