@@ -203,7 +203,7 @@ script:
     outputs:
     - contextPath: vendors
       description: Vendors.
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.83255
   feed: false
   isFetchSamples: true
   runonce: false
