@@ -90,7 +90,7 @@ Deletes an item from OneDrive.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". Possible values are: drives, groups, sites, users. | Required | 
+| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command. | Required | 
 | item_id | The ID of the item to delete.<br/>To get the ID of the file you want to delete, use the msgraph-list-drive-content command. | Required | 
 
@@ -126,7 +126,7 @@ Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". Possible values are: drives, groups, users, sites. | Required | 
+| object_type | The MS Graph resource. Possible values are: drives, groups, users, sites. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command. | Required | 
 | parent_id | The ID of the folder in which to upload the file.<br/>To get the ID of a folder, use the msgraph-list-drive-content command. | Required | 
 | file_name | The name of the file to upload. | Required | 
@@ -227,7 +227,7 @@ Replaces the content of the file in the specified MS Graph resource.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". Possible values are: drives, groups, sites, users. | Required | 
+| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command. | Required | 
 | item_id | The MS Graph item ID of the file you want to replace.<br/>To get the ID of the file you want to replace, use the msgraph-list-drive-content command. | Required | 
 | entry_id | The Cortex XSOAR entry ID of the new file that will replace the current file. | Required | 
@@ -334,7 +334,7 @@ Creates a new folder in a drive with the specified parent item or path.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". Possible values are: drives, groups, sites, users. | Required | 
+| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command. | Required | 
 | parent_id | The ID of the parent in which to upload the new folder.<br/>Parent can be either 'root' or another folder.<br/>To get the required folder ID, use the msgraph-list-drive-content command. | Required | 
 | folder_name | The name of the new folder. | Required | 
@@ -520,7 +520,7 @@ Returns a list of files and folders in the specified drive.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". Possible values are: drives, groups, sites, users. | Required | 
+| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command. | Required | 
 | item_id | The MS Graph item ID.<br/>It can be either 'root' or another folder.<br/>Passing a folder ID retrieves files from a specified folder.<br/>The default is 'root': It retrieves the content in the root of the drive.<br/><br/>To get the required folder ID, use the msgraph-list-drive-content command and leave the argument empty in order to get a list of folders that are located in the root.<br/><br/>If your folder is nested inside another folder, pass the parent ID found when running the msgraph-list-drive-content command without an 'item_id' in this argument to get the required folder ID. | Optional | 
 | limit | The maximum number of results to return. | Optional | 
@@ -700,7 +700,7 @@ Downloads the file contents of the drive item.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The MS Graph resource. Can be "drives", "groups", "sites", or "users". Possible values are: drives, groups, sites, users. | Required | 
+| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command. | Required | 
 | item_id | The MS Graph item ID.<br/>To get the ID of the file you want to download, use the msgraph-list-drive-content command. | Required | 
 
@@ -745,7 +745,7 @@ There is no context output for this command.
 ### msgraph-list-site-permissions
 
 ***
-List of apps with permissions for the site, if permission_id is provide it will return the details of that permission.
+List of apps with permissions for the site. If permission_id is provided, it will return the details of that permission.
 
 #### Permission required
 
