@@ -258,7 +258,7 @@ def ensure_chrome_running():  # pragma: no cover
 
     if chrome_port == ports_list[-1]:
         demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to chrome')
-        return None
+        return None, None
 
     demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
     try:
@@ -282,7 +282,7 @@ def ensure_chrome_running():  # pragma: no cover
         demisto.info(f'Error starting Chrome on port {chrome_port}. Error: {ex}')
     demisto.info(f'Could not connect to Chrome on port {chrome_port}')
 
-    return None
+    return None, None
 
 
 def setup_tab_event(browser, tab):
