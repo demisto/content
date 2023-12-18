@@ -101,7 +101,7 @@
         "verdict",
         "reputation"
     ],
-    "BaseScript": [
+    "Script": [
         "isEqualString",
         "isFalse",
         "isTrue",
