@@ -52,8 +52,6 @@ def generic_request_with_retries(client: demisto_client,
     Returns: True if the request succeeded and status in case of waiting_for_process_to_end
 
     """
-    logging.info(f'####### TESTING ######## Generic Request ')
-
     try:
         for attempts_left in range(attempts_count - 1, -1, -1):
             try:
@@ -63,8 +61,6 @@ def generic_request_with_retries(client: demisto_client,
 
                 # should_try_handler return True, we are trying to send request.
                 logging.info(f"{prior_message}, attempt: {attempts_count - attempts_left}/{attempts_count}")
-                logging.info(f'####### TESTING ######## {body=}')
-                
                 response, status_code, headers = demisto_client.generic_request_func(client,
                                                                                      path=path,
                                                                                      method=method,
@@ -72,11 +68,6 @@ def generic_request_with_retries(client: demisto_client,
                                                                                      body=body,
                                                                                      response_type=response_type,
                                                                                      _request_timeout=request_timeout)
-
-                logging.info(f'####### TESTING ########' + str(response))
-                logging.info(f'####### TESTING ########' + str(response.body))
-                logging.info(f'####### TESTING ########' + str(status_code))
-                
 
                 if 200 <= status_code < 300 and status_code != 204:
                     if success_handler:
