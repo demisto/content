@@ -499,7 +499,7 @@ tasks:
       - - operator: match
           left:
             value:
-              simple: File.Type
+              simple: Inputs.File.Type
             iscontext: true
           right:
             value:
