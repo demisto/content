@@ -5,7 +5,7 @@ from CommonServerPython import *
 ACCOUNT_LIST_COMMAND = 'aws-org-account-list'
 
 
-def http_request(method: str, uri: str, body: dict = {}) -> dict:
+def internal_request(method: str, uri: str, body: dict = {}) -> dict:
     return json.loads(demisto.internalHttpRequest(method, uri, body)['body'])
 
 
@@ -31,14 +31,14 @@ def get_account_ids() -> list[str]:
 def update_ec2_instance(account_ids: list[str], instance_name: str):
     accounts_as_str = ','.join(account_ids)
     try:
-        response = http_request('POST', '/settings/integration/search')
+        response = internal_request('POST', '/settings/integration/search')
         demisto.debug(str(response))  # remove
         instance = next(inst for inst in response['instances'] if inst['name'] == instance_name)
         if instance['configvalues']['accounts_to_access'] != accounts_as_str:
             demisto.debug(f'Updating {instance_name!r} with accounts: {accounts_as_str}')
             # instance['version'] += 1
             instance['configvalues']['accounts_to_access'] = accounts_as_str
-            response = http_request('PUT', '/settings/integration', instance)
+            response = internal_request('PUT', '/settings/integration', instance)
             return_results(str(response))  # remove
         else:
             demisto.debug(f'Not updating {instance_name!r}. Account list is up to date.')
