@@ -2083,6 +2083,44 @@ script:
     - contextPath: MSGraphMail.Rule.Priority
       description: The priorty of the rule.
       type: string
+    description: Retrieve a list of an Inbox rules.
+  - name: ews-get-rule
+    arguments:
+    - name: mailbox
+      description: The mailbox that contains the Inbox rule.
+      required: true
+    - name: identity
+      description: The Inbox rule that you want to view.
+      required: true
+    - name: display_all
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Display all properties of the rule as a list .
+      defaultValue: 'false'
+    outputs:
+    - contextPath: MSGraphMail.Rule.Rule
+      description: The rule identity.
+      type: string
+    - contextPath: MSGraphMail.Rule.RuleName
+      description: The rule name.
+      type: string
+    - contextPath: MSGraphMail.Rule.IsEnabled
+      description: Wheather the rule is enabled or not.
+      type: string
+    - contextPath: MSGraphMail.Rule.Priority
+      description: The priorty of the rule.
+      type: string
+    - contextPath: MSGraphMail.Rule.Description
+      description: The description of the rule.
+      type: string
+    - contextPath: MSGraphMail.Rule.StopProcessingRules
+      description: Stop Processing Rules.
+      type: string
+    - contextPath: MSGraphMail.Rule.IsValid
+      description: wheather the rule is valid or not.
+      type: string
     description: Retrieve information about the Inbox rule properties.
   script: ''
   type: powershell
