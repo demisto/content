@@ -2167,6 +2167,13 @@
 						"transformers": []
 					}
 				},
+"Status Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
 				"Subscription Assigned By": {
 					"complex": {
 						"accessor": "data.properties.metadata.assignedBy",
