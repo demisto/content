@@ -412,7 +412,7 @@ def rasterize(path: str,
     :param width: window width
     :param height: window height
     """
-    demisto.debug(f"rasterize, {path=}")
+    demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = ensure_chrome_running()
     if browser:
         with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
