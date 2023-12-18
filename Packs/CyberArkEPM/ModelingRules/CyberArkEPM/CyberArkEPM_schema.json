@@ -157,7 +157,7 @@
             "is_array": false
         },
         "logonStatusId": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "policyAction": {
