@@ -148,12 +148,11 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
             try:
                 result = func(new_args)
                 result.readable_output = f'#### Result for account `{account_id}`:\n{result.readable_output}'
-                if result.outputs:
-                    if isinstance(result.outputs, list):
-                        for obj in result.outputs:
-                            obj['AccountId'] = account_id
-                    elif isinstance(result.outputs, dict):
-                        result.outputs['AccountId'] = account_id
+                if isinstance(result.outputs, list):
+                    for obj in result.outputs:
+                        obj['AccountId'] = account_id
+                elif isinstance(result.outputs, dict):
+                    result.outputs['AccountId'] = account_id
                 return result
             except Exception as e:  # catch any errors raised from "func" so that they can be tagged with the account and shown
                 return {
