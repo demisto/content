@@ -1040,7 +1040,6 @@ class FilterCondition:
 
 class FilterValue:
     def __init__(self, value):
-        self = value
         self.value = value
         # self.displayValue = value.get("displayValue", None)
 
@@ -1663,7 +1662,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first_fetch_time: datetime,
+def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first_fetch_time: Optional[datetime],
                             alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
                             ) -> Tuple[Dict[str, Optional[datetime]], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
@@ -1701,6 +1700,9 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
 
     incidents: List[Dict[str, Any]] = []
 
+    if first_fetch_time is None:
+        raise ValueError("first_fetch_time can't be None")
+        
     last_fetched_ingest_time_str = last_run.get('last_fetched_ingest_time', first_fetch_time.isoformat())
     last_fetched_ingest_time = try_convert(
         last_fetched_ingest_time_str,
@@ -2132,7 +2134,7 @@ def main() -> None:
 
         elif command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module_command(client)
+            result = check_module_command(client)
             return_results(result)
 
         elif command == 'varonis-get-alerts':
