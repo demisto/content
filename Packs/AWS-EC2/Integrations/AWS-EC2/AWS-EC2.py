@@ -964,7 +964,9 @@ def modify_volume_command(args: dict) -> CommandResults:
     raw.update({'Region': obj['_user_provided_options']['region_name']})
 
     return CommandResults(
-        outputs={'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Modification': raw},
+        outputs=raw,
+        outputs_prefix='AWS.EC2.Volumes',
+        outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Modification', data)
     )
 
@@ -1119,7 +1121,9 @@ def attach_volume_command(args: dict) -> CommandResults:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
     return CommandResults(
-        outputs={'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data},
+        outputs=data,
+        outputs_prefix='AWS.EC2.Volumes',
+        outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
     )
 
@@ -1153,7 +1157,9 @@ def detach_volume_command(args: dict) -> CommandResults:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
     return CommandResults(
-        outputs={'AWS.EC2.Volumes(val.VolumeId === obj.VolumeId).Attachments': data},
+        outputs=data,
+        outputs_prefix='AWS.EC2.Volumes',
+        outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
     )
 
@@ -1637,14 +1643,13 @@ def revoke_security_group_egress_command(args: dict) -> CommandResults:
         kwargs['IpPermissions'] = [IpPermissions_dict]
 
     response = client.revoke_security_group_egress(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
-        if 'UnknownIpPermissions' in response:
-            raise DemistoException("Security Group egress rule not found.")
-        demisto.info(f"the response is: {response}")
-        return_results("The Security Group egress rule was revoked")
-    else:
+    if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
         demisto.debug(response.message)
         raise DemistoException(f"An error has occurred: {response}")
+    if 'UnknownIpPermissions' in response:
+        raise DemistoException("Security Group egress rule not found.")
+    demisto.info(f"the response is: {response}")
+    return CommandResults(readable_output="The Security Group egress rule was revoked")
 
 
 @run_for_given_accounts
@@ -1830,7 +1835,9 @@ def get_password_data_command(args: dict) -> CommandResults:
     }
 
     return CommandResults(
-        outputs={'AWS.EC2.Instances(val.InstancesId === obj.InstancesId).PasswordData': data},
+        outputs=data,
+        outputs_prefix='AWS.EC2.Instances',
+        outputs_key_field='InstancesId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
     )
 
@@ -1908,11 +1915,15 @@ def create_network_acl_command(args: dict) -> CommandResults:
     entries = []
     for entry in network_acl['Entries']:
         entries.append(entry)
-    hr_entries = tableToMarkdown('AWS EC2 ACL Entries', entries, removeNull=True)
-    ec = {'AWS.EC2.VpcId(val.VpcId === obj.VpcId).NetworkAcl': network_acl}
-    hr_acl = tableToMarkdown('AWS EC2 Instance ACL', data, removeNull=True)
-    human_readable = hr_acl + hr_entries
-    return_results(human_readable, ec)
+    return CommandResults(
+        outputs=network_acl,
+        outputs_prefix='AWS.EC2.VpcId',
+        outputs_key_field='VpcId',
+        readable_output=(
+            tableToMarkdown('AWS EC2 ACL Entries', entries, removeNull=True)
+            + tableToMarkdown('AWS EC2 Instance ACL', data, removeNull=True)
+        )
+    )
 
 
 @run_for_given_accounts
@@ -2294,8 +2305,9 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
     except ValueError as err_msg:
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
     return CommandResults(
-        # TODO check if single key override is really needed
-        outputs={'AWS.EC2.Fleet(val.FleetId === obj.FleetId).ActiveInstances': raw},
+        outputs=raw,
+        outputs_prefix='AWS.EC2.Fleet',
+        outputs_key_field='FleetId',
         readable_output=tableToMarkdown('AWS EC2 Fleets Instances', data)
     )
 
@@ -2330,10 +2342,12 @@ def modify_fleet_command(args: dict) -> CommandResults:
 
     response = client.modify_fleet(**kwargs)
 
-    if response['Return'] == 'True':
-        return CommandResults(readable_output="AWS EC2 Fleet was successfully modified")
-    else:
-        return CommandResults(readable_output="AWS EC2 Fleet was not successfully modified: " + response['Return'])
+    readable_output = (
+        "AWS EC2 Fleet was successfully modified"
+        if response['Return'] == 'True'
+        else "AWS EC2 Fleet was not successfully modified: " + response['Return']
+    )
+    return CommandResults(readable_output=readable_output)
 
 
 @run_for_given_accounts
