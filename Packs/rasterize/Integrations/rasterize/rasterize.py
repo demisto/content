@@ -267,8 +267,8 @@ def ensure_chrome_running():  # pragma: no cover
     try:
         process = subprocess.run(['bash', '/start_chrome_headless.sh',
                                  '--port', str(chrome_port),
-                                 '--chrome-binary', CHROME_EXE,
-                                 '--user-options', USER_CHROME_OPTIONS],
+                                  '--chrome-binary', CHROME_EXE,
+                                  '--user-options', USER_CHROME_OPTIONS],
                                  text=True,
                                  stdout=subprocess.DEVNULL,
                                  stderr=subprocess.DEVNULL)
