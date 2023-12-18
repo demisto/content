@@ -1,5 +1,5 @@
 AWS-SNS-Listener description.
-This integration was integrated and tested with version xx of AWS-SNS-Listener.
+This integration was integrated and tested with version December 2023 of AWS-SNS-Listener.
 
 ## Configure AWS-SNS-Listener on Cortex XSOAR
 
