@@ -398,7 +398,7 @@ N/A
 
 
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
-[(https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU)
+[(Packs/Devo/doc_files/devo_video.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU)
 
 ## Known Limitations
 ---
