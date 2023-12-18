@@ -3831,7 +3831,7 @@ script:
   - arguments:
     - description: A comma-separated list of the resource discovery association IDs.
       name: IpamResourceDiscoveryAssociationIds
-    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). 
+    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
       name: Filters
     - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
       name: MaxResults
@@ -3885,7 +3885,7 @@ script:
       type: Unknown
     description: Gets the public IP addresses that have been discovered by IPAM.
     name: aws-ec2-get-ipam-discovered-public-addresses
-  dockerimage: demisto/boto3py3:1.0.0.83521
+  dockerimage: demisto/boto3py3:1.0.0.83677
   runonce: false
   script: '-'
   subtype: python3

@@ -248,7 +248,7 @@ def test_describe_ipam_resource_discovery_associations_command(mocker, return_bo
 
 
 @pytest.mark.parametrize('return_boto, expected_results', [
-    ({'IpamDiscoveredPublicAddresses': []}, 'No Ipam Discovered Public Addresseses were found.'),
+    ({'IpamDiscoveredPublicAddresses': []}, 'No Ipam Discovered Public Addresses were found.'),
     ({"IpamDiscoveredPublicAddresses":
         {
             "Address": "1.1.1.1",
