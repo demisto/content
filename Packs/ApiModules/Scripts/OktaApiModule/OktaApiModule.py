@@ -212,7 +212,7 @@ class OktaClient(BaseClient):
         integration_context['initialized'] = True
         set_integration_context(integration_context)
 
-    def _http_request(self, auth_type: AuthType | None = None, **kwargs):
+    def http_request(self, auth_type: AuthType | None = None, **kwargs):
         """
         Override BaseClient._http_request() to automatically add authentication headers.
 
@@ -231,7 +231,7 @@ class OktaClient(BaseClient):
 
         original_headers = kwargs.get('headers', {})
         kwargs['headers'] = {**auth_headers, **original_headers}
-        return super()._http_request(**kwargs)
+        return self._http_request(**kwargs)
 
 
 def reset_integration_context():

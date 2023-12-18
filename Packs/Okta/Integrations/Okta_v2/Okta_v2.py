@@ -66,7 +66,7 @@ class Client(OktaClient):
         query_params = {
             'q': encode_string_results(group_name)
         }
-        res = self._http_request(
+        res = self.http_request(
             method="GET",
             url_suffix=uri,
             params=query_params
@@ -80,7 +80,7 @@ class Client(OktaClient):
         query_params = {
             'q': encode_string_results(app_name)
         }
-        res = self._http_request(
+        res = self.http_request(
             method="GET",
             url_suffix=uri,
             params=query_params
@@ -95,7 +95,7 @@ class Client(OktaClient):
         query_params = {
             'filter': encode_string_results(f'profile.login eq "{username}"')
         }
-        res = self._http_request(
+        res = self.http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
@@ -110,49 +110,49 @@ class Client(OktaClient):
         sending a POST request to unlock a specific user
         """
         uri = f'/api/v1/users/{user_id}/lifecycle/unlock'
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=uri
         )
 
     def deactivate_user(self, user_id):
         uri = f'/api/v1/users/{user_id}/lifecycle/deactivate'
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def activate_user(self, user_id):
         uri = f'/api/v1/users/{user_id}/lifecycle/activate'
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def suspend_user(self, user_id):
         uri = f'/api/v1/users/{user_id}/lifecycle/suspend'
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def unsuspend_user(self, user_id):
         uri = f'/api/v1/users/{user_id}/lifecycle/unsuspend'
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def get_user_factors(self, user_id):
         uri = f'/api/v1/users/{user_id}/factors'
-        return self._http_request(
+        return self.http_request(
             method="GET",
             url_suffix=uri
         )
 
     def reset_factor(self, user_id, factor_id):
         uri = f'/api/v1/users/{user_id}/factors/{factor_id}'
-        return self._http_request(
+        return self.http_request(
             method="DELETE",
             url_suffix=uri,
             resp_type='text'
@@ -166,7 +166,7 @@ class Client(OktaClient):
             }
         }
 
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri,
             json_data=body
@@ -175,21 +175,21 @@ class Client(OktaClient):
     def set_temp_password(self, user_id):
         uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
 
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri,
         )
 
     def expire_password(self, user_id):
         uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def add_user_to_group(self, user_id, group_id):
         uri = f'/api/v1/groups/{group_id}/users/{user_id}'
-        return self._http_request(
+        return self.http_request(
             method="PUT",
             url_suffix=uri,
             resp_type='text'
@@ -197,7 +197,7 @@ class Client(OktaClient):
 
     def remove_user_from_group(self, user_id, group_id):
         uri = f'/api/v1/groups/{group_id}/users/{user_id}'
-        return self._http_request(
+        return self.http_request(
             method="DELETE",
             url_suffix=uri,
             resp_type='text'
@@ -205,7 +205,7 @@ class Client(OktaClient):
 
     def get_groups_for_user(self, user_id):
         uri = f'/api/v1/users/{user_id}/groups'
-        return self._http_request(
+        return self.http_request(
             method="GET",
             url_suffix=uri
         )
@@ -288,7 +288,7 @@ class Client(OktaClient):
         You must poll the transaction to determine when it completes or expires.
         """
         uri = f'/api/v1/users/{user_id}/factors/{factor_id}/verify'
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
@@ -300,7 +300,7 @@ class Client(OktaClient):
         """
         counter = 0
         while counter < 10:
-            response = self._http_request(
+            response = self.http_request(
                 method='GET',
                 full_url=url,
                 url_suffix=''
@@ -319,7 +319,7 @@ class Client(OktaClient):
             q=encode_string_results(term),
             search=encode_string_results(advanced_search)
         )
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
@@ -429,7 +429,7 @@ class Client(OktaClient):
 
     def get_user(self, user_term):
         uri = f'/api/v1/users/{encode_string_results(user_term)}'
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=uri
         )
@@ -445,7 +445,7 @@ class Client(OktaClient):
             'activate': activate,
             'provider': 'true' if cred.get('provider') else None
         }
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             json_data=body,
@@ -457,7 +457,7 @@ class Client(OktaClient):
             'profile': profile,
         }
         uri = '/api/v1/groups'
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             json_data=body
@@ -507,14 +507,14 @@ class Client(OktaClient):
             "credentials": cred
         }
         uri = f"/api/v1/users/{user_id}"
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             json_data=body
         )
 
     def get_paged_results(self, uri, query_param=None):
-        response = self._http_request(
+        response = self.http_request(
             method="GET",
             url_suffix=uri,
             resp_type='response',
@@ -523,7 +523,7 @@ class Client(OktaClient):
         paged_results = response.json()
         while "next" in response.links and len(response.json()) > 0:
             next_page = response.links.get("next").get("url")
-            response = self._http_request(
+            response = self.http_request(
                 method="GET",
                 full_url=next_page,
                 url_suffix='',
@@ -540,7 +540,7 @@ class Client(OktaClient):
             query_params = {
                 'limit': limit
             }
-            return self._http_request(
+            return self.http_request(
                 method="GET",
                 url_suffix=uri,
                 params=query_params
@@ -556,7 +556,7 @@ class Client(OktaClient):
                 key = 'q'
             query_params[key] = encode_string_results(value)
         limit = int(args.get('limit'))
-        response = self._http_request(
+        response = self.http_request(
             method="GET",
             url_suffix=uri,
             resp_type='response',
@@ -569,7 +569,7 @@ class Client(OktaClient):
             while limit > 0 and "next" in response.links and len(response.json()) > 0:
                 query_params['limit'] = encode_string_results(str(limit))
                 next_page = delete_limit_param(response.links.get("next").get("url"))
-                response = self._http_request(
+                response = self.http_request(
                     method="GET",
                     full_url=next_page,
                     url_suffix='',
@@ -592,7 +592,7 @@ class Client(OktaClient):
                 key = 'q'
             query_params[key] = encode_string_results(value)
         if args.get('limit'):
-            return self._http_request(
+            return self.http_request(
                 method='GET',
                 url_suffix=uri,
                 params=query_params
@@ -607,7 +607,7 @@ class Client(OktaClient):
                 key = 'q'
             query_params[key] = encode_string_results(value)
         if args.get('limit'):
-            return self._http_request(
+            return self.http_request(
                 method='GET',
                 url_suffix=uri,
                 params=query_params
@@ -616,7 +616,7 @@ class Client(OktaClient):
 
     def delete_user(self, user_term):
         uri = f"/api/v1/users/{encode_string_results(user_term)}"
-        return self._http_request(
+        return self.http_request(
             method="DELETE",
             url_suffix=uri,
             resp_type='text'
@@ -624,7 +624,7 @@ class Client(OktaClient):
 
     def clear_user_sessions(self, user_id):
         uri = f'/api/v1/users/{user_id}/sessions'
-        return self._http_request(
+        return self.http_request(
             method='DELETE',
             url_suffix=uri,
             resp_type='text'
@@ -632,7 +632,7 @@ class Client(OktaClient):
 
     def get_zone(self, zoneID):
         uri = f'/api/v1/zones/{zoneID}'
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=uri
         )
@@ -641,7 +641,7 @@ class Client(OktaClient):
         uri = '/api/v1/zones'
         if limit:
             query_params = {'limit': encode_string_results(limit)}
-            return self._http_request(
+            return self.http_request(
                 method='GET',
                 url_suffix=uri,
                 params=query_params
@@ -650,7 +650,7 @@ class Client(OktaClient):
 
     def create_zone(self, zoneObject):
         uri = '/api/v1/zones'
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             json_data=zoneObject
@@ -660,7 +660,7 @@ class Client(OktaClient):
         zoneID = zoneObject['id']
         uri = f'/api/v1/zones/{zoneID}'
 
-        return self._http_request(
+        return self.http_request(
             method='PUT',
             url_suffix=uri,
             data=json.dumps(zoneObject)
@@ -668,7 +668,7 @@ class Client(OktaClient):
 
     def assign_group_to_app(self, group_id, app_id):
         uri = f'/api/v1/apps/{app_id}/groups/{group_id}'
-        return self._http_request(
+        return self.http_request(
             method="PUT",
             url_suffix=uri,
             resp_type='text'
