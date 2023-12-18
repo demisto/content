@@ -11,9 +11,6 @@ import http.server
 import time
 import threading
 import pytest
-from selenium import webdriver
-from pyvirtualdisplay import Display
-from unittest.mock import mock_open, Mock
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)

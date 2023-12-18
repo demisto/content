@@ -93,7 +93,7 @@ class TabLifecycleManager:
             self.tab.Network.emulateNetworkConditions(offline=False, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
 
         self.tab.Page.enable()
-        demisto.debug(f'TabLifecycleManager, {self.chrome_port=}, entering tab {self.tab.id},' \
+        demisto.debug(f'TabLifecycleManager, {self.chrome_port=}, entering tab {self.tab.id},'
                       f' tabs len: {len(self.browser.list_tab())}')
         return self.tab
 
@@ -123,24 +123,23 @@ class TabLifecycleManager:
 
             try:
                 demisto.debug(
-                    f'TabLifecycleManager, __exit__, {self.chrome_port=}, {threading.current_thread().name=}, ' \
+                    f'TabLifecycleManager, __exit__, {self.chrome_port=}, {threading.current_thread().name=}, '
                     f' stopping tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
                 tab_stop_response = self.tab.stop()
-                demisto.debug(f"TabLifecycleManager, __exit__, {self.chrome_port=}, {tab_stop_response=}, " \
+                demisto.debug(f"TabLifecycleManager, __exit__, {self.chrome_port=}, {tab_stop_response=}, "
                               f" active tabs len: {len(self.browser.list_tab())}")
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}')
 
             try:
                 demisto.debug(
-                    f'TabLifecycleManager, __exit__, {self.chrome_port=}, closing tab {tab_id}, ' \
+                    f'TabLifecycleManager, __exit__, {self.chrome_port=}, closing tab {tab_id}, '
                     f' active tabs len: {len(self.browser.list_tab())}')
                 self.browser.close_tab(tab_id)
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to close tab {tab_id} due to {ex}')
 
-            demisto.debug(
-                          'TabLifecycleManager, __exit__, {self.chrome_port=}, sleeping, allowing the tab to close,'
+            demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, sleeping, allowing the tab to close,'
                           f' active tabs len: {len(self.browser.list_tab())}')
             time.sleep(1)  # pylint: disable=E9003
             demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
@@ -217,7 +216,7 @@ def is_chrome_running_locally(port):
             if tabs_count < MAX_CHROME_TABS_COUNT:
                 return browser
             else:
-                demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs, but {MAX_CHROME_TABS_COUNT=}," \
+                demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs, but {MAX_CHROME_TABS_COUNT=},"
                               " so not using it")
                 return None
         except requests.exceptions.ConnectionError as exp:
@@ -486,7 +485,7 @@ def rasterize_email_command():  # pragma: no cover
     path = f'file://{os.path.realpath(f.name)}'
 
     rasterize_output, _ = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
-                          offline_mode=offline, navigation_timeout=navigation_timeout)
+                                    offline_mode=offline, navigation_timeout=navigation_timeout)
 
     res = fileResult(filename=file_name, data=rasterize_output)
 
