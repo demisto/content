@@ -107,7 +107,7 @@ class TabLifecycleManager:
 
             try:
                 time.sleep(1)  # pylint: disable=E9003
-                demisto.debug('TabLifecycleManager, __exit__, {self.chrome_port=}, disabling page')
+                demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, disabling page')
                 self.tab.Page.disable()
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to disable page due to {ex}')
@@ -217,17 +217,17 @@ def is_chrome_running_locally(port):
             if tabs_count < MAX_CHROME_TABS_COUNT:
                 return browser
             else:
-                demisto.debug(f"Connected to Chrome on port {port=} with {tabs_count} tabs, but {MAX_CHROME_TABS_COUNT=}," \
+                demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs, but {MAX_CHROME_TABS_COUNT=}," \
                               " so not using it")
                 return None
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
             connection_refused = 'connection refused'
             if connection_refused in exp_str:
-                demisto.debug(f"Failed to connect to Chrome on port {port=} on iteration {i+1}. {connection_refused}")
+                demisto.debug(f"Failed to connect to Chrome on prot {port} on iteration {i+1}. {connection_refused}")
             else:
                 demisto.debug(
-                    f"Failed to connect to Chrome on port {port=} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
+                    f"Failed to connect to Chrome on port {port} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
 
         # mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
