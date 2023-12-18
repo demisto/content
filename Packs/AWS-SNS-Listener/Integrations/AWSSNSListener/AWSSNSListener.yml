@@ -20,12 +20,6 @@ configuration:
   type: 0
   required: true
   section: Connect
-- additionalinfo: "(For Cortex XSOAR 6.x) False (For Cortex XSOAR 8 and Cortex XSIAM) Optional for engines, otherwise mandatory."
-  display: Username
-  name: credentials
-  type: 9
-  section: Connect
-  required: false
 - display: Certificate (Required for HTTPS)
   additionalinfo: "(For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported."
   name: certificate
