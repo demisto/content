@@ -20,6 +20,7 @@ def run_script(args, files):
         print("An error occurred: {e}".format(e=e))  # noqa: T201,UP032
     return 0
 
+
 def run_command(args_dir):
     args, directory = args_dir
     return subprocess.run(args, cwd=directory).returncode
