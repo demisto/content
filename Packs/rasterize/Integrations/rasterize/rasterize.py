@@ -199,7 +199,7 @@ def is_chrome_running(port):
         demisto.info(f'Error fetching process list: {e.output}')
         return False
     except Exception as e:
-        demisto.info(f'Unexpected when fetching process list, error: {e}')
+        demisto.info(f'Unexpected exception when fetching process list, error: {e}')
         return False
 
 
@@ -247,6 +247,10 @@ def ensure_chrome_running():  # pragma: no cover
             # There's a Chrome listening on that port, and we're connected to it
             demisto.debug(f'Connected to Chrome running on port {chrome_port}')
             return browser, chrome_port
+        elif not chrome_is_running:
+            # There's no Chrome listening on that port
+            demisto.debug(f"No Chrome found on port {chrome_port}")
+            break
         elif chrome_is_running:
             # There's a Chrome listening on that port, but we couldn't connect to it
             demisto.debug(f"Found Chrome running on port {chrome_port}, but couldn't connect to it")
