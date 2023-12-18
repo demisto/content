@@ -52,7 +52,6 @@ class Client(BaseClient):
         result = self._http_request('POST', url_suffix='/EPM/API/Auth/EPM/Logon', data=data)
         if result.get('IsPasswordExpired'):
             return_error('CyberArk is reporting that the user password is expired. Terminating script.')
-            raise
         self._base_url = urljoin(result.get('ManagerURL'), '/EPM/API/')
         self._headers['Authorization'] = f"basic {result.get('EPMAuthenticationResult')}"
 
@@ -84,7 +83,6 @@ class Client(BaseClient):
         result = self._http_request('POST', url_suffix='/SAML/Logon', headers=headers, data=data)
         if result.get('IsPasswordExpired'):
             return_error('CyberArk is reporting that the user password is expired. Terminating script.')
-            raise
         self._base_url = urljoin(result.get('ManagerURL'), '/EPM/API/')
         self._headers['Authorization'] = f"basic {result.get('EPMAuthenticationResult')}"
 
