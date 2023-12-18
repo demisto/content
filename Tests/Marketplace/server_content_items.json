@@ -101,7 +101,12 @@
         "verdict",
         "reputation"
     ],
-    "Script": [
+    "BaseScript": [
+        "isEqualString",
+        "isFalse",
+        "isTrue",
+        "atIndex",
+        "split",
         "getAPIKeyFromLicense",
         "handleIndicatorFormatterCache",
         "dockerImageUpdate",
