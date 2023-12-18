@@ -158,14 +158,14 @@ def search_incidents(args: Dict):   # pragma: no cover
     demisto.debug(
         f'Amount of incidents before filtering = {len(all_found_incidents)} with args {args} before pagination'
     )
+    page_size = args.get('size') or DEFAULT_PAGE_SIZE
+    more_pages = len(all_found_incidents) == page_size
     all_found_incidents = add_incidents_link(apply_filters(all_found_incidents, args), platform)
     demisto.debug(
         f'Amount of incidents after filtering = {len(all_found_incidents)} before pagination'
     )
-    page_size = args.get('size') or DEFAULT_PAGE_SIZE
     page = STARTING_PAGE_NUMBER
 
-    more_pages = len(all_found_incidents) == page_size
     while more_pages and len(all_found_incidents) < limit:
         args['page'] = page
         current_page_found_incidents = execute_command('getIncidents', args).get('data') or []
