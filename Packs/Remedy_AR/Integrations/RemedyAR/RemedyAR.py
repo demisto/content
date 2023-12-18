@@ -34,7 +34,7 @@ def http_request(method, url_suffix, data, headers):
                                headers=headers
                                )
         if res.status_code not in (200, 204):
-            raise Exception(f'Your request failed with the following error: {res.reason}, {res.content}')
+            raise Exception(f'Your request failed with the following error: {res.reason}, {res.content.decode()}')
     except Exception as ex:
         raise Exception(ex)
     return res
@@ -125,7 +125,7 @@ def main():  # pragma: no cover
     token = auth.content
     DEFAULT_HEADERS['Authorization'] = f'AR-JWT {token.decode()}'
 
-    LOG('command is %s' % (demisto.command(),))
+    LOG(f'command is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             # Login is made and tests connectivity and credentials
