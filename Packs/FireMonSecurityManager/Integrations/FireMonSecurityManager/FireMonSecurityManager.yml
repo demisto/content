@@ -1,4 +1,7 @@
 category: Authentication & Identity Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: FireMonSecurityManager
   version: -1
