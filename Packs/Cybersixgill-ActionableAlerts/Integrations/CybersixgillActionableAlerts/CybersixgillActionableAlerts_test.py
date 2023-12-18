@@ -461,3 +461,41 @@ def test_get_alert_content_es_id_na(mocker):
     )
     assert alert_content is None
     assert incident == expected_alert_output_es_id_na
+
+
+def test_add_sub_alerts_fields(mocker):
+
+    from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
+
+    mocker.patch.object(
+        SixgillActionableAlertClient,
+        "get_actionable_alert_content",
+        return_value=get_content_item_es_id_na(),
+    )
+
+    from CybersixgillActionableAlerts import add_sub_alerts_fields
+
+    incident = get_incident()
+    item_info = get_info_item()
+    item_info['sub_alerts_length'] = 1
+    item_info['aggregate_alert_id'] = 1
+    alert_content = add_sub_alerts_fields(
+        incident,
+        item_info,
+        SixgillActionableAlertClient,
+    )
+    assert alert_content is None
+
+# def test_add_sub_alerts_shared_fields(mocker):
+
+#     from CybersixgillActionableAlerts import add_sub_alerts_shared_fields
+
+#     incident = get_incident()
+#     item_info = get_info_item()
+#     item_info['date'] = "2021-11-07 14:55:26"
+#     item_info["CustomFields"] = {}
+#     alert_content = add_sub_alerts_shared_fields(
+#         incident,
+#         incident,
+#     )
+#     assert alert_content is None
