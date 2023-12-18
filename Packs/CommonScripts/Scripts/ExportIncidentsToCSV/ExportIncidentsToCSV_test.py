@@ -2,7 +2,6 @@ import pytest
 
 import demistomock as demisto
 from ExportIncidentsToCSV import main
-from CommonServerPython import *
 
 
 def test_main(mocker):
