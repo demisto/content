@@ -949,7 +949,7 @@ There is no context output for this command.
 ### msgraph-delete-site-permissions
 
 ***
-Deletes a app permission from a site.
+Deletes an app permission from a site.
 
 #### Permission required
 
