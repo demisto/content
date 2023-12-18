@@ -106,7 +106,7 @@ script:
       description: The reputation of the IP address.
       type: String
     - contextPath: AlienVaultOTX.IP.IP
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -505,7 +505,7 @@ script:
       description: The domain data for the Alexa URL.
       type: String
     - contextPath: AlienVaultOTX.URL.Url
-      description: Url
+      description: Url.
       type: String
     - contextPath: AlienVaultOTX.URL.Whois
       description: The Whois URL for domain data.
