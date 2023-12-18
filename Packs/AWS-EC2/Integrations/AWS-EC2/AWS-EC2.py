@@ -2994,11 +2994,7 @@ def modify_snapshot_permission_command(args, aws_client):
     if group_names and user_ids or not (group_names or user_ids):
         raise DemistoException('You should provide one of "groupNames" or "userIds"')
 
-    accounts = {}
-    if group_names:
-        accounts['GroupNames'] = group_names
-    elif user_ids:
-        accounts['UserIds'] = user_ids
+    accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
 
     operation_type = args.get('operationType')
     response = client.modify_snapshot_attribute(
