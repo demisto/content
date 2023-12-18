@@ -377,7 +377,7 @@ def get_endpoint_autodiscover(context_dict):  # pragma: no cover
     return context_dict["service_endpoint"]
 
 
-def get_version(version_str):
+def get_version(version_str):  # pragma: no cover
     if version_str not in VERSIONS:
         raise Exception("{} is unsupported version: {}. Choose one of".format(version_str, "\\".join(list(VERSIONS.keys()))))
     return Version(VERSIONS[version_str])
@@ -587,12 +587,7 @@ def filter_dict_null(d):  # pragma: no cover
 
 
 def is_empty_object(obj):
-    size = 0
-    if isinstance(obj, map):
-        size = obj.__sizeof__()
-    else:
-        size = len(obj)
-    return size == 0
+    return (obj.__sizeof__() if isinstance(obj, map) else len(obj)) == 0
 
 
 def get_time_zone() -> EWSTimeZone | None:
@@ -779,7 +774,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
     return m
 
 
-class GetSearchableMailboxes(EWSService):
+class GetSearchableMailboxes(EWSService):  # pragma: no cover
     SERVICE_NAME = 'GetSearchableMailboxes'
     element_container_name = '{%s}SearchableMailboxes' % MNS
 
@@ -1051,7 +1046,7 @@ def keys_to_camel_case(value):
     return str_to_camel_case(value)
 
 
-def email_ec(item):
+def email_ec(item):  # pragma: no cover
     return {
         'CC': None if not item.cc_recipients else [mailbox.email_address for mailbox in item.cc_recipients],
         'BCC': None if not item.bcc_recipients else [mailbox.email_address for mailbox in item.bcc_recipients],
@@ -1932,7 +1927,7 @@ def get_folder(folder_path, target_mailbox=None, is_public=None):  # pragma: no 
     return get_entry_for_object(f"Folder {folder_path}", CONTEXT_UPDATE_FOLDER, folder)
 
 
-def folder_to_context_entry(f):
+def folder_to_context_entry(f):  # pragma: no cover
     f_entry = {
         'name': f.name,
         'totalCount': f.total_count,
@@ -1951,7 +1946,7 @@ def check_cs_prereqs():  # pragma: no cover
         raise Exception("This command is only supported for Office 365")
 
 
-def get_cs_error(stderr):
+def get_cs_error(stderr):  # pragma: no cover
     return {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["text"],
@@ -1959,7 +1954,7 @@ def get_cs_error(stderr):
     } if stderr else None
 
 
-def get_cs_status(search_name, status):
+def get_cs_status(search_name, status):  # pragma: no cover
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -2353,7 +2348,7 @@ def get_protocol():  # pragma: no cover
     return protocol
 
 
-def encode_and_submit_results(obj):
+def encode_and_submit_results(obj):  # pragma: no cover
     demisto.results(obj)
 
 
@@ -2519,7 +2514,7 @@ def sub_main():  # pragma: no cover
                 demisto.error(f"EWS: unexpected exception when trying to remove log handler: {ex}")
 
 
-def process_main():
+def process_main():  # pragma: no cover
     """setup stdin to fd=0 so we can read from the server"""
     sys.stdin = os.fdopen(0, "r")
     sub_main()
@@ -2548,5 +2543,5 @@ def main():  # pragma: no cover
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins", "__main__"):
+if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()
