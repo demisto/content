@@ -523,9 +523,7 @@ def test_module(client: MsGraphClient) -> str:
             method="GET")
 
     except Exception as e:
-        raise DemistoException(
-            f"Test failed.\n {e}"
-        )
+        raise DemistoException(f"Test failed.\n {e}") from e
     return 'ok'
 
 
