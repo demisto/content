@@ -280,7 +280,7 @@ def ensure_chrome_running():  # pragma: no cover
             demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
     except subprocess.SubprocessError as ex:
         demisto.info(f'Error starting Chrome on port {chrome_port}. Error: {ex}')
-    demisto.info(f'Could not connect to Chrome on port {chrome_port}')
+    demisto.info('Could not connect to Chrome.')
 
     return None, None
 
