@@ -561,7 +561,7 @@ script:
     - description: Deprecated. Please use issue_json.
       name: issueJson
       hidden: true
-    - description: The summary of the issue.
+    - description: The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument).
       name: summary
       required: false
     - description: The project key with which to associate the issue (Project Key or name is required).
