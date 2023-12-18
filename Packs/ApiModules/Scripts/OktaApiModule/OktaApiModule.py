@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 
-AUTH_ENDPOINT = '/oauth2/v1/token'
 TOKEN_EXPIRATION_TIME = 60  # In minutes. This value must be a maximum of only an hour (according to Okta's documentation).
 TOKEN_RENEWAL_TIME_LIMIT = 60  # In seconds. The minimum time before the token expires to renew it.
 
