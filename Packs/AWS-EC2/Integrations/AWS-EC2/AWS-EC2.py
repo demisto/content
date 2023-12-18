@@ -129,9 +129,6 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
     This decorator handles setting up the proper roleArn, roleSessionName,
     roleSessionDuration for accessing each account before calling the function
     and adds the account details to the result.
-
-    Returns either a list of CommandResults for each accounts,
-    or a single CommandResults if a role name is not specified.
     """
     def account_runner(args: dict) -> list[CommandResults | dict]:
 
@@ -154,7 +151,7 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                 elif isinstance(result.outputs, dict):
                     result.outputs['AccountId'] = account_id
                 return result
-            except Exception as e:  # catch any errors raised from "func" so that they can be tagged with the account and shown
+            except Exception as e:  # catch any errors raised from "func" to be tagged with the account ID and displayed
                 return {
                     'Type': entryTypes['error'],
                     'ContentsFormat': formats['markdown'],
