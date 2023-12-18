@@ -38,4 +38,4 @@ Through a powerful set of playbooks, analysts can correlate the discovered infor
 
 ##### Video
 
-[![Expanse and Cortex XSOAR](https://raw.githubusercontent.com/demisto/content/b8efd3c2e9409b02b9c4b1873ff3e783524c5104/Packs/ExpanseV2/doc_files/Expanse_And_Cortex_XSOAR.png)](https://www.youtube.com/watch?v=I3Vj-f5VGMk)
+[![Expanse and Cortex XSOAR](https://raw.githubusercontent.com/demisto/content/1885085df5c55246c25e3395779c69b942f69dbf/Packs/ExpanseV2/doc_files/Expanse_And_Cortex_XSOAR.png)](https://www.youtube.com/watch?v=I3Vj-f5VGMk)

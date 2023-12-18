@@ -80,4 +80,4 @@ There are no outputs for this playbook.
 
 ##### Video
 
-[![Prisma Cloud VM Alert Prioritization](../doc_files/Prisma_Cloud_-_VM_Alert_Prioritization_Video.png)](https://www.youtube.com/watch?v=MtLHCiV_1Wo)
+[![Prisma Cloud VM Alert Prioritization](https://raw.githubusercontent.com/demisto/content/1885085df5c55246c25e3395779c69b942f69dbf/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_-_VM_Alert_Prioritization_README.md)](https://www.youtube.com/watch?v=MtLHCiV_1Wo)
