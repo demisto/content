@@ -187,7 +187,7 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
                                         test_playbook_tickets_converted: bool,
                                         title: str,
                                         pipeline_url: str) -> tuple[list[dict[str, Any]], bool]:
-    
+
     if failed_tests:
         title = (f"{title} ({instance_role}) - Test Playbooks - Passed:{len(succeeded_tests)}, Failed:{len(failed_tests)}, "
                  f"Skipped - {len(skipped_tests)}, Skipped Integrations - {len(skipped_integrations)}")
