@@ -87,26 +87,32 @@ references:
 
   install_neo4j: &install_neo4j
     run:
-      name: Install Neo4j
-      command: |
-        wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
-        echo 'deb https://debian.neo4j.com stable 5' | sudo tee /etc/apt/sources.list.d/neo4j.list
-        sudo apt-get update
-        apt list -a neo4j
-        sudo apt-get install neo4j
-        sudo chown -R circleci /var/log/neo4j
-        sudo chown -R circleci /var/lib/neo4j
-        sudo chown -R circleci /etc/neo4j
-        mkdir -p /var/lib/neo4j/plugins
-        wget -O /var/lib/neo4j/plugins/apoc-5.5.0-core.jar https://github.com/neo4j/apoc/releases/download/5.5.0/apoc-5.5.0-core.jar
-        neo4j_conf_file="/etc/neo4j/neo4j.conf"
-        sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
-        sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
-        apoc_conf_file="/etc/neo4j/apoc.conf"
-        sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
-        sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
-        sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
-        neo4j-admin dbms set-initial-password contentgraph
+        name: Install Neo4j
+        command: |
+          sudo add-apt-repository -y ppa:openjdk-r/ppa
+          sudo apt-get update
+
+          wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
+          echo 'deb https://debian.neo4j.com stable 5' | sudo tee /etc/apt/sources.list.d/neo4j.list
+          sudo apt-get update
+          apt list -a neo4j
+          # The neo4j version should be consistent with APOC version below!
+          sudo apt-get install neo4j=1:5.13.0
+          sudo chown -R circleci /var/log/neo4j
+          sudo chown -R circleci /var/lib/neo4j
+          sudo chown -R circleci /etc/neo4j
+          mkdir -p /var/lib/neo4j/plugins
+          wget -O /var/lib/neo4j/plugins/apoc-5.13.0-core.jar https://github.com/neo4j/apoc/releases/download/5.13.0/apoc-5.13.0-core.jar
+          neo4j_conf_file="/etc/neo4j/neo4j.conf"
+          sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
+          sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
+          sudo echo "dbms.memory.transaction.total.max=600m" >> $neo4j_conf_file
+
+          apoc_conf_file="/etc/neo4j/apoc.conf"
+          sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
+          sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
+          sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
+          neo4j-admin dbms set-initial-password contentgraph
 
   container_config: &container_config
     docker:
