@@ -10,9 +10,9 @@ This integration was integrated and tested with version v1.4.4 of HashicorpTerra
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | API Token | The API Key to use for connection | True |
-    | Default Organization Name | There is an option to override with a command input parameter. If not provided, policies commands should require the Org name. | False |
-    | Default Workspace Id | There is an option to override with an input parameter. If not provided, some commands should require the workspace id. | False |
+    | API Token | The API Key to use for connection. | True |
+    | Default Organization Name | There is an option to override with a command input parameter. If not provided, policy commands should require the organization name. | False |
+    | Default Workspace ID | There is an option to override with an input parameter. If not provided, some commands should require the workspace ID. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -26,7 +26,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### terraform-runs-list
 
 ***
-List Runs in a Workspace.
+List runs in a workspace.
 
 #### Base Command
 
@@ -37,7 +37,7 @@ List Runs in a Workspace.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | workspace_id | The workspace ID to list runs for. | Optional | 
-| run_id | The run id to get a specific run. | Optional | 
+| run_id | The run ID to get a specific run. | Optional | 
 | filter_status | The run status to filter by. Possible values are: pending, fetching, fetching_completed, pre_plan_running, pre_plan_completed, queuing, plan_queued, planning, planned, cost_estimating, cost_estimated, policy_checking, policy_override, policy_soft_failed, policy_checked, confirmed, post_plan_running, post_plan_completed, planned_and_finished, planned_and_saved, apply_queued, applying, applied, discarded, errored, canceled, force_canceled. | Optional | 
 | page_number | The page number of the results to return. Default is 1. | Optional | 
 | page_size | The number of results to return per page. Default is 20, maximum is 100. | Optional | 
@@ -46,10 +46,10 @@ List Runs in a Workspace.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Terraform.Run.data.id | String | The run id. | 
+| Terraform.Run.data.id | String | The run ID. | 
 | Terraform.Run.data.attributes.status | String | The run status. | 
-| Terraform.Run.data.relationships.plan.data.id | String | The Plan id. | 
-| Terraform.Run.data.attributes.status-timestamps.planned-at | Date | The date time the plan was planned. | 
+| Terraform.Run.data.relationships.plan.data.id | String | The plan ID. | 
+| Terraform.Run.data.attributes.status-timestamps.planned-at | Date | The datetime the plan was planned. | 
 | Terraform.Run.data.type | String | THe run type. | 
 | Terraform.Run.data.attributes.actions.is-cancelable | Boolean | Flag indicating whether the Terraform run can be canceled. | 
 | Terraform.Run.data.attributes.actions.is-confirmable | Boolean | Flag indicating whether the Terraform run can be confirmed. | 
@@ -80,7 +80,7 @@ List Runs in a Workspace.
 | Terraform.Run.data.attributes.replace-addrs | Unknown | Replacement addresses associated with the Terraform run. | 
 | Terraform.Run.data.attributes.save-plan | Boolean | Flag indicating whether the Terraform run plan should be saved. | 
 | Terraform.Run.data.attributes.variables | Unknown | Variables associated with the Terraform run. | 
-| Terraform.Run.data.relationships.apply | String | Relationship information for the Terraform run apply. | 
+| Terraform.Run.data.relationships.apply.data.id | String | The apply ID of the run. | 
 | Terraform.Run.data.relationships.comments | String | Relationship information for comments associated with the Terraform run. | 
 | Terraform.Run.data.relationships.configuration-version | String | Relationship information for the Terraform configuration version associated with the run. | 
 | Terraform.Run.data.relationships.cost-estimate | String | Relationship information for cost estimates associated with the Terraform run. | 
@@ -330,7 +330,7 @@ Perform an action on a Terraform run. The available actions are: apply, cancel, 
 | --- | --- | --- |
 | run_id | The Terraform run ID to execute the action on. | Required | 
 | action | The action to execute on the Terraform run. Possible values are: apply, cancel, discard, force-cancel, force-execute. | Required | 
-| comment | An optional comment to associate with the action. not available for the action "force-execute". | Optional | 
+| comment | An optional comment to associate with the action. Not available for the action "force-execute". | Optional | 
 
 #### Context Output
 
@@ -344,7 +344,7 @@ There is no context output for this command.
 ### terraform-plan-get
 
 ***
-Get plan JSON file or the plan meta data.
+Get the plan JSON file or the plan meta data.
 
 #### Base Command
 
@@ -355,13 +355,13 @@ Get plan JSON file or the plan meta data.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | plan_id | The ID of the Terraform plan to retrieve. | Required | 
-| json_output | Whether to return the plan as JSON fileResult. Defaults to false. Possible values are: true, false. Default is false. | Optional | 
+| json_output | Whether to return the plan as a JSON fileResult. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Terraform.Plan.id | String | The plan id. | 
+| Terraform.Plan.id | String | The plan ID. | 
 | Terraform.Plan.attributes.status | String | The plan status. | 
 | Terraform.Plan.type | String | Type of the Terraform plan data. | 
 | Terraform.Plan.attributes.has-changes | Boolean | Flag indicating whether the Terraform plan has changes. | 
@@ -480,15 +480,15 @@ List the policies for an organization or get a specific policy.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organization_name | The name of the organization. | Optional | 
-| policy_kind | If specified, restricts results to those with the matching policy kind value. Valid values are sentinel and opa. Possible values are: sentinel, opa. | Optional | 
-| policy_name | If specified, searching the organization's policies by name. | Optional | 
+| policy_kind | If specified, restricts results to those with the matching policy kind value. Possible values are: sentinel, opa. | Optional | 
+| policy_name | If specified, search the organization's policies by name. | Optional | 
 | policy_id | If specified, get the specific policy. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Terraform.Policy.id | String | The policy id. | 
+| Terraform.Policy.id | String | The policy ID. | 
 | Terraform.Policy.type | String | The policy type. | 
 | Terraform.Policy.attributes.name | String | Name of the Terraform policy. | 
 | Terraform.Policy.attributes.description | Unknown | Description of the Terraform policy. | 
@@ -500,7 +500,7 @@ List the policies for an organization or get a specific policy.
 | Terraform.Policy.attributes.enforcement-level | String | Enforcement level for the Terraform policy. | 
 | Terraform.Policy.relationships.organization.data.id | String | Unique identifier for the organization associated with the Terraform policy. | 
 | Terraform.Policy.relationships.organization.data.type | String | Type of the organization associated with the Terraform policy. | 
-| Terraform.Policy.relationships.policy-sets.data.id | String | The ids of policy-sets contains this policy. | 
+| Terraform.Policy.relationships.policy-sets.data.id | String | The IDs of the policy sets that contain this policy. | 
 | Terraform.Policy.relationships.policy-sets.data.type | String | Type of the policy sets associated with the Terraform policy. | 
 | Terraform.Policy.links.self | String | Link to the Terraform policy data. | 
 | Terraform.Policy.links.upload | String | Link for uploading the Terraform policy. | 
@@ -590,8 +590,8 @@ List the policy sets for an organization or get a specific policy set.
 | organization_name | The name of the organization. | Optional | 
 | policy_set_id | If specified, get the specific policy set. | Optional | 
 | versioned | Allows filtering policy sets based on whether they are versioned, or use individual policy relationships. A true value returns versioned sets, and a false value returns sets with individual policy relationships. If omitted, all policy sets are returned. Possible values are: true, false. | Optional | 
-| policy_set_kind | If specified, restricts results to those with the matching policy kind value. Valid values are sentinel and opa. Possible values are: sentinel, opa. | Optional | 
-| include | Enables you to include related resource data. Value must be a comma-separated list containing one or more of projects, workspaces, workspace-exclusions, policies, newest_version, or current_version. | Optional | 
+| policy_set_kind | If specified, restricts results to those with the matching policy kind value. Possible values are: sentinel, opa. | Optional | 
+| include | Enables you to include related resource data. Value must be a comma-separated list containing one or more projects, workspaces, workspace-exclusions, policies, newest_version, or current_version. | Optional | 
 | policy_set_name | Allows searching the organization's policy sets by name. | Optional | 
 | page_number | The page number of the results to return. Default is 1. | Optional | 
 | page_size | The number of results to return per page. Default is 20, maximum is 100. | Optional | 
@@ -600,7 +600,7 @@ List the policy sets for an organization or get a specific policy set.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Terraform.PolicySet.id | String | The policy set id. | 
+| Terraform.PolicySet.id | String | The policy set ID. | 
 | Terraform.PolicySet.type | String | The policy set type. | 
 | Terraform.PolicySet.attributes.name | String | Name of the Terraform policy set. | 
 | Terraform.PolicySet.attributes.description | Unknown | Description of the Terraform policy set. | 
