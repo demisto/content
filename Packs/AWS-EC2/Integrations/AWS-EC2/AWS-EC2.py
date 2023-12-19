@@ -952,13 +952,13 @@ def modify_volume_command(args: dict) -> CommandResults:
         'Region': obj['_user_provided_options']['region_name'],
     })
 
-    output = json.dumps(response['VolumeModification'], cls=DatetimeEncoder)
+    output = json.dumps(volumeModification, cls=DatetimeEncoder)
     raw = json.loads(output)
     raw.update({'Region': obj['_user_provided_options']['region_name']})
 
     return CommandResults(
         outputs=raw,
-        outputs_prefix='AWS.EC2.Volumes',
+        outputs_prefix='AWS.EC2.Volumes.Modification',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Modification', data)
     )
@@ -1115,7 +1115,7 @@ def attach_volume_command(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs=data,
-        outputs_prefix='AWS.EC2.Volumes',
+        outputs_prefix='AWS.EC2.Volumes.Attachments',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
     )
@@ -1151,7 +1151,7 @@ def detach_volume_command(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs=data,
-        outputs_prefix='AWS.EC2.Volumes',
+        outputs_prefix='AWS.EC2.Volumes.Attachments',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
     )
@@ -1285,6 +1285,7 @@ def run_instances_command(args: dict) -> CommandResults:
     return CommandResults(
         outputs=raw,
         outputs_prefix='AWS.EC2.Instances',
+        outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS Instances', data)
     )
 
@@ -1775,9 +1776,9 @@ def monitor_instances_command(args: dict) -> CommandResults:
         })
 
     return CommandResults(
-        outputs=response['InstanceMonitorings'],
+        outputs={'PasswordData': response['InstanceMonitorings']},
         outputs_prefix='AWS.EC2.Instances',
-        outputs_key_field='InstancesId',
+        outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
     )
 
@@ -1797,7 +1798,7 @@ def unmonitor_instances_command(args: dict) -> CommandResults:
     return CommandResults(
         outputs=response['InstanceMonitorings'],
         outputs_prefix='AWS.EC2.Instances',
-        outputs_key_field='InstancesId',
+        outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
     )
 
@@ -1830,7 +1831,7 @@ def get_password_data_command(args: dict) -> CommandResults:
     return CommandResults(
         outputs=data,
         outputs_prefix='AWS.EC2.Instances',
-        outputs_key_field='InstancesId',
+        outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
     )
 
@@ -1910,7 +1911,7 @@ def create_network_acl_command(args: dict) -> CommandResults:
         entries.append(entry)
     return CommandResults(
         outputs=network_acl,
-        outputs_prefix='AWS.EC2.VpcId',
+        outputs_prefix='AWS.EC2.VpcId.NetworkAcl',
         outputs_key_field='VpcId',
         readable_output=(
             tableToMarkdown('AWS EC2 ACL Entries', entries, removeNull=True)
