@@ -11,10 +11,8 @@ This integration was integrated and tested with version December 2023 of AWS-SNS
     | --- | --- | --- |
     | Long running instance |  | False |
     | Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. \(For Cortex XSOAR 8 and Cortex XSIAM\) If you do not enter a Listen Port, an unused port for AWS SNS Listener will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port. | True |
-    | Username | \(For Cortex XSOAR 6.x\) False \(For Cortex XSOAR 8 and Cortex XSIAM\) Optional for engines, otherwise mandatory. | False |
-    | Password |  | False |
     | Certificate (Required for HTTPS) | \(For Cortex XSOAR 6.x\) For use with HTTPS - the certificate that the service should use. \(For Cortex XSOAR 8 and Cortex XSIAM\) Custom certificates are not supported. | False |
-    | Private Key (Required for HTTPS) | \(For Cortex XSOAR 6.x\) For use with HTTPS - the certificate that the service should use. \(For Cortex XSOAR 8 and Cortex XSIAM\) Custom certificates are not supported. | False |
+    | Private Key (Required for HTTPS) | \(For Cortex XSOAR 6.x\) For use with HTTPS - the private key that the service should use. \(For Cortex XSOAR 8 and Cortex XSIAM\) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server. | False |
     | Store sample events for mapping | Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
