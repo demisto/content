@@ -1,5 +1,4 @@
-AWS-SNS-Listener description.
-This integration was integrated and tested with version December 2023 of AWS-SNS-Listener.
+Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers. This integration was integrated and tested with version December 2023 of AWS-SNS-Listener.
 
 ## Configure AWS-SNS-Listener on Cortex XSOAR
 
