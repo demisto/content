@@ -53,7 +53,7 @@ def check_std_out_err(capfd):
         pytest.fail("Found output in stderr: [{}]".format(err.strip()))
 
 
-def pytest_configure(config: pytest.Config):
+def pytest_configure(config):
     """
     This functions runs before any tests are run, in pre-commit
     It configures the junit xml report to include the docker image name which the test is run
