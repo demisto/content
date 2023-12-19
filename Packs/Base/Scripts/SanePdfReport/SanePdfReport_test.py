@@ -4,7 +4,6 @@ from SanePdfReport import *
 import subprocess
 import os
 import http.client
-import random
 
 
 def test_find_zombie_processes(mocker):
@@ -31,15 +30,17 @@ def test_find_zombie_processes(mocker):
 def test_sane_pdf_report(mocker):
     import SanePdfReport
     import time
-    max_retries = 5
-    retry_delay = 1
+    import logging
 
-    for _ in range(max_retries):
-        # changing the port number just to make sure it has no conflicts with other integrations/scripts
-        random_port = random.randint(10000, 99999)
-        mocker.patch.object(SanePdfReport, 'MD_HTTP_PORT', random_port)
+    logging.basicConfig(level=logging.INFO)
 
+    max_retries = 3
+    retries = 0
+
+    while retries < max_retries:
         try:
+            # changing the port number just to make sure it has no conflicts with other integrations/scripts
+            mocker.patch.object(SanePdfReport, 'MD_HTTP_PORT', 10889)
             mocker.patch.object(demisto, 'args', return_value={
                 'sane_pdf_report_base64':
                     'W3sidHlwZSI6Im1hcmtkb3duIiwiZGF0YSI6eyJ0ZXh0IjoiaGVsbG8gd29ybGQiLCJncm91cHMiOlt7Im5hbWUiOiIiLCJkYXRhIjpbMl0s'
@@ -47,9 +48,11 @@ def test_sane_pdf_report(mocker):
                     'YzAzYTAtMTZhMi0xMWViLWFhNmUtOTMzMWU5NjVhYjA2Iiwicm93UG9zIjowLCJ3Ijo2fSwicXVlcnkiOnsidHlwZSI6ImluY2lkZW50Iiwi'
                     'ZmlsdGVyIjp7InF1ZXJ5IjoiIiwicGVyaW9kIjp7ImJ5RnJvbSI6ImRheXMiLCJmcm9tVmFsdWUiOjd9fX0sImF1dG9tYXRpb24iOnsibmFt'
                     'ZSI6IiIsImlkIjoiIiwiYXJncyI6bnVsbCwibm9FdmVudCI6ZmFsc2V9LCJmcm9tRGF0ZSI6IjIwMjAtMTAtMThUMTE6MTY6MzcrMDM6MDAi'
-                    'LCJ0aXRsZSI6IlRleHQgV2lkZ2V0IiwiZW1wdHlOb3RpZmljYXRpb24iOiJObyByZXN1bHRzIGZvdW5kIiwidGl0bGVTdHlsZSI6bnVsbH1d', 'resourceTimeout': "10000"  # noqa: E501
+                    'LCJ0aXRsZSI6IlRleHQgV2lkZ2V0IiwiZW1wdHlOb3RpZmljYXRpb24iOiJObyByZXN1bHRzIGZvdW5kIiwidGl0bGVTdHlsZSI6bnVsbH1d',  # noqa: E501
+                'resourceTimeout': "10000"
             })
             mocker.patch.object(demisto, 'results')
+
             main()
 
             assert demisto.results.call_args[0][0]['HumanReadable'] == 'Successfully generated pdf'
@@ -58,11 +61,10 @@ def test_sane_pdf_report(mocker):
             zombies, output = find_zombie_processes()
             assert len(zombies) == 0
             break
-        except Exception as e:
-            demisto.debug(f"Error: {e}")
-            time.sleep(retry_delay)
-    else:
-        raise RuntimeError("Test failed after multiple retries")
+        except subprocess.CalledProcessError as e:
+            logging.error(f"Command failed with exit code {e.returncode}. Retrying...")
+            retries += 1
+            time.sleep(1)  # Add a delay before retrying
 
 
 def test_markdown_image_server(mocker, capfd):
