@@ -186,6 +186,12 @@ class GCP:
         with open(item_path) as f:
             return f.read()
 
+    def check_pack_version_in_index_and_all_pack_items_exist(self, pack_id, pack_items, pack_version):
+        version_exists = [self.is_in_index(pack_id), self.download_and_extract_pack(pack_id, pack_version)]
+        items_exists = [self.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
+                        in pack_items.values()]
+        return all(version_exists) and all(items_exists)
+
 
 class BucketVerifier:
     def __init__(self, gcp: GCP, bucket_name, versions_dict, items_dict):
@@ -200,12 +206,10 @@ class BucketVerifier:
         """
         Verify the pack is in the index, verify version 1.0.0 zip exists under the pack's path
         """
-        version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
-        items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
-                        in pack_items.values()]
+        pack_components_as_expected = self.gcp.check_pack_version_in_index_and_all_pack_items_exist(pack_id, pack_items, '1.0.0')
         expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note"""
         rn_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
-        return all(version_exists) and all(items_exists) and rn_as_expected, pack_id, MSG_DICT['verify_new_pack']
+        return pack_components_as_expected and rn_as_expected, pack_id, MSG_DICT['verify_new_pack']
 
     @logger
     def verify_pack_not_in_marketplace(self, pack_id, marketplace):
@@ -220,10 +224,8 @@ class BucketVerifier:
 
     @logger
     def verify_pack_in_marketplace(self, pack_id, marketplace, version, pack_items):
-        version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, version)]
-        items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
-                        in pack_items.values()]
-        return (all(version_exists) and all(items_exists),
+        pack_components_as_expected = self.gcp.check_pack_version_in_index_and_all_pack_items_exist(pack_id, pack_items, version)
+        return (pack_components_as_expected,
                 pack_id,
                 MSG_DICT['verify_new_pack'].format(pack_id, marketplace)
                 )
@@ -346,9 +348,9 @@ class BucketVerifier:
         """
         self.verify_modified_item_path('AlibabaActionTrail', 'ModelingRules/modelingrule-Alibaba.yml',
                                        self.items_dict.get('AlibabaActionTrail'))
-
-        self.verify_pack_not_in_marketplace(TestUploadFlowXSOAR, XSIAM_TESTING_BUCKET)
-        self.verify_pack_not_in_marketplace(TestUploadFlowXsoarSaaS, XSIAM_TESTING_BUCKET)
+        pack_not_for_xsiam = [TestUploadFlowXSOAR, TestUploadFlowXsoarSaaS]
+        for not_supported_xsiam_mp_pack in pack_not_for_xsiam:
+            self.verify_pack_not_in_marketplace(not_supported_xsiam_mp_pack, XSIAM_TESTING_BUCKET)
 
     def run_xsoar_bucket_validations(self):
         """
