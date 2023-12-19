@@ -20,7 +20,7 @@
     "openEnded": false,
     "associatedToAll": false,
     "associatedTypes": [
-        "Certificate"
+        "X509 Certificate"
     ],
     "unmapped": false,
     "unsearchable": false,
