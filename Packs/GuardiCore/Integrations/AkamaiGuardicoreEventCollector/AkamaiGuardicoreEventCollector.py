@@ -158,6 +158,33 @@ def add_time_to_events(events):
         ]
 
 
+def format_events(events: list[dict]) -> None:
+    for event in events:
+        """
+        Delete the "_id" field since it is the same as "id" field,
+        and "_id" is a key that XSIAM uses.
+        """
+        del event["_id"]
+
+        """
+        Add the labels to the "destination asset" and "source asset".
+        """
+        destination_asset: dict = event["destination_asset"]
+        destination_asset_labels = destination_asset["labels"] = {}
+
+        source_asset: dict = event["source_asset"]
+        source_asset_labels = source_asset["labels"] = {}
+
+        labels: list[dict] = event.pop("labels", [])
+        for label in labels:
+            for asset_id in label.get("asset_ids", []):
+                if asset_id == destination_asset.get("vm_id"):
+                    destination_asset_labels[label["key"]] = label["value"]
+
+                if asset_id == source_asset.get("vm_id"):
+                    source_asset_labels[label["key"]] = label["value"]
+
+
 def get_events(client: Client, args: dict):
     """
     Gets events from Guardicore API.
@@ -174,7 +201,8 @@ def get_events(client: Client, args: dict):
     offset = int(args.get("offset", 0))
     response = client.get_events(start_time, end_time, limit, offset)
     events = response["objects"]
-    hr = tableToMarkdown(name="Events", t=events)
+    format_events(events)
+    hr = tableToMarkdown(name=f"Found {len(events)} events", t=events)
     return events, CommandResults(readable_output=hr, raw_response=events)
 
 
@@ -196,11 +224,12 @@ def fetch_events(
 
     response = client.get_events(start_time, end_time, limit, offset)
     retrieve_events = response["objects"]
+    format_events(retrieve_events)
     demisto.debug(f"Fetched {len(retrieve_events)} events.")
 
     last_run = (
         {"from_ts": end_time}
-        if len(retrieve_events) <= limit
+        if len(retrieve_events) < limit
         else {"from_ts": start_time, "offset": offset + limit}
     )
 
