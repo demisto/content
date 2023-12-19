@@ -917,7 +917,7 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
                     {
                         "association": {
                             "ipOwnerId": "amazon",
-                            "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                            "publicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
                             "publicIp": "35.180.1.1"
                         },
                         "attachment": {
@@ -945,7 +945,7 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
                             {
                                 "association": {
                                     "ipOwnerId": "amazon",
-                                    "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                                    "publicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
                                     "publicIp": "35.180.1.1"
                                 },
                                 "primary": true,
@@ -967,7 +967,7 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
                 "privateDnsName": "ip-172-31-34-235.eu-west-3.compute.internal",
                 "privateIpAddress": "172.31.34.235",
                 "productCodes": [],
-                "publicDnsName": "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com",
+                "publicDnsName": "ec2-x-x-x-x.eu-west-1.compute.amazonaws.com",
                 "publicIpAddress": "35.180.1.1",
                 "rootDeviceName": "/dev/sda1",
                 "rootDeviceType": "ebs",

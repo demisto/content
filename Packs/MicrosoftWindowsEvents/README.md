@@ -4,11 +4,12 @@ This pack includes Cortex XSIAM content.
 
 Notes: 
  - The logs will be stored in the dataset named *microsoft_windows_raw*.
- - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **System**, **Application** and **Powershell**.
+ - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **Firewall**, **System**, **Application** and **Powershell**.
 
 To view logs only from the Windows Event log, apply any of the following filters to your datamodel query:
 * `| filter xdm.observer.type="Microsoft-Windows-Security-*"`
 * `| filter xdm.observer.type="Microsoft-Windows-TaskScheduler"`
+* `| filter xdm.observer.type="Microsoft-Windows-Windows Firewall With Advanced Security"`
 * `| filter xdm.event.type="System"`
 * `| filter xdm.event.type="Application"`
 
@@ -60,7 +61,7 @@ As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you ca
 ### Option B
 #### Creating a customized YAML template
 Tailor the XDR collector to your specific needs by creating a custom template that includes all the event types you want to collect.
-As an example, In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System** and **Application**:
+As an example, In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System**, **Application**, and **Microsoft Defender** events:
  ```bash
 winlogbeat.event_logs:
 - name: Security
@@ -72,6 +73,9 @@ winlogbeat.event_logs:
   - name: Application
     ignore_older: 1h
     id: application-logs
+  - name: Microsoft-Windows-Windows Defender
+    ignore_older: 1h
+    id: defender-logs   
 ```
 
 **Note:** Control what event types will be collected by adding or removing the "name", "ignore_older", and "id" lines of the specific event type.

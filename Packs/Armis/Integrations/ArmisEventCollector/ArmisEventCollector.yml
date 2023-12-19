@@ -77,8 +77,20 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: The date from which to fetch events. The format should be '20 minutes', '1 hour' or '2 days'.
+    - description: The date from which to fetch events. The format should be YYYY-MM-DD or YYYY-MM-DDT:HH:MM:SS. If not specified, the current date will be used.
       name: from_date
+      required: false
+    - auto: PREDEFINED
+      defaultValue: 'Alerts'
+      description: The type of event to fetch.
+      name: event_type
+      predefined:
+      - 'Alerts'
+      - 'Activities'
+      - 'Devices'
+      required: false
+    - description: Run your own AQL query to fetch events.
+      name: aql
       required: false
     description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: armis-get-events
@@ -87,7 +99,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.82980
 marketplaces:
 - marketplacev2
 fromversion: 6.10.0

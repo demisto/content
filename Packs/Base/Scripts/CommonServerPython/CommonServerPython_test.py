@@ -27,7 +27,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context, is_integration_command_execution
+    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam
 
 try:
     from StringIO import StringIO
@@ -1216,12 +1217,13 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert False
 
 
-@mark.parametrize('data,data_expected', [
-    ("this is a test", b"this is a test"),
-    (u"עברית", u"עברית".encode('utf-8')),
-    (b"binary data\x15\x00", b"binary data\x15\x00"),
+@mark.parametrize('data,data_expected,filename', [
+    ("this is a test", b"this is a test", "test.txt"),
+    ("this is a test", b"this is a test", "../../../test.txt"),
+    (u"עברית", u"עברית".encode('utf-8'), "test.txt"),
+    (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
 ])  # noqa: E124
-def test_fileResult(mocker, request, data, data_expected):
+def test_fileResult(mocker, request, data, data_expected, filename):
     mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
     mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
     file_name = "1_test_file_result"
@@ -1233,7 +1235,7 @@ def test_fileResult(mocker, request, data, data_expected):
             pass
 
     request.addfinalizer(cleanup)
-    res = fileResult("test.txt", data)
+    res = fileResult(filename, data)
     assert res['File'] == "test.txt"
     with open(file_name, 'rb') as f:
         assert f.read() == data_expected
@@ -2610,6 +2612,46 @@ class TestCommandResults:
         )
         context = res.to_context()
         assert "outputs_test" == context.get('HumanReadable')
+
+    def test_replace_existing(self):
+        """
+        Given:
+        - replace_existing=True
+
+        When:
+        - Returning an object to context that needs to override it's key on each run.
+
+        Then:
+        - Return an object with the DT "(true)"
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="next_token",
+            outputs_prefix="Path.To.Value",
+            replace_existing=True
+        )
+        context = res.to_context()
+        assert context["EntryContext"] == {"Path.To(true)": {"Value": "next_token"}}
+    
+    def test_replace_existing_not_nested(self):
+        """
+        Given:
+        - replace_existing=True but outputs_prefix is not nested, i.e., does not have a period.
+
+        When:
+        - Returning an object to context that needs to override it's key on each run.
+
+        Then:
+        - Raise an errror.
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="next_token",
+            outputs_prefix="PathToValue",
+            replace_existing=True
+        )
+        with pytest.raises(DemistoException, match='outputs_prefix must be a nested path to replace an existing key.'):
+            res.to_context()
 
 
 def test_http_request_ssl_ciphers_insecure():
@@ -7227,6 +7269,28 @@ class TestIsDemistoServerGE:
         assert not is_demisto_version_ge(version, build)
 
 
+class TestDeterminePlatform:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
+
+    @pytest.mark.parametrize('demistoVersion, method', [
+        ({'platform': 'xsoar', 'version': '6.5.0'}, is_xsoar),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsoar),
+        ({'platform': 'xsoar_hosted', 'version': '6.5.0'}, is_xsoar),
+        ({'platform': 'x2', 'version': '8.2.0'}, is_xsiam_or_xsoar_saas),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsiam_or_xsoar_saas),
+        ({'platform': 'xsoar', 'version': '6.5.0'}, is_xsoar_on_prem),
+        ({'platform': 'xsoar_hosted', 'version': '6.5.0'}, is_xsoar_hosted),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsoar_saas),
+        ({'platform': 'x2', 'version': '8.2.0'}, is_xsiam),
+    ])
+    def test_determine_platform(self, mocker, demistoVersion, method):
+        mocker.patch.object(demisto, 'demistoVersion', return_value=demistoVersion)
+        assert method()
+
+
 def test_smart_get_dict():
     d = {'t1': None, "t2": 1}
     # before we remove the dict will return null which is unexpected by a lot of users
@@ -8073,29 +8137,6 @@ class TestFetchWithLookBack:
         assert results.get('limit') == expected_results3.get('limit')
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
-
-    @freeze_time("2022-04-07T10:13:00")
-    def test_lookback_with_offset_time_range(self):
-        """
-        Given:
-            A last run with an offset
-            
-        When:
-            Calling get_fetch_run_time_range
-            
-        Then:
-            The last run should be unchanged, even if there is a lookback.
-        """
-        from CommonServerPython import get_fetch_run_time_range
-        last_time = "2022-04-07T10:13:00"
-        last_run = {"time": last_time, "offset": 3}
-        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
-        # make sure that the start time is unchanged because of the offset
-        assert start_time == last_time
-        last_run = {"time": last_time, "offset": 0}
-        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
-        # now the offset is 0, so the look_back should act
-        assert start_time == "2022-04-07T10:12:00"
     
     def test_lookback_with_offset_update_last_run(self):
         """
@@ -8456,9 +8497,10 @@ def test_content_type(content_format, outputs, expected_type):
 
 
 class TestSendEventsToXSIAMTest:
-    from test_data.send_events_to_xsiam_data import events_dict, log_error
+    from test_data.send_events_to_xsiam_data import events_dict, events_log_error, assets_log_error
     test_data = events_dict
-    test_log_data = log_error
+    events_test_log_data = events_log_error
+    assets_test_log_data = assets_log_error
     orig_xsiam_file_size = 2 ** 20  # 1Mib
 
     @staticmethod
@@ -8469,12 +8511,18 @@ class TestSendEventsToXSIAMTest:
             return "url"
 
 
-    @pytest.mark.parametrize('events_use_case', [
-        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events', 'big_event'
+    @pytest.mark.parametrize('data_use_case, data_type', [
+        ('json_events', 'events'),
+        ('text_list_events', 'events'),
+        ('text_events', 'events'),
+        ('cef_events', 'events'),
+        ('json_zero_events', 'events'),
+        ('big_event', 'events'),
+        ('json_assets', 'assets'),
     ])
-    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+    def test_send_data_to_xsiam_positive(self, mocker, data_use_case, data_type):
         """
-        Test for the fetch events function
+        Test for the fetch events and fetch assets function
         Given:
             Case a: a list containing dicts representing events.
             Case b: a list containing strings representing events.
@@ -8482,15 +8530,17 @@ class TestSendEventsToXSIAMTest:
             Case d: a string representing events (separated by a new line).
             Case e: an empty list of events.
             Case f: a "big" event. a big event is bigger than XSIAM EVENT SIZE declared.
+            Case g: a list containing dicts representing assets.
             ( currently the Ideal event size is 1 Mib)
 
         When:
-            Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
-            Case b: Calling the send_events_to_xsiam function with no explicit data format specified.
-            Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
-            Case d: Calling the send_events_to_xsiam function with a cef data format specification.
-            Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
-            Case f: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case a: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case b: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case c: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case d: Calling the send_assets_to_xsiam function with a cef data format specification.
+            Case e: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case f: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case g: Calling the send_assets_to_xsiam function with no explicit data format specified.
 
         Then ensure that:
             Case a:
@@ -8516,6 +8566,10 @@ class TestSendEventsToXSIAMTest:
                 - The events data was compressed correctly. Expecting to see that last chunk sent.
                 - The data format remained as json.
                 - The number of events reported to the module health - 2. For the last chunk.
+            Case g:
+                - The assets data was compressed correctly
+                - The data format was automatically identified as json.
+                - The number of assets reported to the module health equals to number of assets sent to XSIAM - 2
         """
         if not IS_PY3:
             return
@@ -8524,6 +8578,7 @@ class TestSendEventsToXSIAMTest:
         from requests import Response
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch('time.time', return_value=123)
 
         api_response = Response()
         api_response.status_code = 200
@@ -8531,28 +8586,34 @@ class TestSendEventsToXSIAMTest:
 
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
 
-        events = self.test_data[events_use_case]['events']
-        number_of_events = self.test_data[events_use_case]['number_of_events']  # pushed in each chunk.
-        chunk_size = self.test_data[events_use_case].get('XSIAM_FILE_SIZE', self.orig_xsiam_file_size)
-        data_format = self.test_data[events_use_case].get('format')
-        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format,
-                             chunk_size=chunk_size)
+        items = self.test_data[data_use_case][data_type]
+        number_of_items = self.test_data[data_use_case]['number_of_events']  # pushed in each chunk.
+        chunk_size = self.test_data[data_use_case].get('XSIAM_FILE_SIZE', self.orig_xsiam_file_size)
+        data_format = self.test_data[data_use_case].get('format')
+        send_data_to_xsiam(data=items, vendor='some vendor', product='some product', data_format=data_format,
+                           chunk_size=chunk_size, data_type=data_type)
 
-        if number_of_events:
-            expected_format = self.test_data[events_use_case]['expected_format']
-            expected_data = self.test_data[events_use_case]['expected_data']
+        if number_of_items:
+            expected_format = self.test_data[data_use_case]['expected_format']
+            expected_data = self.test_data[data_use_case]['expected_data']
             arguments_called = _http_request_mock.call_args[1]
             decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
 
             assert arguments_called['headers']['format'] == expected_format
             assert decompressed_data == expected_data
+            assert arguments_called['headers']['collector-type'] == data_type
         else:
             assert _http_request_mock.call_count == 0
+        if data_type == "events":
+            demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_items})
+        elif data_type == "assets":
+            demisto.updateModuleHealth.assert_called_with({'assetsPulled': number_of_items})
+            assert arguments_called['headers']['snapshot-id'] == '123000'
+            assert arguments_called['headers']['total-items-count'] == '2'
 
-        demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_events})
-
-    @pytest.mark.parametrize('error_msg', [None, {'error': 'error'}, ''])
-    def test_send_events_to_xsiam_error_handling(self, mocker, requests_mock, error_msg):
+    @pytest.mark.parametrize('error_msg, data_type', [(None, "events"), ({'error': 'error'}, "events"), ('', "events"),
+                                                      ({'error': 'error'}, "assets")])
+    def test_send_data_to_xsiam_error_handling(self, mocker, requests_mock, error_msg, data_type):
         """
         Given:
             case a: response type containing None
@@ -8560,7 +8621,7 @@ class TestSendEventsToXSIAMTest:
             case c: response type containing empty string
 
         When:
-            calling the send_events_to_xsiam function
+            calling the send_data_to_xsiam function
 
         Then:
             case a:
@@ -8583,7 +8644,7 @@ class TestSendEventsToXSIAMTest:
         mocker.patch.object(demisto, "params", return_value={"url": "www.test_url.com"})
         mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstance": "test_integration_instance",
                                                                     "IntegrationBrand": "test_brand"}})
-
+        mocker.patch('time.time', return_value=123)
         if isinstance(error_msg, dict):
             status_code = 401
             request_mocker = requests_mock.post(
@@ -8600,14 +8661,14 @@ class TestSendEventsToXSIAMTest:
         error_log_mocker = mocker.patch.object(demisto, 'error')
 
         events = self.test_data['json_events']['events']
-        expected_request_and_response_info = self.test_log_data
-        expected_error_header = 'Error sending new events into XSIAM.\n'
+        expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_log_error
+        expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
         with pytest.raises(
                 DemistoException,
                 match=re.escape(expected_error_header + expected_error_msg),
         ):
-            send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+            send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type=data_type)
 
         # make sure the request was sent only once and retry mechanism was not triggered
         assert request_mocker.call_count == 1
@@ -8659,7 +8720,7 @@ class TestSendEventsToXSIAMTest:
             )
         ]
     )
-    def test_retries_send_events_to_xsiam_rate_limit(
+    def test_retries_send_data_to_xsiam_rate_limit(
         self, mocker, mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed
     ):
         """
@@ -8671,7 +8732,7 @@ class TestSendEventsToXSIAMTest:
             case e: 1 response indicating about success from xsiam with no rate limit errors
 
         When:
-            calling the send_events_to_xsiam function
+            calling the send_data_to_xsiam function
 
         Then:
             case a:
@@ -8712,10 +8773,10 @@ class TestSendEventsToXSIAMTest:
 
         events = self.test_data['json_events']['events']
         if should_succeed:
-            send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+            send_data_to_xsiam(data=events, vendor='some vendor', product='some product')
         else:
             with pytest.raises(DemistoException):
-                send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+                send_data_to_xsiam(data=events, vendor='some vendor', product='some product')
 
         assert error_mock.call_count == expected_error_log_count
         assert request_mock.call_count == expected_request_call_count
@@ -9066,4 +9127,33 @@ class TestIsIntegrationCommandExecution:
     def test_problematic_cases(self, mocker, calling_context_mock):
         mocker.patch.object(demisto, 'callingContext', calling_context_mock)
         assert is_integration_command_execution() == True
-        
+
+
+@pytest.mark.parametrize("timestamp_str, seconds_threshold, expected", [
+    ("2019-01-01T00:00:00Z", 60, True), 
+    ("2022-01-01T00:00:00GMT+1", 60, True), 
+    ("2022-01-01T00:00:00Z", 60, False),
+    ("invalid", 60, ValueError)
+])
+def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_threshold, expected, mocker):
+    """
+    Given:
+        A timestamp string and a seconds threshold.
+    When:
+        Running has_passed_time_threshold function.
+    Then:
+        Test - Assert the function returns the expected result.
+        Case 1: The timestamp is in the past.
+        Case 2: Though the timestamp appears identical, it is in a different timezone, so the time passed the threshold.
+        Case 3: The timestamp did not pass the threshold.
+        Case 4: The timestamp is invalid.
+    """
+    from CommonServerPython import has_passed_time_threshold
+    mocker.patch('CommonServerPython.datetime', autospec=True)
+    mocker.patch.object(CommonServerPython.datetime, 'now', return_value=datetime(2022, 1, 1, 0, 0, 0, tzinfo=pytz.utc))
+    if expected == ValueError:
+        with pytest.raises(expected) as e:
+            has_passed_time_threshold(timestamp_str, seconds_threshold)
+        assert str(e.value) == "Failed to parse timestamp: invalid"
+    else:
+        assert has_passed_time_threshold(timestamp_str, seconds_threshold) == expected

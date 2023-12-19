@@ -5,7 +5,7 @@ import demistomock as demisto
 
 
 @pytest.mark.parametrize('params, expected_result', [
-    ({'url': "https://ec2-34-254-32-78.eu-west-1.compute.amazonaws.com"}, 'API Token must be provided.'),
+    ({'url': "https://ec2.us.compute-1.amazonaws.com"}, 'API Token must be provided.'),
 ])
 def test_params(mocker, params, expected_result):
     """

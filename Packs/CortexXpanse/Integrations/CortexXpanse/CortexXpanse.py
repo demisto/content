@@ -318,6 +318,7 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
             ``args['business_units_list']`` List of business units of the Alert status.
             ``args['lte_creation_time']`` string of time format "2019-12-31T23:59:00".
             ``args['gte_creation_time']`` string of time format "2019-12-31T23:59:00".
+            ``args['case_id_list']`` List of integers of the Case ID.
             ``args['tags']`` List of tags.
             ``args['sort_by_creation_time']`` optional - enum (asc,desc).
             ``args['sort_by_severity']`` optional - enum (asc,desc).
@@ -334,6 +335,7 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     business_units_list = argToList(args.get('business_units_list'))
     lte_creation_time = args.get('lte_creation_time')
     gte_creation_time = args.get('gte_creation_time')
+    case_id_list = argToList(args.get('case_id_list'))
     sort_by_creation_time = args.get('sort_by_creation_time')
     sort_by_severity = args.get('sort_by_severity')
     tags = argToList(args.get('tags'))
@@ -374,6 +376,9 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
         })
     if tags:
         search_params.append({"field": "tags", "operator": "in", "value": tags})
+    if case_id_list:
+        case_id_ints = [int(i) for i in case_id_list]
+        search_params.append({"field": "case_id_list", "operator": "in", "value": case_id_ints})  # type: ignore
 
     if sort_by_creation_time:
         request_data = {"request_data": {"filters": search_params, 'search_from': search_from,
@@ -1367,7 +1372,7 @@ def main() -> None:
             'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
             'asm-list-alerts': list_alerts_command,
-            'asm-list-attack-surface-rules': list_attack_surface_rules_command,
+            'asm-get-attack-surface-rule': list_attack_surface_rules_command,
             'asm-tag-asset-assign': assign_tag_to_assets_command,
             'asm-tag-asset-remove': remove_tag_to_assets_command,
             'asm-tag-range-assign': assign_tag_to_ranges_command,

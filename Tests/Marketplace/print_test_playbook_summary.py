@@ -13,7 +13,7 @@ from Tests.scripts.common import calculate_results_table, TEST_PLAYBOOKS_REPORT_
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
     JIRA_API_KEY, jira_server_information, generate_query_by_component_and_issue_type, jira_search_all_by_query, JIRA_LABELS
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
-    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks
+    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, write_test_playbook_to_jira_mapping
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -39,41 +39,6 @@ def read_file_contents(file_path: Path) -> list | None:
     return None
 
 
-def print_test_playbooks_summary_without_junit_report(artifacts_path: Path) -> bool:
-    """
-    Takes the information stored in the files and prints it in a human-readable way.
-    """
-    instance_path = Path(artifacts_path) / "instance_Server Master"
-    failed_tests_path = instance_path / "failed_tests.txt"
-    succeeded_tests_path = instance_path / "succeeded_tests.txt"
-    succeeded_playbooks = read_file_contents(succeeded_tests_path)
-    failed_playbooks = read_file_contents(failed_tests_path)
-
-    # if one of the files isn't existing, we want to fail.
-    if succeeded_playbooks is None or failed_playbooks is None:
-        return True
-
-    succeeded_count = len(succeeded_playbooks)
-    failed_count = len(failed_playbooks)
-
-    logging.info("TEST RESULTS:")
-    logging.info(f"Number of playbooks tested - {succeeded_count + failed_count}")
-
-    if succeeded_count:
-        logging.success(f"Number of succeeded tests - {succeeded_count}")
-        logging.success("Successful Tests:")
-        for playbook_id in succeeded_playbooks:
-            logging.success(f"\t- {playbook_id}")
-
-    if failed_count:
-        logging.error(f"Number of failed tests - {failed_count}:")
-        logging.error("Failed Tests:")
-        for playbook_id in failed_playbooks:
-            logging.error(f"\t- {playbook_id}")
-        return True
-    return False
-
-
 def filter_skipped_playbooks(playbooks_results: dict[str, dict[str, TestSuite]]) -> list[str]:
     filtered_playbooks_ids = []
     for playbook_id, playbook_results in playbooks_results.items():
@@ -90,15 +55,15 @@ def filter_skipped_playbooks(playbooks_results: dict[str, dict[str, TestSuite]])
     return filtered_playbooks_ids
 
 
-def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tuple[bool, bool]:
+def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> bool:
     test_playbooks_report = artifacts_path / TEST_PLAYBOOKS_REPORT_FILE_NAME
 
     # iterate over the artifacts path and find all the test playbook result files
     if not (test_playbooks_result_files_list := get_test_results_files(artifacts_path, TEST_PLAYBOOKS_REPORT_FILE_NAME)):
+        logging.error(f"Could not find any test playbook result files in {artifacts_path}, writing an empty report file")
         # Write an empty report file to avoid failing the build artifacts collection.
         JUnitXml().write(test_playbooks_report.as_posix(), pretty=True)
-        logging.error(f"Could not find any test playbook result files in {artifacts_path}")
-        return False, False
+        return True
 
     logging.info(f"Found {len(test_playbooks_result_files_list)} test playbook result files")
     playbooks_results, server_versions = calculate_test_playbooks_results(test_playbooks_result_files_list)
@@ -124,16 +89,18 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
         jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(playbooks_ids, issues)
         logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_ids)} filtered playbooks")
 
-    headers, column_align, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
-                                                                                      playbooks_results,
-                                                                                      server_versions,
-                                                                                      TEST_PLAYBOOKS_BASE_HEADERS,
-                                                                                      without_jira=without_jira)
+    column_align, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
+                                                                             playbooks_results,
+                                                                             server_versions,
+                                                                             TEST_PLAYBOOKS_BASE_HEADERS,
+                                                                             without_jira=without_jira)
     logging.info(f"Writing test playbook report to {test_playbooks_report}")
     xml.write(test_playbooks_report.as_posix(), pretty=True)
-    table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+    write_test_playbook_to_jira_mapping(artifacts_path, jira_tickets_for_playbooks)
+
+    table = tabulate(tabulate_data, headers="firstrow", tablefmt="pretty", colalign=column_align)
     logging.info(f"Test Playbook Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
-    return True, total_errors != 0
+    return total_errors != 0
 
 
 def main():
@@ -142,10 +109,8 @@ def main():
         options = options_handler()
         artifacts_path = Path(options.artifacts_path)
         logging.info(f"Printing test playbook summary - artifacts path: {artifacts_path}")
-        junit_result_exist, errors_found = print_test_playbooks_summary(artifacts_path, options.without_jira)
-        if not junit_result_exist:
-            errors_found = print_test_playbooks_summary_without_junit_report(artifacts_path)
-        if errors_found:
+
+        if print_test_playbooks_summary(artifacts_path, options.without_jira):
             logging.critical("Test playbook summary found errors")
             sys.exit(1)
 

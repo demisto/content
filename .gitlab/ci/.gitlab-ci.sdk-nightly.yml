@@ -44,12 +44,19 @@ demisto_sdk_nightly:check_idset_dependent_commands:
   variables:
     IS_NIGHTLY: "false"
     KUBERNETES_CPU_REQUEST: 1000m
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
+    INSTANCE_ROLE: "Server Master"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   script:
     - section_start "Secrets Detection" --collapsed
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Secrets Detection"
     - section_start "Update Conf" --collapsed
-    - cp ./Tests/conf.json $ARTIFACTS_FOLDER
+    - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" # workaround for the hard-coded value in the sdk
     - section_end "Update Conf"
     - !reference [.create-id-set]
     - section_start "Activate GCloud Service Account" --collapsed
@@ -57,23 +64,26 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - echo "successfully activated google cloud service account"
     - section_end "Activate GCloud Service Account"
     - section_start "Download private ID set" --collapsed
-    - gsutil cp gs://${TEST_XDR_PREFIX}marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
+    - gsutil cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/private_id_set.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/unified_id_set.json"
     - echo "successfully downloaded private ID set"
     - section_end "Download private ID set"
-    - gcloud auth revoke >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+    - section_start "Revoking GCP Auth"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - section_end "Revoking GCP Auth"
     - section_start "Merge public and private ID sets" --collapsed
-    - demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
+    - demisto-sdk merge-id-sets -i1 "${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json" -i2 "${ARTIFACTS_FOLDER_SERVER_TYPE}/unified_id_set.json" -o "${ARTIFACTS_FOLDER_SERVER_TYPE}/unified_id_set.json"
     - echo "successfully merged public and private ID sets"
     - section_end "Merge public and private ID sets"
     - section_start "Common Server Documentation" --collapsed
     - ./Documentation/commonServerDocs.sh
     - section_end "Common Server Documentation"
     - section_start "Collect Test List and Content Packs" --collapsed
-    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY
+    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n "${IS_NIGHTLY}"
     - section_end "Collect Test List and Content Packs"
     - section_start "Calculate Packs Dependencies" --collapsed
-    - demisto-sdk find-dependencies -idp $ARTIFACTS_FOLDER/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
+    - demisto-sdk find-dependencies -idp "${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json" --output-path "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
+    - section_start "Cleanup env results from artifacts folder" --collapsed
     - job-done
 
 demisto-sdk-nightly:xsoar-prepare-testing-bucket:
@@ -83,11 +93,16 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
+    INSTANCE_ROLE: "Server Master"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
-
   cache:
     policy: pull-push
   needs: []
@@ -104,7 +119,12 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
+    PRODUCT_TYPE: "XSIAM"
+    SERVER_TYPE: "XSIAM"
+    INSTANCE_ROLE: "XSIAM"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_${INSTANCE_ROLE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCT_NAME: "Cortex XSIAM"
@@ -126,7 +146,10 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
+    PRODUCT_TYPE: "XPANSE"
+    SERVER_TYPE: "XPANSE"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XPANSE}/server_type_${SERVER_TYPE}"
     MARKETPLACE_VERSION: "xpanse"
     PRODUCT_NAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
@@ -167,19 +190,17 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
-    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_Server Master"
+    SERVER_TYPE: "XSOAR"
+    INSTANCE_ROLE: "Server Master"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
     - !reference [.ssh-config-setup]
-    - section_start "Create Artifacts instance directory" --collapsed
-    - |
-      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
-      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
-      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-    - section_end "Create Artifacts instance directory"
     - section_start "Wait Until Server Ready"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
@@ -188,7 +209,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - |
-      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
+      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
     - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
@@ -215,15 +236,13 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_end "Run Lint"
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
-    - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
-    - destroy_instances_exit_code=$?
-    - |
-      if [ "${destroy_instances_exit_code}" -ne 0 ]; then
-        echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
-      fi
-    - section_end "Destroy instances"
     - job-done
+  after_script:
+    - !reference [.default-after-script]
+    - !reference [.install_ssh_keys]
+    - !reference [.ssh-config-setup]
+    - !reference [.destroy_xsoar_instances]
+
 
 demisto-sdk-nightly:run-end-to-end-tests:
   tags:
@@ -238,8 +257,13 @@ demisto-sdk-nightly:run-end-to-end-tests:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-    INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
+    INSTANCE_ROLE: "Server Master"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -247,11 +271,11 @@ demisto-sdk-nightly:run-end-to-end-tests:
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
 
-      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
+      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
       unset DEMISTO_API_KEY # a temporary fix 
-      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/xsoar/ || EXIT_CODE=$?
     - job-done
     - exit $EXIT_CODE
 

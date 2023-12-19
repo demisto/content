@@ -1,0 +1,23 @@
+{
+    "value": [
+        {
+            "properties": {
+                "customerId": "1234567890",
+                "provisioningState": "Succeeded",
+                "sku": {
+                    "name": "PerGB2018"
+                },
+                "retentionInDays": 30,
+                "publicNetworkAccessForQuery": "Enabled",
+                "publicNetworkAccessForIngestion": "Enabled"
+            },
+            "id": "/subscriptions/subscriptionID/resourcegroups/resourceGroupName/providers/microsoft.operationalinsights/workspaces/test2170",
+            "name": "Test2170",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "location": "australiasoutheast",
+            "tags": {
+                "tag1": "val1"
+            }
+        }
+    ]
+}

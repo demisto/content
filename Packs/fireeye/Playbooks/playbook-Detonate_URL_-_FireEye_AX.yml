@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 50
+          "x": 50,
+          "y": 60
         }
       }
     note: false
@@ -102,13 +102,13 @@ tasks:
     continueonerrortype: ""
   '2':
     id: '2'
-    taskid: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
+    taskid: ab3448ba-c6f1-484e-83aa-cb95282953e1
     type: condition
     task:
-      id: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
+      id: ab3448ba-c6f1-484e-83aa-cb95282953e1
       version: -1
       name: Is there a URL?
-      description: Check for a URL.
+      description: Checks if there is a URL to detonate.
       type: condition
       iscommand: false
       brand: ''
@@ -131,7 +131,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 300,
           "y": 370
         }
       }
@@ -145,10 +145,10 @@ tasks:
     continueonerrortype: ""
   '3':
     id: '3'
-    taskid: 70b2a5ea-ad97-4dcf-89ea-36eade5e0a59
+    taskid: 500ad9f9-523f-443a-8efc-5f7de8e0178f
     type: regular
     task:
-      id: 70b2a5ea-ad97-4dcf-89ea-36eade5e0a59
+      id: 500ad9f9-523f-443a-8efc-5f7de8e0178f
       version: -1
       name: Send URL to FireEye AX sandbox
       description: Submit a URL for analysis by FireEye.
@@ -173,14 +173,16 @@ tasks:
       profiles:
         simple: win7-sp1
       timeout:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.timeout
       urls:
-        simple: ${inputs.URL}
+        complex:
+          root: inputs.URL
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 455,
           "y": 545
         }
       }
@@ -194,10 +196,10 @@ tasks:
     continueonerrortype: ""
   '4':
     id: '4'
-    taskid: 415427e9-78ce-4dd0-8d95-da55b9c6908a
+    taskid: d77e95a7-5c88-441a-8a56-c86b589f368d
     type: playbook
     task:
-      id: 415427e9-78ce-4dd0-8d95-da55b9c6908a
+      id: d77e95a7-5c88-441a-8a56-c86b589f368d
       version: -1
       name: GenericPolling
       description: |-
@@ -217,15 +219,19 @@ tasks:
       - '7'
     scriptarguments:
       Ids:
-        simple: ${FireEyeAX.Submissions.URL.Key}
+        complex:
+          root: FireEyeAX.Submissions.URL
+          accessor: Key
       Interval:
-        simple: ${inputs.interval}
+        complex:
+          root: inputs.interval
       PollingCommandArgName:
         simple: submission_Key
       PollingCommandName:
         simple: fe-submit-url-status
       Timeout:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.timeout
       dt:
         simple: FireEyeAX.Submissions.URL(val.Status == 'In Progress').Key
     separatecontext: true
@@ -237,8 +243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1060
+          "x": 455,
+          "y": 1040
         }
       }
     note: false
@@ -251,10 +257,10 @@ tasks:
     continueonerrortype: ""
   '6':
     id: '6'
-    taskid: bee9857d-c4a9-4e9f-8939-822514c68078
+    taskid: 40e39159-5c17-4857-8220-89cfecc8bb32
     type: title
     task:
-      id: bee9857d-c4a9-4e9f-8939-822514c68078
+      id: 40e39159-5c17-4857-8220-89cfecc8bb32
       version: -1
       name: Done
       description: '-'
@@ -266,7 +272,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1415
+          "y": 1380
         }
       }
     note: false
@@ -279,14 +285,14 @@ tasks:
     continueonerrortype: ""
   '7':
     id: '7'
-    taskid: 922099fa-9796-48f4-8b19-090d46bda6ac
+    taskid: eb1d3ebb-47be-497e-8f40-2a725ee12697
     type: regular
     task:
-      id: 922099fa-9796-48f4-8b19-090d46bda6ac
+      id: eb1d3ebb-47be-497e-8f40-2a725ee12697
       version: -1
       name: Get task report
-      description: Results of the file submission.
-      script: fireeye|||fe-submit-result
+      description: Results of the URL submission
+      script: fireeye|||fe-submit-url-result
       type: regular
       iscommand: true
       brand: fireeye
@@ -294,14 +300,19 @@ tasks:
       '#none#':
       - '6'
     scriptarguments:
-      submission_Key:
-        simple: ${FireEyeAX.Submissions.URL.Key}
+      info_level:
+        complex:
+          root: inputs.Info_Level
+      submissionID:
+        complex:
+          root: FireEyeAX.Submissions.URL
+          accessor: ID
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1245
+          "x": 455,
+          "y": 1205
         }
       }
     note: false
@@ -314,10 +325,10 @@ tasks:
     continueonerrortype: ""
   '8':
     id: '8'
-    taskid: d1c216d8-d4c1-4394-8b75-94867431a9a8
+    taskid: 4cb63add-21f4-4d58-8cdd-124544b56ce7
     type: regular
     task:
-      id: d1c216d8-d4c1-4394-8b75-94867431a9a8
+      id: 4cb63add-21f4-4d58-8cdd-124544b56ce7
       version: -1
       name: Sleep (let the sandbox create the task)
       description: sleep
@@ -335,8 +346,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 720
+          "x": 455,
+          "y": 710
         }
       }
     note: false
@@ -349,10 +360,10 @@ tasks:
     continueonerrortype: ""
   '9':
     id: '9'
-    taskid: 482cc724-9e91-4603-8910-2fda3c9f3520
+    taskid: f9135ff3-abfa-4a84-8ed5-ffb206a143dd
     type: regular
     task:
-      id: 482cc724-9e91-4603-8910-2fda3c9f3520
+      id: f9135ff3-abfa-4a84-8ed5-ffb206a143dd
       version: -1
       name: View task
       description: Get a status for a url submitted to FireEye analysis
@@ -365,13 +376,15 @@ tasks:
       - '4'
     scriptarguments:
       submission_Key:
-        simple: ${FireEyeAX.Submissions.URL.Key}
+        complex:
+          root: FireEyeAX.Submissions.URL
+          accessor: Key
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 895
+          "x": 455,
+          "y": 875
         }
       }
     note: false
@@ -384,13 +397,16 @@ tasks:
     continueonerrortype: ""
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "1_6_#default#": 0.18,
+      "2_6_#default#": 0.14
+    },
     "paper": {
       "dimensions": {
-        "height": 1430,
-        "width": 605,
+        "height": 1385,
+        "width": 785,
         "x": 50,
-        "y": 50
+        "y": 60
       }
     }
   }
@@ -414,6 +430,11 @@ inputs:
     simple: '30'
   required: false
   description: How long to wait before giving up waiting for results.
+  playbookInputQuery:
+- key: Info_Level
+  value: {}
+  required: false
+  description: This parameter specifies the level of information to be returned in the URL submission report. Information levels include concise (default), normal, or extended.
   playbookInputQuery:
 outputs:
 - contextPath: FireEyeAX.Submissions.URL.Key

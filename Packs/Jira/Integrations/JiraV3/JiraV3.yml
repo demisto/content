@@ -50,7 +50,7 @@ configuration:
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
   name: id_offset
-  defaultvalue: 0
+  defaultvalue: '0'
   type: 0
   required: false
 - defaultvalue: 3 days
@@ -499,14 +499,71 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
+    - description: Deprecated. Please use issue_id or issue_key.
+      hidden: true
+      name: issueId
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
+      name: assignee
+    - description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: assignee_id
+    description: Assigns an assignee to an existing issue.
+    name: jira-issue-assign
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.Labels
+      description: The ticket's project labels.
+      type: Array
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - arguments:
     - description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
       name: issue_json
     - description: Deprecated. Please use issue_json.
       name: issueJson
       hidden: true
-    - description: The summary of the issue.
+    - description: The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument).
       name: summary
-      required: true
+      required: false
     - description: The project key with which to associate the issue (Project Key or name is required).
       name: project_key
     - description: Deprecated. Please use project_key.
@@ -599,6 +656,7 @@ script:
       - 'true'
       - 'false'
       hidden: true
+      auto: PREDEFINED
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If "true", expands the issue links (the linked issues and subtasks).
@@ -612,6 +670,7 @@ script:
       - 'true'
       - 'false'
       hidden: true
+      auto: PREDEFINED
     description: Fetches an issue from Jira.
     name: jira-get-issue
     outputs:
@@ -733,8 +792,10 @@ script:
     name: jira-oauth-complete
   - description: "Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish the process."
     name: jira-oauth-start
+    arguments: []
   - description: Use this command to test the connectivity of the Jira instance.
     name: jira-oauth-test
+    arguments: []
   - arguments:
     - description: The comment ID.
       name: comment_id
@@ -1366,6 +1427,7 @@ script:
     - contextPath: Jira.IssueLinkType.self
       description: The URL of the issue link type.
       type: String
+    arguments: []
   - arguments:
     - description: The key of the outward issue.
       name: outward_issue
@@ -1391,6 +1453,7 @@ script:
     name: get-remote-data
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
+    arguments: []
   - arguments:
     - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
@@ -1398,13 +1461,14 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/btfl-soup:1.0.1.78954
+    arguments: []
+  dockerimage: demisto/btfl-soup:1.0.1.83338
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

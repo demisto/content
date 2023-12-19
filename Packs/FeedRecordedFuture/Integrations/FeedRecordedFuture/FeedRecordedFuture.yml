@@ -44,7 +44,7 @@ configuration:
   required: false
 - display: ""
   name: feedExpirationPolicy
-  defaultvalue: suddenDeath
+  defaultvalue: indicatorType
   type: 17
   options:
   - never
@@ -195,7 +195,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.82980
   feed: true
   runonce: false
   script: '-'

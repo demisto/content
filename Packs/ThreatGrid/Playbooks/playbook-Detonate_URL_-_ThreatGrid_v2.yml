@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 5a59a000-8bfc-4537-8916-1dd8b873197b
+    taskid: 180c1045-80de-4ba7-8b95-a6f038647bc0
     type: regular
     task:
-      id: 5a59a000-8bfc-4537-8916-1dd8b873197b
+      id: 180c1045-80de-4ba7-8b95-a6f038647bc0
       version: -1
       name: ThreatGrid Upload URL
       description: Submits a sample to threat grid for analysis. URL or file, not both.
@@ -51,34 +51,51 @@ tasks:
       - "3"
     scriptarguments:
       interval_in_seconds:
-        simple: ${inputs.interval}
+        complex:
+          root: inputs.interval
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.interval
+                iscontext: true
       timeout_in_seconds:
-        simple: ${inputs.timeout}
+        complex:
+          root: inputs.timeout
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.timeout
+                iscontext: true
       url:
-        simple: ${inputs.URL}
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 545
+          "x": 280,
+          "y": 550
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 1d32d967-6615-452d-830f-aac7d45e910e
+    taskid: 1e5d0366-d6ce-4020-8870-277914fc2ca3
     type: condition
     task:
-      id: 1d32d967-6615-452d-830f-aac7d45e910e
-      description: condition
+      id: 1e5d0366-d6ce-4020-8870-277914fc2ca3
+      description: Verify that there is a valid ThreatGrid instance enabled.
       version: -1
       name: Is ThreatGrid enabled?
       type: condition
@@ -131,7 +148,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -164,11 +181,11 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f47a7d0e-7291-47d5-8111-b8d7d686f159
+    taskid: 67c20c58-de92-41a6-8418-8eac9bb52eb4
     type: condition
     task:
-      id: f47a7d0e-7291-47d5-8111-b8d7d686f159
-      description: condition
+      id: 67c20c58-de92-41a6-8418-8eac9bb52eb4
+      description: Verify that there is a URL to detonate.
       version: -1
       name: Is there a URL to detonate?
       type: condition
@@ -188,11 +205,13 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 170,
           "y": 370
         }
       }
@@ -211,7 +230,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 605,
+        "width": 610,
         "x": 50,
         "y": 50
       }
@@ -220,26 +239,52 @@ view: |-
 inputs:
 - key: URL
   value:
-    simple: ${URL.Data}
+    complex:
+      root: URL
+      accessor: Data
   required: false
   description: URL of the sites to detonate.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: timeout
   value:
     simple: "60"
   required: false
-  description: Indicates the time in seconds until the polling sequence times out. 
-    Default is 60.
-  playbookInputQuery: null
+  description: Indicates the time in seconds until the polling sequence times out. Default is 60.
+  playbookInputQuery:
 - key: interval
   value:
     simple: "10"
   required: false
-  description: Indicates the time in seconds to wait between command execution when
-    'polling' argument is true. Minimum value is 10 seconds. Default is 10.
-  playbookInputQuery: null
-outputs: []
-quiet: true
+  description: Indicates the time in seconds to wait between command execution when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
+  playbookInputQuery:
+outputs:
+- contextPath: ThreatGrid.Sample.id
+  description: The sample id
+  type: string
+- contextPath: ThreatGrid.Sample.filename
+  description: The sample filename
+  type: string
+- contextPath: ThreatGrid.Sample.state
+  description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+  type: string
+- contextPath: ThreatGrid.Sample.status
+  description: The sample status
+  type: string
+- contextPath: ThreatGrid.Sample.md5
+  description: The sample md5
+  type: string
+- contextPath: ThreatGrid.Sample.sha1
+  description: The sample sha1
+  type: string
+- contextPath: ThreatGrid.Sample.sha256
+  description: The sample sha256
+  type: string
+- contextPath: ThreatGrid.Sample.os
+  description: The sample os
+  type: string
+- contextPath: ThreatGrid.Sample.submitted_at
+  description: The sample submission time
+  type: string
 fromversion: 5.0.0
 description: Detonate one or more URLs using the ThreatGrid integration.
 tests:

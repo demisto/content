@@ -833,6 +833,11 @@ def test_event_list_command(requests_mock, mock_client):
             )
             assert response.indicator.path == response.outputs["file"]["file_path"]
             assert response.indicator.name == response.outputs["file"]["file_name"]
+            if "parent" in response.outputs["file"]:
+                assert (
+                    response.indicator.relationships[0].to_context()["EntityB"]
+                    == response.outputs["file"]["parent"]["identity"]["sha256"]
+                )
 
         if computer := response.outputs.get("computer"):
             assert "links" not in computer
@@ -1542,3 +1547,132 @@ def test_vulnerability_list_command(
             computer.pop("links", None)
 
         assert output == mock_output
+
+
+@pytest.mark.parametrize(
+    "last_run, limit, expeted_previous_ids",
+    [
+        (
+            {
+                "last_fetch": "2022-07-18T00:00:00.000Z",
+                "previous_ids": ["6159258594551267593", "6159258594551267594", "6159258594551267595"]
+            },
+            3,
+            ["6159258594551267597"]
+        ),
+        (
+            {},
+            2,
+            ["6159258594551267592", "6159258594551267593"]
+        ),
+        (
+            {
+                "last_fetch": "test",
+                "previous_ids": ["6159258594551267592"]
+            },
+            1,
+            ["6159258594551267592", "6159258594551267593"]
+        )
+    ]
+)
+def test_fetch_incidents(
+    mock_client,
+    mocker,
+    last_run: dict[str, str | list[str]],
+    limit: int,
+    expeted_previous_ids: list[str],
+):
+    """
+    Given:
+        - args: last_run, limit.
+    When:
+        - run `fetch_incidents` function.
+    Then:
+        - Ensure in case previous_ids is provided it does not fetch
+          the incidents with ids already fetched.
+        - Ensure that when there are two incidents with the same time
+          the previous_ids returned contains both ids.
+        - Ensure that when the last incident retrieved has the same time
+          as the incident with the id provided in previous_ids
+          then it returns both ids.
+    """
+    mock_response_1 = load_mock_response("incidents_response_1.json")
+    mock_response_2 = load_mock_response("incidents_response_2.json")
+
+    mocker.patch.object(Client, "event_list_request", side_effect=[mock_response_1, mock_response_2])
+    mocker.patch("AMPv2.date_to_timestamp", return_value=1699360451000)
+
+    from AMPv2 import fetch_incidents
+
+    next_run, incidents = fetch_incidents(mock_client,
+                                          last_run=last_run,
+                                          first_fetch_time="2023-11-01T23:17:39.000Z",
+                                          incident_severities=["Low", "Medium", "High", "Critical"],
+                                          max_incidents_to_fetch=limit)
+
+    # Validate response
+    for previous_id in expeted_previous_ids:
+        assert previous_id in next_run["previous_ids"]
+    assert len(incidents) == limit
+
+
+def test_fetch_incidents_with_no_new_incidents(
+    mock_client,
+    mocker,
+):
+    """
+    Given:
+        - args with last_run that has previous_ids
+          (Simulates a given situation where there are no new incidents).
+    When:
+        - run `fetch_incidents` function.
+    Then:
+        - Ensure the no incidents returned.
+        - Ensure the `previous_ids` does not change and stays with the provided id.
+    """
+    mock_response = load_mock_response("incidents_response_3.json")
+
+    mocker.patch.object(Client, "event_list_request", return_value=mock_response)
+
+    from AMPv2 import fetch_incidents
+
+    next_run, incidents = fetch_incidents(mock_client,
+                                          last_run={
+                                              "last_fatch": "2023-11-15T00:00:00.000Z",
+                                              "previous_ids": ["6159258594551267595"]
+                                          },
+                                          first_fetch_time="2023-11-01T23:17:39.000Z",
+                                          incident_severities=["Low", "Medium", "High", "Critical"],
+                                          max_incidents_to_fetch=100)
+
+    # Validate response
+    assert "6159258594551267595" in next_run["previous_ids"]
+    assert len(incidents) == 0
+
+
+def test_fetch_incidents_for_incident_severities(
+    mock_client,
+    mocker,
+):
+    """
+    Given:
+        - the last_run empty and incident_severities without "Medium" severity.
+    When:
+        - run `fetch_incidents` function.
+    Then:
+        - Ensure the incidents returned only contain "Low", "High" and "Critical" severities.
+    """
+    mock_response = load_mock_response("incidents_response_4.json")
+
+    mocker.patch.object(Client, "event_list_request", return_value=mock_response)
+
+    from AMPv2 import fetch_incidents
+
+    _, incidents = fetch_incidents(mock_client,
+                                   last_run={},
+                                   first_fetch_time="2023-11-01T23:17:39.000Z",
+                                   incident_severities=["Low", "High", "Critical"],
+                                   max_incidents_to_fetch=100)
+
+    # Validate response
+    assert len(incidents) == 3

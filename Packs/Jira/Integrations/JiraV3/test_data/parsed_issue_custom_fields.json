@@ -343,7 +343,7 @@
         "project": "Project",
         "customfield_10031": "Satisfaction",
         "customfield_10032": "Issueidlist",
-        "customfield_10033": "FanaticsTest",
+        "customfield_10033": "FanaticTest",
         "customfield_10034": "Content type",
         "aggregatetimespent": "\\u03a3 Time Spent",
         "customfield_10035": "Publication date",
@@ -972,7 +972,7 @@
             "rawData": {}
         },
         "customfield_10033": {
-            "issueFieldDisplayName": "FanaticsTest",
+            "issueFieldDisplayName": "FanaticTest",
             "rawData": {}
         },
         "customfield_10034": {

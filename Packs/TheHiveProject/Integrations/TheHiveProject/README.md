@@ -21,10 +21,14 @@ This integration was integrated and tested with version 4.1.4 of TheHive Project
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### thehive-list-cases
+
 ***
 List cases.
 
@@ -32,6 +36,7 @@ List cases.
 #### Base Command
 
 `thehive-list-cases`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -88,9 +93,11 @@ List cases.
 
 
 #### Command Example
+
 ```!thehive-list-cases```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -504,6 +511,7 @@ List cases.
 #### Human Readable Output
 
 >### TheHive Cases:
+
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~479312 | case with tasks | case with tasks | 2021-10-11T17:02:01Z |
@@ -515,6 +523,7 @@ List cases.
 
 
 ### thehive-get-case
+
 ***
 Get a case
 
@@ -522,6 +531,7 @@ Get a case
 #### Base Command
 
 `thehive-get-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -578,9 +588,11 @@ Get a case
 
 
 #### Command Example
+
 ```!thehive-get-case id="~479312"```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -681,12 +693,14 @@ Get a case
 #### Human Readable Output
 
 >### TheHive Case ID ~479312:
+
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~479312 | case with tasks | case with tasks | 2021-10-11T17:02:01Z |
 
 
 ### thehive-update-case
+
 ***
 Update a case
 
@@ -694,6 +708,7 @@ Update a case
 #### Base Command
 
 `thehive-update-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -764,9 +779,11 @@ Update a case
 
 
 #### Command Example
+
 ```!thehive-update-case id="~487504" title="updated title for case with no tasks"```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -819,12 +836,14 @@ Update a case
 #### Human Readable Output
 
 >### TheHive Update Case ID ~487504:
+
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~487504 | updated title for case with no tasks | case with no task | 2021-10-11T17:02:34Z |
 
 
 ### thehive-create-case
+
 ***
 Create a new case
 
@@ -832,6 +851,7 @@ Create a new case
 #### Base Command
 
 `thehive-create-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -900,9 +920,11 @@ Create a new case
 
 
 #### Command Example
+
 ```!thehive-create-case title="new created case" description="description for new case" owner="owner"```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -999,12 +1021,14 @@ Create a new case
 #### Human Readable Output
 
 >### TheHive newly Created Case:
+
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~41492552 | new created case | description for new case | 2021-10-11T17:36:40Z |
 
 
 ### thehive-create-task
+
 ***
 Create a new task
 
@@ -1012,6 +1036,7 @@ Create a new task
 #### Base Command
 
 `thehive-create-task`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1038,9 +1063,11 @@ Create a new task
 
 
 #### Command Example
+
 ```!thehive-create-task id="~479312" title="newly added task" description="new description"```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -1079,12 +1106,14 @@ Create a new task
 #### Human Readable Output
 
 >### The newly created task
+
 >|id|title|createdAt|status|
 >|---|---|---|---|
 >| ~581640 | newly added task | 2021-10-11T17:36:42Z | Waiting |
 
 
 ### thehive-remove-case
+
 ***
 Removes a case
 
@@ -1092,6 +1121,7 @@ Removes a case
 #### Base Command
 
 `thehive-remove-case`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1105,13 +1135,16 @@ Removes a case
 There is no context output for this command.
 
 #### Command Example
+
 ```thehive-remove-case id='~41496648'```
 
 #### Human Readable Output
+
 ```Case ID ~41496648 removed successfully```
 
 
 ### thehive-merge-cases
+
 ***
 Merges 2 cases
 
@@ -1119,6 +1152,7 @@ Merges 2 cases
 #### Base Command
 
 `thehive-merge-cases`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1176,9 +1210,11 @@ Merges 2 cases
 
 
 #### Command Example
+
 ```thehive-merge-cases firstCaseID=12402 secondCaseID=49683```
 
 #### Context Example
+
 ```json
 {
         "_id": "~41443480",
@@ -1213,8 +1249,11 @@ Merges 2 cases
             "accessTheHiveFS", "manageAction"
         ]}
 ```
+
 #### Human Readable Output
+
 >### TheHive Linked Cases of ~413824:
+
 >|id|title|description|createdAt|
 >|---|---|---|---|
 >| ~41443480 | new created case / new created case | description for new case<br><br>description for new case | 2021-10-04T22:16:20Z |
@@ -1222,6 +1261,7 @@ Merges 2 cases
 
 
 ### thehive-get-case-tasks
+
 ***
 Get the tasks of a case
 
@@ -1229,6 +1269,7 @@ Get the tasks of a case
 #### Base Command
 
 `thehive-get-case-tasks`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1241,9 +1282,11 @@ Get the tasks of a case
 There is no context output for this command.
 
 #### Command Example
+
 ```!thehive-get-case-tasks id="~479312"```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -1333,6 +1376,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### TheHive Tasks For Case ~479312:
+
 >|_id|title|_createdAt|_createdBy|status|group|
 >|---|---|---|---|---|---|
 >| ~585736 | newly added task | 2021-10-11T17:36:42Z | adrugobitski@paloaltonetworks.com | Waiting | default |
@@ -1343,6 +1387,7 @@ There is no context output for this command.
 
 
 ### thehive-get-task
+
 ***
 Get a specific task.
 
@@ -1350,6 +1395,7 @@ Get a specific task.
 #### Base Command
 
 `thehive-get-task`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1387,6 +1433,7 @@ Get a specific task.
 
 
 #### Command Example
+
 ```!thehive-get-task id="~41357336"```
 
 #### Human Readable Output
@@ -1394,6 +1441,7 @@ Get a specific task.
 >No task found with id: ~41357336.
 
 ### thehive-update-task
+
 ***
 Updates a task.
 
@@ -1401,6 +1449,7 @@ Updates a task.
 #### Base Command
 
 `thehive-update-task`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1419,6 +1468,7 @@ Updates a task.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1426,6 +1476,7 @@ There is no context output for this command.
 
 
 ### thehive-list-users
+
 ***
 Get a list of users.
 
@@ -1433,6 +1484,7 @@ Get a list of users.
 #### Base Command
 
 `thehive-list-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1444,9 +1496,11 @@ Get a list of users.
 There is no context output for this command.
 
 #### Command Example
+
 ```!thehive-list-users```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -1600,6 +1654,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### TheHive Users:
+
 >|id|name|roles|status|
 >|---|---|---|---|
 >| adrugobitski@paloaltonetworks.com | name API | admin,<br/>write,<br/>read,<br/>alert | Ok |
@@ -1614,6 +1669,7 @@ There is no context output for this command.
 
 
 ### thehive-get-user
+
 ***
 Get a single user
 
@@ -1621,6 +1677,7 @@ Get a single user
 #### Base Command
 
 `thehive-get-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1633,9 +1690,11 @@ Get a single user
 There is no context output for this command.
 
 #### Command Example
+
 ```!thehive-get-user id="~41402520"```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -1661,12 +1720,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### TheHive User ID ~41402520:
+
 >|_id|name|roles|status|organisation|createdAt|
 >|---|---|---|---|---|---|
 >| ~41402520 | testing | read | Ok | name | 2021-09-22T10:32:01Z |
 
 
 ### thehive-create-local-user
+
 ***
 Create a new user
 
@@ -1674,6 +1735,7 @@ Create a new user
 #### Base Command
 
 `thehive-create-local-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1690,9 +1752,11 @@ Create a new user
 There is no context output for this command.
 
 #### Command Example
+
 ```!thehive-create-local-user login=name name=dem password=1234```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -1735,12 +1799,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### New User ~593928:
+
 >|_id|login|name|profile|
 >|---|---|---|---|
 >| ~593928 | name@example.local | dem | read-only |
 
 
 ### thehive-block-user
+
 ***
 Block a user
 
@@ -1748,6 +1814,7 @@ Block a user
 #### Base Command
 
 `thehive-block-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1760,6 +1827,7 @@ Block a user
 There is no context output for this command.
 
 #### Command Example
+
 ```!thehive-block-user id="~41208"```
 
 #### Human Readable Output
@@ -1767,6 +1835,7 @@ There is no context output for this command.
 >User "~41208" blocked successfully
 
 ### thehive-list-observables
+
 ***
 List observables for a case.
 
@@ -1774,6 +1843,7 @@ List observables for a case.
 #### Base Command
 
 `thehive-list-observables`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1789,9 +1859,11 @@ List observables for a case.
 
 
 #### Command Example
+
 ```!thehive-list-observables id="~561160"```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -1882,6 +1954,7 @@ List observables for a case.
 #### Human Readable Output
 
 >### Observables for Case ~561160:
+
 >|data|dataType|message|
 >|---|---|---|
 >| google | domain | observable 2 |
@@ -1889,6 +1962,7 @@ List observables for a case.
 
 
 ### thehive-create-observable
+
 ***
 Creates an observable.
 
@@ -1896,6 +1970,7 @@ Creates an observable.
 #### Base Command
 
 `thehive-create-observable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1915,6 +1990,7 @@ Creates an observable.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -1922,6 +1998,7 @@ There is no context output for this command.
 
 
 ### thehive-update-observable
+
 ***
 Update an observable.
 
@@ -1929,6 +2006,7 @@ Update an observable.
 #### Base Command
 
 `thehive-update-observable`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1945,9 +2023,11 @@ Update an observable.
 There is no context output for this command.
 
 #### Command Example
+
 ```!thehive-update-observable id="~41504920" message="updated message for observable"```
 
 #### Context Example
+
 ```json
 {
     "TheHive": {
@@ -1978,12 +2058,14 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Updated Observable:
+
 >|id|data|dataType|message|
 >|---|---|---|---|
 >| ~41504920 | google | domain | updated message for observable |
 
 
 ### get-mapping-fields
+
 ***
 Returns the list of fields.
 
@@ -1991,6 +2073,7 @@ Returns the list of fields.
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2002,6 +2085,7 @@ Returns the list of fields.
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -2009,6 +2093,7 @@ There is no context output for this command.
 
 
 ### get-remote-data
+
 ***
 Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
 
@@ -2016,6 +2101,7 @@ Get remote data from a remote incident. This method does not update the current 
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2029,6 +2115,7 @@ Get remote data from a remote incident. This method does not update the current 
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -2036,6 +2123,7 @@ There is no context output for this command.
 
 
 ### thehive-get-version
+
 ***
 Displays the version of TheHive Project.
 
@@ -2043,6 +2131,7 @@ Displays the version of TheHive Project.
 #### Base Command
 
 `thehive-get-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2054,6 +2143,7 @@ Displays the version of TheHive Project.
 There is no context output for this command.
 
 #### Command Example
+
 ```!thehive-get-version```
 
 #### Human Readable Output
@@ -2061,6 +2151,7 @@ There is no context output for this command.
 >4.1.4-1
 
 ### get-modified-remote-data
+
 ***
 Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
 
@@ -2068,6 +2159,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2079,6 +2171,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 There is no context output for this command.
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

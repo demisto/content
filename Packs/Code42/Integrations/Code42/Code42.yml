@@ -233,7 +233,7 @@ script:
       name: username
     - description: Hostname to search for.
       name: hostname
-    description: Search for Code42 Incydr File Events
+    description: Search for Code42 Incydr File Events.
     name: code42-file-events-search
     outputs:
     - contextPath: Code42.FileEvents.timestamp
@@ -261,7 +261,7 @@ script:
     - description: The alert ID to retrieve. Alert IDs are associated with alerts that are fetched via fetch-incidents.
       name: id
       required: true
-    description: Retrieve alert details by alert ID
+    description: Retrieve alert details by alert ID.
     name: code42-alert-get
     outputs:
     - contextPath: Code42.SecurityAlert.Username
@@ -324,6 +324,7 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: The username to remove from the Departing Employee List.
       name: username
@@ -339,6 +340,7 @@ script:
     - contextPath: Code42.DepartingEmployee.Username
       description: The username of the Departing Employee.
       type: string
+    deprecated: true
   - arguments:
     - description: The number of items to return.
       name: results
@@ -367,6 +369,7 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: The username to add to the High Risk Employee List.
       name: username
@@ -385,6 +388,7 @@ script:
     - contextPath: Code42.HighRiskEmployee.Note
       description: Note associated with the High Risk Employee.
       type: string
+    deprecated: true
   - arguments:
     - description: The username to remove from the High Risk Employee List.
       name: username
@@ -398,6 +402,7 @@ script:
     - contextPath: Code42.HighRiskEmployee.Username
       description: The username of the High Risk Employee.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: To filter results by employees who have these risk tags. Comma delimited.
       name: risktags
@@ -433,6 +438,7 @@ script:
     - contextPath: Code42.HighRiskEmployee.Note
       description: Note associated with the High Risk Employee.
       type: string
+    deprecated: true
   - arguments:
     - description: The username of the High Risk Employee.
       name: username
@@ -461,6 +467,7 @@ script:
     - contextPath: Code42.HighRiskEmployee.RiskTags
       description: Risk tags to associate with the High Risk Employee.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: The username of the High Risk Employee.
       name: username
@@ -489,6 +496,7 @@ script:
     - contextPath: Code42.HighRiskEmployee.RiskTags
       description: Risk tags to disassociate from the High Risk Employee.
       type: Unknown
+    deprecated: true
   - arguments:
     - description: The name of the Code42 organization from which to add the user.
       name: orgname
@@ -651,6 +659,7 @@ script:
     - contextPath: Code42.HighRiskEmployee.Note
       description: Note associated with the High Risk Employee.
       type: string
+    deprecated: true
   - name: code42-departingemployee-get
     description: Retrieve departing employee details.
     outputs:
@@ -670,6 +679,7 @@ script:
     - description: Email id of the departing employee.
       name: username
       required: true
+    deprecated: true
   - name: code42-watchlists-list
     description: List all existing watchlists in your environment.
     outputs:
@@ -737,7 +747,7 @@ script:
       description: The datetime the user was added to the watchlist.
       type: datetime
   - name: code42-user-get-risk-profile
-    description: Get the risk profile details for a given user
+    description: Get the risk profile details for a given user.
     arguments:
     - name: username
       description: The user to get risk profile for.
@@ -784,7 +794,7 @@ script:
       description: If the risk profile update was successful.
       type: boolean
   - name: code42-file-events-table
-    description: Render Code42 file events from the context as a markdown table
+    description: Render Code42 file events from the context as a markdown table.
     arguments:
     - name: include
       description: |
@@ -797,7 +807,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.66909
+  dockerimage: demisto/py42:1.0.0.80756
   isfetch: true
   runonce: false
   script: '-'

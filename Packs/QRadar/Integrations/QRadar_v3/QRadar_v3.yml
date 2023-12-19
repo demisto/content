@@ -69,7 +69,7 @@ configuration:
   name: offenses_per_fetch
   type: 0
   additionalinfo: In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value.
-  defaultvalue: '20'
+  defaultvalue: '10'
   section: Collect
   advanced: true
   required: false
@@ -151,6 +151,22 @@ configuration:
   name: proxy
   type: 8
   section: Connect
+  advanced: true
+  required: false
+- defaultvalue: '60'
+  display: "Timeout for http-requests"
+  name: timeout
+  additionalinfo: The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds.
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: '60'
+  display: "Fetch Incidents Interval"
+  name: fetch_interval
+  additionalinfo: The fetch interval between before each fetch-incidents execution (seconds).
+  type: 0
+  section: Collect
   advanced: true
   required: false
 script:
@@ -2539,7 +2555,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.77674
+  dockerimage: demisto/python3:3.10.13.83255
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

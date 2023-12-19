@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import json
 import random
 import re
@@ -63,7 +65,7 @@ def validate_email_sent(incident_id, email_subject, subject_include_incident_id,
                                      email_latest_message, email_code, mail_sender_instance)
 
     if is_error(email_reply):
-        return f'Error:\n {get_error(email_reply)}'
+        return_error(f'Error:\n {get_error(email_reply)}')
 
     msg = f'Mail sent successfully. To: {email_to}'
     if email_cc:
@@ -108,6 +110,11 @@ def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, 
             "replyTo": service_mail,
             "using": mail_sender_instance
         }
+        # If using Gmail Single User,
+        # add references header to mail_content to properly group replies into conversations in user's inbox.
+        instances = demisto.getModules()
+        if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
+            mail_content["references"] = email_latest_message
     else:
         mail_content = {
             "to": email_to,
@@ -241,7 +248,7 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
                                          new_attachment_names, email_code, mail_sender_instance)
 
     if is_error(email_result):
-        return f'Error:\n {get_error(email_result)}'
+        return_error(f'Error:\n {get_error(email_result)}')
 
     msg = f'Mail sent successfully. To: {email_to}'
     if email_cc:

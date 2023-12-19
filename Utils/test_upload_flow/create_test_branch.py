@@ -126,13 +126,13 @@ def add_changed_pack(func):
 
 
 @add_changed_pack
-def create_new_pack():
+def create_new_pack(pack_id: str):
     """
     Creates a new pack with a given pack name
     """
     content_path = Path(__file__).parent.parent.parent
-    source_path = Path(__file__).parent / 'TestUploadFlow'
-    dest_path = content_path / 'Packs' / 'TestUploadFlow'
+    source_path = Path(__file__).parent / pack_id
+    dest_path = content_path / 'Packs' / pack_id
     if dest_path.exists():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
@@ -283,7 +283,7 @@ def do_changes_on_branch(packs_path: Path):
     Makes the test changes on the created branch
     """
     # Case 1: Verify new pack - TestUploadFlow
-    new_pack_path, _, _ = create_new_pack()
+    new_pack_path, _, _ = create_new_pack(pack_id='TestUploadFlow')
 
     # Case 2: Verify modified pack - Armorblox
     modify_pack(packs_path / 'Armorblox', 'Integrations/Armorblox/Armorblox.py')
@@ -294,15 +294,14 @@ def do_changes_on_branch(packs_path: Path):
     # Case 4: Verify new version - ZeroFox
     enhance_release_notes(packs_path / 'ZeroFox')
 
-    # Case 5: Verify modified existing release notes - BPA
-    update_existing_release_notes(packs_path / 'BPA')
+    # Case 5: Verify modified existing release notes - Box
+    update_existing_release_notes(packs_path / 'Box')
 
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
     set_pack_hidden(packs_path / 'Microsoft365Defender')
 
-    # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
     # Case 7: Verify changed readme - Maltiverse
-    # update_readme(packs_path / 'Maltiverse')
+    update_readme(packs_path / 'Maltiverse')
 
     # TODO: need to cause this pack to fail in another way because the current way cause validation to fail
     # Case 8: Verify failing pack - Absolute
@@ -322,6 +321,9 @@ def do_changes_on_branch(packs_path: Path):
     # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
     add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
                    mandatory=False)
+
+    # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket - TestUploadFlowXSOAR
+    create_new_pack(pack_id='TestUploadFlowXSOAR')
 
     logging.info("Finished making test changes on the branch")
 

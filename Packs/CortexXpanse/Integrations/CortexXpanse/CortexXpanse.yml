@@ -423,6 +423,8 @@ script:
       name: lte_creation_time
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
       name: gte_creation_time
+    - description: Comma-separated list of case (incident) IDs.
+      name: case_id_list
     - description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
       name: sort_by_creation_time
       auto: PREDEFINED
@@ -471,7 +473,7 @@ script:
     - contextPath: ASM.Alert.detection_timestamp
       description: Date the alert was created.
       type: Date
-  - name: asm-list-attack-surface-rules
+  - name: asm-get-attack-surface-rule
     arguments:
     - name: enabled_status
       auto: PREDEFINED
@@ -834,7 +836,7 @@ script:
       description: User-provided notes related to the incident.
       type: string
     description: Returns additional details about a specific incident.
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80593
   isFetchSamples: true
   isfetch: true
   script: ''

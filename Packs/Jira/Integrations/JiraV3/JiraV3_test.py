@@ -699,8 +699,42 @@ class TestJiraCreateIssueCommand:
                         'self': 'dummy_link'}
         expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
         mocker.patch.object(client, 'create_issue', return_value=raw_response)
-        command_result = create_issue_command(client=client, args={})
+        command_result = create_issue_command(client=client, args={"summary": "test"})
         assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+    def test_create_issue_command_with_issue_json(self, mocker):
+        """
+        Given:
+            - A Jira client
+            - Jira summary from issue_json
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that the issue id and key of the newly created issue is returned.
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        raw_response = {'id': "1234", 'key': 'dummy_key', 'self': 'dummy_link'}
+        expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
+        mocker.patch.object(client, 'create_issue', return_value=raw_response)
+        command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
+        assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+    def test_create_issue_command_no_summary(self):
+        """
+        Given:
+            - A Jira client
+            - no Jira summary from issue_json / args
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that DemistoException is raised
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(DemistoException) as e:
+            create_issue_command(client=client, args={})
+        assert 'The summary argument must be provided' in str(e)
 
 
 class TestJiraDeleteIssueCommand:
@@ -2334,3 +2368,61 @@ class TestJiraFetchIncidents:
                 attachment_tag_from_jira='attachment_tag_from_jira'
             )
         assert 'The fetch query configured returned no Jira issues, please update it' in str(e)
+
+
+class TestJiraIssueAssign:
+    @pytest.mark.parametrize(
+        'assignee, assignee_id, excpected_body_request',
+        [
+            ("server_assignee", None, {"name": "server_assignee"}),
+            (None, "cloud_assignee", {"accountId": "cloud_assignee"})
+        ]
+    )
+    def test_update_issue_assignee_command(self, mocker, assignee, assignee_id, excpected_body_request):
+        """
+        Given:
+            - issue id, and assignees for cloud/server jira
+        When
+            - Running the update_issue_assignee_command
+        Then
+            - Ensure the body request is ok for both cloud/server jira
+        """
+        from JiraV3 import update_issue_assignee_command
+        get_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
+        args = {
+            'assignee': assignee,           # For Jira OnPrem
+            'assignee_id': assignee_id,     # For Jira Cloud
+            'issue_id': 21487,
+        }
+        client: JiraBaseClient = jira_base_client_mock()
+        if assignee_id:
+            client = jira_cloud_client_mock()
+        else:
+            client = jira_onprem_client_mock()
+
+        jira_req_mocker = mocker.patch.object(client, 'update_assignee', return_value=None)
+        mocker.patch.object(client, 'get_issue', return_value=get_issue_response)
+        assert update_issue_assignee_command(client=client, args=args)
+        assert jira_req_mocker.call_args[1].get('assignee_body') == excpected_body_request
+
+    def test_test_update_issue_assignee_command_no_assignees(self):
+        """
+        Given:
+            - issue id, without assignee / assignee_id
+        When
+            - Running the update_issue_assignee_command
+        Then
+            - Ensure an exception is raised
+        """
+        from JiraV3 import update_issue_assignee_command
+
+        args = {
+            'assignee': None,       # For Jira OnPrem
+            'assignee_id': None,    # For Jira Cloud
+            'issue_id': 21487,
+        }
+
+        client = jira_base_client_mock()
+
+        with pytest.raises(DemistoException):
+            update_issue_assignee_command(client=client, args=args)

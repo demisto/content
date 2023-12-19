@@ -3,7 +3,6 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
-import dateparser
 
 import pytz
 import urllib3
@@ -17,7 +16,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' ADVANCED GLOBAL PARAMETERS '''
 
 FAILURE_SLEEP = 20  # sleep between consecutive failures events fetch
-FETCH_SLEEP = 60  # sleep between fetches
+FETCH_SLEEP = arg_to_number(demisto.params().get("fetch_interval")) or 60  # sleep between fetches
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
@@ -37,6 +36,9 @@ EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 EVENTS_SEARCH_TRIES = 3  # number of retries for creating a new search
 EVENTS_POLLING_TRIES = 10  # number of retries for events polling
 EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
+CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
+CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
+
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -82,6 +84,8 @@ MIRRORED_OFFENSES_FINISHED_CTX_KEY = 'mirrored_offenses_finished'
 MIRRORED_OFFENSES_FETCHED_CTX_KEY = 'mirrored_offenses_fetched'
 
 LAST_MIRROR_KEY = 'last_mirror_update'
+LAST_MIRROR_CLOSED_KEY = 'last_mirror_closed_update'
+
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 NAME_AND_GROUP_REGEX = re.compile(r'^[\w-]+$')
@@ -358,7 +362,9 @@ FIELDS_MIRRORING = 'id,start_time,event_count,last_persisted_time,close_time'
 
 class Client(BaseClient):
 
-    def __init__(self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict):
+    def __init__(
+        self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict, timeout: Optional[int] = None
+    ):
         username = credentials.get('identifier')
         password = credentials.get('password')
         if username == API_USERNAME:
@@ -369,6 +375,7 @@ class Client(BaseClient):
             self.base_headers = {'Version': api_version}
         base_url = urljoin(server, '/api')
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
+        self.timeout = timeout  # type: ignore[assignment]
         self.password = password
         self.server = server
 
@@ -376,16 +383,30 @@ class Client(BaseClient):
                      json_data: Optional[dict] = None, additional_headers: Optional[dict] = None,
                      timeout: Optional[int] = None, resp_type: str = 'json'):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
-        return self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            params=params,
-            json_data=json_data,
-            headers=headers,
-            error_handler=self.qradar_error_handler,
-            timeout=timeout,
-            resp_type=resp_type
-        )
+        for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
+            try:
+                return self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    json_data=json_data,
+                    headers=headers,
+                    error_handler=self.qradar_error_handler,
+                    timeout=timeout or self.timeout,
+                    resp_type=resp_type
+                )
+            except (DemistoException, requests.ReadTimeout) as error:
+                demisto.error(f'Error {error} in time {_time}')
+                if (
+                    isinstance(
+                        error, DemistoException
+                    ) and not isinstance(
+                        error.exception, requests.ConnectionError) or _time == CONNECTION_ERRORS_RETRIES
+                ):
+                    raise
+                else:
+                    time.sleep(CONNECTION_ERRORS_INTERVAL)  # pylint: disable=sleep-exists
+        return None
 
     @staticmethod
     def qradar_error_handler(res: requests.Response):
@@ -634,7 +655,14 @@ class Client(BaseClient):
             additional_headers=headers
         )
 
-    def reference_set_entries(self, ref_name: str, indicators: Any, fields: Optional[str] = None, source: Optional[str] = None):
+    def reference_set_entries(
+        self,
+        ref_name: str,
+        indicators: Any,
+        fields: Optional[str] = None,
+        source: Optional[str] = None,
+        timeout: Optional[int] = None
+    ):
         headers = {
             'Content-Type': 'application/json'
         }
@@ -650,7 +678,8 @@ class Client(BaseClient):
             url_suffix='/reference_data_collections/set_entries',
             json_data=[{"collection_id": set_id, "value": str(indicator), "source": source}
                        for indicator in indicators],  # type: ignore[arg-type]
-            additional_headers=headers
+            additional_headers=headers,
+            timeout=timeout
         )
 
     def get_reference_data_bulk_task_status(self, task_id: int):
@@ -785,51 +814,63 @@ def insert_values_to_reference_set_polling(client: Client,
     response = {}
     use_old_api = get_major_version(api_version) <= 15
     ref_name = args.get('ref_name', '')
-    if use_old_api or 'task_id' not in args:
-        if from_indicators:
-            query = args.get('query')
-            limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
-            page = arg_to_number(args.get('page', 0))
+    try:
+        if use_old_api or 'task_id' not in args:
+            if from_indicators:
+                query = args.get('query')
+                limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
+                page = arg_to_number(args.get('page', 0))
 
-            # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
-            element_type = args.get('element_type', '')
-            timeout_type = args.get('timeout_type')
-            time_to_live = args.get('time_to_live')
-            try:
-                client.reference_sets_list(ref_name=ref_name)
-            except DemistoException as e:
-                # Create reference set if does not exist
-                if e.message and f'{ref_name} does not exist' in e.message:
-                    # if this call fails, raise an error and stop command execution
-                    client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
-                else:
-                    raise e
+                # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
+                element_type = args.get('element_type', '')
+                timeout_type = args.get('timeout_type')
+                time_to_live = args.get('time_to_live')
+                try:
+                    client.reference_sets_list(ref_name=ref_name)
+                except DemistoException as e:
+                    # Create reference set if does not exist
+                    if e.message and f'{ref_name} does not exist' in e.message:
+                        # if this call fails, raise an error and stop command execution
+                        client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
+                    else:
+                        raise e
 
-            search_indicators = IndicatorsSearcher(page=page)
-            indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
-            indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
-                               for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
-            values = [indicator.get('Indicator Value', '') for indicator in indicators_data]
-            if not indicators_data:
-                return PollResult(CommandResults(
-                    readable_output=f'No indicators were found for reference set {ref_name}',
-                ))
+                search_indicators = IndicatorsSearcher(page=page)
+                indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
+                indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
+                                   for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
+                values = [indicator.get('Indicator Value', '') for indicator in indicators_data]
+                if not indicators_data:
+                    return PollResult(CommandResults(
+                        readable_output=f'No indicators were found for reference set {ref_name}',
+                    ))
 
-        if not values:
-            raise DemistoException('Value to insert must be given.')
-        source = args.get('source')
-        date_value = argToBoolean(args.get('date_value', False))
-        fields = args.get('fields')
+            if not values:
+                raise DemistoException('Value to insert must be given.')
+            source = args.get('source')
+            date_value = argToBoolean(args.get('date_value', False))
+            fields = args.get('fields')
 
-        if date_value:
-            values = [get_time_parameter(value, epoch_format=True) for value in values]
-        if use_old_api:
-            response = client.reference_set_bulk_load(ref_name, values, fields)
+            if date_value:
+                values = [get_time_parameter(value, epoch_format=True) for value in values]
+            if use_old_api:
+                response = client.reference_set_bulk_load(ref_name, values, fields)
+            else:
+                response = client.reference_set_entries(ref_name, values, fields, source, timeout=300)
+                args['task_id'] = response.get('id')
+        if not use_old_api:
+            response = client.get_reference_data_bulk_task_status(args["task_id"])
+    except (DemistoException, requests.Timeout) as e:
+        if 'task_id' in args:
+            print_debug_msg(
+                f"Polling task status {args['task_id']} failed due to {e}. "
+                f"Will try to poll task status again in the next interval."
+            )
         else:
-            response = client.reference_set_entries(ref_name, values, fields, source)
-            args['task_id'] = response.get('id')
-    if not use_old_api:
-        response = client.get_reference_data_bulk_task_status(args["task_id"])
+            print_debug_msg(
+                f"Failed inserting values to reference due to {e}, will retry in the insert in the next interval"
+            )
+        response = {}
     if use_old_api or response.get("status") == "COMPLETED":
         if not use_old_api:
             # get the reference set data
@@ -973,7 +1014,8 @@ def insert_to_updated_context(context_data: dict,
                                  'samples': context_data.get('samples', [])})
 
     if should_update_last_mirror:
-        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0))})
+        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0)),
+                                 LAST_MIRROR_CLOSED_KEY: int(context_data.get(LAST_MIRROR_CLOSED_KEY, 0))})
     return new_context_data, version
 
 
@@ -1712,38 +1754,13 @@ def test_module_command(client: Client, params: dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
-    global EVENTS_SEARCH_TRIES, EVENTS_POLLING_TRIES
-    EVENTS_SEARCH_TRIES = 1
-    EVENTS_POLLING_TRIES = 1
     try:
         ctx = get_integration_context()
         print_context_data_stats(ctx, "Test Module")
         is_long_running = params.get('longRunning')
-        mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
-        mirror_direction = MIRROR_DIRECTION.get(mirror_options)
-
         if is_long_running:
             validate_long_running_params(params)
-            ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-            # Try to retrieve the last successfully retrieved offense
-            last_highest_id = max(ctx.get(LAST_FETCH_KEY, 0) - 1, 0)
-            get_incidents_long_running_execution(
-                client=client,
-                offenses_per_fetch=1,
-                user_query=params.get('query', ''),
-                fetch_mode=params.get('fetch_mode', ''),
-                events_columns=params.get('events_columns') or DEFAULT_EVENTS_COLUMNS,
-                events_limit=0,
-                ip_enrich=ip_enrich,
-                asset_enrich=asset_enrich,
-                last_highest_id=last_highest_id,
-                incident_type=params.get('incident_type'),
-                mirror_direction=mirror_direction,
-                first_fetch=params.get('first_fetch', '3 days'),
-                mirror_options=params.get('mirror_options', '')
-            )
-        else:
-            client.offenses_list(range_="items=0-0")
+        client.offenses_list(range_="items=0-0")
         message = 'ok'
     except DemistoException as e:
         err_msg = str(e)
@@ -2116,6 +2133,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
     print_debug_msg(f'{waiting_for_update=}')
     last_fetch_key = context_data.get(LAST_FETCH_KEY, 'Missing')
     last_mirror_update = context_data.get(LAST_MIRROR_KEY, 0)
+    last_mirror_update_closed = context_data.get(LAST_MIRROR_CLOSED_KEY, 0)
     concurrent_mirroring_searches = get_current_concurrent_searches(context_data)
     samples = context_data.get('samples', [])
     sample_length = 0
@@ -2127,6 +2145,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
                     f"\n Offenses ids waiting for update: {not_updated_ids}"
                     f"\n Concurrent mirroring events searches: {concurrent_mirroring_searches}"
                     f"\n Last Fetch Key {last_fetch_key}, Last mirror update {last_mirror_update}, "
+                    f"Last mirror update closed: {last_mirror_update_closed}, "
                     f"sample length {sample_length}")
     return set(not_updated_ids + finished_queries_ids)
 
@@ -3502,28 +3521,28 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                                                              filter_=f'create_time >= {offense_close_time}')
             # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
             # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
-            close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
-                                           note.get('note_text').startswith('This offense was closed with reason:')),
-                                          closing_reason)
-            if not close_reason_with_note:
+            closenotes = next((note.get('note_text') for note in closed_offense_notes if
+                               note.get('note_text').startswith('This offense was closed with reason:')),
+                              closing_reason)
+            if not closing_reason:
                 print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
-                close_reason_with_note = 'Unknown closing reason from QRadar'
-            else:
-                close_reason_with_note = f'From QRadar: {close_reason_with_note}'
+                closing_reason = 'Unknown closing reason from QRadar'
+                closenotes = 'Unknown closing note from QRadar'
+
         except Exception as e:
             demisto.error(f'Failed to get closing reason with error: {e}')
-            close_reason_with_note = 'Unknown closing reason from QRadar'
+            closing_reason = 'Unknown closing reason from QRadar'
+            closenotes = 'Unknown closing note from QRadar'
             time.sleep(FAILURE_SLEEP)
-
         entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': close_reason_with_note
+                'closeReason': closing_reason,
+                'closeNotes': f'From QRadar: {closenotes}'
             },
             'ContentsFormat': EntryFormat.JSON
         })
-
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
                 int(num_events) >= (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
@@ -3574,7 +3593,8 @@ def add_modified_remote_offenses(client: Client,
                                  version: str,
                                  mirror_options: str,
                                  new_modified_records_ids: set[str],
-                                 current_last_update: int,
+                                 new_last_update_modified: int,
+                                 new_last_update_closed: int,
                                  events_columns: str,
                                  events_limit: int,
                                  fetch_mode: str
@@ -3587,7 +3607,8 @@ def add_modified_remote_offenses(client: Client,
         version: The version of the context data to update.
         mirror_options: The mirror options for the integration.
         new_modified_records_ids: The new modified offenses ids.
-        current_last_update: The current last mirror update.
+        new_last_update_modified: The current last mirror update modified.
+        new_last_update_closed: The current last mirror update.
         events_columns: The events_columns param.
         events_limit: The events_limit param.
 
@@ -3639,7 +3660,7 @@ def add_modified_remote_offenses(client: Client,
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
 
-    new_context_data.update({LAST_MIRROR_KEY: current_last_update})
+    new_context_data.update({LAST_MIRROR_KEY: new_last_update_modified, LAST_MIRROR_CLOSED_KEY: new_last_update_closed})
     print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
     safely_update_context_data(
         new_context_data, version, offense_ids=changed_ids_ctx, should_update_last_mirror=True
@@ -3698,17 +3719,24 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     """
     ctx, ctx_version = get_integration_context_with_version()
     remote_args = GetModifiedRemoteDataArgs(args)
+
     highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     fetch_mode = params.get('fetch_mode', '')
     range_ = f'items=0-{limit - 1}'
-    last_update_time = ctx.get(LAST_MIRROR_KEY, 0)
-    if not last_update_time:
-        last_update_time = remote_args.last_update
-    last_update = get_time_parameter(last_update_time, epoch_format=True)
-    assert isinstance(last_update, int)
-    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update}'
-    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update}'
+    last_update_modified = ctx.get(LAST_MIRROR_KEY, 0)
+    if not last_update_modified:
+        # This is the first mirror. We get the last update of the latest incident with a window of 5 minutes
+        last_update = dateparser.parse(remote_args.last_update)
+        if not last_update:
+            last_update = datetime.now()
+        last_update -= timedelta(minutes=5)
+        last_update_modified = int(last_update.timestamp() * 1000)
+    last_update_closed = ctx.get(LAST_MIRROR_CLOSED_KEY, last_update_modified)
+    assert isinstance(last_update_modified, int)
+    assert isinstance(last_update_closed, int)
+    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update_modified}'
+    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update_closed}'
     print_debug_msg(f'Filter to get modified offenses is: {filter_modified}')
     print_debug_msg(f'Filter to get closed offenses is: {filter_closed}')
     # if this call fails, raise an error and stop command execution
@@ -3720,21 +3748,20 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
                                            filter_=filter_closed,
                                            sort='+close_time',
                                            fields=FIELDS_MIRRORING)
-    last_update_modified, last_update_closed = last_update, last_update
     if offenses_modified:
         last_update_modified = int(offenses_modified[-1].get('last_persisted_time'))
     if offenses_closed:
         last_update_closed = int(offenses_closed[-1].get('close_time'))
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses_modified + offenses_closed if 'id' in offense}
-    current_last_update = max(last_update_modified, last_update_closed)
-    print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
+    print_debug_msg(f'Last update modified: {last_update_modified}, Last update closed: {last_update_closed}')
     events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
 
     new_modified_records_ids = add_modified_remote_offenses(client=client, context_data=ctx, version=ctx_version,
                                                             mirror_options=params.get('mirror_options', ''),
                                                             new_modified_records_ids=new_modified_records_ids,
-                                                            current_last_update=current_last_update,
+                                                            new_last_update_modified=last_update_modified,
+                                                            new_last_update_closed=last_update_closed,
                                                             events_columns=events_columns,
                                                             events_limit=events_limit,
                                                             fetch_mode=fetch_mode,
@@ -3776,7 +3803,15 @@ def qradar_search_retrieve_events_command(
     # determine if this is the last run of the polling command
     is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
         if end_date else False
-    events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+    try:
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+    except (DemistoException, requests.Timeout) as e:
+        if is_last_run:
+            raise e
+        print_debug_msg(f"Polling event failed due to {e}. Will try to poll again in the next interval.")
+        events = []
+        status = QueryStatus.WAIT.value
+
     if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(
@@ -4171,6 +4206,7 @@ def main() -> None:  # pragma: no cover
     if api_version and float(api_version) < MINIMUM_API_VERSION:
         raise DemistoException(f'API version cannot be lower than {MINIMUM_API_VERSION}')
     credentials = params.get('credentials')
+    timeout = arg_to_number(params.get("timeout"))
 
     try:
 
@@ -4179,7 +4215,9 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             api_version=api_version,
-            credentials=credentials)
+            credentials=credentials,
+            timeout=timeout
+        )
         # All command names with or are for supporting QRadar v2 command names for backward compatibility
         if command == 'test-module':
             validate_integration_context()

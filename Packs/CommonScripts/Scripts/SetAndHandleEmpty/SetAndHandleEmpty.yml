@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: SetAndHandleEmpty
 fromversion: 5.0.0
-type: python
+type: javascript
 tags:
 - Utility
 comment: |-
@@ -18,6 +18,7 @@ args:
   required: true
   default: true
   description: The key to set in context.
+  isArray: true
 - name: value
   description: The value of the key to set in context. The value is usually a DQ expression. Can be an array.
   isArray: true
@@ -27,6 +28,7 @@ args:
   - "true"
   - "false"
   description: Whether to append the new context key to the existing context key. If "false", then the existing context key will be overwritten with the new context key.
+  defaultValue: "true"
 - name: stringify
   auto: PREDEFINED
   predefined:
@@ -43,7 +45,6 @@ args:
   defaultValue: "false"
 scripttarget: 0
 script: '-'
-subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
 tests:
 - SetAndHandleEmpty test
+- SetAndHandleEmpty_Test

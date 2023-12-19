@@ -2,13 +2,13 @@ args:
 - description: Incident ID to get the prediction of. If empty, predicts the the current incident ID.
   name: incidentId
 - auto: PREDEFINED
-  description: 'Comma-separated list of incident text fields to take into account when computing similarity. For example: commandline, URL.'
+  description: 'Comma-separated list of incident text fields to take into account when computing similarity. For example: commandline, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
   name: similarTextField
 - auto: PREDEFINED
-  description: 'Comma-separated list of incident categorical fields to take into account whe computing similarity. For example: IP, URL.'
+  description: 'Comma-separated list of incident categorical fields to take into account whe computing similarity. For example: IP, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
   name: similarCategoricalField
 - auto: PREDEFINED
-  description: 'Comma-separated list of incident JSON fields to take into account whe computing similarity. For example: CustomFields.'
+  description: 'Comma-separated list of incident JSON fields to take into account whe computing similarity. For example: CustomFields. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
   name: similarJsonField
 - auto: PREDEFINED
   description: Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity.
@@ -84,7 +84,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.78584
+dockerimage: demisto/ml:1.0.0.82882
 runas: DBotWeakRole
 runonce: true
 tests:

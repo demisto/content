@@ -1,0 +1,27 @@
+{
+    "autorun": false,
+    "color": "#69A536",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "CTF01",
+    "locked": false,
+    "name": "CTF01",
+    "onChangeRepAlg": 0,
+    "playbookId": "CTF 1 - Get to know XSOAR8",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "8.2.0"
+}

@@ -18,19 +18,19 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* aws-iam-get-user
-* gcp-iam-service-accounts-get
-* gsuite-user-get
-* gcp-iam-service-account-keys-get
-* gcp-iam-project-role-list
-* gsuite-role-assignment-list
-* aws-iam-list-user-policies
-* aws-iam-list-groups-for-user
-* msgraph-user-get
 * msgraph-identity-protection-risky-user-history-list
-* msgraph-groups-list-groups
 * aws-iam-list-access-keys-for-user
+* gsuite-user-get
+* aws-iam-get-user
+* gsuite-role-assignment-list
+* aws-iam-list-groups-for-user
 * aws-iam-list-attached-user-policies
+* gcp-iam-service-account-keys-get
+* gcp-iam-service-accounts-get
+* aws-iam-list-user-policies
+* msgraph-groups-list-groups
+* gcp-iam-project-role-list
+* msgraph-user-get
 
 ## Playbook Inputs
 
@@ -49,8 +49,8 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AWS.IAM.Users | AWS AM Users include:<br/>UserId<br/>Arn<br/>CreateDate<br/>Path<br/>PasswordLastUsed | unknown |
-| AWS.IAM.Users.AccessKeys | AWS IAM Users Access Keys include:<br/>AccessKeyId<br/>Status<br/>CreateDate<br/>UserName | unknown |
+| AWS.IAM.Users | AWS AM Users include:<br/>UserId<br/>Arn<br/>CreateDate<br/>Path<br/>PasswordLastUsed. | unknown |
+| AWS.IAM.Users.AccessKeys | AWS IAM Users Access Keys include:<br/>AccessKeyId<br/>Status<br/>CreateDate<br/>UserName. | unknown |
 | GCPIAM | GCP IAM information. | unknown |
 | GSuite | GSuite user information. | unknown |
 | GSuite.PageToken | Token to specify the next page in the list. | unknown |
@@ -63,6 +63,16 @@ This playbook does not use any scripts.
 | AWS.IAM.UserPolicies | AWS IAM - user inline policies. | unknown |
 | AWS.IAM.AttachedUserPolicies | AWS IAM - User attached policies. | unknown |
 | MSGraphGroup | MSGraph group information. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory | Risky user history. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.userPrincipalName | Risky user principal name. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.userDisplayName | Risky user display name. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.riskDetail | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.riskstate | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.riskLevel | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.isProcessing | Indicates whether a user's risky state is being processed by the backend. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.isDeleted | Indicates whether the user is deleted. | unknown |
+| MSGraph.identityProtection.RiskyUserHistory.id | Unique ID of the risky user. | unknown |
 
 ## Playbook Image
 

@@ -29,32 +29,32 @@
 
 .create-id-set:
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json >> "${ARTIFACTS_FOLDER}/logs/create_id_set.log"
-  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER}"
+  - demisto-sdk create-id-set -o ./Tests/id_set.json >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/create_id_set.log"
+  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}"
   - section_end "Create ID Set"
 
 .create-id-set-xsoar:
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xsoar" >> "${ARTIFACTS_FOLDER}/logs/create_id_set.log"
-  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER}"
-  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
-  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xsoar" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/create_id_set.log"
+  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}"
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
 .create-id-set-mp-v2:
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> "${ARTIFACTS_FOLDER}/logs/create_id_set.log"
-  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER}"
-  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
-  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/create_id_set.log"
+  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}"
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
 .create-id-set-xpanse:
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xpanse" >> "${ARTIFACTS_FOLDER}/logs/create_id_set.log"
-  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER}"
-  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
-  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xpanse" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/create_id_set.log"
+  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}"
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
 .download-demisto-conf:
@@ -71,8 +71,8 @@
 .check_build_files_are_up_to_date: &check_build_files_are_up_to_date
   - section_start "Check Build Files Are Up To Date"
   - |
-    if [[ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${SLACK_JOB}" ]]; then
-      echo "running nightly or bucket upload, skipping files up-to-date validation"
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]]; then
+      echo "Running a build which doesn't require build files check validation"
     else
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
       # we want to checkout if it's not up-to-date
@@ -84,12 +84,6 @@
     fi
   - section_end "Check Build Files Are Up To Date"
 
-.cleanup_logs_directory: &cleanup_logs_directory
-  - section_start "Creating new clean logs directory" --collapsed
-  - rm -rf "${ARTIFACTS_FOLDER}/logs"
-  - mkdir -p "${ARTIFACTS_FOLDER}/logs"
-  - section_end "Creating new clean logs directory"
-
 .stop_contrib_external_build: &stop_contrib_external_build
   - - section_start "Stop contrib external build"
   - |
@@ -100,14 +94,33 @@
     fi
   - section_end "Stop contrib external build"
 
+.create_artifacts_and_server_type_instance_folders: &create_artifacts_and_server_type_instance_folders
+  - section_start "Create Artifacts, Server Instance, Server Type folders" --collapsed
+  - |
+    if [[ -n "${ARTIFACTS_FOLDER}" ]] && [[ ! -d "${ARTIFACTS_FOLDER}/logs" ]]; then
+      echo "Creating Artifacts folder: ${ARTIFACTS_FOLDER} and it's log folder"
+      mkdir -p -m 777 "${ARTIFACTS_FOLDER}/logs" # using the -p to create the logs folder as well.
+    fi
+  - |
+    if [[ -n "${ARTIFACTS_FOLDER_INSTANCE}" ]] && [[ ! -d "${ARTIFACTS_FOLDER_INSTANCE}/logs" ]]; then
+      echo "Creating Artifacts instance folder: ${ARTIFACTS_FOLDER_INSTANCE} and it's log folder"
+      mkdir -p -m 777 "${ARTIFACTS_FOLDER_INSTANCE}/logs" # using the -p to create the logs folder as well.
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
+    fi
+  - |
+    if [[ -n "${ARTIFACTS_FOLDER_SERVER_TYPE}" ]] && [[ ! -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs" ]]; then
+      echo "Creating Artifacts Server type folder: ${ARTIFACTS_FOLDER_SERVER_TYPE} and it's log folder"
+      mkdir -p -m 777 "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs" # using the -p to create the logs folder as well.
+      echo "${SERVER_TYPE}" > "${ARTIFACTS_FOLDER_SERVER_TYPE}/server_type.txt"
+    fi
+  - section_end "Create Artifacts, Server Instance, Server Type folders"
+
 .clone_and_export_variables: &clone_and_export_variables
   - section_start "Git - Job Start Actions" --collapsed
+  - git fetch origin master:refs/remotes/origin/master
   - git checkout -B $CI_COMMIT_BRANCH $CI_COMMIT_SHA
   - git config diff.renameLimit 6000
   - section_end "Git - Job Start Actions"
-  - section_start "Create artifacts directory" --collapsed
-  - mkdir -p -m 777 "${ARTIFACTS_FOLDER}/"
-  - section_end "Create artifacts directory"
   - section_start "Source BASH Environment" --collapsed
   - |
     if [[ -f "$BASH_ENV" ]]; then
@@ -148,8 +161,8 @@
       echo "Using SDK from pyproject.toml" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
     fi
   - |
-      python3 --version | tee -a "${ARTIFACTS_FOLDER}/installed_python_libraries.txt"
-      python3 -m pip list | tee -a "${ARTIFACTS_FOLDER}/installed_python_libraries.txt"
+      python3 --version | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
+      python3 -m pip list | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
   - section_end "Installing Virtualenv"
 
 .ssh-config-setup:
@@ -172,16 +185,16 @@
   - source $NVM_DIR/nvm.sh
   - nvm use default | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"
   - echo "Installing Node Modules" | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"
-  - npm ci --cache .npm --prefer-offline | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"
-  - npm list --json | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"
-  - npm link jsdoc-to-markdown@5.0.3 | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"  # disable-secrets-detection
+  - npm ci --cache .npm --prefer-offline >> "${ARTIFACTS_FOLDER}/logs/installations_node.log" 2>&1
+  - npm list --json >> "${ARTIFACTS_FOLDER}/logs/installations_node.log" 2>&1
+  - npm link jsdoc-to-markdown@5.0.3 | tee  >> "${ARTIFACTS_FOLDER}/logs/installations_node.log" 2>&1  # disable-secrets-detection
   - section_end "Installing node modules"
 
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER}/previous_index.json"
-  - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER}/previous_index.json" | jq -r ".\"commit\"")
+  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
+  - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
 
 .neo4j-setup: &neo4j-setup
@@ -193,7 +206,7 @@
 .build_parameters: &build_parameters
   - section_start "Build Parameters" --collapsed
   - echo "Environment Variables:"
-  - set | grep -E "^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=" | sort
+  - set | grep -E "^ARTIFACTS_FOLDER.*=|^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ARTIFACTS_FOLDER_INSTANCE=|^ARTIFACTS_FOLDER_SERVER_TYPE=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=" | sort
   - echo "Versions Installed:"
   - python --version
   - python3 --version
@@ -210,15 +223,38 @@
   - set | grep -E "^CI_.*=|^GITLAB.*=" | sort
   - section_end "Gitlab CI Build Parameters"
 
+.checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
+  - section_start "Checkout upload commit content nightly" --collapsed
+  - | 
+    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
+      if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
+        echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
+        exit 1
+      fi
+      rm -rf ./Packs
+      echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
+      cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
+      git config core.fileMode false  # used to tell git not to identify permission changes on files as changes
+      chmod -R 777 ./Packs  # required for the lint, we use the permissions of the file when running pytest within the containers
+      echo "the Packs changes between upload commit ${LAST_UPLOAD_COMMIT} to master commit ${CI_COMMIT_SHA} is:"
+      git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder
+      echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
+    else
+      echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
+    fi
+  - |
+  - section_end "Checkout upload commit content nightly"
+
+
 .default-before-script:
   before_script:
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
     - *setup-artifactory
     - *stop_contrib_external_build
+    - *create_artifacts_and_server_type_instance_folders
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
-    - *cleanup_logs_directory
     - *install_node_modules
     - *install_venv
     - *get_contribution_pack
@@ -227,6 +263,7 @@
     - *neo4j-setup
     - *build_parameters
     - *gitlab_ci_build_parameters
+    - *checkout-upload-commit-content-nightly
 
 .default-after-script:
   - source .gitlab/helper_functions.sh
@@ -235,11 +272,28 @@
   - *install_node_modules
   - *install_venv
 
+.add-content-production-to-artifacts:
+  - section_start "Clone production content and add it to artifacts" --collapsed
+  - mkdir content_production
+  - cd content_production
+  - git init > /dev/null 2>&1
+  - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
+  - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
+  - git checkout FETCH_HEAD >${ARTIFACTS_FOLDER}/logs/add-content-production-to-artifacts.log 2>&1
+  - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
+  - echo "checked out ${LAST_UPLOAD_COMMIT} which is the last successful upload commit"
+  - section_end "Clone production content and add it to artifacts"
+  - job-done
+
+
 .default-job-settings:
   interruptible: true
   extends:
     - .default-cache
     - .default-before-script
+  needs:
+    - job: cloning-content-repo-last-upload-commit
+      optional: true
 
 .trigger-slack-notification:
   stage: .post
@@ -249,6 +303,16 @@
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
   inherit: # see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27775
     variables: false
+
+.destroy_xsoar_instances:
+  - section_start "Destroy Instances"
+  - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}"
+  - destroy_instances_exit_code=$?
+  - |
+    if [ "${destroy_instances_exit_code}" -ne 0 ]; then
+      echo "Failed to destroy instances of role ${INSTANCE_ROLE}, exit code: ${destroy_instances_exit_code}"
+    fi
+  - section_end "Destroy Instances"
 
 .lock-machine:
   - section_start "Lock Machine" --collapsed
@@ -262,19 +326,24 @@
 
 .unlock-machine:
   - section_start "Unlock Machine" --collapsed
-  - source CloudEnvVariables
   - |
-    if [[ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
-      if [[ -e "${ARTIFACTS_FOLDER}/logs/lock_file.txt" ]]; then
-        echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-        gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
-        echo "Finished removing lock file"
+    if [[ -f "CloudEnvVariables" ]]; then
+      source CloudEnvVariables
+
+      if [[ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
+        if [[ -e "${ARTIFACTS_FOLDER}/logs/lock_file.txt" ]]; then
+          echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
+          gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+          gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
+          echo "Finished removing lock file(s)"
+        else
+          echo "No lock file found, skipping unlocking"
+        fi
       else
-        echo "No lock file found, skipping unlocking"
+        echo "No machine ids were chosen, skipping unlocking"
       fi
     else
-      echo "No machine ids were chosen, skipping unlocking"
+      echo "No CloudEnvVariables file found, skipping unlocking"
     fi
   - section_end "Unlock Machine"
 
@@ -308,7 +377,6 @@
 .unittests-and-lint-settings:
   tags:
     - gce
-  needs: [ ]
   stage: unittests-and-validations
   artifacts:
     reports:
@@ -405,7 +473,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  needs: []
   variables:
     KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
@@ -418,9 +485,9 @@
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
-    - section_start "Copy Tests To Artifact Folder"
-    - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER}/conf.json"
-    - section_end "Copy Tests To Artifact Folder"
+    - section_start "Copy conf.json To Server Type Artifacts Folder"
+    - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json"
+    - section_end "Copy conf.json To Server Type Artifacts Folder"
     - section_start "Validate Files and Yaml"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
@@ -441,7 +508,6 @@
       echo "successfully activated google cloud service account"
       gsutil cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" $INDEX_PATH
       echo "successfully downloaded index.zip"
-      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
     - UNZIP_PATH=$(mktemp -d)
@@ -449,6 +515,9 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - section_start "Revoking GCP Auth"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - section_end "Revoking GCP Auth"
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
 
@@ -458,3 +527,23 @@
     - .default-job-settings
   script:
     - python3 Tests/scripts/check_jobs_done.py --triggering-workflow "${WORKFLOW}" --job-done-files "${PIPELINE_JOBS_FOLDER}"
+
+cloning-content-repo-last-upload-commit:
+  stage: .pre
+  rules:
+    - if: '$NIGHTLY'
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
+  before_script:
+    - source .gitlab/helper_functions.sh
+    - *setup-network-certs
+    - *create_artifacts_and_server_type_instance_folders
+    - *get_last_upload_commit
+  variables:
+    ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
+  script:
+    - !reference [.add-content-production-to-artifacts]

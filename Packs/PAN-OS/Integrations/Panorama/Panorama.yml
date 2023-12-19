@@ -3773,6 +3773,11 @@ script:
       name: device-group
     - description: Return raw XML.
       name: is_xml
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      defaultValue: "false"
     description: Runs any command supported in the API.
     name: pan-os
   - arguments:
@@ -6001,6 +6006,13 @@ script:
     - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
       deprecated: true
+    - description: Whether to show only `after-change-preview`, and `before-change-preview`, or get full data for it.  The full data are under the fields `after-change-detail`, and `before-change-detail`.
+      name: show-detail
+      predefined:
+      - yes
+      - no
+      auto: PREDEFINED
+      defaultValue: no
     description: The query logs in Panorama.
     name: pan-os-query-logs
     outputs:
@@ -9341,7 +9353,20 @@ script:
     - contextPath: Panorama.DeviceGroupNames
       description: The list of device groups.
       type: string
-  dockerimage: demisto/pan-os-python:1.0.0.79261
+  - name: pan-os-export-tech-support-file
+    arguments:
+    - name: interval_in_seconds
+      description: The polling interval (in seconds).
+      defaultValue: "30"
+    - name: timeout
+      description: The polling timeout (in seconds).
+      defaultValue: "1200"
+    - name: job_id
+      hidden: true
+      description: The job ID to use when polling.
+    description: Exports a tech support file (TSF).
+    polling: true
+  dockerimage: demisto/pan-os-python:1.0.0.81877
   isfetch: true
   runonce: false
   script: ''

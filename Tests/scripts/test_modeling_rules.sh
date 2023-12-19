@@ -32,7 +32,7 @@ if [[ "${generate_empty_results_file,,}" == "true" ]]; then
   exit 0
 fi
 
-if [[ ! -s "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt" ]]; then
+if [[ ! -s "${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.txt" ]]; then
   echo "No modeling rules were marked for testing during test collection - writing empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
   write_empty_test_results_file
   exit 0
@@ -44,7 +44,7 @@ CURRENT_DIR=$(pwd)
 echo "CURRENT_DIR: ${CURRENT_DIR}"
 echo "NIGHTLY: ${NIGHTLY}"
 
-MODELING_RULES_ARRAY=($(cat "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"))
+MODELING_RULES_ARRAY=($(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.txt"))
 
 echo "MODELING_RULES_ARRAY size:${#MODELING_RULES_ARRAY[@]}"
 count=0
@@ -66,7 +66,7 @@ done
 echo "Found ${count} modeling rules to test out of ${#MODELING_RULES_ARRAY[@]} modeling rules"
 
 if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
-    exit_on_error 1 "There was a problem reading the list of modeling rules that require testing from '${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt'"
+    exit_on_error 1 "There was a problem reading the list of modeling rules that require testing from '${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.txt'"
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then

@@ -239,6 +239,7 @@ def test_run_command_read_scope(requests_mock, mocker):
             'Command': [{
                 'HostID': '284771ee197e422d5176d6634a62b934',
                 'SessionID': '1113b475-2c28-4486-8617-d000b8f3bc8d',
+                'BatchID': 'batch_id',
                 'Stdout': 'Directory listing for C:\\ -\n\n'
                           'Name                                     Type         Size (bytes)    Size (MB)       '
                           'Last Modified (UTC-5)     Created (UTC-5)          \n----                             '
@@ -308,6 +309,7 @@ def test_run_command_write_scope(requests_mock, mocker):
         'CrowdStrike': {
             'Command': [{
                 'HostID': '284771ee197e422d5176d6634a62b934',
+                'BatchID': 'batch_id',
                 'SessionID': 'ed0743e0-b156-4f98-8bbb-7a720a4192cf',
                 'Stdout': 'C:\\demistotest1',
                 'Stderr': '',
@@ -373,6 +375,7 @@ def test_run_command_with_stderr(requests_mock, mocker):
         'CrowdStrike': {
             'Command': [{
                 'HostID': '284771ee197e422d5176d6634a62b934',
+                'BatchID': 'batch_id',
                 'SessionID': '4d41588e-8455-4f0f-a3ee-0515922a8d94',
                 'Stdout': '',
                 'Stderr': "The term 'somepowershellscript' is not recognized as the name of a cmdlet, function,"
@@ -2186,10 +2189,10 @@ class TestFetch:
                                                                             'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
-                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'created_timestamp': '2020-09-04T09:16:11.000000Z',
                                                 'max_severity_displayname': 'Low'},
                                                {'detection_id': 'ldt:2',
-                                                'created_timestamp': '2020-09-04T09:20:11Z',
+                                                'created_timestamp': '2020-09-04T09:20:11.000000Z',
                                                 'max_severity_displayname': 'Low'}]})
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
@@ -2209,37 +2212,15 @@ class TestFetch:
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'params', return_value={})
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10.000000Z',
                                           'detection_offset': 2,
-                                          'first_behavior_incident_time': '2020-09-04T09:22:10Z',
+                                          'first_behavior_incident_time': '2020-09-04T09:22:10.000000Z',
                                           'last_fetched_incident': '3',
                                           'incident_offset': 4,
                                           })
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == [
             {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}]
-
-    @freeze_time("2020-08-26 17:22:13 UTC")
-    def delete_offset_test(self, set_up_mocks, mocker):
-        """
-        Tests the change of logic done in fetch. Validates that it's done smoothly
-        Given:
-            Old getLastRun which holds two lists with offset key
-        When:
-            The offset is inside the lastRun
-        Then:
-            The offset is deleted from the lastRun
-
-        """
-
-        from CrowdStrikeFalcon import fetch_incidents
-        mocker.patch.object(demisto, 'params', return_value={})
-        mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{'time': '2020-09-04T09:16:10Z', 'offset': 2},
-                                          {'time': '2020-09-04T09:22:10Z', 'offset': 4}])
-        fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'},
-                                                          {'time': '2020-09-04T09:22:10Z'}]
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -2253,18 +2234,19 @@ class TestFetch:
             The `first_behavior_time` changes and no `offset` is added.
         """
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{'time': '2020-09-04T09:16:10Z',
+                            return_value=[{'time': '2020-09-04T09:16:10.000000Z',
                                           'offset': 2}, {}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
-                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'created_timestamp': '2020-09-04T09:16:11.000000Z',
                                                 'max_severity_displayname': 'Low'}],
                                  })
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {
-            'time': '2020-09-04T09:16:11Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
+            'time': '2020-09-04T09:16:11.000000Z', 'limit': 2, 'offset': 0, "found_incident_ids":
+                {'Detection ID: ldt:1': 1599210970}}
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
@@ -2284,19 +2266,20 @@ class TestFetch:
                                                                             'meta': {'pagination': {'total': 4}}})
 
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{'time': '2020-09-04T09:16:10Z',
+                            return_value=[{'time': '2020-09-04T09:16:10.000000Z',
                                           'offset': 0}, {}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
-                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'created_timestamp': '2020-09-04T09:16:11.000000Z',
                                                 'max_severity_displayname': 'Low'}],
                                  })
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         # the offset should be increased to 2, and the time should be stay the same
         expected_last_run = {
-            'time': '2020-09-04T09:16:10Z', 'limit': 2, 'offset': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
+            'time': '2020-09-04T09:16:10.000000Z', 'limit': 2, 'offset': 2, "found_incident_ids":
+                {'Detection ID: ldt:1': 1599210970}}
         assert demisto.setLastRun.mock_calls[0][1][0][0] == expected_last_run
 
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:3', 'ldt:4'],
@@ -2307,15 +2290,16 @@ class TestFetch:
 
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:2',
-                                                'created_timestamp': '2020-09-04T09:16:13Z',
+                                                'created_timestamp': '2020-09-04T09:16:13.000000Z',
                                                 'max_severity_displayname': 'Low'}],
                                  })
 
         fetch_incidents()
         # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
         assert demisto.setLastRun.mock_calls[1][1][0][0] == {
-            'time': '2020-09-04T09:16:13Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
-                                                                                            'Detection ID: ldt:2': 1599210970}}
+            'time': '2020-09-04T09:16:13.000000Z', 'limit': 2, 'offset': 0, "found_incident_ids":
+                {'Detection ID: ldt:1': 1599210970,
+                 'Detection ID: ldt:2': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2460,7 +2444,7 @@ class TestIncidentFetch:
                                                              'offset': 0,
                                                              'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
 
-    @freeze_time("2020-09-04T09:16:10Z")
+    @freeze_time("2020-09-04T09:16:10.000000Z")
     def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
         """
         Tests the correct flow of fetch with offset
@@ -4130,7 +4114,7 @@ def test_get_remote_incident_data(mocker):
     incident_entity['status'] = 'New'
     assert mirrored_data == incident_entity
     assert updated_object == {'state': 'closed', 'status': 'New', 'tags': ['Objective/Keep Access'],
-                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident'}
+                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident', 'fine_score': 38}
 
 
 def test_get_remote_detection_data(mocker):
@@ -4229,16 +4213,11 @@ def test_get_modified_remote_data_command(mocker):
                                       return_value={'resources': [input_data.remote_incident_id]})
     mock_get_detections = mocker.patch('CrowdStrikeFalcon.get_fetch_detections',
                                        return_value={'resources': [input_data.remote_detection_id]})
-    mock_get_idp_detections = mocker.patch('CrowdStrikeFalcon.get_idp_detections_ids',
-                                           return_value={'resources': [input_data.remote_idp_detection_id]})
     last_update = '2022-03-08T08:17:09Z'
-    last_update_idp_detection = '2022-03-08T08:17:09.000000Z'
     result = get_modified_remote_data_command({'lastUpdate': last_update})
     assert mock_get_incidents.call_args.kwargs['last_updated_timestamp'] == last_update
     assert mock_get_detections.call_args.kwargs['last_updated_timestamp'] == last_update
-    assert last_update_idp_detection in mock_get_idp_detections.call_args.kwargs['filter_arg']
-    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id,
-                                            input_data.remote_idp_detection_id]
+    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id]
 
 
 @pytest.mark.parametrize('status',
@@ -6541,3 +6520,117 @@ def test_list_detection_summaries_command_no_results(mocker):
     mocker.patch('CrowdStrikeFalcon.http_request', return_value=response)
     res = list_detection_summaries_command()
     assert res.readable_output == '### CrowdStrike Detections\n**No entries.**\n'
+
+
+def test_run_command_batch_id(requests_mock, mocker):
+    """
+    Test cs-falcon-run-command when batch_id is given as an argument.
+
+    Given:
+     - A batch_id host_ids, command_type, full_command.
+    When:
+     - Running the command cs-falcon-run-command
+    Then:
+     - Check that the batch_id is correct.
+    """
+    from CrowdStrikeFalcon import run_command
+    args = {
+        'host_ids': 'host_id',
+        'command_type': 'ls',
+        'full_command': 'ls',
+        'batch_id': 'batch_id'
+    }
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value=args
+    )
+    response = load_json('test_data/run_command/run_command_with_batch.json')
+    requests_mock.post(
+        f'{SERVER_URL}/real-time-response/combined/batch-command/v1',
+        json=response,
+        status_code=201
+    )
+    results = run_command()
+    expected_results = {
+        'CrowdStrike': {
+            'Command': [{
+                "BaseCommand": "ls",
+                "BatchID": "batch_id",
+                "Command": "ls",
+                "HostID": "aid",
+                "SessionID": "session_id",
+                "Stderr": "",
+                "Stdout": 'Directory listing for C:\\ -\n\n'
+                          'Name                                     Type         Size (bytes)    Size (MB)       '
+                          'Last Modified (UTC+2)     Created (UTC+2)          \n'
+                          '----                                     ----         ------------    ---------       '
+                          '---------------------     ---------------          \n'
+                          '$Recycle.Bin                             <Directory>  --              --              '
+                          '6/19/2023 4:11:43 PM      9/15/2018 10:19:00 AM    \n'
+                          'Config.Msi                               <Directory>  --              --              '
+                          '11/14/2023 1:56:25 AM     8/17/2023 1:49:07 AM     \n'
+            }]
+        }
+    }
+    assert results['EntryContext'] == expected_results
+
+
+def test_run_command_without_batch_id(requests_mock, mocker):
+    """
+    Test cs-falcon-run-command when batch_id isn't given as an argument.
+
+    Given:
+     - host_ids, command_type, full_command.
+    When:
+     - Running the command cs-falcon-run-command
+    Then:
+     - Check that the batch_id is correct.
+    """
+    from CrowdStrikeFalcon import run_command
+    args = {
+        'host_ids': 'host_id',
+        'command_type': 'ls',
+        'full_command': 'ls',
+    }
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value=args
+    )
+    requests_mock.post(
+        f'{SERVER_URL}/real-time-response/combined/batch-init-session/v1',
+        json={
+            'batch_id': 'new_batch_id'
+        },
+        status_code=201
+    )
+    response = load_json('test_data/run_command/run_command_with_batch.json')
+    requests_mock.post(
+        f'{SERVER_URL}/real-time-response/combined/batch-command/v1',
+        json=response,
+        status_code=201
+    )
+    results = run_command()
+    expected_results = {
+        'CrowdStrike': {
+            'Command': [{
+                "BaseCommand": "ls",
+                "BatchID": "new_batch_id",
+                "Command": "ls",
+                "HostID": "aid",
+                "SessionID": "session_id",
+                "Stderr": "",
+                "Stdout": 'Directory listing for C:\\ -\n\n'
+                          'Name                                     Type         Size (bytes)    Size (MB)       '
+                          'Last Modified (UTC+2)     Created (UTC+2)          \n'
+                          '----                                     ----         ------------    ---------       '
+                          '---------------------     ---------------          \n'
+                          '$Recycle.Bin                             <Directory>  --              --              '
+                          '6/19/2023 4:11:43 PM      9/15/2018 10:19:00 AM    \n'
+                          'Config.Msi                               <Directory>  --              --              '
+                          '11/14/2023 1:56:25 AM     8/17/2023 1:49:07 AM     \n'
+            }]
+        }
+    }
+    assert results['EntryContext'] == expected_results

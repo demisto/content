@@ -2615,7 +2615,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.78350
+  dockerimage: demisto/pymisp2:2.4.179.82752
   runonce: false
   script: ''
   subtype: python3

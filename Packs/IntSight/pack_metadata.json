@@ -1,11 +1,11 @@
 {
     "name": "Rapid7 - Threat Command (IntSights)",
     "description": "Use Threat Command to manage alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.",
-    "support": "xsoar",
-    "currentVersion": "3.0.6",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "3.1.0",
+    "author": "Rapid7",
+    "url": "https://www.rapid7.com/for-customers/",
+    "email": "support@rapid7.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"

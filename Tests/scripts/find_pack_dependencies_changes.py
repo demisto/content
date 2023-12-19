@@ -1,5 +1,6 @@
 import json
 import logging as logger
+import os
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DEPENDENCIES_FILENAME = "packs_dependencies.json"
 DIFF_FILENAME = "packs_dependencies_diff.json"
-ARTIFACTS_DIR_LOCATION = "/builds/xsoar/content"
+ARTIFACTS_DIR_LOCATION = os.getenv("CI_PROJECT_DIR", "/builds/xsoar/content")
 
 DEPENDENCIES_FIELDS = ["dependencies", "allLevelDependencies"]
 

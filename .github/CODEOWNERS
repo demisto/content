@@ -31,7 +31,7 @@
 # Test Collection
 /Tests/scripts/collect_tests @dorschw
 /Tests/scripts/collect_tests/id_set.py @ilaner
-/Tests/conf.json @ostolero
+/Tests/conf.json @sapirshuker
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
@@ -92,6 +92,7 @@
 /Tests/scripts/download_demisto_conf.sh @daryakoval
 Tests/scripts/test_modeling_rules.sh @daryakoval
 Tests/scripts/lock_cloud_machines.py @daryakoval
+Tests/Marketplace/server_content_items.json @dantavori
 
 # SDK Related
 .gitlab/ci/.gitlab-ci.sdk-nightly.yml @dorschw

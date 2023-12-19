@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
 
@@ -15,6 +16,8 @@ PRIVATE_NIGHTLY = 'Private Nightly'
 TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
 SECURITY_SCANS = 'Security Scans'
 BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
+UNIT_TESTS_WORKFLOW_SUBSTRINGS = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
+
 WORKFLOW_TYPES = {
     CONTENT_NIGHTLY,
     CONTENT_PR,
@@ -29,7 +32,7 @@ WORKFLOW_TYPES = {
 BUCKET_UPLOAD_BRANCH_SUFFIX = '-upload_test_branch'
 TOTAL_HEADER = "Total"
 NOT_AVAILABLE = "N/A"
-TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira Ticket\nResolution"]
+TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira\nTicket\nResolution"]
 TEST_SUITE_DATA_CELL_HEADER = "S/F/E/T"
 TEST_SUITE_CELL_EXPLANATION = "(Table headers: Skipped/Failures/Errors/Total)"
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
@@ -37,6 +40,20 @@ RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
 TEST_PLAYBOOKS_REPORT_FILE_NAME = "test_playbooks_report.xml"
 TEST_MODELING_RULES_REPORT_FILE_NAME = "test_modeling_rules_report.xml"
+E2E_RESULT_FILE_NAME = "e2e_tests_result.xml"
+
+FAILED_TO_COLOR_ANSI = {
+    True: RED_COLOR,
+    False: GREEN_COLOR,
+}
+FAILED_TO_COLOR_NAME = {
+    True: "red",
+    False: "green",
+}
+FAILED_TO_MSG = {
+    True: "failed",
+    False: "succeeded",
+}
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -62,12 +79,8 @@ def get_properties_for_test_suite(test_suite: TestSuite) -> dict[str, str]:
     return {prop.name: prop.value for prop in test_suite.properties()}
 
 
-def green_text(text: str) -> str:
-    return f"{GREEN_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
-
-
-def red_text(text: str) -> str:
-    return f"{RED_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
+def failed_to_ansi_text(text: str, failed: bool) -> str:
+    return f"{FAILED_TO_COLOR_ANSI[failed]}{text}{NO_COLOR_ESCAPE_CHAR}"
 
 
 class TestSuiteStatistics:
@@ -87,12 +100,12 @@ class TestSuiteStatistics:
         res_str = str(res)
         if self.no_color or show_as_error is None:
             return res_str
-        return red_text(res_str) if show_as_error else green_text(res_str)
+        return failed_to_ansi_text(res_str, show_as_error)
 
     def __str__(self):
-        return (f"{self.show_with_color(self.skipped)} / "
-                f"{self.show_with_color(self.failures, self.failures > 0)} / "
-                f"{self.show_with_color(self.errors, self.errors > 0)} / "
+        return (f"{self.show_with_color(self.skipped)}/"  # no color for skipped.
+                f"{self.show_with_color(self.failures, self.failures > 0)}/"
+                f"{self.show_with_color(self.errors, self.errors > 0)}/"
                 f"{self.show_with_color(self.tests, self.errors + self.failures > 0)}")
 
 
@@ -105,7 +118,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
                             without_jira: bool = False,
                             with_skipped: bool = False,
                             multiline_headers: bool = True,
-                            transpose: bool = False) -> tuple[list[str], list[str], list[list[Any]], JUnitXml, int]:
+                            transpose: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
     headers_multiline_char = "\n" if multiline_headers else " "
     headers = [h.replace("\n", headers_multiline_char) for h in base_headers]
@@ -115,11 +128,13 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
     fixed_headers_length = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
+        server_version_header = server_version.replace(' ', headers_multiline_char)
         headers.append(
-            server_version if transpose else f"{server_version}{headers_multiline_char}({TEST_SUITE_DATA_CELL_HEADER})"
+            server_version_header
+            if transpose else f"{server_version_header}{headers_multiline_char}{TEST_SUITE_DATA_CELL_HEADER}"
         )
         column_align.append("center")
-    tabulate_data = []
+    tabulate_data = [headers]
     total_row: list[Any] = ([""] * fixed_headers_length + [TestSuiteStatistics(no_color)
                                                            for _ in range(len(server_versions_list))])
     total_errors = 0
@@ -166,7 +181,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
             if no_color:
                 row_result_color = row_result
             else:
-                row_result_color = red_text(row_result) if errors_count else green_text(row_result)
+                row_result_color = failed_to_ansi_text(row_result, errors_count > 0)
             row.insert(0, row_result_color)
             tabulate_data.append(row)
 
@@ -177,10 +192,13 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         else:
             logging.debug(f"Skipping {result} since all the test suites were skipped")
     if add_total_row:
-        total_row[0] = (green_text(TOTAL_HEADER) if total_errors == 0 else red_text(TOTAL_HEADER)) \
-            if not no_color else TOTAL_HEADER
+        total_row[0] = TOTAL_HEADER if no_color else failed_to_ansi_text(TOTAL_HEADER, total_errors > 0)
         tabulate_data.append(total_row)
-    return headers, column_align, tabulate_data, xml, total_errors
+
+    if transpose:
+        tabulate_data = pd.DataFrame(tabulate_data, index=None).transpose().to_numpy()
+
+    return column_align, tabulate_data, xml, total_errors
 
 
 def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -192,3 +210,10 @@ def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict
                 break
 
     return failed_results
+
+
+def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
+    escape_chars = ["\n", "\r", "\b", "\f", "\t"]
+    for escape_char in escape_chars:
+        sentence = sentence.replace(escape_char, replace_with)
+    return sentence

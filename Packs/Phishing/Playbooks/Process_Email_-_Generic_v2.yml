@@ -1,7 +1,5 @@
 id: Process Email - Generic v2
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Process Email - Generic v2
 description: |-
   This playbook adds email details to the relevant context entities and handles original email attachments.
@@ -16,15 +14,15 @@ description: |-
     * FireEye EX and FireEye CM
     * Proofpoint Protection Server
     * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
-    * Mimecast
+    * Mimecast.
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: ab3d1010-52ba-4a55-8c9f-787d47714e04
+    taskid: a04b8840-cedc-4a47-8049-27e8471d5813
     type: start
     task:
-      id: ab3d1010-52ba-4a55-8c9f-787d47714e04
+      id: a04b8840-cedc-4a47-8049-27e8471d5813
       version: -1
       name: ''
       iscommand: false
@@ -51,10 +49,10 @@ tasks:
     continueonerrortype: ""
   '1':
     id: '1'
-    taskid: aa7ddce2-5a85-46fe-8e35-6c4ebbe62059
+    taskid: 0dd52ab6-3b18-4d35-802d-842309495c7c
     type: condition
     task:
-      id: aa7ddce2-5a85-46fe-8e35-6c4ebbe62059
+      id: 0dd52ab6-3b18-4d35-802d-842309495c7c
       version: -1
       name: Do we have original emails attached?
       description: Identifies whether the incident includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for use for later. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
@@ -91,10 +89,10 @@ tasks:
     continueonerrortype: ""
   '3':
     id: '3'
-    taskid: 5802b254-fac3-4c94-8b2d-89038b4239e5
+    taskid: a4928ca0-7759-4d39-8454-fe4e6c8bce43
     type: regular
     task:
-      id: 5802b254-fac3-4c94-8b2d-89038b4239e5
+      id: a4928ca0-7759-4d39-8454-fe4e6c8bce43
       version: -1
       name: Extract email artifacts and attachments
       description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
@@ -130,10 +128,10 @@ tasks:
     continueonerrortype: ""
   '4':
     id: '4'
-    taskid: d6c5b273-5d28-487a-8ccf-aefb1759d1f5
+    taskid: 07d4d696-1b95-42c4-8b7f-dec6d6caad71
     type: condition
     task:
-      id: d6c5b273-5d28-487a-8ccf-aefb1759d1f5
+      id: 07d4d696-1b95-42c4-8b7f-dec6d6caad71
       version: -1
       name: Can an image of the email be rendered?
       description: Checks whether the email is HTML-formatted, and whether the Rasterize integration is enabled.
@@ -215,10 +213,10 @@ tasks:
     continueonerrortype: ""
   '5':
     id: '5'
-    taskid: b50d466b-3299-40c7-8ba4-e18f05bb0d3c
+    taskid: 82e8f49c-8af4-4da9-8802-27df9e49adf3
     type: regular
     task:
-      id: b50d466b-3299-40c7-8ba4-e18f05bb0d3c
+      id: 82e8f49c-8af4-4da9-8802-27df9e49adf3
       version: -1
       name: Render HTML to an image
       description: Rasterizes an email body into an image.
@@ -264,10 +262,10 @@ tasks:
     continueonerrortype: ""
   '6':
     id: '6'
-    taskid: 68d4779d-e845-4c51-8b7d-628f42bf4a96
+    taskid: 35ab88e4-5632-4395-805b-77b1e13433e7
     type: title
     task:
-      id: 68d4779d-e845-4c51-8b7d-628f42bf4a96
+      id: 35ab88e4-5632-4395-805b-77b1e13433e7
       version: -1
       name: Done
       type: title
@@ -279,7 +277,7 @@ tasks:
       {
         "position": {
           "x": 350,
-          "y": 4420
+          "y": 4390
         }
       }
     note: false
@@ -292,10 +290,10 @@ tasks:
     continueonerrortype: ""
   '11':
     id: '11'
-    taskid: 02bb525c-7801-4a05-8368-323b10f7bc4d
+    taskid: 3639ae41-1ee1-4399-8452-086f7537792f
     type: title
     task:
-      id: 02bb525c-7801-4a05-8368-323b10f7bc4d
+      id: 3639ae41-1ee1-4399-8452-086f7537792f
       version: -1
       name: Email Screenshot
       type: title
@@ -323,10 +321,10 @@ tasks:
     continueonerrortype: ""
   '16':
     id: '16'
-    taskid: 1e92b0fe-4a08-4667-856d-8393f0f18b58
+    taskid: c2ea9adf-1841-416e-87d5-78a68fe96f4d
     type: condition
     task:
-      id: 1e92b0fe-4a08-4667-856d-8393f0f18b58
+      id: c2ea9adf-1841-416e-87d5-78a68fe96f4d
       version: -1
       name: Should the original email be retrieved?
       description: Determines whether to retrieve the original email in the thread.
@@ -389,10 +387,10 @@ tasks:
     continueonerrortype: ""
   '18':
     id: '18'
-    taskid: 5d4f7213-dbe7-4a40-8960-f177324ac530
+    taskid: 58d6d2c1-a97e-42bf-8649-185bb70587d0
     type: condition
     task:
-      id: 5d4f7213-dbe7-4a40-8960-f177324ac530
+      id: 58d6d2c1-a97e-42bf-8649-185bb70587d0
       version: -1
       name: Was the original email retrieved?
       description: Determines whether there is an email object in the context.
@@ -431,10 +429,10 @@ tasks:
     continueonerrortype: ""
   '19':
     id: '19'
-    taskid: 22392e6a-e7ba-455a-81c5-6b6a188812c1
+    taskid: aeef38e1-8f4f-476f-81b8-a10cad505f6b
     type: condition
     task:
-      id: 22392e6a-e7ba-455a-81c5-6b6a188812c1
+      id: aeef38e1-8f4f-476f-81b8-a10cad505f6b
       version: -1
       name: Keep backward-compatibility?
       description: Whether to keep this sub-playbook backward-compatible in terms of the incident fields being set. Opting out will result in the Rendered HTML and Email Body HTML not being set, and the Email HTML field will be used instead.
@@ -477,10 +475,10 @@ tasks:
     continueonerrortype: ""
   '20':
     id: '20'
-    taskid: 293d898d-dc20-44ff-81bd-81ebb1056023
+    taskid: f7b513dc-d1ca-4c9a-8923-47d613439a2f
     type: regular
     task:
-      id: 293d898d-dc20-44ff-81bd-81ebb1056023
+      id: f7b513dc-d1ca-4c9a-8923-47d613439a2f
       version: -1
       name: Display email headers in layout - Email.Headers
       description: Fills the "Email Headers" field in the incident layout with the retrieved email headers.
@@ -524,10 +522,10 @@ tasks:
     continueonerrortype: ""
   '21':
     id: '21'
-    taskid: 0388326d-fb71-4386-8a1f-b9e33eb70242
+    taskid: 40ab6886-b7f5-46cc-8803-9a820d2ddb70
     type: condition
     task:
-      id: 0388326d-fb71-4386-8a1f-b9e33eb70242
+      id: 40ab6886-b7f5-46cc-8803-9a820d2ddb70
       version: -1
       name: Were email headers extracted successfully?
       description: Checks whether the email headers were extracted from the original email that was either attached or retrieved using available email integrations.
@@ -576,10 +574,10 @@ tasks:
     continueonerrortype: ""
   '22':
     id: '22'
-    taskid: 6bb8388f-977a-4fd5-83c0-c62843fc8857
+    taskid: 43770b8d-3981-4456-8cd9-9e621a56db99
     type: title
     task:
-      id: 6bb8388f-977a-4fd5-83c0-c62843fc8857
+      id: 43770b8d-3981-4456-8cd9-9e621a56db99
       version: -1
       name: Incident Layout Display
       type: title
@@ -608,10 +606,10 @@ tasks:
     continueonerrortype: ""
   '23':
     id: '23'
-    taskid: 8398a7c0-fb88-4a69-83fc-3493ea024fa3
+    taskid: 47622f33-536f-41ab-8b78-c4a2bb1d6234
     type: condition
     task:
-      id: 8398a7c0-fb88-4a69-83fc-3493ea024fa3
+      id: 47622f33-536f-41ab-8b78-c4a2bb1d6234
       version: -1
       name: Are there any files in the incident?
       description: Checks whether the incident contains any kind of file.
@@ -653,10 +651,10 @@ tasks:
     continueonerrortype: ""
   '24':
     id: '24'
-    taskid: 73335578-482c-4f91-8d4c-dde807dbd8cf
+    taskid: 971afa58-3f58-434b-895e-15bc11e1ccb3
     type: regular
     task:
-      id: 73335578-482c-4f91-8d4c-dde807dbd8cf
+      id: 971afa58-3f58-434b-895e-15bc11e1ccb3
       version: -1
       name: Save incident files separately from email attachments
       description: Saves the files that were initially involved with the incident in a separate context key so they are available separate from email attachment files.
@@ -691,10 +689,10 @@ tasks:
     continueonerrortype: ""
   '25':
     id: '25'
-    taskid: 609256a1-714e-42d2-83f9-a245b903ddd4
+    taskid: afb5f93c-42cf-4e92-8934-04a1885c80cb
     type: title
     task:
-      id: 609256a1-714e-42d2-83f9-a245b903ddd4
+      id: afb5f93c-42cf-4e92-8934-04a1885c80cb
       version: -1
       name: Attachment Information
       description: Set multiple keys/values to the context.
@@ -727,10 +725,10 @@ tasks:
     continueonerrortype: ""
   '26':
     id: '26'
-    taskid: fc7c93bd-a76d-4329-804e-9e36a56e6d0f
+    taskid: 793e4e15-3ff6-47a2-879b-c1fce93c3d3a
     type: regular
     task:
-      id: fc7c93bd-a76d-4329-804e-9e36a56e6d0f
+      id: 793e4e15-3ff6-47a2-879b-c1fce93c3d3a
       version: -1
       name: Save number of attachments
       description: Saves the number of attachments in the email.
@@ -783,10 +781,10 @@ tasks:
     continueonerrortype: ""
   '27':
     id: '27'
-    taskid: cb1897a4-77db-478e-83de-5cfd82749846
+    taskid: df9fdd5c-8861-4a3f-8ade-52604f201044
     type: regular
     task:
-      id: cb1897a4-77db-478e-83de-5cfd82749846
+      id: df9fdd5c-8861-4a3f-8ade-52604f201044
       version: -1
       name: Save attachment extensions
       description: Saves the email attachment extensions.
@@ -844,10 +842,10 @@ tasks:
     continueonerrortype: ""
   '28':
     id: '28'
-    taskid: fd5a4fa8-7edb-4342-88fe-b842a41906f8
+    taskid: c967c0e1-b2a8-41ad-8baf-b8cf30f75188
     type: regular
     task:
-      id: fd5a4fa8-7edb-4342-88fe-b842a41906f8
+      id: c967c0e1-b2a8-41ad-8baf-b8cf30f75188
       version: -1
       name: Save attachment MD5 hashes
       description: Saves the email attachment MD5 hashes.
@@ -905,10 +903,10 @@ tasks:
     continueonerrortype: ""
   '29':
     id: '29'
-    taskid: 48d7ce37-ace0-433c-86d9-5ec0e75982a5
+    taskid: e9315111-7d2b-4466-844f-7a6e852616b7
     type: regular
     task:
-      id: 48d7ce37-ace0-433c-86d9-5ec0e75982a5
+      id: e9315111-7d2b-4466-844f-7a6e852616b7
       version: -1
       name: Save attachment names
       description: Saves the email attachment names.
@@ -966,10 +964,10 @@ tasks:
     continueonerrortype: ""
   '30':
     id: '30'
-    taskid: e3200e4e-7fbe-45cd-89c8-6f76b32cf65f
+    taskid: aee2a44d-f0e5-461e-84df-5d0e9b4dc07a
     type: regular
     task:
-      id: e3200e4e-7fbe-45cd-89c8-6f76b32cf65f
+      id: aee2a44d-f0e5-461e-84df-5d0e9b4dc07a
       version: -1
       name: Save attachment sizes
       description: Saves the email attachment sizes.
@@ -1027,10 +1025,10 @@ tasks:
     continueonerrortype: ""
   '31':
     id: '31'
-    taskid: 5c020da7-dd25-41dd-8208-c24d0c28c941
+    taskid: 6dd271dc-7932-4202-839b-de25909a3e71
     type: regular
     task:
-      id: 5c020da7-dd25-41dd-8208-c24d0c28c941
+      id: 6dd271dc-7932-4202-839b-de25909a3e71
       version: -1
       name: Save attachment types
       description: Saves the email attachment types.
@@ -1088,10 +1086,10 @@ tasks:
     continueonerrortype: ""
   '32':
     id: '32'
-    taskid: b01edbd3-8f20-4abf-8344-7b28dddc35f9
+    taskid: c213bea9-5c9f-4bc6-81f8-91ef7712c07b
     type: regular
     task:
-      id: b01edbd3-8f20-4abf-8344-7b28dddc35f9
+      id: c213bea9-5c9f-4bc6-81f8-91ef7712c07b
       version: -1
       name: Normalize Reporter Email Headers
       description: Normalizes the keys names of the headers, which are different with each client. This facilitates extracting the relevant values for the next tasks.
@@ -1134,10 +1132,10 @@ tasks:
     continueonerrortype: ""
   '33':
     id: '33'
-    taskid: 06309202-bd36-411d-85fb-026d39e3767c
+    taskid: 5c2f2f03-5a7e-446e-84ec-81b30a5c201c
     type: regular
     task:
-      id: 06309202-bd36-411d-85fb-026d39e3767c
+      id: 5c2f2f03-5a7e-446e-84ec-81b30a5c201c
       version: -1
       name: Extract Reporter Email Headers
       description: Preserves the original state of the reporter's email headers, which are stored in the context.
@@ -1173,10 +1171,10 @@ tasks:
     continueonerrortype: ""
   '34':
     id: '34'
-    taskid: 9e32420a-cbe7-44aa-892e-5112ba7364a2
+    taskid: be1ca0e3-fba9-4111-86e8-f3580cdd4f86
     type: playbook
     task:
-      id: 9e32420a-cbe7-44aa-892e-5112ba7364a2
+      id: be1ca0e3-fba9-4111-86e8-f3580cdd4f86
       version: -1
       name: Get Original Email - Generic v2
       description: |-
@@ -1235,10 +1233,10 @@ tasks:
     continueonerrortype: ""
   '36':
     id: '36'
-    taskid: efef13c9-b8f6-49e4-8fd8-a51c5c664481
+    taskid: 43766a67-fa17-4183-81d4-d89bc0a5d84e
     type: condition
     task:
-      id: efef13c9-b8f6-49e4-8fd8-a51c5c664481
+      id: 43766a67-fa17-4183-81d4-d89bc0a5d84e
       version: -1
       name: Do we have original emails attached?
       description: Identifies whether the incident includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for later use. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
@@ -1275,10 +1273,10 @@ tasks:
     continueonerrortype: ""
   '37':
     id: '37'
-    taskid: 5ce226b3-dafb-4503-867a-453e0326b7d4
+    taskid: d174bb70-e6e8-4ec2-839c-c2e88a795b85
     type: regular
     task:
-      id: 5ce226b3-dafb-4503-867a-453e0326b7d4
+      id: d174bb70-e6e8-4ec2-839c-c2e88a795b85
       version: -1
       name: Display email headers in layout - Email.HeadersMap
       description: Fills the "Email Headers" field in the incident layout with the retrieved email headers.
@@ -1322,10 +1320,10 @@ tasks:
     continueonerrortype: ""
   '38':
     id: '38'
-    taskid: 92eff262-ab72-45d1-8ce0-b5a353ee0599
+    taskid: c2183b0c-92d8-4851-8d0b-e589253364e7
     type: playbook
     task:
-      id: 92eff262-ab72-45d1-8ce0-b5a353ee0599
+      id: c2183b0c-92d8-4851-8d0b-e589253364e7
       version: -1
       name: Get Original Email - Generic v2
       description: |-
@@ -1405,10 +1403,10 @@ tasks:
     continueonerrortype: ""
   '39':
     id: '39'
-    taskid: 9f007781-ed52-47a4-8ee6-4714d5be06ca
+    taskid: f32dd442-572b-40c0-86c6-f2c33042651f
     type: condition
     task:
-      id: 9f007781-ed52-47a4-8ee6-4714d5be06ca
+      id: f32dd442-572b-40c0-86c6-f2c33042651f
       version: -1
       name: Check if attachments were found in eml file
       description: Checks if attachments were found in an EML file to display their details in the layout.
@@ -1448,10 +1446,10 @@ tasks:
     continueonerrortype: ""
   '40':
     id: '40'
-    taskid: fd58d739-4b2b-4b54-881d-403a91126651
+    taskid: df95e52c-4643-426e-816c-9737192b7b8f
     type: regular
     task:
-      id: fd58d739-4b2b-4b54-881d-403a91126651
+      id: df95e52c-4643-426e-816c-9737192b7b8f
       version: -1
       name: Set ExtractedHeadersMap
       description: Set a value in context under the key you entered.
@@ -1492,10 +1490,10 @@ tasks:
     continueonerrortype: ""
   '41':
     id: '41'
-    taskid: b0f67d11-6da9-4d36-8d1c-6ad107972fbe
+    taskid: d3cebc5c-faf2-4156-81d5-2f7f3e397194
     type: condition
     task:
-      id: b0f67d11-6da9-4d36-8d1c-6ad107972fbe
+      id: d3cebc5c-faf2-4156-81d5-2f7f3e397194
       version: -1
       name: Did the automation find more than one email?
       description: Checks if the Get Original Email - Generic v2 playbook found more than one EML file.
@@ -1560,10 +1558,10 @@ tasks:
     continueonerrortype: ""
   '42':
     id: '42'
-    taskid: cf61d30f-5608-4e1f-884d-8b53c3a987d9
+    taskid: f44c8d3c-b102-4ac5-8ec2-1683bac638aa
     type: collection
     task:
-      id: cf61d30f-5608-4e1f-884d-8b53c3a987d9
+      id: f44c8d3c-b102-4ac5-8ec2-1683bac638aa
       version: -1
       name: Handling multiple email files
       description: Asks the user to provide the EntryID of one of the EML files found.
@@ -1650,10 +1648,10 @@ tasks:
     continueonerrortype: ""
   '43':
     id: '43'
-    taskid: 4696b16c-670b-44f6-8595-1d6e09016766
+    taskid: a0b0274c-09a5-44a0-84d6-19b666ac5474
     type: regular
     task:
-      id: 4696b16c-670b-44f6-8595-1d6e09016766
+      id: a0b0274c-09a5-44a0-84d6-19b666ac5474
       version: -1
       name: Set the relevant file entry id
       description: Set a value in context under the key you entered.
@@ -1691,10 +1689,10 @@ tasks:
     continueonerrortype: ""
   '44':
     id: '44'
-    taskid: be817d7a-f6d7-482f-84a1-b9d734af50cf
+    taskid: eccf6f51-1797-4462-849f-b973f2885a2b
     type: regular
     task:
-      id: be817d7a-f6d7-482f-84a1-b9d734af50cf
+      id: eccf6f51-1797-4462-849f-b973f2885a2b
       version: -1
       name: Set reported email origin (attached)
       description: Set a value in context under the key you entered.
@@ -1728,10 +1726,10 @@ tasks:
     continueonerrortype: ""
   '45':
     id: '45'
-    taskid: 4df560a8-e403-4170-84d5-e56a1a92b871
+    taskid: 9c94d183-ab1b-4779-8313-6ecb6cb3c5c7
     type: regular
     task:
-      id: 4df560a8-e403-4170-84d5-e56a1a92b871
+      id: 9c94d183-ab1b-4779-8313-6ecb6cb3c5c7
       version: -1
       name: Set reported email origin (none)
       description: Set "reportedemailorigin" incident field value to "None".
@@ -1763,10 +1761,10 @@ tasks:
     continueonerrortype: ""
   '46':
     id: '46'
-    taskid: fa6dfbef-a424-47eb-80a7-0b06238025e7
+    taskid: 8cbc8a81-41b4-4ea5-83c7-c4bc0db369c0
     type: regular
     task:
-      id: fa6dfbef-a424-47eb-80a7-0b06238025e7
+      id: 8cbc8a81-41b4-4ea5-83c7-c4bc0db369c0
       version: -1
       name: Set reported email origin (retrieved)
       description: Set a value in context under the key you entered.
@@ -1800,10 +1798,10 @@ tasks:
     continueonerrortype: ""
   '47':
     id: '47'
-    taskid: ce085c9a-03b6-4155-8755-ea1d3d9744b3
+    taskid: 40fd9f0d-4f6b-4e9c-8280-ff22c0c0017c
     type: regular
     task:
-      id: ce085c9a-03b6-4155-8755-ea1d3d9744b3
+      id: 40fd9f0d-4f6b-4e9c-8280-ff22c0c0017c
       version: -1
       name: Set reported email origin (retrieved)
       description: Set a value in context under the key you entered.
@@ -1837,10 +1835,10 @@ tasks:
     continueonerrortype: ""
   '48':
     id: '48'
-    taskid: c455a74c-0b75-4448-8f83-9b26622f9da0
+    taskid: 758d220a-6468-4a1c-819d-cc765b4483b2
     type: title
     task:
-      id: c455a74c-0b75-4448-8f83-9b26622f9da0
+      id: 758d220a-6468-4a1c-819d-cc765b4483b2
       version: -1
       name: Phishing - Forwarded Email
       type: title
@@ -1868,10 +1866,10 @@ tasks:
     continueonerrortype: ""
   '49':
     id: '49'
-    taskid: bb94119b-622f-4098-873c-9a52e65b8540
+    taskid: a34a58fb-2830-4188-86d3-6d9a01686600
     type: title
     task:
-      id: bb94119b-622f-4098-873c-9a52e65b8540
+      id: a34a58fb-2830-4188-86d3-6d9a01686600
       version: -1
       name: Phishing Alerts
       type: title
@@ -1899,10 +1897,10 @@ tasks:
     continueonerrortype: ""
   '50':
     id: '50'
-    taskid: 6a08d29d-324b-4451-85c6-d1711c01a651
+    taskid: 7fbb6732-637c-4f2a-89da-d9bf34283c12
     type: title
     task:
-      id: 6a08d29d-324b-4451-85c6-d1711c01a651
+      id: 7fbb6732-637c-4f2a-89da-d9bf34283c12
       version: -1
       name: Do Not Retrieve Email
       type: title
@@ -1928,189 +1926,12 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-  '55':
-    id: '55'
-    taskid: d92b905f-b6f6-408c-896b-6910ed0f9251
-    type: regular
-    task:
-      id: d92b905f-b6f6-408c-896b-6910ed0f9251
-      version: -1
-      name: Set incident attachments
-      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
-      scriptName: UploadFile
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '6'
-    scriptarguments:
-      entryID:
-        complex:
-          root: File
-          filters:
-          - - operator: notIn
-              left:
-                value:
-                  simple: File.MD5
-                iscontext: true
-              right:
-                value:
-                  simple: IncidentFiles.MD5
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: File.MD5
-                iscontext: true
-          accessor: EntryID
-          transformers:
-          - operator: uniq
-      incID:
-        complex:
-          root: incident
-          accessor: id
-      target:
-        simple: incident attachment
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1460,
-          "y": 4170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '56':
-    id: '56'
-    taskid: 6ed6697b-5d7a-4700-8b04-41bf375be00f
-    type: condition
-    task:
-      id: 6ed6697b-5d7a-4700-8b04-41bf375be00f
-      version: -1
-      name: Check Whether to add attachments
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '6'
-      yes:
-      - '55'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: File
-                filters:
-                - - operator: notIn
-                    left:
-                      value:
-                        simple: File.MD5
-                      iscontext: true
-                    right:
-                      value:
-                        simple: IncidentFiles.MD5
-                      iscontext: true
-                - - operator: isNotEmpty
-                    left:
-                      value:
-                        simple: File.MD5
-                      iscontext: true
-                accessor: EntryID
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core REST API
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1460,
-          "y": 3990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '57':
-    id: '57'
-    taskid: 6c2b45b8-9f84-49ed-81d4-75205b0d5aff
-    type: title
-    task:
-      id: 6c2b45b8-9f84-49ed-81d4-75205b0d5aff
-      version: -1
-      name: Add email files and attachments to the layout
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '56'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1460,
-          "y": 3840
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "59":
     id: "59"
-    taskid: 091bf8a2-8d3f-4b57-8179-98c2b22565f4
+    taskid: f1f02e34-e79a-45f8-8233-949d5474fc5b
     type: title
     task:
-      id: 091bf8a2-8d3f-4b57-8179-98c2b22565f4
+      id: f1f02e34-e79a-45f8-8233-949d5474fc5b
       version: -1
       name: Keep Old Field Mapping
       type: title
@@ -2138,10 +1959,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 1e874c19-fbe3-4f87-805f-5ca7a2c8fed8
+    taskid: 655dada4-1eea-4524-87ef-7de91fffa4a2
     type: regular
     task:
-      id: 1e874c19-fbe3-4f87-805f-5ca7a2c8fed8
+      id: 655dada4-1eea-4524-87ef-7de91fffa4a2
       version: -1
       name: Add original email details to context
       description: Sets the details of the email that was forwarded under the email context key. Also saves the HTML or email text to the email body section in the layout.
@@ -2188,10 +2009,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 7fb9c52d-f820-4875-84e5-10d5bd448afc
+    taskid: 3e62e117-814b-4967-86fa-78302c9093b1
     type: title
     task:
-      id: 7fb9c52d-f820-4875-84e5-10d5bd448afc
+      id: 3e62e117-814b-4967-86fa-78302c9093b1
       version: -1
       name: No Field Mapping
       type: title
@@ -2219,10 +2040,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 3a7de419-9074-45ec-8509-c0c20db5d21f
+    taskid: 2ea1361a-74c3-47c1-8eba-2f7477689110
     type: regular
     task:
-      id: 3a7de419-9074-45ec-8509-c0c20db5d21f
+      id: 2ea1361a-74c3-47c1-8eba-2f7477689110
       version: -1
       name: Add original email details to context
       description: Sets the details of the email that was forwarded under the email context key. Also saves the HTML or email text to the email body section in the layout.
@@ -2256,10 +2077,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 2b2898ad-5e86-4522-8c82-9563ea1c68ad
+    taskid: 7cea36ef-74f3-43ba-81a6-9908756bd4a5
     type: condition
     task:
-      id: 2b2898ad-5e86-4522-8c82-9563ea1c68ad
+      id: 7cea36ef-74f3-43ba-81a6-9908756bd4a5
       version: -1
       name: Keep backward-compatibility?
       description: Whether to keep this sub-playbook backward-compatible in terms of the incident fields being set. Opting out will result in the Rendered HTML and Email Body HTML not being set, and the Email HTML field will be used instead.
@@ -2302,10 +2123,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: d7d180f3-26e2-4e14-8843-9ea46c71764e
+    taskid: 4fc1e52e-511d-47e3-8447-bc2ecb0ee2c4
     type: regular
     task:
-      id: d7d180f3-26e2-4e14-8843-9ea46c71764e
+      id: 4fc1e52e-511d-47e3-8447-bc2ecb0ee2c4
       version: -1
       name: Display email information in layout
       description: Updates Cortex XSOAR incident fields using data from the email object.
@@ -2334,10 +2155,6 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.ID
-      attachmentitem:
-        complex:
-          root: Email
-          accessor: Attachment.Item
       attachmentname:
         complex:
           root: Email
@@ -2401,10 +2218,6 @@ tasks:
                 iscontext: true
           - operator: uniq
           - operator: Stringify
-      emailimage:
-        complex:
-          root: Email
-          accessor: Image
       emailinreplyto:
         complex:
           root: Email
@@ -2588,10 +2401,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 7c6361e7-81a8-4b08-80f5-b1f143c6c134
+    taskid: 59e175da-6af9-43d6-82c6-d3ab9400b56e
     type: title
     task:
-      id: 7c6361e7-81a8-4b08-80f5-b1f143c6c134
+      id: 59e175da-6af9-43d6-82c6-d3ab9400b56e
       version: -1
       name: Keep Old Fields
       type: title
@@ -2619,10 +2432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 62df369f-0409-4abd-820f-66fba1520ded
+    taskid: 2fce304c-8afd-49dc-818f-e77ff239cbc3
     type: regular
     task:
-      id: 62df369f-0409-4abd-820f-66fba1520ded
+      id: 2fce304c-8afd-49dc-818f-e77ff239cbc3
       version: -1
       name: Display email information in layout
       description: Updates Cortex XSOAR incident fields using data from the email object.
@@ -2651,10 +2464,6 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.ID
-      attachmentitem:
-        complex:
-          root: Email
-          accessor: Attachment.Item
       attachmentname:
         complex:
           root: Email
@@ -2716,10 +2525,6 @@ tasks:
           accessor: HTML
           transformers:
           - operator: uniq
-      emailimage:
-        complex:
-          root: Email
-          accessor: Image
       emailinreplyto:
         complex:
           root: Email
@@ -2915,10 +2720,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 76f2dc82-4bf3-4e8d-8cdf-9c3320d600db
+    taskid: 17c7cfdb-f6a0-459a-82f6-900dd62250cd
     type: title
     task:
-      id: 76f2dc82-4bf3-4e8d-8cdf-9c3320d600db
+      id: 17c7cfdb-f6a0-459a-82f6-900dd62250cd
       version: -1
       name: Don't Keep Old Fields
       type: title
@@ -2946,10 +2751,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 143f39f8-0851-4102-82c6-a03578ea2d4b
+    taskid: 40a6f63a-ee3c-40a3-8318-0897f9036454
     type: title
     task:
-      id: 143f39f8-0851-4102-82c6-a03578ea2d4b
+      id: 40a6f63a-ee3c-40a3-8318-0897f9036454
       version: -1
       name: Continue
       type: title
@@ -2958,8 +2763,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "57"
       - "11"
+      - "72"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2967,6 +2772,179 @@ tasks:
         "position": {
           "x": 920,
           "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 754742b3-8a98-45b3-8d02-a850f90d83fd
+    type: regular
+    task:
+      id: 754742b3-8a98-45b3-8d02-a850f90d83fd
+      version: -1
+      name: Upload email attachments to layout
+      description: Uploads file attachments of the email to the incident layout.
+      script: '|||core-api-multipart'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: File.MD5
+                iscontext: true
+              right:
+                value:
+                  simple: IncidentFiles.MD5
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.MD5
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      uri:
+        simple: incident/upload/${incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: bc13d37f-42b6-49cc-873a-3f41c8b60b38
+    type: condition
+    task:
+      id: bc13d37f-42b6-49cc-873a-3f41c8b60b38
+      version: -1
+      name: Can email attachments be uploaded?
+      description: Checks whether the Core REST API integration is enabled, and whether any file attachments were extracted from the email.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IncidentFiles.MD5
+                      iscontext: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                accessor: EntryID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core REST API
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: beee6bf9-e581-46ac-8c39-d1a74d2c91fc
+    type: title
+    task:
+      id: beee6bf9-e581-46ac-8c39-d1a74d2c91fc
+      version: -1
+      name: Add email files and attachments to the layout
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 3840
         }
       }
     note: false
@@ -2987,13 +2965,14 @@ view: |-
       "41_3_#default#": 0.35,
       "41_42_yes": 0.5,
       "4_5_yes": 0.57,
-      "56_55_yes": 0.46,
+      "4_6_#default#": 0.18,
       "63_59_yes": 0.6,
-      "63_61_#default#": 0.58
+      "63_61_#default#": 0.58,
+      "71_6_#default#": 0.24
     },
     "paper": {
       "dimensions": {
-        "height": 4995,
+        "height": 4965,
         "width": 4270,
         "x": -940,
         "y": -510

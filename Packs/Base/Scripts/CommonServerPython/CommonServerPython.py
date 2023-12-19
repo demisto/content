@@ -45,6 +45,9 @@ _MODULES_LINE_MAPPING = {
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
+ASSETS = "assets"
+EVENTS = "events"
+DATA_TYPES = [EVENTS, ASSETS]
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -194,7 +197,7 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
-    
+
     from urllib3 import disable_warnings
     disable_warnings()
 
@@ -456,7 +459,7 @@ class DBotScoreReliability(object):
         )
 
     @staticmethod
-    def get_dbot_score_reliability_from_str(reliability_str):
+    def get_dbot_score_reliability_from_str(reliability_str):   # pragma: no cover
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -932,7 +935,7 @@ def positiveUrl(entry):
     return False
 
 
-def positiveFile(entry):
+def positiveFile(entry):    # pragma: no cover
     """
        Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
 
@@ -981,7 +984,7 @@ def vtCountPositives(entry):
     return positives
 
 
-def positiveIp(entry):
+def positiveIp(entry):  # pragma: no cover
     """
        Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
 
@@ -1017,7 +1020,7 @@ def formatEpochDate(t):
     return ''
 
 
-def shortCrowdStrike(entry):
+def shortCrowdStrike(entry):    # pragma: no cover
     """
        Display CrowdStrike Intel results in Markdown (deprecated)
 
@@ -1056,7 +1059,7 @@ def shortCrowdStrike(entry):
     return entry
 
 
-def shortUrl(entry):
+def shortUrl(entry):    # pragma: no cover
     """
        Formats a URL reputation entry into a short table (deprecated)
 
@@ -1084,7 +1087,7 @@ def shortUrl(entry):
     return {'ContentsFormat': 'text', 'Type': 4, 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-def shortFile(entry):
+def shortFile(entry):   # pragma: no cover
     """
        Formats a file reputation entry into a short table (deprecated)
 
@@ -1342,7 +1345,7 @@ def encode_string_results(text):
         return text.encode("utf8", "replace")
 
 
-def safe_load_json(json_object):
+def safe_load_json(json_object):    # pragma: no cover
     """
     Safely loads a JSON object from an argument. Allows the argument to accept either a JSON in string form,
     or an entry ID corresponding to a JSON file.
@@ -2260,7 +2263,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 tblToMd = tableToMarkdown
 
 
-def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
+def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):     # pragma: no cover
     """Receives a dict with flattened key values, and converts them into nested dicts
 
     :type obj: ``dict`` or ``list``
@@ -2369,6 +2372,19 @@ def fileResult(filename, data, file_type=None):
     # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
+
+    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
+    # xsoar returns empty files to war-rooms
+    if isinstance(filename, str):
+        replaced_filename = filename.replace("../", "")
+        if filename != replaced_filename:
+            filename = replaced_filename
+            demisto.debug(
+                "replaced {filename} with new file name {replaced_file_name}".format(
+                    filename=filename, replaced_file_name=replaced_filename
+                )
+            )
+
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
@@ -6807,6 +6823,17 @@ class CommandResults:
     :type execution_metrics: ``ExecutionMetrics``
     :param execution_metrics: contains metric data about a command's execution
 
+    :type replace_existing: ``bool``
+    :param replace_existing: Replace the context value at outputs_prefix if it exists.
+            Works only if outputs_prefix is a path to a nested value i.e., contains a period.
+            For example, the "next token" result should always be overwritten. This response can be returned as follows:
+            >>> CommandResults(
+            >>>     readable_output=f'Next Token: {next_token}',
+            >>>     outputs=next_token,
+            >>>     outputs_prefix='Path.To.NextToken',
+            >>>     replace_existing=True,
+            >>> )
+
     :return: None
     :rtype: ``None``
     """
@@ -6826,8 +6853,9 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
-                 execution_metrics=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
+                 execution_metrics=None,
+                 replace_existing=False):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -6869,6 +6897,7 @@ class CommandResults:
         self.scheduled_command = scheduled_command
         self.relationships = relationships
         self.execution_metrics = execution_metrics
+        self.replace_existing = replace_existing
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
@@ -6915,19 +6944,23 @@ class CommandResults:
         if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
-                if isinstance(self.outputs, dict) or isinstance(self.outputs, list):
+                if isinstance(self.outputs, (dict, list)):
                     human_readable = tableToMarkdown('Results', self.outputs)
                 else:
                     human_readable = self.outputs   # type: ignore[assignment]
-            if self.outputs_prefix and self._outputs_key_field:
+            if self.outputs_prefix and self.replace_existing:
+                next_token_path, _, next_token_key = self.outputs_prefix.rpartition('.')
+                if not next_token_path:
+                    raise DemistoException('outputs_prefix must be a nested path to replace an existing key.')
+                outputs[next_token_path + '(true)'] = {next_token_key: self.outputs}
+            elif self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
                                                      for key_field in self._outputs_key_field])
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
-                outputs_key = '{}'.format(self.outputs_prefix)
-                outputs[outputs_key] = self.outputs
+                outputs[str(self.outputs_prefix)] = self.outputs
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
@@ -8183,6 +8216,60 @@ def is_demisto_version_ge(version, build_number=''):
         )
 
         return True
+
+
+def is_xsiam_or_xsoar_saas():
+    """Determines whether or not the platform is XSIAM or XSOAR SAAS.
+
+    :return: True iff the platform is XSIAM or XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar():
+    """Determines whether or not the platform is XSOAR.
+
+    :return: True iff the platform is XSOAR.
+    :rtype: ``bool``
+    """
+    return "xsoar" in demisto.demistoVersion().get("platform")
+
+
+def is_xsoar_on_prem():
+    """Determines whether or not the platform is a XSOAR on-prem.
+
+    :return: True iff the platform is XSOAR on-prem.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and not is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar_hosted():
+    """Determines whether or not the platform is XSOAR hosted.
+
+    :return: True iff the platform is XSOAR hosted.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar_hosted"
+
+
+def is_xsoar_saas():
+    """Determines whether or not the platform is XSOAR SAAS.
+
+    :return: True iff the platform is XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
+
+
+def is_xsiam():
+    """Determines whether or not the platform is XSIAM.
+
+    :return: True iff the platform is XSIAM.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "x2"
 
 
 class DemistoHandler(logging.Handler):
@@ -9844,7 +9931,7 @@ def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
     raise DemistoException("You cannot use getLastMirrorRun as your version is below 6.6.0")
 
 
-def support_multithreading():
+def support_multithreading():   # pragma: no cover
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
 
     :return: No data returned
@@ -10195,7 +10282,7 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):  # pragma: no cover
     """
     Function that registers the threads and memory dump signal listener
 
@@ -10294,7 +10381,7 @@ class PollResult:
 
 
 def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
-                     requires_polling_arg=True):
+                     requires_polling_arg=True):    # pragma: no cover
     """
     To use on a function that should rerun itself
     Commands that use this decorator must have a Polling argument, polling: true in yaml,
@@ -10329,7 +10416,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 *arguments: any additional arguments to the command function.
                 **kwargs: additional keyword arguments to the command function.
             """
-            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name)):
+            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
 
@@ -10570,7 +10657,6 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
-    offset = last_run.get('offset')
     now = get_current_time(timezone)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
@@ -10579,7 +10665,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if not offset and look_back and look_back > 0:
+    if look_back and look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
@@ -10607,16 +10693,16 @@ def get_current_time(time_zone=0):
 
 def calculate_new_offset(old_offset, num_incidents, total_incidents):
     """ This calculates the new offset based on the response
-    
+
     :type old_offset: ``int``
     :param old_offset: The offset from the previous run
 
     :type num_incidents: ``int``
     :param num_incidents: The number of incidents returned by the API.
-    
+
     :type total_incidents: ``int``
     :param total_incidents: The total number of incidents returned by the API.
-    
+
     :return: The new offset for the next run.
     :rtype: ``int``
     """
@@ -10795,7 +10881,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
-    
+
     :type new_offset: ``int | None``
     :param new_offset: The new offset to set in the last run
 
@@ -10810,13 +10896,13 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         # if we need to update the offset, we need to keep the old time and just update the offset
         new_last_run = {
             'time': last_run.get("time"),
-        } 
+        }
     elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
             'limit': fetch_limit,
         }
-    else:        
+    else:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
@@ -10826,7 +10912,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         if latest_incident_fetched_time == start_fetch_time:
             # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
-    
+
     if new_offset is not None:
         new_last_run['offset'] = new_offset
         new_last_run['limit'] = fetch_limit
@@ -10870,7 +10956,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
-    
+
     :type new_offset: ``int | None``
     :param new_offset: The new offset to set in the last run
 
@@ -11041,10 +11127,11 @@ def xsiam_api_call_with_retries(
     num_of_attempts,
     events_error_handler=None,
     error_msg='',
-    is_json_response=False
-):
+    is_json_response=False,
+    data_type=EVENTS
+):    # pragma: no cover
     """
-    Send the fetched events into the XDR data-collector private api.
+    Send the fetched events or assests into the XDR data-collector private api.
 
     :type client: ``BaseClient``
     :param client: base client containing the XSIAM url.
@@ -11067,6 +11154,9 @@ def xsiam_api_call_with_retries(
     :type events_error_handler: ``callable``
     :param events_error_handler: error handler function
 
+    :type data_type: ``str``
+    :param data_type: events or assets
+
     :return: Response object or DemistoException
     :rtype: ``requests.Response`` or ``DemistoException``
     """
@@ -11076,7 +11166,7 @@ def xsiam_api_call_with_retries(
     response = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
+        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(data_type=data_type, attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         response = client._http_request(
@@ -11161,89 +11251,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :return: None
     :rtype: ``None``
     """
-    data = events
-    amount_of_events = 0
-    params = demisto.params()
-    url = params.get(url_key)
-    calling_context = demisto.callingContext.get('context', {})
-    instance_name = calling_context.get('IntegrationInstance', '')
-    collector_name = calling_context.get('IntegrationBrand', '')
-
-    if not events:
-        demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
-        demisto.updateModuleHealth({'eventsPulled': amount_of_events})
-        return
-
-    # only in case we have events data to send to XSIAM we continue with this flow.
-    # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
-    if isinstance(events, list):
-        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        if isinstance(events[0], dict):
-            events = [json.dumps(event) for event in events]
-            data_format = 'json'
-        # Separating each event with a new line
-        data = '\n'.join(events)
-    elif not isinstance(events, str):
-        raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
-                                'list.').format(type_events=type(events)))
-    if not data_format:
-        data_format = 'text'
-
-    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
-    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
-    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
-    headers = {
-        'authorization': xsiam_api_token,
-        'format': data_format,
-        'product': product,
-        'vendor': vendor,
-        'content-encoding': 'gzip',
-        'collector-name': collector_name,
-        'instance-name': instance_name,
-        'final-reporting-device': url
-    }
-
-    header_msg = 'Error sending new events into XSIAM.\n'
-
-    def events_error_handler(res):
-        """
-        Internal function to parse the XSIAM API errors
-        """
-        try:
-            response = res.json()
-            error = res.reason
-            if response.get('error').lower() == 'false':
-                xsiam_server_err_msg = response.get('error')
-                error += ": " + xsiam_server_err_msg
-
-        except ValueError:
-            if res.text:
-                error = '\n{}'.format(res.text)
-            else:
-                error = "Received empty response from the server"
-
-        api_call_info = (
-            'Parameters used:\n'
-            '\tURL: {xsiam_url}\n'
-            '\tHeaders: {headers}\n\n'
-            'Response status code: {status_code}\n'
-            'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
-
-        demisto.error(header_msg + api_call_info)
-        raise DemistoException(header_msg + error, DemistoException)
-
-    client = BaseClient(base_url=xsiam_url)
-    data_chunks = split_data_to_chunks(data, chunk_size)
-    for data_chunk in data_chunks:
-        amount_of_events += len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        xsiam_api_call_with_retries(client=client, events_error_handler=events_error_handler,
-                                    error_msg=header_msg, headers=headers,
-                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True)
-    demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+    send_data_to_xsiam(events, vendor, product, data_format, url_key, num_of_attempts, chunk_size, data_type="events")
 
 
 def is_scheduled_command_retry():
@@ -11283,6 +11291,155 @@ def replace_spaces_in_credential(credential):
                       lambda match: match.group(0).replace(' ', '\n'), credential)
     return credential
 
+def has_passed_time_threshold(timestamp_str, seconds_threshold):
+    """
+    Checks if the time difference between the current time and the timestamp is greater than the threshold.
+    
+    :type timestamp_str: ``str``
+    :param timestamp_str: The timestamp to compare the current time to.
+    :type seconds_threshold: ``int``
+    :param seconds_threshold: The threshold in seconds.
+    
+    :return: True if the time difference is greater than the threshold, otherwise False.
+    :rtype: ``bool``
+    """
+    import pytz
+    to_utc_timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
+    # using astimezone since utcnow() returns a naive datetime object when unitesting  
+    current_time = datetime.now().astimezone(pytz.utc)
+    if to_utc_timestamp:
+        time_difference = current_time - to_utc_timestamp
+        return time_difference.total_seconds() > seconds_threshold
+    else:
+        raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
+
+def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
+    """
+    Send the supported fetched data types into the XDR data-collector private api.
+
+    :type data: ``Union[str, list]``
+    :param data: The data to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event or asset.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the data.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the data.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
+
+    :type data_type: ``str``
+    :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :return: None
+    :rtype: ``None``
+    """
+    data_size = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get('context', {})
+    instance_name = calling_context.get('IntegrationInstance', '')
+    collector_name = calling_context.get('IntegrationBrand', '')
+    items_count = len(data) if isinstance(data, list) else 1
+    if data_type not in DATA_TYPES:
+        demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
+        return
+
+    if not data:
+        demisto.debug('send_data_to_xsiam function received no {data_type}, '
+                      'skipping the API call to send {data} to XSIAM'.format(data_type=data_type, data=data_type))
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+        return
+
+    # only in case we have data to send to XSIAM we continue with this flow.
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
+    if isinstance(data, list):
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        if isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+            data_format = 'json'
+        # Separating each event with a new line
+        data = '\n'.join(data)
+    elif not isinstance(data, str):
+        raise DemistoException('Unsupported type: {data} for the {data_type} parameter.'
+                               ' Should be a string or list.'.format(data=type(data), data_type=data_type))
+    if not data_format:
+        data_format = 'text'
+
+    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    headers = {
+        'authorization': xsiam_api_token,
+        'format': data_format,
+        'product': product,
+        'vendor': vendor,
+        'content-encoding': 'gzip',
+        'collector-name': collector_name,
+        'instance-name': instance_name,
+        'final-reporting-device': url,
+        'collector-type': ASSETS if data_type == ASSETS else EVENTS
+    }
+    if data_type == ASSETS:
+        headers['snapshot-id'] = str(round(time.time() * 1000))
+        headers['total-items-count'] = str(items_count)
+
+    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type = data_type)
+
+    def data_error_handler(res):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = res.json()
+            error = res.reason
+            if response.get('error').lower() == 'false':
+                xsiam_server_err_msg = response.get('error')
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            if res.text:
+                error = '\n{}'.format(res.text)
+            else:
+                error = "Received empty response from the server"
+
+        api_call_info = (
+            'Parameters used:\n'
+            '\tURL: {xsiam_url}\n'
+            '\tHeaders: {headers}\n\n'
+            'Response status code: {status_code}\n'
+            'Error received:\n\t{error}'
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
+
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    client = BaseClient(base_url=xsiam_url)
+    data_chunks = split_data_to_chunks(data, chunk_size)
+    for data_chunk in data_chunks:
+        data_size += len(data_chunk)
+        data_chunk = '\n'.join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                    error_msg=header_msg, headers=headers,
+                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                    zipped_data=zipped_data, is_json_response=True)
+
+    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
