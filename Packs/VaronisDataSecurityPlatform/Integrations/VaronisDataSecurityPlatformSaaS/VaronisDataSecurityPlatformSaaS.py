@@ -2,13 +2,9 @@ from typing import Dict, Any, List, Tuple
 import json
 import fnmatch
 import traceback
-from typing import Any, Dict, List
-import requests
 import demistomock as demisto
-from typing import Dict, List
 from CommonServerUserPython import *
 from CommonServerPython import *
-from typing import List
 
 
 class AlertAttributes:
@@ -100,7 +96,7 @@ class AlertAttributes:
             for pattern in extra_fields:
                 match_columns = fnmatch.filter(self.ExtraColumns, pattern)
                 output.extend([item for item in match_columns if item not in output])
-        
+
         return output
 
 
@@ -116,6 +112,7 @@ class AlertItem:
 
     def to_dict(self) -> Dict[str, Any]:
         return self.row
+
 
 class BaseMapper:
     @staticmethod
@@ -134,7 +131,6 @@ MAX_DAYS_BACK = 180
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
 ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
-
 
 
 class Client(BaseClient):
@@ -256,7 +252,7 @@ class Client(BaseClient):
             ingest_time_condition = FilterCondition().set_path(alert_attributes.Alert_IngestTime)\
                 .set_operator("Between")\
                 .add_value({alert_attributes.Alert_IngestTime: ingest_time_from.isoformat(
-                ), f"{alert_attributes.Alert_IngestTime}0": ingest_time_to.isoformat()})  # "displayValue": ingest_time_from.isoformat(),
+                ), f"{alert_attributes.Alert_IngestTime}0": ingest_time_to.isoformat()})
             search_request.query.filter.add_filter(ingest_time_condition)
         else:
             days_back = MAX_DAYS_BACK
@@ -271,7 +267,7 @@ class Client(BaseClient):
             if start_time and end_time:
                 time_condition = time_condition\
                     .set_operator("Between")\
-                    .add_value({alert_attributes.Alert_TimeUTC : start_time.isoformat(
+                    .add_value({alert_attributes.Alert_TimeUTC: start_time.isoformat(
                     ), f"{alert_attributes.Alert_TimeUTC}0": end_time.isoformat()})  # "displayValue": start_time.isoformat(),
             if last_days:
                 time_condition\
@@ -416,15 +412,14 @@ class Client(BaseClient):
         if start_time and end_time:
             time_condition = time_condition\
                 .set_operator("Between")\
-                .add_value({event_attributes.Event_TimeUTC: start_time.isoformat(), 
+                .add_value({event_attributes.Event_TimeUTC: start_time.isoformat(),
                             f"{event_attributes.Event_TimeUTC}0": end_time.isoformat()})
-                # "displayValue": start_time.isoformat(), (this line seems to be commented out)
+            # "displayValue": start_time.isoformat(), (this line seems to be commented out)
         if last_days:
             time_condition\
                 .set_operator("LastDays")\
                 .add_value({event_attributes.Event_TimeUTC: last_days, "displayValue": last_days})
         search_request.query.filter.add_filter(time_condition)
-
 
         if descending_order:
             search_request.rows.add_ordering({"path": event_attributes.Event_Time, "sortOrder": "Desc"})
@@ -494,6 +489,7 @@ class Client(BaseClient):
             '/api/alert/alert/AddNoteToAlerts',
             json_data=query,
             headers=self.headers)
+
 
 class EventAttributes:
     Event_StatusReason_Name = "Event.StatusReason.Name"
@@ -1017,6 +1013,7 @@ class EventItem:
     def to_dict(self) -> Dict[str, Any]:
         return self.row
 
+
 class FilterCondition:
     def __init__(self):
         self.path = None
@@ -1038,6 +1035,7 @@ class FilterCondition:
     def __repr__(self):
         return f"{self.path} {self.operator} {self.values}"
 
+
 class FilterValue:
     def __init__(self, value):
         self.value = value
@@ -1045,6 +1043,7 @@ class FilterValue:
 
     def __repr__(self):
         return f"{self.value}"
+
 
 class Filters:
     def __init__(self):
@@ -1062,6 +1061,7 @@ class Filters:
     def __repr__(self):
         return f"Filter Operator: {self.filterOperator}, Filters: {self.filters}"
 
+
 class Query:
     def __init__(self):
         self.entityName = None
@@ -1078,6 +1078,7 @@ class Query:
     def __repr__(self):
         return f"Entity Name: {self.entityName}, Filter: {self.filter}"
 
+
 class RequestParams:
     def __init__(self):
         self.searchSource = None
@@ -1093,6 +1094,7 @@ class RequestParams:
 
     def __repr__(self):
         return f"Search Source: {self.searchSource}, Search Source Name: {self.searchSourceName}"
+
 
 class Rows:
     def __init__(self):
@@ -1119,6 +1121,7 @@ class Rows:
 
     def __repr__(self):
         return f"Columns: {self.columns}, Filter: {self.filter}, Grouping: {self.grouping}, Ordering: {self.ordering}"
+
 
 class SearchAlertObjectMapper(BaseMapper):
     def map(self, json_data):
@@ -1185,6 +1188,7 @@ class SearchEventObjectMapper(BaseMapper):
             return [v.strip() for v in multi_value.split(',') if v.strip()]
         return None
 
+
 class SearchRequest:
     def __init__(self):
         self.query = Query()
@@ -1210,6 +1214,7 @@ class SearchRequest:
         dataJSON = json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
         return dataJSON
 
+
 class ThreatModelAttributes:
     Id = "ruleID"
     Name = "ruleName"
@@ -1218,6 +1223,7 @@ class ThreatModelAttributes:
     Severity = "severity"
 
     Columns = [Id, Name, Category, Source, Severity]
+
 
 class ThreatModelItem:
     def __init__(self):
@@ -1234,6 +1240,7 @@ class ThreatModelItem:
 
     def to_dict(self) -> Dict[str, Any]:
         return {key: value for key, value in self.__dict__.items() if value is not None}
+
 
 class ThreatModelObjectMapper(BaseMapper):
     def map(self, json_data):
@@ -1255,10 +1262,9 @@ class ThreatModelObjectMapper(BaseMapper):
 
         return threat_model_item
 
+
 """Varonis Data Security Platform integration
 """
-
-
 
 
 ''' CONSTANTS '''
@@ -1680,7 +1686,8 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
         the datetime on when to start fetching incidents
 
     :type alert_status: ``Optional[str]``
-    :param alert_status: status of the alert to search for. Options are 'New', 'Under investigation', 'Action Required', 'Auto-Resolved' or 'Closed' 
+    :param alert_status: status of the alert to search for.
+        Options are 'New', 'Under investigation', 'Action Required', 'Auto-Resolved' or 'Closed'
 
     :type threat_model: ``Optional[str]``
     :param threat_model: Comma-separated list of threat model names of alerts to fetch
@@ -1702,7 +1709,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
 
     if first_fetch_time is None:
         raise ValueError("first_fetch_time can't be None")
-        
+
     last_fetched_ingest_time_str = last_run.get('last_fetched_ingest_time', first_fetch_time.isoformat())
     last_fetched_ingest_time = try_convert(
         last_fetched_ingest_time_str,
@@ -1880,7 +1887,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     """Get alerted events from Varonis DA
 
     :type client: ``Client``
-    :param client: Http client 
+    :param client: Http client
 
     :type args: ``Dict[str, Any]``
     :param args:
@@ -2059,8 +2066,8 @@ def main() -> None:
 
         if command == 'varonis-get-threat-models':
             args['id'] = "1,2,3"  # List of requested threat model ids
-            # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"  # List of requested threat model names
-            args['name'] = ""
+            # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"
+            args['name'] = ""  # List of requested threat model names
             args['category'] = ""  # "Exfiltration,Reconnaissance"  # List of requested threat model categories
             args['severity'] = ""  # "3 - Error,4 - Warning"  # List of requested threat model severities
             args['source'] = ""  # "Predefined"  # List of requested threat model sources
@@ -2086,11 +2093,11 @@ def main() -> None:
             args['last_days'] = None  # Number of days you want the search to go back to
             args['extra_fields'] = ""  # extra fields
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
-        
+
         elif command == 'varonis-alert-add-note':
             args['alert_id'] = test_alert_id  # Array of alert ids to be updated
             args['note'] = "user note"  # Note for alert
-            
+
         elif command == 'varonis-update-alert-status':
             args['status'] = 'under investigation'  # Alert's new status
             args['alert_id'] = test_alert_id  # Array of alert ids to be updated
@@ -2142,10 +2149,10 @@ def main() -> None:
 
         elif command == 'varonis-get-alerted-events':
             return_results(varonis_get_alerted_events_command(client, args))
-       
+
         elif command == 'varonis-alert-add-note':
             return_results(varonis_alert_add_note_command(client, args))
-        
+
         elif command == 'varonis-update-alert-status':
             return_results(varonis_update_alert_status_command(client, args))
 
