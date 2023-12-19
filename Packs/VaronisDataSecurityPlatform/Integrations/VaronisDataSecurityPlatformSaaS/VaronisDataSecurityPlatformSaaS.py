@@ -1545,7 +1545,7 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module_command(client: Client) -> CommandResults:
+def check_module_command(client: Client) -> CommandResults:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
