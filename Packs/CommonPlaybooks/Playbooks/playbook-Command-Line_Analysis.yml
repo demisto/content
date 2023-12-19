@@ -1807,6 +1807,12 @@ outputs:
 - contextPath: Domain
   description: The domain object.
   type: unknown
+- contextPath: CommandlineVerdict.base64
+  description: Command line verdict base64 was found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.suspiciousParameters
+  description: Command line verdict suspicious parameters found. True/False
+  type: unknown
 tests:
   - no tests
 fromversion: 6.0.0

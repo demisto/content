@@ -29,8 +29,8 @@ This playbook does not use any integrations.
 
 * DeleteContext
 * Set
-* Base64Decode
 * MatchRegexV2
+* Base64Decode
 
 ### Commands
 
@@ -51,15 +51,17 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| MatchRegex | The regex found in the command line | unknown |
-| Indicators | Indicators extracted from the command line | unknown |
-| commandline.original | The original command line | unknown |
-| commandline.decoded | The decoded command line | unknown |
-| CommandlineVerdict | The command line verdict | unknown |
+| MatchRegex | The regex found in the command line. | unknown |
+| Indicators | Indicators extracted from the command line. | unknown |
+| commandline.original | The original command line. | unknown |
+| commandline.decoded | The decoded command line. | unknown |
+| CommandlineVerdict | The command line verdict. | unknown |
 | IP | The IP object. | unknown |
 | URL | The URL object. | uknown |
 | File | The file object. | unknown |
 | Domain | The domain object. | unknown |
+| CommandlineVerdict.base64 | Command line verdict base64 was found. True/False | unknown |
+| CommandlineVerdict.suspiciousParameters | Command line verdict suspicious parameters found. True/False | unknown |
 
 ## Playbook Image
 
