@@ -27,19 +27,30 @@ def get_account_ids() -> list[str]:
         raise DemistoException(f'Unexpected error while fetching accounts:\n{e}')
 
 
+def get_instance(instance_name: str) -> dict:
+    integrations = internal_request('POST', '/settings/integration/search')
+    return next(inst for inst in integrations['instances'] if inst['name'] == instance_name)
+
+
+def set_instance(instance: dict, accounts: str) -> dict:
+    accounts_param = next(param for param in instance['data'] if param['name'] == EC2_ACCOUNTS_PARAM)
+    accounts_param.update({
+        'hasvalue': True,
+        'value': accounts
+    })
+    return internal_request('PUT', '/settings/integration', instance)
+
+
 def update_ec2_instance(account_ids: list[str], instance_name: str) -> str:
     accounts_as_str = ','.join(account_ids)
     try:
-        response = internal_request('POST', '/settings/integration/search')
-        instance = next(inst for inst in response['instances'] if inst['name'] == instance_name)
+        instance = get_instance(instance_name)
         if instance['configvalues'][EC2_ACCOUNTS_PARAM] == accounts_as_str:
             return f'Account list in {instance_name!r} is up to date.'
-        demisto.debug(f'Updating {instance_name!r} with accounts: {accounts_as_str}')
-        next(param for param in instance['data'] if param['name'] == EC2_ACCOUNTS_PARAM)['value'] = accounts_as_str
-        instance['configuration']['configuration'] = instance['data']
-        response = internal_request('PUT', '/settings/integration', instance)
+        response = set_instance(instance, accounts_as_str)
         if response['configvalues'][EC2_ACCOUNTS_PARAM] != accounts_as_str:
-            raise DemistoException(f'Attempt to update {instance_name!r} with accounts {accounts_as_str} has failed')
+            demisto.debug(f'{response=}')
+            raise DemistoException(f'Attempt to update {instance_name!r} with accounts {accounts_as_str} has failed.')
         return f'Successfully updated {instance_name!r} with accounts: {accounts_as_str}'
     except StopIteration:
         raise DemistoException(f'Instance {instance_name!r} was not found or is not an AWS - EC2 instance.')
