@@ -177,9 +177,17 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
             playbook_name=playbook_id_name
         ), save_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
             # make sure the playbook finished successfully
-            assert xsoar_saas_client.poll_playbook_state(
-                incident_response.id, expected_states=(InvestigationPlaybookState.COMPLETED,)
-            )
+            try:
+                assert xsoar_saas_client.poll_playbook_state(
+                    incident_response.id, expected_states=(InvestigationPlaybookState.COMPLETED,)
+                )
+            except RuntimeError as error:
+                if xsoar_saas_client.get_playbook_state(incident_response.id) == InvestigationPlaybookState.FAILED:
+                    logging.error(
+                        f'Playbook failure: {error=}, '
+                        f'reason={xsoar_saas_client.get_incident_playbook_failure(incident_response.id)}'
+                    )
+                raise
 
             context = xsoar_saas_client.get_investigation_context(incident_response.investigation_id)
             # make sure the context is populated with thread id(s) from slack ask
