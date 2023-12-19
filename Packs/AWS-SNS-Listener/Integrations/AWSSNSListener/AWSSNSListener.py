@@ -4,7 +4,6 @@ from tempfile import NamedTemporaryFile
 from traceback import format_exc
 from collections import deque
 import uvicorn
-# from secrets import compare_digest
 from fastapi import FastAPI, Request
 from fastapi.security import HTTPBasic
 from fastapi.security.api_key import APIKeyHeader
