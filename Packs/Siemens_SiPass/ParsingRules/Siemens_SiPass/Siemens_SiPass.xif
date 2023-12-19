@@ -1,0 +1,8 @@
+[INGEST:vendor="siemens", product="sipass", target_dataset="siemens_sipass_raw", no_hit=keep]
+alter log_array = split(_raw_log,"    ")
+| alter tmp_time_zone = to_string(divide(to_integer(arrayindex(log_array,41)), 60))
+| alter tmp_time_zone = if(tmp_time_zone contains "-", concat("UTC",tmp_time_zone), concat("UTC+",tmp_time_zone ))
+| alter tmp_time = concat(arrayindex(log_array,6)," ",arrayindex(log_array,7)," ", tmp_time_zone)
+| filter tmp_time ~= "\d{8}\s\d{6}\sUTC[\-\+]?\d+"
+| alter _time = if(tmp_time != null and tmp_time != "", parse_timestamp("%Y%m%d %H%M%S %Z", tmp_time))
+| fields -tmp_time, tmp_time_zone;

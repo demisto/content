@@ -245,6 +245,32 @@
   - |
   - section_end "Checkout upload commit content nightly"
 
+.export_cloud_machine_constants: &export_cloud_machine_constants
+  # exporting the machine credentials
+  - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
+  - |
+    if [[ $TEST_XDR_ENV ]]; then
+      cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+    else
+      echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+    fi
+  - |
+    if [[ $TEST_XDR_ENV ]]; then
+      cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+    else
+      echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+    fi
+
+  - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
+  - |
+    for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
+      export XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
+      export DEMISTO_BASE_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
+      export XSIAM_AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
+      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
+      export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
+      break
+    done
 
 .default-before-script:
   before_script:

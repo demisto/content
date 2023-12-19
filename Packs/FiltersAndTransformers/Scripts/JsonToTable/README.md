@@ -27,7 +27,9 @@ There are no outputs for this script.
 
 ## Script Examples
 ### Example command
-```!JsonToTable value=`[{"name": "name1", "value": "val1"}, {"name": "name2", "value" : "val2"}]````
+```
+!JsonToTable value=`[{"name": "name1", "value": "val1"}, {"name": "name2", "value" : "val2"}]`
+```
 ### Context Example
 ```json
 {}
@@ -42,7 +44,9 @@ There are no outputs for this script.
 
 
 ### Example command
-```!JsonToTable value=`[{"name": "name1", "value": "val1"}, {"name": "name2", "value" : "val2"}]` headers=name```
+```
+!JsonToTable value=`[{"name": "name1", "value": "val1"}, {"name": "name2", "value" : "val2"}]` headers=name
+```
 ### Context Example
 ```json
 {}
@@ -57,7 +61,9 @@ There are no outputs for this script.
 
 
 ### Example command
-```!JsonToTable value=`[{"name": {"first": "a", "second": "b", "not_important": "no"}, "value": "val1"}, {"name": {"first": "c", "second": "d", "not_important": "no"}, "value": "val2"}]` is_auto_json_transform=true```
+```
+!JsonToTable value=`[{"name": {"first": "a", "second": "b", "not_important": "no"}, "value": "val1"}, {"name": {"first": "c", "second": "d", "not_important": "no"}, "value": "val2"}]` is_auto_json_transform=true
+```
 ### Context Example
 ```json
 {}
@@ -72,7 +78,9 @@ There are no outputs for this script.
 
 
 ### Example command
-```!JsonToTable value=`[{"name": {"first": "a", "second": "b", "not_important": "no"}, "value": "val1"}, {"name": {"first": "c", "second": "d", "not_important": "no"}, "value": "val2"}]` json_transform_properties=`{"name": {"keys": ["first", "second"]}}````
+```
+!JsonToTable value=`[{"name": {"first": "a", "second": "b", "not_important": "no"}, "value": "val1"}, {"name": {"first": "c", "second": "d", "not_important": "no"}, "value": "val2"}]` json_transform_properties=`{"name": {"keys": ["first", "second"]}}`
+```
 ### Context Example
 ```json
 {}
@@ -87,7 +95,9 @@ There are no outputs for this script.
 
 
 ### Example command
-```!JsonToTable value=`[{"name": {"first": {"a": "val"}, "second": "b", "not_important": "no"}, "value": "val1"}, {"name": {"first": {"a": "val2"}, "second": "d", "not_important": "no"}, "value": "val2"}]` json_transform_properties=`{"name": {"keys": ["a", "second"], "is_nested": "true"}}````
+```
+!JsonToTable value=`[{"name": {"first": {"a": "val"}, "second": "b", "not_important": "no"}, "value": "val1"}, {"name": {"first": {"a": "val2"}, "second": "d", "not_important": "no"}, "value": "val2"}]` json_transform_properties=`{"name": {"keys": ["a", "second"], "is_nested": "true"}}`
+```
 ### Context Example
 ```json
 {}

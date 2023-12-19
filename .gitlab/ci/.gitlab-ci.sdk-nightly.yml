@@ -21,6 +21,71 @@
   - demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
+.run_test_content: &run_test_content
+  - section_start "Run test-content" --collapsed
+  - |
+    if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
+    fi
+  - |
+    ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+  - rm -f Tests/conf.json
+  - section_end "Run test-content"
+
+.run_end_to_end_tests: &run_end_to_end_tests
+  - section_start "End to End Tests"  --collapsed
+  - |
+    mkdir $ARTIFACTS_FOLDER/demisto-sdk
+    git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+    python3 -m pytest "$ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER}" || EXIT_CODE=$?
+  - section_end "End to End Tests"
+
+.copy_env_results: &copy_env_results
+  - section_start "Copy env results to artifacts folder" --collapsed
+  - |
+    # workaround for the hard-coded value in the sdk CIAC-9091
+    if [[ -e "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" ]]; then
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" "./artifacts/env_results.json"
+    fi
+    if [[ -e "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" ]]; then
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
+    fi
+  - section_end "Copy env results to artifacts folder"
+
+.prepare_for_test_content: &prepare_for_test_content
+  - section_start "Install Packs" --collapsed
+  - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
+  - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+  - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
+  - section_end "Install Packs"
+
+.assert_test_content: &assert_test_content
+  - section_start "Assert test-content" --collapsed
+  - num_test_that_ran=$(grep -c "Test" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt")
+  - num_tests_that_should_run=$(grep -c "Test" "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt") 
+  - echo "Number of test-playbook tested - $num_test_that_ran "
+  - echo "Number of tests that should have been tested - $num_tests_that_should_run "
+  - |
+    if [ $num_test_that_ran -eq $num_tests_that_should_run ]; then
+      echo "test-content ran all of the collected test-playbooks."
+    else
+      echo "test-content did not ran all of the test-playbooks that were collected. exit with exit code 1"
+      EXIT_CODE=1
+    fi
+  - section_end "Assert test-content"
+  
+.cleanup_after_test_content: &cleanup_after_test_content
+  - section_start "Cleanup env results from artifacts folder" --collapsed
+  - |
+    # workaround for the hard-coded value in the sdk CIAC-9091
+    if [[ -e "./artifacts/env_results.json" ]]; then
+      rm -f "./artifacts/env_results.json"
+    fi
+    if [[ -e "./artifacts/filter_file.txt" ]]; then
+      rm -f "./artifacts/filter_file.txt"
+    fi
+  - section_end "Cleanup env results from artifacts folder"
+
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -164,6 +229,30 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
+demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR SAAS"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    MARKETPLACE_VERSION: "xsoar_saas"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
+  cache:
+    policy: pull-push
+  needs: []
+  stage: prepare-testing-bucket
+  script:
+    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - !reference [.generic-prepare-testing-bucket, script]
+    - job-done
+
 demisto-sdk-nightly:test-upload-flow:
   tags:
     - gke
@@ -177,7 +266,7 @@ demisto-sdk-nightly:test-upload-flow:
   script:
     - !reference [test-upload-flow, script]
 
-demisto-sdk-nightly:run-commands-against-instance:
+demisto-sdk-nightly:run-end-to-end-tests-general:
   tags:
     - gce # can't run docker in docker on gke
   extends:
@@ -197,56 +286,29 @@ demisto-sdk-nightly:run-commands-against-instance:
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
+    E2E_TEST_FOLDER: "general"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
+    - EXIT_CODE=0
     - !reference [.ssh-config-setup]
-    - section_start "Wait Until Server Ready"
+
+    - section_start "End to End Tests"  --collapsed
     - |
-      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
-    - section_end "Wait Until Server Ready"
-    - !reference [.download-demisto-conf]
-    - !reference [.secrets-fetch]
-    - |
-      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
-      echo "Server URL: $DEMISTO_BASE_URL"
-    - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
-    - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
-    - section_end "Unlock HelloWorld Integration and Playbook"
-    - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
-    - *upload-entities-to-cortex-xsoar
-    - section_end "Create and Upload Entities to XSOAR Instance"
-    - section_start "Download Entities from XSOAR Instance" --collapsed
-    - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
-    - section_end "Download Entities from XSOAR Instance"
-    - section_start "Format Content Items" --collapsed
-    - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
-    - section_end "Format Content Items"
-    - section_start "Run Validate" --collapsed
-    - demisto-sdk validate -i Packs/HelloWorld/
-    - section_end "Run Validate"
-    - section_start "Run Lint" --collapsed
-    - demisto-sdk lint --console-log-threshold DEBUG -i Packs/HelloWorld/
-    - section_end "Run Lint"
-    - *change-file-ids
-    - *upload-entities-to-cortex-xsoar
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      python3 -m pytest ${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER} || EXIT_CODE=$?
+    - section_end "End to End Tests"
+
     - job-done
+    - exit $EXIT_CODE
   after_script:
     - !reference [.default-after-script]
-    - !reference [.install_ssh_keys]
-    - !reference [.ssh-config-setup]
-    - !reference [.destroy_xsoar_instances]
 
-
-demisto-sdk-nightly:run-end-to-end-tests:
+demisto-sdk-nightly:run-end-to-end-tests-xsoar:
   tags:
-    - gce
+    - gce # can't run docker in docker on gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
@@ -264,20 +326,186 @@ demisto-sdk-nightly:run-end-to-end-tests:
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
+    FAIL_ON_ERROR: "true"
+    E2E_TEST_FOLDER: "xsoar"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
+    - EXIT_CODE=0
+    - !reference [.ssh-config-setup]
+
+    - !reference [.copy_env_results]
+
+    - section_start "Wait Until Server Ready" --collapsed
+    - |
+      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+      python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
+    - section_end "Wait Until Server Ready"
+
+    - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
+
+    - section_start "End to End Tests"  --collapsed
     - |
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
 
-      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      unset DEMISTO_API_KEY
       export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
-      unset DEMISTO_API_KEY # a temporary fix 
-      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/xsoar/ || EXIT_CODE=$?
+      python3 -m pytest ${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER} || EXIT_CODE=$?
+    - section_end "End to End Tests"
+
+    - !reference [.prepare_for_test_content]
+
+    - section_start "Wait Until Server Ready"  --collapsed
+    - echo Going to sleep for 15 minutes to allow server finish indexing
+    - sleep-with-progress 900 30 "Sleeping... " 150
+    - echo "Done sleeping!"
+    - section_end "Wait Until Server Ready"
+
+    - !reference [.run_test_content]
+
+    - !reference [.assert_test_content]
+
+    - !reference [.cleanup_after_test_content]
+
     - job-done
     - exit $EXIT_CODE
+  after_script:
+    - !reference [.default-after-script]
+    - !reference [.install_ssh_keys]
+    - !reference [.ssh-config-setup]
+
+    - !reference [.destroy_xsoar_instances]
+
+demisto-sdk-nightly:run-end-to-end-tests-xsiam:
+  tags:
+    - gce
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  services: # needed for running e2e tests for docker
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
+  variables:
+      CLOUD_MACHINES_TYPE: "build"
+      CLOUD_MACHINES_COUNT: 1
+      INSTANCE_ROLE: "xsiam"
+      GCS_QUEUE_FILE: "queue-ga"
+      GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+      CLOUD_SERVERS_FILE: "xsiam_servers_path"
+      XSIAM_SERVERS_PATH: "./xsiam_servers.json"
+      CLOUD_API_KEYS: $XSIAM_API_KEYS
+      CLOUD_API_TOKENS: $XSIAM_TOKENS
+      ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+      ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_${INSTANCE_ROLE}"
+      GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+      GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
+      GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+      SERVER_TYPE: "XSIAM"
+      MARKETPLACE_NAME: "marketplacev2"
+      NON_REMOVABLE_PACKS: "Base"
+      EXTRACT_PRIVATE_TESTDATA: "true"
+      NIGHTLY: "true"
+      FAIL_ON_ERROR: "true"
+      E2E_TEST_FOLDER: "xsiam"
+      PRODUCT_TYPE: "XSIAM"
+      ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
+      ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
+  needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
+  stage: run-instances
+  script:
+    - EXIT_CODE=0
+
+    - !reference [.copy_env_results]
+
+    - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
+    - !reference [.lock-machine]
+
+    - !reference [.export_cloud_machine_constants]
+
+    - !reference [.run_end_to_end_tests]
+
+    - !reference [.prepare_for_test_content]
+
+    - !reference [.run_test_content]
+
+    - !reference [.assert_test_content]
+
+    - !reference [.cleanup_after_test_content]
+
+    - !reference [.cloud-machine-information]
+    - job-done
+    - exit $EXIT_CODE
+
+  after_script:
+    - source .gitlab/helper_functions.sh
+    - !reference [.unlock-machine]
+
+demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
+  tags:
+    - gce
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  services: # needed for running e2e tests for docker
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
+  variables:
+    CLOUD_MACHINES_TYPE: "build"
+    CLOUD_MACHINES_COUNT: 1
+    INSTANCE_ROLE: "xsoar_saas"
+    SERVER_TYPE: "XSOAR SAAS"
+    GCS_QUEUE_FILE: "queue-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
+    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
+    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
+    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
+    MARKETPLACE_NAME: "xsoar_saas"
+    NON_REMOVABLE_PACKS: "Base"
+    NIGHTLY: "true"
+    FAIL_ON_ERROR: "true"
+    E2E_TEST_FOLDER: "xsoar-saas"
+    PRODUCT_TYPE: "XSOAR"
+    CLOUD_API_TOKENS: $XSIAM_TOKENS
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
+  needs: ["demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket"]
+  stage: run-instances
+  script:
+    - EXIT_CODE=0
+
+    - !reference [.copy_env_results]
+
+    - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
+    - !reference [.lock-machine]
+
+    - !reference [.uninstall-packs-and-reset-bucket-cloud]
+    - !reference [.export_cloud_machine_constants]
+
+    - !reference [.run_end_to_end_tests]
+
+    - !reference [.prepare_for_test_content]
+
+    - !reference [.run_test_content]
+
+    - !reference [.assert_test_content]
+
+    - !reference [.cleanup_after_test_content]
+
+    - !reference [.cloud-machine-information]
+    - job-done
+    - exit $EXIT_CODE
+
+  after_script:
+    - source .gitlab/helper_functions.sh
+    - !reference [.unlock-machine]
 
 demisto-sdk-nightly:fan-in:
   tags:

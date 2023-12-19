@@ -121,8 +121,18 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     echo "Failed testing Modeling Rules on at least one of the chosen machines"
   fi
 
-  echo "Finish running test modeling rules, error handling will be done on the results job, exiting with code 0"
-  exit 0
+  if [ -n "${FAIL_ON_ERROR}" ]; then
+    if [ "${exit_code}" -eq 0 ]; then
+      echo "Finish running test modeling rules, exiting with code 0"
+      exit 0
+    else
+      echo "Finish running test modeling rules with errors on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 1"
+      exit 1 
+    fi 
+  else
+    echo "Finish running test modeling rules, error handling will be done on the results job, exiting with code 0"
+    exit 0
+  fi
 
 else
   write_empty_test_results_file
