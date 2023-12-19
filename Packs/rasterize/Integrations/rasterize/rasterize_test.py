@@ -293,23 +293,6 @@ class TestRasterizeIncludeUrl:
         def quit(self):
             pass
 
-    # @pytest.mark.parametrize('include_url', [False, True])
-    # def test_headless_chrome_option(self, mocker, include_url):
-    #     """
-    #         Given:
-    #             - A parameter that mention whether to include the URL bar in the screenshot.
-    #         When:
-    #             - Running the 'rasterize' function.
-    #         Then:
-    #             - Verify that it runs as expected.
-    #     """
-    #     mocker.patch.object(Display, 'start', retuen_value=None)
-    #     mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
-    #     mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
-
-    #     driver = init_driver(include_url=include_url)
-
-    #     assert ("--headless" in driver.options) != include_url
 
     @pytest.mark.parametrize('include_url', [False, True])
     def test_sanity_rasterize_with_include_url(self, mocker, include_url, capfd):
@@ -333,24 +316,3 @@ class TestRasterizeIncludeUrl:
             image = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG,
                               include_url=include_url)
             assert image
-
-
-# def test_rasterize_html_no_internet_access(mocker, capfd):
-#     """
-#     Validates that when calling the command rasterize_html_command
-#     No http requests are executed. - CIAC-8142
-#     """
-#     import requests
-#     mock = Mock()
-#     requests.get = mock
-#     path = os.path.realpath('test_data/file.html')
-#     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
-#     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
-#     mocker.patch.object(os, 'rename')
-#     mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
-#     mocker_output = mocker.patch('rasterize.return_results')
-#     with capfd.disabled():
-#         rasterize_html_command()
-#         assert mocker_output.call_args.args[0]['File'] == 'email.png'
-#         args, kwargs = mock.call_args
-#         assert args[0].startswith("http://127.0.0.1:92")
