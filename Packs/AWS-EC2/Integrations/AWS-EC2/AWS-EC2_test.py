@@ -65,11 +65,7 @@ def validate_kwargs(*args, **kwargs):
         return {'ResponseMetadata': {'HTTPStatusCode': 404}, 'Return': "some_return_value"}
 
 
-@pytest.mark.parametrize('args, expected_results', [
-    (IPPERMISSIONSFULL_ARGS, "The Security Group ingress rule was created"),
-    (INVALID_ARGS, None)
-])
-def test_aws_ec2_authorize_security_group_ingress_rule(mocker, args, expected_results):
+def test_aws_ec2_authorize_security_group_ingress_rule(mocker):
     """
     Given
     - authorize-security-group-ingress-command arguments and aws client
@@ -82,16 +78,18 @@ def test_aws_ec2_authorize_security_group_ingress_rule(mocker, args, expected_re
     - Case 1: Should ensure that the right message was resulted return true.
     - Case 2: Should ensure that no message was resulted return true.
     """
-    aws_client = create_client()
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'authorize_security_group_ingress', side_effect=validate_kwargs)
-    mocker.patch.object(demisto, 'results')
-    AWS_EC2.authorize_security_group_ingress_command(args, aws_client)
-    if not expected_results:
-        assert not demisto.results.call_args
-    else:
-        results = demisto.results.call_args[0][0]
-        assert results == expected_results
+    mocker.patch.object(AWS_EC2, 'return_results')
+    AWS_EC2.build_client = lambda x: create_client().aws_session(**x)
+
+    # Case 1
+    with pytest.raises(DemistoException, match='Unexpected response from AWS - EC2:'):
+        AWS_EC2.authorize_security_group_ingress_command(INVALID_ARGS)
+
+    # Case 2
+    result = AWS_EC2.authorize_security_group_ingress_command(IPPERMISSIONSFULL_ARGS)
+    assert result.readable_output == "The Security Group ingress rule was created"
 
 
 def test_create_policy_kwargs_dict():
@@ -109,11 +107,7 @@ def test_create_policy_kwargs_dict():
     assert AWS_EC2.create_policy_kwargs_dict({}) == {}
 
 
-@pytest.mark.parametrize('args, expected_results', [
-    (VALID_ARGS, "The Security Group egress rule was created"),
-    (INVALID_ARGS, None)
-])
-def test_aws_ec2_authorize_security_group_egress_rule(mocker, args, expected_results):
+def test_aws_ec2_authorize_security_group_egress_rule(mocker):
     """
     Given
     - authorize-security-group-egress-command arguments and aws client
@@ -126,16 +120,18 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker, args, expected_res
     - Case 1: Should ensure that the right message was resulted return true.
     - Case 2: Should ensure that no message was resulted return true.
     """
-    aws_client = create_client()
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'authorize_security_group_egress', side_effect=validate_kwargs)
-    mocker.patch.object(demisto, 'results')
-    AWS_EC2.authorize_security_group_egress_command(args, aws_client)
-    if not expected_results:
-        assert not demisto.results.call_args
-    else:
-        results = demisto.results.call_args[0][0]
-        assert results == expected_results
+    mocker.patch.object(AWS_EC2, 'return_results')
+    AWS_EC2.build_client = lambda x: create_client().aws_session(**x)
+
+    # Case 1
+    with pytest.raises(DemistoException, match='Unexpected response from AWS - EC2:'):
+        AWS_EC2.authorize_security_group_egress_command(INVALID_ARGS)
+
+    # Case 2
+    result = AWS_EC2.authorize_security_group_egress_command(VALID_ARGS)
+    assert result.readable_output == "The Security Group egress rule was created"
 
 
 @pytest.mark.parametrize('filter, expected_results', [
