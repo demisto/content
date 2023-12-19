@@ -348,8 +348,8 @@ class BucketVerifier:
         """
         self.verify_modified_item_path('AlibabaActionTrail', 'ModelingRules/modelingrule-Alibaba.yml',
                                        self.items_dict.get('AlibabaActionTrail'))
-        pack_not_for_xsiam = [TestUploadFlowXSOAR, TestUploadFlowXsoarSaaS]
-        for not_supported_xsiam_mp_pack in pack_not_for_xsiam:
+        packs_not_for_xsiam = [TestUploadFlowXSOAR, TestUploadFlowXsoarSaaS]
+        for not_supported_xsiam_mp_pack in packs_not_for_xsiam:
             self.verify_pack_not_in_marketplace(not_supported_xsiam_mp_pack, XSIAM_TESTING_BUCKET)
 
     def run_xsoar_bucket_validations(self):
