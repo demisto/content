@@ -1899,7 +1899,7 @@ def main():  # pragma: no cover
             return_results(get_scan_history_command(args, client))
         elif command == 'tenable-io-export-scan':
             return_results(export_scan_command(args, client))
-        elif command == 'tenable-get-audit-logs':
+        elif command == 'tenable-io-get-audit-logs':
             results, events = get_audit_logs_command(client,
                                                      from_date=args.get('from_date'),
                                                      to_date=args.get('to_date'),
@@ -1909,7 +1909,7 @@ def main():  # pragma: no cover
             return_results(results)
 
             if argToBoolean(args.get('should_push_events', 'true')):
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
         # Fetch Commands
         elif command == 'fetch-events':
 
