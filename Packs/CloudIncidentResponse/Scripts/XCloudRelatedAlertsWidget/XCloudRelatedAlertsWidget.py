@@ -8,7 +8,6 @@ def get_additonal_info() -> List[Dict]:  # pragma: no cover
     alerts = demisto.context().get('foundIncidents')
     if (alerts == "{}") or (alerts is None):
         raise DemistoException('No related alerts found')
-        return None
     else:
         if not isinstance(alerts, list):
             alerts = [alerts]
