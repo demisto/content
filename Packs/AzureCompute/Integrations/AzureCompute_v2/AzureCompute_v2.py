@@ -1,11 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import urllib3
 from MicrosoftApiModule import *  # noqa: E402
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
 API_VERSION = '2023-03-01'
@@ -468,11 +465,11 @@ class MsGraphClient:
 
     def get_network_interface(self, resource_group, interface_name):
         url_suffix = f"{resource_group}/providers/Microsoft.Network/networkInterfaces/{interface_name}"
-        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=self.default_params)
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params={"api-version": '2023-05-01'})
 
     def get_public_ip_details(self, resource_group, address_name):
         url_suffix = f"{resource_group}/providers/Microsoft.Network/publicIPAddresses/{address_name}"
-        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=self.default_params)
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params={"api-version": '2023-05-01'})
 
     def create_nic(self, resource_group, args):
         # Retrieve relevant command argument
@@ -481,7 +478,12 @@ class MsGraphClient:
 
         # Construct VM object utilizing parameters passed as command arguments
         payload = create_nic_parameters(resource_group, self.subscription_id, args)
-        return self.ms_client.http_request(method='PUT', url_suffix=url_suffix, params=self.default_params, json_data=payload)
+        return self.ms_client.http_request(
+            method='PUT',
+            url_suffix=url_suffix,
+            params={'api-version': '2023-05-01'},
+            json_data=payload
+        )
 
 
 def test_module(client: MsGraphClient):

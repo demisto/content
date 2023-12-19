@@ -153,34 +153,37 @@ def search_incidents(args: Dict):   # pragma: no cover
         if platform == 'x2':
             return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
-
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     all_found_incidents = res[0]["Contents"]["data"]
     demisto.debug(
         f'Amount of incidents before filtering = {len(all_found_incidents)} with args {args} before pagination'
     )
+    page_size = args.get('size') or DEFAULT_PAGE_SIZE
+    more_pages = len(all_found_incidents) == page_size
     all_found_incidents = add_incidents_link(apply_filters(all_found_incidents, args), platform)
     demisto.debug(
         f'Amount of incidents after filtering = {len(all_found_incidents)} before pagination'
     )
-    # adding 1 here because the default page number start from 0
-    max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
-    demisto.debug(f'{max_page=}')
-
     page = STARTING_PAGE_NUMBER
-    while len(all_found_incidents) < limit and page < max_page:
+
+    while more_pages and len(all_found_incidents) < limit:
         args['page'] = page
         current_page_found_incidents = execute_command('getIncidents', args).get('data') or []
-        demisto.debug(
-            f'before filtering {len(current_page_found_incidents)=} '
-            f' {args=} {page=}'
-        )
+
+        # When current_page_found_incidents is None it means the requested page was empty
+        if not current_page_found_incidents:
+            break
+
+        demisto.debug(f'before filtering {len(current_page_found_incidents)=} {args=} {page=}')
+        more_pages = len(current_page_found_incidents) == page_size
+
         current_page_found_incidents = add_incidents_link(apply_filters(current_page_found_incidents, args), platform)
         demisto.debug(f'after filtering = {len(current_page_found_incidents)=}')
         all_found_incidents.extend(current_page_found_incidents)
         page += 1
 
     all_found_incidents = all_found_incidents[:limit]
+
     headers: List[str]
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
