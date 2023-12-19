@@ -34,7 +34,7 @@ configuration:
   type: 8
 - defaultvalue: '1000'
   display: Maximum number of incidents per fetch
-  additionalinfo: 
+  additionalinfo:
   name: max_fetch
   type: 0
   required: false
@@ -72,7 +72,7 @@ configuration:
   - Auto-Resolved
   required: false
   type: 15
-description: Streamline alerts and related forensic information from Varonis DSP
+description: Streamline alerts and related forensic information from Varonis DSP.
 display: Varonis Data Security Platform SaaS
 name: VaronisDataSecurityPlatformSaaS
 script:
@@ -162,8 +162,7 @@ script:
       description: Name of the country from which the event occurred.
       type: String
     - contextPath: Varonis.Alert.Location.SubdivisionName
-      description: Name of the state or regional subdivision from which the event
-        occurred.
+      description: Name of the state or regional subdivision from which the event occurred.
       type: String
     - contextPath: Varonis.Alert.Status.Name
       description: |-
@@ -185,13 +184,10 @@ script:
         - Other.
       type: String
     - contextPath: Varonis.Alert.Location.BlacklistedLocation
-      description: Whether any of the geographical locations from which an alerted
-        activity originated was on the blacklist at the time the activity occurred.
+      description: Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred.
       type: Boolean
     - contextPath: Varonis.Alert.Location.AbnormalLocation
-      description: Whether any of the geographical locations from which an alerted
-        activity originated is new or abnormal to the organization, the user and peers,
-        or only the user.
+      description: Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user.
       type: Boolean
     - contextPath: Varonis.Alert.EventsCount
       description: Number of events with alerts.
@@ -215,12 +211,10 @@ script:
       description: Whether the data affected by the alerted events has global flags.
       type: Boolean
     - contextPath: Varonis.Alert.Data.IsSensitive
-      description: Filters according to whether the resource on which the event was
-        performed is sensitive (including subfolders).
+      description: Filters according to whether the resource on which the event was performed is sensitive (including subfolders).
       type: Boolean
     - contextPath: Varonis.Alert.Filer.Platform.Name
-      description: Type of platform on which the server resides. For example, Windows,
-        Exchange, or SharePoint.
+      description: Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint.
       type: String
     - contextPath: Varonis.Alert.Asset.Path
       description: Path of the alerted asset.
@@ -256,18 +250,18 @@ script:
       description: Time when the alert was ingested into the system.
       type: Date
   - arguments:
-      - default: false
-        description: Requested alerts.
-        isArray: true
-        name: alert_id
-        required: true
-        secret: false
-      - default: false
-        description: Note.
-        isArray: false
-        name: note
-        required: true
-        secret: false
+    - default: false
+      description: Requested alerts.
+      isArray: true
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      description: Note.
+      isArray: false
+      name: note
+      required: true
+      secret: false
     deprecated: false
     description: Add note to alerts.
     execution: false
@@ -356,7 +350,7 @@ script:
       isArray: false
       name: last_days
       required: false
-      secret: false  
+      secret: false
     - default: false
       description: Extra fields.
       isArray: false
@@ -488,55 +482,55 @@ script:
       description: Path of the resource.
       type: String
   - arguments:
-      - default: false
-        description: List of requested threat model ids.
-        isArray: true
-        name: id
-        required: false
-        secret: false
-      - default: false
-        description: List of requested threat model names.
-        isArray: true
-        name: name
-        required: false
-        secret: false  
-      - default: false
-        description: List of requested threat model categories.
-        isArray: true
-        name: category
-        required: false
-        secret: false
-      - default: false
-        description: List of requested threat model severities.
-        isArray: true
-        name: severity
-        required: false
-        secret: false
-      - default: false
-        description: List of requested threat model sources.
-        isArray: true
-        name: source
-        required: false
-        secret: false
+    - default: false
+      description: List of requested threat model ids.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: List of requested threat model names.
+      isArray: true
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: List of requested threat model categories.
+      isArray: true
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: List of requested threat model severities.
+      isArray: true
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      description: List of requested threat model sources.
+      isArray: true
+      name: source
+      required: false
+      secret: false
     deprecated: false
     description: Get Varonis threat models.
     execution: false
     outputs:
-      - contextPath: ID
-        description: ID of the threat model.
-        type: String
-      - contextPath: Name
-        description: Name of the threat model.
-        type: String
-      - contextPath: Category
-        description: Category of the threat model.
-        type: String
-      - contextPath: Severity
-        description: Severity of the threat model.
-        type: String
-      - contextPath: Source
-        description: Predefined/User-defined.
-        type: String
+    - contextPath: ID
+      description: ID of the threat model.
+      type: String
+    - contextPath: Name
+      description: Name of the threat model.
+      type: String
+    - contextPath: Category
+      description: Category of the threat model.
+      type: String
+    - contextPath: Severity
+      description: Severity of the threat model.
+      type: String
+    - contextPath: Source
+      description: Predefined/User-defined.
+      type: String
     name: varonis-get-threat-models
   dockerimage: demisto/ntlm:1.0.0.82629
   feed: false
