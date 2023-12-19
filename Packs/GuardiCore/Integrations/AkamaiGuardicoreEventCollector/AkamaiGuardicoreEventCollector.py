@@ -223,15 +223,23 @@ def fetch_events(
     limit = arg_to_number(params.get("max_events_per_fetch")) or 1000
 
     response = client.get_events(start_time, end_time, limit, offset)
-    retrieve_events = response["objects"]
+    retrieve_events: list = response["objects"]
     format_events(retrieve_events)
+    if last_ids := last_run.get("last_ids"):
+        retrieve_events = [
+            event for event in retrieve_events if event["id"] not in last_ids
+        ]
     demisto.debug(f"Fetched {len(retrieve_events)} events.")
 
-    last_run = (
-        {"from_ts": end_time}
-        if len(retrieve_events) < limit
-        else {"from_ts": start_time, "offset": offset + limit}
-    )
+    if len(retrieve_events) < limit:
+        last_ids = [
+            event["id"]
+            for event in retrieve_events
+            if event["start_time"] // 1000 == end_time // 1000
+        ]
+        last_run = {"from_ts": end_time, "last_ids": last_ids}
+    else:
+        last_run = {"from_ts": start_time, "offset": offset + limit}
 
     return retrieve_events, last_run
 
