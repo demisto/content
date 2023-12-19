@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # pragma: no cover
+from CommonServerPython import *  # pragma: no cover
 
 ''' COMMAND FUNCTION '''  # pragma: no cover
 
