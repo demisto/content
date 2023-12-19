@@ -1,6 +1,5 @@
-Together, DomainTools and Cortex XSOAR automate and orchestrate the incident response process with essential domain profile, web crawl, SSL and infrastructure data. SOCs can create custom, automated workflows to trigger Indicator of Compromise (IoC) investigations, block threats based on connected infrastructure, and identify potentially malicious domains before weaponization.
-The DomainTools App for Cortex XSOAR is shipped with pre-built playbooks to enable automated enrichment, decision logic, ad-hoc investigations, and the ability to persist enriched intelligence.
-This integration was integrated and tested with version 1.0 of DomainTools Iris
+Together, DomainTools and Cortex XSOAR automate and orchestrate the incident response process with essential domain profile, web crawl, SSL and infrastructure data. SOCs can create custom, automated workflows to trigger Indicator of Compromise (IoC) investigations, block threats based on connected infrastructure, and identify potentially malicious domains before weaponization. The DomainTools App for Cortex XSOAR is shipped with pre-built playbooks to enable automated enrichment, decision logic, ad-hoc investigations, and the ability to persist enriched intelligence.
+This integration was integrated and tested with version 1.0 of DomainTools Iris.
 
 ## Configure DomainTools Iris on Cortex XSOAR
 
@@ -40,11 +39,144 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### domain
 
 ***
-Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If parsing of FQDNs is desired, see domainExtractAndInvestigate.
+Provides data enrichment for domains.
 
 #### Base Command
 
 `domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | The domain to enrich. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The name of the domain. | 
+| Domain.DNS | String | The DNS of the domain. | 
+| Domain.DomainStatus | Boolean | The status of the domain. | 
+| Domain.CreationDate | Date | The creation date. | 
+| Domain.ExpirationDate | Date | The expiration date of the domain. | 
+| Domain.NameServers | String | The nameServers of the domain. | 
+| Domain.Registrant.Country | String | The registrant country of the domain. | 
+| Domain.Registrant.Email | String | The registrant email of the domain. | 
+| Domain.Registrant.Name | String | The registrant name of the domain. | 
+| Domain.Registrant.Phone | String | The registrant phone number of the domain. | 
+| Domain.Malicious.Vendor | String | The vendor who classified the domain as malicious. | 
+| Domain.Malicious.Description | String | The description as to why the domain was found to be malicious. | 
+| DomainTools.Name | String | The domain name in DomainTools. | 
+| DomainTools.LastEnriched | Date | The last Time DomainTools enriched domain data. | 
+| DomainTools.Analytics.OverallRiskScore | Number | The Overall Risk Score in DomainTools. | 
+| DomainTools.Analytics.ProximityRiskScore | Number | The Proximity Risk Score in DomainTools. | 
+| DomainTools.Analytics.ThreatProfileRiskScore.RiskScore | Number | The Threat Profile Risk Score in DomainTools. | 
+| DomainTools.Analytics.ThreatProfileRiskScore.Threats | String | The threats of the Threat Profile Risk Score in DomainTools. | 
+| DomainTools.Analytics.ThreatProfileRiskScore.Evidence | String | The Threat Profile Risk Score Evidence in DomainTools. | 
+| DomainTools.Analytics.WebsiteResponseCode | Number | The Website Response Code in DomainTools. | 
+| DomainTools.Analytics.Tags | String | The Tags in DomainTools. | 
+| DomainTools.Identity.RegistrantName | String | The name of the registrant. | 
+| DomainTools.Identity.RegistrantOrg | String | The organization of the registrant. | 
+| DomainTools.Identity.RegistrantContact.Country.value | String | The country value of the registrant contact. | 
+| DomainTools.Identity.RegistrantContact.Country.count | Number | The count of the registrant contact country. | 
+| DomainTools.Identity.RegistrantContact.Email.value | String | The Email value of the registrant contact. | 
+| DomainTools.Identity.RegistrantContact.Email.count | Number | The Email count of the registrant contact. | 
+| DomainTools.Identity.RegistrantContact.Name.value | String | The name value of the registrant contact. | 
+| DomainTools.Identity.RegistrantContact.Name.count | Number | The name count of the registrant contact. | 
+| DomainTools.Identity.RegistrantContact.Phone.value | String | The phone value of the registrant contact. | 
+| DomainTools.Identity.RegistrantContact.Phone.count | Number | The phone count of the registrant contact. | 
+| DomainTools.Identity.SOAEmail | String | The SOA record of the Email. | 
+| DomainTools.Identity.SSLCertificateEmail | String | The Email of the SSL certificate. | 
+| DomainTools.Identity.AdminContact.Country.value | String | The country value of the administrator contact. | 
+| DomainTools.Identity.AdminContact.Country.count | Number | The country count of the administrator contact. | 
+| DomainTools.Identity.AdminContact.Email.value | String | The Email value of the administrator contact. | 
+| DomainTools.Identity.AdminContact.Email.count | Number | The Email count of the administrator contact. | 
+| DomainTools.Identity.AdminContact.Name.value | String | The name value of the administrator contact. | 
+| DomainTools.Identity.AdminContact.Name.count | Number | The name count of the administrator contact. | 
+| DomainTools.Identity.AdminContact.Phone.value | String | The phone value of the administrator contact. | 
+| DomainTools.Identity.AdminContact.Phone.count | Number | The phone count of the administrator contact. | 
+| DomainTools.Identity.TechnicalContact.Country.value | String | The country value of the technical contact. | 
+| DomainTools.Identity.TechnicalContact.Country.count | Number | The country count of the technical contact. | 
+| DomainTools.Identity.TechnicalContact.Email.value | String | The Email value of the technical contact. | 
+| DomainTools.Identity.TechnicalContact.Email.count | Number | The Email count of the technical contact. | 
+| DomainTools.Identity.TechnicalContact.Name.value | String | The name value of the technical Contact. | 
+| DomainTools.Identity.TechnicalContact.Name.count | Number | The name count of the technical contact. | 
+| DomainTools.Identity.TechnicalContact.Phone.value | String | The phone value of the technical contact. | 
+| DomainTools.Identity.TechnicalContact.Phone.count | Number | The phone count of the technical contact. | 
+| DomainTools.Identity.BillingContact.Country.value | String | The country value of the billing contact. | 
+| DomainTools.Identity.BillingContact.Country.count | Number | The country count of the billing contact. | 
+| DomainTools.Identity.BillingContact.Email.value | String | The Email value of the billing contact. | 
+| DomainTools.Identity.BillingContact.Email.count | Number | The Email count of the billing contact. | 
+| DomainTools.Identity.BillingContact.Name.value | String | The name value of the billing contact. | 
+| DomainTools.Identity.BillingContact.Name.count | Number | The name count of the billing contact. | 
+| DomainTools.Identity.BillingContact.Phone.value | String | The phone value of the billing contact. | 
+| DomainTools.Identity.BillingContact.Phone.count | Number | The phone count of the billing contact. | 
+| DomainTools.Identity.EmailDomains | String | The Email Domains. | 
+| DomainTools.Identity.AdditionalWhoisEmails.value | String | The value of the Additional Whois Emails record. | 
+| DomainTools.Identity.AdditionalWhoisEmails.count | Number | The count of the Additional Whois Emails record. | 
+| DomainTools.Registration.DomainRegistrant | String | The registrant of the domain. | 
+| DomainTools.Registration.RegistrarStatus | String | The status of the registrar. | 
+| DomainTools.Registration.DomainStatus | Boolean | The active status of the domain. | 
+| DomainTools.Registration.CreateDate | Date | The date the domain was created. | 
+| DomainTools.Registration.ExpirationDate | Date | The expiration date of the domain. | 
+| DomainTools.Hosting.IPAddresses.address.value | String | The address value of IP addresses. | 
+| DomainTools.Hosting.IPAddresses.address.count | Number | The address count of IP addresses. | 
+| DomainTools.Hosting.IPAddresses.asn.value | String | The ASN value of IP addresses. | 
+| DomainTools.Hosting.IPAddresses.asn.count | Number | The ASN count of IP addresses. | 
+| DomainTools.Hosting.IPAddresses.country_code.value | String | The country code value of IP addresses. | 
+| DomainTools.Hosting.IPAddresses.country_code.count | Number | The country code count of IP addresses. | 
+| DomainTools.Hosting.IPAddresses.isp.value | String | The ISP value of IP addresses. | 
+| DomainTools.Hosting.IPAddresses.isp.count | Number | The ISP count of IP addresses. | 
+| DomainTools.Hosting.IPCountryCode | String | The country code of the IP address. | 
+| DomainTools.Hosting.MailServers.domain.value | String | The domain value of the Mail Servers. | 
+| DomainTools.Hosting.MailServers.domain.count | Number | The domain count of the Mail Servers. | 
+| DomainTools.Hosting.MailServers.host.value | String | The host value of the Mail Servers. | 
+| DomainTools.Hosting.MailServers.host.count | Number | The host count of the Mail Servers. | 
+| DomainTools.Hosting.MailServers.ip.value | String | The IP value of the Mail Servers. | 
+| DomainTools.Hosting.MailServers.ip.count | Number | The IP count of the Mail Servers. | 
+| DomainTools.Hosting.SPFRecord | String | The SPF Record. | 
+| DomainTools.Hosting.NameServers.domain.value | String | The domain value of the domain NameServers. | 
+| DomainTools.Hosting.NameServers.domain.count | Number | The domain count of the domain NameServers. | 
+| DomainTools.Hosting.NameServers.host.value | String | The host value of the domain NameServers. | 
+| DomainTools.Hosting.NameServers.host.count | Number | The host count of the domain NameServers. | 
+| DomainTools.Hosting.NameServers.ip.value | String | The IP value of the domain NameServers. | 
+| DomainTools.Hosting.NameServers.ip.count | Number | The IP count of domain NameServers. | 
+| DomainTools.Hosting.SSLCertificate.hash.value | String | The hash value of the SSL certificate. | 
+| DomainTools.Hosting.SSLCertificate.hash.count | Number | The hash count of the SSL certificate. | 
+| DomainTools.Hosting.SSLCertificate.organization.value | String | The organization value of the SSL certificate. | 
+| DomainTools.Hosting.SSLCertificate.organization.count | Number | The organization count of the SSL certificate information. | 
+| DomainTools.Hosting.SSLCertificate.subject.value | String | The subject value of the SSL certificate information. | 
+| DomainTools.Hosting.SSLCertificate.subject.count | Number | The subject count of the SSL certificate information. | 
+| DomainTools.Hosting.RedirectsTo.value | String | The Redirects To Value of the domain. | 
+| DomainTools.Hosting.RedirectsTo.count | Number | The Redirects To Count of the domain. | 
+| DomainTools.Analytics.GoogleAdsenseTrackingCode | Number | The tracking code of Google Adsense. | 
+| DomainTools.Analytics.GoogleAnalyticTrackingCode | Number | The tracking code of Google Analytics. | 
+| DomainTools.Domains.Analytics.GA4TrackingCode | Number | The tracking code of ga4. | 
+| DomainTools.Domains.Analytics.GTMTrackingCode | Number | The tracking code of gtm. | 
+| DomainTools.Domains.Analytics.FBTrackingCode | Number | The tracking code of fb. | 
+| DomainTools.Domains.Analytics.HotJarTrackingCode | Number | The tracking code of Hot Jar. | 
+| DomainTools.Domains.Analytics.BaiduTrackingCode | Number | The tracking code of Baidu. | 
+| DomainTools.Domains.Analytics.YandexTrackingCode | Number | The tracking code of Yandex. | 
+| DomainTools.Domains.Analytics.MatomoTrackingCode | Number | The tracking code of Matomo. | 
+| DomainTools.Domains.Analytics.StatcounterProjectTrackingCode | Number | The tracking code of Stat Counter Project. | 
+| DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode | Number | The tracking code of Stat Counter Security. | 
+| DomainTools.WebsiteTitle | Number | The website title. | 
+| DomainTools.FirstSeen | Number | The date the domain was first seen. | 
+| DomainTools.ServerType | Number | The server type. | 
+| DBotScore.Indicator | String | The indicator of the DBotScore. | 
+| DBotScore.Type | String | The indicator type of the DBotScore. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+### domaintoolsiris-investigate
+
+***
+Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If parsing of FQDNs is desired, see domainExtractAndInvestigate.
+
+#### Base Command
+
+`domaintoolsiris-investigate`
 
 #### Input
 
@@ -756,7 +888,7 @@ The DomainTools Reverse Whois API provides a list of domain names that share the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| terms | (mandatory and default) List of one or more terms to search for in the Whois record, separated with the pipe character ( \| ). | Required | 
+| terms | (default) List of one or more terms to search for in the Whois record, separated with the pipe character ( \| ). | Required | 
 | exclude | Domain names with Whois records that match these terms will be excluded from the result set. Separate multiple terms with the pipe character ( \| ). | Optional | 
 | onlyHistoricScope | Show only historic records. Possible values are: true, false. Default is false. | Optional | 
 
