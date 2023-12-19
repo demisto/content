@@ -4,12 +4,10 @@ echo "running: pwd and ls -la"
 pwd
 ls -la
 echo "-----------------------------------------"
-echo "running: apt install whois"
+echo "running: sudo apt-get install whois"
 sudo apt-get install whois
-echo "running: apt install whois"
 echo "running: whois google.co.uk (wihtout proxy)"
 whois google.co.uk
-
 
 echo "running: chmod +x ./Packs/Whois/Integrations/Whois/test_data/microsocks"
 chmod +x ./Packs/Whois/Integrations/Whois/test_data/microsocks # grant permissions to execute
