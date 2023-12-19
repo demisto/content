@@ -55,11 +55,11 @@ def check_std_out_err(capfd):
 
 def pytest_configure(config: pytest.Config):
     """
-    This functions runs before any tests are run.
+    This functions runs before any tests are run, in pre-commit
     It configures the junit xml report to include the docker image name which the test is run
     """
     junit_xml = config.option.xmlpath
-    if junit_xml:
+    if junit_xml and ".pre-commit" in junit_xml:
         image = os.getenv("DOCKER_IMAGE")
         if image:
             config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))
