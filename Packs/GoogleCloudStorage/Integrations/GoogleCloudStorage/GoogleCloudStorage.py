@@ -266,8 +266,10 @@ def upload_blob(client, file_path, bucket_name, object_name):
 
 def gcs_list_bucket_objects(client, default_bucket, args):
     bucket_name = get_bucket_name(args, default_bucket)
+    prefix = args.get('prefix', None)
+    delimiter = args.get('delimiter', None)
 
-    blobs = client.list_blobs(bucket_name)
+    blobs = client.list_blobs(bucket_name, prefix=prefix, delimiter=delimiter)
     result = [blob2dict(blob) for blob in blobs]
 
     return_outputs(
