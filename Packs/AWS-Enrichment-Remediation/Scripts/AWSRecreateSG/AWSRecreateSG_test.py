@@ -20,6 +20,10 @@ import pytest
           "UserIdGroupPairs": [], 'FromPort': 22, 'ToPort': 100},
          {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],
           'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 23, 'ToPort': 100}),
+        ({"IpProtocol": "tcp", "IpRanges": [], "Ipv6Ranges": [{'CidrIpv6': '::/0'}], "PrefixListIds": [],
+          "UserIdGroupPairs": [], 'FromPort': 22, 'ToPort': 100},
+         {'IpProtocol': 'tcp', 'IpRanges': [], 'Ipv6Ranges': [{'CidrIpv6': '::/0'}], 'PrefixListIds': [],
+          'UserIdGroupPairs': [], 'FromPort': 23, 'ToPort': 100}),
     ]
 )
 def test_split_rule(rule, first_rule_created):
@@ -129,6 +133,7 @@ def test_aws_recreate_sg(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "port": "22", "protocol": "tcp"}
-    result = aws_recreate_sg(args)
+    command_results = aws_recreate_sg(args)
+    readable_output = command_results.readable_output
     correct_output = "For interface eni-00000000000000000: \r\nreplaced SG sg-00000000000000000 with sg-00000000000000001 \r\n"
-    assert result == correct_output
+    assert readable_output == correct_output

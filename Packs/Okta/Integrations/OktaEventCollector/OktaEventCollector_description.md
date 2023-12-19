@@ -14,7 +14,7 @@ Okta Events collector XSIAM
 ## Step by step configuration
 
 **Server URL** - `https://<domain>.com/api/v1/logs` (where `domain` is your domain name). To get help finding your domain, see:  
-https://developer.okta.com/docs/guides/find-your-domain/main/  
+[https://developer.okta.com/docs/guides/find-your-domain/main/](https://developer.okta.com/docs/guides/find-your-domain/main/)  
 **API key** - your API key 
 **Number of incidents to fetch per fetch** - 100  
 **Events fetch  interval** - 01 Minutes 

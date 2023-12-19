@@ -153,7 +153,7 @@ script:
       description: The tags of the Attack Pattern.
       type: string
   - arguments:
-    - description: The Attack Pattern IDs list
+    - description: The Attack Pattern IDs list.
       isArray: true
       name: attack_ids
       required: true
@@ -166,7 +166,7 @@ script:
     - contextPath: MITREATTACK.value
       description: MITRE ATTACK Attack Pattern value.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.57584
+  dockerimage: demisto/taxii2:1.0.0.78918
   feed: true
   runonce: false
   script: '-'

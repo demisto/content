@@ -1,5 +1,4 @@
 import base64
-import fnmatch
 import glob
 import json
 import os
@@ -27,10 +26,9 @@ import yaml
 from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
-from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
-    ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
+from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
+    BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
+    XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
 from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
@@ -53,7 +51,7 @@ class Pack:
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
         README (str): pack's readme file name.
         METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
-        USER_METADATA (str); pack metadata file name, the one that located in content repo.
+        PACK_METADATA (str); pack metadata file name, the one that located in content repo.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
         RELEASE_NOTES (str): release notes folder name.
@@ -62,35 +60,37 @@ class Pack:
     PACK_INITIAL_VERSION = "1.0.0"
     CHANGELOG_JSON = "changelog.json"
     README = "README.md"
-    USER_METADATA = "pack_metadata.json"
+    PACK_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
+    INDEX_FILES_TO_UPDATE = [METADATA, CHANGELOG_JSON, README]
 
     def __init__(self, pack_name, pack_path, is_modified=None):
         self._pack_name = pack_name
         self._pack_path = pack_path
         self._zip_path = None  # zip_path will be updated as part of zip_pack
-        self._marketplaces = []  # initialized in load_user_metadata function
+        self._marketplaces = []  # initialized in load_pack_metadata function
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
         self._server_min_version = "99.99.99"  # initialized min version
         self._latest_version = None  # pack latest version found in changelog
-        self._support_type = None  # initialized in load_user_metadata function
-        self._current_version = None  # initialized in load_user_metadata function
-        self._hidden = False  # initialized in load_user_metadata function
-        self._description = None  # initialized in load_user_metadata function
-        self._display_name = None  # initialized in load_user_metadata function
-        self._user_metadata = {}  # initialized in load_user_metadata function
-        self._eula_link = None  # initialized in load_user_metadata function
+        self._support_type = None  # initialized in load_pack_metadata function
+        self._current_version = None  # initialized in load_pack_metadata function
+        self._hidden = False  # initialized in load_pack_metadata function
+        self._description = None  # initialized in load_pack_metadata function
+        self._dependencies = {}  # initialized in load_pack_metadata function
+        self._display_name = None  # initialized in load_pack_metadata function
+        self._pack_metadata = {}  # initialized in load_pack_metadata function
+        self._eula_link = None  # initialized in load_pack_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
         self._aggregated = False  # weather the pack's rn was aggregated or not.
         self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
-        self._create_date = None  # initialized in enhance_pack_attributes function
+        self._create_date = ""  # initialized in enhance_pack_attributes function
         self._update_date = None  # initialized in enhance_pack_attributes function
         self._uploaded_author_image = False  # whether the pack author image was uploaded or not
         self._reademe_images = []
@@ -112,10 +112,10 @@ class Pack:
         self._content_commit_hash = None  # initialized in enhance_pack_attributes function
         self._preview_only = None  # initialized in enhance_pack_attributes function
         self._disable_monthly = None  # initialized in enhance_pack_attributes
-        self._tags = None  # initialized in enhance_pack_attributes function
+        self._tags = set()  # initialized in load_pack_metadata function
         self._modules = None
         self._categories = None  # initialized in enhance_pack_attributes function
-        self._content_items = None  # initialized in collect_content_items function
+        self._content_items = None  # initialized in load_pack_metadata function
         self._content_displays_map = None  # initialized in collect_content_items function
         self._search_rank = None  # initialized in enhance_pack_attributes function
         self._related_integration_images = None  # initialized in enhance_pack_attributes function
@@ -124,9 +124,7 @@ class Pack:
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
-        self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = is_modified
-        self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
@@ -154,20 +152,6 @@ class Pack:
         """ str: pack folder full path.
         """
         return self._pack_path
-
-    @property
-    def latest_version(self):
-        """ str: pack latest version from sorted keys of changelog.json file.
-        """
-        if not self._latest_version:
-            self._latest_version = self._get_latest_version()
-            return self._latest_version
-        else:
-            return self._latest_version
-
-    @latest_version.setter
-    def latest_version(self, latest_version):
-        self._latest_version = latest_version
 
     @property
     def status(self):
@@ -212,6 +196,7 @@ class Pack:
     def status(self, status_value):
         """ setter of pack current status.
         """
+        logging.info(f"Pack '{self.name}' status is set to '{status_value}'")
         self._status = status_value
 
     @property
@@ -240,7 +225,7 @@ class Pack:
 
     @property
     def current_version(self):
-        """ str: current version of the pack (different from latest_version).
+        """ str: current version of the pack.
         """
         return self._current_version
 
@@ -281,10 +266,10 @@ class Pack:
         return self._display_name
 
     @property
-    def user_metadata(self):
+    def pack_metadata(self):
         """ dict: the pack_metadata.
         """
-        return self._user_metadata
+        return self._pack_metadata
 
     @display_name.setter  # type: ignore[attr-defined,no-redef]
     def display_name(self, display_name_value):
@@ -388,10 +373,6 @@ class Pack:
         return self._uploaded_dynamic_dashboard_images
 
     @property
-    def is_missing_dependencies(self):
-        return self._is_missing_dependencies
-
-    @property
     def zip_path(self):
         return self._zip_path
 
@@ -407,28 +388,14 @@ class Pack:
     def all_levels_dependencies(self):
         return self._all_levels_dependencies
 
-    def _get_latest_version(self):
-        """ Return latest semantic version of the pack.
-
-        In case that changelog.json file was not found, default value of 1.0.0 will be returned.
-        Otherwise, keys of semantic pack versions will be collected and sorted in descending and return latest version.
-        For additional information regarding changelog.json format go to issue #19786
-
-        Returns:
-            str: Pack latest version.
-
-        """
-        changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
-
-        if not os.path.exists(changelog_path):
-            return self._current_version
-
-        with open(changelog_path) as changelog_file:
-            changelog = json.load(changelog_file)
-            pack_versions = [Version(v) for v in changelog]
-            pack_versions.sort(reverse=True)
-
-            return str(pack_versions[0])
+    @property
+    def statistics_metadata(self):
+        return {
+            Metadata.DOWNLOADS: self.downloads_count,
+            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.TAGS: list(self._tags or []),
+            Metadata.INTEGRATIONS: self._related_integration_images
+        }
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
@@ -458,7 +425,7 @@ class Pack:
         all_dep_int_imgs = pack_integration_images
         for dep_pack_name in pack_dependencies_by_download_count:
             if dep_pack_name in pack_dependencies_integration_images_dict:
-                logging.info(f'Adding {dep_pack_name} to deps int imgs')
+                logging.debug(f'Adding {dep_pack_name} to deps int imgs')
                 dep_int_imgs = sorted(pack_dependencies_integration_images_dict[dep_pack_name], key=sort_by_name)
                 for dep_int_img in dep_int_imgs:
                     if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
@@ -467,8 +434,7 @@ class Pack:
         return all_dep_int_imgs
 
     @staticmethod
-    def _get_all_pack_images(pack_integration_images: list, display_dependencies_images: list,
-                             dependencies_metadata: dict,
+    def _get_all_pack_images(index_folder_path, pack_integration_images: list, display_dependencies_images: list,
                              pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
@@ -485,11 +451,10 @@ class Pack:
 
         """
         dependencies_integration_images_dict: dict = {}
-        additional_dependencies_data = {k: v for k, v in dependencies_metadata.items() if k in
-                                        display_dependencies_images}
 
-        for dependency_data in additional_dependencies_data.values():
-            for dep_int_img in dependency_data.get('integrations', []):
+        for pack_id in display_dependencies_images:
+            dependency_metadata = load_json(f"{index_folder_path}/{pack_id}/metadata.json")
+            for dep_int_img in dependency_metadata.get('integrations', []):
                 dep_int_img_gcs_path = dep_int_img.get('imagePath', '')  # image public url
                 dep_int_img['name'] = Pack.remove_contrib_suffix_from_name(dep_int_img.get('name', ''))
                 dep_pack_name = os.path.basename(os.path.dirname(dep_int_img_gcs_path))
@@ -507,273 +472,32 @@ class Pack:
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
 
-    def is_data_source_pack(self, yaml_content):
-
-        is_data_source = self._is_data_source
-        # this's the first integration in the pack, and the pack is in xsiam
-        if self._single_integration and 'marketplacev2' in self.marketplaces:
-
-            # the integration contains isfetch or isfetchevents (no matter if its deprecated or not)
-            if yaml_content.get('script', {}).get('isfetchevents', False) or \
-                    yaml_content.get('script', {}).get('isfetch', False) is True:
-                logging.info(f"{yaml_content.get('name')} makes the pack a Data Source potential")
-                is_data_source = True
-        # already has the pack as data source
-        elif not self._single_integration and is_data_source:
-
-            # found a second integration in the pack
-            logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
-            is_data_source = False
-
-        return is_data_source
-
-    def add_pack_type_tags(self, yaml_content, yaml_type):
-        """
-        Checks if a pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
-        Args:
-            yaml_content: The yaml content extracted by yaml.safe_load().
-            yaml_type: The type of object to check.
-
-        Returns:
-            Doesn't return
-        """
-        logging.info("adding pack type tags")
-        if yaml_type == 'Integration':
-            if yaml_content.get('script', {}).get('feed', False) is True:
-                self._is_feed = True
-            if yaml_content.get('script', {}).get('isfetchevents', False) is True:
-                self._is_siem = True
-
-            self._is_data_source = self.is_data_source_pack(yaml_content)
-
-            # already found the first integration in the pack,
-            self._single_integration = False
-
-        if yaml_type == 'Playbook' and yaml_content.get('name').startswith('TIM '):
-            self._is_feed = True
-        if yaml_type in SIEM_RULES_OBJECTS:
-            self._is_siem = True
-
     @staticmethod
     def _clean_release_notes(release_notes_lines):
         return re.sub(r'<\!--.*?-->', '', release_notes_lines, flags=re.DOTALL)
 
-    def _parse_pack_dependencies(self, dependencies_metadata_dict):
-        """ Parses user defined dependencies and returns dictionary with relevant data about each dependency pack.
-
-        Args:
-            first_level_dependencies (dict): first lever dependencies that were retrieved
-            from user pack_metadata.json file.
-            dependencies_metadata_dict (dict): dict of pack dependencies data.
-
-        Returns:
-            dict: parsed dictionary with pack dependency data.
-        """
-        parsed_result = {}
-
-        first_level_dependencies = self.user_metadata.get(Metadata.DEPENDENCIES, {})
-        for dependency_id, dependency_data in dependencies_metadata_dict.items():
-            if dependency_id in self.user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, []):
-                continue
-            parsed_result[dependency_id] = {
-                "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
-                "minVersion": dependency_data.get(Metadata.CURRENT_VERSION, Pack.PACK_INITIAL_VERSION),
-                "author": dependency_data.get('author', ''),
-                "name": dependency_data.get('name') if dependency_data.get('name') else dependency_id,
-                "certification": dependency_data.get('certification', 'certified')
-            }
-
-        return parsed_result
-
-    @staticmethod
-    def _create_support_section(support_type, support_url=None, support_email=None):
-        """ Creates support dictionary that is part of metadata.
-
-        In case of support type xsoar, adds default support url. If support is xsoar and support url is defined and
-        doesn't match xsoar default url, warning is raised.
-
-        Args:
-            support_type (str): support type of pack.
-            support_url (str): support full url.
-            support_email (str): support email address.
-
-        Returns:
-            dict: supported data dictionary.
-        """
-        support_details = {}
-
-        if support_url:  # set support url from user input
-            support_details['url'] = support_url
-        elif support_type == Metadata.XSOAR_SUPPORT:  # in case support type is xsoar, set default xsoar support url
-            support_details['url'] = Metadata.XSOAR_SUPPORT_URL
-        # add support email if defined
-        if support_email:
-            support_details['email'] = support_email
-
-        return support_details
-
-    @staticmethod
-    def _get_author(support_type, author=None):
-        """ Returns pack author. In case support type is xsoar, more additional validation are applied.
-
-        Args:
-            support_type (str): support type of pack.
-            author (str): author of the pack.
-
-        Returns:
-            str: returns author from the input.
-        """
-        if support_type == Metadata.XSOAR_SUPPORT and not author:
-            return Metadata.XSOAR_AUTHOR  # returned xsoar default author
-        elif support_type == Metadata.XSOAR_SUPPORT and author != Metadata.XSOAR_AUTHOR:
-            logging.warning(f"{author} author doest not match {Metadata.XSOAR_AUTHOR} default value")
-            return author
-        else:
-            return author
-
-    @staticmethod
-    def _get_certification(support_type, certification=None):
-        """ Returns pack certification.
-
-        In case support type is xsoar or partner, CERTIFIED is returned.
-        In case support is not xsoar or partner but pack_metadata has certification field, certification value will be
-        taken from pack_metadata defined value.
-        Otherwise empty certification value (empty string) will be returned
-
-        Args:
-            support_type (str): support type of pack.
-            certification (str): certification value from pack_metadata, if exists.
-
-        Returns:
-            str: certification value
-        """
-        if support_type in [Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT]:
-            return Metadata.CERTIFIED
-        elif certification:
-            return certification
-        else:
-            return ""
-
-    def _get_tags_from_landing_page(self, landing_page_sections: dict) -> set:
-        """
-        Build the pack's tag list according to the user metadata and the landingPage sections file.
-        Args:
-            landing_page_sections (dict): landingPage sections and the packs in each one of them.
-
-        Returns:
-            set: Pack's tags.
-
-        """
-
-        tags = set()
-        sections = landing_page_sections.get('sections', []) if landing_page_sections else []
-
-        for section in sections:
-            if self._pack_name in landing_page_sections.get(section, []):
-                tags.add(section)
-
-        return tags
-
-    def _parse_pack_metadata(self, build_number, commit_hash):
+    def _parse_pack_metadata(self, parse_dependencies: bool = False):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
-            build_number (str): circleCI build number.
-            commit_hash (str): current commit hash.
+            parse_dependencies (bool): Whether to parse dependencies in metadata as well.
 
         Returns:
             dict: parsed pack metadata.
-
         """
         pack_metadata = {
-            Metadata.NAME: self._display_name or self._pack_name,
-            Metadata.ID: self._pack_name,
-            Metadata.DESCRIPTION: self._description or self._pack_name,
             Metadata.CREATED: self._create_date,
             Metadata.UPDATED: self._update_date,
-            Metadata.LEGACY: self._legacy,
-            Metadata.SUPPORT: self._support_type,
-            Metadata.SUPPORT_DETAILS: self._support_details,
-            Metadata.EULA_LINK: self._eula_link,
-            Metadata.AUTHOR: self._author,
-            Metadata.AUTHOR_IMAGE: self._author_image,
-            Metadata.CERTIFICATION: self._certification,
-            Metadata.PRICE: self._price,
-            Metadata.SERVER_MIN_VERSION: self.user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
-            Metadata.CURRENT_VERSION: self.user_metadata.get(Metadata.CURRENT_VERSION, ''),
-            Metadata.VERSION_INFO: build_number,
-            Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
             Metadata.TAGS: list(self._tags or []),
-            Metadata.MODULES: list(self._modules or []),
-            Metadata.CATEGORIES: self._categories,
-            Metadata.CONTENT_ITEMS: self._content_items,
-            Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
-            Metadata.USE_CASES: self._use_cases,
-            Metadata.KEY_WORDS: self._keywords,
-            Metadata.DEPENDENCIES: self._parsed_dependencies,
-            Metadata.EXCLUDED_DEPENDENCIES: self.user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, []),
-            Metadata.MARKETPLACES: self._marketplaces,
-            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
-        if self._is_private_pack:
-            pack_metadata.update({
-                Metadata.PREMIUM: self._is_premium,
-                Metadata.VENDOR_ID: self._vendor_id,
-                Metadata.PARTNER_ID: self._partner_id,
-                Metadata.PARTNER_NAME: self._partner_name,
-                Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
-                Metadata.PREVIEW_ONLY: self._preview_only,
-                Metadata.DISABLE_MONTHLY: self._disable_monthly,
-            })
+        if parse_dependencies:
+            pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
 
         return pack_metadata
-
-    def _load_pack_dependencies_metadata(self, index_folder_path, packs_dict):
-        """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
-            There are 3 cases:
-              Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
-              Case 2: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
-                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is
-                created, and therefore it contains the new pack, we call this function again, and hitting case 1.
-              Case 3: The dependency is of a pack that is not a part of this marketplace. In this case, we ignore this
-              dependency.
-        Args:
-            index_folder_path (str): full path to download index folder.
-            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
-
-        Returns:
-            dict: pack id as key and loaded metadata of packs as value.
-            bool: True if the pack is missing dependencies, False otherwise.
-
-        """
-        dependencies_metadata_result = {}
-        dependencies_ids = set(self._first_level_dependencies)
-        dependencies_ids.update(self._displayed_images_dependent_on_packs)
-
-        for dependency_pack_id in dependencies_ids:
-            dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
-
-            if os.path.exists(dependency_metadata_path):
-                # Case 1: the dependency is found in the index.zip
-                with open(dependency_metadata_path) as metadata_file:
-                    dependency_metadata = json.load(metadata_file)
-                    dependencies_metadata_result[dependency_pack_id] = dependency_metadata
-            elif dependency_pack_id in packs_dict:
-                # Case 2: the dependency is not in the index since it is a new pack
-                self._is_missing_dependencies = True
-                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"was not found in index, marking it as missing dependencies - to be resolved in "
-                                f"next iteration over packs")
-            else:
-                # Case 3: the dependency is not a part of this marketplace
-                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"is not part of this marketplace, ignoring this dependency")
-
-        return dependencies_metadata_result, self._is_missing_dependencies
 
     def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
@@ -859,7 +583,7 @@ class Pack:
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
         if entry_result and new_version:
-            logging.info(f"Starting filtering entry for pack {self._pack_name} with version {version_display_name}")
+            logging.debug(f"Starting filtering entry for pack {self._pack_name} with version {version_display_name}")
             return self.filter_changelog_entries(
                 entry_result,
                 version_display_name,
@@ -868,11 +592,8 @@ class Pack:
 
         return entry_result, False
 
-    def remove_unwanted_files(self, delete_test_playbooks=True):
+    def remove_unwanted_files(self):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
-
-        Args:
-            delete_test_playbooks (bool): whether to delete test playbooks folder.
 
         Returns:
             bool: whether the operation succeeded.
@@ -880,19 +601,19 @@ class Pack:
         task_status = True
         try:
             for directory in Pack.EXCLUDE_DIRECTORIES:
-                if delete_test_playbooks and os.path.isdir(f'{self._pack_path}/{directory}'):
+                if os.path.isdir(f'{self._pack_path}/{directory}'):
                     shutil.rmtree(f'{self._pack_path}/{directory}')
-                    logging.info(f"Deleted {directory} directory from {self._pack_name} pack")
+                    logging.debug(f"Deleted {directory} directory from {self._pack_name} pack")
 
             for root, _dirs, files in os.walk(self._pack_path, topdown=True):
                 for pack_file in files:
                     full_file_path = os.path.join(root, pack_file)
                     # removing unwanted files
                     if pack_file.startswith('.') \
-                            or pack_file in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA] \
+                            or pack_file in [Pack.AUTHOR_IMAGE_NAME, Pack.PACK_METADATA] \
                             or pack_file in self._remove_files_list:
                         os.remove(full_file_path)
-                        logging.info(f"Deleted pack {pack_file} file for {self._pack_name} pack")
+                        logging.debug(f"Deleted pack {pack_file} file for {self._pack_name} pack")
                         continue
 
         except Exception:
@@ -924,9 +645,9 @@ class Pack:
                     logging.error(f"Failed to sign pack for {self._pack_name} - {str(err)}")
                     return None
 
-                logging.info(f"Signed {self._pack_name} pack successfully")
+                logging.debug(f"Signed {self._pack_name} pack successfully")
             else:
-                logging.info(f"No signature provided. Skipped signing {self._pack_name} pack")
+                logging.debug(f"No signature provided. Skipped signing {self._pack_name} pack")
             task_status = True
         except Exception:
             logging.exception(f"Failed to sign pack for {self._pack_name}")
@@ -952,7 +673,7 @@ class Pack:
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
             task_status = True
-            logging.success(f"Finished zipping {source_name} folder.")
+            logging.debug(f"Finished zipping {source_name} folder.")
         except Exception:
             logging.exception(f"Failed in zipping {source_name} folder")
         finally:
@@ -1029,7 +750,7 @@ class Pack:
             shutil.rmtree(extract_destination_path)
             os.chdir(current_working_dir)
             if stdout:
-                logging.info(str(stdout))
+                logging.debug(str(stdout))
             if stderr:
                 logging.error(f"Error: Premium pack {self._pack_name} should be encrypted, but isn't.")
                 return False
@@ -1075,210 +796,125 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
-        """ Detects pack modified files.
-
-        The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
-        index. In case that no commit was found in index (initial run), the default value will be set to previous commit
-        from origin/master.
+    def sign_and_zip_pack(self, signature_key, uploaded_packs_dir=None):
+        """
+        Signs and zips the pack before uploading it to GCP.
 
         Args:
-            content_repo (git.repo.base.Repo): content repo object.
-            index_folder_path (str): full path to downloaded index folder.
-            current_commit_hash (str): last commit hash of head.
-            previous_commit_hash (str): the previous commit to diff with.
+            pack (Pack): Pack to be zipped.
+            signature_key (str): Base64 encoded string used to sign the pack.
+            uploaded_packs_dir: Directory path to save the pack zip in build artifacts.
 
         Returns:
-            bool: whether the operation succeeded.
-            list: list of RN files that were modified.
-            bool: whether pack was modified and override will be required.
+            (bool): Whether the zip was successful
         """
-        task_status = False
-        modified_rn_files_paths: list = []
-        pack_was_modified = False
 
-        try:
-            pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
+        if not self.remove_unwanted_files():
+            self._status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS.name
+            self.cleanup()
+            return False
 
-            if not os.path.exists(pack_index_metadata_path):
-                logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
-                task_status = True
-                return task_status, modified_rn_files_paths
+        if not self.sign_pack(signature_key):
+            self._status = PackStatus.FAILED_SIGNING_PACKS.name
+            self.cleanup()
+            return False
 
-            with open(pack_index_metadata_path) as metadata_file:
-                downloaded_metadata = json.load(metadata_file)
+        task_status, _ = self.zip_pack()
+        if not task_status:
+            self._status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+            self.cleanup()
+            return False
 
-            previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
-            # set 2 commits by hash value in order to check the modified files of the diff
-            current_commit = content_repo.commit(current_commit_hash)
-            previous_commit = content_repo.commit(previous_commit_hash)
+        if uploaded_packs_dir:
+            shutil.copyfile(self.zip_path, uploaded_packs_dir / f"{self.name}.zip")
+        logging.debug(f"Finished sign_and_zip_pack for pack '{self.name}', {self.zip_path=}")
+        return True
 
-            for modified_file in current_commit.diff(previous_commit):
-                if modified_file.a_path.startswith(PACKS_FOLDER):
-                    modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
-                    pack_name, entity_type_dir = modified_file_path_parts[1], modified_file_path_parts[2]
-
-                    if pack_name and pack_name == self._pack_name:
-                        if not is_ignored_pack_file(modified_file_path_parts):
-                            logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
-                            task_status, pack_was_modified = True, True
-                            modified_rn_files_paths.append(modified_file.a_path)
-
-                            if entity_type_dir in PackFolders.pack_displayed_items():
-                                if entity_type_dir in self._modified_files:
-                                    self._modified_files[entity_type_dir].append(modified_file.a_path)
-                                else:
-                                    self._modified_files[entity_type_dir] = [modified_file.a_path]
-
-                        else:
-                            logging.debug(f'{modified_file.a_path} is an ignored file')
-
-            task_status = True
-            if pack_was_modified:
-                # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = any(
-                    self.RELEASE_NOTES not in path
-                    for path in modified_rn_files_paths
-                )
-                # Filter modifications in release notes config JSON file - they will be handled later on.
-                modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-        except Exception:
-            logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        return task_status, modified_rn_files_paths
-
-    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
-        """
-        Checks if the pack modification is relevant for the current marketplace.
-
-        This is done by searching the modified files in the id_set, if the files were not found in id_set,
-        then the modified entities probably not relevant for the current marketplace upload.
-        This check is done to identify changed items inside a pack that have both XSIAM and XSOAR entities.
+    def upload_encrypted_private_content_to_storage(self, storage_bucket, storage_base_path, pack_artifacts_path):
+        """For private content packs, change path to an encrypted path and upload it to GCP.
 
         Args:
-            id_set (dict): The current id set.
-            modified_rn_files_paths (list): list of paths of the pack's modified release notes files.
-
-        Returns:
-            bool: whether the operation succeeded and changes are relevant for marketplace.
-            dict: data from id set for the modified files.
+            storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
+            storage_base_path (str): The upload destination in the target bucket.
+            pack_artifacts_path (str): Path to where we are saving pack artifacts.
         """
-        logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
+        secondary_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
+        secondary_encryption_key_bucket_path = os.path.join(storage_base_path, self.name, self.current_version,
+                                                            secondary_encryption_key_pack_name)
 
-        task_status = False
-        modified_files_data = {}
+        #  In some cases the path given is actually a zip.
+        if isinstance(pack_artifacts_path, str) and pack_artifacts_path.endswith('content_packs.zip'):
+            _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
+        else:
+            _pack_artifacts_path = pack_artifacts_path
 
-        for pack_folder, modified_file_paths in self._modified_files.items():
-            modified_entities = []
-            for path in modified_file_paths:
-                if id_set:
-                    if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
-                        logging.debug(f"The entity with the path {path} is present in the id set")
-                        modified_entities.append(id_set_entity)
-                else:
-                    if entity := get_graph_entity_by_path(Path(path), marketplace):
-                        logging.debug(f"The entity with the path {path} is present in the content graph")
-                        modified_entities.append(entity)
+        secondary_encryption_key_artifacts_path = self.zip_path.replace(f'{self._pack_name}',
+                                                                        f'{self._pack_name}.enc2')
 
-            if modified_entities:
-                modified_files_data[pack_folder] = modified_entities
+        blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
+        blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+        with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
+            blob.upload_from_file(pack_zip)
 
-        if not self._modified_files or modified_files_data or modified_rn_files_paths:
-            # The task status will be success if there are no modified files in the pack or if the modified files were found in
-            # the id-set or if there are modified old release notes files for items that are not being modified.
-            task_status = True
+        logging.debug(
+            f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/"
+            f"packs/{self._pack_name}.zip")
+        shutil.copy(secondary_encryption_key_artifacts_path,
+                    f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
-        return task_status, modified_files_data
-
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
-                          private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
+    def upload_to_storage(self, zip_pack_path, storage_bucket, storage_base_path,
+                          private_content=False, pack_artifacts_path=None, with_dependencies_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
-        The zip pack will be uploaded by default to following path: /content/packs/pack_name/pack_latest_version.
-        In case that zip pack artifact already exist at constructed path, the upload will be skipped.
-        If flag override_pack is set to True, pack will forced for upload.
-        If item_upload_path is provided it will override said path, and will save the item to that destination.
+        The zip pack will be uploaded by default to following path: /content/packs/pack_name/pack_current_version.
+        If with_dependencies_path is provided it will override said path, and will save the item to that destination.
 
         Args:
             zip_pack_path (str): full path to pack zip artifact.
-            latest_version (str): pack latest version.
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
-            override_pack (bool): whether to override existing pack.
-            private_content (bool): Is being used in a private content build.
             storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
                                      <some_path_in_the_target_bucket>/content/Packs).
-
+            private_content (bool): Is being used in a private content build.
             pack_artifacts_path (str): Path to where we are saving pack artifacts.
-            overridden_upload_path (str): If provided, will override version_pack_path calculation and will use this path instead
+            with_dependencies_path (str): If provided, will override version_pack_path calculation and will use this path instead
 
         Returns:
             bool: whether the operation succeeded.
-            bool: True in case of pack existence at targeted path and upload was skipped, otherwise returned False.
-            str: Path to pack's zip in the bucket after the upload.
-
         """
-        task_status = True
 
+        task_status = True
         try:
-            if overridden_upload_path:
+            if with_dependencies_path:
                 if private_content:
                     logging.warning("Private content does not support overridden argument")
-                    return task_status, True, None
-                zip_to_upload_full_path = overridden_upload_path
+                    return task_status
+                dest_path_to_upload = with_dependencies_path
             else:
-                version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
+                version_pack_path = os.path.join(storage_base_path, self.name, self.current_version)
+                logging.debug(f"Uploading pack '{self._pack_name}' to storage")
 
-                if override_pack:
-                    logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
-                                    f"files already in storage.")
+                dest_path_to_upload = os.path.join(version_pack_path, f"{self._pack_name}.zip")
 
-                else:
-                    logging.warning(f"The following packs were not modified: {self._pack_name}")
-                    logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                    return task_status, True, None
-
-                zip_to_upload_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
-            blob = storage_bucket.blob(zip_to_upload_full_path)
+            blob = storage_bucket.blob(dest_path_to_upload)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
+
             if private_content:
-                secondary_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
-                secondary_encryption_key_bucket_path = os.path.join(version_pack_path,
-                                                                    secondary_encryption_key_pack_name)
-
-                #  In some cases the path given is actually a zip.
-                if isinstance(pack_artifacts_path, str) and pack_artifacts_path.endswith('content_packs.zip'):
-                    _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
-                else:
-                    _pack_artifacts_path = pack_artifacts_path
-
-                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}',
-                                                                                f'{self._pack_name}.enc2')
-
-                blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
-                blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-                with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
-                    blob.upload_from_file(pack_zip)
-
-                logging.info(
-                    f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/"
-                    f"packs/{self._pack_name}.zip")
-                shutil.copy(secondary_encryption_key_artifacts_path,
-                            f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
+                self.upload_encrypted_private_content_to_storage(storage_bucket, storage_base_path, pack_artifacts_path)
 
             self.public_storage_path = blob.public_url
-            logging.success(f"Uploaded {self._pack_name} pack to {zip_to_upload_full_path} path.")
+            logging.success(f"Uploaded '{self._pack_name}' pack to {dest_path_to_upload} path.")
 
-            return task_status, False, zip_to_upload_full_path
+            return task_status
         except Exception:
             task_status = False
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
-            return task_status, True, None
+            return task_status
 
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict,
                                    successful_uploaded_dependencies_zip_packs_dict, storage_base_path, build_bucket_base_path):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
-        The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
+        The zip pack will be copied to following path: /content/packs/pack_name/pack_current_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
 
         Args:
@@ -1305,20 +941,19 @@ class Pack:
 
         elif pack_was_uploaded_in_prepare_content:
 
-            latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
-            self._latest_version = latest_version
+            latest_pack_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
 
-            build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_version)
+            build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_pack_version)
 
             # Verifying that the latest version of the pack has been uploaded to the build bucket
             existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
             if not existing_bucket_version_files:
-                logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
+                logging.error(f"{self._pack_name} latest version ({latest_pack_version}) was not found on build bucket at "
                               f"path {build_version_pack_path}.")
                 return False, False
 
             # We upload the pack zip object taken from the build bucket into the production bucket
-            prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
+            prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_pack_version)
             prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
             build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
             build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
@@ -1331,7 +966,7 @@ class Pack:
                 self.public_storage_path = copied_blob.public_url
                 task_status = copied_blob.exists()
             except Exception as e:
-                pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
+                pack_suffix = os.path.join(self._pack_name, latest_pack_version, f'{self._pack_name}.zip')
                 logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
                 return False, False
 
@@ -1391,7 +1026,7 @@ class Pack:
         Returns: the changelog file contents, the last version,  and contents of rn in the changelog file
 
         """
-        logging.info(f"Found Changelog for: {self._pack_name}")
+        logging.debug(f"Found Changelog for: {self._pack_name}")
         if os.path.exists(changelog_index_path):
             try:
                 with open(changelog_index_path) as changelog_file:
@@ -1444,7 +1079,7 @@ class Pack:
             # The case where the version is a key in the changelog file,
             # and the value is not an aggregated release note
             if is_the_only_rn_in_block(release_notes_dir, version, changelog):
-                logging.info("The version is a key in the changelog file and by itself in the changelog block")
+                logging.debug("The version is a key in the changelog file and by itself in the changelog block")
                 with open(os.path.join(release_notes_dir, rn_filename)) as rn_file:
                     rn_lines = rn_file.read()
                 modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
@@ -1521,14 +1156,14 @@ class Pack:
 
         latest_release_notes_version = max(found_versions)
         latest_release_notes_version_str = str(latest_release_notes_version)
-        logging.info(f"Latest ReleaseNotes version is: {latest_release_notes_version_str}")
+        logging.debug(f"Latest ReleaseNotes version is: {latest_release_notes_version_str}")
 
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
             aggregation_str = f"[{', '.join(str(lv) for lv in found_versions if lv > changelog_latest_rn_version)}]" \
                               f" => {latest_release_notes_version_str}"
-            logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
+            logging.debug(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
             self._aggregated = True
             self._aggregation_str = aggregation_str
@@ -1538,7 +1173,7 @@ class Pack:
         else:
             # In case where the pack is up to date, i.e. latest changelog is latest rn file
             # We should take the release notes from the index as it has might been aggregated
-            logging.info(f'No new RN file was detected for pack {self._pack_name}, taking latest RN from the index')
+            logging.debug(f'No new RN file was detected for pack {self._pack_name}, taking latest RN from the index')
             release_notes_lines = changelog_latest_rn
         new_release_notes_versions = list(pack_versions_dict.keys())
 
@@ -1564,36 +1199,48 @@ class Pack:
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def get_rn_files_names(self, modified_rn_files_paths):
+    def get_rn_files_names(self, diff_files_list):
         """
-
         Args:
             modified_rn_files_paths: a list containing all modified files in the current pack, generated
             by comparing the old and the new commit hash.
         Returns:
             The names of the modified release notes files out of the given list only,
             as in the names of the files that are under ReleaseNotes directory in the format of 'filename.md'.
-
         """
         modified_rn_files = []
-        for file_path in modified_rn_files_paths:
-            modified_file_path_parts = os.path.normpath(file_path).split(os.sep)
-            if self.RELEASE_NOTES in modified_file_path_parts:
-                modified_rn_files.append(modified_file_path_parts[-1])
+        for file_path in diff_files_list:
+            file_a_path = file_path.a_path
+            if not self.is_pack_release_notes_file(file_a_path):
+                continue
+            logging.debug(f"Found file path '{file_a_path}' as a modified release notes file of pack '{self._pack_name}'")
+            modified_file_path_parts = os.path.normpath(file_a_path).split(os.sep)
+            modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
-    def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
+    def is_pack_release_notes_file(self, file_path: str):
+        """ Indicates whether a file_path is an MD release notes file of the pack or not
+        Args:
+            file_path (str): The file path.
+        Returns:
+            bool: True if the file is a release notes file or False otherwise
+        """
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name, self.RELEASE_NOTES)),
+            os.path.basename(os.path.dirname(file_path)) == self.RELEASE_NOTES,
+            os.path.basename(file_path).endswith('.md')
+        ])
+
+    def prepare_release_notes(self, index_folder_path, build_number, diff_files_list=None,
                               marketplace='xsoar', id_set=None, is_override=False):
         """
         Handles the creation and update of the changelog.json files.
-
         Args:
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
             marketplace (str): The marketplace to which the upload is made.
             is_override (bool): Whether the flow overrides the packs on cloud storage.
-
         Returns:
             bool: whether the operation succeeded.
             bool: whether running build has not updated pack release notes.
@@ -1603,13 +1250,12 @@ class Pack:
         not_updated_build = False
         release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
-        modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
+        diff_files_list = diff_files_list or []
         id_set = id_set if id_set else {}
         pack_versions_to_keep: list[str] = []
 
         try:
-            # load changelog from downloaded index
-            logging.info(f"Loading changelog for {self._pack_name} pack")
+            logging.debug(f"Starting prepare_release_notes for pack '{self._pack_name}'")
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
 
             changelog: dict = {}
@@ -1625,7 +1271,7 @@ class Pack:
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
-                    rn_files_names = self.get_rn_files_names(modified_rn_files_paths)
+                    rn_files_names = self.get_rn_files_names(diff_files_list)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
@@ -1651,7 +1297,7 @@ class Pack:
                             )
 
                         else:
-                            logging.info(f"Created new release notes for version: {latest_release_notes}")
+                            logging.debug(f"Created new release notes for version: {latest_release_notes}")
                             version_changelog, not_updated_build = self._create_changelog_entry(
                                 release_notes=release_notes_lines,
                                 version_display_name=latest_release_notes,
@@ -1665,13 +1311,12 @@ class Pack:
                             changelog[latest_release_notes] = version_changelog
 
                         if modified_release_notes_lines_dict:
-                            logging.info(f"Updating changelog entries for modified release notes: "
-                                         f"{modified_release_notes_lines_dict}")
+                            logging.debug(f"Updating changelog entries for modified release notes: "
+                                          f"{modified_release_notes_lines_dict}")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
                                 all_relevant_pr_nums_for_unified = list({pr_num for _version in versions
                                                                         for pr_num in self.get_pr_numbers_for_version(_version)})
-                                logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog=changelog,
                                     version=version,
@@ -1705,12 +1350,12 @@ class Pack:
                         if version_changelog:
                             changelog[first_key_in_changelog] = version_changelog
 
-                        logging.info(f"Found existing release notes in {Pack.CHANGELOG_JSON} for version: "
-                                     f"{first_key_in_changelog} of pack {self._pack_name}. Modifying this version in "
-                                     f"{Pack.CHANGELOG_JSON}")
+                        logging.debug(f"Found existing release notes in {Pack.CHANGELOG_JSON} for version: "
+                                      f"{first_key_in_changelog} of pack {self._pack_name}. Modifying this version in "
+                                      f"{Pack.CHANGELOG_JSON}")
 
             elif self._hidden:
-                logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
+                logging.warning(f"Pack {self._pack_name} is hidden. Skipping release notes handling.")
                 task_status = True
                 not_updated_build = True
                 return task_status, not_updated_build, pack_versions_to_keep
@@ -1743,8 +1388,8 @@ class Pack:
                         self._current_version: version_changelog
                     }
 
-                logging.info(f'Created {Pack.CHANGELOG_JSON} for pack {self._pack_name} starting at version'
-                             f' {self._current_version}')
+                logging.debug(f'Created {Pack.CHANGELOG_JSON} for pack {self._pack_name} starting at version'
+                              f' {self._current_version}')
 
             # Update change log entries with BC flag.
             self.add_bc_entries_if_needed(release_notes_dir, changelog)
@@ -1758,7 +1403,7 @@ class Pack:
                 json.dump(changelog, pack_changelog, indent=4)
 
             task_status = True
-            logging.success(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}")
+            logging.debug(f"Finished creating {Pack.CHANGELOG_JSON} for {self._pack_name}")
         except Exception as e:
             logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
                           f"Additional info: {e}")
@@ -1787,7 +1432,7 @@ class Pack:
             (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
         logging.debug(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
-                      f"{self._pack_name}")
+                      f"{self._pack_name} and marketplace {marketplace}")
 
         release_notes = self.filter_release_notes_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES), marketplace)
 
@@ -1803,15 +1448,7 @@ class Pack:
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
         filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set, marketplace)
 
-        # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
-        #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
-        #     # modified files are actually relevant for the other marketplace.
-        #     logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
-        #                   f"marketplace")
-        #     return {}, True
-
         # Convert the RN dict to string
-
         final_release_notes = construct_entities_block(filtered_release_notes).strip()
         if not final_release_notes:
             final_release_notes = f"Changes are not relevant for " \
@@ -1820,25 +1457,6 @@ class Pack:
         changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
-
-    def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
-        """
-        Returns true if all the modified files are also relevant to another marketplace besides the current one
-         this upload is done for.
-
-        Args:
-            modified_files_data (dict): The modified files data that are given from id-set.
-
-        Return:
-            (bool) True, if all the files are relevant to more than one marketplace.
-                   False, if there is an item that is relevant only to the current marketplace.
-        """
-        modified_items = []
-
-        for entities_data in modified_files_data.values():
-            modified_items.extend([list(item.values())[0] for item in entities_data])
-
-        return all(len(item['marketplaces']) != 1 for item in modified_items)
 
     @staticmethod
     def filter_entries_by_display_name(release_notes: dict, id_set: dict, marketplace="xsoar"):
@@ -1923,7 +1541,7 @@ class Pack:
             release_notes_dict (dict): The release notes in dict object.
 
         Returns:
-            (bool) Whther the dict contains the RN entries by the entities types.
+            (bool) Whether the dict contains the RN entries by the entities types.
         """
         return release_notes_str and not release_notes_dict
 
@@ -1940,9 +1558,12 @@ class Pack:
         """
 
         def remove_tags_section_from_rn(release_notes, marketplace, upload_marketplace):
-
             start_tag, end_tag = TAGS_BY_MP[marketplace]
-            if start_tag in release_notes and end_tag in release_notes and marketplace != upload_marketplace:
+            if ((start_tag in release_notes and end_tag in release_notes) and (
+                ((upload_marketplace in [XSIAM_MP, XPANSE_MP]) and marketplace != upload_marketplace)
+                or (upload_marketplace == XSOAR_SAAS_MP and marketplace not in [XSOAR_SAAS_MP, XSOAR_MP])
+                or (upload_marketplace == XSOAR_MP and marketplace not in [XSOAR_MP, XSOAR_ON_PREM_MP])
+            )):
                 logging.debug(f"Filtering irrelevant release notes by tags of marketplace "
                               f"{marketplace} for pack {self._pack_name} when uploading to marketplace "
                               f"{upload_marketplace}.")
@@ -1958,11 +1579,17 @@ class Pack:
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
 
+        # Filters our for XSOAR_SAAS tags
+        release_notes = remove_tags_section_from_rn(release_notes, XSOAR_SAAS_MP, upload_marketplace)
+
+        # Filters our for XSOAR_ON_PREM tags
+        release_notes = remove_tags_section_from_rn(release_notes, XSOAR_ON_PREM_MP, upload_marketplace)
+
         # Filters out for XPANSE tags
         release_notes = remove_tags_section_from_rn(release_notes, XPANSE_MP, upload_marketplace)
 
         logging.debug(f"RN result after filtering for pack {self._pack_name} in marketplace "
-                      f"{upload_marketplace}\n - {release_notes}")
+                      f"{upload_marketplace} -\n {release_notes}")
 
         return release_notes
 
@@ -2058,435 +1685,7 @@ class Pack:
         latest_toversion = latest_toversion if latest_toversion != MAX_TOVERSION else ''
         return latest_fromversion, latest_toversion
 
-    def collect_content_items(self):
-        """ Iterates over content items folders inside pack and collects content items data.
-
-        Returns:
-            dict: Parsed content items
-            .
-        """
-        task_status = False
-        content_items_result: dict = {}
-        content_items_id_to_version_map: dict = {}
-
-        try:
-
-            for root, _pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
-                current_directory = root.split(os.path.sep)[-1]
-                parent_directory = root.split(os.path.sep)[-2]
-
-                if parent_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
-                    current_directory = parent_directory
-                elif current_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
-                    continue
-
-                folder_collected_items: list = []
-                for pack_file_name in pack_files_names:
-                    if not pack_file_name.endswith(('.json', '.yml')):
-                        continue
-
-                    pack_file_path = os.path.join(root, pack_file_name)
-
-                    # reputation in old format aren't supported in 6.0.0 server version
-                    if current_directory == PackFolders.INDICATOR_TYPES.value \
-                            and not fnmatch.fnmatch(pack_file_name, 'reputation-*.json'):
-                        os.remove(pack_file_path)
-                        logging.info(f"Deleted pack {pack_file_name} reputation file for {self._pack_name} pack")
-                        continue
-
-                    with open(pack_file_path) as pack_file:
-                        if current_directory in PackFolders.yml_supported_folders():
-                            content_item = yaml.safe_load(pack_file)
-                        elif current_directory in PackFolders.json_supported_folders():
-                            content_item = json.load(pack_file)
-                        else:
-                            continue
-
-                    # check if content item has to version
-                    try:
-                        to_version = content_item.get('toversion') or content_item.get('toVersion')
-                    except Exception:
-                        logging.exception(f"Failed on {pack_file_path=}. {content_item=}")
-
-                    if to_version and Version(to_version) < Version(Metadata.SERVER_DEFAULT_MIN_VERSION):
-                        os.remove(pack_file_path)
-                        logging.info(
-                            f"{self._pack_name} pack content item {pack_file_name} has to version: {to_version}. "
-                            f"{pack_file_name} file was deleted.")
-                        continue
-
-                    if current_directory not in PackFolders.pack_displayed_items():
-                        continue  # skip content items that are not displayed in contentItems
-
-                    logging.debug(
-                        f"Iterating over {pack_file_path} file and collecting items of {self._pack_name} pack")
-                    # updated min server version from current content item
-                    self._server_min_version = get_updated_server_version(self._server_min_version, content_item,
-                                                                          self._pack_name)
-
-                    content_item_tags = content_item.get('tags', [])
-                    metadata_toversion = to_version or ''
-
-                    if current_directory == PackFolders.SCRIPTS.value:
-                        metadata_output = {
-                            'id': content_item.get('commonfields', {}).get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('comment', ''),
-                            'tags': content_item_tags,
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                        if not self._contains_transformer and 'transformer' in content_item_tags:
-                            self._contains_transformer = True
-
-                        if not self._contains_filter and 'filter' in content_item_tags:
-                            self._contains_filter = True
-
-                    elif current_directory == PackFolders.PLAYBOOKS.value:
-                        self.add_pack_type_tags(content_item, 'Playbook')
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ['xsoar', 'marketplacev2']),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-                    elif current_directory == PackFolders.INTEGRATIONS.value:
-                        integration_commands = content_item.get('script', {}).get('commands', [])
-                        self.add_pack_type_tags(content_item, 'Integration')
-                        metadata_output = {
-                            'id': content_item.get('commonfields', {}).get('id', ''),
-                            'name': content_item.get('display', ''),
-                            'description': content_item.get('description', ''),
-                            'category': content_item.get('category', ''),
-                            'commands': [
-                                {'name': c.get('name', ''), 'description': c.get('description', '')}
-                                for c in integration_commands],
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                            'isfetch': content_item.get('script', {}).get('isfetch', False),
-                            'isfetchevents': content_item.get('script', {}).get('isfetchevents', False),
-                            'deprecated': content_item.get('deprecated', False),
-                        }
-
-                    elif current_directory == PackFolders.INCIDENT_FIELDS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'type': content_item.get('type', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.INCIDENT_TYPES.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'playbook': content_item.get('playbookId', ''),
-                            'closureScript': content_item.get('closureScript', ''),
-                            'hours': int(content_item.get('hours', 0)),
-                            'days': int(content_item.get('days', 0)),
-                            'weeks': int(content_item.get('weeks', 0)),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.DASHBOARDS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.INDICATOR_FIELDS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'type': content_item.get('type', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.REPORTS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.INDICATOR_TYPES.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'details': content_item.get('details', ''),
-                            'reputationScriptName': content_item.get('reputationScriptName', ''),
-                            'enhancementScriptNames': content_item.get('enhancementScriptNames', []),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.LAYOUTS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-                        layout_description = content_item.get('description')
-                        if layout_description is not None:
-                            metadata_output['description'] = layout_description
-
-                    elif current_directory == PackFolders.CLASSIFIERS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name') or content_item.get('id', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.WIDGETS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'dataType': content_item.get('dataType', ''),
-                            'widgetType': content_item.get('widgetType', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.LISTS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif parent_directory == PackFolders.GENERIC_FIELDS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'type': content_item.get('type', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.GENERIC_MODULES.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif parent_directory == PackFolders.GENERIC_TYPES.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.PREPROCESS_RULES.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.JOBS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            # note that `name` may technically be blank, but shouldn't pass validations
-                            'name': content_item.get('name', ''),
-                            'details': content_item.get('details', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
-                        self.add_pack_type_tags(content_item, 'ParsingRule')
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
-                        self.add_pack_type_tags(content_item, 'ModelingRule')
-                        schema: dict[str, Any] = json.loads(content_item.get('schema') or '{}')
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'datasets': list(schema.keys()),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith("external-"):
-                        self.add_pack_type_tags(content_item, 'CorrelationRule')
-                        metadata_output = {
-                            'id': content_item.get('global_rule_id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.XSIAM_DASHBOARDS.value and pack_file_name.startswith("external-"):
-                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
-                        metadata_output = {
-                            'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
-                            'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
-                            'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                        if preview:
-                            metadata_output.update({"preview": preview})
-
-                    elif current_directory == PackFolders.XSIAM_REPORTS.value and pack_file_name.startswith("external-"):
-                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
-                        metadata_output = {
-                            'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
-                            'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
-                            'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                        if preview:
-                            metadata_output.update({"preview": preview})
-
-                    elif current_directory == PackFolders.WIZARDS.value:
-                        metadata_output = {
-                            'id': content_item.get('id', ''),
-                            'name': content_item.get('name', ''),
-                            'description': content_item.get('description', ''),
-                            'dependency_packs': content_item.get('dependency_packs', {}),
-                            'fromVersion': content_item.get('fromVersion', ''),
-                            'toVersion': content_item.get('toVersion', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        }
-
-                    elif current_directory == PackFolders.XDRC_TEMPLATES.value and pack_file_name.startswith("external-"):
-                        self.add_pack_type_tags(content_item, 'XDRCTemplate')
-                        metadata_output = {
-                            'id': content_item.get('content_global_id', ''),
-                            'content_global_id': content_item.get('content_global_id', ''),
-                            'name': content_item.get('name', ''),
-                            'os_type': content_item.get('os_type', ''),
-                            'profile_type': content_item.get('profile_type', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-
-                    elif current_directory == PackFolders.LAYOUT_RULES.value and pack_file_name.startswith(
-                            "external-"):
-                        self.add_pack_type_tags(content_item, 'LayoutRule')
-                        metadata_output = {
-                            'id': content_item.get('rule_id', ''),
-                            'name': content_item.get('rule_name', ''),
-                            'layout_id': content_item.get('layout_id', ''),
-                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'fromversion': self._server_min_version,
-                            'toversion': metadata_toversion,
-                        }
-                        layout_rule_description = content_item.get('description')
-                        if layout_rule_description is not None:
-                            metadata_output['description'] = layout_rule_description
-                    else:
-                        logging.info(f'Failed to collect: {current_directory}')
-                        continue
-                    content_item_type_and_id = f"{current_directory}_{metadata_output['id']}"
-                    if self.is_replace_item_in_folder_collected_list(
-                            content_item, content_items_id_to_version_map,
-                            content_item_type_and_id):
-                        latest_fromversion, latest_toversion = self.get_latest_versions(
-                            content_items_id_to_version_map, content_item_type_and_id)
-                        metadata_output['fromversion'] = latest_fromversion
-                        metadata_output['toversion'] = latest_toversion
-                        folder_collected_items = [metadata_output
-                                                  if d["id"] == metadata_output["id"]
-                                                  else d
-                                                  for d in folder_collected_items]
-                    elif not content_items_id_to_version_map.get(
-                            content_item_type_and_id, {}).get('added_to_metadata_list', ''):
-                        folder_collected_items.append(metadata_output)
-                        content_items_id_to_version_map.get(content_item_type_and_id, {})['added_to_metadata_list'] = True
-
-                if current_directory in PackFolders.pack_displayed_items():
-                    content_item_key = CONTENT_ITEM_NAME_MAPPING[current_directory]
-
-                    content_items_result[content_item_key] = \
-                        content_items_result.get(content_item_key, []) + folder_collected_items
-
-            logging.success(f"Finished collecting content items for {self._pack_name} pack")
-            task_status = True
-        except Exception:
-            logging.exception(f"Failed collecting content items in {self._pack_name} pack")
-        finally:
-            self._content_items = content_items_result
-
-            def display_getter(items, display):
-                return f'{display}s' if items and len(items) > 1 else display
-
-            self._content_displays_map = {
-                name: display_getter(content_items_result.get(name), display)
-                for name, display in ITEMS_NAMES_TO_DISPLAY_MAPPING.items()
-                if content_items_result.get(name)
-            }
-
-            return task_status
-
-    def load_user_metadata(self):
+    def load_pack_metadata(self):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
@@ -2494,199 +1693,141 @@ class Pack:
 
         """
         task_status = False
-        user_metadata = {}
+        pack_metadata = {}
 
         try:
-            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
-            if not os.path.exists(user_metadata_path):
-                logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
+            logging.debug(f"Starting load_pack_metadata for pack '{self.name}'")
+            pack_metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # user metadata path before parsing
+            if not os.path.exists(pack_metadata_path):
+                logging.error(f"{self._pack_name} pack is missing {Pack.METADATA} file.")
                 return task_status
 
-            with open(user_metadata_path) as user_metadata_file:
-                user_metadata = json.load(user_metadata_file)  # loading user metadata
+            with open(pack_metadata_path) as pack_metadata_file:
+                pack_metadata = json.load(pack_metadata_file)  # loading user metadata
                 # part of old packs are initialized with empty list
-                user_metadata = {} if isinstance(user_metadata, list) else user_metadata
+                pack_metadata = {} if isinstance(pack_metadata, list) else pack_metadata
 
             # store important user metadata fields
-            self.support_type = user_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
-            self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
-            self.hidden = user_metadata.get(Metadata.HIDDEN, False)
-            self.description = user_metadata.get(Metadata.DESCRIPTION, False)
-            self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
-            self._user_metadata = user_metadata
-            self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
-            self._modules = user_metadata.get(Metadata.MODULES, [])
+            self.support_type = pack_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
+            self.current_version = pack_metadata.get(Metadata.CURRENT_VERSION, '')
+            self.hidden = pack_metadata.get(Metadata.HIDDEN, False)
+            self.description = pack_metadata.get(Metadata.DESCRIPTION, False)
+            self.display_name = pack_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
+            self._pack_metadata = pack_metadata
+            self._content_items = pack_metadata.get(Metadata.CONTENT_ITEMS, {})
+            self._eula_link = pack_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
+            self._marketplaces = pack_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
+            self._modules = pack_metadata.get(Metadata.MODULES, [])
+            self._tags = set(pack_metadata.get(Metadata.TAGS) or [])
+            self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
+            self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
 
-            logging.info(f"Finished loading {self._pack_name} pack user metadata")
+            logging.debug(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
-
         except Exception:
             logging.exception(f"Failed in loading {self._pack_name} user metadata.")
         finally:
             return task_status
 
-    def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs, marketplace):
-        tags = self._get_tags_by_marketplace(user_metadata, marketplace)
-        tags |= self._get_tags_from_landing_page(landing_page_sections)
-        tags |= {PackTags.TIM} if self._is_feed else set()
-        tags |= {PackTags.USE_CASE} if self._use_cases else set()
-        tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
-        tags |= {PackTags.FILTER} if self._contains_filter else set()
-        tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {PackTags.DATA_SOURCE} if self._is_data_source and marketplace == XSIAM_MP else set()
+    def _collect_pack_tags_by_statistics(self, trending_packs):
 
-        if self._create_date:
-            days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
-            if days_since_creation <= 30:
-                tags |= {PackTags.NEW}
-            else:
-                tags -= {PackTags.NEW}
+        days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
+        if days_since_creation <= 30:
+            self._tags |= {PackTags.NEW}
+        else:
+            self._tags -= {PackTags.NEW}
 
-        if trending_packs:
-            if self._pack_name in trending_packs:
-                tags |= {PackTags.TRENDING}
-            else:
-                tags -= {PackTags.TRENDING}
+        if self._pack_name in trending_packs:
+            self._tags |= {PackTags.TRENDING}
+        else:
+            self._tags -= {PackTags.TRENDING}
 
-        return tags
+    def remove_test_dependencies(self):
+        """Removes test dependencies from pack dependencies property"""
 
-    def _get_tags_by_marketplace(self, user_metadata: dict, marketplace: str):
-        """ Returns tags in according to the current marketplace"""
-        tags = []
-        for tag in user_metadata.get('tags', []):
-            if ':' in tag:
-                tag_data = tag.split(':')
-                if marketplace in tag_data[0].split(','):
-                    tags.append(tag_data[1])
-            else:
-                tags.append(tag)
+        pack_dependencies = [dep_id for dep_id in self._first_level_dependencies
+                             if not self._first_level_dependencies[dep_id].get("is_test", False)]
 
-        return set(input_to_list(input_data=tags))
+        self._dependencies = {k: v for k, v in self._dependencies.items() if k in pack_dependencies}
+        removed_test_deps = [dep_id for dep_id in self._first_level_dependencies if dep_id not in self._dependencies]
+        logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
 
-    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict, marketplace,
-                                 statistics_handler=None, format_dependencies_only=False):
-        """ Enhances the pack object with attributes for the metadata file
-
-        Args:
-            dependencies_metadata_dict (dict): mapping of pack dependencies metadata, for first level dependencies.
-            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
-            dependencies or not.
-
-        Returns:
-            dict: parsed pack metadata.
-
+    def enhance_pack_attributes(self, index_folder_path, packs_dependencies_mapping, marketplace='xsoar',
+                                statistics_handler=None, remove_test_deps=False):
         """
-        landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
-        trending_packs = None
-        pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
-        if not format_dependencies_only:
-            # ===== Pack Regular Attributes =====
-            self._support_type = self.user_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
-            self._support_details = self._create_support_section(
-                support_type=self._support_type, support_url=self.user_metadata.get(Metadata.URL),
-                support_email=self.user_metadata.get(Metadata.EMAIL)
-            )
-            self._author = self._get_author(
-                support_type=self._support_type, author=self.user_metadata.get(Metadata.AUTHOR, ''))
-            self._certification = self._get_certification(
-                support_type=self._support_type, certification=self.user_metadata.get(Metadata.CERTIFICATION)
-            )
-            self._legacy = self.user_metadata.get(Metadata.LEGACY, True)
-            self._create_date = self._get_pack_creation_date(index_folder_path)
-            self._update_date = self._get_pack_update_date(index_folder_path)
-            self._use_cases = input_to_list(input_data=self.user_metadata.get(Metadata.USE_CASES),
-                                            capitalize_input=True)
-            self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES),
-                                             capitalize_input=True)
-            self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
-        self._parsed_dependencies = self._parse_pack_dependencies(dependencies_metadata_dict)
-
-        # ===== Pack Private Attributes =====
-        if not format_dependencies_only:
-            self._is_private_pack = Metadata.PARTNER_ID in self.user_metadata
-            self._is_premium = self._is_private_pack
-            self._preview_only = get_valid_bool(self.user_metadata.get(Metadata.PREVIEW_ONLY, False))
-            self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
-            if self._is_private_pack:
-                self._vendor_id = self.user_metadata.get(Metadata.VENDOR_ID, "")
-                self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
-                self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
-                self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
-                self._disable_monthly = self.user_metadata.get(Metadata.DISABLE_MONTHLY, False)
-                # Currently all content packs are legacy.
-                # Since premium packs cannot be legacy, we directly set this attribute to false.
-                self._legacy = False
-
-        # ===== Pack Statistics Attributes =====
-        if not self._is_private_pack and statistics_handler:  # Public Content case
-            self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
-                self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
-                self._displayed_images_dependent_on_packs
-            )
-            self._downloads_count = self._pack_statistics_handler.download_count
-            trending_packs = statistics_handler.trending_packs
-            pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-        self._tags = self._collect_pack_tags(self.user_metadata, landing_page_sections, trending_packs, marketplace)
-        self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
-            tags=self._tags, certification=self._certification, content_items=self._content_items
-        )
-        self._related_integration_images = self._get_all_pack_images(
-            self._displayed_integration_images, self._displayed_images_dependent_on_packs, dependencies_metadata_dict,
-            pack_dependencies_by_download_count
-        )
-
-    def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        statistics_handler, packs_dict=None, marketplace='xsoar',
-                        format_dependencies_only=False):
-        """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
-        the result.
+        Enhances the pack object attributes for the metadata file.
 
         Args:
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
-            build_number (str): circleCI build number.
-            commit_hash (str): current commit hash.
-            statistics_handler (StatisticsHandler): The marketplace statistics handler
-            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_name: pack_object}.
             marketplace (str): Marketplace of current upload.
-            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
-             dependencies or not.
+            statistics_handler (StatisticsHandler): The marketplace statistics handler.
+            remove_test_deps (bool): Whether to remove test dependencies.
+        """
+        task_status = False
+        try:
+            logging.debug(f"Starting enhance_pack_attributes for pack '{self.name}'")
+            trending_packs = []
+            pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
+            self._create_date = self._get_pack_creation_date(index_folder_path)
+            self._update_date = self._get_pack_update_date(index_folder_path)
+
+            self.set_pack_dependencies(packs_dependencies_mapping, marketplace=marketplace)
+            if remove_test_deps:
+                self.remove_test_dependencies()
+
+            if statistics_handler:
+                self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
+                    self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
+                    self._displayed_images_dependent_on_packs
+                )
+                self._downloads_count = self._pack_statistics_handler.download_count
+                trending_packs = statistics_handler.trending_packs
+                pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
+
+            self._collect_pack_tags_by_statistics(trending_packs)
+            self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
+                tags=self._tags, certification=self._certification, content_items=self._content_items
+            )
+            self._displayed_integration_images = self.build_integration_images_metadata()
+            self._related_integration_images = self._get_all_pack_images(
+                index_folder_path, self._displayed_integration_images, self._displayed_images_dependent_on_packs,
+                pack_dependencies_by_download_count
+            )
+            logging.debug(f"Finished enhancing pack's object attributes for pack '{self.name}'")
+            task_status = True
+        except Exception as e:
+            logging.exception(f"Failed to enhance the pack properties for pack '{self.name}'.\n{e}")
+        finally:
+            return task_status
+
+    def format_metadata(self, remove_test_deps=False):
+        """
+        Formats pack's metadata before uploading to bucket.
+
+        Args:
+            remove_test_deps (bool): Whether to remove test dependencies.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
-            bool: True is returned in pack is missing dependencies.
-
         """
         task_status = False
-        packs_dict = packs_dict if packs_dict else {}
-        is_missing_dependencies = False
-
         try:
-            self.set_pack_dependencies(packs_dependencies_mapping, packs_dict, marketplace=marketplace)
+            logging.debug(f"Starting format_metadata for pack '{self.name}'")
 
-            logging.info(f"Loading pack dependencies metadata for {self._pack_name} pack")
-            dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
-                index_folder_path, packs_dict)
-
-            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict, marketplace,
-                                          statistics_handler, format_dependencies_only)
-
-            formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
+            formatted_metadata = self._parse_pack_metadata(parse_dependencies=remove_test_deps)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
-            json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
+            json_write(metadata_path, formatted_metadata, update=True)  # writing back parsed metadata
 
-            logging.success(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.")
+            logging.debug(f"Finished formatting '{self._pack_name}' packs's {Pack.METADATA} file")
             task_status = True
-
         except Exception as e:
-            logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
-
+            logging.exception(f"Failed in formatting {self._pack_name} pack metadata.\n{str(e)}")
         finally:
-            return task_status, is_missing_dependencies
+            return task_status
 
     @staticmethod
     def pack_created_in_time_delta(pack_name, time_delta: timedelta, index_folder_path: str) -> bool:
@@ -2743,35 +1884,21 @@ class Pack:
 
         return latest_changelog_released_date
 
-    def set_pack_dependencies(self, packs_dependencies_mapping, packs_dict, marketplace='xsoar'):
+    def set_pack_dependencies(self, packs_dependencies_mapping, marketplace='xsoar'):
         """
         Retrieve all pack's dependencies by merging the calculated dependencies from pack_dependencies.json file, given
         as input priorly, and the hard coded dependencies featured in the pack_metadata.json file.
         This is done for both first level dependencies and the all levels dependencies.
         Args:
             packs_dependencies_mapping: the calculated dependencies from pack_dependencies.json file
-            packs_dict (dict): Dict of packs relevant for current marketplace as {pack_name: pack_object}
             marketplace: the current marketplace this upload is for
         """
         pack_dependencies_mapping = packs_dependencies_mapping.get(self._pack_name, {})
-        first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
-        all_levels_dependencies = list(pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {}))
-        displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
-        logging.debug(f'(0) {first_level_dependencies=}')
-        logging.debug(f'(0) {all_levels_dependencies=}')
-
-        if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
-            self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
-
-        if Metadata.DEPENDENCIES not in self._user_metadata:
-            self._user_metadata[Metadata.DEPENDENCIES] = {}
-
-        if self._pack_name != GCPConfig.BASE_PACK:
-            # add base as a mandatory pack dependency, by design for all packs
-            first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-            all_levels_dependencies.append(GCPConfig.BASE_PACK)
-            logging.debug(f'(1) {first_level_dependencies=}')
-            logging.debug(f'(1) {all_levels_dependencies=}')
+        self._first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
+        self._all_levels_dependencies = list(pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {}))
+        self._displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
+        logging.debug(f'(0) {self._first_level_dependencies=}')
+        logging.debug(f'(0) {self._all_levels_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
@@ -2779,48 +1906,15 @@ class Pack:
         logging.debug(f'{core_packs=}')
 
         if self._pack_name in core_packs:
-            mandatory_dependencies = [k for k, v in first_level_dependencies.items()
+            mandatory_dependencies = [k for k, v in self._first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
                                       and not v.get("is_test", False)
                                       and k not in core_packs
-                                      and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()
-                                      and k not in self._user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, [])]
+                                      and k not in self.pack_metadata[Metadata.DEPENDENCIES].keys()
+                                      and k not in self.pack_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, [])]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
-
-        self._user_metadata[Metadata.DEPENDENCIES] = first_level_dependencies
-        self._first_level_dependencies = first_level_dependencies
-        self._all_levels_dependencies = all_levels_dependencies
-        self._displayed_images_dependent_on_packs = displayed_images_dependent_on_packs
-
-    def prepare_for_index_upload(self):
-        """ Removes and leaves only necessary files in pack folder.
-
-        Returns:
-            bool: whether the operation succeeded.
-
-        """
-        task_status = False
-        files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
-
-        try:
-            for file_or_folder in os.listdir(self._pack_path):
-                files_or_folder_path = os.path.join(self._pack_path, file_or_folder)
-
-                if file_or_folder in files_to_leave:
-                    continue
-
-                if os.path.isdir(files_or_folder_path):
-                    shutil.rmtree(files_or_folder_path)
-                else:
-                    os.remove(files_or_folder_path)
-
-            task_status = True
-        except Exception:
-            logging.exception(f"Failed in preparing index for upload in {self._pack_name} pack.")
-        finally:
-            return task_status
 
     @staticmethod
     def _get_spitted_yml_image_data(root, target_folder_files):
@@ -2884,7 +1978,7 @@ class Pack:
             image_data['image_path'] = temp_image_path
             image_data['integration_path_basename'] = os.path.basename(pack_file_path)
 
-            logging.info(f"Created temporary integration {image_data['display_name']} image for {self._pack_name} pack")
+            logging.debug(f"Created temporary integration {image_data['display_name']} image for {self._pack_name} pack")
 
         return image_data
 
@@ -2973,86 +2067,58 @@ class Pack:
             integration_path_basename in unified_integrations
         ])
 
-    def upload_integration_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
-        """ Uploads pack integrations images to gcs.
+    def build_integration_images_metadata(self) -> list[dict]:
+        """Collects the integration images metadata to be added in pack's metadata.json
 
-        The returned result of integration section are defined in issue #19786.
+        Returns:
+            list[dict]: List of objects with the integration image data
+        """
+        integration_images_data = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
+        return [{'name': self.remove_contrib_suffix_from_name(image_data.get('display_name')),
+                 'imagePath': urllib.parse.quote(os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name,
+                                                              os.path.basename(image_data.get('image_path'))))}
+                for image_data in integration_images_data]
+
+    def upload_integration_images(self, storage_bucket, storage_base_path):
+        """Searches for integration images and uploads them to gcs.
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
             storage_base_path (str): The target destination of the upload in the target bucket.
-            detect_changes (bool): Whether to detect changes or upload all images in any case.
-            diff_files_list (list): The list of all modified/added files found in the diff
+
         Returns:
             bool: whether the operation succeeded.
-            list: list of dictionaries with uploaded pack integration images.
-
         """
         task_status = True
-        integration_images = []
-        integration_dirs = []
-        unified_integrations = []
-
         try:
-            if detect_changes:
-                # detect added/modified integration images
-                for file in diff_files_list:
-                    if self.is_integration_image(file.a_path):
-                        # integration dir name will show up in the unified integration file path in content_packs.zip
-                        integration_dirs.append(os.path.basename(os.path.dirname(file.a_path)))
-                    elif self.is_unified_integration(file.a_path):
-                        # if the file found in the diff is a unified integration we upload its image
-                        unified_integrations.append(os.path.basename(file.a_path))
-
+            logging.debug(f"Uploading integration images for pack '{self.name}'")
             pack_local_images = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
 
             if not pack_local_images:
-                return True  # return empty list if no images were found
-
-            pack_storage_root_path = os.path.join(storage_base_path, self._pack_name)
+                logging.debug(f"No integration images were found in pack {self.name}")
+                return task_status
 
             for image_data in pack_local_images:
-                image_path = image_data.get('image_path')
-                if not image_path:
-                    raise Exception(f"{self._pack_name} pack integration image was not found")
-
-                image_name = os.path.basename(image_path)
-                image_storage_path = os.path.join(pack_storage_root_path, image_name)
-                pack_image_blob = storage_bucket.blob(image_storage_path)
-
-                if not detect_changes or \
-                        self.need_to_upload_integration_image(image_data, integration_dirs, unified_integrations):
-                    # upload the image if needed
-                    logging.info(f"Uploading image: {image_name} of integration: {image_data.get('display_name')} "
-                                 f"from pack: {self._pack_name}")
-                    with open(image_path, "rb") as image_file:
-                        pack_image_blob.upload_from_file(image_file)
-                    self._uploaded_integration_images.append(image_name)
-
-                if GCPConfig.USE_GCS_RELATIVE_PATH:
-                    image_gcs_path = urllib.parse.quote(
-                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, image_name))
-                else:
-                    image_gcs_path = pack_image_blob.public_url
-
                 integration_name = image_data.get('display_name', '')
 
-                if self.support_type != Metadata.XSOAR_SUPPORT:
-                    integration_name = self.remove_contrib_suffix_from_name(integration_name)
+                image_name = os.path.basename(image_data.get('image_path'))
+                image_storage_path = os.path.join(storage_base_path, self.name, image_name)
+                pack_image_blob = storage_bucket.blob(image_storage_path)
 
-                integration_images.append({
-                    'name': integration_name,
-                    'imagePath': image_gcs_path
-                })
+                logging.debug(f"Uploading image for integration: {integration_name} from pack: {self.name}")
+                with open(image_data.get('image_path'), "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+                self._uploaded_integration_images.append(image_name)
 
             if self._uploaded_integration_images:
-                logging.info(f"Uploaded {len(self._uploaded_integration_images)} images for {self._pack_name} pack.")
+                logging.debug(f"Uploaded {len(self._uploaded_integration_images)} images for {self._pack_name} pack.")
+            else:
+                logging.debug(f"No images were uploaded in pack '{self.name}'")
+
         except Exception as e:
             task_status = False
             logging.exception(f"Failed to upload {self._pack_name} pack integration images. Additional Info: {str(e)}")
-        finally:
-            self._displayed_integration_images = integration_images
-            return task_status
+        return task_status
 
     def copy_integration_images(self, production_bucket, build_bucket, images_data, storage_base_path,
                                 build_bucket_base_path):
@@ -3082,7 +2148,7 @@ class Pack:
                               f"{build_bucket_image_path} does not exist in build bucket")
                 task_status = False
             else:
-                logging.info(f"Copying {self._pack_name} pack integration image: {image_name}")
+                logging.debug(f"Copying {self._pack_name} pack integration image: {image_name}")
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
@@ -3103,74 +2169,46 @@ class Pack:
             logging.error(err_msg)
         else:
             if num_copied_images == 0:
-                logging.info(f"No added/modified integration images were detected in {self._pack_name} pack.")
+                logging.debug(f"No added/modified integration images were detected in {self._pack_name} pack.")
             else:
                 logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 
         return task_status
 
-    def upload_author_image(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
-        """ Uploads pack author image to gcs.
-
-        Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
-        default Base pack image path is used and it's gcp path is returned.
+    def upload_author_image(self, storage_bucket, storage_base_path):
+        """
+        Searches for `Author_image.png` and uploads pack author image to gcs.
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
             storage_base_path (str): the path under the bucket to upload to.
-            diff_files_list (list): The list of all modified/added files found in the diff
-            detect_changes (bool): Whether to detect changes or upload the author image in any case.
 
         Returns:
             bool: whether the operation succeeded.
-            str: public gcp path of author image.
-
         """
         task_status = True
-        author_image_storage_path = ""
-
         try:
-            author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+            logging.debug(f"Uploading author image for pack '{self.name}'")
+            author_image_path = os.path.join(self.path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
-                image_to_upload_storage_path = os.path.join(storage_base_path, self._pack_name,
-                                                            Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
-                pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
+                storage_image_path = os.path.join(storage_base_path, self.name,
+                                                  Pack.AUTHOR_IMAGE_NAME)
+                pack_author_image_blob = storage_bucket.blob(storage_image_path)
 
-                if not detect_changes or any(self.is_author_image(file.a_path) for file in diff_files_list):
-                    # upload the image if needed
-                    with open(author_image_path, "rb") as author_image_file:
-                        pack_author_image_blob.upload_from_file(author_image_file)
-                    self._uploaded_author_image = True
-                    logging.success(f"Uploaded successfully {self._pack_name} pack author image")
+                with open(author_image_path, "rb") as author_image_file:
+                    pack_author_image_blob.upload_from_file(author_image_file)
+                self._uploaded_author_image = True
+                logging.debug(f"Uploaded successfully pack author image for pack '{self.name}'")
 
-                if GCPConfig.USE_GCS_RELATIVE_PATH:
-                    author_image_storage_path = urllib.parse.quote(
-                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME))
-                else:
-                    author_image_storage_path = pack_author_image_blob.public_url
-
-            elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
-                author_image_storage_path = os.path.join(GCPConfig.IMAGES_BASE_PATH, GCPConfig.BASE_PACK,
-                                                         Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
-
-                if not GCPConfig.USE_GCS_RELATIVE_PATH:
-                    # disable-secrets-detection-start
-                    author_image_storage_path = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name,
-                                                             author_image_storage_path)
-                    # disable-secrets-detection-end
-                logging.info(f"Skipping uploading of {self._pack_name} pack author image "
-                             f"and use default {GCPConfig.BASE_PACK} pack image")
             else:
-                logging.info(f"Skipping uploading of {self._pack_name} pack author image. "
-                             f"The pack is defined as {self.support_type} support type")
+                logging.debug(f"Skipping uploading of {self.name} pack author image. "
+                              f"The pack is defined as {self.support_type} support type")
 
         except Exception:
-            logging.exception(f"Failed uploading {self._pack_name} pack author image.")
+            logging.exception(f"Failed uploading {self.name} pack author image.")
             task_status = False
-            author_image_storage_path = ""
         finally:
-            self._author_image = author_image_storage_path
             return task_status
 
     def copy_author_image(self, production_bucket, build_bucket, images_data, storage_base_path,
@@ -3219,46 +2257,45 @@ class Pack:
                 return False
 
         else:
-            logging.info(f"No added/modified author image was detected in {self._pack_name} pack.")
+            logging.debug(f"No added/modified author image was detected in {self._pack_name} pack.")
             return True
 
-    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
+    def upload_images(self, storage_bucket, storage_base_path, marketplace):
         """
         Upload the images related to the pack.
         The image is uploaded in the case it was modified, OR if this is the first time the current pack is being
         uploaded to this current marketplace (#46785).
         Args:
-            index_folder_path (str): the path to the local index folder
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
             storage_base_path (str): the path under the bucket to upload to.
-            diff_files_list (list): The list of all modified/added files found in the diff
-            override_all_packs (bool): Whether to override all packs without checking for changes
         Returns:
             True if the images were successfully uploaded, false otherwise.
 
         """
-
-        detect_changes = False if override_all_packs else os.path.exists(os.path.join(index_folder_path, self.name,
-                                                                                      Pack.METADATA)) or self.hidden
-
-        # Don't check if the image was modified if this is the first time it is uploaded to this marketplace, meaning it
-        # doesn't exist in the index (and it isn't deprecated), or if we want to override it (upload without
-        # detecting changes)
-
-        if not detect_changes:
-            logging.info(f'Uploading images of pack {self.name} which did not exist in this marketplace before')
-
-        task_status = self.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        task_status = self.upload_integration_images(storage_bucket, storage_base_path)
         if not task_status:
             self._status = PackStatus.FAILED_IMAGES_UPLOAD.name
             self.cleanup()
             return False
 
-        task_status = self.upload_author_image(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        task_status = self.upload_author_image(storage_bucket, storage_base_path)
         if not task_status:
             self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             self.cleanup()
             return False
+
+        task_status = self.upload_preview_images(storage_bucket, storage_base_path)
+        if not task_status:
+            self._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
+            self.cleanup()
+            return False
+
+        if marketplace == XSIAM_MP:
+            task_status = self.upload_dynamic_dashboard_images(storage_bucket, storage_base_path)
+            if not task_status:
+                self._status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
+                self.cleanup()
+                return False
 
         return True
 
@@ -3268,7 +2305,7 @@ class Pack:
         """
         if os.path.exists(self._pack_path):
             shutil.rmtree(self._pack_path)
-            logging.info(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
+            logging.debug(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
     def is_changelog_exists(self):
         """ Indicates whether the local changelog of a given pack exists or not
@@ -3375,7 +2412,7 @@ class Pack:
             rn_loose_version: Version = Version(changelog_entry)
             if bc_versions := self._changelog_entry_bc_versions(predecessor_version, rn_loose_version, loose_versions,
                                                                 bc_version_to_text):
-                logging.info(f'Changelog entry {changelog_entry} contains BC versions')
+                logging.debug(f'Changelog entry {changelog_entry} contains BC versions')
                 changelog[changelog_entry]['breakingChanges'] = True
                 if bc_text := self._calculate_bc_text(release_notes_dir, bc_versions):
                     changelog[changelog_entry]['breakingChangesNotes'] = bc_text
@@ -3569,6 +2606,7 @@ class Pack:
         Returns:
             bool: whether the operation succeeded.
         """
+        logging.debug(f"Uploading preview images for pack '{self.name}'")
         pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
 
         for _dir in [PackFolders.XSIAM_REPORTS.value, PackFolders.XSIAM_DASHBOARDS.value]:
@@ -3582,7 +2620,7 @@ class Pack:
                 logging.debug(f"Could not find preview images in pack {local_preview_image_dir}")
                 continue
 
-            logging.info(f"Found preview image: {preview_image_relative_paths}")
+            logging.debug(f"Found preview image: {preview_image_relative_paths}")
             preview_image_relative_path: str = preview_image_relative_paths[0]
             image_name = os.path.basename(preview_image_relative_path)
             image_storage_path = os.path.join(pack_storage_root_path, _dir, image_name)
@@ -3591,6 +2629,7 @@ class Pack:
             try:
                 with open(preview_image_relative_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
+                logging.debug(f"Successfully uploaded preview images for pack '{self.name}'")
             except Exception as e:
                 logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
                 return False
@@ -3608,7 +2647,7 @@ class Pack:
             bool: whether the operation succeeded.
         """
         pack_storage_root_path = os.path.join(storage_base_path, 'images').replace("packs/", "")
-        logging.debug(f"Uploading dynamic dashboard to folder in path: {pack_storage_root_path}")
+        logging.debug(f"Uploading dynamic dashboard to folder in path: {pack_storage_root_path} for pack '{self.name}'")
 
         local_dynamic_dashboard_image_dir = os.path.join(PACKS_FOLDER, self.name, PackFolders.INTEGRATIONS.value)
         if not os.path.isdir(local_dynamic_dashboard_image_dir):
@@ -3641,6 +2680,7 @@ class Pack:
             try:
                 with open(dynamic_dashboard_image, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
+                logging.debug(f"Successfully uploaded dynamic dashboard images for pack '{self.name}'")
             except Exception as e:
                 logging.exception(f"Failed uploading {self.name} pack dynamic dashboard image. Additional info: {e}")
                 return False
@@ -3678,7 +2718,7 @@ class Pack:
                               f"{build_bucket_image_path} does not exist in build bucket")
                 task_status = False
             else:
-                logging.info(f"Copying {self._pack_name} pack preview image: {image_name}")
+                logging.debug(f"Copying {self._pack_name} pack preview image: {image_name}")
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
@@ -3700,7 +2740,7 @@ class Pack:
             logging.error(err_msg)
         else:
             if num_copied_images == 0:
-                logging.info(f"No added/modified preview images were detected in {self._pack_name} pack.")
+                logging.debug(f"No added/modified preview images were detected in {self._pack_name} pack.")
             else:
                 logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 
@@ -3733,7 +2773,7 @@ class Pack:
                               f"'{build_bucket_image_path}' does not exist in build bucket")
                 task_status = False
             else:
-                logging.info(f"Copying {self._pack_name} pack dynamic dashboard image: {build_bucket_image_path}")
+                logging.debug(f"Copying {self._pack_name} pack dynamic dashboard image: {build_bucket_image_path}")
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
@@ -3756,7 +2796,7 @@ class Pack:
             logging.error(err_msg)
         else:
             if num_copied_images == 0:
-                logging.info(f"No added/modified dynamic dashboard images were detected in {self._pack_name} pack.")
+                logging.debug(f"No added/modified dynamic dashboard images were detected in {self._pack_name} pack.")
             else:
                 logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 
@@ -3898,7 +2938,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
                     BucketUploadFlow.STATUS: pack.status,
                     BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
                     else "False",
-                    BucketUploadFlow.LATEST_VERSION: pack.latest_version
+                    BucketUploadFlow.LATEST_VERSION: pack.current_version
                 } for pack in successful_packs
             }
         }
@@ -3910,7 +2950,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
             BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS: {
                 pack.name: {
                     BucketUploadFlow.STATUS: pack.status,
-                    BucketUploadFlow.LATEST_VERSION: pack.latest_version
+                    BucketUploadFlow.LATEST_VERSION: pack.current_version
                 } for pack in successful_uploaded_dependencies_zip_packs
             }
         }
@@ -3928,7 +2968,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
     if images_data:
         # adds a list with all the packs that were changed with images
         packs_results[stage].update({BucketUploadFlow.IMAGES: images_data})
-        logging.info(f"Images data {images_data}")
+        logging.debug(f"Images data {images_data}")
 
     if packs_results:
         if stage == BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING:
@@ -3963,16 +3003,22 @@ def load_json(file_path: str) -> dict:
         return {}
 
 
-def json_write(file_path: str, data: list | dict):
+def json_write(file_path: str, data: dict, update: bool = False):
     """ Writes given data to a json file
-
     Args:
         file_path: The file path
         data: The data to write
-
+        update: Whether to update the json file object with data
     """
+    logging.debug(f"update_index: {file_path=}, {data=}, {update=}")
+    if update:
+        metadata_obj = load_json(file_path=file_path)
+        metadata_obj.update(data)
+    else:
+        metadata_obj = data
+
     with open(file_path, "w") as f:
-        f.write(json.dumps(data, indent=4))
+        f.write(json.dumps(metadata_obj, indent=4))
 
 
 def init_storage_client(service_account=None):
@@ -3989,7 +3035,7 @@ def init_storage_client(service_account=None):
     """
     if service_account:
         storage_client = storage.Client.from_service_account_json(service_account)
-        logging.info("Created gcp service account")
+        logging.debug("Created gcp service account")
 
         return storage_client
     else:
@@ -3997,7 +3043,7 @@ def init_storage_client(service_account=None):
         warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
         credentials, project = google.auth.default()
         storage_client = storage.Client(credentials=credentials, project=project)
-        logging.info("Created gcp private account")
+        logging.debug("Created gcp private account")
 
         return storage_client
 
@@ -4132,7 +3178,7 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, 
         return get_last_upload_commit_hash(content_repo, index_folder_path)
     elif is_private_build:
         previous_master_head_commit = content_repo.commit('origin/master~1').hexsha
-        logging.info(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
+        logging.debug(f"Using origin/master HEAD~1 commit hash {previous_master_head_commit} to diff with.")
         return previous_master_head_commit
     else:
         if circle_branch == 'master':
@@ -4143,7 +3189,7 @@ def get_previous_commit(content_repo, index_folder_path, is_bucket_upload_flow, 
             head_str = "HEAD"
             # else we are on a regular branch and the diff should be done with origin/master HEAD
             previous_master_head_commit = content_repo.commit('origin/master').hexsha
-        logging.info(f"Using origin/master {head_str} commit hash {previous_master_head_commit} to diff with.")
+        logging.debug(f"Using origin/master {head_str} commit hash {previous_master_head_commit} to diff with.")
         return previous_master_head_commit
 
 
@@ -4166,14 +3212,14 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
         inner_index_json_file = load_json(inner_index_json_path)
         if 'commit' in inner_index_json_file:
             last_upload_commit_hash = inner_index_json_file['commit']
-            logging.info(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}")
+            logging.debug(f"Retrieved the last commit that was uploaded to production: {last_upload_commit_hash}")
         else:
             logging.critical(f"No commit field in {GCPConfig.INDEX_NAME}.json, content: {str(inner_index_json_file)}")
             sys.exit(1)
 
     try:
         last_upload_commit = content_repo.commit(last_upload_commit_hash).hexsha
-        logging.info(f"Using commit hash {last_upload_commit} from index.json to diff with.")
+        logging.debug(f"Using commit hash {last_upload_commit} from index.json to diff with.")
         return last_upload_commit
     except Exception as e:
         logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
@@ -4303,44 +3349,6 @@ def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.
     return index_json.get('commit')
 
 
-def get_graph_entity_by_path(entity_path: Path, marketplace):
-    with Neo4jContentGraphInterface() as content_graph_interface:
-        return content_graph_interface.search(marketplace, path=entity_path)[0]
-
-
-def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
-    """
-    Get the full entity dict from the id set of the entity given as a path, if it does not exist in the id set
-    return None. The item's path in the id set is of the yml/json file, so for integrations, scripts and playbooks this
-    function checks if there is an item in the id set that the containing folder of it's yml file is the same as the
-    containing folder of the entity path given. For all other content items, we check if the path's are identical.
-    Args:
-        entity_path: path to entity (content item)
-        pack_folder: containing folder of that item
-        id_set: id set dict
-
-    Returns:
-        id set dict entity if exists, otherwise {}
-    """
-    logging.debug(f"Checking if the entity with the path {entity_path} is present in the id set")
-
-    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
-
-        if len(entity_path.parts) == 5:  # Content items that have a sub folder (integrations, scripts, etc)
-            if Path(list(id_set_entity.values())[0]['file_path']).parent == entity_path.parent:
-                return id_set_entity
-
-        else:  # Other content items
-            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
-                return id_set_entity
-
-    if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers
-        for id_set_entity in id_set['Mappers']:
-            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
-                return id_set_entity
-    return {}
-
-
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
         res = interface.search(content_type=content_type, marketplace=marketplace, display_name=display_name)
@@ -4376,7 +3384,6 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
         return True
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
-
         if list(id_set_entity.values())[0]['display_name'] == display_name:
             return True
 

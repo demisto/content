@@ -104,6 +104,10 @@
         "type": "string",
         "is_array": false
       },
+      "FTNTFGTseverity": {
+        "type": "string",
+        "is_array": false
+      },
       "FTNTFGTlogdesc": {
         "type": "string",
         "is_array": false
@@ -133,6 +137,10 @@
         "is_array": false
       },
       "FTNTFGTlevel": {
+        "type": "string",
+        "is_array": false
+      },
+      "FTNTFGTCRlevel": {
         "type": "string",
         "is_array": false
       },

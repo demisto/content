@@ -27,8 +27,8 @@ configuration:
   name: cap_apikey
   type: 4
   required: false
-description: Malwation AIMA malware analysis sandboxing.
-display: Malwation AIMA
+description: Deprecated. Use ThreatZone instead.
+display: Malwation AIMA (Deprecated)
 name: MalwationAIMA
 script:
   commands:
@@ -41,6 +41,7 @@ script:
       - win7x64
       - win10x64
       required: true
+      deprecated: true
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Privacy of the submission.
@@ -151,6 +152,7 @@ script:
     - contextPath: AIMA.Result.ID
       description: The ID of the submission.
       type: String
+    deprecated: true
   - arguments:
     - description: The entry id of the file.
       name: entry_id
@@ -161,6 +163,7 @@ script:
     - contextPath: CAP.Static.UUID
       description: The uuid value of the submission.
       type: String
+    deprecated: true
   - arguments:
     - description: The Entry id of the file.
       name: entry_id
@@ -171,6 +174,7 @@ script:
     - contextPath: CAP.Mav.UUID
       description: The uuid value of the submission.
       type: String
+    deprecated: true
   - arguments:
     - description: The uuid of the file.
       name: uuid
@@ -193,6 +197,7 @@ script:
     - contextPath: CAP.Static.ENTROPY
       description: The entropy value of sample.
       type: Number
+    deprecated: true
   - arguments:
     - description: The uuid value of submission.
       name: uuid
@@ -212,6 +217,7 @@ script:
     - contextPath: CAP.Mav.STATUS
       description: The status of the submission scanning process.
       type: String
+    deprecated: true
   dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
@@ -220,3 +226,4 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+deprecated: true

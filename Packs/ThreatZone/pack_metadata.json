@@ -1,0 +1,19 @@
+{
+    "name": "ThreatZone",
+    "description": "ThreatZone malware analysis sandboxing",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Malwation",
+    "url": "https://app.threat.zone",
+    "email": "info@malwation.com",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

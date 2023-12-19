@@ -84,7 +84,8 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | --- | --- | --- |
 | endpoint_id_list | A comma-separated list of endpoint IDs. | Optional | 
 | dist_name | A comma-separated list of distribution package names or installation package names. <br/>Example: dist_name1,dist_name2. | Optional | 
-| ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
+| ip_list | A comma-separated list of private IP addresses.<br/> Example: 10.1.1.1,192.168.1.1. | Optional | 
+| public_ip_list | A comma-separated list of public IP addresses that correlate to the last IPv4 address from which the Cortex XDR agent connected (know as `Last Origin IP`).<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
 | group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
 | platform | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
 | alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 

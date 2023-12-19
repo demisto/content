@@ -5,9 +5,9 @@ from HYASInsight import Client, get_passive_dns_records_by_indicator, get_dynami
     get_whois_records_by_indicator, get_whois_current_records_by_domain, get_malware_samples_records_by_indicator, \
     get_associated_ips_by_hash, get_associated_domains_by_hash, \
     get_c2attribution_records_by_indicator, \
-    get_passive_hash_records_by_indicator,\
+    get_passive_hash_records_by_indicator, \
     get_ssl_certificate_records_by_indicator, \
-    get_sinkhole_records_by_ipv4_address, get_malware_sample_information_by_hash,\
+    get_sinkhole_records_by_ipv4_address, get_malware_sample_information_by_hash, \
     get_opensource_indicator_records_by_indicator, get_device_geo_records_by_ip_address
 
 client = Client(

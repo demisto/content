@@ -1,0 +1,920 @@
+id: Prepare your CTF
+version: -1
+name: Prepare your CTF
+description: "This playbook aims to assit in configuring you env for the Capture The Flag (CTF) game."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cf903115-f134-4907-8055-cf6d686211b6
+    type: start
+    task:
+      id: cf903115-f134-4907-8055-cf6d686211b6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c64d8b3c-d8f4-4607-8c2c-2c87ec8038c1
+    type: title
+    task:
+      id: c64d8b3c-d8f4-4607-8c2c-2c87ec8038c1
+      version: -1
+      name: Ensure that integrations are available
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4e488844-f755-4c50-824c-6da02c0126fb
+    type: title
+    task:
+      id: 4e488844-f755-4c50-824c-6da02c0126fb
+      version: -1
+      name: VirusTotal
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 12490790-4985-4d0a-8df9-337cb144b910
+    type: title
+    task:
+      id: 12490790-4985-4d0a-8df9-337cb144b910
+      version: -1
+      name: Atom - unit42 Feed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9271de38-e26d-42d9-891a-0e7f3628265c
+    type: regular
+    task:
+      id: 9271de38-e26d-42d9-891a-0e7f3628265c
+      version: -1
+      name: 'Tag the malicious IP with a "Blocked" Tag -> change to automatic '
+      description: |-
+        A wrapper script to the 'AppendindicatorField' script that enables adding tags to certain indicators.
+        Note: You can use this script in an incident Layout button to allow tags to be added to indicators through the incident.
+      scriptName: AppendindicatorFieldWrapper
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      indicators_values:
+        simple: 137.184.208.116
+      tags:
+        simple: blocked
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 50bae072-ab61-46ed-842f-be9ceefbe140
+    type: title
+    task:
+      id: 50bae072-ab61-46ed-842f-be9ceefbe140
+      version: -1
+      name: Final preparation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9a5ca0f7-6127-4940-8263-e2885d3a433f
+    type: title
+    task:
+      id: 9a5ca0f7-6127-4940-8263-e2885d3a433f
+      version: -1
+      name: Configure the custom integrations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f524ef51-5fd0-416c-842c-09192efe158e
+    type: title
+    task:
+      id: f524ef51-5fd0-416c-842c-09192efe158e
+      version: -1
+      name: Cortex XDR - CTF
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 5edc69b3-fc10-4e30-8823-bc8b963553d0
+    type: title
+    task:
+      id: 5edc69b3-fc10-4e30-8823-bc8b963553d0
+      version: -1
+      name: OHMYVT
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1111caf0-6571-48e2-8181-d9051fb5e1db
+    type: regular
+    task:
+      id: 1111caf0-6571-48e2-8181-d9051fb5e1db
+      version: -1
+      name: Ensure the following
+      description: |
+        # items to check
+
+        1. The incidents created successfully - wait until the incident for BruteForece stops on the manual task that classifies the incident.
+        2. Indicators extracted properly
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: af2f080a-54eb-41d2-830a-21dc2b32cc4a
+    type: title
+    task:
+      id: af2f080a-54eb-41d2-830a-21dc2b32cc4a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e7cf50eb-9424-42cf-8bf5-cda996bb21cd
+    type: condition
+    task:
+      id: e7cf50eb-9424-42cf-8bf5-cda996bb21cd
+      version: -1
+      name: Check if VirusTotal (API v3) Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "13"
+    scriptarguments:
+      brandname:
+        simple: VirusTotal (API v3)
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c8859380-e985-4012-85b2-7053faa2e753
+    type: condition
+    task:
+      id: c8859380-e985-4012-85b2-7053faa2e753
+      version: -1
+      name: Check if Unit42v2 Feed Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "13"
+    scriptarguments:
+      brandname:
+        simple: Unit42v2 Feed
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 042475d3-3657-4bea-8aed-7beec2e77a4a
+    type: regular
+    task:
+      id: 042475d3-3657-4bea-8aed-7beec2e77a4a
+      version: -1
+      name: Please configure an instance of VirusTotal
+      description: Please configure an instance of VirusTotal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 3aac8842-34d5-414a-8152-ed0a6fd57bfd
+    type: regular
+    task:
+      id: 3aac8842-34d5-414a-8152-ed0a6fd57bfd
+      version: -1
+      name: Please configure an instance of Unit42 Atom feed
+      description: Please configure an instance of Unit42 Atom feed
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5d9ed6b7-401c-48a1-876d-6985070224d6
+    type: condition
+    task:
+      id: 5d9ed6b7-401c-48a1-876d-6985070224d6
+      version: -1
+      name: Check if Cortex XDR - IR CTF Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "12"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR CTF
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 78b846ef-5777-4968-86e5-63471af8eddd
+    type: condition
+    task:
+      id: 78b846ef-5777-4968-86e5-63471af8eddd
+      version: -1
+      name: Check if custom "OHMYVT_CTF" integration Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "12"
+    scriptarguments:
+      brandname:
+        simple: OHMYVT_CTF
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d9b3e830-acd5-459e-8b03-08d6a3c5de3d
+    type: regular
+    task:
+      id: d9b3e830-acd5-459e-8b03-08d6a3c5de3d
+      version: -1
+      name: Please configure an instance of Cortex XDR - IR CTF
+      description: Please configure an instance of Cortex XDR - IR CTF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 18012360-ac62-4678-8e93-cc2bc2cad881
+    type: regular
+    task:
+      id: 18012360-ac62-4678-8e93-cc2bc2cad881
+      version: -1
+      name: Please configure an instance of OHMYVT_CTF
+      description: Please configure an instance of OHMYVT_CTF
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 61abfb1f-dc4e-4572-8d6b-f5d4e91b6403
+    type: regular
+    task:
+      id: 61abfb1f-dc4e-4572-8d6b-f5d4e91b6403
+      version: -1
+      name: Check if the indicators are exist
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      query:
+        simple: value:"137.184.208.116" or value:"IcedID Infection leads to DarkVNC"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 3969212c-f8cb-42c4-849d-5261a544dee3
+    type: condition
+    task:
+      id: 3969212c-f8cb-42c4-849d-5261a544dee3
+      version: -1
+      name: Validate that indicators exist
+      description: "Validate that indicators exist in your tenant.Required the following indicators -> value:\"137.184.208.116\" or value:\"IcedID Infection leads to DarkVNC\" "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIndicators.value
+            iscontext: true
+          right:
+            value:
+              simple: IcedID Infection leads to DarkVNC
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foundIndicators.value
+            iscontext: true
+          right:
+            value:
+              simple: 137.184.208.116
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: c8b9920d-3b91-499d-87f5-742d67f2a2eb
+    type: regular
+    task:
+      id: c8b9920d-3b91-499d-87f5-742d67f2a2eb
+      version: -1
+      name: 'Verify that the indicators have relationships '
+      description: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      scriptName: SearchIndicatorRelationships
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      entities:
+        simple: 137.184.208.116,IcedID Infection leads to DarkVNC
+      limit:
+        simple: "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c43ef918-2d27-48a2-8447-c31ce776e1fa
+    type: regular
+    task:
+      id: c43ef918-2d27-48a2-8447-c31ce776e1fa
+      version: -1
+      name: Error with Indicators extraction
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Something went wrong with the Indicators extraction - Please check that you configured all the previous steps.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: b3468f89-7f7d-41df-84a1-f8424deb1761
+    type: condition
+    task:
+      id: b3468f89-7f7d-41df-84a1-f8424deb1761
+      version: -1
+      name: Validate that there are relationships associated with the indicators above.
+      description: "Validate that there are relationships associated with the indicators above --> \"137.184.208.116\" and \"IcedID Infection leads to DarkVNC\""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Relationships.EntityA
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: a51b155f-f9f9-4897-8057-ae0980758667
+    type: regular
+    task:
+      id: a51b155f-f9f9-4897-8057-ae0980758667
+      version: -1
+      name: Error with Indicators enrichment
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Something went wrong with the Indicators extraction - Please check that you configured all the previous steps.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 82f45955-b04a-42a6-8d38-2039f3948bd1
+    type: regular
+    task:
+      id: 82f45955-b04a-42a6-8d38-2039f3948bd1
+      version: -1
+      name: Your are all set!
+      description: "To strat the CTF -> create a new incident with the playbook -> \n`CTF 1 - Get to know XSOAR`"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3055,
+        "width": 1010,
+        "x": 220,
+        "y": -70
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.2.0

@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
+from enum import Enum
 import re
 import time
 from distutils.util import strtobool
@@ -21,6 +22,12 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
+
+
+class FormType(Enum):  # Used for 'send-message', and by the MicrosoftTeamsAsk script
+    PREDEFINED_OPTIONS = 'predefined-options'
+    OPEN_ANSWER = 'open-answer'
+
 
 ''' GLOBAL VARIABLES'''
 EXTERNAL_FORM_URL_DEFAULT_HEADER = 'Microsoft Teams Form'
@@ -360,7 +367,7 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     raise ValueError(f'Team member {requested_team_member} was not found')
 
 
-def create_adaptive_card(body: list, actions: list = None) -> dict:
+def create_adaptive_card(body: list, actions: list | None = None) -> dict:
     """
     Creates Microsoft Teams adaptive card object given body and actions
     :param body: Adaptive card data
@@ -485,27 +492,73 @@ def process_ask_user(message: str) -> dict:
     message_object: dict = json.loads(message)
     text: str = message_object.get('message_text', '')
     entitlement: str = message_object.get('entitlement', '')
+    form_type: FormType = FormType(message_object.get('form_type', FormType.PREDEFINED_OPTIONS.value))
     options: list = message_object.get('options', [])
     investigation_id: str = message_object.get('investigation_id', '')
     task_id: str = message_object.get('task_id', '')
-    body = [
-        {
+
+    body: list[dict] = []
+    actions: list[dict] = []
+
+    if form_type == FormType.PREDEFINED_OPTIONS:
+        body.append({
             'type': 'TextBlock',
-            'text': text
-        }
-    ]
-    actions = []
-    for option in options:
+            'text': text,
+        })
+
+        for option in options:
+            actions.append({
+                'type': 'Action.Submit',
+                'title': option,
+                'data': {
+                    'response': option,
+                    'entitlement': entitlement,
+                    'investigation_id': investigation_id,
+                    'task_id': task_id
+                }
+            })
+
+    elif form_type == FormType.OPEN_ANSWER:
+        body.extend([
+            {
+                'type': 'TextBlock',
+                'text': 'Form',
+                'id': 'Title',
+                'spacing': 'Medium',
+                'horizontalAlignment': 'Center',
+                'size': 'Medium',
+                'weight': 'Bolder',
+                'color': 'Accent'
+            },
+            {
+                'type': 'Container',
+                'items': [
+                    {
+                        'type': 'TextBlock',
+                        'text': text,
+                        'wrap': True,
+                        'spacing': 'Medium',
+                    },
+                    {
+                        'type': 'Input.Text',
+                        'placeholder': 'Enter an answer',
+                        'id': 'response',
+                        'isMultiline': True,
+                    }
+                ]
+            },
+        ])
+
         actions.append({
             'type': 'Action.Submit',
-            'title': option,
+            'title': 'Submit',
             'data': {
-                'response': option,
                 'entitlement': entitlement,
                 'investigation_id': investigation_id,
                 'task_id': task_id
             }
         })
+
     return create_adaptive_card(body, actions)
 
 
@@ -1994,6 +2047,7 @@ def send_message():
                 'type': 'message',
                 'attachments': [adaptive_card]
             }
+            demisto.debug(f"The following Adaptive Card will be used:\n{json.dumps(adaptive_card)}")
         else:
             # Sending regular message
             formatted_message: str = urlify_hyperlinks(message, external_form_url_header)
@@ -2714,10 +2768,11 @@ def main():   # pragma: no cover
     }
 
     ''' EXECUTION '''
+    command: str = demisto.command()
+
     try:
         support_multithreading()
         handle_proxy()
-        command: str = demisto.command()
         LOG(f'Command being called is {command}')
         if command in commands:
             commands[command]()
@@ -2731,5 +2786,5 @@ def main():   # pragma: no cover
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
-if __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

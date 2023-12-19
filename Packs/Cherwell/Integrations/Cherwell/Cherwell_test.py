@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from CommonServerPython import date_to_timestamp
 import demistomock as demisto
-from Cherwell import cherwell_get_business_object_summary_command, cherwell_get_one_step_actions_command,\
+from Cherwell import cherwell_get_business_object_summary_command, cherwell_get_one_step_actions_command, \
     get_one_step_actions_recursive
 from unittest.mock import patch
 
@@ -130,7 +130,7 @@ def test_get_one_step_actions_recursive_3_folders():
     """
     actions = {}
     root_obj = {'childFolders': [
-        {'name': 'folder1', 'childItems': [1, 2, 3], 'childFolders':[
+        {'name': 'folder1', 'childItems': [1, 2, 3], 'childFolders': [
             {'name': 'folder1_child', 'childItems': [4, 5, 6]}]},
         {'name': 'folder2', 'childItems': [10, 20, 30]}
     ]}

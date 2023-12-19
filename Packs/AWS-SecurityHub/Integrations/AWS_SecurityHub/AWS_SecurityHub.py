@@ -549,7 +549,7 @@ def parse_filter_field(string_filters) -> dict:
         try:
             filters_list = string_filters.split(';')
             filters = {split_str[0].split('=')[1]: [{'Value': split_str[1].split('=')[1],
-                                                    'Comparison':split_str[2].split('=')[1].upper()}]
+                                                    'Comparison': split_str[2].split('=')[1].upper()}]
                        for split_str in [filter_str.split(',') for filter_str in filters_list]}
         except Exception:
             demisto.error(f'Failed parsing filters: {string_filters}\n error: {Exception}')

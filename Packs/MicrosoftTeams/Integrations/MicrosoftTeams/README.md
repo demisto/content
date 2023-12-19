@@ -691,7 +691,11 @@ Retrieves a list of members from a channel.
 ### microsoft-teams-chat-create
 ***
 Creates a new chat. 
-Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
+
+
+Notes:
+- Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
+- This command works with the consent user, not with the bot. Which means, the chat is created between the consent user and the user provided in the command's argument.
 
 
 ##### Base Command
@@ -743,6 +747,9 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 ***
 Sends a new chat message in the specified chat.
 
+Note:
+
+This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
 
 ##### Base Command
 

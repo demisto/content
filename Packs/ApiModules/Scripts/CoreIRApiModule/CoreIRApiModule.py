@@ -152,6 +152,7 @@ class CoreClient(BaseClient):
                       endpoint_id_list=None,
                       dist_name=None,
                       ip_list=None,
+                      public_ip_list=None,
                       group_name=None,
                       platform=None,
                       alias_name=None,
@@ -181,7 +182,7 @@ class CoreClient(BaseClient):
             status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
             ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
             hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
-            last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
+            last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, public_ip_list=public_ip_list
         )
 
         if search_from:
@@ -1809,6 +1810,7 @@ def get_endpoints_command(client, args):
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
     ip_list = argToList(args.get('ip_list'))
+    public_ip_list = argToList(args.get('public_ip_list'))
     group_name = argToList(args.get('group_name'))
     platform = argToList(args.get('platform'))
     alias_name = argToList(args.get('alias_name'))
@@ -1845,6 +1847,7 @@ def get_endpoints_command(client, args):
         endpoint_id_list=endpoint_id_list,
         dist_name=dist_name,
         ip_list=ip_list,
+        public_ip_list=public_ip_list,
         group_name=group_name,
         platform=platform,
         alias_name=alias_name,
@@ -2464,13 +2467,20 @@ def get_indicators_context(incident):
 
     file_artifacts = incident.get('file_artifacts', [])
     for file in file_artifacts:
+        file_sha = file.get('file_sha256')
         file_details = {
             'Name': file.get('file_name'),
-            'SHA256': file.get('file_sha256'),
+            'SHA256': file_sha,
         }
         remove_nulls_from_dictionary(file_details)
+        is_malicious = file.get("is_malicious")
+
         if file_details:
             file_context.append(file_details)
+            if file_sha:
+                relevant_processes = filter(lambda p: p.get("SHA256") == file_sha, process_context)
+                for process in relevant_processes:
+                    process["is_malicious"] = is_malicious
 
     return file_context, process_context, domain_context, ip_context
 
@@ -3454,6 +3464,7 @@ def create_request_filters(
     endpoint_id_list: Optional[List] = None,
     dist_name: Optional[List] = None,
     ip_list: Optional[List] = None,
+    public_ip_list: Optional[List] = None,
     group_name: Optional[List] = None,
     platform: Optional[List] = None,
     alias_name: Optional[List] = None,
@@ -3500,6 +3511,13 @@ def create_request_filters(
             'field': 'ip_list',
             'operator': 'in',
             'value': ip_list
+        })
+
+    if public_ip_list:
+        filters.append({
+            'field': 'public_ip_list',
+            'operator': 'in',
+            'value': public_ip_list
         })
 
     if group_name:

@@ -5,9 +5,7 @@ This playbook blocks malicious indicators using all integrations that are enable
 - Block IP - Generic v3
 - Block File - Generic v2
 - Block Email - Generic v2
-- Block Domain - Generic v2
-
-
+- Block Domain - Generic v2.
 
 ## Dependencies
 
@@ -16,11 +14,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Block File - Generic v2
-* Block Account - Generic v2
 * Block Email - Generic v2
-* Block URL - Generic v2
-* Block IP - Generic v3
 * Block Domain - Generic v2
+* Block Account - Generic v2
+* Block IP - Generic v3
+* Block URL - Generic v2
 
 ### Integrations
 
@@ -32,7 +30,7 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* setIndicators
+* appendIndicatorField
 
 ## Playbook Inputs
 
@@ -58,7 +56,7 @@ This playbook does not use any integrations.
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
 | DomainBlackListID | The Domain List ID to add the Domain to.<br/>product: Proofpoint Threat Response |  | Optional |
-| Tag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. |  | Optional |
+| Tag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. | Blocked Indicator In Systems | Optional |
 | DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IPs list handling. |  | Optional |
 | UserVerification | Possible values: True/False.  Default: True.<br/>Whether to provide user verification for blocking those IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | True | Optional |
 | InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
@@ -90,9 +88,9 @@ This playbook does not use any integrations.
 | CheckpointFWRule.DataDirection | Rule data direction. | unknown |
 | CheckpointFWRule.DataNegate | Rule data negate status \(True/False\). | unknown |
 | CheckpointFWRule.Hits | Rule hits count. | unknown |
-| PanoramaRule.Direction | Direction of the Panorama rule. Can be 'to','from', 'both' | string |
-| PanoramaRule.IP | The IP the Panorama rule blocks | string |
-| PanoramaRule.Name | Name of the Panorama rule | string |
+| PanoramaRule.Direction | Direction of the Panorama rule. Can be 'to','from', 'both'. | string |
+| PanoramaRule.IP | The IP the Panorama rule blocks. | string |
+| PanoramaRule.Name | Name of the Panorama rule. | string |
 | CheckpointFWRule.Data.Name | Rule data object name. | unknown |
 | CheckpointFWRule.Data.Domain | Information about the domain the data object belongs to. | unknown |
 | CheckpointFWRule.Domain.Name | Rule domain name. | unknown |
@@ -101,9 +99,9 @@ This playbook does not use any integrations.
 | CheckpointFWRule.Hits.FirstDate | The date of the first hit for the rule. | unknown |
 | CheckpointFWRule.Hits.LastDate | The date of the last hit for the rule. | unknown |
 | CheckpointFWRule.Hits.Level | Level of rule hits. | unknown |
-| CheckpointFWRule.Hits.Percentage | Percentage of rule hits | unknown |
+| CheckpointFWRule.Hits.Percentage | Percentage of rule hits. | unknown |
 | CheckpointFWRule.Hits.Value | Value of rule hits. | unknown |
-| IndicatorsToBlock | Selected indicators to block | unknown |
+| IndicatorsToBlock | Selected indicators to block. | unknown |
 
 ## Playbook Image
 

@@ -1,14 +1,15 @@
-import io
 import json
 import pytest
 from CommonServerPython import IncidentSeverity
 from RecordedFutureASI import Client, fetch_incidents
+import RecordedFutureASI
+import demistomock as demisto
 
 TEST_PROJECT_ID = 'fakeprojectid'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -221,3 +222,40 @@ def test_incident_total_limit(requests_mock, client):
     assert len(incidents) == 5
     assert incidents[4]['severity'] == IncidentSeverity.LOW
     assert incidents[4]['name'] == '❗Attack Surface Intelligence: 10+ Changes'
+
+
+@pytest.mark.parametrize(
+    "demisto_params_result, expected_result",
+    [({'credentials': {'password': 'api_key'}, 'apikey': 'old_api_key'}, {'APIKEY': 'api_key'}),
+     ({'credentials': {'password': ''}, 'apikey': 'old_api_key'}, {'APIKEY': 'old_api_key'}),
+     ({'apikey': 'old_api_key'}, {'APIKEY': 'old_api_key'})]
+)
+def test_get_api_key(mocker, demisto_params_result, expected_result):
+    """Test get API key.
+    Given: Input parameters to the main function, including the API key configured
+           in credentials or passed directly via the apikey parameter.
+    When: The main function is called, which instantiates a client.
+    Then: Ensure the API key passed to the client constructor matches the expected API key based on the input parameters.
+    """
+    mocker.patch.object(demisto, 'params', return_value=demisto_params_result)
+    mock_client = mocker.patch('RecordedFutureASI.Client')
+    # Call main()
+    RecordedFutureASI.main()
+
+    # Get the client that was instantiated
+    assert mock_client.call_args[1].get('headers') == expected_result
+
+
+def test_get_api_key_invalid_key(mocker):
+    """Test get API key.
+    Given: Input parameters to the main function, including empty API key and empty credentials object.
+    When: The main function is called, which instantiates a client.
+    Then: Ensure that error message was raised.
+    """
+    mocker.patch.object(demisto, 'params', return_value={'credentials': {'password': ''}, 'apikey': ''})
+    mocker.patch.object(demisto, 'results')
+
+    # Get the client that was instantiated
+    with pytest.raises(SystemExit):
+        RecordedFutureASI.main()
+    assert demisto.results.call_args[0][0]['Contents'] == 'Please provide a valid API token'

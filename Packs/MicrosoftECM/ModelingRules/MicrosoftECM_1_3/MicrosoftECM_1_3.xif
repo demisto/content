@@ -1,12 +1,6 @@
-[MODEL: dataset=msft_ecm_raw]
-// timestamp part
- alter time = arrayindex(regextract(_raw_log, "time=\"(\d+\:\d+\:\d{2})"), 0),
-    date = arrayindex(regextract(_raw_log, "date=\"(\d{1,2}\-\d{1,2}\-\d{4})"), 0),
-    timestamp = arrayindex(regextract(_raw_log, "(\d{1,2}\-\d{1,2}\-\d{4}\s+\S{8})"), 0)
-| alter dateTime = format_string("%s %s", date, time)
-| alter timestamp = coalesce(timestamp, dateTime)
-// end timestamp part
-| alter thread_id = arrayindex(regextract(_raw_log, "thread\=\"*(\d+)\"*"), 0),
+[MODEL: dataset = msft_ecm_raw]
+alter
+    thread_id = arrayindex(regextract(_raw_log, "thread\=\"*(\d+)\"*"), 0),
     file = arrayindex(regextract(_raw_log, "file\=\"([^\"]*)\""), 0),
     msg_1 = arrayindex(regextract(_raw_log, "^(.+)[\~|\$]"), 0),
     msg_2 = arrayindex(regextract(_raw_log, "^\<\!\[LOG\[(.+)\]LOG"), 0),
@@ -20,10 +14,16 @@
     duration1 = arrayindex(regextract(_raw_log ,"\s(\d*\.*\d+)\sseconds"),0),
     duration2 = arrayindex(regextract(_raw_log ,"\s(\d*\.*\d+)\shours"),0),
     duration3 = arrayindex(regextract(_raw_log ,"\s(\d+)\sminutes"),0),
-    event_type = arrayindex(regextract(_raw_log ,"^([A-Za-z]*\s*[a-zA-Z]*)\>*\:"),0)
-| alter duration = coalesce(duration1 , duration2, duration3 )
-| alter component = coalesce(component, component2)
-| alter msg = coalesce(msg_1, msg_2)
+    log_prefix = lowercase(arrayindex(regextract(_raw_log ,"^([A-Za-z]*\s*[a-zA-Z]*)\>*\:"),0)),
+    event_type = arrayindex(regextract(_log_source_file_name, "([\w_]+)[-\d+]{0,}\.log"),0),
+    user_name = arrayindex(regextract(_raw_log, "UserName=([^~\s]+)"), 0),
+    user_domain = arrayindex(regextract(_raw_log, "UserName=([^\\]+)\\"), 0)
+| alter
+    duration = coalesce(duration1 , duration2, duration3),
+    component = coalesce(component, component2),
+    msg = coalesce(msg_1, msg_2),
+    event_type = if(event_type contains "CMGService", "CMGService", event_type contains "SMSPXE", "SMSPXE", event_type),
+    user_name = if(user_name contains """\\""", arrayindex(regextract(user_name, "\\([\S]+)"), 0), user_name)
 | alter
     xdm.session_context_id = thread_id,
     xdm.event.description = msg,
@@ -34,4 +34,7 @@
     xdm.network.dns.dns_resource_record.name = dns_name,
     xdm.observer.name = site_server,
     xdm.event.duration = to_number(duration),
-    xdm.event.type = event_type;
+    xdm.event.type = event_type,
+    xdm.event.log_level = if(log_prefix contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_prefix contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_prefix contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_prefix contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_prefix contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_prefix contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_prefix contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_prefix)),
+    xdm.source.user.domain = user_domain,
+    xdm.source.user.username = user_name;

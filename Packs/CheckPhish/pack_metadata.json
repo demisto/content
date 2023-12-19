@@ -1,6 +1,6 @@
 {
     "name": "CheckPhish",
-    "description": "Check any URL to detect supsicious behavior.",
+    "description": "Check any URL to detect suspicious behavior.",
     "support": "xsoar",
     "currentVersion": "1.0.19",
     "author": "Cortex XSOAR",
@@ -11,7 +11,8 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence Management"
+        "Threat Intelligence Management",
+        "Free Enricher"
     ],
     "useCases": [],
     "keywords": [],

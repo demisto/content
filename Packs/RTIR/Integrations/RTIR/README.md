@@ -24,7 +24,11 @@
 <strong>Name</strong>: A textual name for the integration instance.</li>
 <li>
 <strong>Server URL</strong> (for example: https://192.168.0.1)</li>
-<li><strong>Credentials</strong></li>
+<li><strong>Username</strong></li>
+<li><strong>Password</strong></li>
+<li><strong>Token</strong></li>
+<li><strong>Certificate</strong></li>
+<li><strong>Private Key</strong></li>
 <li>
 <strong>Trust any certificate </strong>(not secure)</li>
 <li><strong>Use system proxy settings</strong></li>

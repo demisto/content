@@ -2564,22 +2564,6 @@ def main():
             return_results(results=get_console_version(client=client))
         elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-list':
             return_results(results=get_custom_feeds_ip_list(client=client))
-        elif requested_command == 'prisma-cloud-compute-profile-host-list':
-            return_results(results=get_profile_host_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-profile-container-list':
-            return_results(results=get_container_profile_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-profile-container-hosts-list':
-            return_results(results=get_container_hosts_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-profile-container-forensic-list':
-            return_results(results=get_profile_container_forensic_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-host-forensic-list':
-            return_results(results=get_profile_host_forensic_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-add':
-            return_results(results=add_custom_ip_feeds(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-console-version-info':
-            return_results(results=get_console_version(client=client))
-        elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-list':
-            return_results(results=get_custom_feeds_ip_list(client=client))
         elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-list':
             return_results(results=get_custom_malware_feeds(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-add':

@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys
 import time
 import argparse
@@ -243,7 +242,6 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     :return: No object is returned, just updates the tests_data_keep object.
     """
     server = SERVER_URL.format(server_ip)
-    server_numeric_version = tests_settings.serverNumericVersion or ''
     logging.info(f"Executing tests with the server {server} - and the server ip {server_ip}")
     slack = tests_settings.slack
     circle_ci = tests_settings.circleci
@@ -274,14 +272,16 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     xsoar_client = demisto_client.configure(base_url=server, username=demisto_user,
                                             password=demisto_pass, verify_ssl=False)
 
+    server_numeric_version = get_server_numeric_version(xsoar_client, tests_settings.is_local_run)
+
     # turn off telemetry
     turn_off_telemetry(xsoar_client)
 
     failed_playbooks: list = []
     succeed_playbooks: list = []
-    skipped_tests: set = set([])
-    skipped_integration: set = set([])
-    playbook_skipped_integration: set = set([])
+    skipped_tests: set = set()
+    skipped_integration: set = set()
+    playbook_skipped_integration: set = set()
 
     #  Private builds do not use mocking. Here we copy the mocked test list to the unmockable list.
     private_tests = get_test_records_of_given_test_names(tests_settings, all_tests)
@@ -350,8 +350,6 @@ def manage_tests(tests_settings: SettingsTester):
                                         tests should be ran.
 
     """
-    tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
-                                                                     tests_settings.is_local_run)
     instances_ips = get_instances_ips_and_names(tests_settings)
     tests_data_keeper = DataKeeperTester()
 

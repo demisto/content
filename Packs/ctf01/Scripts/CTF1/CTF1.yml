@@ -1,0 +1,31 @@
+commonfields:
+  id: CTF_1
+  version: -1
+name: CTF_1
+script: ''
+type: python
+tags: []
+comment: This should provide answers to the CTF_1.
+enabled: true
+args:
+- name: secret
+  description: Enter the needed secret.
+- name: question_ID
+  description: The question id e.g. 01/02/03...
+  auto: PREDEFINED
+  predefined:
+  - "01"
+  - "02"
+  - "03"
+  - "04"
+  - "05"
+  isArray: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.13.78960
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 8.2.0
+tests:
+- No tests (auto formatted)

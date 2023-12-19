@@ -1,0 +1,1509 @@
+commonfields:
+  id: Netcraft V2
+  version: -1
+name: Netcraft V2
+display: Netcraft
+category: Utilities
+description: Netcraft takedown, submission and screenshot management.
+sectionOrder:
+- Connect
+- Collect
+configuration:
+- display: Takedown Server URL
+  name: takedown_url
+  defaultvalue: "https://takedown.netcraft.com"
+  type: 0
+  required: true
+  section: Connect
+  additionalinfo: The URL to use for the Takedown Service.
+- display: Submission Server URL
+  name: submission_url
+  defaultvalue: "https://report.netcraft.com"
+  type: 0
+  required: true
+  section: Connect
+  additionalinfo: The URL to use for the Submission Service.
+- name: credentials
+  type: 9
+  required: true
+  displaypassword: API Key
+  hiddenusername: true
+  section: Connect
+  additionalinfo: The API key associated with the Netcraft account.
+- name: region
+  type: 0
+  required: true
+  display: Region
+  section: Connect
+  additionalinfo: The default region to use with the takedown Service.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+  defaultvalue: Netcraft Attack
+  required: false
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: true
+- defaultvalue: '1'
+  display: 'Incidents Fetch Interval'
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+script:
+  commands:
+  - name: netcraft-attack-report
+    description: |
+      Report a new attack or authorize an existing attack in the Takedown Service.
+      If a takedown for the attack already exists in the Netcraft system it will be authorized, otherwise, a new takedown will be added and authorized.
+    arguments:
+    - name: attack
+      required: true
+      description: The digital location of the attack to take down, e.g., a phishing URL, or a fraudulent email address.
+    - name: comment
+      required: true
+      description: The reason for the report, such as a description of the attack.
+    - description: The brand to report the takedown under. If no brand is specified, the brand of the provided "region" will be used.
+      name: brand
+    - defaultValue: phishing_url
+      description: |
+        The type of attack being reported.
+        Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.
+      name: attack_type
+    - auto: PREDEFINED
+      description: |
+        Set to "true" if the attack is not currently active.
+        This will place the takedown directly into the "Inactive (Monitoring)" status, which can be used to monitor suspicious sites.
+      name: inactive
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: |
+        If set to true, Netcraft will be authorized to start the takedown as soon as the report has been processed.
+        If set to false, the takedown will only be authorized if you have automatic authorization enabled for the given attack type, or if the takedown is manually authorized later through the web interface.
+      name: force_auth
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: |
+        Should be set to true if the reported content contains or is related to a computer virus.
+        This is used to determine the correct attack type in the case where the attack_type argument has not been provided.
+      name: malware
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |
+        Should be set to true if you believe that the domain name has been registered as part of the fraud.
+        This will ensure that the registrar is contacted to seek suspension of the domain name.
+      name: suspected_fraud_domain
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The password to extract any archived evidence provided via the evidence argument, if necessary.
+      name: password
+    - description: Entry ID of the evidence file uploaded to Cortex XSOAR. If a password is needed for the file, it can be provided with the "password" argument.
+      name: entry_id
+    - description: |
+        The URL where the phishkit archive was found.
+        This parameter is required for attacks of type "phishkit_email".
+      name: phishkit_fetch_url
+    - description: |
+        The URL of the phishing attack which uses the referenced phishkit.
+        This parameter is required for attacks of type "phishkit_email" and/or "phishkit_archive".
+      name: phishkit_phish_url
+    - description: A free-text field which can be used to keep track of particular attacks.
+      name: customer_label
+    - description: A comma-separated list of tags to apply to the attack.
+      isArray: true
+      name: tags
+    - description: |
+        The name of the region to create a takedown under.
+        If not provided, the region specified in the instance configuration will be used.
+      name: region
+    outputs:
+    - contextPath: Netcraft.Takedown.id
+      description: The ID of the takedown. (This key will only appear if the takedown has been created and verified).
+      type: String
+  - name: netcraft-takedown-list
+    arguments:
+    - name: id
+      description: Filter to the takedown with the specified ID.
+    - name: statuses
+      description: |
+        Filter to takedowns that are currently in the given status. Multiple values may be provided as a comma-separated list.
+        Possible values: "inactive_monitoring", "verified", "contacted_hosting", "contacted_police", "contacted_upstream", "resolved_monitoring", "resolved", "stale".
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - unverified
+      - inactive_monitoring
+      - verified
+      - contacted_hosting
+      - contacted_police
+      - contacted_upstream
+      - resolved_monitoring
+      - resolved
+      - stale
+      - invalid
+    - name: url
+      description: Filter by URL, email, hostname, domain or IP.
+    - name: false_positive
+      description: Whether to filter to takedowns which have been incorrectly marked as malicious.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: ip
+      description: Filter to attacks that are hosted on the given IPv4 address, or within the given IPv4 CIDR range. Note that partial IP addresses will not be matched.
+    - description: Filter to takedowns that were submitted before the specified takedown ID.
+      name: id_before
+    - description: |
+        Filter to takedowns that were submitted after the specified takedown
+        ID. When using this argument we recommend that you also set the "sort" argument
+        to Id to ensure that no results are missed.
+      name: id_after
+    - description: |
+        Filter to takedowns that were submitted on or after the date/time
+        provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC format. If no time
+        information is provided, the system will default to YYYY-MM-DD 00:00:00. Relative
+        date/time formats are also supported, for example "5 days ago"",\_and "monday
+        this week".
+      name: date_from
+    - description: |
+        Filter to takedowns that were submitted on or before the date/time
+        provided. Values should be supplied as "YYYY-MM-DD HH:MM:SS" in UTC format. If no time
+        information is provided, the system will default to "YYYY-MM-DD 00:00:00". Relative
+        date/time formats are also supported, for example "5 days ago", and "monday this week".
+      name: date_to
+    - description: Filter to takedowns that were reported by the given user.
+      name: reporter_email
+    - description: Filter to takedowns that were reported through the given mechanism.
+      name: report_source
+      auto: PREDEFINED
+      predefined:
+      - Interface
+      - Phishing Feed
+      - Referer
+      - Forensic
+      - Api
+      - Email Feed
+      - Fraud Detection
+    - description: |
+        Filter to takedowns of the given attack type. Multiple values may be provided as a comma-separated list.
+        Run the command "netcraft-attack-type-list" to get the list of available types, use the "Name" field of the type for this argument.
+      name: attack_types
+      isArray: true
+    - description: Filter based on whether and by who the takedown has been authorized.
+      name: auth_given
+      auto: PREDEFINED
+      predefined:
+      - 'Yes'
+      - Yes Customer
+      - Yes Netcraft
+      - 'No'
+    - description: Filter based on whether and by who the takedown has been escalated.
+      name: escalated
+      auto: PREDEFINED
+      predefined:
+      - 'Yes'
+      - Yes Customer
+      - Yes Netcraft
+      - 'No'
+    - defaultValue: Status
+      description: The key that the list of takedowns should be sorted by.
+      name: sort
+      auto: PREDEFINED
+      predefined:
+      - Auth Given
+      - Customer Label
+      - Date Submitted
+      - Hoster
+      - Id
+      - Ip
+      - Language
+      - Last Updated
+      - Registrar
+      - Status
+    - defaultValue: asc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: The direction to sort takedowns in with the key specified in the "sort" argument.
+      name: sort_direction
+    - defaultValue: '50'
+      description: The maximum number of takedowns to return. The max value is 100,000.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |
+        Whether to retrieve all takedowns that match the filters.
+        If true, the "limit" argument will be ignored. The maximum takedowns returned in one call is 100,000.
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
+    - description: |
+        The name of the region for which to list takedowns.
+        If not provided, the region specified in the instance configuration will be used.
+      name: region
+    description: |
+      Get a list of takedown objects.
+      Netcraft has a limit of 1,000,000 objects returned within a 24 hour period (moving time window) per email address.
+    outputs:
+    - contextPath: Netcraft.Takedown.id
+      description: The ID of the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.group_id
+      description: The ID of the group that the takedown belongs to. Can potentially be the same ID, or empty if there is no group.
+      type: String
+    - contextPath: Netcraft.Takedown.attack_url
+      description: The location of the attack being taken down. This field contains a canonicalized value. See the reported_url field for the exact location that was reported to takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.reported_url
+      description: The location of the attack as reported to takedown. See the attack_url field for the formatted location of the attack being taken down.
+      type: String
+    - contextPath: Netcraft.Takedown.ip
+      description: The IPv4 address of the attack.
+      type: String
+    - contextPath: Netcraft.Takedown.country_code
+      description: ISO country code of the advertised hosting location.
+      type: String
+    - contextPath: Netcraft.Takedown.date_submitted
+      description: The date and time that the takedown was reported, in UTC format.
+      type: Date
+    - contextPath: Netcraft.Takedown.last_updated
+      description: The date and time of the last action taken on the takedown, in UTC format.
+      type: Date
+    - contextPath: Netcraft.Takedown.region
+      description: The name of the area that the takedown resides in.
+      type: String
+    - contextPath: Netcraft.Takedown.target_brand
+      description: The name of the brand being targeted by the attack.
+      type: String
+    - contextPath: Netcraft.Takedown.authgiven
+      description: Indicates whether the takedown has been authorized.
+      type: Boolean
+    - contextPath: Netcraft.Takedown.host
+      description: The name of the company responsible for the IP address.
+      type: String
+    - contextPath: Netcraft.Takedown.registrar
+      description: The name of the registrar responsible for the domain name used in the attack.
+      type: String
+    - contextPath: Netcraft.Takedown.customer_label
+      description: A custom field which may be provided along with the takedown report.
+      type: String
+    - contextPath: Netcraft.Takedown.date_authed
+      description: The date and time that the takedown was authorized, in UTC.
+      type: Date
+    - contextPath: Netcraft.Takedown.stop_monitoring_date
+      description: |
+        The date and time that the takedown system stopped monitoring the attack, in UTC format.
+        If the attack is still being monitored, an empty string is given.
+      type: Date
+    - contextPath: Netcraft.Takedown.domain
+      description: |
+        The domain of the URL or email address being taken down.
+        This will be blank for an attack with no domain name.
+      type: String
+    - contextPath: Netcraft.Takedown.language
+      description: The language used in the attack (if it can be determined).
+      type: String
+    - contextPath: Netcraft.Takedown.date_first_actioned
+      description: |
+        The date and time of the first action taken by Netcraft
+        after the takedown was reported, in UTC format. This is calculated as the first time
+        that the takedown was moved out of the "unverified" status.
+      type: Date
+    - contextPath: Netcraft.Takedown.escalated
+      description: Indicates whether the takedown has been escalated.
+      type: Boolean
+    - contextPath: Netcraft.Takedown.first_contact
+      description: The date and time that the takedown first entered a contacted state, in UTC format.
+      type: Date
+    - contextPath: Netcraft.Takedown.first_inactive
+      description: The date and time that the takedown first entered the inactive (monitoring) state in UTC format.
+      type: Date
+    - contextPath: Netcraft.Takedown.is_redirect
+      description: |
+        Whether or not the attack redirects to another location.
+        Possible values:
+          "final" - the attack is the final destination of another redirect.
+          "redirect" - the attack redirects to another location.
+          "no_redirect" - the attack does not redirect.
+      type: String
+    - contextPath: Netcraft.Takedown.attack_type
+      description: The type of attack being taken down.
+      type: String
+    - contextPath: Netcraft.Takedown.certificate
+      description: |
+        HTTPS certificate details for the hostname.
+        The structure of the returned data is the output of PHP's "openssl_x509_parse" function with the additional keys spki_sha256 and spki_sha1. (See https://www.php.net/manual/en/function.openssl-x509-parse.php).
+      type: Unknown
+    - contextPath: Netcraft.Takedown.certificate.spki_sha256
+      description: The SHA-256 hash of the Subject Public Key Info structure in the certificate.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.certificate.spki_sha1
+      description: The SHA-1 hash of the Subject Public Key Info structure in the certificate.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.deceptive_domain_score
+      description: |
+        The deceptive domain score of the domain.
+        E.g., for the URL https://l0gin.example.com/, this value will contain the deceptive domain score for example.com.
+      type: String
+    - contextPath: Netcraft.Takedown.domain_risk_rating
+      description: |
+        A score from 0 to 10 which represents the risk that the domain is hosting a malicious website.
+        E.g., for the URL https://l0gin.example.com/, this value will contain the risk rating for "example.com".
+        This score is distinct from the "deceptive domain score", and takes a range of factors into account,
+        such as the reputation of the hosting provider, age of the domain name, search engine rankings and more.
+      type: String
+    - contextPath: Netcraft.Takedown.final_outage
+      description: |
+        The duration (hh:mm:ss) between when the takedown was
+        authorized, and the final time that the attack went offline (final_resolved - date_authed).
+      type: String
+    - contextPath: Netcraft.Takedown.final_resolved
+      description: The date and time that the attack went offline for the final time, in UTC format.
+      type: Date
+    - contextPath: Netcraft.Takedown.first_outage
+      description: The duration (hh:mm:ss) between when the takedown was authorized, and the first time that the attack went offline (first_resolved - date_authed).
+      type: Date
+    - contextPath: Netcraft.Takedown.first_resolved
+      description: The date and time that the attack first went offline, in UTC format.
+      type: Date
+    - contextPath: Netcraft.Takedown.fwd_owner
+      description: The owner of the forward DNS infrastructure.
+      type: String
+    - contextPath: Netcraft.Takedown.has_phishing_kit
+      description: Indicates whether the takedown has an associated phishing kit.
+      type: Boolean
+    - contextPath: Netcraft.Takedown.hostname
+      description: The full hostname of the URL or email address being taken down. This will be blank for attacks with no hostname.
+      type: String
+    - contextPath: Netcraft.Takedown.hostname_ddss_score
+      description: |
+        The deceptive domain score of the hostname.
+        E.g., For the URL https://l0gin.example.com/, this value will contain the deceptive domain score for l0gin.example.com.
+      type: String
+    - contextPath: Netcraft.Takedown.evidence_url
+      description: A URL for the public incident report for this attack.
+      type: String
+    - contextPath: Netcraft.Takedown.domain_attack
+      description: |
+        Whether or not the domain name used in the attack is believed to be fraudulent.
+        Possible values (non exhaustive):
+          "all" - All attacks.
+          "yes" - There is a high confidence that the domain name is fraudulent.
+                  The domain registrar will be contacted, and the webmaster will not be contacted.
+          "yes_low_confidence" - The domain is likely fraudulent. The domain registrar
+                                will be contacted, and the webmaster will still be contacted.
+          "no" - The domain name is not believed to be fraudulent. This is likely a compromised site.
+      type: String
+    - contextPath: Netcraft.Takedown.false_positive
+      description: Indicates whether the reported content was incorrectly flagged as malicious.
+      type: Boolean
+    - contextPath: Netcraft.Takedown.hostname_attack
+      description: |
+        Whether or not the hostname used in the attack is believed to be fraudulent.
+        Possible values (non exhaustive):
+          "all" - All attacks.
+          "yes" - There is a high confidence that the hostname is fraudulent. The certificate authority will be contacted.
+          "yes_low_confidence" - The hostname is likely fraudulent.
+          "no" - The hostname is not believed to be fraudulent. This is likely a compromised site.
+      type: String
+    - contextPath: Netcraft.Takedown.malware_category
+      description: The category of malware detected. Only set for malware attack types. May be empty if category cannot be determined.
+      type: String
+    - contextPath: Netcraft.Takedown.malware_family
+      description: The family of malware detected. Only set for malware attack types. May be empty if family cannot be determined.
+      type: String
+    - contextPath: Netcraft.Takedown.phishing_kit_hash
+      description: The SHA-1 hashes of all phishing kits available for download that are related to this takedown.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.report_source
+      description: The method through which the takedown was submitted.
+      type: String
+    - contextPath: Netcraft.Takedown.reporter
+      description: Person/account that submitted the takedown. This will be the email address of the user, or "netcraft" for any reports made by Netcraft.
+      type: String
+    - contextPath: Netcraft.Takedown.rev_owner
+      description: The owner of the reverse DNS infrastructure.
+      type: String
+    - contextPath: Netcraft.Takedown.reverse_dns
+      description: The output of a reverse DNS lookup on the IP of the attack.
+      type: String
+    - contextPath: Netcraft.Takedown.certificate_revoked
+      description: If the SSL certificate has been revoked, then the date this was detected (in UTC format) is returned, else "Not revoked" is returned.
+      type: String
+    - contextPath: Netcraft.Takedown.screenshot_url
+      description: |
+        The URL(s) at which a screenshot of the attack can be found.
+        When returning a single URL as a string (the default behaviour) the returned URL will be the best guess of the screenshot which displays the live attack.
+        When returning multiple URLs, the list will be sorted by the time the screenshot was requested, with the earliest first.
+      type: String
+    - contextPath: Netcraft.Takedown.status_change_uptime
+      description: |
+        The total duration (hh:mm:ss) that the attack was available for after authorization, as determined by the takedown status changes.
+        i.e. the total amount of time since authorization that an attack was not in the resolved or resolved (monitoring)  state.'.
+      type: String
+    - contextPath: Netcraft.Takedown.status
+      description: |
+        The status of the takedown.
+        Possible values:
+          "Unverified" - The report has not yet been verified as fraudulent by Netcraft.
+          "Inactive (Monitoring)" - The attack went offline before Netcraft was authorized to start the takedown process, and is being monitored in case it returns.
+          "Verified" - The report has been verified as fraudulent, but no takedown notices have been sent.
+          "Contacted Hosting" - Takedown notices have been sent to the hosting provider.
+          "Contacted Police" - The takedown has been escalated to local law enforcement.
+          "Contacted Upstream" - The takedown has been escalated to the organization providing connectivity to the hosting provider.
+          "Monitoring" - The attack is offline, as it is being monitored in case it returns.
+          "Resolved" - The attack has been offline for 7 consecutive days, and is no longer being monitored.
+          "Stale" - The attack went offline before Netcraft was authorized to start the takedown process, and is no longer being monitored.
+          "Invalid" - The report is not a valid takedown target.
+      type: String
+    - contextPath: Netcraft.Takedown.tags
+      description: List of tags applied to the group.
+      type: String
+    - contextPath: Netcraft.Takedown.targeted_url
+      description: The URL which this attack is masquerading as, e.g., the URL of the legitimate login form that a phishing attack is targeting.
+      type: String
+    - contextPath: Netcraft.Takedown.site_risk_rating
+      description: |
+        A score from 0 to 10 which represents the risk that the hostname is hosting a malicious website.
+        E.g., For the URL https://l0gin.example.com/, this value will contain the risk rating for l0gin.example.com.
+      type: String
+    - contextPath: Netcraft.Takedown.whois_server
+      description: The WHOIS data for the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.authorization_source
+      description: |
+        The source of authorization for the takedown. will be blank if the takedown has not been authorized.  customer
+        Possible values: "customer" "netcraft".
+      type: String
+    - contextPath: Netcraft.Takedown.escalation_source
+      description: |
+        The source of escalation for the takedown. Will be blank if the takedown has not been escalated.
+        Possible values: "customer" "netcraft".
+      type: String
+    - contextPath: Netcraft.Takedown.restart_date
+      description: |
+        The latest date and time, in UTC format, that the takedown was restarted, i.e., went from the "resolved (monitoring)" status to a contacted status.
+        Will be empty if the takedown had never been restarted.
+      type: String
+    - contextPath: Netcraft.Takedown.gsb_block_status
+      description: |
+        An array of objects containing the Google Safe Browsing block status on all platforms (iOS, Android and Desktop).
+        Will be an empty array if the takedown is not a Phishing URL takedown, or if Netcraft hasn't tested the GSB block status for the takedown.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.gsb_first_blocked
+      description: |
+        An array of objects containing the first time that the URL was seen blocked in Google Safe Browsing (GSB) by Netcraft.
+        Will be an empty array if the URL was not seen blocked by GSB on any platform.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.managed
+      description: Indicates whether the takedown is being performed under the managed service.
+      type: Boolean
+    - contextPath: Netcraft.Takedown.date_escalated
+      description: The date and time that the takedown entered the managed state, in UTC format.
+      type: Date
+    - contextPath: Netcraft.Takedown.logged_credential_injections
+      description: An array of objects containing the type and value of each marked account injection associated with the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.whois_data
+      description: The WHOIS data for the takedown.
+      type: String
+  - name: netcraft-takedown-update
+    arguments:
+    - name: takedown_id
+      description: The ID of the takedown to update.
+      required: true
+      default: true
+    - name: customer_label
+      description: A free-text field which can be used to keep track of particular attacks.
+    - name: description
+      description: The reason for the report, such as a description of the attack.
+    - name: brand
+      description: The brand to move the takedown under.
+    - auto: PREDEFINED
+      description: Should be set to true if it is believed that the domain name has been registered as part of the fraud. This will ensure that the registrar is contacted to seek suspension of the domain name.
+      name: suspected_fraud_domain
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      name: suspected_fraud_hostname
+      description: Should be set to true if it is believed that the hostname has been created as part of the fraud. This will ensure that the certificate issuer is contacted to seek revocation of any certificates for the hostname.
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of tags to add to the takedown group.
+      isArray: true
+      name: add_tags
+    - description: |
+        A comma-separated list of tags to remove from the takedown group.
+        Removing a tag from a group which already doesn't have that tag is permitted.
+        However, including the same tag in both "add_tags" and "remove_tags" will return an error.
+      isArray: true
+      name: remove_tags
+    - description: The name of the region to move the takedown under.
+      name: region
+    description: Update one or more fields related to a takedown.
+    outputs: []
+  - name: netcraft-takedown-escalate
+    arguments:
+    - name: takedown_id
+      description: The ID of the automated takedown to escalate.
+      required: true
+      default: true
+    description: |
+      Escalate an automated takedown to a managed takedown.
+      Only attacks that are in an authorized state can be escalated.
+      The minimum access level required to escalate is "Escalator".
+      Note that escalating a takedown may cost one or more Netcraft managed credits.
+    outputs: []
+  - name: netcraft-takedown-note-create
+    arguments:
+    - description: The ID of the takedown to add the note to.
+      name: takedown_id
+      required: true
+      default: true
+    - description: The contents of the new note.
+      name: note_text
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: |
+        When set to true, the note will also be raised to Netcraft's operations team for further investigation.
+        This should be set if you require a Netcraft staff member to read and respond to your note.
+      name: notify
+      predefined:
+      - 'true'
+      - 'false'
+    description: Add a new note to an existing takedown.
+    outputs:
+    - contextPath: Netcraft.TakedownNote.note_id
+      description: The ID of the note added to the takedown.
+      type: Number
+  - name: netcraft-takedown-note-list
+    arguments:
+    - description: Filter to notes that have been added to the takedown with the given ID.
+      name: takedown_id
+      default: true
+    - description: |
+        Filter to notes that were created by the user with the given username.
+        Notes that were created by Netcraft can be found by filtering to "Netcraft".
+      name: author_mail
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve all notes that match the filters. If set to false, only 50 will be returned.
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
+    description: Retrieve details of notes that have been added to takedowns.
+    outputs:
+    - contextPath: Netcraft.TakedownNote.note_id
+      description: The unique identifier for the note.
+      type: Number
+    - contextPath: Netcraft.TakedownNote.takedown_id
+      description: The ID of the takedown that the note belongs to.
+      type: String
+    - contextPath: Netcraft.TakedownNote.group_id
+      description: |
+        The ID of the takedown group that this note belongs to.
+        This will only be set if the note has been attached to all takedowns in the group, otherwise this field will have a value of "0".
+      type: String
+    - contextPath: Netcraft.TakedownNote.time
+      description: The date and time that the note was created.
+      type: Date
+    - contextPath: Netcraft.TakedownNote.author
+      description: The username of the account that created the note. Notes added by Netcraft will show as "Netcraft".
+      type: String
+    - contextPath: Netcraft.TakedownNote.note
+      description: The contents of the note.
+      type: String
+  - name: netcraft-attack-type-list
+    arguments:
+    - auto: PREDEFINED
+      description: Filter to attack types where automated takedowns are available.
+      name: automated
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Filter to attack types which you have chosen to escalate to managed takedowns after the configured escalation period.
+      name: auto_escalation
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Filter to attack types which you have chosen to automatically authorize takedowns against.
+      name: auto_authorize
+      predefined:
+      - 'true'
+      - 'false'
+    - description: |
+        The name of the region to create a takedown under.
+        If not provided, the region specified in the instance configuration will be used.
+      name: region
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve all attack types that match the filters. If set to false, only 50 will be returned.
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
+    description: Get information on the attack types that are available under a given region.
+    outputs:
+    - contextPath: Netcraft.AttackType.name
+      description: The unique string identifier for the attack type.
+      type: String
+    - contextPath: Netcraft.AttackType.display_name
+      description: The human-readable name of the attack type.
+      type: String
+    - contextPath: Netcraft.AttackType.base_type
+      description: The unique string identifier for the top-level parent type of this attack type.
+      type: String
+    - contextPath: Netcraft.AttackType.description
+      description: A short description of the attack type.
+      type: String
+    - contextPath: Netcraft.AttackType.automated
+      description: Indicates whether or not automated takedowns are available for this attack type.
+      type: Boolean
+    - contextPath: Netcraft.AttackType.auto_escalation
+      description: Indicates whether or not you have chosen to automatically escalate takedowns under this type to managed takedowns after the configured escalation period.
+      type: Boolean
+    - contextPath: Netcraft.AttackType.auto_authorize
+      description: Indicates whether or not you have chosen to automatically authorize takedowns under this type.
+      type: Boolean
+  - name: netcraft-submission-list
+    polling: true
+    description: Get basic information about a submissions.
+    arguments:
+    - description: Get a specific submission. If provided, all the others arguments will be ignored and an extensive report will be returned.
+      name: submission_uuid
+      default: true
+    - description: Filter submissions by start date. Use UTC format or plain English for example "5 days ago".
+      name: date_start
+    - description: Filter submissions by end date. Use UTC format or plain English for example "5 days ago".
+      name: date_end
+    - description: Filter the submissions by source.
+      name: source_name
+    - description: The state of the submissions. Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      name: state
+      auto: PREDEFINED
+      predefined:
+      - Processing
+      - No Threats
+      - Suspicious
+      - Malicious
+    - description: Filter the submissions by words contained in the submission reason.
+      name: submission_reason
+    - description: Filter the submissions by submitter email.
+      name: submitter_email
+    - description: The number of submissions to return.
+      name: limit
+      defaultValue: '50'
+    - description: The number of submissions to return per page. The maximum is 1000.
+      name: page_size
+    - description: The UUID denoting the first submission to return, as given by the response of the previous run of this command under the context key "Netcraft.SubmissionNextToken".
+      name: next_token
+    - name: polling
+      hidden: true
+      defaultValue: 'false'
+      description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
+    - defaultValue: '30'
+      hidden: true
+      name: interval_in_seconds
+      description: Indicates the time in seconds until the polling sequence times out.
+    - defaultValue: '600'
+      hidden: true
+      name: timeout
+      description: Indicates how long to wait between command executions (in seconds).
+    - defaultValue: true
+      hidden: true
+      name: hide_polling_output
+      description: whether to hide the output of the polling on each run, should always be "true".
+    - defaultValue: false
+      hidden: true
+      name: ignore_404
+      description: Whether to ignore 404 responses from the API. Used when creating a submission as Netcraft may not have updated the system yet.
+    outputs:
+    - contextPath: Netcraft.Submission.date
+      description: The UNIX timestamp of the submission.
+      type: Number
+    - contextPath: Netcraft.Submission.source_name
+      description: The name of the source of this submission.
+      type: String
+    - contextPath: Netcraft.Submission.state
+      description: The state of the submission. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_email
+      description: The email address of the reporter of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.uuid
+      description: The unique identifier of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_uuid
+      description: The unique identifier of the submitter. This key appears only if the "submission_uuid" argument is *not* provided.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.date
+      description: A UNIX timestamp of when this state change occurred. This key appears only if the "submission_uuid" argument is provided.
+      type: Number
+    - contextPath: Netcraft.Submission.classification_log.from_state
+      description: The state the submission moved out of. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.to_state
+      description: The state the submission moved into. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.files
+      description: An API URL to get details about the files associated with this submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.has_cryptocurrency_addresses
+      description: Whether the submission contains cryptocurrency addresses. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_files
+      description: Whether the submission contains files. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_issues
+      description: Whether the submission contains issues. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_mail
+      description: Whether the submission has an email. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_phone_numbers
+      description: Whether the submission contains phone numbers. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_urls
+      description: Whether the submission contains URLs. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.is_archived
+      description: Whether the submission has been archived. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.last_update
+      description: A UNIX timestamp of when this submission was last updated. This key appears only if the "submission_uuid" argument is provided.
+      type: Number
+    - contextPath: Netcraft.Submission.mail
+      description: An API URL to get details about the email associated with this submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.mail_state
+      description: The state of the email in the submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.name
+      description: The name of the submission source. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.type
+      description: The type of submission source. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.pending
+      description: Whether the submission is still pending. This key appears only if the "submission_uuid" argument is provided.
+      type: Boolean
+    - contextPath: Netcraft.Submission.reason
+      description: The optional reason for this submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.source.type
+      description: The type of submission source. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.source.uuid
+      description: The UUID of the source. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.state_counts.files
+      description: An object containing the amount of files in each state, where the key is the state and the value is the amount. This key appears only if the "submission_uuid" argument is provided.
+      type: Unknown
+    - contextPath: Netcraft.Submission.state_counts.urls
+      description: An object containing the amount of URLs in each state, where the key is the state and the value is the amount. This key appears only if the "submission_uuid" argument is provided.
+      type: Unknown
+    - contextPath: Netcraft.Submission.tags.name
+      description: The name of the tag. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.tags.description
+      description: The tag's description. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.urls
+      description: An API URL to get details about the URLs associated with this submission. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.link
+      description: A link to further information about the warning. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.warning
+      description: The warning. This key appears only if the "submission_uuid" argument is provided.
+      type: String
+    - contextPath: Netcraft.SubmissionNextToken
+      description: The submission UUID to provide as the "next_token" argument in a subsequent request for pagination. Will be null if the end of the submissions has been reached. This key appears only if the "submission_uuid" argument is *not* provided.
+      type: String
+  - name: netcraft-file-report-submit
+    polling: true
+    description: Report files to Netcraft for analysis.
+    arguments:
+    - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
+      name: reporter_email
+      required: true
+    - description: A base64 encoded string of the file. To report multiple files, upload the files to Cortex XSOAR and provide the file entry IDs in the "entry_id" argument. Max 10 files per submission, with a maximum combined file size of 20MiB.
+      name: file_content
+    - description: |
+        The name of the file. To report multiple files, upload the files to Cortex XSOAR and provide the file entry IDs in the "entry_id" argument.
+      name: file_name
+    - description: A comma-separated list of Cortex XSOAR file entry IDs to report. Max 10 files per submission, with a maximum combined file size of 20MiB. The arguments "file_content" and "file_name" can be used for reporting a single file.
+      isArray: true
+      name: entry_id
+    - description: The reason the file is considered malicious. Should be less than 1000 characters.
+      name: reason
+    - auto: PREDEFINED
+      description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
+      name: polling
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval_in_seconds
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence times out.
+      name: timeout
+    outputs:
+    - contextPath: Netcraft.Submission.date
+      description: The UNIX timestamp of the submission.
+      type: Number
+    - contextPath: Netcraft.Submission.source_name
+      description: The name of the source of this submission.
+      type: String
+    - contextPath: Netcraft.Submission.state
+      description: The state of the submission. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_email
+      description: The email address of the reporter of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.uuid
+      description: The unique identifier of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.date
+      description: A UNIX timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.Submission.classification_log.from_state
+      description: The state the submission moved out of.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.to_state
+      description: The state the submission moved into.
+      type: String
+    - contextPath: Netcraft.Submission.files
+      description: An API URL to get details about the files associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.has_cryptocurrency_addresses
+      description: Whether the submission contains cryptocurrency addresses.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_files
+      description: Whether the submission contains files.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_issues
+      description: Whether the submission contains issues.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_mail
+      description: Whether the submission has an email.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_phone_numbers
+      description: Whether the submission contains phone numbers.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_urls
+      description: Whether the submission contains URLs.
+      type: Boolean
+    - contextPath: Netcraft.Submission.is_archived
+      description: Whether the submission has been archived.
+      type: Boolean
+    - contextPath: Netcraft.Submission.last_update
+      description: A UNIX timestamp of when this submission was last updated.
+      type: Number
+    - contextPath: Netcraft.Submission.mail
+      description: An API URL to get details about the email associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.mail_state
+      description: The state of the email in the submission.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.name
+      description: The name of the submission source.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.pending
+      description: Whether the submission is still pending.
+      type: Boolean
+    - contextPath: Netcraft.Submission.reason
+      description: The optional reason for this submission.
+      type: String
+    - contextPath: Netcraft.Submission.source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.source.uuid
+      description: The UUID of the source.
+      type: String
+    - contextPath: Netcraft.Submission.state_counts.files
+      description: An object containing the amount of files in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.state_counts.urls
+      description: An object containing the amount of URLs in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.tags.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Netcraft.Submission.tags.description
+      description: The tag's description.
+      type: String
+    - contextPath: Netcraft.Submission.urls
+      description: An API URL to get details about the URLs associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.link
+      description: A link to further information about the warning.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.warning
+      description: The warning.
+      type: String
+  - name: netcraft-submission-file-list
+    description: |
+      Get basic information about a submission's files.
+      When a submission is archived this command will return an error with the message "this submission has been archived".
+    arguments:
+    - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
+      name: submission_uuid
+      required: true
+      default: true
+    - name: page
+      description: The page number of file records to retrieve (used for pagination) starting from 1. The page size is defined by the "page_size" argument.
+    - name: page_size
+      description: The number of file records per page to retrieve (used for pagination). The page number is defined by the "page" argument.
+    - name: limit
+      description: The maximum number of file records to retrieve. If "page_size" is defined, this argument is ignored.
+      defaultValue: '50'
+    outputs:
+    - contextPath: Netcraft.SubmissionFile.file_state
+      description: The classification state of the file. One of "processing", "no threats" or "malicious.".
+      type: String
+    - contextPath: Netcraft.SubmissionFile.filename
+      description: The name of the file.
+      type: String
+    - contextPath: Netcraft.SubmissionFile.has_screenshot
+      description: Whether the file has a screenshot associated with it.
+      type: Boolean
+    - contextPath: Netcraft.SubmissionFile.hash
+      description: The hash of the file.
+      type: String
+    - contextPath: Netcraft.SubmissionFile.classification_log.date
+      description: A UNIX timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.SubmissionFile.classification_log.from_state
+      description: The state the entity moved out of.
+      type: String
+    - contextPath: Netcraft.SubmissionFile.classification_log.to_state
+      description: The state the entity moved into.
+      type: String
+  - name: netcraft-file-screenshot-get
+    description: Get a screenshot for a file associated with a submission.
+    arguments:
+    - description: The unique identifier of the submission from which to retrieve a file screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
+      name: submission_uuid
+      required: true
+      default: true
+    - description: The file's hash. Submission file hashes can be obtained by running the command "netcraft-submission-file-list".
+      name: file_hash
+      required: true
+    outputs:
+    - contextPath: InfoFile.Size
+      description: The size of the screenshot in bytes.
+      type: number
+    - contextPath: InfoFile.Name
+      description: The name of the screenshot.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The War Room entry ID of the screenshot.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The format and encoding of the screenshot.
+      type: string
+    - contextPath: InfoFile.Type
+      description: The type of the screenshot.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The file extension of the screenshot.
+      type: string
+  - name: netcraft-email-report-submit
+    polling: true
+    description: |
+      Report email messages to Netcraft for analysis.
+      The email will be examined for malicious attachments and URLs.
+      Optionally, emails can be encrypted before upload. If an email is encrypted before upload, it should be encrypted with AES-256-CBC, for example using OpenSSL.
+      The email must be provided using either the "message" or "entry_id" arguments.
+    arguments:
+    - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
+      name: reporter_email
+      required: true
+    - description: Either a plain text string of the malicious email in MIME format or if the "password" argument is provided, a base64 encoded AES-256-CBC encrypted email in MIME format. Max message size is 20MiB.
+      name: message
+    - description: Entry ID of an EML file uploaded to Cortex XSOAR. Max message size is 20MiB.
+      name: entry_id
+    - description: The password used to encrypt/decrypt the MIME email provided with the "message" argument. Should not be provided if the email is not encrypted.
+      name: password
+    - auto: PREDEFINED
+      description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
+      name: polling
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval_in_seconds
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence times out.
+      name: timeout
+    outputs:
+    - contextPath: Netcraft.Submission.date
+      description: The UNIX timestamp of the submission.
+      type: Number
+    - contextPath: Netcraft.Submission.source_name
+      description: The name of the source of this submission.
+      type: String
+    - contextPath: Netcraft.Submission.state
+      description: The state of the submission. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_email
+      description: The email address of the reporter of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.uuid
+      description: The unique identifier of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.date
+      description: A UNIX timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.Submission.classification_log.from_state
+      description: The state the submission moved out of.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.to_state
+      description: The state the submission moved into.
+      type: String
+    - contextPath: Netcraft.Submission.files
+      description: An API URL to get details about the files associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.has_cryptocurrency_addresses
+      description: Whether the submission contains cryptocurrency addresses.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_files
+      description: Whether the submission contains files.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_issues
+      description: Whether the submission contains issues.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_mail
+      description: Whether the submission has an email.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_phone_numbers
+      description: Whether the submission contains phone numbers.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_urls
+      description: Whether the submission contains URLs.
+      type: Boolean
+    - contextPath: Netcraft.Submission.is_archived
+      description: Whether the submission has been archived.
+      type: Boolean
+    - contextPath: Netcraft.Submission.last_update
+      description: A UNIX timestamp of when this submission was last updated.
+      type: Number
+    - contextPath: Netcraft.Submission.mail
+      description: An API URL to get details about the email associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.mail_state
+      description: The state of the email in the submission.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.name
+      description: The name of the submission source.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.pending
+      description: Whether the submission is still pending.
+      type: Boolean
+    - contextPath: Netcraft.Submission.reason
+      description: The optional reason for this submission.
+      type: String
+    - contextPath: Netcraft.Submission.source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.source.uuid
+      description: The UUID of the source.
+      type: String
+    - contextPath: Netcraft.Submission.state_counts.files
+      description: An object containing the amount of files in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.state_counts.urls
+      description: An object containing the amount of URLs in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.tags.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Netcraft.Submission.tags.description
+      description: The tag's description.
+      type: String
+    - contextPath: Netcraft.Submission.urls
+      description: An API URL to get details about the URLs associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.link
+      description: A link to further information about the warning.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.warning
+      description: The warning.
+      type: String
+  - name: netcraft-submission-mail-get
+    description: |
+      Get basic information about a submission's email.
+      When a submission is archived this command will return an error with the message "this submission has been archived".
+    arguments:
+    - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
+      name: submission_uuid
+      required: true
+      default: true
+    outputs:
+    - contextPath: Netcraft.SubmissionMail.classification_log.date
+      description: A unix timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.SubmissionMail.classification_log.from_state
+      description: The state the entity moved out of.
+      type: String
+    - contextPath: Netcraft.SubmissionMail.classification_log.to_state
+      description: The state the entity moved into.
+      type: String
+    - contextPath: Netcraft.SubmissionMail.from
+      description: The email addresses of the email senders.
+      type: String
+    - contextPath: Netcraft.SubmissionMail.hash
+      description: The MD5 hash of the email associated with this submission.
+      type: String
+    - contextPath: Netcraft.SubmissionMail.reply_to
+      description: The email addresses that reply messages of the email were sent to.
+      type: String
+    - contextPath: Netcraft.SubmissionMail.state
+      description: The classification state of the email. One of "processing", "no threats" or "malicious".
+      type: String
+    - contextPath: Netcraft.SubmissionMail.subject
+      description: The subject of the email submitted.
+      type: String
+    - contextPath: Netcraft.SubmissionMail.to
+      description: The email addresses of the email recipients.
+      type: String
+  - name: netcraft-mail-screenshot-get
+    arguments:
+    - description: The unique identifier of the submission from which to retrieve an email screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
+      name: submission_uuid
+      required: true
+      default: true
+    description: Get a screenshot for the email associated with a submission.
+    outputs:
+    - contextPath: InfoFile.Size
+      description: The size of the screenshot in bytes.
+      type: number
+    - contextPath: InfoFile.Name
+      description: The name of the screenshot.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The War Room entry ID of the screenshot.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The format and encoding of the screenshot.
+      type: string
+    - contextPath: InfoFile.Type
+      description: The type of the screenshot.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The file extension of the screenshot.
+      type: string
+  - name: netcraft-url-report-submit
+    polling: true
+    description: Report URLs to Netcraft for analysis.
+    arguments:
+    - description: The reporter's email address, to which the result of Netcraft's analysis will be sent.
+      name: reporter_email
+      required: true
+    - description: A comma-separated list of URLs to report. Up to 1,000 URLs per submission are permitted.
+      isArray: true
+      name: urls
+      required: true
+    - description: The reason the URLs are considered malicious. Should be less than 10,000 characters.
+      name: reason
+    - auto: PREDEFINED
+      description: Use Cortex XSOAR built-in polling to wait for the report to be processed.
+      name: polling
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval_in_seconds
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence times out.
+      name: timeout
+    outputs:
+    - contextPath: Netcraft.Submission.date
+      description: The UNIX timestamp of the submission.
+      type: Number
+    - contextPath: Netcraft.Submission.source_name
+      description: The name of the source of this submission.
+      type: String
+    - contextPath: Netcraft.Submission.state
+      description: The state of the submission. One of "processing", "no threats", "suspicious" or "malicious". Note, in the case of a misclassification, a submission may be assigned a higher-severity state several days after its initial classification.
+      type: String
+    - contextPath: Netcraft.Submission.submitter_email
+      description: The email address of the reporter of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.uuid
+      description: The unique identifier of the submission.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.date
+      description: A UNIX timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.Submission.classification_log.from_state
+      description: The state the submission moved out of.
+      type: String
+    - contextPath: Netcraft.Submission.classification_log.to_state
+      description: The state the submission moved into.
+      type: String
+    - contextPath: Netcraft.Submission.files
+      description: An API URL to get details about the files associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.has_cryptocurrency_addresses
+      description: Whether the submission contains cryptocurrency addresses.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_files
+      description: Whether the submission contains files.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_issues
+      description: Whether the submission contains issues.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_mail
+      description: Whether the submission has an email.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_phone_numbers
+      description: Whether the submission contains phone numbers.
+      type: Boolean
+    - contextPath: Netcraft.Submission.has_urls
+      description: Whether the submission contains URLs.
+      type: Boolean
+    - contextPath: Netcraft.Submission.is_archived
+      description: Whether the submission has been archived.
+      type: Boolean
+    - contextPath: Netcraft.Submission.last_update
+      description: A unix timestamp of when this submission was last updated.
+      type: Number
+    - contextPath: Netcraft.Submission.mail
+      description: An API URL to get details about the email associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.mail_state
+      description: The state of the email in the submission.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.name
+      description: The name of the submission source.
+      type: String
+    - contextPath: Netcraft.Submission.original_source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.pending
+      description: Whether the submission is still pending.
+      type: Boolean
+    - contextPath: Netcraft.Submission.reason
+      description: The optional reason for this submission.
+      type: String
+    - contextPath: Netcraft.Submission.source.type
+      description: The type of submission source.
+      type: String
+    - contextPath: Netcraft.Submission.source.uuid
+      description: The UUID of the source.
+      type: String
+    - contextPath: Netcraft.Submission.state_counts.files
+      description: An object containing the amount of files in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.state_counts.urls
+      description: An object containing the amount of URLs in each state, where the key is the state and the value is the amount.
+      type: Unknown
+    - contextPath: Netcraft.Submission.tags.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Netcraft.Submission.tags.description
+      description: The tag's description.
+      type: String
+    - contextPath: Netcraft.Submission.urls
+      description: An API URL to get details about the URLs associated with this submission.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.link
+      description: A link to further information about the warning.
+      type: String
+    - contextPath: Netcraft.Submission.warnings.warning
+      description: The warning.
+      type: String
+  - name: netcraft-submission-url-list
+    description: |
+      Get basic information about a submission's URLs.
+      When a submission is archived this command will return an error with the message "this submission has been archived".
+    arguments:
+    - description: The submission's unique identifier. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
+      name: submission_uuid
+      required: true
+      default: true
+    - name: page
+      description: The page number of URLs to retrieve (used for pagination). The page size is defined by the "page_size" argument.
+    - name: page_size
+      description: The number of URLs per page to retrieve (used for pagination). The page number is defined by the "page" argument.
+    - name: limit
+      description: The maximum number of URLs to retrieve. If "page_size" is defined, this argument is ignored.
+      defaultValue: '50'
+    outputs:
+    - contextPath: Netcraft.SubmissionURL.url
+      description: The URL reported.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.url_state
+      description: The state of the URL. One of "processing", "no threats", "unavailable", "malicious", "rejected", or "suspicious".
+      type: String
+    - contextPath: Netcraft.SubmissionURL.classification_log.date
+      description: A UNIX timestamp of when this state change occurred.
+      type: Number
+    - contextPath: Netcraft.SubmissionURL.classification_log.from_state
+      description: The state the entity moved out of.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.classification_log.to_state
+      description: The state the entity moved into.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.country_code
+      description: The country code this hostname resolved to.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.file_hash
+      description: If the URL was found in a file that was submitted or an email attachment, this field contains the MD5 hash of that file.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.hostname
+      description: The hostname of the URL.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.incident_report_url
+      description: A link to the incident report detailing the attack hosted by the URL. This will only exist if Netcraft is performing takedown action.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.ip
+      description: The IP address this hostname resolved to.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.reason
+      description: The reason this URL is believed to be malicious.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.screenshots.hash
+      description: A hash of the screenshot provided.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.screenshots.type
+      description: The type of screenshot. One of "gif" or "png".
+      type: String
+    - contextPath: Netcraft.SubmissionURL.sources.file_hash
+      description: If this URL originated in a file, this is the hash of the file.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.sources.file_name
+      description: If this URL originated in a file, this is the filename.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.sources.source
+      description: The name of a source this URL was found in.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.sources.source_id
+      description: The part of the email the URL was found in, if applicable. Either 1 for the body of the email, or 2 for an attachment to the email.
+      type: Number
+    - contextPath: Netcraft.SubmissionURL.tags.description
+      description: The tag's description.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.tags.name
+      description: The name of the tag.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.tags.submitter_tag
+      description: The submitter of the tag, 1 is for user, 0 is for Netcraft.
+      type: Number
+    - contextPath: Netcraft.SubmissionURL.takedown_link
+      description: A link to the takedown associated with the URL.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.takedown_url_id
+      description: The ID for the URL in takedown.
+      type: Number
+    - contextPath: Netcraft.SubmissionURL.url_classification_reason
+      description: The reason for a URL classification.
+      type: String
+    - contextPath: Netcraft.SubmissionURL.url_takedown_state
+      description: The progress of Netcraft's takedown action against the URL. One of "not injected", "not started", "in progress" or "resolved".
+      type: String
+    - contextPath: Netcraft.SubmissionURL.uuid
+      description: The UUID of the URL.
+      type: String
+  - name: netcraft-url-screenshot-get
+    description: Download associated screenshots for a specified URL.
+    arguments:
+    - description: The unique identifier of the submission from which to retrieve a URL screenshot. Submission UUIDs can be obtained by running the command "netcraft-submission-list".
+      name: submission_uuid
+      required: true
+      default: true
+    - description: The URL's UUID. Submission URL UUIDs can be obtained by running the command "netcraft-submission-url-list".
+      name: url_uuid
+      required: true
+    - description: An MD5 hash of the URL's screenshot. Submission URL screenshot hashes can be obtained by running the command "netcraft-submission-url-list".
+      name: screenshot_hash
+      required: true
+    outputs:
+    - contextPath: InfoFile.Size
+      description: The size of the screenshot in bytes.
+      type: number
+    - contextPath: InfoFile.Name
+      description: The name of the screenshot.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The War Room entry ID of the screenshot.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The format and encoding of the screenshot.
+      type: string
+    - contextPath: InfoFile.Type
+      description: The type of the screenshot.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The file extension of the screenshot.
+      type: string
+  script: '-'
+  type: python
+  dockerimage: demisto/python3:3.10.13.80014
+  subtype: python3
+  isfetch: true
+  runonce: false
+fromversion: 6.10.0
+tests:
+- Test - Netcraft
+defaultmapperin: Netcraft Incoming Mapper

@@ -1,0 +1,232 @@
+{
+    "claroty_ctd_raw": {
+        "cat": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceEventClassId": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefName": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefSeverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs10": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs10label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs11": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs11label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs12": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs12label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs13": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs13label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs14": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs14label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs15": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs15label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs16": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs16label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs17": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs17label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs18": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs18label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs19": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs19label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs20": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs20label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs21": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs21label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs22": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs22label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs4": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs4label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs5": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs5label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs6": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs6label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs7": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs7label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs8": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs8label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs9": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs9label": {
+            "type": "string",
+            "is_array": false
+        },
+        "dhost": {
+            "type": "string",
+            "is_array": false
+        },
+        "dmac": {
+            "type": "string",
+            "is_array": false
+        },
+        "dst": {
+            "type": "string",
+            "is_array": false
+        },
+        "externalid": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "shost": {
+            "type": "string",
+            "is_array": false
+        },
+        "smac": {
+            "type": "string",
+            "is_array": false
+        },
+        "src": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

@@ -13,6 +13,8 @@
     "deprecated": false,
     "certification": "certified",
     "price": 100,
+    "downloads": 0,
+    "searchRank": 0,
     "vendorId" : "vendorId",
     "partnerId": "partnerId",
     "partnerName": "partnerName",

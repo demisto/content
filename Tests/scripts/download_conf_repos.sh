@@ -85,7 +85,18 @@ clone_repository_with_fallback_branch() {
   fi
 }
 
-echo "Getting content-test-conf and infra repositories with branch:${CI_COMMIT_BRANCH}, with fallback to master"
+TEST_UPLOAD_BRANCH_SUFFIX="-upload_test_branch-"
+# Search for the branch name without the suffix of '-upload_test_branch-' in case it exists.
+if [[ "${CI_COMMIT_BRANCH}" == *"${TEST_UPLOAD_BRANCH_SUFFIX}"* ]]; then
+  # Using bash string pattern matching to search only the last occurrence of the suffix, that's why we use a single '%'.
+  SEARCHED_BRANCH_NAME="${CI_COMMIT_BRANCH%"${TEST_UPLOAD_BRANCH_SUFFIX}"*}"
+  echo "Found branch with suffix ${TEST_UPLOAD_BRANCH_SUFFIX} in branch name, using the branch ${SEARCHED_BRANCH_NAME} to clone content-test-conf and infra repositories"
+else
+  # default to CI_COMMIT_BRANCH when the suffix is not found.
+  echo "Didn't find a branch with suffix ${TEST_UPLOAD_BRANCH_SUFFIX} in branch name, using the branch ${CI_COMMIT_BRANCH} to clone content-test-conf and infra repositories, with fallback to master"
+  SEARCHED_BRANCH_NAME="${CI_COMMIT_BRANCH}"
+fi
+echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
 
 SECRET_CONF_PATH="./conf_secret.json"
 echo ${SECRET_CONF_PATH} > secret_conf_path
@@ -104,7 +115,7 @@ echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
 CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
 
-clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${CI_COMMIT_BRANCH}" 3 10 "master"
+clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 
 cp ./content-test-conf/secrets_build_scripts/google_secret_manager_handler.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
@@ -117,11 +128,11 @@ cp -r ./content-test-conf/content/PrivatePacks/* ./Packs
 echo "Cloned PrivatePacks"
 
 if [[ "${NIGHTLY}" == "true" || "${EXTRACT_PRIVATE_TESTDATA}" == "true" ]]; then
-    python ./Tests/scripts/extract_content_test_conf.py --content-path . --content-test-conf-path ./content-test-conf
+    python ./Tests/scripts/extract_content_test_conf.py --content-path . --content-test-conf-path ./content-test-conf --missing-content-packs-test-conf "${ARTIFACTS_FOLDER_SERVER_TYPE}/missing_content_packs_test_conf.txt"
 fi
 rm -rf ./content-test-conf
 
-clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${CI_COMMIT_BRANCH}" 3 10 "master"
+clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/infra" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 
 cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
 cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
@@ -131,4 +142,3 @@ rm -rf ./infra
 
 set -e
 echo "Successfully cloned content-test-conf and infra repositories"
-

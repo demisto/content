@@ -64,7 +64,7 @@ Recursively extracts specified fields from provided list of assets for Prisma Cl
                 "accountName": "aws-user-personal",
                 "cloudType": "aws",
                 "fqdn": [
-                    "ec2-35-180-1-1.eu-west-3.compute.amazonaws.com"
+                    "ec2.eu.compute-1.amazonaws.com"
                 ],
                 "hasAlert": false,
                 "id": "i-654321b",
@@ -88,5 +88,5 @@ Recursively extracts specified fields from provided list of assets for Prisma Cl
 >|accountId|accountName|cloudType|fqdn|hasAlert|id|ip|regionId|resourceName|resourceType|rrn|service|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 12345 | aws-user-personal | aws | application-lb-624166765.us-east-1.elb.amazonaws.com | false | arn:aws:elasticloadbalancing:us-east-1:12345:loadbalancer/app/application-lb/1398164320221c02 |  | us-east-1 | application-lb | Managed Load Balancer | rrn::managedLb:us-east-1:12345:b38d940663c047b02c2116be49695cf353976dff:arn%3Aaws%3Aelasticloadbalancing%3Aus-east-1%3A12345%3Aloadbalancer%2Fapp%2Fapplication-lb%2F1398164320221c02 | Amazon Elastic Load Balancing |
->| 12345 | aws-user-personal | aws | ec2-35-180-1-1.eu-west-3.compute.amazonaws.com | false | i-654321 | 35.180.1.1 | eu-west-3 | testvm | Instance | rrn::instance:eu-west-3:12345:9db2db5fdba47606863c8da86d3ae594fb5aee2b:i-654321 | Amazon EC2 |
+>| 12345 | aws-user-personal | aws | ec2.eu.amazonaws.com | false | i-654321 | 35.180.1.1 | eu-west-3 | testvm | Instance | rrn::instance:eu-west-3:12345:9db2db5fdba47606863c8da86d3ae594fb5aee2b:i-654321 | Amazon EC2 |
 

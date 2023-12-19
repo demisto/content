@@ -7,7 +7,7 @@ type: python
 tags:
 - transformer
 - string
-comment: "Extraction of elements which are contained in all the subgroups of the match to the pattern.\nFor example, extracting from the string \"The quick brown fox\" the object `{\"article\":\"The\",\"noun\":quick\"}`\n(See arguments descriptions for more details) "
+comment: "Extraction of elements which are contained in all the subgroups of the match to the pattern.\nFor example, extracting from the string \"The quick brown fox\" the object `{\"article\":\"The\",\"noun\":quick\"}`\n(See arguments descriptions for more details)."
 enabled: true
 args:
 - name: value
@@ -24,7 +24,7 @@ args:
   description: The comma separated flags for pattern matching in regex. "dotall" (s), "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.78960
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

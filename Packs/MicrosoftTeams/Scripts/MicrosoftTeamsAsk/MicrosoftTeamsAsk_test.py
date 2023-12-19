@@ -19,7 +19,8 @@ def execute_command(name, args=None):
             'options': ['Great', 'Wonderful', 'SSDD', 'Wooah'],
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8',
             'investigation_id': '32',
-            'task_id': '44'
+            'task_id': '44',
+            'form_type': 'predefined-options',
         })
         expected_script_arguments: dict = {
             'message': expected_message,
@@ -50,7 +51,8 @@ def test_microsoft_teams_ask(mocker):
         'option1': 'Great',
         'option2': 'Wonderful',
         'additional_options': 'SSDD,Wooah',
-        'task_id': '44'
+        'task_id': '44',
+        'form_type': 'predefined-options',
     }
     mocker.patch.object(
         demisto,

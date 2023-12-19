@@ -522,6 +522,43 @@ def test_list_incidents_command(requests_mock):
     assert response.outputs_key_field == 'incident_id'
 
 
+def test_get_incident_command(requests_mock):
+    """Tests get_incident_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate update_incident_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'get_incident_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, get_incident_command
+
+    from test_data.raw_response import INCIDENT_GET_RAW
+    from test_data.expected_results import INCIDENT_GET_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/incidents/get_incident_extra_data/',
+                       json=INCIDENT_GET_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'incident_id': 1
+    }
+
+    response = get_incident_command(client, args)
+
+    assert response.outputs == INCIDENT_GET_RESULTS
+    assert response.outputs_prefix == 'ASM.Incident'
+
+
 def test_update_incident_command(requests_mock):
     """Tests update_incident_command function.
 
@@ -596,6 +633,87 @@ def test_update_alert_command(requests_mock):
 
     assert response.outputs == ALERT_UPDATE_RESULTS
     assert response.outputs_prefix == 'ASM.UpdatedAlerts'
+
+
+def test_ip_command(requests_mock):
+    """Tests ip_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate ip_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'ip_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, ip_command
+
+    from test_data.raw_response import IP_DOMAIN_RAW
+    from test_data.expected_results import IP_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
+                       json=IP_DOMAIN_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'ip': "1.1.1.1"
+    }
+
+    responses = ip_command(client, args)
+    assert len(responses) == 2
+    for response in responses:
+        if response.outputs_prefix == 'ASM.IP':
+            assert response.outputs == IP_RESULTS
+        elif response.outputs_prefix == 'DBotScore':
+            assert response.outputs.get("Score") == 0
+
+
+def test_domain_command(requests_mock):
+    """Tests domain_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate domain_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'domain_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, domain_command
+
+    from test_data.raw_response import IP_DOMAIN_RAW
+    from test_data.expected_results import IP_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
+                       json=IP_DOMAIN_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'domain': "*.acme.com"
+    }
+    del IP_RESULTS[0]['ip']
+    responses = domain_command(client, args)
+
+    assert len(responses) == 2
+    for response in responses:
+        if response.outputs_prefix == 'ASM.Domain':
+            assert response.outputs == IP_RESULTS
+        elif response.outputs_prefix == 'DBotScore':
+            assert response.outputs.get("Score") == 0
 
 
 def test_fetch_incidents(requests_mock, mocker):

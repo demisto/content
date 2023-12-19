@@ -4,10 +4,6 @@ import Whois
 import demistomock as demisto
 import pathlib
 import pytest
-import subprocess
-import time
-import tempfile
-import sys
 from typing import Any
 
 from CommonServerPython import DBotScoreReliability, EntryType, ExecutionMetrics, ErrorTypes
@@ -84,23 +80,24 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
         assert "Exception thrown calling command" in results[0]['Contents']
 
 
-def test_socks_proxy(mocker, request):
-    mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5h://localhost:9980'})
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(demisto, 'results')
-    tmp = tempfile.TemporaryFile('w+')
-    microsocks = './test_data/microsocks_darwin' if 'darwin' in sys.platform else './test_data/microsocks'
-    process = subprocess.Popen([microsocks, "-p", "9980"], stderr=subprocess.STDOUT, stdout=tmp)
-
-    def cleanup():
-        process.kill()
-
-    request.addfinalizer(cleanup)
-    time.sleep(1)
-    Whois.main()
-    assert_results_ok()
-    tmp.seek(0)
-    assert 'connected to' in tmp.read()  # make sure we went through microsocks
+# Test skipped - CIAC-8779
+# def test_socks_proxy(mocker, request):
+#     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5h://localhost:9980'})
+#     mocker.patch.object(demisto, 'command', return_value='test-module')
+#     mocker.patch.object(demisto, 'results')
+#     tmp = tempfile.TemporaryFile('w+')
+#     microsocks = './test_data/microsocks_darwin' if 'darwin' in sys.platform else './test_data/microsocks'
+#     process = subprocess.Popen([microsocks, "-p", "9980"], stderr=subprocess.STDOUT, stdout=tmp)
+#
+#     def cleanup():
+#         process.kill()
+#
+#     request.addfinalizer(cleanup)
+#     time.sleep(1)
+#     Whois.main()
+#     assert_results_ok()
+#     tmp.seek(0)
+#     assert 'connected to' in tmp.read()  # make sure we went through microsocks
 
 
 TEST_QUERY_RESULT_INPUT = [

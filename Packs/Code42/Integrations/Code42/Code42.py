@@ -10,8 +10,6 @@ import py42.sdk
 import py42.settings
 from datetime import datetime
 from uuid import UUID
-from py42.services.detectionlists.departing_employee import DepartingEmployeeFilters
-from py42.services.detectionlists.high_risk_employee import HighRiskEmployeeFilters
 from py42.sdk.queries.fileevents.file_event_query import FileEventQuery as FileEventQueryV1
 from py42.sdk.queries.fileevents.v2.file_event_query import FileEventQuery as FileEventQueryV2
 from py42.sdk.queries.fileevents.filters import (
@@ -193,8 +191,9 @@ def _get_severity_filter_value(severity_arg):
         return (
             [severity_arg.upper()]
             if isinstance(severity_arg, str)
-            else list(map(lambda x: x.upper(), severity_arg))
+            else [x.upper() for x in severity_arg]
         )
+    return None
 
 
 def _create_alert_query(event_severity_filter, start_time):
@@ -206,21 +205,6 @@ def _create_alert_query(event_severity_filter, start_time):
     alert_filters.append_result(start_time, DateObserved.on_or_after)
     alert_query = alert_filters.to_all_query()
     return alert_query
-
-
-def _get_all_high_risk_employees_from_page(page, risk_tags):
-    res = []
-    employees = page.get("items") or []
-    for employee in employees:
-        if not risk_tags:
-            res.append(employee)
-            continue
-
-        employee_tags = employee.get("riskFactors")
-        # If the employee risk tags contain all the given risk tags
-        if employee_tags and set(risk_tags) <= set(employee_tags):
-            res.append(employee)
-    return res
 
 
 class Code42Client(BaseClient):
@@ -257,85 +241,6 @@ class Code42Client(BaseClient):
 
             self._sdk = py42.sdk.SDKClient.from_jwt_provider(self._base_url, api_client_provider)
         return self._sdk
-
-    # Departing Employee methods (deprecated, replaced by Watchlist methods)
-
-    def get_departing_employee(self, username):
-        user_id = self._get_user_id(username)
-        response = self.sdk.detectionlists.departing_employee.get(user_id)
-        return response.data
-
-    def add_user_to_departing_employee(self, username, departure_date=None, note=None):
-        user_id = self._get_user_id(username)
-        self.sdk.detectionlists.departing_employee.add(
-            user_id, departure_date=departure_date
-        )
-        if note:
-            self.sdk.detectionlists.update_user_notes(user_id, note)
-        return user_id
-
-    def remove_user_from_departing_employee(self, username):
-        user_id = self._get_user_id(username)
-        self.sdk.detectionlists.departing_employee.remove(user_id)
-        return user_id
-
-    def get_all_departing_employees(self, results, filter_type):
-        res = []
-        results = int(results) if results else 50
-        filter_type = filter_type if filter_type else DepartingEmployeeFilters.OPEN
-        pages = self.sdk.detectionlists.departing_employee.get_all(filter_type=filter_type)
-        for page in pages:
-            employees = page.data.get("items") or []
-            for employee in employees:
-                res.append(employee)
-                if results and len(res) == results:
-                    return res
-        return res
-
-    # High Risk Employee methods (deprecated, replaced by Watchlist methods)
-
-    def get_high_risk_employee(self, username):
-        user_id = self._get_user_id(username)
-        response = self.sdk.detectionlists.high_risk_employee.get(user_id)
-        return response.data
-
-    def add_user_to_high_risk_employee(self, username, note=None):
-        user_id = self._get_user_id(username)
-        self.sdk.detectionlists.high_risk_employee.add(user_id)
-        if note:
-            self.sdk.detectionlists.update_user_notes(user_id, note)
-        return user_id
-
-    def remove_user_from_high_risk_employee(self, username):
-        user_id = self._get_user_id(username)
-        self.sdk.detectionlists.high_risk_employee.remove(user_id)
-        return user_id
-
-    def add_user_risk_tags(self, username, risk_tags):
-        risk_tags = argToList(risk_tags)
-        user_id = self._get_user_id(username)
-        self.sdk.detectionlists.add_user_risk_tags(user_id, risk_tags)
-        return user_id
-
-    def remove_user_risk_tags(self, username, risk_tags):
-        risk_tags = argToList(risk_tags)
-        user_id = self._get_user_id(username)
-        self.sdk.detectionlists.remove_user_risk_tags(user_id, risk_tags)
-        return user_id
-
-    def get_all_high_risk_employees(self, risk_tags, results, filter_type):
-        risk_tags = argToList(risk_tags)
-        results = int(results) if results else 50
-        filter_type = filter_type if filter_type else HighRiskEmployeeFilters.OPEN
-        res = []
-        pages = self.sdk.detectionlists.high_risk_employee.get_all(filter_type=filter_type)
-        for page in pages:
-            employees = _get_all_high_risk_employees_from_page(page.data, risk_tags)
-            for employee in employees:
-                res.append(employee)
-                if results and len(res) == results:
-                    return res
-        return res
 
     # Alert methods
 
@@ -432,7 +337,7 @@ class Code42Client(BaseClient):
         elif _hash_is_sha256(hash_arg):
             return security_module.stream_file_by_sha256(hash_arg)
         else:
-            raise Code42UnsupportedHashError()
+            raise Code42UnsupportedHashError
 
     def _get_user_id(self, username):
         user_id = self.get_user(username).get("userUid")
@@ -462,32 +367,33 @@ class Code42Client(BaseClient):
             members = member_page["legalHoldMemberships"]
             for member in members:
                 return member["legalHoldMembershipUid"]
+        return None
 
 
 class Code42AlertNotFoundError(Exception):
     def __init__(self, alert_id):
-        super(Code42AlertNotFoundError, self).__init__(
-            "No alert found with ID {0}.".format(alert_id)
+        super().__init__(
+            f"No alert found with ID {alert_id}."
         )
 
 
 class Code42UserNotFoundError(Exception):
     def __init__(self, username):
-        super(Code42UserNotFoundError, self).__init__(
-            "No user found with username {0}.".format(username)
+        super().__init__(
+            f"No user found with username {username}."
         )
 
 
 class Code42OrgNotFoundError(Exception):
     def __init__(self, org_name):
-        super(Code42OrgNotFoundError, self).__init__(
-            "No organization found with name {0}.".format(org_name)
+        super().__init__(
+            f"No organization found with name {org_name}."
         )
 
 
 class Code42InvalidWatchlistTypeError(Exception):
     def __init__(self, watchlist):
-        msg = "Invalid Watchlist type: {0}, run !code42-watchlists-list to get a list of available Watchlists.".format(
+        msg = "Invalid Watchlist type: {}, run !code42-watchlists-list to get a list of available Watchlists.".format(
             watchlist
         )
         super().__init__(msg)
@@ -495,42 +401,42 @@ class Code42InvalidWatchlistTypeError(Exception):
 
 class Code42UnsupportedHashError(Exception):
     def __init__(self):
-        super(Code42UnsupportedHashError, self).__init__(
+        super().__init__(
             "Unsupported hash. Must be SHA256 or MD5."
         )
 
 
 class Code42UnsupportedV2ParameterError(Exception):
     def __init__(self, param: str):
-        super(Code42UnsupportedV2ParameterError, self).__init__(
+        super().__init__(
             f"Unsupported parameter: {param} when 'v2_events' is enabled on Code42 integration."
         )
 
 
 class Code42MissingSearchArgumentsError(Exception):
     def __init__(self):
-        super(Code42MissingSearchArgumentsError, self).__init__(
+        super().__init__(
             "No query args provided for searching Code42 security events."
         )
 
 
 class Code42LegalHoldMatterNotFoundError(Exception):
     def __init__(self, matter_name):
-        super(Code42LegalHoldMatterNotFoundError, self).__init__(
-            "No legal hold matter found with name {0}.".format(matter_name)
+        super().__init__(
+            f"No legal hold matter found with name {matter_name}."
         )
 
 
 class Code42InvalidLegalHoldMembershipError(Exception):
     def __init__(self, username, matter_name):
-        super(Code42InvalidLegalHoldMembershipError, self).__init__(
-            "User '{0}' is not an active member of legal hold matter '{1}'".format(
+        super().__init__(
+            "User '{}' is not an active member of legal hold matter '{}'".format(
                 username, matter_name
             )
         )
 
 
-class Code42SearchFilters(object):
+class Code42SearchFilters:
     def __init__(self):
         self._filters = []
 
@@ -562,7 +468,7 @@ class FileEventQueryFilters(Code42SearchFilters):
 
     def __init__(self, pg_size=None):
         self._pg_size = pg_size
-        super(FileEventQueryFilters, self).__init__()
+        super().__init__()
 
     def to_all_query(self):
         """Convert list of search criteria to *args"""
@@ -593,7 +499,7 @@ def build_query_payload(args):
     exposure = args.get("exposure")
 
     if not _hash and not hostname and not username and not exposure:
-        raise Code42MissingSearchArgumentsError()
+        raise Code42MissingSearchArgumentsError
 
     search_args = FileEventQueryFilters(pg_size)
     search_args.append_result(_hash, _create_hash_filter)
@@ -602,7 +508,7 @@ def build_query_payload(args):
     search_args.append_result(exposure, _create_exposure_filter)
 
     query = search_args.to_all_query()
-    LOG("File Event Query: {}".format(str(query)))
+    LOG(f"File Event Query: {str(query)}")
     return query
 
 
@@ -615,7 +521,7 @@ def build_v2_query_payload(args):
     min_risk_score = arg_to_number(args.get("min_risk_score"), arg_name="min_risk_score") or 1
 
     if not _hash and not hostname and not username:
-        raise Code42MissingSearchArgumentsError()
+        raise Code42MissingSearchArgumentsError
 
     filters = []
     if _hash:
@@ -647,6 +553,7 @@ def _create_hash_filter(hash_arg):
         return MD5.eq(hash_arg)
     elif _hash_is_sha256(hash_arg):
         return SHA256.eq(hash_arg)
+    return None
 
 
 def _create_exposure_filter(exposure_arg):
@@ -769,204 +676,93 @@ def alert_resolve_command(client, args):
 
 @logger
 def departingemployee_add_command(client, args):
-    departing_date = args.get("departuredate")
-    username = args.get("username")
-    note = args.get("note")
-    user_id = client.add_user_to_departing_employee(username, departing_date, note)
-    # CaseID included but is deprecated.
-    de_context = {
-        "CaseID": user_id,
-        "UserID": user_id,
-        "Username": username,
-        "DepartureDate": departing_date,
-        "Note": note,
-    }
-    readable_outputs = tableToMarkdown("Code42 Departing Employee List User Added", de_context)
     return CommandResults(
         outputs_prefix="Code42.DepartingEmployee",
         outputs_key_field="UserID",
-        outputs=de_context,
-        readable_output=readable_outputs,
-        raw_response=user_id,
+        readable_output="Deprecated. Please use the code42-watchlists-add-user command.",
     )
 
 
 @logger
 def departingemployee_remove_command(client, args):
-    username = args.get("username")
-    user_id = client.remove_user_from_departing_employee(username)
-    # CaseID included but is deprecated.
-    de_context = {"CaseID": user_id, "UserID": user_id, "Username": username}
-    readable_outputs = tableToMarkdown("Code42 Departing Employee List User Removed", de_context)
     return CommandResults(
         outputs_prefix="Code42.DepartingEmployee",
         outputs_key_field="UserID",
-        outputs=de_context,
-        readable_output=readable_outputs,
-        raw_response=user_id,
+        readable_output="Deprecated. Please use the code42-watchlists-remove-user command.",
     )
 
 
 @logger
 def departingemployee_get_all_command(client, args):
-    results = args.get("results", 50)
-    filter_type = args.get("filtertype", DepartingEmployeeFilters.OPEN)
-    employees = client.get_all_departing_employees(results, filter_type)
-    if not employees:
-        return CommandResults(
-            readable_output="No results found",
-            outputs_prefix="Code42.DepartingEmployee",
-            outputs_key_field="UserID",
-            outputs={"Results": []},
-            raw_response={},
-        )
-
-    employees_context = [
-        {
-            "UserID": e.get("userId"),
-            "Username": e.get("userName"),
-            "DepartureDate": e.get("departureDate"),
-            "Note": e.get("notes"),
-        }
-        for e in employees
-    ]
-    readable_outputs = tableToMarkdown("All Departing Employees", employees_context)
     return CommandResults(
         outputs_prefix="Code42.DepartingEmployee",
         outputs_key_field="UserID",
-        outputs=employees_context,
-        readable_output=readable_outputs,
-        raw_response=employees,
+        readable_output="Deprecated. Please use the code42-watchlists-list-included-users command.",
     )
 
 
 @logger
 def departingemployee_get_command(client, args):
-    username = args.get("username")
-    departing_employee = client.get_departing_employee(username)
-    de_context = {
-        "UserID": departing_employee.get("userId"),
-        "Username": departing_employee.get("userName"),
-        "DepartureDate": departing_employee.get("departureDate"),
-        "Note": departing_employee.get("notes"),
-    }
-    readable_outputs = tableToMarkdown("Retrieve departing employee", de_context)
     return CommandResults(
         outputs_prefix="Code42.DepartingEmployee",
         outputs_key_field="UserID",
-        outputs=de_context,
-        readable_output=readable_outputs,
-        raw_response=username,
+        readable_output="Deprecated. Please use the code42-user-get-risk-profile command.",
     )
 
 
 @logger
 def highriskemployee_get_command(client, args):
-    username = args.get("username")
-    high_risk_employee = client.get_high_risk_employee(username)
-    hre_context = {
-        "UserID": high_risk_employee.get("userId"),
-        "Username": high_risk_employee.get("userName"),
-        "Note": high_risk_employee.get("notes")
-    }
-    readable_outputs = tableToMarkdown("Retrieve high risk employee", hre_context)
     return CommandResults(
         outputs_prefix="Code42.HighRiskEmployee",
         outputs_key_field="UserID",
-        outputs=hre_context,
-        readable_output=readable_outputs,
-        raw_response=username,
+        readable_output="Deprecated. Please use the code42-user-get-risk-profile command.",
     )
 
 
 @logger
 def highriskemployee_add_command(client, args):
-    username = args.get("username")
-    note = args.get("note")
-    user_id = client.add_user_to_high_risk_employee(username, note)
-    hr_context = {"UserID": user_id, "Username": username}
-    readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Added", hr_context)
     return CommandResults(
         outputs_prefix="Code42.HighRiskEmployee",
         outputs_key_field="UserID",
-        outputs=hr_context,
-        readable_output=readable_outputs,
-        raw_response=user_id,
+        readable_output="Deprecated. Please use the code42-watchlists-add-user command.",
     )
 
 
 @logger
 def highriskemployee_remove_command(client, args):
-    username = args.get("username")
-    user_id = client.remove_user_from_high_risk_employee(username)
-    hr_context = {"UserID": user_id, "Username": username}
-    readable_outputs = tableToMarkdown("Code42 High Risk Employee List User Removed", hr_context)
     return CommandResults(
         outputs_prefix="Code42.HighRiskEmployee",
         outputs_key_field="UserID",
-        outputs=hr_context,
-        readable_output=readable_outputs,
-        raw_response=user_id,
+        readable_output="Deprecated. Please use the code42-watchlists-remove-user command.",
     )
 
 
 @logger
 def highriskemployee_get_all_command(client, args):
-    tags = args.get("risktags")
-    results = args.get("results", 50)
-    filter_type = args.get("filtertype", HighRiskEmployeeFilters.OPEN)
-    employees = client.get_all_high_risk_employees(tags, results, filter_type)
-    if not employees:
-        return CommandResults(
-            readable_output="No results found",
-            outputs_prefix="Code42.HighRiskEmployee",
-            outputs_key_field="UserID",
-            outputs={"Results": []},
-            raw_response={},
-        )
-    employees_context = [
-        {"UserID": e.get("userId"), "Username": e.get("userName"), "Note": e.get("notes")}
-        for e in employees
-    ]
-    readable_outputs = tableToMarkdown("Retrieved All High Risk Employees", employees_context)
     return CommandResults(
         outputs_prefix="Code42.HighRiskEmployee",
         outputs_key_field="UserID",
-        outputs=employees_context,
-        readable_output=readable_outputs,
-        raw_response=employees,
+        readable_output="Deprecated. Please use the code42-watchlists-list-included-users command.",
     )
 
 
 @logger
 def highriskemployee_add_risk_tags_command(client, args):
-    username = args.get("username")
-    tags = args.get("risktags")
-    user_id = client.add_user_risk_tags(username, tags)
-    rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-    readable_outputs = tableToMarkdown("Code42 Risk Tags Added", rt_context)
     return CommandResults(
         outputs_prefix="Code42.HighRiskEmployee",
         outputs_key_field="UserID",
-        outputs=rt_context,
-        readable_output=readable_outputs,
-        raw_response=user_id,
+        readable_output="Deprecated. The risk tags are now represented as separate watchlist types "
+                        + "and there is no replacement for this command.",
     )
 
 
 @logger
 def highriskemployee_remove_risk_tags_command(client, args):
-    username = args.get("username")
-    tags = args.get("risktags")
-    user_id = client.remove_user_risk_tags(username, tags)
-    rt_context = {"UserID": user_id, "Username": username, "RiskTags": tags}
-    readable_outputs = tableToMarkdown("Code42 Risk Tags Removed", rt_context)
     return CommandResults(
         outputs_prefix="Code42.HighRiskEmployee",
         outputs_key_field="UserID",
-        outputs=rt_context,
-        readable_output=readable_outputs,
-        raw_response=user_id,
+        readable_output="Deprecated. The risk tags are now represented as separate watchlist types "
+                        + "and there is no replacement for this command.",
     )
 
 
@@ -1347,19 +1143,7 @@ def file_events_to_table_command(client, args):
 """Fetching"""
 
 
-def _process_event_from_observation(event):
-    # We need to convert certain fields to a stringified list else React.JS will throw an error
-    shared_with = event.get("sharedWith")
-    private_ip_addresses = event.get("privateIpAddresses")
-    if shared_with:
-        shared_list = [u.get("cloudUsername") for u in shared_with if u.get("cloudUsername")]
-        event["sharedWith"] = str(shared_list)
-    if private_ip_addresses:
-        event["privateIpAddresses"] = str(private_ip_addresses)
-    return event
-
-
-class Code42SecurityIncidentFetcher(object):
+class Code42SecurityIncidentFetcher:
     def __init__(
         self,
         client,
@@ -1402,6 +1186,8 @@ class Code42SecurityIncidentFetcher(object):
                     remaining_incidents[:self._fetch_limit],
                     remaining_incidents[self._fetch_limit:],
                 )
+            return None
+        return None
 
     def _get_start_query_time(self):
         start_query_time = self._try_get_last_fetch_time()
@@ -1529,12 +1315,12 @@ def handle_fetch_command(client):
 def run_command(command):
     try:
         results = command()
-        if not isinstance(results, (tuple, list)):
+        if not isinstance(results, tuple | list):
             results = [results]
         for result in results:
             return_results(result)
     except Exception as e:
-        msg = "Failed to execute command {0} command. Error: {1}".format(demisto.command(), e)
+        msg = f"Failed to execute command {demisto.command()} command. Error: {e}"
         return_error(msg)
 
 
@@ -1556,48 +1342,54 @@ def create_client():
 
 
 def main():
-    client = create_client()
-    command_key = demisto.command()
-    # switch case
-    commands = {
-        "code42-alert-get": alert_get_command,
-        "code42-alert-resolve": alert_resolve_command,
-        "code42-securitydata-search": securitydata_search_command,
-        "code42-file-events-search": file_events_search_command,
-        "code42-file-events-table": file_events_to_table_command,
-        "code42-departingemployee-add": departingemployee_add_command,
-        "code42-departingemployee-remove": departingemployee_remove_command,
-        "code42-departingemployee-get-all": departingemployee_get_all_command,
-        "code42-departingemployee-get": departingemployee_get_command,
-        "code42-highriskemployee-add": highriskemployee_add_command,
-        "code42-highriskemployee-remove": highriskemployee_remove_command,
-        "code42-highriskemployee-get-all": highriskemployee_get_all_command,
-        "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
-        "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
-        "code42-highriskemployee-get": highriskemployee_get_command,
-        "code42-user-create": user_create_command,
-        "code42-user-block": user_block_command,
-        "code42-user-unblock": user_unblock_command,
-        "code42-user-deactivate": user_deactivate_command,
-        "code42-user-reactivate": user_reactivate_command,
-        "code42-user-get-risk-profile": get_user_risk_profile,
-        "code42-user-update-risk-profile": update_user_risk_profile,
-        "code42-legalhold-add-user": legal_hold_add_user_command,
-        "code42-legalhold-remove-user": legal_hold_remove_user_command,
-        "code42-download-file": download_file_command,
-        "code42-watchlists-list": list_watchlists_command,
-        "code42-watchlists-list-included-users": list_watchlists_included_users,
-        "code42-watchlists-add-user": add_user_to_watchlist_command,
-        "code42-watchlists-remove-user": remove_user_from_watchlist_command,
-    }
-    LOG("Command being called is {0}.".format(command_key))
-    if command_key == "test-module":
-        result = test_module(client)
-        demisto.results(result)
-    elif command_key == "fetch-incidents":
-        handle_fetch_command(client)
-    elif command_key in commands:
-        run_command(lambda: commands[command_key](client, demisto.args()))
+    try:
+        client = create_client()
+        command_key = demisto.command()
+        # switch case
+        commands = {
+            "code42-alert-get": alert_get_command,
+            "code42-alert-resolve": alert_resolve_command,
+            "code42-securitydata-search": securitydata_search_command,
+            "code42-file-events-search": file_events_search_command,
+            "code42-file-events-table": file_events_to_table_command,
+            "code42-departingemployee-add": departingemployee_add_command,
+            "code42-departingemployee-remove": departingemployee_remove_command,
+            "code42-departingemployee-get-all": departingemployee_get_all_command,
+            "code42-departingemployee-get": departingemployee_get_command,
+            "code42-highriskemployee-add": highriskemployee_add_command,
+            "code42-highriskemployee-remove": highriskemployee_remove_command,
+            "code42-highriskemployee-get-all": highriskemployee_get_all_command,
+            "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
+            "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+            "code42-highriskemployee-get": highriskemployee_get_command,
+            "code42-user-create": user_create_command,
+            "code42-user-block": user_block_command,
+            "code42-user-unblock": user_unblock_command,
+            "code42-user-deactivate": user_deactivate_command,
+            "code42-user-reactivate": user_reactivate_command,
+            "code42-user-get-risk-profile": get_user_risk_profile,
+            "code42-user-update-risk-profile": update_user_risk_profile,
+            "code42-legalhold-add-user": legal_hold_add_user_command,
+            "code42-legalhold-remove-user": legal_hold_remove_user_command,
+            "code42-download-file": download_file_command,
+            "code42-watchlists-list": list_watchlists_command,
+            "code42-watchlists-list-included-users": list_watchlists_included_users,
+            "code42-watchlists-add-user": add_user_to_watchlist_command,
+            "code42-watchlists-remove-user": remove_user_from_watchlist_command,
+        }
+        LOG(f"Command being called is {command_key}.")
+        if command_key == "test-module":
+            result = test_module(client)
+            demisto.results(result)
+        elif command_key == "fetch-incidents":
+            handle_fetch_command(client)
+        elif command_key in commands:
+            run_command(lambda: commands[command_key](client, demisto.args()))
+        else:
+            raise NotImplementedError(f'{command_key} command is not implemented.')
+
+    except Exception as e:
+        return_error(str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

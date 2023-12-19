@@ -12,13 +12,13 @@ ERROR_VERIFY_THRESHOLD_MESSAGE = 'Please provide valid threshold values for the 
                                  'Suspicious is greater than Malicious and both are within a range of -100 to 100'
 
 
-@pytest.mark.parametrize('suspicous, malicious, expected_mock_result', [
+@pytest.mark.parametrize('suspicious, malicious, expected_mock_result', [
     (0, -100, None),
     (0, -200, ERROR_VERIFY_THRESHOLD_MESSAGE),
     (200, -100, ERROR_VERIFY_THRESHOLD_MESSAGE),
     (0, 50, ERROR_VERIFY_THRESHOLD_MESSAGE)
 ])
-def test_verify_threshold_suspicouns_and_malicious_parameters(suspicous, malicious, expected_mock_result, mocker):
+def test_verify_threshold_suspicious_and_malicious_parameters(suspicious, malicious, expected_mock_result, mocker):
     """
         Given:
             - The suspicious and malicious thresholds params
@@ -28,7 +28,7 @@ def test_verify_threshold_suspicouns_and_malicious_parameters(suspicous, malicio
             - Verify suspicious is bigger then malicious and both of them in range of -100 to 100
     """
     mock_result = mocker.patch('Cisco-umbrella-investigate.return_error')
-    Cisco_umbrella_investigate.verify_threshold_params(suspicous, malicious)
+    Cisco_umbrella_investigate.verify_threshold_params(suspicious, malicious)
 
     if not mock_result.call_args:
         assert not expected_mock_result
@@ -216,6 +216,7 @@ def different_inputs_handling(*args):
         error.response = requests.Response()
         error.response.status_code = 404
         raise error
+    return None
 
 
 @pytest.mark.parametrize(("status", "securerank2", "expected_score"), (

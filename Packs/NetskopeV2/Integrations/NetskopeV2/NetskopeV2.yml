@@ -9,30 +9,36 @@ configuration:
   type: 0
 - display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: api_key_credentials
+  type: 9
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 description: Block URLs, domains and file hashes.
 display: Netskope (API v2)
 name: Netskope (API v2)
 script:
   commands:
   - arguments:
-    - description: Name of the URL list
+    - description: Name of the URL list.
       name: list_name
       required: true
-    - description: URLs to add to the list
+    - description: URLs to add to the list.
       isArray: true
       name: url
       required: true
-    description: Add URLs to the Netskope URL block list
+    description: Add URLs to the Netskope URL block list.
     name: netskopev2-add-url
     outputs:
     - contextPath: Netskope.URLList.id
@@ -61,14 +67,14 @@ script:
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments:
-    - description: Name of the URL list
+    - description: Name of the URL list.
       name: list_name
       required: true
-    - description: URLs to remove from the list
+    - description: URLs to remove from the list.
       isArray: true
       name: url
       required: true
-    description: Remove URLs from the Netskope URL block list
+    description: Remove URLs from the Netskope URL block list.
     name: netskopev2-remove-url
     outputs:
     - contextPath: Netskope.URLList.id
@@ -97,7 +103,7 @@ script:
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments: []
-    description: Get all applied and pending URL lists
+    description: Get all applied and pending URL lists.
     name: netskopev2-get-lists
     outputs:
     - contextPath: Netskope.List.id
@@ -126,10 +132,10 @@ script:
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments:
-    - description: Name of the URL list
+    - description: Name of the URL list.
       name: list_name
       required: true
-    description: Get URL list by ID
+    description: Get URL list by ID.
     name: netskopev2-get-list
     outputs:
     - contextPath: Netskope.List.id
@@ -157,7 +163,7 @@ script:
     - contextPath: Netskope.List.pending
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.78960
   runonce: false
   script: ''
   subtype: python3

@@ -119,16 +119,16 @@ LIST_ALL_ACCOUNTS_RAW_RESPONSE = {
                         "SSH",
                         "Telnet"
                     ],
-                    "ACCOUNT NAME":"administrator",
-                    "PASSWORD STATUS":"****",
-                    "ISREMOTEAPPONLY":"false",
-                    "ACCOUNT PASSWORD POLICY":"Strong",
-                    "AUTOLOGONSTATUS":"One of the resources or landing servers is configured to be connected repeatedly. Check your landing server configuration or contact your administrator.",
-                    "IS_TICKETID_REQD_ACW":"false",
-                    "PASSWDID":"1",
-                    "IS_TICKETID_REQD_MANDATORY":"false",
-                    "IS_TICKETID_REQD":"false",
-                    "ISREASONREQUIRED":"false"
+                    "ACCOUNT NAME": "administrator",
+                    "PASSWORD STATUS": "****",
+                    "ISREMOTEAPPONLY": "false",
+                    "ACCOUNT PASSWORD POLICY": "Strong",
+                    "AUTOLOGONSTATUS": "One of the resources or landing servers is configured to be connected repeatedly. Check your landing server configuration or contact your administrator.",
+                    "IS_TICKETID_REQD_ACW": "false",
+                    "PASSWDID": "1",
+                    "IS_TICKETID_REQD_MANDATORY": "false",
+                    "IS_TICKETID_REQD": "false",
+                    "ISREASONREQUIRED": "false"
                 }
             ],
             "DEPARTMENT": "Finance",

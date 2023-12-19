@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Dict, Any
+from typing import Any
 
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -29,7 +29,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._headers = headers
 
-    def request_ip_objects(self, body: dict, method: str, url_suffix: str, params: dict, resp_type='json') -> Dict:
+    def request_ip_objects(self, body: dict, method: str, url_suffix: str, params: dict, resp_type='json') -> dict:
         """
         Makes an HTTP request to F5 Silverline API by the given arguments.
         Args:
@@ -91,7 +91,7 @@ def get_ip_and_mask_from_cidr(cidr_range):
     return ip_address, mask
 
 
-def add_ip_objects_command(client: Client, args: Dict[str, Any]):
+def add_ip_objects_command(client: Client, args: dict[str, Any]):
     """
     Adds a new IP object to the requested list type (denylist or allowlist).
     IP object includes an IP address (mandatory). Other fields are optional and have default values.
@@ -121,7 +121,7 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]):
     if success_list:
 
         success_lines = '\n'.join(success_list)
-        human_readable = f"IP objects wehre added successfully into the {list_type}\n| IP |\n| - |\n{success_lines}"
+        human_readable = f"IP objects were added successfully into the {list_type}\n| IP |\n| - |\n{success_lines}"
         return_results(CommandResults(readable_output=human_readable))
     if errors_list:
         return_error('\n'.join(errors_list))
@@ -161,7 +161,7 @@ def is_object_id_exist(client, object_id_list, list_type):
         raise DemistoException("An object with the given identifier was not found. ")
 
 
-def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
+def delete_ip_objects_command(client: Client, args: dict[str, Any]):
     """
     Deletes an exist IP object from the requested list type (denylist or allowlist) by its object id or its ip.
     Note: Human readable appears only if the HTTP request did not fail and the object id exists. In case the ID does not
@@ -172,6 +172,8 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
     object_id = args.get('object_id')
     object_ip = args.get('object_ip')
     object_id_list = []
+    list_target = args.get('list_target', 'proxy')
+
     if not object_id and not object_ip:
         raise DemistoException("At least one of the following should be given: object_ip, object_id.")
 
@@ -186,7 +188,10 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
         human_readable = ""
         for object_id in object_id_list:
             url_suffix = f'{list_type}/ip_objects/{object_id}'
-            client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
+            # like the matching ip-object-add command, the list_target argument is added as a default value to the request if
+            # no other value explicitly selected, and is only relevant for denylist (ignored for allowlist)
+            client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={
+                                      'list_target': list_target}, resp_type='content')
             human_readable += f"IP object with ID: {object_id} deleted successfully from the {list_type} list. \n"
         return CommandResults(readable_output=human_readable)
 
@@ -267,7 +272,7 @@ def paging_data_to_human_readable(current_page_number, last_page_number, page_si
     return output
 
 
-def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_ip_objects_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets a list of IP objects by the requested list type (denylist or allowlist).
     If the object_id argument is given, only those IP objects will be displayed. Otherwise, all IP objects that match
@@ -331,7 +336,7 @@ def get_ip_objects_by_ids(client: Client, object_ids: list, list_type: str, para
     return human_results, outputs
 
 
-def parse_get_ip_object_list_results(results: Dict):
+def parse_get_ip_object_list_results(results: dict):
     """
     Parsing the API response after requesting the IP object list. Parsing maps the important fields that will appear
     as the human readable output.
@@ -367,7 +372,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        headers: Dict = {"X-Authorization-Token": access_token, "Content-Type": 'application/json'}
+        headers: dict = {"X-Authorization-Token": access_token, "Content-Type": 'application/json'}
 
         client = Client(
             base_url=base_url,

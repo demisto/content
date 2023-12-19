@@ -1,13 +1,13 @@
 args:
-- description: The name of the Demisto REST API instance to check.
+- description: The name of the Core/Demisto REST API instance to check.
   name: instanceName
   required: true
-comment: Checks if the provided Demisto REST API instance is available for the XSOAR Simple Dev to Prod workflow.
+comment: Checks if the provided Core/Demisto REST API instance is available for the XSOAR Simple Dev to Prod workflow.
 commonfields:
   id: IsDemistoRestAPIInstanceAvailable
   id_x2: IsCoreRestAPIInstanceAvailable
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.80014
 enabled: true
 name: IsDemistoRestAPIInstanceAvailable
 name_x2: IsCoreRestAPIInstanceAvailable

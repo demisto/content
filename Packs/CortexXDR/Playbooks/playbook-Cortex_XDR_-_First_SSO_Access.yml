@@ -113,7 +113,7 @@ tasks:
         complex:
           root: IP.Geo
           accessor: Country
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2177,3 +2177,5 @@ fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+marketplaces:
+- xsoar

@@ -3,26 +3,24 @@ commonfields:
   version: -1
 name: IsInCidrRanges
 script: ''
-type: python
-subtype: python3
+type: javascript
 tags:
 - filter
-comment: Determines whether an IPv4 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4 addresses can be passed comma-delimited and each will be tested.
+comment: Determines whether an IPv4 or IPv6 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4/IPv6 addresses can be passed comma-delimited and each will be tested.
 enabled: true
 args:
 - name: left
   required: true
   isArray: true
-  description: The IPv4 address (or comma-delimited addresses) to check.
+  description: The IPv4/IPv6 address (or comma-delimited addresses) to check.
 - name: right
   required: true
   isArray: true
-  description: A comma-delimited list of IPv4 ranges in CIDR notation against which to match.
+  description: A comma-delimited list of IPv4/IPv6 ranges in CIDR notation against which to match.
 scripttarget: 0
-dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 tests:
-- No test - unit test
+- TestIsInCidrRanges
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields:

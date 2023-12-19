@@ -61,13 +61,13 @@ name: ConcentricAI
 script:
   commands:
   - arguments:
-    - description: Path of the file
+    - description: Path of the file.
       name: path
       required: true
-    - description: Name of File
+    - description: Name of File.
       name: file-name
       required: true
-    description: Get's file information
+    description: Get's file information.
     name: concentricai-get-file-details
     outputs:
     - contextPath: ConcentricAI.FileInfo.risk_names
@@ -77,29 +77,29 @@ script:
       description: owner Details.
       type: String
     - contextPath: ConcentricAI.FileInfo.pii
-      description: PII present in file or not
+      description: PII present in file or not.
       type: String
     - contextPath: ConcentricAI.FileInfo.cid
-      description: File ID
+      description: File ID.
       type: String
   - arguments:
     - default: true
       defaultValue: '50'
       description: Maximum no. of users fetched per category.
       name: max_users
-    description: Get overview of Users involved
+    description: Get overview of Users involved.
     name: concentricai-get-users-overview
   - arguments:
-    - description: Enter user name
+    - description: Enter user name.
       name: user
       required: true
-    description: Get's user details
+    description: Get's user details.
     name: concentricai-get-user-details
   - arguments:
-    - description: File ID
+    - description: File ID.
       name: cid
       required: true
-    description: Get's file sharing details
+    description: Get's file sharing details.
     name: concentricai-get-file-sharing-details
     outputs:
     - contextPath: ConcentricAI.FileSharingInfo.type
@@ -108,7 +108,7 @@ script:
     - contextPath: ConcentricAI.FileSharingInfo.user_name
       description: User name.
       type: Array
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   runonce: false
   script: '-'

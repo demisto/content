@@ -1,4 +1,4 @@
-from IllusiveNetworks import Client, is_deceptive_user_command, is_deceptive_server_command,\
+from IllusiveNetworks import Client, is_deceptive_user_command, is_deceptive_server_command, \
     delete_deceptive_users_command, delete_deceptive_servers_command, run_forensics_on_demand_command, \
     get_asm_host_insight_command, get_asm_cj_insight_command, get_deceptive_users_command, \
     get_deceptive_servers_command, get_forensics_timeline_command, assign_host_to_policy_command, \
@@ -305,7 +305,7 @@ def test_fetch_incidents(requests_mock):
     client = Client(base_url='https://server', verify=False)
     mock_response = [{'deceptionFamilies': [], 'incidentId': '1234', 'hasForensics': True,
                       'incidentTypes': 'MACHINE', 'incidentTimeUTC': '2020-04-21T15:39:32.954Z'},
-                     {'deceptionFamilies': [], 'incidentId': '4321', 'hasForensics':False,
+                     {'deceptionFamilies': [], 'incidentId': '4321', 'hasForensics': False,
                      'incidentTypes': 'MACHINE', 'incidentTimeUTC': '2020-04-21T14:53:54.234Z'}]
     first_fetch_time = "7 days"
     requests_mock.get('https://server/api/v1/incidents?limit=10&offset=0&start_date=2018-10-24T14:13:20+00:000Z',
