@@ -3,6 +3,7 @@ from CommonServerPython import *
 
 
 ACCOUNT_LIST_COMMAND = 'aws-org-account-list'
+EC2_ACCOUNTS_PARAM = 'accounts_to_access'
 
 
 def internal_request(method: str, uri: str, body: dict = {}) -> dict:
@@ -11,39 +12,37 @@ def internal_request(method: str, uri: str, body: dict = {}) -> dict:
 
 def get_account_ids() -> list[str]:
     try:
-        account_list_result = demisto.executeCommand(ACCOUNT_LIST_COMMAND, {})
+        account_list_result: list[dict[str, dict]] = demisto.executeCommand(ACCOUNT_LIST_COMMAND, {})  # type: ignore
         return [
             account['Id']
-            for account in dict_safe_get(
-                account_list_result,
-                [0, 'EntryContext', 'AWS.Organizations.Account(val.Id && val.Id == obj.Id)'],
-            ) or []
+            for account
+            in account_list_result[0]['EntryContext']['AWS.Organizations.Account(val.Id && val.Id == obj.Id)']
         ]
     except ValueError:
         raise DemistoException(f'The command {ACCOUNT_LIST_COMMAND!r} must be operational to run this script.')
     except KeyError:
-        account_list_result = locals().get('account_list_result')  # catch unbound variable error
+        account_list_result = locals().get('account_list_result')  # type: ignore # catch unbound variable error
         raise DemistoException(f'Unexpected output from {ACCOUNT_LIST_COMMAND!r}:\n{account_list_result}')
     except Exception as e:
         raise DemistoException(f'Unexpected error while fetching accounts:\n{e}')
 
 
-def update_ec2_instance(account_ids: list[str], instance_name: str):
+def update_ec2_instance(account_ids: list[str], instance_name: str) -> str:
     accounts_as_str = ','.join(account_ids)
     try:
         response = internal_request('POST', '/settings/integration/search')
-        demisto.debug(str(response))  # remove
         instance = next(inst for inst in response['instances'] if inst['name'] == instance_name)
-        if instance['configvalues']['accounts_to_access'] != accounts_as_str:
-            demisto.debug(f'Updating {instance_name!r} with accounts: {accounts_as_str}')
-            # instance['version'] += 1
-            instance['configvalues']['accounts_to_access'] = accounts_as_str
-            response = internal_request('PUT', '/settings/integration', instance)
-            return_results(str(response))  # remove
-        else:
-            demisto.debug(f'Not updating {instance_name!r}. Account list is up to date.')
+        if instance['configvalues'][EC2_ACCOUNTS_PARAM] == accounts_as_str:
+            return f'Account list in {instance_name!r} is up to date.'
+        demisto.debug(f'Updating {instance_name!r} with accounts: {accounts_as_str}')
+        next(param for param in instance['data'] if param['name'] == EC2_ACCOUNTS_PARAM)['value'] = accounts_as_str
+        instance['configuration']['configuration'] = instance['data']
+        response = internal_request('PUT', '/settings/integration', instance)
+        if response['configvalues'][EC2_ACCOUNTS_PARAM] != accounts_as_str:
+            raise DemistoException(f'Attempt to update {instance_name!r} with accounts {accounts_as_str} has failed')
+        return f'Successfully updated {instance_name!r} with accounts: {accounts_as_str}'
     except StopIteration:
-        raise DemistoException(f'AWS - EC2 instance {instance_name!r} was not found.')
+        raise DemistoException(f'Instance {instance_name!r} was not found or is not an AWS - EC2 instance.')
     except Exception as e:
         raise DemistoException(f'Unexpected error while configuring AWS - EC2 instance with accounts {accounts_as_str!r}:\n{e}')
 
@@ -52,8 +51,8 @@ def main():
     try:
         instance_name = str(demisto.getArg('instanceName'))
         account_ids = get_account_ids()
-        update_ec2_instance(account_ids, instance_name)
-        return_results(f'Successfully updated {instance_name!r} with accounts: {", ".join(account_ids)}')
+        result = update_ec2_instance(account_ids, instance_name)
+        return_results(result)
     except Exception as e:
         return_error(f'Error in AwsEC2GetAccounts: {e}')
 
