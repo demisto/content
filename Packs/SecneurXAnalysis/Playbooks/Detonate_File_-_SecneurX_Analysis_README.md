@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* snx-analysis-get-report
 * snx-analysis-submit-file
+* snx-analysis-get-report
 
 ## Playbook Inputs
 
