@@ -1,39 +1,18 @@
 {
     "id": "DomainTools Iris",
-    "version": 4,
-    "cacheVersn": 0,
+    "version": -1,
     "modified": "2023-12-19T20:11:35.191562524Z",
-    "created": "2023-12-05T16:19:28.684636513Z",
-    "sizeInBytes": 0,
-    "packID": "",
-    "packName": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
-    "prevName": "",
-    "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
     "shouldCommit": false,
     "regex": "",
     "details": "DomainTools Iris",
     "prevDetails": "DomainTools Iris",
-    "legacyNames": null,
-    "reputationScriptName": "",
     "reputationCommand": "domain",
-    "enhancementScriptNames": [],
     "system": false,
     "locked": false,
     "disabled": false,
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "formatScript": "",
-    "contextPath": "",
-    "contextValue": "",
-    "excludedBrands": [],
-    "defaultMapping": null,
     "manualMapping": {
         "domaintoolsirisadditionalwhoisemails": {
             "simple": "DomainTools.Identity.AdditionalWhoisEmails.value"
@@ -75,8 +54,7 @@
             "simple": "DomainTools.Registration.ExpirationDate"
         }
     },
-    "fileHashesPriority": null,
     "expiration": 0,
-    "shouldShareComments": false,
-    "layout": "DomainTools Iris Indicator Layout"
+    "layout": "DomainTools Iris Indicator Layout",
+    "fromVersion": "6.6.0"
 }

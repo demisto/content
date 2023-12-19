@@ -88,7 +88,8 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
             "MalwareRiskScore": domaintools_analytics_data.get("MalwareRiskScore") or "",
             "PhishingRiskScore": domaintools_analytics_data.get("PhishingRiskScore") or "",
             "SpamRiskScore": domaintools_analytics_data.get("SpamRiskScore") or "",
-            "ThreatProfileRiskScore": {"Evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get("Evidence")} or ""
+            "ThreatProfileRiskScore": {"Evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get(
+                "Evidence")} or ""
         }
 
         domaintools_iris_indicator = {
