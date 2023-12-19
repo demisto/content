@@ -430,7 +430,7 @@ inputs:
   value:
     simple: "900"
   required: false
-  description: The default duration after which to stop pooling and to resume the playbook (in seconds).
+  description: The default duration after which to stop polling and to resume the playbook (in seconds).
   playbookInputQuery:
 - key: Systems
   value: {}
