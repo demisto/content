@@ -469,7 +469,7 @@ class MsGraphClient:
 
     def get_public_ip_details(self, resource_group, address_name):
         url_suffix = f"{resource_group}/providers/Microsoft.Network/publicIPAddresses/{address_name}"
-        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params={"api-version": '2023-05-01'})
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params={"api-version": '2023-07-01'})
 
     def create_nic(self, resource_group, args):
         # Retrieve relevant command argument
