@@ -1601,14 +1601,14 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 >Returned file: scan_16_SSE-144f3dc6-cb2d-42fc-b6cc-dd20b807735f-html.html [Download](https://www.paloaltonetworks.com/cortex)
 
 
-### tenable-get-audit-logs
+### tenable-io-get-audit-logs
 ***
 Returns audit logs extracted from Tenable io.
 
 
 #### Base Command
 
-`tenable-get-audit-logs`
+`tenable-io-get-audit-logs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1626,7 +1626,7 @@ Returns audit logs extracted from Tenable io.
 There is no context output for this command.
 
 #### Command example
-```!tenable-get-audit-logs limit=1```
+```!tenable-io-get-audit-logs limit=1```
 
 
 #### Human Readable Output
@@ -1635,34 +1635,3 @@ There is no context output for this command.
 >|Action| Actor    | Crud | Description | Fields                                                                                                                                                  | Id  |Is Anonymous|Is Failure|Received| Target                                              |
 >|----------|------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----|---|---|---|-----------------------------------------------------|---|
 >| user.create | id: test | c    |             | {'key': 'X-Access-Type', 'value': 'apikey'},<br>{'key': 'X-Forwarded-For', 'value': '1.2.3.4'},<br>{'key': 'X-Request-Uuid', 'value': '12:12:12:12:12'} | 12  | true | false | 2022-05-18T16:33:02Z | id: 12-1-1-1-1<br>name: test@test.com<br>type: User |
-
-
-### tenable-get-vulnerabilities
-***
-Returns vulnerabilities extracted from Tenable io.
-
-
-#### Base Command
-
-`tenable-get-vulnerabilities`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
-| last_found | Returns vulnerabilities that were last found between the specified date (in Unix time) and now. | Optional | 
-| num_assets | The severity of the vulnerabilities to include in the export. | Optional | 
-| hide_polling_output | Whether to hide the polling output. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-
-#### Human Readable Output
-
->## Vulnerabilities List:
->| Asset |First Found|Indexed|Last Found|Output|Plugin|Port|Scan|Severity|Severity Default Id|Severity Id|Severity Modification Type|State|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| test     | 2022-08-14T14:53:18.852Z | 2022-08-14T14:53:53.627Z | 2022-08-14T14:53:18.852Z | Port 465/tcp was found to be open | checks_for_default | info | 0 | 0 | NONE | OPEN |

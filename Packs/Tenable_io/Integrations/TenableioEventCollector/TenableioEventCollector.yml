@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 - Collect - events
-- Collect - assests
+- Collect - assets
 commonfields:
   id: Tenable.io Event Collector
   version: -1
