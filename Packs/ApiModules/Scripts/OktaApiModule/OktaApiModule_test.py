@@ -67,7 +67,7 @@ def test_assign_app_role(mocker):
         jwt_algorithm=JWTAlgorithm.RS256
     )
     mocker.patch.object(client, 'get_token', return_value='JWT_TOKEN')
-    http_request_mock = mocker.patch.object(client, '_http_request')
+    http_request_mock = mocker.patch.object(client, 'http_request')
     client.assign_app_role(client_id='Y', role='X', auth_type=AuthType.API_TOKEN)
 
     assert http_request_mock.call_count == 1
@@ -181,7 +181,7 @@ def test_generate_oauth_token(mocker):
     )
 
     mocker.patch.object(client, 'generate_jwt_token', return_value='JWT_TOKEN')
-    http_request_mock = mocker.patch.object(client, '_http_request')
+    http_request_mock = mocker.patch.object(client, 'http_request')
     client.generate_oauth_token(scopes=['X', 'Y'])
 
     assert http_request_mock.call_count == 1
@@ -298,8 +298,8 @@ def test_http_request_no_auth(mocker):
         auth_type=AuthType.API_TOKEN,
     )
 
-    base_client_http_request_mock = mocker.patch.object(BaseClient, '_http_request')
-    client._http_request(
+    base_client_http_request_mock = mocker.patch.object(client, '_http_request')
+    client.http_request(
         auth_type=AuthType.NO_AUTH,
         full_url='https://test.url',
         method='GET',
@@ -329,8 +329,8 @@ def test_http_request_api_token_auth(mocker):
         auth_type=AuthType.API_TOKEN,
     )
 
-    base_client_http_request_mock = mocker.patch.object(BaseClient, '_http_request')
-    client._http_request(
+    base_client_http_request_mock = mocker.patch.object(client, '_http_request')
+    client.http_request(
         auth_type=AuthType.API_TOKEN,
         full_url='https://test.url',
         method='GET',
@@ -366,8 +366,8 @@ def test_http_request_oauth_auth(mocker):
     )
 
     mocker.patch.object(client, 'get_token', return_value='JWT_TOKEN')
-    base_client_http_request_mock = mocker.patch.object(BaseClient, '_http_request')
-    client._http_request(
+    base_client_http_request_mock = mocker.patch.object(client, '_http_request')
+    client.http_request(
         auth_type=AuthType.OAUTH,
         full_url='https://test.url',
         method='GET',

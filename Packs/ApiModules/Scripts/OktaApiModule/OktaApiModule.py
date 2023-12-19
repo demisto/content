@@ -82,7 +82,7 @@ class OktaClient(BaseClient):
         Returns:
             dict: The response from the API.
         """
-        return self._http_request(
+        return self.http_request(
             auth_type=auth_type,
             url_suffix=f'/oauth2/v1/clients/{client_id}/roles',
             method='POST',
@@ -130,7 +130,7 @@ class OktaClient(BaseClient):
         auth_url = self._base_url + '/oauth2/v1/token'
         jwt_token = self.generate_jwt_token(url=auth_url)
 
-        return self._http_request(
+        return self.http_request(
             auth_type=AuthType.NO_AUTH,
             full_url=auth_url,
             method='POST',
