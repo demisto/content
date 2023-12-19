@@ -3,4 +3,4 @@ Amazon Simple Notification Service (SNS) is a managed service that provides mess
 ## What does this pack do
 The AWS SNS Listener supports two types of POST requests:
 * SubscriptionConfirmation: Extract the subscription URL send subscription confirmation.
-* Notification: Extract the subject and message body and creates an XSOAR / XSIAM incident.
+* Notification: Extract the subject and message body and creates a Cortex XSOAR / Cortex XSIAM incident.
