@@ -18,7 +18,10 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate"
+    ],
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
