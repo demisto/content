@@ -52,7 +52,7 @@ This playbook does not use any sub-playbooks.
 | Endpoint | The endpoint's object. | unknown |
 | Endpoint.Hostname | The hostname to enrich. | string |
 | Endpoint.IP | A list of endpoint IP addresses. | string |
-| IP.Address | The IP Address. | string |
+| IP.Address | The IP address. | string |
 | IP.InRange | Is the IP is in the input ranges? \(could be 'yes' or 'no\). | string |
 | DBotScore.Indicator | The indicator that was tested. | string |
 | DBotScore.Type | The indicator type. | string |
