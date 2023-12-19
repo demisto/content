@@ -56,6 +56,7 @@ class exchangelibSSLAdapter(SSLAdapter):
         super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
 
+
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
 
