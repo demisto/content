@@ -218,7 +218,7 @@ class OktaClient(BaseClient):
 
         Args:
             auth_type (AuthType | None): Type of authentication to use for the request.
-                If not provided, 'self.use_oauth' will be used.
+                If not provided, 'self.auth_type' will be used.
         """
         auth_type = auth_type if auth_type is not None else self.auth_type
         auth_headers = {}
