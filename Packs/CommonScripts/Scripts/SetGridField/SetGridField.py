@@ -396,7 +396,7 @@ def main():  # pragma: no cover
                 data = entry["Contents"]["data"]
                 custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
         # in the debugger and in the playground, there is an addition of the "_grid" suffix to the grid_id.
-        if is_xsiam_or_xsoar_saas() and table and (not (grid_id in custom_fields or f"{grid_id}_grid" in custom_fields)):
+        if is_xsiam_or_xsoar_saas() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
             raise ValueError(get_error_message(grid_id))
         if is_error(res_set):
             demisto.error(f'failed to execute "setIncident" with table: {table}.')
