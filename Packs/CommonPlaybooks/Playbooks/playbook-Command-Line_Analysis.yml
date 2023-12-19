@@ -1792,9 +1792,6 @@ outputs:
 - contextPath: commandline.decoded
   description: The decoded command line.
   type: unknown
-- contextPath: CommandlineVerdict
-  description: The command line verdict.
-  type: unknown
 - contextPath: IP
   description: The IP object.
   type: unknown

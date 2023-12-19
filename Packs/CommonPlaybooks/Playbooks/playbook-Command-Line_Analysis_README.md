@@ -28,9 +28,9 @@ This playbook does not use any integrations.
 ### Scripts
 
 * DeleteContext
+* Base64Decode
 * Set
 * MatchRegexV2
-* Base64Decode
 
 ### Commands
 
@@ -55,7 +55,6 @@ This playbook does not use any integrations.
 | Indicators | Indicators extracted from the command line. | unknown |
 | commandline.original | The original command line. | unknown |
 | commandline.decoded | The decoded command line. | unknown |
-| CommandlineVerdict | The command line verdict. | unknown |
 | IP | The IP object. | unknown |
 | URL | The URL object. | uknown |
 | File | The file object. | unknown |
