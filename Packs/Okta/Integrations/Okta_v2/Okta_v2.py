@@ -683,7 +683,7 @@ def module_test(client, args):
     else:
         uri = '/api/v1/users/me'
 
-    client._http_request(method='GET', url_suffix=uri)
+    client.http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
 
 

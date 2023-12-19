@@ -229,7 +229,7 @@ class OktaClient(BaseClient):
         elif auth_type == AuthType.API_TOKEN:
             auth_headers['Authorization'] = f'SSWS {self.api_token}'
 
-        original_headers = kwargs.get('headers', {})
+        original_headers = kwargs.get('headers') or self._headers or {}
         kwargs['headers'] = {**auth_headers, **original_headers}
         return self._http_request(**kwargs)
 
