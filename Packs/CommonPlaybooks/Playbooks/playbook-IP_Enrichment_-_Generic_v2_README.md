@@ -50,7 +50,7 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | IP | The IP objects. | unknown |
 | DBotScore | Indicator, Score, Type, Vendor. | unknown |
-| Endpoint | The Endpoint's object. | unknown |
+| Endpoint | The endpoint's object. | unknown |
 | Endpoint.Hostname | The hostname to enrich. | string |
 | Endpoint.OS | Endpoint OS. | string |
 | Endpoint.IP | List of endpoint IP addresses. | string |
@@ -76,8 +76,8 @@ This playbook does not use any commands.
 | IP.VirusTotal.ReferrerHashes | Latest detected files that embed this IP address in their strings. | string |
 | IP.VirusTotal.UnAVDetectedReferrerHashes | Latest undetected files that embed this IP address in their strings. | string |
 | IP.VirusTotal.Resolutions.last_resolved | The last time the following domains resolved to the given IP. | string |
-| IP.Address | The IP Address. | string |
-| IP.InRange | Is the IP is in the input ranges? \(could be 'yes' or 'no\). | string |
+| IP.Address | The IP address. | string |
+| IP.InRange | Is the IP in the input ranges? \(could be 'yes' or 'no\). | string |
 | Endpoint.ID | The endpoint ID. | string |
 | Endpoint.Status | The endpoint status. | string |
 | Endpoint.IsIsolated | The endpoint isolation status. | string |

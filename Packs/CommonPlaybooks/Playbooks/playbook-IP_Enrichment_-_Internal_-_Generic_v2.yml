@@ -573,8 +573,11 @@ inputs:
   required: false
   description: |-
     Whether to execute common logic, like the classification of IP addresses to ranges and resolving, in the the main (IP Enrichment - Generic v2) enrichment playbook, instead of in the sub-playbooks.
+    
     Possible values are: True, False.
-    Set this to True in the parent playbook if you are using it, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident.
+    Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.
+
+    Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident.
   playbookInputQuery:
 - key: Hostnames
   value: {}
@@ -1068,10 +1071,10 @@ outputs:
   description: The score.
   type: string
 - contextPath: IP.Address
-  description: The IP Address.
+  description: The IP address.
   type: string
 - contextPath: IP.InRange
-  description: Is the IP is in the input ranges? (could be 'yes' or 'no).
+  description: Is the IP in the input ranges? (could be 'yes' or 'no).
   type: string
 fromversion: 5.0.0
 tests:
