@@ -33,7 +33,7 @@ def main():
     try:
         readable, response = upload_file_command(demisto.args())
         return_outputs(readable, {}, response)
-    except Exception as err:
+    except Exception as err: # test
         return_error(str(err))
 
 
