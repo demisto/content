@@ -475,10 +475,6 @@ tasks:
           root: inputs.File
       InternetAccess:
         simple: "True"
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
     separatecontext: true
     continueonerrortype: ""
     loop:
