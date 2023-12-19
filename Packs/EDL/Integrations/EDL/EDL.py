@@ -1,7 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 import tempfile
 
 
@@ -278,7 +276,7 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
             and the number of original indicators received from the server before formatting (int).
     """
     limit = request_args.offset + request_args.limit
-    offset = request_args.offset - 1  # allows use of natural numbering from 1 
+    offset = request_args.offset
     indicator_searcher = IndicatorsSearcher(
         filter_fields=request_args.fields_to_present,
         query=request_args.query,
