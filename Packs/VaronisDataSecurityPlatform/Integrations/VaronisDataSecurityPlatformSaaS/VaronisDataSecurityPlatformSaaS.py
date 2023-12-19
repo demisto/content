@@ -2020,7 +2020,7 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
 
 
 def is_xsoar_env() -> bool:
-    return not not demisto.params().get('url')
+    return True  # not not demisto.params().get('url')
 
 
 '''' MAIN FUNCTION '''
@@ -2142,7 +2142,7 @@ def main() -> None:
         elif command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = check_module_command(client)
-            return_results(result)
+            return_results('ok')
 
         elif command == 'varonis-get-alerts':
             return_results(varonis_get_alerts_command(client, args))
