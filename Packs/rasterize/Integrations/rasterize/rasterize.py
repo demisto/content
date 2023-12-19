@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import os
 import pychrome
+import random
 import requests
 import subprocess
 import tempfile
@@ -42,6 +43,7 @@ DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
 
+FIRST_CHROME_PORT = 9301
 MAX_CHROMES_COUNT = int(demisto.params().get('max_chromes_count', "64"))
 # Max number of tabs each Chrome will open before not responding for more requests
 MAX_CHROME_TABS_COUNT = int(demisto.params().get('max_chrome_tabs_count', "10"))
@@ -68,10 +70,12 @@ class RasterizeType(Enum):
 
 # region utility classes
 
-def except_hook_recv_loop(args):
-    if '(_recv_loop)' in args.thread.name \
-            and type(args.exc_value) == json.decoder.JSONDecodeError:
-        demisto.debug(f"Caught a JSONDecodeError exception in _recv_loop, suppressing, {args.exc_value}")
+def excepthook_recv_loop(args):
+    exc_value = args.exc_value
+    if args.exc_type == json.decoder.JSONDecodeError:
+        demisto.debug(f"Caught a JSONDecodeError exception in _recv_loop, suppressing, {exc_value}")
+    else:
+        demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}, {exc_value=}")
 
 
 class TabLifecycleManager:
@@ -103,7 +107,7 @@ class TabLifecycleManager:
 
         if self.tab and self.tab.id:
             tab_id = self.tab.id
-            threading.excepthook = except_hook_recv_loop
+            threading.excepthook = excepthook_recv_loop
 
             try:
                 time.sleep(1)  # pylint: disable=E9003
@@ -179,7 +183,7 @@ class PychromeEventHandler:
 # endregion
 
 
-def is_chrome_running(port):
+def count_running_chromes(port):
     try:
         processes = subprocess.check_output(['ps', 'auxww'],
                                             stderr=subprocess.STDOUT,
@@ -192,14 +196,14 @@ def is_chrome_running(port):
                             and not any(identifier in process for identifier in chrome_renderer_identifiers)]
 
         demisto.debug(f'Detected {len(chrome_processes)} Chrome processes running on port {port}')
-        return len(chrome_processes) > 0
+        return len(chrome_processes)
 
     except subprocess.CalledProcessError as e:
         demisto.info(f'Error fetching process list: {e.output}')
-        return False
+        return 0
     except Exception as e:
         demisto.info(f'Unexpected exception when fetching process list, error: {e}')
-        return False
+        return 0
 
 
 def is_chrome_running_locally(port):
@@ -235,28 +239,28 @@ def is_chrome_running_locally(port):
 
 
 def ensure_chrome_running():  # pragma: no cover
-    first_chrome_port = 9201
+    first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
+    random.shuffle(ports_list)
     demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
     for chrome_port in ports_list:
-        chrome_is_running = is_chrome_running(chrome_port)
+        len_running_chromes = count_running_chromes(chrome_port)
         browser = is_chrome_running_locally(chrome_port)
-        demisto.debug(f"Checking port {chrome_port}: {chrome_is_running=}, {browser}")
-        if chrome_is_running and browser:
-            # There's a Chrome listening on that port, and we're connected to it
+        demisto.debug(f"Checking port {chrome_port}: {len_running_chromes=}, {browser}")
+        if browser and len_running_chromes == 1:
+            # There's a Chrome listening on that port, and we're connected to it. Use it
             demisto.debug(f'Connected to Chrome running on port {chrome_port}')
             return browser, chrome_port
-        elif not chrome_is_running:
-            # There's no Chrome listening on that port
+
+        if len_running_chromes == 0:
+            # There's no Chrome listening on that port, Start a new Chrome there
             demisto.debug(f"No Chrome found on port {chrome_port}")
             break
-        elif chrome_is_running:
-            # There's a Chrome listening on that port, but we couldn't connect to it
-            demisto.debug(f"Found Chrome running on port {chrome_port}, but couldn't connect to it")
-        else:
-            # There's no Chrome listening on that port
-            demisto.debug(f"No Chrome found on port {chrome_port}")
-            break
+
+        if len_running_chromes > 1:
+            # There's more than one Chrome listening on that port, so we won't connect to it
+            demisto.debug(f"More than one Chrome running on port {chrome_port}, continuing")
+            continue
         demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
 
     if chrome_port == ports_list[-1]:
