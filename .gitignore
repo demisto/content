@@ -80,6 +80,7 @@ neo4j-data
 Packs/Whois/Integrations/Whois/test_data/microsocks
 
 # Precommit configs
+.pre-commit
 .pre-commit-config-content.yaml
 .report.json
 .report_pytest.xml
@@ -90,6 +91,7 @@ Packs/**/Scripts/**/.pytest.ini
 pytest_report.json
 test_runner.sh
 .sourcery_tmp.yaml
+testResults.xml
 
 # log files
 demisto_sdk_debug.log
