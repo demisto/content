@@ -58,6 +58,9 @@ script:
       - gpt-3.5-turbo
       description: Name of model to use. For Azure OpenAI, this should be the name of the DEPLOYMENT, not the generic model name.
       defaultValue: gpt-3.5-turbo
+    - defaultValue: "256"
+      description: The maximum number of tokens to generate.
+      name: max_tokens
     outputs:
     - contextPath: OpenAI.ChatGPTResponse.ChatGPTResponse
       description: ChatGPT response.

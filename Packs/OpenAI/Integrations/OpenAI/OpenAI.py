@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+
+
 import urllib3
 
 urllib3.disable_warnings()
@@ -62,7 +64,7 @@ class Client(BaseClient):
         """
 
         # available API params for OpenAI: https://platform.openai.com/docs/api-reference/completions/create
-        # available API params for Azure OpenAI: 
+        # available API params for Azure OpenAI:
         # https://learn.microsoft.com/en-us/azure/cognitive-services/openai/reference#completions
         data = {
             "prompt": prompt,
@@ -84,7 +86,7 @@ class Client(BaseClient):
             headers=self.headers, resp_type='json', ok_codes=(200,)
         )
 
-    def chatgpt(self, prompt: str, model: str = CHAT_DEFAULT_MODEL) -> dict:
+    def chatgpt(self, prompt: str, model: str = CHAT_DEFAULT_MODEL, max_tokens: int = 256) -> dict:
         """
             Send prompt to ChatGPT using the 'chat/completions' endpoint.
 
@@ -96,7 +98,7 @@ class Client(BaseClient):
                 dict: HTTP response from the OpenAI Chat API
         """
         options = {
-            "max_tokens": 1000,
+            "max_tokens": max_tokens,
             "messages": [{
                 "role": "user",
                 "content": prompt
@@ -174,7 +176,8 @@ def test_module(client: Client, model: str) -> str:
 
 
 def chatgpt_send_prompt_command(client: Client, prompt: str,
-                                model: str = CHAT_DEFAULT_MODEL) -> CommandResults:
+                                model: str = CHAT_DEFAULT_MODEL,
+                                max_tokens: str = "256") -> CommandResults:
     """
         Command to send prompts to OpenAI ChatGPT API
         and receive a response converted into json then
@@ -186,7 +189,7 @@ def chatgpt_send_prompt_command(client: Client, prompt: str,
     if not prompt:
         raise DemistoException('the prompt argument cannot be empty.')
 
-    chatgpt_response = client.chatgpt(prompt, model=model)
+    chatgpt_response = client.chatgpt(prompt, model=model, max_tokens=int(max_tokens))
     return chatgpt_output(chatgpt_response)
 
 
@@ -299,3 +302,4 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
