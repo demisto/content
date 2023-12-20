@@ -1,5 +1,6 @@
 from Tests.scripts import common
 
+
 def test_person_in_charge(mocker):
     """
     Given a commit object 
@@ -18,10 +19,6 @@ def test_person_in_charge(mocker):
     assert result == expected
 
 
-
-from Tests.scripts import common
-
-
 def test_are_pipelines_in_order_as_commits_true(mocker):
     """
     Given a list of commits and two pipeline SHAs
@@ -33,7 +30,7 @@ def test_are_pipelines_in_order_as_commits_true(mocker):
     commit1.id = '1'
     commit1.created_at = '2020-01-01T00:00:00Z'
 
-    commit2 = mocker.Mock() 
+    commit2 = mocker.Mock()
     commit2.id = '2'
     commit2.created_at = '2020-01-02T00:00:00Z'
 
@@ -56,7 +53,7 @@ def test_are_pipelines_in_order_as_commits_false(mocker):
 
     """
     commit1 = mocker.Mock()
-    commit1.id = '1' 
+    commit1.id = '1'
     commit1.created_at = '2020-01-01T00:00:00Z'
 
     commit2 = mocker.Mock()
@@ -72,7 +69,6 @@ def test_are_pipelines_in_order_as_commits_false(mocker):
     result = common.are_pipelines_in_order_as_commits(commits, current_sha, previous_sha)
     # there is a problem to test if side effect that is None is equal to None, so for now its removed from the assert
     assert result[0] == expected[0]
-
 
 
 def test_is_pivot_first_pipeline(mocker):
@@ -101,7 +97,7 @@ def test_is_pivot_pipeline_not_in_list(mocker):
 
     """
     pipeline_id = '1'
-    pipelines = [mocker.Mock(id=2)] 
+    pipelines = [mocker.Mock(id=2)]
     commits = [mocker.Mock()]
 
     expected = (None, None)
@@ -120,7 +116,7 @@ def test_is_pivot_negative(mocker):
     """
     pipeline_id = '2'
     pipelines = [
-        mocker.Mock(id=1, status='success'), 
+        mocker.Mock(id=1, status='success'),
         mocker.Mock(id=2, status='failed')
     ]
     commit = mocker.Mock()

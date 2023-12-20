@@ -221,7 +221,7 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
     return sentence
 
 
-def get_pipelines_and_commits(gitlab_url:str, gitlab_access_token:str, project_id:str, look_back_hours:int):
+def get_pipelines_and_commits(gitlab_url: str, gitlab_access_token: str, project_id: str, look_back_hours: int):
     """
      Get finished pipelines and commits on the master branch in the last X hours,
     pipelines are filtered to only include successful and failed pipelines.

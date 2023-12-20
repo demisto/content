@@ -530,7 +530,7 @@ def main():
         logging.info(f'Pivot commit is {pivot_commit}, pipeline changed status is {pipeline_changed_status}')
         if pipeline_changed_status is not None:
             name, email, pr = person_in_charge(pivot_commit)
-            msg = "broke" if pipeline_changed_status else "fixed"  
+            msg = "broke" if pipeline_changed_status else "fixed"
             shame_message = (f"Hi @{name}, You {msg} the build.", f" That was done in this {slack_link(pr,'PR.')}")
 
             computed_slack_channel = "test_slack_notifier_when_master_is_broken"
