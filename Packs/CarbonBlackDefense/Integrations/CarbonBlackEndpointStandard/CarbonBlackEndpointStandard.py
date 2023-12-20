@@ -866,7 +866,7 @@ class Client(BaseClient):
                 target_priority=target_priority
             ),
             query=query,
-            rows=rows
+            rows=arg_to_number(rows)
         )
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
