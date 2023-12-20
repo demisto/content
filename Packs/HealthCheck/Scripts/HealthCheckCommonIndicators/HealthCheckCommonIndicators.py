@@ -31,7 +31,7 @@ def main(args):
     body = build_body(tenant_name)
 
     indicator_thresholds = args.get('Thresholds', THRESHOLDS)
-    indicator_res = execute_command('demisto-api-post', {
+    indicator_res = execute_command('core-api-post', {
         'uri': f'{account_name}indicators/search',
         'body': body,
     })

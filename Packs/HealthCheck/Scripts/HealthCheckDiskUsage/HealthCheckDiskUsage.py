@@ -50,7 +50,7 @@ def main(args):
             partition = entry['value']
 
     res = execute_command(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": f"{account_name}/statistics/widgets/query",
             "body": {
@@ -118,6 +118,7 @@ def main(args):
                     }
                 }
             }
+            return None
     else:
         add_actions = analyze_data(stats)
         return CommandResults(
