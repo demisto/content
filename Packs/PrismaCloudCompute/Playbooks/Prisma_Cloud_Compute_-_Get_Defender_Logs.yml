@@ -2,10 +2,10 @@ id: Prisma Cloud Compute - Get Defender Logs
 version: -1
 name: Prisma Cloud Compute - Get Defender Logs
 description: |-
-  This is a sub-playbook of the “Prisma Cloud Compute - Audit Alert v2” playbook
+  This is a sub-playbook of the “Prisma Cloud Compute - Audit Alert v2” playbook.
   - Gets defender logs and sets them to layout
   - Downloads defender logs
-  - Gets defender backups.
+  - Gets defender backups
 starttaskid: "0"
 tasks:
   "0":

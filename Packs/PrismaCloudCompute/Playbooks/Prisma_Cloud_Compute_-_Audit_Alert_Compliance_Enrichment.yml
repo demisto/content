@@ -4,8 +4,8 @@ name: Prisma Cloud Compute - Audit Alert Compliance Enrichment
 description: |-
   This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
   Retrieves the following information:
-  - Alert profiles
-  - Container WAAS policies
+  - Alert profiles.
+  - Container WAAS policies.
   - Image compliance issues.
 starttaskid: "0"
 tasks:

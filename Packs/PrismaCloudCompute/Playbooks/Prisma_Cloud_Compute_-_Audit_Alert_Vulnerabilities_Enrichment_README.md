@@ -15,11 +15,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
+SetAndHandleEmpty
 
 ### Commands
 
-* createNewIndicator
+createNewIndicator
 
 ## Playbook Inputs
 

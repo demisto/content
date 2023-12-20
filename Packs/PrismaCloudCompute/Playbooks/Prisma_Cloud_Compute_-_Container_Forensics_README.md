@@ -11,11 +11,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* PaloAltoNetworks_PrismaCloudCompute
+PaloAltoNetworks_PrismaCloudCompute
 
 ### Scripts
 
-* SetAndHandleEmpty
+SetAndHandleEmpty
 
 ### Commands
 
@@ -26,14 +26,14 @@ This playbook does not use any sub-playbooks.
 
 ---
 
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| AuditAlertType | The audit alert type. |  | Optional |
-| Image | Image name. |  | Optional |
-| DefenderType | The defender type. |  | Optional |
-| AlertCluster | The alert's cluster name. |  | Optional |
-| Hostname | The hostname. |  | Optional |
-| ForensicLink | This link exist in audit runtime incidents. |  | Optional |
+| **Name** | **Description**                              | **Default Value** | **Required** |
+| --- |----------------------------------------------| --- | --- |
+| AuditAlertType | The audit alert type.                        |  | Optional |
+| Image | Image name.                                  |  | Optional |
+| DefenderType | The defender type.                           |  | Optional |
+| AlertCluster | The alert's cluster name.                    |  | Optional |
+| Hostname | The hostname.                                |  | Optional |
+| ForensicLink | This link exists in audit runtime incidents. |  | Optional |
 
 ## Playbook Outputs
 

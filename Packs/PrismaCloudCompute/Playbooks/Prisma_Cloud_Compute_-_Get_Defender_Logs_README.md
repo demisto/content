@@ -1,7 +1,7 @@
-This is a sub-playbook of the “Prisma Cloud Compute - Audit Alert v2” playbook
+This is a sub-playbook of the “Prisma Cloud Compute - Audit Alert v2” playbook.
 - Gets defender logs and sets them to layout
 - Downloads defender logs
-- Gets defender backups.
+- Gets defender backups
 
 ## Dependencies
 
@@ -13,11 +13,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* PaloAltoNetworks_PrismaCloudCompute
+PaloAltoNetworks_PrismaCloudCompute
 
 ### Scripts
 
-* ToTable
+ToTable
 
 ### Commands
 
