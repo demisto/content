@@ -1,5 +1,7 @@
 id: Prisma Cloud Compute - Audit Alert Enrichment
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Prisma Cloud Compute - Audit Alert Enrichment
 description: |-
   This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
@@ -23,9 +25,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
       - "4"
       - "6"
+      - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -76,105 +78,6 @@ tasks:
         "position": {
           "x": -27.5,
           "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: b9d9483a-60a8-4d28-85f8-6217160b581e
-    type: regular
-    task:
-      id: b9d9483a-60a8-4d28-85f8-6217160b581e
-      version: -1
-      name: Set Incident Link
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      externallink:
-        complex:
-          root: inputs.ConsoleLink
-          transformers:
-          - operator: Stringify
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: /compute?computeState=
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.BaseURL
-                iscontext: true
-              suffix: {}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 452.5,
-          "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 63f6c793-9288-4ad5-89a7-bab70137e7da
-    type: condition
-    task:
-      id: 63f6c793-9288-4ad5-89a7-bab70137e7da
-      description: ""
-      version: -1
-      name: Does baseUrl exist in inputs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "2"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.BaseURL
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.ConsoleLink
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 452.5,
-          "y": 280
         }
       }
     note: false
@@ -345,7 +248,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -880,
+          "x": -450,
           "y": 510
         }
       }
@@ -429,7 +332,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -450,
+          "x": -870,
           "y": 510
         }
       }
@@ -468,17 +371,120 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 58963268-42d9-422f-888b-c1e419e0cd7e
+    type: regular
+    task:
+      id: 58963268-42d9-422f-888b-c1e419e0cd7e
+      version: -1
+      name: Set Incident Link
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      externallink:
+        complex:
+          root: inputs.ConsoleLink
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: /compute?computeState=
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.BaseURL
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 23c9f7e7-52a0-4913-8049-b4ee573c20fe
+    type: condition
+    task:
+      id: 23c9f7e7-52a0-4913-8049-b4ee573c20fe
+      description: ""
+      version: -1
+      name: Does baseUrl exist in inputs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.BaseURL
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ConsoleLink
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
+      "13_12_yes": 0.39,
       "4_7_yes": 0.22,
       "4_9_#default#": 0.6
     },
     "paper": {
       "dimensions": {
         "height": 745,
-        "width": 2150,
-        "x": -880,
+        "width": 2140,
+        "x": -870,
         "y": 90
       }
     }

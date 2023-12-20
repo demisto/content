@@ -1,5 +1,7 @@
 id: Prisma Cloud Compute - Container Forensics
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Prisma Cloud Compute - Container Forensics
 description: |-
   This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
@@ -254,10 +256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e17406e0-be58-4d5a-8c16-def2619debfc
+    taskid: c0c53de6-3a0d-45ba-87cc-47aef8e36a5c
     type: condition
     task:
-      id: e17406e0-be58-4d5a-8c16-def2619debfc
+      id: c0c53de6-3a0d-45ba-87cc-47aef8e36a5c
       description: ""
       version: -1
       name: Forensic link exists?
@@ -277,9 +279,10 @@ tasks:
           left:
             value:
               complex:
-                root: PrismaCloudCompute.AuditAlert
-                accessor: forensicLink
+                root: inputs.ForensicLink
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -297,10 +300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 76051d11-b0c7-4837-8c8a-06ca24206f93
+    taskid: 2d178d2d-57f0-498a-89a3-7972faf323de
     type: regular
     task:
-      id: 76051d11-b0c7-4837-8c8a-06ca24206f93
+      id: 2d178d2d-57f0-498a-89a3-7972faf323de
       version: -1
       name: Extract container id
       description: |-
@@ -321,8 +324,7 @@ tasks:
         simple: ContainerID
       value:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: forensicLink
+          root: inputs.ForensicLink
           transformers:
           - operator: Cut
             args:
@@ -397,6 +399,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {

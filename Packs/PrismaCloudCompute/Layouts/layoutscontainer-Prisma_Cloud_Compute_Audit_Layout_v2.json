@@ -761,7 +761,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
-                        "hideName": true,
+                        "hideName": false,
                         "i": "caseinfoid-5hwygcoqct-caseinfoid-dhendfrlpj-caseinfoid-5hwygcoqct-caseinfoid-e1b77c30-d894-11eb-9526-0138f2c993e4",
                         "items": [
                             {

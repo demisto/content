@@ -29,82 +29,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "5"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 172.5,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 21ea5bd5-ebb6-49f3-8f26-dada4f2fa115
-    type: regular
-    task:
-      id: 21ea5bd5-ebb6-49f3-8f26-dada4f2fa115
-      version: -1
-      name: Parse Audit Alert
-      description: Parse raw vulnerabilities JSON data
-      scriptName: PrismaCloudComputeParseAuditAlert
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
       - "91"
-    scriptarguments:
-      alert_raw_json:
-        complex:
-          root: incident
-          accessor: prismacloudcomputerawalertjson
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 172.5,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: c6dc14f9-1dc6-4844-8afa-704cd09cd999
-    type: title
-    task:
-      id: c6dc14f9-1dc6-4844-8afa-704cd09cd999
-      version: -1
-      name: Case Details
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "50"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 172.5,
-          "y": 575
+          "x": 132.5,
+          "y": -90
         }
       }
     note: false
@@ -134,8 +66,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 1560
+          "x": -100,
+          "y": 450
         }
       }
     note: false
@@ -165,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 392.5,
-          "y": 1560
+          "x": 352.5,
+          "y": 450
         }
       }
     note: false
@@ -198,8 +130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2990
+          "x": 122.5,
+          "y": 1880
         }
       }
     note: false
@@ -230,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3600
+          "x": 122.5,
+          "y": 2490
         }
       }
     note: false
@@ -258,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3800
+          "x": 122.5,
+          "y": 2690
         }
       }
     note: false
@@ -289,8 +221,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1975
+          "x": 122.5,
+          "y": 865
         }
       }
     note: false
@@ -326,8 +258,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 2620
+          "x": 582.5,
+          "y": 1510
         }
       }
     note: false
@@ -357,63 +289,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 3430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: 781b9f9c-08b4-4b41-86d8-ea02e57472d7
-    type: condition
-    task:
-      id: 781b9f9c-08b4-4b41-86d8-ea02e57472d7
-      description: ""
-      version: -1
-      name: Check if Raw Alert JSON exist
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "66"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: prismacloudcomputerawalertjson
-            iscontext: true
-          right:
-            value: {}
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: prismacloudcomputerawalertjson
-            iscontext: true
-          right:
-            value:
-              simple: '"kind": "audit"'
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 172.5,
-          "y": 775
+          "x": 582.5,
+          "y": 2320
         }
       }
     note: false
@@ -425,10 +302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 08a62d27-46b8-4125-8a1c-a5b6541948b8
+    taskid: 04c093e5-186e-4c4c-86ea-88ca13bb0057
     type: regular
     task:
-      id: 08a62d27-46b8-4125-8a1c-a5b6541948b8
+      id: 04c093e5-186e-4c4c-86ea-88ca13bb0057
       version: -1
       name: 'Get host''s defenders list '
       description: Retrieve a list of defenders and their information.
@@ -442,15 +319,15 @@ tasks:
     scriptarguments:
       hostname:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: host
+          root: incident
+          accessor: prismacloudcomputehost
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2120
+          "x": 122.5,
+          "y": 1010
         }
       }
     note: false
@@ -462,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 65f18f33-3201-4622-8249-a55f567578eb
+    taskid: 0ed9edab-867d-4d8f-8eb2-47abeb6d1491
     type: condition
     task:
-      id: 65f18f33-3201-4622-8249-a55f567578eb
+      id: 0ed9edab-867d-4d8f-8eb2-47abeb6d1491
       description: ""
       version: -1
       name: Check if there's a defender on the host
@@ -490,12 +367,14 @@ tasks:
                 root: PrismaCloudCompute
                 accessor: DefenderDetails
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2280
+          "x": 122.5,
+          "y": 1170
         }
       }
     note: false
@@ -507,10 +386,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: f3ba7536-959f-4897-8c31-80358e0f3cd4
+    taskid: 70932739-28c5-4095-87ae-88b3347ed951
     type: regular
     task:
-      id: f3ba7536-959f-4897-8c31-80358e0f3cd4
+      id: 70932739-28c5-4095-87ae-88b3347ed951
       version: -1
       name: Get host forensic
       description: Get forensics on a specific host.
@@ -526,15 +405,15 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: host
+          root: incident
+          accessor: prismacloudcomputehost
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 2810
+          "x": 582.5,
+          "y": 1700
         }
       }
     note: false
@@ -564,36 +443,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: 0ab96be2-b218-44f7-84c5-27a158b44c38
-    type: title
-    task:
-      id: 0ab96be2-b218-44f7-84c5-27a158b44c38
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -350,
-          "y": 980
+          "x": 122.5,
+          "y": 1370
         }
       }
     note: false
@@ -623,8 +474,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -337.5,
-          "y": 2480
+          "x": -377.5,
+          "y": 1370
         }
       }
     note: false
@@ -654,8 +505,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 2480
+          "x": 582.5,
+          "y": 1370
         }
       }
     note: false
@@ -667,17 +518,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: c8f03a0b-1c3c-4be7-81b4-fceca4c87c6f
+    taskid: 5b726f5c-5b94-41ac-8149-30bbda95814f
     type: playbook
     task:
-      id: c8f03a0b-1c3c-4be7-81b4-fceca4c87c6f
+      id: 5b726f5c-5b94-41ac-8149-30bbda95814f
       version: -1
       name: Prisma Cloud Compute - Get Defender Logs
+      description: |-
+        This is a sub-playbook of the “Prisma Cloud Compute - Audit Alert v2” playbook
+        - Gets defender logs and sets them to layout
+        - Downloads defender logs
+        - Gets defender backups.
       playbookName: Prisma Cloud Compute - Get Defender Logs
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -699,8 +554,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2690
+          "x": 122.5,
+          "y": 1580
         }
       }
     note: false
@@ -712,10 +567,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 966c7c23-4025-4aae-8f84-580b930ca0c5
+    taskid: 080f6b6e-61e7-44b1-80cd-e95ccb90f8a4
     type: playbook
     task:
-      id: 966c7c23-4025-4aae-8f84-580b930ca0c5
+      id: 080f6b6e-61e7-44b1-80cd-e95ccb90f8a4
       version: -1
       name: Prisma Cloud Compute - Container Forensics
       description: |-
@@ -731,8 +586,8 @@ tasks:
     scriptarguments:
       AlertCluster:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: cluster
+          root: incident
+          accessor: prismacloudcomputecluster
       AuditAlertType:
         complex:
           root: PrismaCloudCompute.DefenderDetails
@@ -743,12 +598,12 @@ tasks:
           accessor: type
       ForensicLink:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: forensicLink
+          root: incident
+          accessor: prismacloudcomputeforensic
       Hostname:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: host
+          root: incident
+          accessor: prismacloudcomputehost
       Image:
         complex:
           root: incident
@@ -763,8 +618,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -337.5,
-          "y": 2690
+          "x": -377.5,
+          "y": 1580
         }
       }
     note: false
@@ -821,8 +676,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 392.5,
-          "y": 1720
+          "x": 352.5,
+          "y": 610
         }
       }
     note: false
@@ -834,10 +689,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 29061f7d-6f67-4cb5-832f-80ea9c54cb54
+    taskid: b5d7f194-e55d-4f30-8ae8-25da8f2cad3c
     type: playbook
     task:
-      id: 29061f7d-6f67-4cb5-832f-80ea9c54cb54
+      id: b5d7f194-e55d-4f30-8ae8-25da8f2cad3c
       version: -1
       name: Block Indicators - Generic v3
       description: |-
@@ -866,6 +721,52 @@ tasks:
         simple: "True"
       CustomURLCategory:
         simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       FilesToBlock:
         complex:
           root: DBotScore
@@ -997,6 +898,8 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
+      Tag:
+        simple: Blocked Indicator In Systems
       URL:
         complex:
           root: DBotScore
@@ -1055,8 +958,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3220
+          "x": 122.5,
+          "y": 2110
         }
       }
     note: false
@@ -1068,10 +971,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 3ef25921-cadb-4149-8c5e-2fd8348edc85
+    taskid: bda50bb5-003b-452a-8dca-e9715d791b58
     type: playbook
     task:
-      id: 3ef25921-cadb-4149-8c5e-2fd8348edc85
+      id: bda50bb5-003b-452a-8dca-e9715d791b58
       version: -1
       name: Cloud Response - Generic
       description: |-
@@ -1244,8 +1147,8 @@ tasks:
           accessor: region
       username:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: user
+          root: incident
+          accessor: prismacloudcomputeuser
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1256,8 +1159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 3420
+          "x": -320,
+          "y": 2310
         }
       }
     note: false
@@ -1269,13 +1172,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 0ec1c5d9-f30a-4620-8126-59b6b4d2a476
+    taskid: 7fa19377-d50b-4ff5-8348-a694e49423c8
     type: condition
     task:
-      id: 0ec1c5d9-f30a-4620-8126-59b6b4d2a476
+      id: 7fa19377-d50b-4ff5-8348-a694e49423c8
       description: ""
       version: -1
-      name: Run Cloud Response?
+      name: Run "Cloud Response - Generic" playbook?
       type: condition
       iscommand: false
       brand: ""
@@ -1292,7 +1195,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.CloudResponseFlow
+                root: inputs.AdvancedCloudResponseFlow
             iscontext: true
           right:
             value:
@@ -1302,8 +1205,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 3220
+          "x": -320,
+          "y": 2110
         }
       }
     note: false
@@ -1315,17 +1218,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 109df743-7e77-485e-86d3-2d3e9700615a
+    taskid: 8e62e41d-5e56-40ab-859d-a2423d3946a5
     type: playbook
     task:
-      id: 109df743-7e77-485e-86d3-2d3e9700615a
+      id: 8e62e41d-5e56-40ab-859d-a2423d3946a5
       version: -1
       name: Prisma Cloud Compute - Audit Alert Enrichment
+      description: |-
+        This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
+        It does the following:
+        - Runs the "Prisma Cloud - Get Account Owner" playbook in order to retrieve potential owners for the alert.
+        - Sets the incident link to the layout.
+        - Pulls image details and alerts
+        - Pulls host scan results.
       playbookName: Prisma Cloud Compute - Audit Alert Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -1333,27 +1242,27 @@ tasks:
     scriptarguments:
       AccountID:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: accountID
+          root: incident
+          accessor: accountid
       AuditAlertType:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: type
+          root: incident
+          accessor: prismacloudcomputetype
       BaseURL:
         complex:
           root: inputs.baseUrl
       ConsoleLink:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: consoleLink
+          root: incident
+          accessor: externallink
       Hostname:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: host
+          root: incident
+          accessor: prismacloudcomputehost
       ImageName:
         complex:
-          root: PrismaCloudCompute.AuditAlert
-          accessor: image
+          root: incident
+          accessor: prismacloudcomputeimage
       Namespace:
         complex:
           root: incident
@@ -1368,8 +1277,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 172.5,
-          "y": 1375
+          "x": 132.5,
+          "y": 265
         }
       }
     note: false
@@ -1399,8 +1308,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 172.5,
-          "y": 1220
+          "x": 132.5,
+          "y": 110
         }
       }
     note: false
@@ -1445,8 +1354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 1720
+          "x": -100,
+          "y": 610
         }
       }
     note: false
@@ -1491,8 +1400,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 3220
+          "x": 582.5,
+          "y": 2110
         }
       }
     note: false
@@ -1502,21 +1411,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "50_66_#default#": 0.28,
       "60_11_#default#": 0.31,
       "85_26_#default#": 0.41,
+      "85_83_yes": 0.47,
       "93_26_#default#": 0.43,
       "93_42_yes": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 3465,
-        "width": 1352.5,
-        "x": -350,
-        "y": 400
+        "height": 2845,
+        "width": 1340,
+        "x": -377.5,
+        "y": -90
       }
     }
   }
@@ -1613,7 +1523,7 @@ inputs:
     - True
     - False
   playbookInputQuery:
-- key: CloudResponseFlow
+- key: AdvancedCloudResponseFlow
   value:
     simple: "True"
   required: false
