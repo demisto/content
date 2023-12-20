@@ -393,7 +393,7 @@ def test_case_file_evidence_add_command(mocker, requests_mock):
     - Validate that file is uploaded successfully even if the content-type can be wrong
     """
     from LogRhythmRestV2 import case_file_evidence_add_command
-    requests_mock.get(f'lr-case-api/cases/1/evidence/file', text="Success")
+    requests_mock.get('lr-case-api/cases/1/evidence/file', text="Success")
     _http_request_mocker = mocker.patch.object(CLIENT, "_http_request", side_effect=[DemistoException("error"), "Success"])
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/test.txt", "name": "test.txt"})
     assert case_file_evidence_add_command(CLIENT, {"case_id": "1", "entryId": "1"})
