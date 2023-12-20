@@ -417,8 +417,10 @@ Function ExecuteServiceScript()
 	{
 		throw "Must use one of the following parameters: device_name, collection_id, collection_name"
 	}
-	$result = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $CollectionID, $CollectionName, $DeviceName, $ScriptText, $ScriptName -ErrorAction Stop -ScriptBlock {
-		param($SiteCode, $CollectionID, $CollectionName, $DeviceName, $ScriptText, $ScriptName)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$result = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $CollectionID, $CollectionName, $DeviceName, $ScriptText, $ScriptName, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($SiteCode, $CollectionID, $CollectionName, $DeviceName, $ScriptText, $ScriptName, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -488,8 +490,10 @@ Function GetLastLogOnUser()
 	param(
 		[Parameter()] [string]$DeviceName
 	)
-	$device = Invoke-Command $global:Session -ArgumentList $DeviceName, $global:siteCode -ErrorAction Stop -ScriptBlock {
-		param($deviceName, $siteCode)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$device = Invoke-Command $global:Session -ArgumentList $DeviceName, $global:siteCode, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($deviceName, $siteCode, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -534,8 +538,10 @@ Function GetCollectionList()
 		collection_id = $CollectionID
 		collection_name = $CollectionName
 	}
-	$Collections = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode -ErrorAction Stop -ScriptBlock {
-		param($parameters, $siteCode)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$Collections = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($parameters, $siteCode, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -574,8 +580,10 @@ Function GetDeviceList()
 		collection_name = $CollectionName
 		limit = $limit
 	}
-	$Devices = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode -ErrorAction Stop -ScriptBlock {
-		param($parameters, $siteCode)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$Devices = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($parameters, $siteCode, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -626,8 +634,10 @@ Function GetScriptList()
 		[Parameter()] [string]$author,
 		[Parameter()] [string]$scriptName
 	)
-	$scripts = Invoke-Command $global:Session -ArgumentList $author, $scriptName, $global:SiteCode -ErrorAction Stop -ScriptBlock {
-		param($author, $scriptName, $SiteCode)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$scripts = Invoke-Command $global:Session -ArgumentList $author, $scriptName, $global:SiteCode, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($author, $scriptName, $SiteCode, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -674,8 +684,10 @@ Function CreateScript()
 		$scriptPath = $demisto.GetFilePath($scriptFileEntryID).path
 		Copy-Item –Path $scriptPath –Destination "C:\$( $scriptPath ).ps1" –ToSession $session
 	}
-	$script = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $usedParameterName, $scriptPath, $scriptText, $scriptName -ErrorAction Stop -ScriptBlock {
-		param($SiteCode, $usedParameterName, $scriptPath, $scriptText, $scriptName)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$script = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $usedParameterName, $scriptPath, $scriptText, $scriptName, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($SiteCode, $usedParameterName, $scriptPath, $scriptText, $scriptName, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -715,8 +727,10 @@ Function InvokeScript()
 	{
 		throw "Must use one of the following parameters: collection_id, collection_name, device_name"
 	}
-	$InvokedScript = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $scriptGuid, $CollectionID, $CollectionName, $DeviceName -ErrorAction Stop -ScriptBlock {
-		param($SiteCode, $scriptGuid, $CollectionID, $CollectionName, $DeviceName)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$InvokedScript = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $scriptGuid, $CollectionID, $CollectionName, $DeviceName, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($SiteCode, $scriptGuid, $CollectionID, $CollectionName, $DeviceName, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -752,8 +766,10 @@ Function ApproveScript()
 		[Parameter()] [string]$scriptGuid,
 		[Parameter()] [string]$comment
 	)
-	Invoke-Command $global:Session -ArgumentList $global:SiteCode, $scriptGuid, $comment -ErrorAction Stop -ScriptBlock {
-		param($SiteCode, $scriptGuid, $comment)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	Invoke-Command $global:Session -ArgumentList $global:SiteCode, $scriptGuid, $comment, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($SiteCode, $scriptGuid, $comment, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -836,8 +852,10 @@ Function CreateDeviceCollection()
 		[Parameter()] [string]$CollectionName,
 		[Parameter()] [string]$limitingCollectionName
 	)
-	$collection = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $comment, $CollectionName, $limitingCollectionName -ErrorAction Stop -ScriptBlock {
-		param($SiteCode, $comment, $CollectionName, $limitingCollectionName)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$collection = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $comment, $CollectionName, $limitingCollectionName, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($SiteCode, $comment, $CollectionName, $limitingCollectionName, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -868,8 +886,10 @@ Function AddMembersToDeviceCollection()
 		throw "Must use one of the following parameters: collection_id, collection_name"
 	}
 	$resourceIDs = ArgToList $deviceResourceIDs
-	$result = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $CollectionID, $CollectionName, $resourceIDs -ErrorAction Stop -ScriptBlock {
-		param($SiteCode, $CollectionID, $CollectionName, $resourceIDs)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$result = Invoke-Command $global:Session -ArgumentList $global:SiteCode, $CollectionID, $CollectionName, $resourceIDs, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($SiteCode, $CollectionID, $CollectionName, $resourceIDs, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -908,8 +928,10 @@ Function IncludeDeviceCollection()
 		include_collection_id = $includeCollectionID
 		include_collection_name = $includeCollectionName
 	}
-	$result = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode -ErrorAction Stop -ScriptBlock {
-		param($parameters, $siteCode)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$result = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($parameters, $siteCode, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -954,8 +976,10 @@ Function ExcludeDeviceCollection()
 		exclude_collection_id = $excludeCollectionID
 		exclude_collection_name = $excludeCollectionName
 	}
-	$result = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode -ErrorAction Stop -ScriptBlock {
-		param($parameters, $siteCode)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$result = Invoke-Command $global:Session -ArgumentList $parameters, $global:siteCode, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($parameters, $siteCode, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -996,8 +1020,10 @@ Function AddMembersToCollectionByQuery()
 	{
 		throw "Must use one of the following parameters: collection_id, collection_name"
 	}
-	$result = Invoke-Command $global:Session -ArgumentList $global:siteCode, $CollectionID, $CollectionName, $queryExpression, $ruleName -ErrorAction Stop -ScriptBlock {
-		param($siteCode, $CollectionID, $CollectionName, $queryExpression, $ruleName)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	$result = Invoke-Command $global:Session -ArgumentList $global:siteCode, $CollectionID, $CollectionName, $queryExpression, $ruleName, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($siteCode, $CollectionID, $CollectionName, $queryExpression, $ruleName, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -1391,8 +1417,10 @@ Function TestModule()
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
 	param()
-	Invoke-Command $global:Session -ArgumentList $global:SiteCode -ErrorAction Stop -ScriptBlock {
-		param($SiteCode)
+    $Demisto.Debug("The value of global computerName is $global:computerName")
+    $Demisto.Debug("The value of global SiteCode is $global:SiteCode")
+	Invoke-Command $global:Session -ArgumentList $global:SiteCode, $global:computerName -ErrorAction Stop -ScriptBlock {
+		param($SiteCode, $computerName)
 		Set-Location $env:SMS_ADMIN_UI_PATH\..\
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
@@ -1416,7 +1444,7 @@ function Main
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
 	param()
 	# Parse Params
-	$computerName = $demisto.Params()['ComputerName']
+	$global:computerName = $demisto.Params()['ComputerName']
 	$userName = $demisto.Params()['credentials']['identifier']
 	$password = $demisto.Params()['credentials']['password']
 	$global:SiteCode = $demisto.Params()['SiteCode']
