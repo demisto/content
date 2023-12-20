@@ -70,6 +70,8 @@ repos:
     config_file_arg:
       arg_name: --rcfile
       file_name: .pylintrc
+    skip:commit: true
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
@@ -94,6 +96,8 @@ repos:
     - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
+    skip:commit: true
+
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
@@ -133,12 +137,15 @@ repos:
     entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
     language: script
     pass_filenames: false
+    skip:commit: true
   - id: is-gitlab-changed
     name: is-gitlab-changed
     description: Checks if gitlab files are changed, and checkout to current if it is.
     entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
     language: script
     pass_filenames: false
+    skip:commit: true
+
   - id: validate
     name: validate
     description: validate content
@@ -148,6 +155,8 @@ repos:
     pass_filenames: false
     language: system
     require_serial: true
+    skip:commit: true
+    
   - id: format
     name: format
     description: Format non-code files, to comply with XSOAR standards.
