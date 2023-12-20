@@ -250,7 +250,7 @@ class CollectionResult:
                         )
                 test_marketplaces = conf.tests_to_marketplace_set[test]
                 logger.info(f'HERE MARKETPLACES: {test_marketplaces=}, {conf.marketplace=}')
-                if not test_marketplaces or conf.marketplace not in test_marketplaces:
+                if test_marketplaces and conf.marketplace not in test_marketplaces:
                     raise IncompatibleTestMarketplaceException(test_name=test,
                                                                test_marketplaces=test_marketplaces,
                                                                expected_marketplace=conf.marketplace)
