@@ -1,6 +1,5 @@
 ## How to Access the Generic Export Indicators Service
 
-// should be only on prem - need to check from what version and if it works also from engine
 If you have several Generic Export Indicators Service integration instances, make sure to use **different listening ports** to separate the outbound feeds.
 Note: After a successful configuration of an instance, if the 'test button' is clicked again, it may result in a failure due to an incorrect assumption that the port is already in use. Nevertheless, it is important to highlight that despite this issue, the instance will continue to function correctly.
 
@@ -23,8 +22,7 @@ curl -v -u test:password https://edl-my-xsiam-subdomain.us.paloaltonetworks.com/
 
 <~XSOAR_SAAS>
 
-### Access the Generic Export Indicators Service by URL and Port (HTTP) - only via engine
-with curl, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
+### Access the Generic Export Indicators Service by URL and Port (HTTP)
 
 **Note**: For security purposes, Cortex XSOAR recommends that you use HTTPS when accessing the indicator service through the URL and port. To do so, you must provide a certificate and private key, in the respective fields. In addition, make sure to provide credentials that must be used to connect to the integration instance.
 
@@ -34,6 +32,7 @@ with curl, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 
 **Note**: The External Dynamic List is not accessible via web browsers and you will receive an unauthorized error if accessing the External Dynamic List via a browser.
 
+**Note**: When using instance that running on engine, you can access only with the `Listen Port`, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 
 1. To access the **Generic Export Indicators Service** by instance name, set up the **username** and **password** values in the **External Dynamic List Integration** page (**Settings & info** > **SETTINGS** > **Long Running Integrations**).
 2. You can access the External Dynamic List at the following url: `https://edl-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`.
@@ -62,8 +61,6 @@ In a web browser, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`
 
 </~XSOAR_ON_PREM>
-
-
 
 
 #### Note:
