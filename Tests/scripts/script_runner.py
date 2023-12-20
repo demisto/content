@@ -18,15 +18,17 @@ def run_script(args, files):
             return 1
     except subprocess.CalledProcessError as e:
         print("Error: {e}".format(e=e))  # noqa: T201,UP032
-        return 1
+        raise
     except Exception as e:
         print("An error occurred: {e}".format(e=e))  # noqa: T201,UP032
-        return 1
+        raise
     return 0
 
 
 def run_command(args_dir):
     args, directory = args_dir
+    if sys.version_info[0] < 3:
+        return subprocess.call(args, cwd=directory)
     return subprocess.run(args, cwd=directory).returncode
 
 
