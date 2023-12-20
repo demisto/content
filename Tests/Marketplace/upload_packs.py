@@ -759,7 +759,7 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
     if branch_name and branch_name.startswith('pull/'):
         successful_packs_table = build_summary_table_md(successful_packs)
 
-        build_num = os.environ['CI_BUILD_ID']
+        build_num = os.environ['CI_JOB_ID']
 
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
                       f'{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{branch_name}/{build_num}'

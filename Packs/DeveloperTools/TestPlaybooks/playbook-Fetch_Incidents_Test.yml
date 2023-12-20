@@ -1,6 +1,5 @@
 id: Fetch Incidents Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Fetch Incidents Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -116,6 +116,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -139,8 +140,7 @@ tasks:
       id: e0ea2027-5364-4b49-86f5-6aed5c35a5b7
       version: -1
       name: Check If Fields Exist
-      description: Receive fields and context. Verifies that these field exists in
-        context.
+      description: Receive fields and context. Verifies that these field exists in context.
       scriptName: VerifyObjectFieldsList
       type: regular
       iscommand: false
@@ -666,7 +666,7 @@ tasks:
       version: -1
       name: Get Incident Fields to search
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -854,11 +854,12 @@ inputs:
   value: {}
   required: false
   description: Id of Integration that we want to test.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: searchfield
   value: {}
   required: false
   description: Comma separated list of fields to confirm that exists in all incidents.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
+description: ''
