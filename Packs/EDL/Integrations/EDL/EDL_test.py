@@ -250,7 +250,7 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=(io.StringIO(f), 6))
         edl_v, _ = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}
-        
+
     def test_create_new_edl_with_offset(self, mocker, requests_mock):
         """
         Test create_new_edl with and without offset
@@ -259,7 +259,7 @@ class TestHelperFunctions:
         When:
             - calling create_new_edl
         Then:
-            - Ensure that the list is the same as is should with no offset and with offset=2 
+            - Ensure that the list is the same as is should with no offset and with offset=2
         """
 
         import EDL as edl
@@ -286,7 +286,7 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
         edl_v, _ = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"google.com", "co.uk", "*.co.uk", "*.google.com", "*.com", "aא.com"}
-        
+
     def test_create_json_out_format(self):
         """
         Given:
