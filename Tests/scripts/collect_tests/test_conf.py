@@ -51,7 +51,8 @@ class TestConf(DictFileBased):
         self.tests_to_marketplace_set: dict[str, set[str]] = defaultdict(set)
         for test in self.tests:
             tests_to_integration_set[test.playbook_id].update(test.integrations)
-            self.tests_to_marketplace_set[test.playbook_id].update(test.marketplaces)
+            if test.marketplaces:
+                self.tests_to_marketplace_set[test.playbook_id].update(test.marketplaces)
         self.tests_to_integrations: dict[str, tuple[str, ...]] = {
             test: tuple(sorted(test_integrations)) for test, test_integrations in tests_to_integration_set.items()
         }
