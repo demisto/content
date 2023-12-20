@@ -113,3 +113,12 @@ poetry.lock @ilaner @dorschw
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval
+
+# TIM Related
+/Packs/TAXIIServer/Integrations/* @MLainer1
+/Packs/FeedTAXII/Integrations/* @MLainer1
+/Packs/EDL/Integrations/* @MLainer1
+/Packs/FeedJSON/Integrations/* @MLainer1
+/Packs/FeedMitreAttackv2/* @MLainer1
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @MLainer1
+/Packs/ApiModules/Scripts/NGINXApiModule/* @MLainer1
