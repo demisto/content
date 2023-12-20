@@ -21,6 +21,8 @@ ignore=PB118
 
 [known_words]
 powershell
+o365-sc-get-search
+o365-sc-list-search
 
 [file:GetEWSFolder.yml]
 ignore=BA124
