@@ -11,7 +11,7 @@ description: |-
   - Separate internal and external IP addresses
   - For internal IP addresses, get host information.
   
-  When executing this playbook throguh IP Enrichment - Generic v2, IP classification and resolution will be handled by the main playbook, improving performance.
+  When executing this playbook through IP Enrichment - Generic v2, IP classification and resolution will be handled by the main playbook, improving performance.
 starttaskid: "0"
 tasks:
   "0":
