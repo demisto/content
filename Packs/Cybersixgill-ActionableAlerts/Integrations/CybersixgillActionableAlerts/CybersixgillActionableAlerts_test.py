@@ -310,6 +310,15 @@ def get_content_es_id_na():
     return content_info_item
 
 
+def get_content_cveid_and_esid_none():
+    content_info_item = copy.deepcopy(info_item)
+    content_info_item["additional_info"]["cve_id"] = None
+    content_info_item["es_id"] = None
+    content_info_item["aggregate_alert_id"] = 1
+
+    return content_info_item
+
+
 def get_content_item_es_id_na():
     cloned_content_item = copy.deepcopy(content_item)
     cloned_content_item["content"]["items"][1]["Additional Keywords"] = "Items"
@@ -456,6 +465,30 @@ def test_get_alert_content_es_id_na(mocker):
     alert_content = get_alert_content(
         content,
         get_content_es_id_na(),
+        incident,
+        SixgillActionableAlertClient,
+    )
+    assert alert_content is None
+    assert incident == expected_alert_output_es_id_na
+
+
+def test_get_alert_content_with_none(mocker):
+
+    from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
+
+    mocker.patch.object(
+        SixgillActionableAlertClient,
+        "get_actionable_alert_content",
+        return_value=get_content_item_es_id_na(),
+    )
+
+    from CybersixgillActionableAlerts import get_alert_content
+
+    content = get_content()
+    incident = get_incident()
+    alert_content = get_alert_content(
+        content,
+        get_content_cveid_and_esid_none(),
         incident,
         SixgillActionableAlertClient,
     )

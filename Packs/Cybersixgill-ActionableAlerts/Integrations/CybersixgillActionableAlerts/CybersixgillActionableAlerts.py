@@ -117,13 +117,6 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
         'cybersixgillactor': content_item.get('creator', None),
         'cybersixgilltriggeredassets': triggered_assets
     })
-    if item_info.get("sub_alerts_length"):
-        url = "https://portal.cybersixgill.com/#/alerts?"
-        content = f"actionable_alert_content_id={item_info.get('id')}&"
-        index = f"aggregatedIndex={item_info.get('aggregate_alert_id')}&"
-        aleid = f"filters.alert_id={item_info.get('id')}"
-        post_url = f"{url}{content}{index}{aleid}"
-        incident["CustomFields"].update({"cybersixgillposturl": post_url})
 
 
 def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
