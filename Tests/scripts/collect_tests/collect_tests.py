@@ -24,7 +24,7 @@ from Tests.scripts.collect_tests.exceptions import (
     NoTestsConfiguredException, NothingToCollectException,
     NotUnderPackException, PrivateTestException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException,
-    NonNightlyPackInNightlyBuildException)
+    NonNightlyPackInNightlyBuildException, IncompatibleTestMarketplaceException)
 from Tests.scripts.collect_tests.id_set import Graph, IdSet, IdSetItem
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
@@ -248,6 +248,12 @@ class CollectionResult:
                             skip_place='conf.json (integrations)',
                             skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
                         )
+                test_marketplaces = conf.tests_to_marketplace_set[test]
+                logger.info(f'HERE MARKETPLACES: {test_marketplaces=}, {conf.marketplace=}')
+                if not test_marketplaces or conf.marketplace not in test_marketplaces:
+                    raise IncompatibleTestMarketplaceException(test_name=test,
+                                                               test_marketplaces=test_marketplaces,
+                                                               expected_marketplace=conf.marketplace)
 
             if skip_reason := conf.skipped_tests.get(test):  # type: ignore[union-attr]
                 raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
@@ -304,7 +310,7 @@ class TestCollector(ABC):
             self.id_set = Graph(marketplace)
         else:
             self.id_set = IdSet(marketplace, PATHS.id_set_path)
-        self.conf = TestConf(PATHS.conf_path)
+        self.conf = TestConf(PATHS.conf_path, marketplace)
         self.trigger_sanity_tests = False
 
     @property
