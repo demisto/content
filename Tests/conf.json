@@ -23,7 +23,7 @@
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
-            "instance_name" : "Azure_Log_Analytics_client_cred",
+            "instance_name": "Azure_Log_Analytics_client_cred",
             "timeout": 800,
             "is_mockable": false
         },
@@ -190,7 +190,17 @@
             "memory_threshold": 500
         },
         {
-            "playbookID": "SetIfEmpty - non-ascii chars - Test"
+            "playbookID": "SetIfEmpty_Test"
+        },
+        {
+            "playbookID": "IsEmailAddressInternal_Test"
+        },
+        {
+            "playbookID": "SetAndHandleEmpty_Test"
+        },
+        {
+            "playbookID": "ExtractEmailTransformer_Test",
+            "fromversion": "6.11.0"
         },
         {
             "integrations": "Tripwire",
@@ -1851,7 +1861,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 1000,
+            "timeout": 5000,
             "is_mockable": false
         },
         {
@@ -2226,6 +2236,11 @@
             "playbookID": "Microsoft Graph Security Test self deployed v2",
             "instance_names": "ms_graph_security_client_cred_v2",
             "is_mockable": false
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "MSG-Threat-Assessment-test",
+            "instance_names": "ms_graph_security_ediscovery"
         },
         {
             "integrations": "Microsoft Graph User",
@@ -2976,7 +2991,8 @@
         },
         {
             "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "toversion": "7.9.9"
         },
         {
             "integrations": "AWS - EC2",
@@ -3496,6 +3512,11 @@
         {
             "playbookID": "Code42 Suspicious Activity Action v2 - Test",
             "integrations": "Code42",
+            "fromversion": "6.10.0"
+        },
+        {
+            "playbookID": "HasiCoprTerraformTest",
+            "integrations": "HashicorpTerraform",
             "fromversion": "6.10.0"
         },
         {
@@ -5489,6 +5510,9 @@
             "playbookID": "GridFieldSetup_test"
         },
         {
+            "playbookID": "TestGetArrayElements"
+        },
+        {
             "integrations": "Aha",
             "playbookID": "AHA_TestPlaybook",
             "fromversion": "6.5.0"
@@ -5594,9 +5618,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "AWS - Organizations",
+            "playbookID": "Test - AWS_Organizations"
+        },
+        {
             "integrations": "Netcraft V2",
-            "playbookID": "Test - Netcraft",
-            "timeout": 2400
+            "playbookID": "Test - Netcraft"
         }
     ],
     "skipped_tests": {
@@ -5777,7 +5804,10 @@
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
         "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
-        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
+        "ThreatStream-Test": "Issue CRTX-96526",
+        "MSG-Threat-Assessment-test": "API limitation",
+        "BambenekConsultingFeed_Test": "Issue CRTX-99480"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -6209,4 +6239,3 @@
         "IPv6 extraction test"
     ]
 }
-

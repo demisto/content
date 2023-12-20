@@ -21,8 +21,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * McAfee ePO v2
 * carbonblack-v2
-* epo
 * Active Directory Query v2
+* epo
 
 ### Scripts
 
@@ -30,10 +30,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* endpoint
-* cs-device-details
 * cb-sensor-info
 * extrahop-device-search
+* endpoint
+* cs-device-details
 * cs-device-search
 * ad-get-computer
 * epo-find-system

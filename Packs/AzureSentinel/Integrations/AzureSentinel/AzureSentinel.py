@@ -31,9 +31,9 @@ AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access t
                           'The response from the server did not contain the expected content.'
 
 INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
-                    'AssigneeEmail', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
-                    'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
-                    'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
+                    'AssigneeEmail', 'AssigneeObjectID', 'AssigneeUPN', 'Label', 'FirstActivityTimeUTC', 'LastActivityTimeUTC',
+                    'LastModifiedTimeUTC', 'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount',
+                    'AlertProductNames', 'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
 
 COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
 
@@ -233,6 +233,8 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
         'Status': properties.get('status'),
         'AssigneeName': properties.get('owner', {}).get('assignedTo'),
         'AssigneeEmail': properties.get('owner', {}).get('email'),
+        'AssigneeObjectID': properties.get('owner', {}).get('objectId'),
+        'AssigneeUPN': properties.get('owner', {}).get('userPrincipalName'),
         'Label': [{
             'Name': label.get('labelName'),
             'Type': label.get('labelType')
@@ -348,8 +350,10 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     classification_comment = args.get('classification_comment')
     classification_reason = args.get('classification_reason')
     assignee_email = args.get('assignee_email')
+    assignee_objectid = args.get('assignee_objectid')
     user_principal_name = args.get('user_principal_name')
     labels = argToList(args.get('labels', ''))
+    unassign = args.get('unassign')
     owner = demisto.get(fetched_incident_data, 'properties.owner', {})
 
     if not title:
@@ -360,10 +364,15 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
         severity = demisto.get(fetched_incident_data, 'properties.severity')
     if not status:
         status = demisto.get(fetched_incident_data, 'properties.status')
-    if user_principal_name:
-        owner = {'userPrincipalName': user_principal_name}
-    if assignee_email:
-        owner['email'] = assignee_email
+    if unassign == 'true':
+        owner = {}
+    elif assignee_objectid:
+        owner = {'objectId': assignee_objectid}
+    else:
+        if user_principal_name:
+            owner = {'userPrincipalName': user_principal_name}
+        if assignee_email:
+            owner['email'] = assignee_email
 
     existing_labels = demisto.get(fetched_incident_data, 'properties.labels')
     if not labels:  # not provided as arg
@@ -1250,7 +1259,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     last_incident_number = last_run.get('last_incident_number')
     demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
-    if last_fetch_time is None or last_incident_number is None:
+    if last_fetch_time is None or not last_incident_number:
         demisto.debug("handle via timestamp")
         if last_fetch_time is None:
             last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
@@ -1346,7 +1355,7 @@ def process_incidents(raw_incidents: list, min_severity: int, latest_created_tim
             incidents.append(xsoar_incident)
         else:
             demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
-                          "due to the {incident_severity=} is lower then {min_severity=}")
+                          f"due to the {incident_severity=} is lower then {min_severity=}")
 
         # Update last run to the latest fetch time
         if incident_created_time is None:
@@ -1356,7 +1365,6 @@ def process_incidents(raw_incidents: list, min_severity: int, latest_created_tim
             latest_created_time = incident_created_time
         if incident.get('IncidentNumber') > last_incident_number:
             last_incident_number = incident.get('IncidentNumber')
-
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
         'last_fetch_ids': current_fetch_ids,

@@ -3696,6 +3696,48 @@ inputs:
     For example: name of the organization finance app that the attacker might impersonate.
     This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
+inputsSections:
+- name: Role and Assignment
+  description:  Parameters defining user responsibilities and task allocations.
+  inputs: 
+  - Role
+  - OnCall
+- name: Search and Delete Functionality
+  description: Input criteria to locate specific entries and actions to remove them.
+  inputs:
+  - SearchAndDelete
+  - SearchAndDeleteIntegration
+  - O365DeleteType
+  - O365ExchangeLocation
+  - O365AllowNotFoundSearchLocations
+  - O365ExchangeLocationExclusion
+- name: Email Verification and Classification
+  description: Criteria and actions for authenticating email sources and categorizing by content.
+  inputs:
+  - AuthenticateEmail
+  - CheckMicrosoftHeaders
+  - InternalDomains
+  - GetOriginalEmail
+  - OriginalAuthenticationHeader
+- name: Analysis and Threat Detection
+  description: Parameters for examining data, identifying, and assessing security threats.
+  inputs:
+  - BlockIndicators
+  - DetonateURL
+  - InternalRange
+  - PhishingModelName
+  - DBotPredictURLPhishingURLsNumber
+  - EmailFileToExtract
+  - HuntEmailIndicators
+- name: Incident Management and User Engagement
+  description: Input settings for handling security events and involving end-users in the resolution process.
+  inputs:
+  - EmailHuntingCreateNewIncidents
+  - ListenerMailbox
+  - SendMailInstance
+  - UserEngagement
+  - TakeManualActions
+  - KeyWordsToSearch
 outputs: []
 tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test

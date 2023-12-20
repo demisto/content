@@ -1,0 +1,419 @@
+id: Detonate URL - WildFire v2.2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate URL - WildFire v2.2
+description: |-
+  Detonate a webpage or remote file using the WildFire v2 integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types:
+  APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z, JS.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1b1b3125-d39b-4930-89fc-c9ff36ac559c
+    type: start
+    task:
+      id: 1b1b3125-d39b-4930-89fc-c9ff36ac559c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 74b54d79-9464-4112-824b-e836cbce4dbc
+    type: title
+    task:
+      id: 74b54d79-9464-4112-824b-e836cbce4dbc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d4449595-5c9b-4dfd-8960-35f1d1dc309b
+    type: condition
+    task:
+      id: d4449595-5c9b-4dfd-8960-35f1d1dc309b
+      version: -1
+      name: Is there a URL to detonate?
+      description: Look for file URLs to detonate
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8089eb7a-a9e8-4efd-8c2e-74a4583af22e
+    type: condition
+    task:
+      id: 8089eb7a-a9e8-4efd-8c2e-74a4583af22e
+      version: -1
+      name: Is WildFire-v2 enabled?
+      description: Check if integration instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2a424489-4f53-47f0-8504-6b71550d8bc7
+    type: regular
+    task:
+      id: 2a424489-4f53-47f0-8504-6b71550d8bc7
+      version: -1
+      name: WildFire Get Report
+      description: Retrieves results for a file hash using WildFire.
+      script: WildFire-v2|||wildfire-report
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        complex:
+          root: WildFire
+          accessor: Report.URL
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c43f0095-ea2f-4aaf-85ee-41ea5ba54e6c
+    type: regular
+    task:
+      id: c43f0095-ea2f-4aaf-85ee-41ea5ba54e6c
+      version: -1
+      name: WildFire Upload File URL
+      description: Uploads a URL of a webpage to WildFire for analysis.
+      script: '|||wildfire-upload-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+      polling:
+        simple: "true"
+      timeout_in_seconds:
+        complex:
+          root: inputs.Timeout
+      upload:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_5_#default#": 0.7
+    },
+    "paper": {
+      "dimensions": {
+        "height": 915,
+        "width": 815,
+        "x": 265,
+        "y": 30
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+      transformers:
+      - operator: uniq
+  required: false
+  description: URL of the webpage or file url to detonate. The URL is taken from the context.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Duration for executing the polling (in minutes).
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "8"
+  required: false
+  description: The duration after which to stop polling and to resume the playbook (in minutes).
+  playbookInputQuery:
+- key: ReportFileType
+  value: {}
+  required: false
+  description: The resource type to download. Default is PDF. XML is also possible.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: File.Size
+  description: File size.
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash.
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash.
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE".
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash.
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample.
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that determined that the file is malicious.
+  type: string
+- contextPath: File.Name
+  description: Filename.
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason the vendor determined that the file is malicious.
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of indicator.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: IP.Address
+  description: IPs relevant to the sample.
+  type: string
+- contextPath: File
+  description: The File object.
+  type: unknown
+- contextPath: InfoFile
+  description: The report file object.
+  type: unknown
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file.
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file.
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file.
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file.
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file.
+  type: number
+- contextPath: InfoFile.Type
+  description: The type of the report file.
+  type: string
+- contextPath: File.Malicious
+  description: The malicious object.
+  type: unknown
+- contextPath: WildFire.Report
+  description: The submission object.
+  type: unknown
+- contextPath: WildFire.Report.MD5
+  description: MD5 of the submission.
+  type: string
+- contextPath: WildFire.Report.SHA256
+  description: SHA256 of the submission.
+  type: string
+- contextPath: WildFire.Report.FileType
+  description: The type of the submission.
+  type: string
+- contextPath: WildFire.Report.Status
+  description: The status of the submission.
+  type: string
+- contextPath: WildFire.Report.Size
+  description: The size of the submission.
+  type: number
+- contextPath: WildFire.Report.URL
+  description: URL of the submission.
+  type: string
+- contextPath: WildFire.Report.detection_reasons
+  description: The detection reasons object.
+  type: unknown
+- contextPath: WildFire.Report.detection_reasons.description
+  description: Reason for the detection verdict.
+  type: string
+- contextPath: WildFire.Report.detection_reasons.name
+  description: Name of the detection.
+  type: string
+- contextPath: WildFire.Report.detection_reasons.type
+  description: Type of the detection.
+  type: string
+- contextPath: WildFire.Report.detection_reasons.verdict
+  description: Verdict of the detection.
+  type: string
+- contextPath: WildFire.Report.detection_reasons.artifacts
+  description: Artifacts for the detection reasons.
+  type: string
+- contextPath: WildFire.Report.iocs
+  description: Associated IOCs.
+  type: string
+- contextPath: WildFire.Report.ExtractedURL.URL
+  description: The extracted URL.
+  type: string
+- contextPath: WildFire.Report.ExtractedURL.Verdict
+  description: The extracted verdict.
+  type: number
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
