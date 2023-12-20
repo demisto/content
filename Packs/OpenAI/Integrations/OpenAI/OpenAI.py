@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-import json
 import urllib3
 
 urllib3.disable_warnings()
@@ -63,7 +62,8 @@ class Client(BaseClient):
         """
 
         # available API params for OpenAI: https://platform.openai.com/docs/api-reference/completions/create
-        # available API params for Azure OpenAI: https://learn.microsoft.com/en-us/azure/cognitive-services/openai/reference#completions
+        # available API params for Azure OpenAI: 
+        # https://learn.microsoft.com/en-us/azure/cognitive-services/openai/reference#completions
         data = {
             "prompt": prompt,
             "temperature": temperature,
