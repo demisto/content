@@ -176,10 +176,11 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     Returns:
         DataFrame: Existing grid data.
     """
+    # Note: in XSIAM empty grid fields doe not exist in the context.
+    # in XSOAR the fields exist with empty values.
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields", {}) or {}
-    is_playground = incident.get("isPlayground")
-    if is_playground and grid_id not in custom_fields:
+    if (not is_xsiam()) and grid_id not in custom_fields:
         raise ValueError(get_error_message(grid_id))
     current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
@@ -389,13 +390,13 @@ def main():  # pragma: no cover
         # we want to check if the incident was succefully updated
         # we execute command and not using `demisto.incident()` because we want to get the updated incident and context
         res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
-        is_playground = demisto.incident().get("isPlayground")
         custom_fields = {}
         for entry in res:
             if entry['Contents']:
                 data = entry["Contents"]["data"]
                 custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
-        if (not is_playground) and table and grid_id not in custom_fields:
+        # in the debugger, there is an addition of the "_grid" suffix to the grid_id.
+        if is_xsiam() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
             raise ValueError(get_error_message(grid_id))
         if is_error(res_set):
             demisto.error(f'failed to execute "setIncident" with table: {table}.')
