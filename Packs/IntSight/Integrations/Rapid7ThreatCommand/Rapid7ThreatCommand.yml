@@ -6,6 +6,7 @@ configuration:
 - defaultvalue: https://api.ti.insight.rapid7.com/
   display: Server URL
   name: base_url
+  additionalinfo: URL of the Rapid7 platform.
   required: true
   type: 0
 - name: credentials
@@ -32,18 +33,20 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- additionalinfo: Timestamp in ISO format or <number> <time unit>, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+- additionalinfo: Timestamp in ISO format or <number> <time unit>, e.g., 2023-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
   display: First fetch timestamp.
+  defaultvalue: 1 day
   name: first_fetch
   type: 0
   required: false
-- additionalinfo: Default is 50. Maximum is 100.
+- additionalinfo: The maximum number of alerts to fetch each time. The default is 50. If the value is greater than 200, it will be considered as 200.
   display: Maximum incidents per fetch
   defaultvalue: 50
   name: max_fetch
   type: 0
   required: true
 - display: Alert types to fetch as incidents
+  additionalinfo: Alert types to fetch as incidents.
   name: alert_types
   options:
   - AttackIndication
@@ -54,7 +57,16 @@ configuration:
   - vip
   type: 16
   required: false
+- display: Network types to fetch as incidents
+  additionalinfo: Network types to fetch as incidents.
+  name: network_types
+  options:
+  - Clear Web
+  - Dark Web
+  type: 16
+  required: false
 - display: Minimum Alert Severity Level
+  additionalinfo: Alerts with the minimum level of severity to fetch.
   name: alert_severity
   options:
   - Low
@@ -63,6 +75,7 @@ configuration:
   type: 15
   required: false
 - display: Source types to filter alerts by
+  additionalinfo: Source types to filter alerts by.
   name: source_types
   options:
   - ApplicationStores
@@ -75,6 +88,7 @@ configuration:
   required: false
 - defaultvalue: 'false'
   display: Fetch closed alerts
+  additionalinfo: Fetch closed alerts from Rapid7 platform.
   name: fetch_closed_incidents
   type: 8
   required: false
@@ -140,7 +154,7 @@ script:
     - description: "A comma-separated list of nationalities by which to filter the results. For example: Egypt,Iraq."
       isArray: true
       name: origins
-    - description: "A comma-separated list of TTPs by which to filter the results. For example: Malware,Backdoor"
+    - description: "A comma-separated list of TTPs by which to filter the results. For example: Malware,Backdoor."
       isArray: true
       name: ttps
     - description: "Filter for results whose last update date is greater than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z. Default value: Last year."
@@ -269,7 +283,7 @@ script:
       description: The value of the IOC.
       type: String
     - contextPath: ThreatCommand.IOC.type
-      description: The type of the IOC
+      description: The type of the IOC.
       type: String
     - contextPath: ThreatCommand.IOC.updated_date
       description: The date the IOC was last updated.
@@ -349,7 +363,7 @@ script:
     - description: "Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com"
       isArray: true
       name: domains
-    - description: "Comma-separated list of URL IOC values to add. For example: \"http://securitywap.com/path\""
+    - description: "Comma-separated list of URL IOC values to add. For example: \"http://securitywap.com/path\"."
       isArray: true
       name: urls
     - description: "Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4."
@@ -478,7 +492,7 @@ script:
       - Installation
       - Command and Control
       - Actions on Objective
-    description: "Gets IOC details by value or IOC’s full enrichment data. While using the enrichment flag, the command is scheduled and allows us to get full enrichment data. Note that enrichment has a quota. You can get the quota by using threat-command-quotas-usage-get."
+    description: "Gets IOC details by value or IOC's full enrichment data. While using the enrichment flag, the command is scheduled and allows us to get full enrichment data. Note that enrichment has a quota. You can get the quota by using threat-command-quotas-usage-get."
     name: threat-command-ioc-search
     polling: true
     outputs:
@@ -1025,7 +1039,7 @@ script:
       name: source_url
     - description: "Alert's source date. For example:  2022-12-25T08:38:06Z."
       name: source_date
-    - description: "Comma-separated list of image entry IDs to attach to the alert. Allowed image types: gif,jpeg"
+    - description: "Comma-separated list of image entry IDs to attach to the alert. Allowed image types: gif,jpeg."
       isArray: true
       name: image_entry_ids
     - description: "If provided, the related values will override any type and sub_type parameters (dependencies - use the threat-command-alert-scenario-list command to get all the alert scenarios)."
@@ -1125,7 +1139,7 @@ script:
     - description: 'Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com'
       isArray: true
       name: domains
-    - description: 'Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path"'
+    - description: 'Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path".'
       isArray: true
       name: urls
     - description: 'Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4.'
@@ -1252,7 +1266,7 @@ script:
       description: Response initiator.
       type: String
     - contextPath: ThreatCommand.Alert.Message.message
-      description: Response message
+      description: Response message.
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
@@ -1330,6 +1344,31 @@ script:
       required: true
     description: Get alert's CSV file in case of credentials leakage or leaked credit cards alerts.
     name: threat-command-alert-csv-get
+    outputs:
+    - contextPath: ThreatCommand.CSV.alert_id
+      description: Alert ID.
+      type: String
+    - contextPath: ThreatCommand.CSV.content
+      description: Content of CSV file.
+      type: Unknown
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the CSV file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the CSV file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the CSV file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the CSV file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the CSV file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the CSV file.
+      type: string
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
       name: alert_id
@@ -1337,7 +1376,7 @@ script:
     - description: Desired note.
       name: note
       required: true
-    - description: "Comma-separated list of file entry IDs. Allowed types: pdf,csv,doc,docx,png,txt,jpeg,jpg"
+    - description: "Comma-separated list of file entry IDs. Allowed types: pdf,csv,doc,docx,png,txt,jpeg,jpg."
       isArray: true
       name: entry_ids
     description: "Add a note to the alert. You can add notes, as text or uploaded files, to an alert that can be seen by internal users. Each note is accompanied by the name of the note creator. Other users can reply to notes. Alert notes remain with the alert, even after it is closed or otherwise remediated."
@@ -2055,7 +2094,7 @@ script:
       description: Domain updated date.
       type: String
     description: Checks the reputation of a domain.
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.80593
   isfetch: true
   runonce: false
   script: "-"

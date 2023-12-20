@@ -10,7 +10,7 @@ description: |-
   -QRadar
   -Azure Log Analytics
   -PAN-OS
-  -XDR By Palo Alto Networks
+  -XDR / Core By Palo Alto Networks.
 starttaskid: "0"
 tasks:
   "0":
@@ -110,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 85e91ccb-1565-48a5-8f56-e745b4b3d5a2
+    taskid: 73c894c8-fd7a-4ea0-8eba-dbfd2db37bcf
     type: title
     task:
-      id: 85e91ccb-1565-48a5-8f56-e745b4b3d5a2
+      id: 73c894c8-fd7a-4ea0-8eba-dbfd2db37bcf
       version: -1
       name: Done
       type: title
@@ -125,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1820
+          "x": 720,
+          "y": 1840
         }
       }
     note: false
@@ -156,7 +156,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 400
         }
       }
@@ -219,7 +219,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 530
         }
       }
@@ -232,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 66eaa232-f160-4fc8-8788-163874940a58
+    taskid: ea25e12c-7774-410a-8af8-77c6320c30ab
     type: regular
     task:
-      id: 66eaa232-f160-4fc8-8788-163874940a58
+      id: ea25e12c-7774-410a-8af8-77c6320c30ab
       version: -1
       name: PAN-OS query logs
       description: The query logs in Panorama.
@@ -250,15 +250,15 @@ tasks:
       log-type:
         simple: threat
       query:
-        simple: (user.src eq ${inputs.Username}) or (user.dst eq ${inputs.Username}) and (time_generated in last-24-hrs)
+        simple: (user.src eq ${SplitUsername}) or (user.dst eq ${SplitUsername}) and (time_generated in last-24-hrs)
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": 1050
+          "x": 2070,
+          "y": 1090
         }
       }
     note: false
@@ -299,8 +299,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": 1625
+          "x": 2070,
+          "y": 1665
         }
       }
     note: false
@@ -337,8 +337,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": 1215
+          "x": 2070,
+          "y": 1255
         }
       }
     note: false
@@ -362,14 +362,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+      - "87"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": 920
+          "x": 2070,
+          "y": 800
         }
       }
     note: false
@@ -381,12 +381,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 0c346c23-69f5-4e9c-8350-2ab4c133f5fe
+    taskid: 0506de8c-0534-4fae-8513-3c734bb4c00a
     type: title
     task:
-      id: 0c346c23-69f5-4e9c-8350-2ab4c133f5fe
+      id: 0506de8c-0534-4fae-8513-3c734bb4c00a
       version: -1
-      name: Related alerts from XDR
+      name: Related alerts from XDR / Core
       type: title
       iscommand: false
       brand: ""
@@ -394,13 +394,14 @@ tasks:
     nexttasks:
       '#none#':
       - "72"
+      - "84"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 400
+          "x": 1270,
+          "y": 410
         }
       }
     note: false
@@ -491,7 +492,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 170
         }
       }
@@ -582,8 +583,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
-          "y": 1390
+          "x": 2070,
+          "y": 1430
         }
       }
     note: false
@@ -595,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 135dfff8-d76c-41c5-8a38-6891f2d98256
+    taskid: 83835468-5432-4baa-8656-cfd7c05fecbe
     type: playbook
     task:
-      id: 135dfff8-d76c-41c5-8a38-6891f2d98256
+      id: 83835468-5432-4baa-8656-cfd7c05fecbe
       version: -1
       name: Cortex XDR - Get entity alerts by MITRE tactics
       description: |-
@@ -644,6 +645,14 @@ tasks:
       entityID:
         complex:
           root: inputs.Username
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+          - operator: uniq
       timeRange:
         simple: 2 hours
     separatecontext: true
@@ -656,7 +665,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
+          "x": 1050,
           "y": 930
         }
       }
@@ -725,8 +734,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 530
+          "x": 1050,
+          "y": 550
         }
       }
     note: false
@@ -942,7 +951,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
+          "x": 1050,
           "y": 800
         }
       }
@@ -1141,6 +1150,239 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 3a2b054d-f7b4-4576-8d76-2bc32cf07f96
+    type: condition
+    task:
+      id: 3a2b054d-f7b4-4576-8d76-2bc32cf07f96
+      version: -1
+      name: Is Cortex Core integration enabled and user name is defined?
+      description: Checks if Cortex XDR integration is enabled and the user name is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Core - IR
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRUsernameField
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 0adef6b2-c579-4948-8bbc-73f122ed38c6
+    type: title
+    task:
+      id: 0adef6b2-c579-4948-8bbc-73f122ed38c6
+      version: -1
+      name: Cortex Core
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 30f27e02-ece5-453a-8cc3-0b62510da975
+    type: playbook
+    task:
+      id: 30f27e02-ece5-453a-8cc3-0b62510da975
+      version: -1
+      name: Get entity alerts by MITRE tactics
+      description: |-
+        This playbook searches XDR alerts related to specific entities , on a given timeframe, based on MITRE tactics.
+        Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
+      playbookName: Get entity alerts by MITRE tactics
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      EntityID:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+          - operator: uniq
+      EntityType:
+        complex:
+          root: inputs.XDRUsernameField
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntCredentialAccessTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      RunAll:
+        simple: "False"
+      timeRange:
+        simple: 2 hours
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 1fe16618-2b52-443d-891e-3705a9bd5d65
+    type: regular
+    task:
+      id: 1fe16618-2b52-443d-891e-3705a9bd5d65
+      version: -1
+      name: Save split username
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: SplitUsername
+      value:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1157,12 +1399,13 @@ view: |-
       "72_28_#default#": 0.1,
       "72_77_yes": 0.67,
       "74_28_#default#": 0.14,
-      "74_75_yes": 0.47
+      "74_75_yes": 0.47,
+      "84_28_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 2040,
-        "width": 2140,
+        "height": 2060,
+        "width": 2610,
         "x": -160,
         "y": -155
       }
@@ -1227,7 +1470,8 @@ inputs:
   description: Whether to search for logs from Okta? Can be False or True.
   playbookInputQuery:
 - key: XDRUsernameField
-  value: {}
+  value:
+    simple: actor_effective_username
   required: false
   description: Cortex XDR User name Field.
   playbookInputQuery:
@@ -1287,7 +1531,7 @@ outputs:
   description: The result of the Azure Log Analytics search.
   type: unknown
 - contextPath: QRadar.Search.Result
-  description: 'The result of the QRadar search '
+  description: 'The result of the QRadar search.'
 - contextPath: Splunk.Result
   description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
 - contextPath: NumOfFailedLogon
@@ -1300,3 +1544,5 @@ quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
