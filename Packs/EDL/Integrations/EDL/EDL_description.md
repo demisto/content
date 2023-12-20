@@ -81,7 +81,7 @@ Use the following arguments in the URL to change the request:
 | argument | Description | Example |
 | --- | --- | --- |
 | **n** | The maximum number of entries in the output. If no value is provided, will use the value specified in the *List Size* parameter configured in the instance configuration. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?n=50 |
-| **s** | The starting entry index from which to export the indicators. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50 |
+| **s** | The starting entry index from which to export the indicators when index 0 is the first position. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50 |
 | **v** | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`). | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
 | **q** | The query used to retrieve indicators from the system. If you are using this argument, no more than 100,000 can be exported through the EDL. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source" |
 | **t** | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip |
