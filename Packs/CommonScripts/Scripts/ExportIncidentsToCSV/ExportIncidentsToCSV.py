@@ -31,7 +31,7 @@ def main():
 
     # generate the file
     export_to_csv_result = demisto.executeCommand(
-        "demisto-api-post", {"uri": "/incident/batch/exportToCsv", "body": incident_body}
+        "core-api-post", {"uri": "/incident/batch/exportToCsv", "body": incident_body}
     )
     demisto.debug(f'{export_to_csv_result=}')
     if is_error(export_to_csv_result):
@@ -42,7 +42,7 @@ def main():
     csv_file_name = export_to_csv_result[0]["Contents"]["response"]
 
     # download the file and return to the war room
-    incident_csv_result = demisto.executeCommand("demisto-api-get", {"uri": f"/incident/csv/{csv_file_name}"})
+    incident_csv_result = demisto.executeCommand("core-api-get", {"uri": f"/incident/csv/{csv_file_name}"})
     demisto.debug(f'{incident_csv_result=}')
     if is_error(incident_csv_result):
         demisto.error(
