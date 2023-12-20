@@ -17,9 +17,9 @@ For more details about the authentication used in this integration, see <a href=
 
 <h3>Note</h3>
 Using "GroupMember.ReadWrite.All" permission instead of Group.ReadWrite.All:
-This permission allows the app to list groups, read basic properties, read and update the membership of the groups the signed-in user has access to.
+This permission allows the app to list groups, read basic properties, and read and update the membership of the groups the signed-in user has access to.
 Group properties and owners cannot be updated and groups cannot be deleted.
-<strong><br>Using this permission will raise errors on following commands:
+<strong><br>Using this permission will raise errors on the following commands:
 <li>msgraph-groups-delete-group</li>
 <li>msgraph-groups-create-group</strong></li>
 
