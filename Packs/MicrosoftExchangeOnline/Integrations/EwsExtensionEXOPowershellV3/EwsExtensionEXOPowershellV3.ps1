@@ -8,6 +8,7 @@
 # should be called before returning results to the server.
 #>
 Import-Module ExchangeOnlineManagement
+Import-Module ExchangePowerShell
 
 # Disable PowerShell progress bars, as they aren't helpful in a non-interactive script
 $Global:ProgressPreference = 'SilentlyContinue'
