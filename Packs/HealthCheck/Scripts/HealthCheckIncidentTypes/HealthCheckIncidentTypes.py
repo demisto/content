@@ -13,7 +13,7 @@ def main():
     account_name = f"acc_{account_name}" if account_name != "" else ""
 
     res = execute_command(
-        "demisto-api-get",
+        "core-api-get",
         {
             "uri": f"{account_name}/incidenttype"
         })['response']
