@@ -86,6 +86,7 @@ def fetch_indicators_command(
             added_after = get_added_after(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
             )
+            demisto.debug(f'Calling build_iterator with {added_after=}')
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
             last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
@@ -104,7 +105,6 @@ def fetch_indicators_command(
             if client.last_fetched_indicator__modified
             else added_after
         )
-    demisto.debug(f'{indicators=}')
     return indicators, last_run_ctx
 
 
@@ -277,6 +277,7 @@ def main():  # pragma: no cover
                 limit = -1
 
             last_run_indicators = get_feed_last_run()
+            demisto.debug(f'Before fetch command last run: {last_run_indicators}')
             (indicators, last_run_indicators) = fetch_indicators_command(
                 client,
                 initial_interval,
@@ -284,6 +285,7 @@ def main():  # pragma: no cover
                 last_run_indicators,
                 fetch_full_feed,
             )
+            demisto.debug(f'After fetch command last run: {last_run_indicators}')
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
