@@ -6,15 +6,15 @@ name: DemistoUploadFileV2
 fromversion: 5.0.0
 script: '-'
 args:
-- description: File entry ID
+- description: File entry ID.
   name: entryID
   predefined:
   - ''
   required: true
-- description: Incident ID to upload the file to
+- description: Incident ID to upload the file to.
   name: incidentID
   required: true
-- description: Request body
+- description: Request body.
   name: body
 - auto: PREDEFINED
   defaultValue: 'war room entry'
@@ -23,21 +23,21 @@ args:
     - Available options are:
     - `war room entry`: the file will be uploaded as war room entry.
     - `incident attachment`: the file will be uploaded as incident attachment.
-    - default are `war room entry`
+    - default are `war room entry`.
   name: target
   predefined:
   - 'war room entry'
   - 'incident attachment'
 comment: Deprecated. Use UploadFile instead.
 subtype: python3
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.13.83255
 tags:
 - DemistoAPI
 timeout: '0'
 type: python
 dependson:
   must:
-  - demisto-api-multipart
+  - core-api-multipart
 tests:
 - No tests (auto formatted)
 deprecated: true
