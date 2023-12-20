@@ -5,12 +5,12 @@
 This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
-The log forwarding of Siemens SiPass is configured using a [file collection][here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Activate-the-Files-and-Folders-Collector).
+The log forwarding of Siemens SiPass is configured using a [file collection](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Activate-the-Files-and-Folders-Collector).
 
-**Importent Notes**
+**Important Notes**
 * Details of the folder path on the network share containing the files that you want to monitor and upload to Cortex XSIAM.
 * Settings related to the list of files to monitor and upload to Cortex XSIAM, where the log format is either Raw (default), JSON, CSV, TSV, PSV, CEF, LEEF, Corelight, or Cisco.
-* Ensure that the user permissions for the network share include the ability to rename and delete files in the folder that you want to configure collection.
+* Ensure that the user permissions for the network share include the ability to rename and delete files in the folder that you want to configure the collection.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
