@@ -8,7 +8,7 @@ from CommonServerPython import *
 
 def get_installed_docker_images():
     res = demisto.executeCommand(
-        'demisto-api-get',
+        'core-api-get',
         {'uri': 'settings/docker-images'}
     )
     if is_error(res):
