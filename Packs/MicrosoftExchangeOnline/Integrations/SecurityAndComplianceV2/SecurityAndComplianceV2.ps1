@@ -1,4 +1,5 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
+### pack version: 1.2.31
 
 $script:INTEGRATION_NAME = "Security And Compliance"
 $script:COMMAND_PREFIX = "o365-sc"
@@ -1540,14 +1541,24 @@ function ListSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - Search configurations"
+
+    # Remove self referencing property
+    $filtered_raw_response = @()
+    foreach ($response in $raw_response) {
+        if ($response | Get-Member -MemberType Properties -Name "Language" -ErrorAction SilentlyContinue) {
+            $response.Language = $response.Language | Select-Object -ExcludeProperty Parent
+        }
+        $filtered_raw_response += $response
+    }
+
     # Entry context
     $entry_context = @{
-        $script:SEARCH_ENTRY_CONTEXT =  $raw_response | ForEach-Object {
+        $script:SEARCH_ENTRY_CONTEXT =  $filtered_raw_response | ForEach-Object {
             ParseSearchToEntryContext $_
         }
     }
 
-    return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $filtered_raw_response
 }
 
 function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1570,6 +1581,12 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
         $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
         return $human_readable, $entry_context, $raw_response
     }
+
+    # Remove self referencing property
+    if ($raw_response | Get-Member -MemberType Properties -Name "Language" -ErrorAction SilentlyContinue) {
+        $raw_response.Language = $raw_response.Language | Select-Object -ExcludeProperty Parent
+    }
+
     # Entry context
     $entry_context = @{
         $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext -search $raw_response -limit $kwargs.limit -all_results $all_results
