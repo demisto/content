@@ -7,7 +7,7 @@ incident = demisto.incidents()[0]
 accountName = incident.get('account')
 accountName = f"acc_{accountName}/" if accountName != "" else ""
 
-config_json = demisto.executeCommand("demisto-api-get",
+config_json = demisto.executeCommand("core-api-get",
                                      {"uri": f"{accountName}contentpacks/installed-expired"})[0]["Contents"]["response"]
 
 for item in config_json:
