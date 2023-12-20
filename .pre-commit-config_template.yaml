@@ -71,7 +71,7 @@ repos:
       arg_name: --rcfile
       file_name: .pylintrc
     skip:commit: true
-    
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
@@ -155,6 +155,8 @@ repos:
     pass_filenames: false
     language: system
     require_serial: true
+    skip:commit: true
+    
   - id: format
     name: format
     description: Format non-code files, to comply with XSOAR standards.
