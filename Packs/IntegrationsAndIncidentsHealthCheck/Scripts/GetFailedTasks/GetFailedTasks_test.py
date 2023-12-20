@@ -8,8 +8,9 @@ from test_data.constants import INCIDENTS_RESULT, RESTAPI_TAS_RESULT, INTERNAL_T
 def mock_execute_command(command_name, _):
     if command_name == 'getIncidents':
         return INCIDENTS_RESULT
-    elif command_name == 'demisto-api-post':
+    elif command_name == 'core-api-post':
         return RESTAPI_TAS_RESULT
+    return None
 
 
 @pytest.mark.parametrize('rest_api_instacne', ['rest_api_instacne', None])
@@ -100,7 +101,7 @@ def test_get_incident_tasks_using_internal_request(mocker, response, expected_re
 def test_get_incident_data_using_rest_api_instance(mocker):
     """
         Given:
-            - An incident and an Demisto Rest Api instance.
+            - An incident and an Core REST API instance.
 
         When:
             - Running the get_incident_data function.
@@ -118,7 +119,7 @@ def test_get_incident_data_using_rest_api_instance(mocker):
 def test_get_incident_data_using_internal_http_request(mocker):
     """
         Given:
-            - An incident and no Demisto Rest Api instance.
+            - An incident and no Core REST API instance.
 
         When:
             - Running the get_incident_data function.
@@ -135,7 +136,7 @@ def test_get_incident_data_using_internal_http_request(mocker):
 def test_get_incident_data_internal_http_request_fail(mocker):
     """
         Given:
-            - An incident and no Demisto Rest Api instance.
+            - An incident and no Core REST API instance.
 
         When:
             - Running the get_incident_data function.

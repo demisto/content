@@ -1,0 +1,143 @@
+{
+    "mock_response": {
+        "data": {
+            "id": "plan-Abcabcabcabcabc4",
+            "type": "plans",
+            "attributes": {
+                "has-changes": false,
+                "status": "finished",
+                "status-timestamps": {
+                    "started-at": "2023-11-30T09:21:37+00:00",
+                    "finished-at": "2023-11-30T09:21:41+00:00",
+                    "agent-queued-at": "2023-11-30T09:21:33+00:00"
+                },
+                "resource-additions": 0,
+                "resource-changes": 0,
+                "resource-destructions": 0,
+                "resource-imports": 0,
+                "structured-run-output-enabled": true,
+                "generated-configuration": false,
+                "actions": {
+                    "is-exportable": true
+                },
+                "execution-details": {
+                    "mode": "remote"
+                },
+                "permissions": {
+                    "can-export": true
+                }
+            },
+            "relationships": {
+                "state-versions": {
+                    "data": []
+                },
+                "exports": {
+                    "data": []
+                }
+            },
+            "links": {
+                "self": "/api/v2/plans/plan-Abcabcabcabcabc4",
+                "json-output": "/api/v2/plans/plan-Abcabcabcabcabc4/json-output",
+                "json-output-redacted": "/api/v2/plans/plan-Abcabcabcabcabc4/json-output-redacted",
+                "json-schema": "/api/v2/plans/plan-Abcabcabcabcabc4/json-schema"
+            }
+        }
+    },
+    "expected_results": {
+        "Type": 1,
+        "ContentsFormat": "json",
+        "Contents": {
+            "data": {
+                "id": "plan-Abcabcabcabcabc4",
+                "type": "plans",
+                "attributes": {
+                    "has-changes": false,
+                    "status": "finished",
+                    "status-timestamps": {
+                        "started-at": "2023-11-30T09:21:37+00:00",
+                        "finished-at": "2023-11-30T09:21:41+00:00",
+                        "agent-queued-at": "2023-11-30T09:21:33+00:00"
+                    },
+                    "resource-additions": 0,
+                    "resource-changes": 0,
+                    "resource-destructions": 0,
+                    "resource-imports": 0,
+                    "structured-run-output-enabled": true,
+                    "generated-configuration": false,
+                    "actions": {
+                        "is-exportable": true
+                    },
+                    "execution-details": {
+                        "mode": "remote"
+                    },
+                    "permissions": {
+                        "can-export": true
+                    }
+                },
+                "relationships": {
+                    "state-versions": {
+                        "data": []
+                    },
+                    "exports": {
+                        "data": []
+                    }
+                },
+                "links": {
+                    "self": "/api/v2/plans/plan-Abcabcabcabcabc4",
+                    "json-output": "/api/v2/plans/plan-Abcabcabcabcabc4/json-output",
+                    "json-output-redacted": "/api/v2/plans/plan-Abcabcabcabcabc4/json-output-redacted",
+                    "json-schema": "/api/v2/plans/plan-Abcabcabcabcabc4/json-schema"
+                }
+            }
+        },
+        "HumanReadable": "### Terraform Plan\n|Agent Queued at|Plan id|Status|\n|---|---|---|\n| 2023-11-30T09:21:33+00:00 | plan-Abcabcabcabcabc4 | finished |\n",
+        "EntryContext": {
+            "Terraform.Plan(val.id && val.id == obj.id)": {
+                "id": "plan-Abcabcabcabcabc4",
+                "type": "plans",
+                "attributes": {
+                    "has-changes": false,
+                    "status": "finished",
+                    "status-timestamps": {
+                        "started-at": "2023-11-30T09:21:37+00:00",
+                        "finished-at": "2023-11-30T09:21:41+00:00",
+                        "agent-queued-at": "2023-11-30T09:21:33+00:00"
+                    },
+                    "resource-additions": 0,
+                    "resource-changes": 0,
+                    "resource-destructions": 0,
+                    "resource-imports": 0,
+                    "structured-run-output-enabled": true,
+                    "generated-configuration": false,
+                    "actions": {
+                        "is-exportable": true
+                    },
+                    "execution-details": {
+                        "mode": "remote"
+                    },
+                    "permissions": {
+                        "can-export": true
+                    }
+                },
+                "relationships": {
+                    "state-versions": {
+                        "data": []
+                    },
+                    "exports": {
+                        "data": []
+                    }
+                },
+                "links": {
+                    "self": "/api/v2/plans/plan-Abcabcabcabcabc4",
+                    "json-output": "/api/v2/plans/plan-Abcabcabcabcabc4/json-output",
+                    "json-output-redacted": "/api/v2/plans/plan-Abcabcabcabcabc4/json-output-redacted",
+                    "json-schema": "/api/v2/plans/plan-Abcabcabcabcabc4/json-schema"
+                }
+            }
+        },
+        "IndicatorTimeline": [],
+        "IgnoreAutoExtract": false,
+        "Note": false,
+        "Relationships": []
+    }
+}

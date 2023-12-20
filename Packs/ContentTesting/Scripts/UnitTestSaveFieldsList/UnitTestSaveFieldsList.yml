@@ -1,5 +1,5 @@
 args:
-- description: List to Save Incident Fields To
+- description: List to Save Incident Fields To.
   name: list
   required: true
 commonfields:
@@ -9,7 +9,7 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 comment: ''
-dockerimage: demisto/python3:3.10.13.72123
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: UnitTestSaveFieldsList
 runas: DBotWeakRole

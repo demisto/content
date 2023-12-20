@@ -193,7 +193,7 @@ AUTOMATIONS = '''{
             "scriptTarget": 0,
             "dependsOn": {
                 "must": [
-                    "demisto-api-multipart"
+                    "core-api-multipart"
                 ]
             },
             "deprecated": true,

@@ -1,13 +1,13 @@
 args:
-- description: Define the thresholds
+- description: Define the thresholds.
   name: Thresholds
-- description: un
+- description: un.
   name: Inadvisable
-comment: Parsing playbooks
+comment: Parsing playbooks.
 commonfields:
   id: HealthCheckPlaybookAnalysis
   version: -1
-dockerimage: demisto/python3:3.10.10.49934
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: HealthCheckPlaybookAnalysis
 runas: DBotWeakRole

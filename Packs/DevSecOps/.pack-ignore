@@ -28,3 +28,5 @@ ignore=BA101
 [file:Packs/DevSecOps/Integrations/LGTM/README.md]
 ignore=RM112
 
+[file:1_1_8.md]
+ignore=RN116

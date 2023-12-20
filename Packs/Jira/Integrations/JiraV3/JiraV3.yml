@@ -561,9 +561,9 @@ script:
     - description: Deprecated. Please use issue_json.
       name: issueJson
       hidden: true
-    - description: The summary of the issue.
+    - description: The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument).
       name: summary
-      required: true
+      required: false
     - description: The project key with which to associate the issue (Project Key or name is required).
       name: project_key
     - description: Deprecated. Please use project_key.
@@ -1462,7 +1462,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.79197
+  dockerimage: demisto/btfl-soup:1.0.1.83338
   isfetch: true
   ismappable: true
   isremotesyncin: true

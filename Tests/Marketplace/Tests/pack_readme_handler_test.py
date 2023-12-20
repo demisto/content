@@ -1,10 +1,12 @@
 import os
+import pytest
 from google.cloud.storage.blob import Blob
 from pathlib import Path
 from Tests.Marketplace.marketplace_constants import GCPConfig, BucketUploadFlow
 from Tests.Marketplace.pack_readme_handler import (
     copy_markdown_images,
     download_markdown_images_from_artifacts,
+    decode_before_upload
 )
 
 
@@ -71,3 +73,21 @@ def test_download_markdown_images_from_artifacts(mocker):
         "pack_3": {},
     }
     assert pack_images_names == expected_res
+
+
+@pytest.mark.parametrize("name, res", [('%26%20%25', '& %'),
+                                       ('ABC', 'ABC'),
+                                       ('A B C', 'A B C'),
+                                       ('$$ $$', '$$ $$'),
+                                       ('%24%24%20%24%24', '$$ $$'),
+                                       ('', '')])
+def test_decode_before_upload(name, res):
+    """
+    Given:
+        - A name of a file or path
+    When:
+        - Uploaing the file path or file name to GCP
+    Then:
+        - Decode the path/name before upload to prevent double encoding.
+    """
+    assert decode_before_upload(name) == res

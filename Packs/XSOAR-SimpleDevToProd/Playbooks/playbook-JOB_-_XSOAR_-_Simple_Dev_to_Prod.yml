@@ -1,5 +1,5 @@
 description: |-
-  This playbook is intended to be run as an adhoc job to quickly create a custom content bundle with only selected items from the servers custom content.  You can import this new zip on the other XSOAR server, or push it to production using the Core REST API or Demisto REST API integration.
+  This playbook is intended to be run as an adhoc job to quickly create a custom content bundle with only selected items from the servers custom content.  You can import this new zip on the other XSOAR server, or push it to production using the Core REST API integration.
 
   Please ensure to read the setup instructions for this pack carefully.
 
@@ -68,7 +68,7 @@ tasks:
       id: 45d6032a-9bfe-4db1-8b27-1e600f74a706
       iscommand: true
       name: Download Custom Content Bundle from Dev
-      script: '|||demisto-api-download'
+      script: '|||core-api-download'
       tags:
       - devcontent
       type: regular
@@ -128,10 +128,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if the provided Core REST API or Demisto REST API instance is available for the XSOAR Simple Dev to Prod workflow.
+      description: Checks if the provided Core REST API instance is available for the XSOAR Simple Dev to Prod workflow.
       id: 4dde15ac-db8b-41e3-8680-4e7927257751
       iscommand: false
-      name: Is the Demisto Dev - Core/Demisto REST API integration instance enabled?
+      name: Is the Demisto Dev - Core REST API integration instance enabled?
       script: IsDemistoRestAPIInstanceAvailable
       type: condition
       version: -1
@@ -157,10 +157,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "# Setup Demisto Dev\n\nPlease setup a single instance of the Core REST API or Demisto REST API Integration for your Development server to continue using this playbook. \n\nThis instance must be named **Demisto Dev**.\n\nRerun this playbook once completed. \n\n"
+      description: "# Setup Demisto Dev\n\nPlease setup a single instance of the Core REST API Integration for your Development server to continue using this playbook. \n\nThis instance must be named **Demisto Dev**.\n\nRerun this playbook once completed. \n\n"
       id: 6b342869-d7bb-4c5a-80f9-f929a0836f69
       iscommand: false
-      name: Enable Demisto Dev - Core/Demisto REST API integration instance to continue
+      name: Enable Demisto Dev - Core REST API integration instance to continue
       type: regular
       version: -1
     taskid: 6b342869-d7bb-4c5a-80f9-f929a0836f69
@@ -498,7 +498,7 @@ tasks:
       id: 1957024c-a9ab-4aa9-8fde-54d059eb654e
       iscommand: true
       name: Push Selected Content to Prod
-      script: '|||demisto-api-multipart'
+      script: '|||core-api-multipart'
       type: regular
       version: -1
     taskid: 1957024c-a9ab-4aa9-8fde-54d059eb654e
@@ -620,7 +620,7 @@ tasks:
       id: 9538b972-1086-4717-89ee-0b8e5e96446e
       iscommand: true
       name: 'Backup Custom Content Bundle from Prod '
-      script: '|||demisto-api-download'
+      script: '|||core-api-download'
       tags:
       - prodbackup
       type: regular
@@ -691,10 +691,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if the provided Core REST API or Demisto REST API instance is available for the XSOAR Simple Dev to Prod workflow.
+      description: Checks if the provided Core REST API instance is available for the XSOAR Simple Dev to Prod workflow.
       id: 2f1df859-7924-4ccd-856c-1f17300cfb5b
       iscommand: false
-      name: Is the Demisto Prod - Core/Demisto REST API integration instance enabled?
+      name: Is the Demisto Prod - Core REST API integration instance enabled?
       script: IsDemistoRestAPIInstanceAvailable
       type: condition
       version: -1
@@ -735,10 +735,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks the configuration on the Core REST API or Demisto REST API Prod instance to see if it's correct
+      description: Checks the configuration on the Core REST API Prod instance to see if it's correct
       id: 511c189a-5f93-4289-8e1f-8404ed0f9a25
       iscommand: false
-      name: Is the Production Core/Demisto REST API setup properly?
+      name: Is the Production Core REST API setup properly?
       type: condition
       version: -1
     taskid: 511c189a-5f93-4289-8e1f-8404ed0f9a25
@@ -763,7 +763,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "# Setup Instructions for Demisto Prod\n\nThe Demisto Prod - Core REST API or Demisto REST API instance must be set to \"Do not use by default\" on the instance configuration. \n\nThe check in this playbook indicates this is not set properly, please ensure to read the setup instructions for this Pack.  \n\nPlease set the **Demisto Prod** instance properly, and re-run this playbook. "
+      description: "# Setup Instructions for Demisto Prod\n\nThe Demisto Prod - Core REST API instance must be set to \"Do not use by default\" on the instance configuration. \n\nThe check in this playbook indicates this is not set properly, please ensure to read the setup instructions for this Pack.  \n\nPlease set the **Demisto Prod** instance properly, and re-run this playbook. "
       id: 40db8672-b761-46e9-8fa9-2b87fb9fc443
       iscommand: false
       name: Demisto Prod Instance not setup properly, provide instructions
@@ -972,10 +972,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "# Setup Demisto Prod\n\nPlease setup a single instance of the Core REST API or Demisto REST API Integration for your Production server to continue using this playbook. \n\nThis instance must be named **Demisto Prod**, and the instance must be marked as **Do not use by default**\n\nRerun this playbook once completed. \n\n"
+      description: "# Setup Demisto Prod\n\nPlease setup a single instance of the Core REST API Integration for your Production server to continue using this playbook. \n\nThis instance must be named **Demisto Prod**, and the instance must be marked as **Do not use by default**\n\nRerun this playbook once completed. \n\n"
       id: 8c9702f6-e0a1-4888-8db8-5c5e5459b798
       iscommand: false
-      name: Enable Demisto Prod - Core/Demisto REST API integration instance to continue
+      name: Enable Demisto Prod - Core REST API integration instance to continue
       type: regular
       version: -1
     taskid: 8c9702f6-e0a1-4888-8db8-5c5e5459b798

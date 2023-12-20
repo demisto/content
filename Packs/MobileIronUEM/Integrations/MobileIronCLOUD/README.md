@@ -6,7 +6,7 @@
 2. Open the users section.
 3. Click the create user button and select the option to create a new API user. It is recommended to create a new user for the Cortex XSOAR integration specifically and not reuse
 an existing one.  
-4. Fill in all the required details (i.e., use demisto-api-user as the username) and make sure you enter a strong password.
+4. Fill in all the required details (i.e., use core-api-user as the username) and make sure you enter a strong password.
 5. When setting up the Cortex XSOAR integration, use the auto-generated email address as the username and the password you 
 defined as the MobileIron tenant credentials.
 6. Click the `Test` button and ensure the connection can be established.
@@ -57,10 +57,14 @@ Here is an example image of the rule
     | isFetch | Fetch incidents | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### mobileiron-cloud-get-devices-data
+
 ***
 Gets all the devices based on a particular filter query. The command might execute multiple API calls depending on the amount of devices that would be returned.
 
@@ -68,6 +72,7 @@ Gets all the devices based on a particular filter query. The command might execu
 #### Base Command
 
 `mobileiron-cloud-get-devices-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -113,9 +118,11 @@ Gets all the devices based on a particular filter query. The command might execu
 
 
 #### Command Example
+
 ```!mobileiron-cloud-get-devices-data```
 
 #### Context Example
+
 ```json
 {
   "MobileIronCloud": {
@@ -162,6 +169,7 @@ Gets all the devices based on a particular filter query. The command might execu
 ```
 
 ### mobileiron-cloud-get-device-by-mac
+
 ***
 Gets a single device matching the provided mac address.
 
@@ -169,6 +177,7 @@ Gets a single device matching the provided mac address.
 #### Base Command
 
 `mobileiron-cloud-get-device-by-mac`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -213,9 +222,11 @@ Gets a single device matching the provided mac address.
 
 
 #### Command Example
+
 ```!mobileiron-cloud-get-device-by-mac device_mac=MAC_HERE```
 
 #### Context Example
+
 ```json
 {
   "MobileIronCloud": {
@@ -260,6 +271,7 @@ Gets a single device matching the provided mac address.
 ```
 
 ### mobileiron-cloud-get-device-by-serial
+
 ***
 Gets a single device matching the provided value for the device serial number.
 
@@ -267,6 +279,7 @@ Gets a single device matching the provided value for the device serial number.
 #### Base Command
 
 `mobileiron-cloud-get-device-by-serial`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -311,9 +324,11 @@ Gets a single device matching the provided value for the device serial number.
 
 
 #### Command Example
+
 ```!mobileiron-cloud-get-device-by-serial device_serial=SERIAL_HERE```
 
 #### Context Example
+
 ```json
 {
   "MobileIronCloud": {
@@ -358,6 +373,7 @@ Gets a single device matching the provided value for the device serial number.
 ```
 
 ### mobileiron-cloud-unlock-device
+
 ***
 Sends an unlock action to the device.
 
@@ -365,6 +381,7 @@ Sends an unlock action to the device.
 #### Base Command
 
 `mobileiron-cloud-unlock-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -373,6 +390,7 @@ Sends an unlock action to the device.
 
 
 #### Command Example
+
 ```!mobileiron-cloud-unlock-device device_id=1100646```
 
 #### Human Readable Output
@@ -380,6 +398,7 @@ Sends an unlock action to the device.
 >Action was performed successfully
 
 ### mobileiron-cloud-retire-device
+
 ***
 Sends a retire action to the device.
 
@@ -387,6 +406,7 @@ Sends a retire action to the device.
 #### Base Command
 
 `mobileiron-cloud-retire-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -399,6 +419,7 @@ Sends a retire action to the device.
 >Action was performed successfully
 
 ### mobileiron-cloud-wipe-device
+
 ***
 Sends a wipe action to the device. This is a potentially destructive action as it will completely wipe the device.
 
@@ -406,6 +427,7 @@ Sends a wipe action to the device. This is a potentially destructive action as i
 #### Base Command
 
 `mobileiron-cloud-wipe-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -419,6 +441,7 @@ Sends a wipe action to the device. This is a potentially destructive action as i
 
 
 ### mobileiron-cloud-force-check-in
+
 ***
 Forces a check in to the particular device based on the device ID.
 
@@ -426,6 +449,7 @@ Forces a check in to the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-cloud-force-check-in`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -439,6 +463,7 @@ Forces a check in to the particular device based on the device ID.
 
 
 ### mobileiron-cloud-send-message
+
 ***
 Sends a message to the device.
 
@@ -446,6 +471,7 @@ Sends a message to the device.
 #### Base Command
 
 `mobileiron-cloud-send-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -462,12 +488,14 @@ Sends a message to the device.
 
 
 ### mobileiron-cloud-get-device-by-id
+
 ***
 Returns the data for a particular device based on the device ID.
 
 #### Base Command
 
 `mobileiron-cloud-get-device-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -512,9 +540,11 @@ Returns the data for a particular device based on the device ID.
 
 
 #### Command Example
+
 ```!mobileiron-cloud-get-device-by-id device_id=1100646```
 
 #### Context Example
+
 ```json
 {
   "MobileIronCloud": {

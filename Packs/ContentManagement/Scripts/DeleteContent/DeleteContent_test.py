@@ -2,7 +2,7 @@ import pytest
 
 from DeleteContent import get_and_delete_needed_ids, CORE_PACKS_LIST_URL
 from abc import ABC, abstractmethod
-from typing import Tuple, Any
+from typing import Any
 
 
 XSOAR_IDS_FULL_STATE = {
@@ -31,11 +31,11 @@ class MockEntityResponses(ABC):
         self.xsoar_state_ids = xsoar_state.get(self.entity_name)
 
     @abstractmethod
-    def search_response(self, command_name, command_args) -> Tuple[bool, Any]:
+    def search_response(self, command_name, command_args) -> tuple[bool, Any]:
         pass
 
     @abstractmethod
-    def delete_response(self, command_name, command_args) -> Tuple[bool, Any]:
+    def delete_response(self, command_name, command_args) -> tuple[bool, Any]:
         pass
 
 
@@ -60,7 +60,7 @@ class MockJobResponses(MockEntityResponses):
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('jobs/') and command_name == 'demisto-api-delete':
+        if command_uri.startswith('jobs/') and command_name == 'core-api-delete':
             job_name = command_uri.split('jobs/')[1]
             if job_name in self.xsoar_state_ids:
                 return True, {'data': [{'name': job_name, 'id': job_name}]}
@@ -99,18 +99,18 @@ class MockPackResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_name == 'demisto-api-get' and command_uri.startswith('/contentpacks/installed/'):
+        if command_name == 'core-api-get' and command_uri.startswith('/contentpacks/installed/'):
             pack_name = command_uri.split('/contentpacks/installed/')[1]
             return (True, {'id': pack_name}) if pack_name in self.xsoar_state_ids else (False, 'Id not found')
 
-        if command_name == 'demisto-api-get' and command_uri.startswith('/contentpacks/installed-expired'):
+        if command_name == 'core-api-get' and command_uri.startswith('/contentpacks/installed-expired'):
             return True, [{'id': pack_name} for pack_name in self.xsoar_state_ids]
 
         return False, False
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_name == 'demisto-api-delete' and command_uri.startswith('/contentpacks/installed/'):
+        if command_name == 'core-api-delete' and command_uri.startswith('/contentpacks/installed/'):
             pack_name = command_uri.split('/contentpacks/installed/')[1]
             return (True, {'id': pack_name}) if pack_name in self.xsoar_state_ids else (False, 'Id not found')
         return False, False
@@ -137,7 +137,7 @@ class MockScriptResponses(MockEntityResponses):
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri == '/automation/delete' and command_name == 'demisto-api-post':
+        if command_uri == '/automation/delete' and command_name == 'core-api-post':
             script_name = command_args.get('body', {}).get('script', {}).get('id', '')
             if script_name in self.xsoar_state_ids:
                 return True, {'scripts': [{'id': script_name}]}
@@ -150,13 +150,13 @@ class MockPlaybookResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_name == 'demisto-api-get' and command_uri.startswith('/playbook/'):
+        if command_name == 'core-api-get' and command_uri.startswith('/playbook/'):
             name = command_uri.split('/playbook/')[1]
             if name in self.xsoar_state_ids:
                 return True, {'id': name}
             return False, 'Id not found'
 
-        if command_name == 'demisto-api-post' and command_uri == '/playbook/search':
+        if command_name == 'core-api-post' and command_uri == '/playbook/search':
             return True, {'playbooks': [{'id': name} for name in self.xsoar_state_ids]}
 
         return False, False
@@ -176,13 +176,13 @@ class MockIncidentFieldResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri == '/incidentfields' and command_name == 'demisto-api-get':
+        if command_uri == '/incidentfields' and command_name == 'core-api-get':
             return True, [{'id': name} for name in self.xsoar_state_ids]
         return False, False
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/incidentfield/') and command_name == 'demisto-api-delete':
+        if command_uri.startswith('/incidentfield/') and command_name == 'core-api-delete':
             name = command_uri.split('/incidentfield/')[1]
             if name in self.xsoar_state_ids:
                 return True, None
@@ -211,7 +211,7 @@ class MockIntegrationResponses(MockEntityResponses):
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri == '/settings/integration-conf/delete' and command_name == 'demisto-api-post':
+        if command_uri == '/settings/integration-conf/delete' and command_name == 'core-api-post':
             name = command_args.get('body', {}).get('id')
             if name in self.xsoar_state_ids:
                 return True, {'configurations': [{'id': name}]}
@@ -224,13 +224,13 @@ class MockPreprocessRuleResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri == '/preprocess/rules' and command_name == 'demisto-api-get':
+        if command_uri == '/preprocess/rules' and command_name == 'core-api-get':
             return True, [{'id': name} for name in self.xsoar_state_ids]
         return False, False
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/preprocess/rule/') and command_name == 'demisto-api-delete':
+        if command_uri.startswith('/preprocess/rule/') and command_name == 'core-api-delete':
             name = command_uri.split('/preprocess/rule/')[1]
             if name in self.xsoar_state_ids:
                 return True, None
@@ -243,7 +243,7 @@ class MockWidgetResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/widgets') and command_name == 'demisto-api-get':
+        if command_uri.startswith('/widgets') and command_name == 'core-api-get':
             if command_uri.startswith('/widgets/'):
                 name = command_uri.split('/widgets/')[1]
                 if name in self.xsoar_state_ids:
@@ -254,7 +254,7 @@ class MockWidgetResponses(MockEntityResponses):
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/widgets/') and command_name == 'demisto-api-delete':
+        if command_uri.startswith('/widgets/') and command_name == 'core-api-delete':
             name = command_uri.split('/widgets/')[1]
             if name in self.xsoar_state_ids:
                 return True, None
@@ -267,7 +267,7 @@ class MockDashboardResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/dashboards') and command_name == 'demisto-api-get':
+        if command_uri.startswith('/dashboards') and command_name == 'core-api-get':
             if command_uri.startswith('/dashboards/'):
                 name = command_uri.split('/dashboards/')[1]
                 if name in self.xsoar_state_ids:
@@ -278,7 +278,7 @@ class MockDashboardResponses(MockEntityResponses):
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/dashboards/') and command_name == 'demisto-api-delete':
+        if command_uri.startswith('/dashboards/') and command_name == 'core-api-delete':
             name = command_uri.split('/dashboards/')[1]
             if name in self.xsoar_state_ids:
                 return True, None
@@ -291,7 +291,7 @@ class MockReportResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/reports') and command_name == 'demisto-api-get':
+        if command_uri.startswith('/reports') and command_name == 'core-api-get':
             if command_uri.startswith('/reports/'):
                 name = command_uri.split('/reports/')[1]
                 if name in self.xsoar_state_ids:
@@ -302,7 +302,7 @@ class MockReportResponses(MockEntityResponses):
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/report/') and command_name == 'demisto-api-delete':
+        if command_uri.startswith('/report/') and command_name == 'core-api-delete':
             name = command_uri.split('/report/')[1]
             if name in self.xsoar_state_ids:
                 return True, None
@@ -315,13 +315,13 @@ class MockIncidentTypeResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/incidenttypes/export') and command_name == 'demisto-api-get':
+        if command_uri.startswith('/incidenttypes/export') and command_name == 'core-api-get':
             return True, [{'id': name} for name in self.xsoar_state_ids]
         return False, False
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/incidenttype/delete') and command_name == 'demisto-api-post':
+        if command_uri.startswith('/incidenttype/delete') and command_name == 'core-api-post':
             name = command_args.get('body', {}).get('id')
             if name in self.xsoar_state_ids:
                 return True, None
@@ -334,9 +334,9 @@ class MockClassifierResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri == '/classifier/search' and command_name == 'demisto-api-post':
+        if command_uri == '/classifier/search' and command_name == 'core-api-post':
             return True, {'classifiers': [{'id': name} for name in self.xsoar_state_ids]}
-        if command_uri.startswith('/classifier/') and command_name == 'demisto-api-get':
+        if command_uri.startswith('/classifier/') and command_name == 'core-api-get':
             name = command_uri.split('/classifier/')[1]
             if name in self.xsoar_state_ids:
                 return True, {'id': name}
@@ -345,7 +345,7 @@ class MockClassifierResponses(MockEntityResponses):
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/classifier/') and command_name == 'demisto-api-delete':
+        if command_uri.startswith('/classifier/') and command_name == 'core-api-delete':
             name = command_uri.split('/classifier/')[1]
             if name in self.xsoar_state_ids:
                 return True, None
@@ -358,13 +358,13 @@ class MockReputationResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/reputation/export') and command_name == 'demisto-api-get':
+        if command_uri.startswith('/reputation/export') and command_name == 'core-api-get':
             return True, [{'id': name} for name in self.xsoar_state_ids]
         return False, False
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/reputation/') and command_name == 'demisto-api-delete':
+        if command_uri.startswith('/reputation/') and command_name == 'core-api-delete':
             name = command_uri.split('/reputation/')[1]
             if name in self.xsoar_state_ids:
                 return True, None
@@ -377,18 +377,18 @@ class MockLayoutResponses(MockEntityResponses):
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/layout/') and command_name == 'demisto-api-get':
+        if command_uri.startswith('/layout/') and command_name == 'core-api-get':
             name = command_uri.split('/layout/')[1]
             if name in self.xsoar_state_ids:
                 return True, {'id': name}
             return False, 'Id not Found'
-        if command_uri == '/layouts' and command_name == 'demisto-api-get':
+        if command_uri == '/layouts' and command_name == 'core-api-get':
             return True, [{'id': name} for name in self.xsoar_state_ids]
         return False, False
 
     def delete_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
-        if command_uri.startswith('/layout/') and command_uri.endswith('/remove') and command_name == 'demisto-api-post':
+        if command_uri.startswith('/layout/') and command_uri.endswith('/remove') and command_name == 'core-api-post':
             name = command_uri.split('/layout/')[1]
             name = name.split('/remove')[0]
             if name in self.xsoar_state_ids:

@@ -53,10 +53,10 @@ tags:
 - troubleshoot
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 fromversion: 5.0.0
 dependson:
   must:
-  - demisto-api-post
+  - core-api-post
 tests:
 - No tests (auto formatted)

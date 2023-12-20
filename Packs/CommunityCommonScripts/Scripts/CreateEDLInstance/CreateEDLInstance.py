@@ -645,7 +645,7 @@ def main():
     parameters = {'uri': '/settings/integration', 'body': body}
 
     try:
-        results = demisto.executeCommand('demisto-api-put', parameters)
+        results = demisto.executeCommand('core-api-put', parameters)
     except Exception as e:
         return_error(e)
 

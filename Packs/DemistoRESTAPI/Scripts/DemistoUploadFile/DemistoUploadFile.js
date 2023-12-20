@@ -1,4 +1,4 @@
-var res = executeCommand("demisto-api-multipart", {"uri":'entry/upload/' + args.incidentID,"entryID":args.entryID, "body":args.body});
+var res = executeCommand("core-api-multipart", {"uri":'entry/upload/' + args.incidentID,"entryID":args.entryID, "body":args.body});
 if (isError(res[0])) {
     return res;
 }

@@ -974,7 +974,7 @@ Scope: `write:jira-work`
 | --- | --- | --- |
 | issue_json | The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}. | Optional |
 | issueJson | Deprecated. Please use issue_json. | Optional |
-| summary | The summary of the issue. | Required |
+| summary | The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument). | Optional |
 | project_key | The project key with which to associate the issue (Project Key or name is required). | Optional |
 | projectKey | Deprecated. Please use project_key. | Optional |
 | issue_type_name | Selects an issue type by name, for example: "Problem". (Issue type name or id is required). | Optional |

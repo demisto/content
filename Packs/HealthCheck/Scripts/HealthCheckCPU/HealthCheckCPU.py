@@ -65,7 +65,7 @@ def main(args):
 
     is_widget = argToBoolean(args.get('isWidget', True))
     res = execute_command(
-        'demisto-api-post',
+        'core-api-post',
         {
             'uri': f'{account_name}statistics/widgets/query',
             'body': {

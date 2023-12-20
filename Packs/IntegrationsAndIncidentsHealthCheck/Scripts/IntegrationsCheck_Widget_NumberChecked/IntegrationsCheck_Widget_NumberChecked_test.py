@@ -5,7 +5,7 @@ from IntegrationsCheck_Widget_NumberChecked import main
 
 @pytest.mark.parametrize('list_, expected', [
     ([{
-        'Contents': 'Cortex XDR - IR_instance_1,Demisto REST API_instance_1,Image '
+        'Contents': 'Cortex XDR - IR_instance_1,Core REST API_instance_1,Image '
                     'OCR_default_instance,Rasterize_default_instance,Where is the egg?_default_instance,d2,'
                     'fcm_default_instance,testmodule,Active Directory Query v2_instance_1,BigFix_instance_1,'
                     'Tanium Threat Response_instance_1,Threat Grid_instance_1,VirusTotal_instance_1,'

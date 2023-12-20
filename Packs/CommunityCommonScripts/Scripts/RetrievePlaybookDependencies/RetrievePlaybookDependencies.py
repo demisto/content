@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import List, Dict, Any
+from typing import Any
 import traceback
 import re
 from json import dumps
@@ -23,7 +23,7 @@ def perform_rest_call(method: str, endpoint: str, body=None):
     if body:
         args['body'] = dumps(body)
 
-    result = demisto.executeCommand(f"demisto-api-{method}", args)
+    result = demisto.executeCommand(f"core-api-{method}", args)
     if len(result) < 1 or 'Contents' not in result[0] or 'response' not in result[0].get('Contents'):
         raise Exception(f"Error with REST call to endpoint {endpoint}")
 
@@ -33,7 +33,7 @@ def perform_rest_call(method: str, endpoint: str, body=None):
 def get_tasks_list(tasks):
     # {'1':{'id': '1'}, ...} -> [{'id':'1'}, ...]
     tasks_list = []
-    for task_number in tasks.keys():
+    for task_number in tasks:
         tasks_list.append(tasks[task_number])
     return tasks_list
 
@@ -46,7 +46,7 @@ def append_commands(commands, subplaybook_name, subplaybook_json):
             key = task.get('scriptId', '').replace('|||', '')
             # These are base commands and should be excluded from brandless list
             if key not in ["domain", "file", "ip", "url"]:
-                if key in commands.keys():
+                if key in commands:
                     if subplaybook_name not in commands[key]:
                         commands[key].append(subplaybook_name)
                 else:
@@ -118,7 +118,7 @@ def create_markdown_list(lists, scripts, integrations, playbooks, parent_playboo
 
 def get_xsoar_list_name(task):
     # Search for lists in tasks
-    if 'scriptArguments' in task.keys():
+    if 'scriptArguments' in task:
         r = re.search(r'\${lists\.(.*?)(\..*?)?}', str(task.get('scriptArguments')))
         if r:
             xsoar_list_name = r.group(1)
@@ -129,12 +129,12 @@ def get_xsoar_list_name(task):
 ''' COMMAND FUNCTION '''
 
 
-def retrieve_playbook_dependencies(args: Dict[str, Any]) -> CommandResults:
-    playbooks: List[str] = []
-    integrations: List[str] = []
-    script_ids: List[str] = []
-    commands: Dict[str, Any] = {}   # commands not using brand
-    lists: List[str] = []       # XSOAR List names
+def retrieve_playbook_dependencies(args: dict[str, Any]) -> CommandResults:
+    playbooks: list[str] = []
+    integrations: list[str] = []
+    script_ids: list[str] = []
+    commands: dict[str, Any] = {}   # commands not using brand
+    lists: list[str] = []       # XSOAR List names
 
     # Call parent playbook's data, then recursivley call all subplaybooks' data
     playbooks_json = perform_rest_call('post', 'playbook/search', {'query': f'''name:"{args.get('playbook_name')}"'''})
@@ -161,8 +161,8 @@ def retrieve_playbook_dependencies(args: Dict[str, Any]) -> CommandResults:
 
     # Sort scripts into base scripts and custom scripts, and get the displayname for custom scripts
     script_ids = list(set(script_ids))
-    custom_scripts: List[str] = []
-    base_scripts: List[str] = []
+    custom_scripts: list[str] = []
+    base_scripts: list[str] = []
     for script_id in script_ids:
         if '-' in script_id:
             custom_scripts.append(perform_rest_call('post', f'automation/load/{script_id}').get('name'))
@@ -172,11 +172,11 @@ def retrieve_playbook_dependencies(args: Dict[str, Any]) -> CommandResults:
     # Sort, format and display brandless commands' possible integrations and the playbooks they were located in
     if len(commands) > 0:
         integration_result = perform_rest_call('get', "settings/integration-commands")
-        integration_commands: Dict[str, List[str]] = {}
+        integration_commands: dict[str, list[str]] = {}
         # Find the integrations connected to brand-less commands
         for integration in integration_result:
             for command in integration.get('commands', []):
-                if command.get('name') and command.get('name') in commands.keys():
+                if command.get('name') and command.get('name') in commands:
                     integration_commands.setdefault(integration.get('display'), []).append(command.get('name'))
 
         # Format into markdown table displaying integration, command, and playbook it was found in
@@ -207,8 +207,8 @@ def retrieve_playbook_dependencies(args: Dict[str, Any]) -> CommandResults:
     markdown_string = create_markdown_list(lists, custom_scripts, integrations, playbooks, args.get('playbook_name'))
 
     # Format results for output
-    integrations = sorted(list(set(integrations)))
-    lists = sorted(list(set(lists)))
+    integrations = sorted(set(integrations))
+    lists = sorted(set(lists))
     playbooks.sort()
     custom_scripts.sort()
     base_scripts.sort()

@@ -69,7 +69,7 @@ def restart_tasks(failed_tasks: list, sleep_time: int, group_size: int):
         if is_xsoar_version_6_2:
             body = {'taskinfo': body}
 
-        demisto.executeCommand("demisto-api-post", {"uri": "inv-playbook/task/execute", "body": json.dumps(body)})
+        demisto.executeCommand("core-api-post", {"uri": "inv-playbook/task/execute", "body": json.dumps(body)})
         restarted_tasks.append({'IncidentID': incident_id, 'TaskID': task_id, 'PlaybookName': playbook_name,
                                 'TaskName': task_name})
         restarted_tasks_count += 1

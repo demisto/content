@@ -5,7 +5,7 @@ from pprint import pformat
 
 def main():
     # get incident fields
-    res = demisto.executeCommand('demisto-api-get', {'uri': '/incidentfields'})
+    res = demisto.executeCommand('core-api-get', {'uri': '/incidentfields'})
     if is_error(res):
         return_error(res[0]['Contents'])
 

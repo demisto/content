@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 def findTopUsedPLaybooks(accountName):
     stats = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": f"{accountName}statistics/widgets/query",
             "body": {
@@ -80,11 +80,11 @@ account_name = f'acc_{account_name}/' if account_name != "" else ""
 thresholds = args.get('Thresholds', Thresholds)
 
 customPlaybooks = demisto.executeCommand(
-    "demisto-api-post", {"uri": f"{account_name}playbook/search",
-                         "body": {"query": "system:F"}})[0]["Contents"]["response"]["playbooks"]
+    "core-api-post", {"uri": f"{account_name}playbook/search",
+                      "body": {"query": "system:F"}})[0]["Contents"]["response"]["playbooks"]
 builtinPlaybooks = demisto.executeCommand(
-    "demisto-api-post", {"uri": f"{account_name}playbook/search",
-                         "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
+    "core-api-post", {"uri": f"{account_name}playbook/search",
+                      "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
 
 builtinPlaybooksNames = []
 copyDetected = []

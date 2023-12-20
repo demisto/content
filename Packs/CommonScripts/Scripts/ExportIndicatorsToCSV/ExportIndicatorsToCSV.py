@@ -30,11 +30,11 @@ def main():
     }
 
     # generate the file
-    res = demisto.executeCommand("demisto-api-post", {"uri": "/indicators/batch/exportToCsv",
-                                                      "body": indicator_body})[0]["Contents"]["response"]
+    res = demisto.executeCommand("core-api-post", {"uri": "/indicators/batch/exportToCsv",
+                                                   "body": indicator_body})[0]["Contents"]["response"]
 
     # download the file and return to the war room
-    file = demisto.executeCommand("demisto-api-get", {"uri": f"/indicators/csv/{res}"})[0]["Contents"]["response"]
+    file = demisto.executeCommand("core-api-get", {"uri": f"/indicators/csv/{res}"})[0]["Contents"]["response"]
     demisto.results(fileResult(res, file))
 
 

@@ -3076,7 +3076,7 @@ script:
     - contextPath: GoogleDrive.File.File.mimeType
       description: The MIME type of the copied file.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.78508
+  dockerimage: demisto/googleapi-python3:1.0.0.83610
   isfetch: true
   runonce: false
   script: "-"

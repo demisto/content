@@ -27,7 +27,7 @@ def isAdminAPIInstance():
     accountName = f"acc_{accountName}" if accountName != "" else ""
 
     res = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": f"{accountName}/user/preferences",
             "body": {
@@ -49,7 +49,7 @@ def isAdminAPIInstance():
 
 
 errors = [""]
-# Check if Demisto REST API integration was defined and number of instances
+# Check if Core REST API integration was defined and number of instances
 ApiIntegrations = isDemistoAPIIntegrationAvailable()
 if ApiIntegrations == 0:
     errors.append('No API integration defined')
@@ -57,12 +57,12 @@ if ApiIntegrations == 0:
 if ApiIntegrations == 2:
     errors.append("Too many API integrations were defined")
 
-# Check if Demisto REST API integration defined with DefaultAdmin API key
+# Check if Core REST API integration defined with DefaultAdmin API key
 if not isAdminAPIInstance():
     errors.append('API instance is not using Admin')
 
 if len(errors) > 1:
     strerror = "\n".join(errors)
-    return_error(f"Demisto REST API Validation failed due to: {strerror}")
+    return_error(f"Core REST API Validation failed due to: {strerror}")
 else:
     return_results("Done")

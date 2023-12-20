@@ -3,15 +3,15 @@ from CommonServerPython import *  # noqa: F401
 
 
 def GetTasks(incid: str, playbookname: str) -> dict:
-    response = execute_command("demisto-api-get", {
+    response = execute_command("core-api-get", {
         "uri": f"/inv-playbook/{incid}"})
 
     tasks = {}
-    for key, t in response['response']['tasks'].items():
+    for _key, t in response['response']['tasks'].items():
         if t['type'] == "playbook":
             sub = t['subPlaybook']
             if sub['name'] == playbookname:
-                for key, task in sub['tasks'].items():
+                for _key, task in sub['tasks'].items():
                     if task['type'] == "regular" or task['type'] == "playbook" or task['type'] == "condition":
                         completed = 0
                         if 'state' in task:
@@ -34,14 +34,14 @@ def TaskCoverageMarkdown(tasks: Dict) -> str:
     if len(tasks) == 0:
         markdown += "|No Tasks Found||||\n"
         return markdown
-    for key, val in tasks.items():
+    for _key, val in tasks.items():
         markdown += f"|{val['name']}|{val['count']}|{val['completed']}|{val['completed']/val['count']*100}%|\n"
 
     return markdown
 
 
 def GetAutomationName(scriptid) -> str:
-    results = demisto.executeCommand("demisto-api-post", {
+    results = demisto.executeCommand("core-api-post", {
         "uri": f"/automation/load/{scriptid}"
     })[0]
     if "response" not in results.keys():

@@ -16,7 +16,7 @@ import ast
 
 
 def GetAutomation(scriptid: str):
-    results = demisto.executeCommand("demisto-api-post", {
+    results = demisto.executeCommand("core-api-post", {
         "uri": f"/automation/load/{scriptid}"
     })
     if is_error(results):
@@ -29,7 +29,7 @@ def GetAutomationName(scriptid: str) -> str:
     octets = scriptid.split('-')
     if len(octets) == 5:
         if len(octets[0]) == 8 and len(octets[1]) == 4 and len(octets[2]) == 4 and len(octets[3]) == 4 and len(octets[4]) == 12:
-            results = demisto.executeCommand("demisto-api-post", {
+            results = demisto.executeCommand("core-api-post", {
                 "uri": f"/automation/load/{scriptid}"
             })
             if is_error(results):
@@ -70,26 +70,23 @@ def CalledAutomation(scrname: str, script: str) -> list:
             if 'func=Attribute' in lin:
                 watchatt = True
                 continue
-            if watchatt:
-                if 'attr=' in lin:
-                    name = lin.split("'")[1]
-                    watchatt = False
-                    if name == "executeCommand":
-                        watcharg = True
-                        continue
-            if watcharg:
-                if "args=[" in lin:
-                    watcharg = False
-                    watchval = True
+            if watchatt and 'attr=' in lin:
+                name = lin.split("'")[1]
+                watchatt = False
+                if name == "executeCommand":
+                    watcharg = True
                     continue
-            if watchval:
-                if "Constant(value=" in lin:
-                    parts = lin.split("'")
-                    if len(parts) > 1:
-                        name = parts[1]
-                        watchval = False
-                        watchname = False
-                        names.append(name)
+            if watcharg and "args=[" in lin:
+                watcharg = False
+                watchval = True
+                continue
+            if watchval and "Constant(value=" in lin:
+                parts = lin.split("'")
+                if len(parts) > 1:
+                    name = parts[1]
+                    watchval = False
+                    watchname = False
+                    names.append(name)
 
     final = []
     names = list(set(names))
@@ -102,7 +99,7 @@ def CalledAutomation(scrname: str, script: str) -> list:
 def GetPlaybooks(query: str) -> list:
     if query != "":
         query = " AND " + query
-    playbooks = demisto.executeCommand("demisto-api-post", {
+    playbooks = demisto.executeCommand("core-api-post", {
         "uri": "/playbook/search",
         "body": {"query": f"hidden:F AND deprecated:F {query}"}
     })[0]['Contents']['response']['playbooks']
@@ -115,14 +112,14 @@ def GetEntities(playbooks: list) -> dict:
     for p in playbooks:
         pbname = p['name']
         entities[pbname] = {'etype': "playbook", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
-        for key, t in p['tasks'].items():
+        for _key, t in p['tasks'].items():
             if t['type'] == "playbook":
                 spbname = t['task'].get('name', "notaskname")
                 if spbname not in entities:
                     entities[spbname] = {'etype': "playbook", 'pcalled': [], 'pcalls': [], 'scalled': [], 'scalls': []}
                 entities[pbname]['pcalls'].append(spbname)  # type: ignore
                 entities[spbname]['pcalled'].append(pbname)  # type: ignore
-            elif "scriptId" in t['task'].keys():
+            elif "scriptId" in t['task']:
                 scrname = GetAutomationName(t['task']['scriptId'])
                 if scrname != "":
                     scrname, script, stype = GetAutomation(scrname)

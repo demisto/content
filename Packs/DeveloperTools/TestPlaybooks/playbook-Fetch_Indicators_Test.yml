@@ -1,6 +1,5 @@
 id: Fetch Indicators Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Fetch Indicators Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -114,7 +114,7 @@ tasks:
       version: -1
       name: Get Indicator Field to search
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -152,6 +152,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -816,11 +817,12 @@ inputs:
   value: {}
   required: false
   description: Id of Integration that we want to test.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: searchfield
   value: {}
   required: false
   description: Comma separated list of fields to confirm that exists in al indicators.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
+description: ''

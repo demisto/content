@@ -11,16 +11,12 @@ inputs:
       root: incident
       accessor: demistorestapiname
   required: true
-  description: Defines which instance of a configured Demisto API to use for checking
-    updates against.
-  playbookInputQuery: null
+  description: Defines which instance of a configured Demisto API to use for checking updates against.
+  playbookInputQuery:
 name: Check For Content Installation
 outputs:
 - contextPath: PacksUpdated
-  description: This will return true if all the content packs were updated. If a user
-    specified "All" in the content pack filters then all packs must be updated. Otherwise,
-    only those that are specified in the filter need to be updated for this to return
-    as True.
+  description: This will return true if all the content packs were updated. If a user specified "All" in the content pack filters then all packs must be updated. Otherwise, only those that are specified in the filter need to be updated for this to return as True.
   type: boolean
 - contextPath: ContentDataPreCheck
   description: This will return the names of packs that were not updated successfully.
@@ -114,7 +110,7 @@ tasks:
       id: 855437f4-5e4f-45b6-8430-9aa92004787d
       iscommand: true
       name: Check for updates
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       version: -1
     taskid: 855437f4-5e4f-45b6-8430-9aa92004787d
@@ -177,8 +173,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This task checks to see if either all packs were updates or if
-        the user filtered packs were all updated.
+      description: This task checks to see if either all packs were updates or if the user filtered packs were all updated.
       id: e4616c06-c123-450f-8047-b88512bbf1c4
       iscommand: false
       name: Are all the packs updated?

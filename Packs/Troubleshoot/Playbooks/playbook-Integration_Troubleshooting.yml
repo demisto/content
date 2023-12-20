@@ -3,8 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Integration Troubleshooting
-description: Troubleshoot a problem with either an integration's configuration or
-  with running a command.
+description: Troubleshoot a problem with either an integration's configuration or with running a command.
 starttaskid: "0"
 tasks:
   "0":
@@ -451,8 +450,7 @@ tasks:
       - "19"
     scriptarguments:
       value:
-        simple: The command succeeds when changing the 'Proxy' value. Try changing
-          it and see if the problem persists.
+        simple: The command succeeds when changing the 'Proxy' value. Try changing it and see if the problem persists.
     separatecontext: false
     view: |-
       {
@@ -484,8 +482,7 @@ tasks:
       - "19"
     scriptarguments:
       message:
-        simple: This is not a verified XSOAR integration. Use an official integration
-          instead.
+        simple: This is not a verified XSOAR integration. Use an official integration instead.
     continueonerror: true
     separatecontext: false
     view: |-
@@ -551,8 +548,7 @@ tasks:
       - "19"
     scriptarguments:
       value:
-        simple: The command succeeds when changing the 'Insecure' (Trust any certificate,
-          not secure) value. Try changing it and see if the problem persists.
+        simple: The command succeeds when changing the 'Insecure' (Trust any certificate, not secure) value. Try changing it and see if the problem persists.
     separatecontext: false
     view: |-
       {
@@ -719,8 +715,7 @@ tasks:
       id: 1b34a222-1005-427c-8926-a669b1c3822e
       version: -1
       name: Did insecure change work?
-      description: Did changing the 'Insecure' (Trust any certificate, not secure)
-        value work?
+      description: Did changing the 'Insecure' (Trust any certificate, not secure) value work?
       type: condition
       iscommand: false
       brand: ""
@@ -957,8 +952,8 @@ tasks:
     task:
       id: 44cebb67-c8c0-4247-804f-623e8caf4ae7
       version: -1
-      name: Is Demisto REST API integration configured?
-      description: Is the Demisto REST API integration configured?
+      name: Is Core REST API integration configured?
+      description: Is the Core REST API integration configured?
       type: condition
       iscommand: false
       brand: ""
@@ -984,7 +979,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Demisto REST API
+                        simple: Core REST API
                 accessor: state
             iscontext: true
           right:
@@ -1017,8 +1012,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: The Demisto REST API integration is not configured. Configure the
-          integration in order to use this playbook.
+        simple: The Core REST API integration is not configured. Configure the integration in order to use this playbook.
     separatecontext: false
     view: |-
       {
@@ -1065,8 +1059,7 @@ tasks:
       id: 09db14ae-7d44-4e58-81a6-20627815216a
       version: -1
       name: Is running with insecure checked?
-      description: Checks if the incident's 'Insecure' (Trust any certificate, not
-        secure) value is selected.
+      description: Checks if the incident's 'Insecure' (Trust any certificate, not secure) value is selected.
       type: condition
       iscommand: false
       brand: ""
@@ -1186,7 +1179,7 @@ tasks:
       version: -1
       name: Get server logs
       description: Download files from the Cortex XSOAR server.
-      script: '|||demisto-api-download'
+      script: '|||core-api-download'
       type: regular
       iscommand: true
       brand: ""
@@ -1220,7 +1213,7 @@ tasks:
       version: -1
       name: Get advanced parameters
       description: Send HTTP GET requests.
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
