@@ -17,7 +17,7 @@
     "json_zero_events": {
         "events": [
         ],
-        "number_of_events": 0,
+        "number_of_events": 0
     },
     "text_list_events": {
         "events": [
@@ -39,7 +39,7 @@
         "number_of_events": 2,
         "format": "cef",
         "expected_format": "cef",
-        "expected_data": "Some cef event 1\nSome cef event 2",
+        "expected_data": "Some cef event 1\nSome cef event 2"
     },
     "big_event": {
         "events": [
@@ -85,7 +85,7 @@
             }
         ],
         "number_of_events": 10,
-        "expected_data": '{"name": "Event 10", "data": "In three words I can sum up everything I\'ve learned about life: it goes on. - Robert Frost"}',
+        "expected_data": "{\"name\": \"Event 10\", \"data\": \"In three words I can sum up everything I've learned about life: it goes on. - Robert Frost\"}",
         "expected_format": "json",
         "XSIAM_FILE_SIZE": 300
     },
