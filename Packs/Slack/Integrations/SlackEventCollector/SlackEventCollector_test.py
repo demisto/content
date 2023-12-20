@@ -161,3 +161,76 @@ def test_test_module(mocker):
 
     mocker.patch.object(Session, 'request', return_value=MockResponse([]))
     assert test_module_command(Client(base_url=''), {}) == 'ok'
+
+
+def test_fetch_events_(mocker):
+    """
+    Given:
+        - fetch-events command execution.
+    When:
+        - The first call "fetch_events_command" was the last run empty, There were 6 results (in 2 pages)
+           assert we returned 4 events according to the limit, and returned the "last_search_stop_point_event_id", "cursor", and next_last_event.
+        - Second, call "fetch_events_command" we have a last run with a cursor and got a response with 3 events (that were already fetched)
+           assert we returned 2 and the last run contains only the "last_fetched_event".
+        - Third, call "fetch_events_command" we got an empty response.
+            assert the last run stayed the same.
+        - The fourth call "fetch_events_command" was in the "last run" the "last_fetched_event", There were 6 results (in 2 pages)
+           assert we returned 4 events according to the limit, and returned the "last_fetched_event" "last_search_stop_point_event_id", "cursor", and next_last_event.
+    """
+    from SlackEventCollector import fetch_events_command, Client
+
+    # first round
+    mock_response1 = MockResponse([
+        {'id': '6', 'date_create': 1521214345},
+        {'id': '5', 'date_create': 1521214343},
+        {'id': '4', 'date_create': 1521214343},
+    ])
+    mock_response1.data['response_metadata'] = {'next_cursor': 'mock_response2'}
+    mock_response2 = MockResponse([
+        {'id': '3', 'date_create': 1521214345},
+        {'id': '2', 'date_create': 1521214343},
+        {'id': '1', 'date_create': 1521214343},
+    ])
+    mocker.patch.object(Client, '_http_request', side_effect=[mock_response1.data,
+                                                              mock_response2.data])
+    events, last_run = fetch_events_command(Client(base_url=''), params={'limit': 4}, last_run={})
+    assert len(events) == 4  # 4 events according to the limit
+    assert last_run == {'cursor': 'mock_response2 ',  # The cursor was returned because we still haven't finished
+                                                      # fetching the events from the mock_response2.
+                        'last_search_stop_point_event_id': '2',  # the id where to start collect next run.
+                        'next_last_event': {'last_event_id': '6', 'last_event_time': 1521214345}}  # the next nowest event thet we fetchd alredy.
+                                                                                                   # This is just the next one because we haven't
+                                                                                                   # finished bringing all the previous events yet
+
+    # Second round
+    mocker.patch.object(Client, '_http_request', side_effect=[mock_response2.data])
+    events, last_run = fetch_events_command(Client(base_url=''), params={'limit': 4}, last_run=last_run)
+    assert len(events) == 2  # 2 events that remains
+    assert last_run == {'last_fetched_event': {'last_event_id': '6', 'last_event_time': 1521214345}}  # the last fetched event
+
+    # Third round
+    mocker.patch.object(Client, '_http_request', return_value={})
+    events, last_run = fetch_events_command(Client(base_url=''), params={'limit': 4}, last_run=last_run)
+    assert len(events) == 0  # 0 events because an empty response
+    assert last_run == {'last_fetched_event': {'last_event_id': '6', 'last_event_time': 1521214345}}  # the last run didn't change
+
+    # fourth round
+    mock_response3 = MockResponse([
+        {'id': '11', 'date_create': 1521214345},
+        {'id': '10', 'date_create': 1521214343},
+        {'id': '9', 'date_create': 1521214343},
+    ])
+    mock_response4 = MockResponse([
+        {'id': '8', 'date_create': 1521214345},
+        {'id': '7', 'date_create': 1521214343},
+        {'id': '6', 'date_create': 1521214343},
+    ])
+    mock_response3.data['response_metadata'] = {'next_cursor': 'mock_response4'}
+    mocker.patch.object(Client, '_http_request', side_effect=[mock_response3.data, mock_response4.data])
+    events, last_run = fetch_events_command(Client(base_url=''), params={'limit': 4}, last_run=last_run)
+    assert len(events) == 4 # 4 events according to the limit
+    assert last_run == {'cursor': 'mock_response4',  # The cursor was returned because we still haven't finished
+                                                     # fetching the events from the mock_response4.
+                        'last_fetched_event': {'last_event_id': '6', 'last_event_time': 1521214345},  # The last event we collected (in the previous search)
+                        'last_search_stop_point_event_id': '7',  # the id where to start (downwards) collect next run.
+                        'next_last_event': {'last_event_id': '11', 'last_event_time': 1521214345}}  # The last event we collected (in this search)
