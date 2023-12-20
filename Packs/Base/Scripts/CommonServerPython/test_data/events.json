@@ -1,4 +1,4 @@
-events_dict = {
+{
     "json_events": {
         "events": [
             {
@@ -105,45 +105,3 @@ events_dict = {
         "expected_data": '{"name": "my asset 1", "data": "some data 1"}\n{"name": "my asset 2", "data": "some data 2"}'
     }
 }
-
-events_log_error = \
-    """Error sending new events into XSIAM.
-Parameters used:
-\tURL: https://api-url
-\tHeaders: {{
-        "authorization": "TOKEN",
-        "format": "json",
-        "product": "some product",
-        "vendor": "some vendor",
-        "content-encoding": "gzip",
-        "collector-name": "test_brand",
-        "instance-name": "test_integration_instance",
-        "final-reporting-device": "www.test_url.com",
-        "collector-type": "events"
-}}
-
-Response status code: {status_code}
-Error received:
-\t{error_received}"""
-
-assets_log_error = \
-    """Error sending new assets into XSIAM.
-Parameters used:
-\tURL: https://api-url
-\tHeaders: {{
-        "authorization": "TOKEN",
-        "format": "json",
-        "product": "some product",
-        "vendor": "some vendor",
-        "content-encoding": "gzip",
-        "collector-name": "test_brand",
-        "instance-name": "test_integration_instance",
-        "final-reporting-device": "www.test_url.com",
-        "collector-type": "assets",
-        "snapshot-id": "123000",
-        "total-items-count": "2"
-}}
-
-Response status code: {status_code}
-Error received:
-\t{error_received}"""
