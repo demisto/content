@@ -315,10 +315,11 @@ def is_pivot(single_pipeline_id, list_of_pipelines, commits):
 
     # if previous pipeline was successful and current pipeline failed, and current pipeline was created after
     # previous pipeline (n), then it is a negative pivot
-    in_order, pivot_commit = are_pipelines_in_order_as_commits(commits, current_pipeline.sha, previous_pipeline.sha)
-    if in_order:
-        if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
-            return True, pivot_commit
-        if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
-            return False, pivot_commit
+    if current_pipeline:
+        in_order, pivot_commit = are_pipelines_in_order_as_commits(commits, current_pipeline.sha, previous_pipeline.sha)
+        if in_order :
+            if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':       
+                return True, pivot_commit
+            if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
+                return False, pivot_commit
     return None, None
