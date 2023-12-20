@@ -14,5 +14,5 @@
     "mergeContext": false,
     "expiration": 0,
     "layout": "X509 Certificate",
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.0.0"
 }
