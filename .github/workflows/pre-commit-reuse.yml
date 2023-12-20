@@ -1,0 +1,73 @@
+name: pre-commit
+on: 
+  workflow_call:
+
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+    steps:
+    - name: Install poetry
+      uses: Gr1N/setup-poetry@v8
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'poetry'
+    
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Cache Pre commit
+      id: cache-pre-commit
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pre-commit
+        key: ${{ runner.os }}-pre-commit
+      
+    - name: run pre-commit
+      env:
+        DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: |
+        source .venv/bin/activate
+        demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+
+    - name: "Check coverage.xml exists"
+      if: always()
+      id: check_files
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "coverage_report/coverage.xml"
+
+    - name: Pytest coverage comment
+      if: always() && steps.check_files.outputs.files_exists == 'true'
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        pytest-xml-coverage-path: coverage_report/coverage.xml
+        junitxml-path: .report_pytest.xml
+
+    - name: Print Summary of pytest results in workflow summary
+      if: always() && steps.check_files.outputs.files_exists == 'true'
+      uses: pmeier/pytest-results-action@main
+      with:
+          path: .report_pytest.xml
+          summary: true
+          fail-on-empty: true
+    
+    - uses: actions/cache/save@v3
+      if: always()
+      with:
+        path: ~/.cache/pre-commit
+        key: ${{ runner.os }}-pre-commit
+      
