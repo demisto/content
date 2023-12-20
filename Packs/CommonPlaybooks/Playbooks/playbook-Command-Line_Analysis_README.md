@@ -27,10 +27,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* DeleteContext
 * Base64Decode
 * Set
 * MatchRegexV2
+* DeleteContext
 
 ### Commands
 
@@ -61,6 +61,11 @@ This playbook does not use any integrations.
 | Domain | The domain object. | unknown |
 | CommandlineVerdict.base64 | Command line verdict base64 was found. True/False | unknown |
 | CommandlineVerdict.suspiciousParameters | Command line verdict suspicious parameters found. True/False | unknown |
+| CommandlineVerdict.AMSI | Command line verdict AMSI found. True/False | unknown |
+| CommandlineVerdict.foundIndicators | Command line verdict foundIndicators found. True/False | unknown |
+| CommandlineVerdict.maliciousTools | Command line verdict maliciousTools found. True/False | unknown |
+| CommandlineVerdict.networkActivity | Command line verdict networkActivity found. True/False | unknown |
+| CommandlineVerdict.SuspiciousLolbinExecution | Command line verdict SuspiciousLolbinExecution found. True/False | unknown |
 
 ## Playbook Image
 

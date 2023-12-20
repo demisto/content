@@ -1810,6 +1810,21 @@ outputs:
 - contextPath: CommandlineVerdict.suspiciousParameters
   description: Command line verdict suspicious parameters found. True/False
   type: unknown
+- contextPath: CommandlineVerdict.AMSI
+  description: Command line verdict AMSI found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.foundIndicators
+  description: Command line verdict foundIndicators found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.maliciousTools
+  description: Command line verdict maliciousTools found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.networkActivity
+  description: Command line verdict networkActivity found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.SuspiciousLolbinExecution
+  description: Command line verdict SuspiciousLolbinExecution found. True/False
+  type: unknown
 tests:
   - no tests
 fromversion: 6.0.0
