@@ -12,7 +12,7 @@
         ],
         "number_of_events": 2,
         "expected_format": "json",
-        "expected_data": '{"name": "my event 1", "data": "some data 1"}\n{"name": "my event 2", "data": "some data 2"}'
+        "expected_data": "{\"name\": \"my event 1\", \"data\": \"some data 1\"}\n{\"name\": \"my event 2\", \"data\": \"some data 2\"}"
     },
     "json_zero_events": {
         "events": [
@@ -102,6 +102,6 @@
         ],
         "number_of_events": 2,
         "expected_format": "json",
-        "expected_data": '{"name": "my asset 1", "data": "some data 1"}\n{"name": "my asset 2", "data": "some data 2"}'
+        "expected_data": "{\"name\": \"my asset 1\", \"data\": \"some data 1\"}\n{\"name\": \"my asset 2\", \"data\": \"some data 2\"}"
     }
 }
