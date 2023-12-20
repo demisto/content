@@ -8496,290 +8496,290 @@ def test_content_type(content_format, outputs, expected_type):
     assert command_results.to_context()['ContentsFormat'] == expected_type
 
 
-# class TestSendEventsToXSIAMTest:
-#     from test_data.send_events_to_xsiam_data import events_dict, events_log_error, assets_log_error
-#     test_data = events_dict
-#     events_test_log_data = events_log_error
-#     assets_test_log_data = assets_log_error
-#     orig_xsiam_file_size = 2 ** 20  # 1Mib
-#
-#     @staticmethod
-#     def get_license_custom_field_mock(arg):
-#         if 'token' in arg:
-#             return "TOKEN"
-#         elif 'url' in arg:
-#             return "url"
-#
-#
-#     @pytest.mark.parametrize('data_use_case, data_type', [
-#         ('json_events', 'events'),
-#         ('text_list_events', 'events'),
-#         ('text_events', 'events'),
-#         ('cef_events', 'events'),
-#         ('json_zero_events', 'events'),
-#         ('big_event', 'events'),
-#         ('json_assets', 'assets'),
-#     ])
-#     def test_send_data_to_xsiam_positive(self, mocker, data_use_case, data_type):
-#         """
-#         Test for the fetch events and fetch assets function
-#         Given:
-#             Case a: a list containing dicts representing events.
-#             Case b: a list containing strings representing events.
-#             Case c: a string representing events (separated by a new line).
-#             Case d: a string representing events (separated by a new line).
-#             Case e: an empty list of events.
-#             Case f: a "big" event. a big event is bigger than XSIAM EVENT SIZE declared.
-#             Case g: a list containing dicts representing assets.
-#             ( currently the Ideal event size is 1 Mib)
-#
-#         When:
-#             Case a: Calling the send_assets_to_xsiam function with no explicit data format specified.
-#             Case b: Calling the send_assets_to_xsiam function with no explicit data format specified.
-#             Case c: Calling the send_assets_to_xsiam function with no explicit data format specified.
-#             Case d: Calling the send_assets_to_xsiam function with a cef data format specification.
-#             Case e: Calling the send_assets_to_xsiam function with no explicit data format specified.
-#             Case f: Calling the send_assets_to_xsiam function with no explicit data format specified.
-#             Case g: Calling the send_assets_to_xsiam function with no explicit data format specified.
-#
-#         Then ensure that:
-#             Case a:
-#                 - The events data was compressed correctly
-#                 - The data format was automatically identified as json.
-#                 - The number of events reported to the module health equals to number of events sent to XSIAM - 2
-#             Case b:
-#                 - The events data was compressed correctly
-#                 - The data format was automatically identified as text.
-#                 - The number of events reported to the module health equals to number of events sent to XSIAM - 2
-#             Case c:
-#                 - The events data was compressed correctly
-#                 - The data format was automatically identified as text.
-#                 - The number of events reported to the module health equals to number of events sent to XSIAM - 2
-#             Case d:
-#                 - The events data was compressed correctly
-#                 - The data format remained as cef.
-#                 - The number of events reported to the module health equals to number of events sent to XSIAM - 2
-#             Case e:
-#                 - No request to XSIAM API was made.
-#                 - The number of events reported to the module health - 0.
-#             Case f:
-#                 - The events data was compressed correctly. Expecting to see that last chunk sent.
-#                 - The data format remained as json.
-#                 - The number of events reported to the module health - 2. For the last chunk.
-#             Case g:
-#                 - The assets data was compressed correctly
-#                 - The data format was automatically identified as json.
-#                 - The number of assets reported to the module health equals to number of assets sent to XSIAM - 2
-#         """
-#         if not IS_PY3:
-#             return
-#
-#         from CommonServerPython import BaseClient
-#         from requests import Response
-#         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-#         mocker.patch.object(demisto, 'updateModuleHealth')
-#         mocker.patch('time.time', return_value=123)
-#
-#         api_response = Response()
-#         api_response.status_code = 200
-#         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-#
-#         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
-#
-#         items = self.test_data[data_use_case][data_type]
-#         number_of_items = self.test_data[data_use_case]['number_of_events']  # pushed in each chunk.
-#         chunk_size = self.test_data[data_use_case].get('XSIAM_FILE_SIZE', self.orig_xsiam_file_size)
-#         data_format = self.test_data[data_use_case].get('format')
-#         send_data_to_xsiam(data=items, vendor='some vendor', product='some product', data_format=data_format,
-#                            chunk_size=chunk_size, data_type=data_type)
-#
-#         if number_of_items:
-#             expected_format = self.test_data[data_use_case]['expected_format']
-#             expected_data = self.test_data[data_use_case]['expected_data']
-#             arguments_called = _http_request_mock.call_args[1]
-#             decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
-#
-#             assert arguments_called['headers']['format'] == expected_format
-#             assert decompressed_data == expected_data
-#             assert arguments_called['headers']['collector-type'] == data_type
-#         else:
-#             assert _http_request_mock.call_count == 0
-#         if data_type == "events":
-#             demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_items})
-#         elif data_type == "assets":
-#             demisto.updateModuleHealth.assert_called_with({'assetsPulled': number_of_items})
-#             assert arguments_called['headers']['snapshot-id'] == '123000'
-#             assert arguments_called['headers']['total-items-count'] == '2'
-#
-#     @pytest.mark.parametrize('error_msg, data_type', [(None, "events"), ({'error': 'error'}, "events"), ('', "events"),
-#                                                       ({'error': 'error'}, "assets")])
-#     def test_send_data_to_xsiam_error_handling(self, mocker, requests_mock, error_msg, data_type):
-#         """
-#         Given:
-#             case a: response type containing None
-#             case b: response type containing json
-#             case c: response type containing empty string
-#
-#         When:
-#             calling the send_data_to_xsiam function
-#
-#         Then:
-#             case a:
-#                 - DemistoException is raised with the empty response message
-#                 - Error log is created with the empty response message and status code of 403
-#                 - Make sure only single api request was sent and that retry mechanism was not triggered
-#             case b:
-#                 - DemistoException is raised with the Unauthorized[401] message
-#                 - Error log is created with Unauthorized[401] message and status code of 401
-#                 - Make sure only single api request was sent and that retry mechanism was not triggered
-#             case c:
-#                 - DemistoException is raised with the empty response message
-#                 - Error log is created with the empty response message and status code of 403
-#                 - Make sure only single api request was sent and that retry mechanism was not triggered
-#
-#         """
-#         if not IS_PY3:
-#             return
-#
-#         mocker.patch.object(demisto, "params", return_value={"url": "www.test_url.com"})
-#         mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstance": "test_integration_instance",
-#                                                                     "IntegrationBrand": "test_brand"}})
-#         mocker.patch('time.time', return_value=123)
-#         if isinstance(error_msg, dict):
-#             status_code = 401
-#             request_mocker = requests_mock.post(
-#                 'https://api-url/logs/v1/xsiam', json=error_msg, status_code=status_code, reason='Unauthorized[401]'
-#             )
-#             expected_error_msg = 'Unauthorized[401]'
-#         else:
-#             status_code = 403
-#             request_mocker = requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=status_code)
-#             expected_error_msg = 'Received empty response from the server'
-#
-#         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-#         mocker.patch.object(demisto, 'updateModuleHealth')
-#         error_log_mocker = mocker.patch.object(demisto, 'error')
-#
-#         events = self.test_data['json_events']['events']
-#         expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_log_error
-#         expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
-#
-#         with pytest.raises(
-#                 DemistoException,
-#                 match=re.escape(expected_error_header + expected_error_msg),
-#         ):
-#             send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type=data_type)
-#
-#         # make sure the request was sent only once and retry mechanism was not triggered
-#         assert request_mocker.call_count == 1
-#
-#         error_log_mocker.assert_called_with(
-#             expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
-#
-#     @pytest.mark.parametrize(
-#         'mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed', [
-#             (
-#                 [
-#                     (429, None), (429, None), (429, None)
-#                 ],
-#                 3,
-#                 1,
-#                 False
-#             ),
-#             (
-#                 [
-#                     (401, None)
-#                 ],
-#                 1,
-#                 1,
-#                 False
-#             ),
-#             (
-#                 [
-#                     (429, None), (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
-#                 ],
-#                 3,
-#                 0,
-#                 True
-#             ),
-#             (
-#                 [
-#                     (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
-#                 ],
-#                 2,
-#                 0,
-#                 True
-#             ),
-#             (
-#                 [
-#                     (200, json.dumps({'error': 'false'}).encode('utf-8'))
-#                 ],
-#                 1,
-#                 0,
-#                 True
-#             )
-#         ]
-#     )
-#     def test_retries_send_data_to_xsiam_rate_limit(
-#         self, mocker, mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed
-#     ):
-#         """
-#         Given:
-#             case a: 3 responses indicating about api limit from xsiam (429)
-#             case b: 2 responses indicating about unauthorized access from xsiam (401)
-#             case c: 2 responses indicating about api limit from xsiam (429) and the third indicating about success
-#             case d: 1 response indicating about api limit from xsiam (429) and the second indicating about success
-#             case e: 1 response indicating about success from xsiam with no rate limit errors
-#
-#         When:
-#             calling the send_data_to_xsiam function
-#
-#         Then:
-#             case a:
-#                 - DemistoException is raised
-#                 - Error log is called 1 time
-#                 - Make sure 3 api requests were sent by the retry mechanism
-#             case b:
-#                 - DemistoException is raised
-#                 - Error log is called 1 time
-#                 - Make sure only 1 api request were sent by the retry mechanism
-#             case c:
-#                 - Error log is not called at all
-#                 - Make sure only 3 api requests were sent by the retry mechanism
-#             case d:
-#                 - EError log is not called at all
-#                 - Make sure only 2 api requests were sent by the retry mechanism
-#             case e:
-#                 - Error log is not called at all
-#                 - Make sure only 1 api request were sent by the retry mechanism
-#
-#         """
-#         if not IS_PY3:
-#             return
-#
-#         import requests
-#         mocked_responses_side_effect = []
-#         for status_code, text in mocked_responses:
-#             api_response = requests.Response()
-#             api_response.status_code = status_code
-#             api_response._content = text
-#             mocked_responses_side_effect.append(api_response)
-#
-#         request_mock = mocker.patch.object(requests.Session, 'request', side_effect=mocked_responses_side_effect)
-#
-#         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-#         mocker.patch.object(demisto, 'updateModuleHealth')
-#         error_mock = mocker.patch.object(demisto, 'error')
-#
-#         events = self.test_data['json_events']['events']
-#         if should_succeed:
-#             send_data_to_xsiam(data=events, vendor='some vendor', product='some product')
-#         else:
-#             with pytest.raises(DemistoException):
-#                 send_data_to_xsiam(data=events, vendor='some vendor', product='some product')
-#
-#         assert error_mock.call_count == expected_error_log_count
-#         assert request_mock.call_count == expected_request_call_count
+class TestSendEventsToXSIAMTest:
+    from test_data.send_events_to_xsiam_data import events_dict, events_log_error, assets_log_error
+    test_data = events_dict
+    events_test_log_data = events_log_error
+    assets_test_log_data = assets_log_error
+    orig_xsiam_file_size = 2 ** 20  # 1Mib
+
+    @staticmethod
+    def get_license_custom_field_mock(arg):
+        if 'token' in arg:
+            return "TOKEN"
+        elif 'url' in arg:
+            return "url"
+
+
+    @pytest.mark.parametrize('data_use_case, data_type', [
+        ('json_events', 'events'),
+        ('text_list_events', 'events'),
+        ('text_events', 'events'),
+        ('cef_events', 'events'),
+        ('json_zero_events', 'events'),
+        ('big_event', 'events'),
+        ('json_assets', 'assets'),
+    ])
+    def test_send_data_to_xsiam_positive(self, mocker, data_use_case, data_type):
+        """
+        Test for the fetch events and fetch assets function
+        Given:
+            Case a: a list containing dicts representing events.
+            Case b: a list containing strings representing events.
+            Case c: a string representing events (separated by a new line).
+            Case d: a string representing events (separated by a new line).
+            Case e: an empty list of events.
+            Case f: a "big" event. a big event is bigger than XSIAM EVENT SIZE declared.
+            Case g: a list containing dicts representing assets.
+            ( currently the Ideal event size is 1 Mib)
+
+        When:
+            Case a: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case b: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case c: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case d: Calling the send_assets_to_xsiam function with a cef data format specification.
+            Case e: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case f: Calling the send_assets_to_xsiam function with no explicit data format specified.
+            Case g: Calling the send_assets_to_xsiam function with no explicit data format specified.
+
+        Then ensure that:
+            Case a:
+                - The events data was compressed correctly
+                - The data format was automatically identified as json.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case b:
+                - The events data was compressed correctly
+                - The data format was automatically identified as text.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case c:
+                - The events data was compressed correctly
+                - The data format was automatically identified as text.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case d:
+                - The events data was compressed correctly
+                - The data format remained as cef.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case e:
+                - No request to XSIAM API was made.
+                - The number of events reported to the module health - 0.
+            Case f:
+                - The events data was compressed correctly. Expecting to see that last chunk sent.
+                - The data format remained as json.
+                - The number of events reported to the module health - 2. For the last chunk.
+            Case g:
+                - The assets data was compressed correctly
+                - The data format was automatically identified as json.
+                - The number of assets reported to the module health equals to number of assets sent to XSIAM - 2
+        """
+        if not IS_PY3:
+            return
+
+        from CommonServerPython import BaseClient
+        from requests import Response
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        items = self.test_data[data_use_case][data_type]
+        number_of_items = self.test_data[data_use_case]['number_of_events']  # pushed in each chunk.
+        chunk_size = self.test_data[data_use_case].get('XSIAM_FILE_SIZE', self.orig_xsiam_file_size)
+        data_format = self.test_data[data_use_case].get('format')
+        send_data_to_xsiam(data=items, vendor='some vendor', product='some product', data_format=data_format,
+                           chunk_size=chunk_size, data_type=data_type)
+
+        if number_of_items:
+            expected_format = self.test_data[data_use_case]['expected_format']
+            expected_data = self.test_data[data_use_case]['expected_data']
+            arguments_called = _http_request_mock.call_args[1]
+            decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
+
+            assert arguments_called['headers']['format'] == expected_format
+            assert decompressed_data == expected_data
+            assert arguments_called['headers']['collector-type'] == data_type
+        else:
+            assert _http_request_mock.call_count == 0
+        if data_type == "events":
+            demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_items})
+        elif data_type == "assets":
+            demisto.updateModuleHealth.assert_called_with({'assetsPulled': number_of_items})
+            assert arguments_called['headers']['snapshot-id'] == '123000'
+            assert arguments_called['headers']['total-items-count'] == '2'
+
+    @pytest.mark.parametrize('error_msg, data_type', [(None, "events"), ({'error': 'error'}, "events"), ('', "events"),
+                                                      ({'error': 'error'}, "assets")])
+    def test_send_data_to_xsiam_error_handling(self, mocker, requests_mock, error_msg, data_type):
+        """
+        Given:
+            case a: response type containing None
+            case b: response type containing json
+            case c: response type containing empty string
+
+        When:
+            calling the send_data_to_xsiam function
+
+        Then:
+            case a:
+                - DemistoException is raised with the empty response message
+                - Error log is created with the empty response message and status code of 403
+                - Make sure only single api request was sent and that retry mechanism was not triggered
+            case b:
+                - DemistoException is raised with the Unauthorized[401] message
+                - Error log is created with Unauthorized[401] message and status code of 401
+                - Make sure only single api request was sent and that retry mechanism was not triggered
+            case c:
+                - DemistoException is raised with the empty response message
+                - Error log is created with the empty response message and status code of 403
+                - Make sure only single api request was sent and that retry mechanism was not triggered
+
+        """
+        if not IS_PY3:
+            return
+
+        mocker.patch.object(demisto, "params", return_value={"url": "www.test_url.com"})
+        mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstance": "test_integration_instance",
+                                                                    "IntegrationBrand": "test_brand"}})
+        mocker.patch('time.time', return_value=123)
+        if isinstance(error_msg, dict):
+            status_code = 401
+            request_mocker = requests_mock.post(
+                'https://api-url/logs/v1/xsiam', json=error_msg, status_code=status_code, reason='Unauthorized[401]'
+            )
+            expected_error_msg = 'Unauthorized[401]'
+        else:
+            status_code = 403
+            request_mocker = requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=status_code)
+            expected_error_msg = 'Received empty response from the server'
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        error_log_mocker = mocker.patch.object(demisto, 'error')
+
+        events = self.test_data['json_events']['events']
+        expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_log_error
+        expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
+
+        with pytest.raises(
+                DemistoException,
+                match=re.escape(expected_error_header + expected_error_msg),
+        ):
+            send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type=data_type)
+
+        # make sure the request was sent only once and retry mechanism was not triggered
+        assert request_mocker.call_count == 1
+
+        error_log_mocker.assert_called_with(
+            expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
+
+    @pytest.mark.parametrize(
+        'mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed', [
+            (
+                [
+                    (429, None), (429, None), (429, None)
+                ],
+                3,
+                1,
+                False
+            ),
+            (
+                [
+                    (401, None)
+                ],
+                1,
+                1,
+                False
+            ),
+            (
+                [
+                    (429, None), (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                3,
+                0,
+                True
+            ),
+            (
+                [
+                    (429, None), (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                2,
+                0,
+                True
+            ),
+            (
+                [
+                    (200, json.dumps({'error': 'false'}).encode('utf-8'))
+                ],
+                1,
+                0,
+                True
+            )
+        ]
+    )
+    def test_retries_send_data_to_xsiam_rate_limit(
+        self, mocker, mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed
+    ):
+        """
+        Given:
+            case a: 3 responses indicating about api limit from xsiam (429)
+            case b: 2 responses indicating about unauthorized access from xsiam (401)
+            case c: 2 responses indicating about api limit from xsiam (429) and the third indicating about success
+            case d: 1 response indicating about api limit from xsiam (429) and the second indicating about success
+            case e: 1 response indicating about success from xsiam with no rate limit errors
+
+        When:
+            calling the send_data_to_xsiam function
+
+        Then:
+            case a:
+                - DemistoException is raised
+                - Error log is called 1 time
+                - Make sure 3 api requests were sent by the retry mechanism
+            case b:
+                - DemistoException is raised
+                - Error log is called 1 time
+                - Make sure only 1 api request were sent by the retry mechanism
+            case c:
+                - Error log is not called at all
+                - Make sure only 3 api requests were sent by the retry mechanism
+            case d:
+                - EError log is not called at all
+                - Make sure only 2 api requests were sent by the retry mechanism
+            case e:
+                - Error log is not called at all
+                - Make sure only 1 api request were sent by the retry mechanism
+
+        """
+        if not IS_PY3:
+            return
+
+        import requests
+        mocked_responses_side_effect = []
+        for status_code, text in mocked_responses:
+            api_response = requests.Response()
+            api_response.status_code = status_code
+            api_response._content = text
+            mocked_responses_side_effect.append(api_response)
+
+        request_mock = mocker.patch.object(requests.Session, 'request', side_effect=mocked_responses_side_effect)
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        error_mock = mocker.patch.object(demisto, 'error')
+
+        events = self.test_data['json_events']['events']
+        if should_succeed:
+            send_data_to_xsiam(data=events, vendor='some vendor', product='some product')
+        else:
+            with pytest.raises(DemistoException):
+                send_data_to_xsiam(data=events, vendor='some vendor', product='some product')
+
+        assert error_mock.call_count == expected_error_log_count
+        assert request_mock.call_count == expected_request_call_count
 
 
 class TestIsMetricsSupportedByServer:
