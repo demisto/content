@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # This script triggers a cleanup build machines job in gitlab-CI.
 
-# For this script to work you will need to use a trigger token (see here for more about that: https://code.pan.run/help/ci/triggers/README#trigger-token)  # disable-secrets-detection
+# For this script to work you will need to use a trigger token (see here for more about that: https://docs.gitlab.com/ee/ci/triggers/#create-a-pipeline-trigger-token)
 
 # This script requires the gitlab-ci trigger token. The branch to run against is an optional second parameter
 # (the default is the current branch). The Slack channel to send messages to is an optional
@@ -17,7 +17,7 @@ if [ "$#" -lt "1" ]; then
   [-b, --branch]         The branch name. Default is the current branch.
   [-ch, --slack-channel] A Slack channel to send notifications to. Default is dmst-build-test.
   "
-  echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
+  echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection  TODO
   exit 1
 fi
 
