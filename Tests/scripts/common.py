@@ -346,14 +346,18 @@ def get_reviewer(pr_url: str) -> str|None:
             break
     return approved_reviewer if approved_reviewer else None
 
+
 def load_json(file):
     with open(file, 'r') as f:
         return json.load(f)
 
-def get_slack_user_name(name:str) -> str:
+
+def get_slack_user_name(name:str, name_mapping: str) -> str:
+    mapping = load_json(
+        name_mapping
+    )
+    # FIXME comment what were doing here!
     if name == 'github-actions[bot]':
-        return 'Israel Polishuk'
+        return mapping["docker_images"]["owner"]
     else:
-        return load_json(
-            '/Users/yrosenberg/dev/demisto/content/.gitlab/ci/name_mapping.json'
-        ).get(name, name)
+        return mapping.get(name, name)
