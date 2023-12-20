@@ -1,5 +1,4 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
-### pack version: 1.2.31
 
 $script:INTEGRATION_NAME = "Security And Compliance"
 $script:COMMAND_PREFIX = "o365-sc"
