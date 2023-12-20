@@ -4701,6 +4701,40 @@ script:
       auto: PREDEFINED
     description: Perform actions on alerts.
     name: cs-falcon-resolve-identity-detection
+  - arguments:
+    - description: ID(s) of specific users to list.
+      name: id
+      isArray: true
+      required: false
+    - description: 'The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid.'
+      name: filter
+      isArray: true
+      required: false
+    - description: The integer offset to start retrieving records from.
+      name: offset
+      defaultValue: 0
+      required: false
+    - description: The maximum number of records to return.
+      name: limit
+      defaultValue: 100
+      required: false
+    description: List users.
+    name: cs-falcon-list-users
+    outputs:
+      - contextPath: CrowdStrike.Users.uuid
+        type: String
+      - contextPath: CrowdStrike.Users.cid
+        type: String
+      - contextPath: CrowdStrike.Users.uid
+        type: String
+      - contextPath: CrowdStrike.Users.first_name
+        type: String
+      - contextPath: CrowdStrike.Users.last_name
+        type: String
+      - contextPath: CrowdStrike.Users.last_login_at
+        type: String
+      - contextPath: CrowdStrike.Users.created_at
+        type: String
   dockerimage: demisto/py3-tools:1.0.0.83529
   isfetch: true
   ismappable: true

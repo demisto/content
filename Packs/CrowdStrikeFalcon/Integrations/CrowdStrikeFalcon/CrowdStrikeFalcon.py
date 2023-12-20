@@ -1418,6 +1418,71 @@ def get_idp_detection_entities(incidents_ids: list):
     )
 
 
+def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:
+    """
+    Get a list of users using pagination.
+
+    Note:
+        The result will include all collected paginated data, but the 'meta' key will only include information of the first page.
+
+    Args:
+        offset (int): The offset to begin from.
+        limit (int): The maximum number of records to return.
+        query_filter (str): Filter to use for the API request.
+
+    Returns:
+        dict: The response from the API (a combination of all paginated data).
+    """
+    def generate_paginated_request(_offset: int, _limit: int) -> dict:
+        result: dict = {
+            'method': 'GET',
+            'url_suffix': '/user-management/queries/users/v1',
+            'params': {
+                'offset': _offset,
+                'limit': _limit,
+            }
+        }
+
+        if query_filter:
+            result['params']['filter'] = query_filter
+
+        return result
+
+    response = http_request(
+        **generate_paginated_request(_offset=offset, _limit=limit)
+    )
+
+    total_results = response.get('meta', {}).get('pagination', {}).get('total', 0)
+    fetched_results_count = len(response.get('resources', []))
+
+    while fetched_results_count < limit and fetched_results_count + offset < total_results:
+        current_offset = offset + fetched_results_count
+        remaining_results_count = min(limit - fetched_results_count, total_results - fetched_results_count)
+
+        if remaining_results_count > 500:
+            current_limit = 500
+
+        else:
+            current_limit = remaining_results_count
+
+        current_response = http_request(
+            **generate_paginated_request(_offset=current_offset, _limit=current_limit)
+        )
+
+        response['resources'].extend(current_response.get('resources', []))
+        fetched_results_count += len(current_response.get('resources', []))
+
+    return response
+
+
+def get_users_data(user_ids: list[str]) -> dict:
+    return http_request(
+        'POST',
+        '/user-management/entities/users/GET/v1',
+        data=json.dumps({'ids': user_ids}),
+    )
+
+
 def upload_ioc(ioc_type, value, policy=None, expiration_days=None,
                share_level=None, description=None, source=None):
     """
@@ -4668,7 +4733,7 @@ def upload_batch_custom_ioc_command(
     return entry_objects_list
 
 
-def test_module():
+def module_test():
     try:
         get_token(new_token=True)
     except ValueError:
@@ -6338,6 +6403,48 @@ def cs_falcon_resolve_identity_detection(args: dict[str, Any]) -> CommandResults
     return CommandResults(readable_output=f'IDP Detection(s) {", ".join(ids)} were successfully updated')
 
 
+def cs_falcon_list_users_command(args: dict[str, Any]) -> CommandResults:
+    users_ids = argToList(args['id']) if 'id' in args else None
+    offset = arg_to_number(args.get('offset')) or 0
+    limit = arg_to_number(args.get('limit')) or 50
+    query_filter = args.get('filter')
+
+    if not users_ids:
+        users_api_response = get_users(offset=offset, limit=limit, query_filter=query_filter)
+        users_ids = users_api_response.get('resources', [])
+
+        if not users_ids:
+            return CommandResults(readable_output='No matching results found.')
+
+    users_data_api_response = get_users_data(user_ids=users_ids)
+    users_data = users_data_api_response.get('resources', [])
+
+    def table_headers_transformer(header: str) -> str:
+        mapping = {
+            'uuid': 'UUID',
+            'first_name': 'First Name',
+            'last_name': 'Last Name',
+            'uid': 'E-Mail (UID)',
+            'last_login_at': 'Last Login',
+        }
+
+        return mapping.get(header, header)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.Users',
+        outputs_key_field='uuid',
+        outputs=users_data,
+        readable_output=tableToMarkdown(
+            name='CrowdStrike Users',
+            t=users_data,
+            headers=['uuid', 'first_name', 'last_name', 'uid', 'last_login_at'],
+            headerTransform=table_headers_transformer,
+            sort_headers=False,
+        ),
+        raw_response=users_data_api_response,
+    )
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -6349,7 +6456,7 @@ def main():
     args = demisto.args()
     try:
         if command == 'test-module':
-            result = test_module()
+            result = module_test()
             return_results(result)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
@@ -6561,6 +6668,8 @@ def main():
             return_results(cs_falcon_cspm_update_policy_settings_command(args=args))
         elif command == 'cs-falcon-resolve-identity-detection':
             return_results(cs_falcon_resolve_identity_detection(args=args))
+        elif command == 'cs-falcon-list-users':
+            return_results(cs_falcon_list_users_command(args=args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
