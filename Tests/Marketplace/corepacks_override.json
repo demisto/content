@@ -1,25 +1,54 @@
 {
-  "server_version": "8.2.0",
-  "file_version": "2",
-  "marketplaces": [
-    "marketplacev2"
-  ],
-  "updated_corepacks_content": {
-    "corePacks": [
-      "CommonTypes/3.4.66/CommonTypes.zip",
-      "FeedUnit42v2/1.0.27/FeedUnit42v2.zip",
-      "CommonScripts/1.11.65/CommonScripts.zip",
-      "TIM_Processing/1.1.15/TIM_Processing.zip",
-      "CommonWidgets/1.3.0/CommonWidgets.zip"
+    "server_version": "8.3.0",
+    "file_version": "2",
+    "marketplaces": [
+        "xsoar"
     ],
-    "upgradeCorePacks": [
-      "Base",
-      "CommonScripts",
-      "CommonPlaybooks",
-      "CommonTypes",
-      "CommonDashboards",
-      "CommonReports",
-      "CommonWidgets"
-    ]
-  }
+    "updated_corepacks_content": {
+        "corePacks": [
+            "FeedUnit42v2/1.0.30/FeedUnit42v2.zip",
+            "DefaultPlaybook/2.0.2/DefaultPlaybook.zip",
+            "Palo_Alto_Networks_WildFire/2.1.27/Palo_Alto_Networks_WildFire.zip",
+            "PAN-OS/1.17.11/PAN-OS.zip",
+            "Base/1.32.15/Base.zip",
+            "CommonReports/1.0.2/CommonReports.zip",
+            "CommonPlaybooks/2.3.76/CommonPlaybooks.zip",
+            "CommonTypes/3.3.74/CommonTypes.zip",
+            "DemistoLocking/1.0.5/DemistoLocking.zip",
+            "CommonScripts/1.11.87/CommonScripts.zip",
+            "DemistoRESTAPI/1.3.28/DemistoRESTAPI.zip",
+            "CommonDashboards/1.3.4/CommonDashboards.zip",
+            "TIM_Processing/1.1.17/TIM_Processing.zip",
+            "AutoFocus/2.1.10/AutoFocus.zip",
+            "ThreatIntelReports/1.0.8/ThreatIntelReports.zip",
+            "Unit42Intel/1.0.7/Unit42Intel.zip",
+            "Whois/1.4.16/Whois.zip",
+            "ImageOCR/1.1.17/ImageOCR.zip",
+            "Maltiverse/1.0.21/Maltiverse.zip"
+        ],
+        "upgradeCorePacks": [
+            "AutoFocus",
+            "Base",
+            "CommonDashboards",
+            "CommonPlaybooks",
+            "CommonReports",
+            "CommonScripts",
+            "CommonTypes",
+            "CommonWidgets",
+            "DefaultPlaybook",
+            "DemistoLocking",
+            "DemistoRESTAPI",
+            "EDL",
+            "FeedMitreAttackv2",
+            "FeedUnit42v2",
+            "FiltersAndTransformers",
+            "HelloWorld",
+            "ImageOCR",
+            "Palo_Alto_Networks_WildFire",
+            "TIM_Processing",
+            "TIM_SIEM",
+            "ThreatIntelReports"
+        ],
+        "buildNumber": "5567341"
+    }
 }
