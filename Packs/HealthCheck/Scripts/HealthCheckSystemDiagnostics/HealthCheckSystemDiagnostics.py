@@ -21,22 +21,22 @@ RESOLUTION = [
 
 
 def LargeIncidents(account_name):
-    largeIncidents = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}diagnostics/incidentsSize"})[0]['Contents']
+    largeIncidents = demisto.executeCommand("core-api-get", {"uri": f"{account_name}diagnostics/incidentsSize"})[0]['Contents']
     return largeIncidents['response']
 
 
 def BigWorkplans(account_name):
-    bigWorkplans = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}diagnostics/bigworkplans"})[0]['Contents']
+    bigWorkplans = demisto.executeCommand("core-api-get", {"uri": f"{account_name}diagnostics/bigworkplans"})[0]['Contents']
     return bigWorkplans['response']
 
 
 def BigContext(account_name):
-    bigContext = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}diagnostics/invContextSize"})[0]['Contents']
+    bigContext = demisto.executeCommand("core-api-get", {"uri": f"{account_name}diagnostics/invContextSize"})[0]['Contents']
     return bigContext['response']
 
 
 def BigTasks(account_name):
-    bigTasks = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}diagnostics/bigtasks"})[0]['Contents']
+    bigTasks = demisto.executeCommand("core-api-get", {"uri": f"{account_name}diagnostics/bigtasks"})[0]['Contents']
     return bigTasks['response'][0]['tasksList']
 
 
@@ -47,7 +47,7 @@ def FormatSize(size):
     while size > power:
         size /= power
         n += 1
-    return "{:.2f} {}".format(size, power_labels[n])
+    return f"{size:.2f} {power_labels[n]}"
 
 
 def format_time(time):
@@ -102,13 +102,13 @@ SystemDiagnosticsResults = {
 }
 
 out = []
-for key in SystemDiagnosticsResults.keys():
+for key, value in SystemDiagnosticsResults.copy().items():
     if key != "bigTasks":
-        res = FormatTableAndSet(SystemDiagnosticsResults[key], key)
+        res = FormatTableAndSet(value, key)
         SystemDiagnosticsResults[key] = res
         out.extend(res)
     else:
-        bigTasksNewFormat = FormatTableAndSet(SystemDiagnosticsResults[key], key)
+        bigTasksNewFormat = FormatTableAndSet(value, key)
 
 actionableItems = []
 if SystemDiagnosticsResults['largeIncidents']:
