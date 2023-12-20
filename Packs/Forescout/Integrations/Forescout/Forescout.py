@@ -398,7 +398,9 @@ def web_api_login():
     """
     global LAST_JWT_FETCH
     global WEB_AUTH
+    demisto.debug("In web_api_login")
     if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
+        demisto.debug(f"In web_api_login if statement {LAST_JWT_FETCH=} , {JWT_VALIDITY_TIME=}")
         url_suffix = '/api/login'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         params = {'username': WEB_API_USERNAME, 'password': WEB_API_PASSWORD}
@@ -450,6 +452,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
     """
     try:
         address = full_url if full_url else BASE_URL + url_suffix
+        demisto.debug(f'The address before the request is {address=}')
         res = requests.request(
             method,
             address,
@@ -462,6 +465,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
             timeout=timeout
         )
 
+        demisto.debug(f'The response is {res=}')
         # Handle error responses gracefully
         if res.status_code not in {200, 304}:
             err_msg = 'Error in Forescout Integration API call [{}] - {}'.format(res.status_code, res.reason)
