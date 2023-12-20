@@ -304,7 +304,7 @@ tasks:
       export:
         simple: "true"
       results:
-        simple: "true"
+        simple: "false"
       retry-count:
         simple: "10"
       search_action_name:
