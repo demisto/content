@@ -725,10 +725,10 @@ outputs:
   description: The last time the following domains resolved to the given IP.
   type: string
 - contextPath: IP.Address
-  description: The IP Address.
+  description: The IP address.
   type: string
 - contextPath: IP.InRange
-  description: Is the IP is in the input ranges? (could be 'yes' or 'no).
+  description: Is the IP in the input ranges? (could be 'yes' or 'no).
   type: string
 - contextPath: Endpoint.ID
   description: The endpoint ID.
