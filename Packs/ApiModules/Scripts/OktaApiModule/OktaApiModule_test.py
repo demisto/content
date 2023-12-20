@@ -155,12 +155,12 @@ jxAayhtcVKeL96dqimK9twmw/NC5DveOVoReXx7io4gicmQi7AGq5WRkm8NUZRVE
     )
 
     mocker.patch('uuid.uuid4', return_value="083f42d3-fab0-4af9-bebd-c9fa24fdc7c9")
-    assert (client.generate_jwt_token("http://test.url") ==
-            ("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwOi8vdGVzdC51cmwiLCJpYXQiOjE2MDk0NTkyMDAsImV4cCI6MTYwOTQ2MjgwMC"
-             "wiaXNzIjoiWCIsInN1YiI6IlgiLCJqdGkiOiIwODNmNDJkMy1mYWIwLTRhZjktYmViZC1jOWZhMjRmZGM3YzkifQ.bBKg1iS_xz1MVyniW5CLXraIGi"
-             "pwKeyKD0g1Y3qUt0EFkXN_jmSHA6gDws1mBBF0OzAW96Yq9uLPpcRcXoz4K0RG29YdhS-QWZscqbhBUWmLneUvP3vvvKJuAEsjFICZjFC3bQzdOK09a"
-             "5Jtv-QvzyWNeHv3jBcMYgydrDxnRIoLf2i0DcTzBOfnVOWt9karXjWWlkQPUtIUgMPFF6ZS1eXloWUvJYmiusd0HmpjWxHLPiT4f2dIKRJUVQLPu3_Q"
-             "HGapsEspvSziJ9EtKTfu77XBA8OvEAzySCIsalMSYNuCHAiuZzT7MxZy9fFWOWWr4k54FFJnWtJx4npTHcBBTw"))
+    assert (client.generate_jwt_token("http://test.url")
+            == ("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwOi8vdGVzdC51cmwiLCJpYXQiOjE2MDk0NTkyMDAsImV4cCI6MTYwOTQ2Mjg"
+                "wMCwiaXNzIjoiWCIsInN1YiI6IlgiLCJqdGkiOiIwODNmNDJkMy1mYWIwLTRhZjktYmViZC1jOWZhMjRmZGM3YzkifQ.bBKg1iS_xz1MVyniW5CL"
+                "XraIGipwKeyKD0g1Y3qUt0EFkXN_jmSHA6gDws1mBBF0OzAW96Yq9uLPpcRcXoz4K0RG29YdhS-QWZscqbhBUWmLneUvP3vvvKJuAEsjFICZjFC3"
+                "bQzdOK09a5Jtv-QvzyWNeHv3jBcMYgydrDxnRIoLf2i0DcTzBOfnVOWt9karXjWWlkQPUtIUgMPFF6ZS1eXloWUvJYmiusd0HmpjWxHLPiT4f2dI"
+                "KRJUVQLPu3_QHGapsEspvSziJ9EtKTfu77XBA8OvEAzySCIsalMSYNuCHAiuZzT7MxZy9fFWOWWr4k54FFJnWtJx4npTHcBBTw"))
 
 
 def test_generate_oauth_token(mocker):
