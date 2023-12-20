@@ -29,7 +29,19 @@
 						"accessor": "",
 						"filters": [],
 						"root": "Bcc",
-						"transformers": []
+						"transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
 					},
 					"simple": ""
 				},
@@ -65,7 +77,19 @@
 						"accessor": "",
 						"filters": [],
 						"root": "Cc",
-						"transformers": []
+						"transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
 					},
 					"simple": ""
 				},
@@ -114,7 +138,19 @@
 						"accessor": "",
 						"filters": [],
 						"root": "To",
-						"transformers": []
+						"transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
 					},
 					"simple": ""
 				}
