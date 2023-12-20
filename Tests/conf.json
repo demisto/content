@@ -3516,6 +3516,11 @@
             "fromversion": "6.10.0"
         },
         {
+            "playbookID": "HasiCoprTerraformTest",
+            "integrations": "HashicorpTerraform",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
         },
