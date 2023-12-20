@@ -532,7 +532,7 @@ script:
       description: Predefined/User-defined.
       type: String
     name: varonis-get-threat-models
-  dockerimage: demisto/ntlm:1.0.0.82629
+  dockerimage: demisto/ntlm:1.0.0.83820
   feed: false
   isfetch: true
   longRunning: false
