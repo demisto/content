@@ -176,11 +176,11 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     Returns:
         DataFrame: Existing grid data.
     """
-    # Note: in XSIAM or XSOAR 8 empty grid fields doe not exist in the context.
-    # in XSOAR On-Prem the fields exist with empty values.
+    # Note: in XSIAM empty grid fields doe not exist in the context.
+    # in XSOAR the fields exist with empty values.
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields", {}) or {}
-    if (not is_xsiam_or_xsoar_saas()) and grid_id not in custom_fields:
+    if (not is_xsiam()) and grid_id not in custom_fields:
         raise ValueError(get_error_message(grid_id))
     current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
@@ -395,8 +395,8 @@ def main():  # pragma: no cover
             if entry['Contents']:
                 data = entry["Contents"]["data"]
                 custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
-        # in the debugger and in the playground, there is an addition of the "_grid" suffix to the grid_id.
-        if is_xsiam_or_xsoar_saas() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
+        # in the debugger, there is an addition of the "_grid" suffix to the grid_id.
+        if is_xsiam() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
             raise ValueError(get_error_message(grid_id))
         if is_error(res_set):
             demisto.error(f'failed to execute "setIncident" with table: {table}.')
