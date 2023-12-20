@@ -1224,7 +1224,8 @@ class Client(BaseClient):
             response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', data=prepare_data(content_type))
         except DemistoException as error:
             demisto.debug(f'error when trying to upload {file_name} to case {case_id}, error:\n{error}')
-            response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', data=prepare_data("multipart/from-data"))
+            response = self._http_request(
+                'POST', f'lr-case-api/cases/{case_id}/evidence/file', data=prepare_data("multipart/from-data"))
 
         return response
 
