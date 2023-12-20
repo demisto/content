@@ -3,7 +3,7 @@ from Tests.scripts import common
 
 def test_person_in_charge(mocker):
     """
-    Given a commit object 
+    Given a commit object
     When person_in_charge is called on it
     Then it should return the expected name, email and PR link
     """
@@ -47,10 +47,9 @@ def test_are_pipelines_in_order_as_commits_true(mocker):
 
 def test_are_pipelines_in_order_as_commits_false(mocker):
     """
-    Given a list of commits and two pipeline SHAs 
+    Given a list of commits and two pipeline SHAs
     When the pipeline SHAs are not in the same order as the commits
     Then it should return False and None
-
     """
     commit1 = mocker.Mock()
     commit1.id = '1'
@@ -74,9 +73,8 @@ def test_are_pipelines_in_order_as_commits_false(mocker):
 def test_is_pivot_first_pipeline(mocker):
     """
     Given a pipeline id, list of pipelines and commits
-    When the pipeline is the first in the list 
+    When the pipeline is the first in the list
     Then it should return None, None
-
     """
     pipeline_id = '1'
     pipelines = [mocker.Mock(id=1)]
@@ -94,7 +92,6 @@ def test_is_pivot_pipeline_not_in_list(mocker):
     Given a pipeline id, list of pipelines and commits
     When the pipeline id is not in the list of pipelines
     Then it should return None, None
-
     """
     pipeline_id = '1'
     pipelines = [mocker.Mock(id=2)]
@@ -109,10 +106,9 @@ def test_is_pivot_pipeline_not_in_list(mocker):
 
 def test_is_pivot_negative(mocker):
     """
-    Given a pipeline id, list of pipelines and commits 
+    Given a pipeline id, list of pipelines and commits
     When previous pipeline succeeded and current failed and in order
     Then it should return True, commit
-
     """
     pipeline_id = '2'
     pipelines = [

@@ -299,7 +299,7 @@ def are_pipelines_in_order_as_commits(commits, current_pipeline_sha, previous_pi
 
 def is_pivot(single_pipeline_id, list_of_pipelines, commits):
     """
-    Check if a given pipeline is a pivot, 
+    Check if a given pipeline is a pivot,
     i.e. if the previous pipeline was successful and the current pipeline failed and vise versa
    Args:
     single_pipeline_id: gitlab pipeline ID
