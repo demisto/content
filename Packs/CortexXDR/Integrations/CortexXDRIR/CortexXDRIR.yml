@@ -12,7 +12,6 @@ configuration:
   type: 8
   section: Collect
   required: false
-  defaultvalue:xpanse: 'false'
 - display: Incident type
   name: incidentType
   type: 13
