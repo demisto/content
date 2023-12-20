@@ -1,6 +1,7 @@
-Uses the Demisto REST API integration to query the server audit trail logs, and return back a CSV or JSON file.
+Uses the Core REST API integration to query the server audit trail logs, and return back a CSV or JSON file.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,11 +10,14 @@ Uses the Demisto REST API integration to query the server audit trail logs, and 
 | Tags | Utility |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
+
+* core-api-post
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,5 +26,6 @@ This script uses the following commands and scripts.
 | output | Type of File to return, either JSON, or CSV |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
