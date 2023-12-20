@@ -8540,7 +8540,7 @@ def test_content_type(content_format, outputs, expected_type):
 
 class TestSendEventsToXSIAMTest:
     # from test_data.send_events_to_xsiam_data import events_dict, events_log_error, assets_log_error
-    with open('test_data/simple_data_example.json') as f:
+    with open('test_data/events.json') as f:
         test_data = json.load(f)
     events_test_log_data = EVENTS_LOG_ERROR
     assets_test_log_data = ASSETS_LOG_ERROR
