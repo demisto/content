@@ -1,4 +1,4 @@
-This Automation script uses the XSOAR API to get the audit logs and pushes them to Splunk HEC. Dependencies: SlunkPy and Demisto REST API integrations
+This Automation script uses the XSOAR API to get the audit logs and pushes them to Splunk HEC. Dependencies: SlunkPy and Core REST API integrations
 
 ## Script Data
 ---

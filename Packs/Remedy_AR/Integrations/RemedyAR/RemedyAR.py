@@ -34,7 +34,7 @@ def http_request(method, url_suffix, data, headers):
                                headers=headers
                                )
         if res.status_code not in (200, 204):
-            raise Exception(f'Your request failed with the following error: {res.reason}')
+            raise Exception(f'Your request failed with the following error: {res.reason}, {res.content.decode()}')
     except Exception as ex:
         raise Exception(ex)
     return res
@@ -71,7 +71,9 @@ def logout():
     http_request('POST', cmd_url, None, DEFAULT_HEADERS)
 
 
-def get_server_details(qualification, fields):
+def get_server_details(args):
+    fields = args.get('fields')
+    qualification = args.get('qualification', '')
 
     # Adds fields to filter by
     if isinstance(fields, list):
@@ -114,24 +116,29 @@ def get_server_details(qualification, fields):
 
 
 ''' EXECUTION CODE '''
-auth = login()
-token = auth.content
-DEFAULT_HEADERS['Authorization'] = f'AR-JWT {token}'
 
-LOG('command is %s' % (demisto.command(), ))
-try:
-    if demisto.command() == 'test-module':
-        # Login is made and tests connectivity and credentials
-        demisto.results('ok')
-    elif demisto.command() == 'remedy-get-server-details':
-        if 'qualification' in demisto.args():
-            qualification = demisto.args()['qualification']
-        else:
-            qualification = ''
-        demisto.results(get_server_details(qualification, demisto.args()['fields']))
-except Exception as e:
-    LOG(e)
-    LOG.print_log()
-    raise
-finally:
-    logout()
+
+def main():  # pragma: no cover
+    global DEFAULT_HEADERS
+
+    auth = login()
+    token = auth.content
+    DEFAULT_HEADERS['Authorization'] = f'AR-JWT {token.decode()}'
+
+    LOG(f'command is {demisto.command()}')
+    try:
+        if demisto.command() == 'test-module':
+            # Login is made and tests connectivity and credentials
+            demisto.results('ok')
+        elif demisto.command() == 'remedy-get-server-details':
+            demisto.results(get_server_details(demisto.args()))
+    except Exception as e:
+        LOG(e)
+        LOG.print_log()
+        raise
+    finally:
+        logout()
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
