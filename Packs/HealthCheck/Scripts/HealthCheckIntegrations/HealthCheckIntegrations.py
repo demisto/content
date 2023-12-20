@@ -6,7 +6,7 @@ accountName = incident.get('account')
 accountName = f"acc_{accountName}" if accountName != "" else ""
 
 res = demisto.executeCommand(
-    "demisto-api-post",
+    "core-api-post",
     {
         "uri": f"{accountName}/settings/integration/search",
         "body": {
