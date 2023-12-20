@@ -160,7 +160,7 @@ script:
       description: 'The alarm rule name.'
     - type: String
       contextPath: LogRhythm.Alarm.alarmStatus
-      description: 'The alarm status'
+      description: 'The alarm status.'
     - type: Date
       contextPath: LogRhythm.Alarm.dateInserted
       description: 'The alarm date inserted.'
@@ -449,7 +449,7 @@ script:
       description: 'The event message ID.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.mpeRuleId
-      description: 'The event MPE rule ID,'
+      description: 'The event MPE rule ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.mpeRuleName
       description: 'The event MPE rule name.'
@@ -662,7 +662,7 @@ script:
       description: 'The event vendor message ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.version
-      description: 'The alarm event version'
+      description: 'The alarm event version.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originUserIdentityName
       description: 'The event origin user identity.'
@@ -735,7 +735,7 @@ script:
       description: 'The alarm summary origin host ID.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedHostId
-      description: 'The alarm summary impacted host ID'
+      description: 'The alarm summary impacted host ID.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.originUser
       description: 'The alarm summary origin user.'
@@ -784,10 +784,10 @@ script:
       description: 'The date in UTC of the alarm.'
     - type: Number
       contextPath: LogRhythm.AlarmDetails.alarmRuleID
-      description: 'The Rule ID of the rule which triggered the alarm'
+      description: 'The Rule ID of the rule which triggered the alarm.'
     - type: String
       contextPath: LogRhythm.AlarmDetails.alarmRuleName
-      description: 'The name of the rule which triggered the alarm'
+      description: 'The name of the rule which triggered the alarm.'
     - type: String
       contextPath: LogRhythm.AlarmDetails.alarmStatus
       description: 'The status of the alarm.'
@@ -1452,7 +1452,7 @@ script:
       description: 'The evidence type.'
     - type: String
       contextPath: LogRhythm.CaseEvidence.Evidences.status
-      description: 'The evidence status'
+      description: 'The evidence status.'
     - type: Unknown
       contextPath: LogRhythm.CaseEvidence.Evidences.statusMessage
       description: 'The evidence status message.'
@@ -1511,7 +1511,7 @@ script:
       description: 'The evidence type.'
     - type: String
       contextPath: LogRhythm.AlarmEvidence.Evidences.status
-      description: 'The evidence status'
+      description: 'The evidence status.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvidence.Evidences.statusMessage
       description: 'The evidence status message.'
@@ -1593,7 +1593,7 @@ script:
       description: 'The evidence type.'
     - type: String
       contextPath: LogRhythm.NoteEvidence.Evidences.status
-      description: 'The evidence status,'
+      description: 'The evidence status,.'
     - type: Unknown
       contextPath: LogRhythm.NoteEvidence.Evidences.statusMessage
       description: 'The evidence status message.'
@@ -1610,7 +1610,7 @@ script:
     description: 'Upload a file as evidence on a case.'
     arguments:
     - name: case_id
-      description: 'Unique identifier for the case,'
+      description: 'Unique identifier for the case,.'
       required: true
     - name: entryId
       description: 'The entry ID of the file to attach.'
@@ -1651,7 +1651,7 @@ script:
       description: 'The evidence type.'
     - type: String
       contextPath: LogRhythm.FileEvidence.Evidences.status
-      description: 'The evidence status'
+      description: 'The evidence status.'
     - type: Unknown
       contextPath: LogRhythm.FileEvidence.Evidences.statusMessage
       description: 'The evidence status message.'
@@ -1719,7 +1719,7 @@ script:
       description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: 'Whether the owner is disabled or not'
+      description: 'Whether the owner is disabled or not.'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
       description: 'The ID of the user who last updated the case.'
@@ -1784,7 +1784,7 @@ script:
     description: 'Remove tags from a case.'
     arguments:
     - name: case_id
-      description: 'Unique identifier for the case'
+      description: 'Unique identifier for the case.'
       required: true
     - name: tag_numbers
       description: 'A comma-separated list of tag numbers to remove.'
@@ -1817,7 +1817,7 @@ script:
       description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: 'Whether the owner is disabled or not'
+      description: 'Whether the owner is disabled or not.'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
       description: 'The ID of the user who last updated the case.'
@@ -2046,7 +2046,7 @@ script:
       description: 'The host threat level.'
     - type: String
       contextPath: LogRhythm.Host.threatLevelComments
-      description: 'The threat level comments'
+      description: 'The threat level comments.'
     - type: String
       contextPath: LogRhythm.Host.recordStatusName
       description: 'The host record status name.'
@@ -2115,7 +2115,7 @@ script:
       description: 'The user last name.'
       type: String
     - contextPath: LogRhythm.User.userType
-      description: 'The user type'
+      description: 'The user type.'
       type: String
     - contextPath: LogRhythm.User.fullName
       description: 'The user full name.'
@@ -3890,7 +3890,7 @@ script:
       description: 'The host name.'
     - type: String
       contextPath: LogRhythm.Host.riskLevel
-      description: 'The host risk level'
+      description: 'The host risk level.'
     - type: String
       contextPath: LogRhythm.Host.threatLevel
       description: 'The host threat level.'
@@ -3996,7 +3996,7 @@ script:
       description: 'The network threat level.'
       type: String
     - contextPath: LogRhythm.Network.threatLevelComment
-      description: 'The threat level comments'
+      description: 'The threat level comments.'
       type: String
     - contextPath: LogRhythm.Network.recordStatusName
       description: 'The network record status name.'
