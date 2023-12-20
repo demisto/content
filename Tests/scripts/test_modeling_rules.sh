@@ -53,6 +53,7 @@ for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   # If it is nightly, run `test modeling rules` only on modeling rules that have `_testdata.json` file.
   # globbing is needed here, don't quote the variable.
   # shellcheck disable=SC2086
+  # TODO Also add the toVersion and fromVersion here, so we can filter them out in the next step
   if [ -z "${NIGHTLY}" ] || [ -e ${MODELING_RULE_TEST_FILE_PATTERN} ]; then
     count=$((count+1))
     if [[ -n "${MODELING_RULES_TO_TEST}" ]]; then
@@ -99,12 +100,14 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
   for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
 
     # Get XSIAM Tenant Config Details
+    # TODO Extract the version of the machine
     XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "${XSIAM_SERVERS_PATH}")
     XSIAM_URL=$(echo "${XSIAM_SERVER_CONFIG}" | jq -r ".[\"base_url\"]")
     AUTH_ID=$(echo "${XSIAM_SERVER_CONFIG}" | jq -r ".[\"x-xdr-auth-id\"]")
     API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
     XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
-
+    # TODO Check the machine version against the modeling rules version (filter out MODELING_RULES_RESULTS_FILE_NAME
+    # with respect to their version)
     # shellcheck disable=SC2086
     demisto-sdk modeling-rules test --xsiam-url="${XSIAM_URL}" --auth-id="${AUTH_ID}" --api-key="${API_KEY}" \
       --xsiam-token="${XSIAM_TOKEN}" --non-interactive --junit-path="${MODELING_RULES_RESULTS_FILE_NAME}" \

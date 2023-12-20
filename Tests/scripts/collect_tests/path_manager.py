@@ -49,7 +49,9 @@ class PathManager:
         self.id_set_path = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'id_set.json'
         self.conf_path = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'conf.json'
         self.output_tests_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'filter_file.txt'
-        self.output_modeling_rules_to_test_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'modeling_rules_to_test.txt'
+        # CHANGES Change modeling_rules_to_test.txt to be json
+        # self.output_modeling_rules_to_test_json = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'modeling_rules_to_test.json'
+        self.output_modeling_rules_to_test_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'modeling_rules_to_test.json'
         self.output_packs_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_install.txt'
         self.output_packs_to_upload_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_upload.txt'
         self.output_machines_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'filter_envs.json'
