@@ -8539,7 +8539,6 @@ def test_content_type(content_format, outputs, expected_type):
 
 
 class TestSendEventsToXSIAMTest:
-    # from test_data.send_events_to_xsiam_data import events_dict, events_log_error, assets_log_error
     with open('test_data/events.json') as f:
         test_data = json.load(f)
     events_test_log_data = EVENTS_LOG_ERROR
@@ -8704,7 +8703,7 @@ class TestSendEventsToXSIAMTest:
         error_log_mocker = mocker.patch.object(demisto, 'error')
 
         events = self.test_data['json_events']['events']
-        expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_log_error
+        expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_test_log_data
         expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
         with pytest.raises(
