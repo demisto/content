@@ -7,15 +7,15 @@ The actionable items report will contain recommendations based on errors found o
 ##Prerequisites
 **Single Server Deployment**
 
-1. Configure **"Demisto REST API"** Integration Instance with **Admin** user
+1. Configure **"Core REST API"** Integration Instance with **Admin** user
 
 **Multi-Tenants Deployment**
 
 1. Create API Key on Main Tenant
-2. Create **Demisto REST API** integration on Main Tenant and use the API Key you created in previous step.
+2. Create **Core REST API** integration on Main Tenant and use the API Key you created in previous step.
    On instance settings define in URL field *https://127.0.0.1*
    make sure not to set the tenant name in the URL.
-2. Propogate **Demisto REST API** instance to All tenants or to the required tenant using propogation labels.
+2. Propogate **Core REST API** instance to All tenants or to the required tenant using propogation labels.
 
 
 **How to**:
