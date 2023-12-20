@@ -62,7 +62,7 @@ tasks:
       id: 3fb995fa-a0bf-4054-8f8c-d829a5ceb5d2
       iscommand: true
       name: Download Custom Content Bundle from Dev
-      script: '|||demisto-api-download'
+      script: '|||core-api-download'
       tags:
       - devcontent
       type: regular
@@ -151,10 +151,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "# Setup Demisto Dev\n\nPlease setup a single instance of the Core REST API or Demisto REST API Integration for your Development server to continue using this playbook. \n\nThis instance must be named **Demisto Dev**.\n\nRerun this playbook once completed. \n"
+      description: "# Setup Demisto Dev\n\nPlease setup a single instance of the Core REST API Integration for your Development server to continue using this playbook. \n\nThis instance must be named **Demisto Dev**.\n\nRerun this playbook once completed. \n"
       id: e09f3cae-5301-451b-85ca-138e4ca93bbf
       iscommand: false
-      name: Enable Demisto Dev - Core or Demisto REST API integration instance to continue
+      name: Enable Demisto Dev - Core REST API integration instance to continue
       type: regular
       version: -1
     taskid: e09f3cae-5301-451b-85ca-138e4ca93bbf
