@@ -2,6 +2,7 @@ import json
 import pytest
 from LogRhythmRestV2 import Client
 import demistomock as demisto
+from CommonServerPython import *
 
 BASE_URL = 'http://testurl.com/'
 CLIENT = Client(BASE_URL, True, True, headers={}, auth=None)
@@ -378,3 +379,22 @@ def test_empty_alarmsSearchDetails(requests_mock):
     requests_mock.get(f'{BASE_URL}lr-alarm-api/alarms/', json=Empty_ALARMS_LIST_BY_ID)
     res, _ = CLIENT.alarms_list_request(created_after="x.x.x")
     assert not res
+
+
+def test_case_file_evidence_add_command(mocker, requests_mock):
+    """
+    Given:
+    - a file
+
+    When:
+    - Trying to upload the file into a case
+
+    Then:
+    - Validate that file is uploaded successfully even if the content-type can be wrong
+    """
+    from LogRhythmRestV2 import case_file_evidence_add_command
+    requests_mock.get(f'lr-case-api/cases/1/evidence/file', text="Success")
+    _http_request_mocker = mocker.patch.object(CLIENT, "_http_request", side_effect=[DemistoException("error"), "Success"])
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/test.txt", "name": "test.txt"})
+    assert case_file_evidence_add_command(CLIENT, {"case_id": "1", "entryId": "1"})
+    assert _http_request_mocker.call_count == 2
