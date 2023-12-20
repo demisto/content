@@ -69,7 +69,7 @@ class Client(BaseClient):
         self._set_access_token(token)
 
     def save_jwt_token(self, access_token: str):
-        expiration = get_jwt_expiration(access_token)
+        expiration = self.get_jwt_expiration(access_token)
         expiration_timestamp = datetime.fromtimestamp(expiration)
         context = {
             "access_token": access_token,
@@ -80,6 +80,14 @@ class Client(BaseClient):
             f"New access token that expires in : {expiration_timestamp.strftime(DATE_FORMAT)}"
             f" was set to integration_context."
         )
+
+    @staticmethod
+    def get_jwt_expiration(token: str):
+        if "." not in token:
+            return 0
+        jwt_token = base64.b64decode(token.split(".")[1] + "==")
+        jwt_token = json.loads(jwt_token)
+        return jwt_token.get("exp")
 
     def authenticate(self):
         body = {"username": self.username, "password": self.password}
@@ -97,23 +105,16 @@ class Client(BaseClient):
 
     def get_events(self, start_time, end_time, limit, offset) -> dict[str, Any]:
         """
-        Get events from Guardicore API using the modelbreaches endpoint and the start and end time.
+        Get events from Guardicore API using the incidents endpoint.
         """
         params = {
             "from_time": start_time,
             "to_time": end_time,
             "limit": limit,
             "offset": offset,
+            "sort": "start_time",
         }
         return self._http_request(method="GET", url_suffix="/incidents", params=params)
-
-
-def get_jwt_expiration(token: str):
-    if "." not in token:
-        return 0
-    jwt_token = base64.b64decode(token.split(".")[1] + "==")
-    jwt_token = json.loads(jwt_token)
-    return jwt_token.get("exp")
 
 
 def test_module(client: Client) -> str:
@@ -141,14 +142,14 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def add_time_to_events(events):
+def add_time_to_events(events: list[dict]) -> None:
     """Adds the _time key to the events.
 
     Args:
         events: list[dict] - list of events to add the _time key to.
 
     Returns:
-        list: The events with the _time key.
+        None
     """
     if events:
         [
@@ -158,17 +159,28 @@ def add_time_to_events(events):
         ]
 
 
-def format_events(events: list[dict]) -> None:
-    for event in events:
-        """
-        Delete the "_id" field since it is the same as "id" field,
-        and "_id" is a key that XSIAM uses.
-        """
-        del event["_id"]
+def delete_id_key_from_events(events: list[dict]) -> None:
+    """Deletes the _id key from the events.
 
-        """
-        Add the labels to the "destination asset" and "source asset".
-        """
+    Args:
+        events: list[dict] - list of events to deletes the _id key.
+
+    Returns:
+        None
+    """
+    [event.pop("_id", None) for event in events]
+
+
+def handle_events_labels(events: list[dict]) -> None:
+    """Add the labels to the "destination asset" and "source asset".
+
+    Args:
+        events: list[dict] - list of events to handle the labels.
+
+    Returns:
+        None
+    """
+    for event in events:
         destination_asset: dict = event["destination_asset"]
         destination_asset_labels = destination_asset["labels"] = {}
 
@@ -183,6 +195,27 @@ def format_events(events: list[dict]) -> None:
 
                 if asset_id == source_asset.get("vm_id"):
                     source_asset_labels[label["key"]] = label["value"]
+
+
+def format_events(events: list[dict]) -> None:
+    delete_id_key_from_events(events)
+    handle_events_labels(events)
+
+
+def create_last_run(events: list[dict], end_time: int) -> dict:
+    if events:
+        start_time_last_event = events[-1]["start_time"]
+        ids_in_start_time_last_event = [
+            event["id"]
+            for event in events
+            if event["start_time"] // 1000 == start_time_last_event // 1000
+        ]
+        return {
+            "from_ts": start_time_last_event,
+            "ids_in_start_time_last_event": ids_in_start_time_last_event,
+        }
+    else:
+        return {"from_ts": end_time}
 
 
 def get_events(client: Client, args: dict):
@@ -223,31 +256,23 @@ def fetch_events(
     limit = arg_to_number(params.get("max_events_per_fetch")) or 1000
 
     response = client.get_events(start_time, end_time, limit, offset)
-    retrieve_events: list = response["objects"]
-    format_events(retrieve_events)
-    if last_ids := last_run.get("last_ids"):
-        retrieve_events = [
-            event for event in retrieve_events if event["id"] not in last_ids
+    events: list = response["objects"]
+    format_events(events)
+    if ids_in_start_time_last_event := last_run.get("ids_in_start_time_last_event"):
+        events = [
+            event for event in events if event["id"] not in ids_in_start_time_last_event
         ]
-    demisto.debug(f"Fetched {len(retrieve_events)} events.")
+    demisto.debug(f"Fetched {len(events)} events.")
 
-    if len(retrieve_events) < limit:
-        last_ids = [
-            event["id"]
-            for event in retrieve_events
-            if event["start_time"] // 1000 == end_time // 1000
-        ]
-        last_run = {"from_ts": end_time, "last_ids": last_ids}
-    else:
-        last_run = {"from_ts": start_time, "offset": offset + limit}
+    last_run = create_last_run(events, end_time)
 
-    return retrieve_events, last_run
+    return events, last_run
 
 
 """ MAIN FUNCTION """
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """

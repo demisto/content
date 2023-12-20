@@ -1,13 +1,10 @@
 category: Analytics & SIEM
-ectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Akamai Guardicore Event Collector
   version: -1
 configuration:
 - defaultvalue: https://example.guardicore.com
-  display: Server URL (e.g. https://some_url.com)
+  display: Server URL (e.g. https://example.guardicore.com)
   name: url
   required: true
   type: 0
@@ -65,7 +62,7 @@ script:
     description: Gets events from Akamai Guardicore.
     execution: false
     name: guardicore-get-events
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.13.83255
   isfetchevents: true
   runonce: false
   script: '-'
@@ -73,6 +70,6 @@ script:
   type: python
 marketplaces:
 - marketplacev2
-fromversion: 6.8.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
