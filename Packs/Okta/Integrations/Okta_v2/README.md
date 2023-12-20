@@ -36,13 +36,13 @@ The following scopes are required for the Okta v2 integration to work properly:
 ##### Prerequisites
 1. Generate an API token as described previously. This is required for some backend API calls that are needed to setup OAuth authentication.
 2. Sign in to your Okta organization as a user with administrative privileges.
-3. In the Admin Console, go to **Applications > Applications**.
+3. In the Admin Console, go to **Applications** > **Applications**.
 4. Click **Create App Integration**.
 5. Select **API Services** as the sign-in method, and click **Next**.
 6. Enter a name for your app integration.
 7. On the app configuration page, under the **General** tab and the **Client Credentials** section, select **Public key / Private key** for the **Client authentication** option.
 8. Under the newly added **PUBLIC KEYS** section, click the **Add Key** button.
-9. In the **Add Public Key** dialog, click **Generate new key**, and make sure to keep the private key (in PEM format) in somewhere safe.
+9. In the **Add Public Key** dialog box, click **Generate new key**, and make sure to keep the private key (in PEM format) in somewhere safe.
 10. On the app configuration page, under the **Okta API Scopes** tab, make sure that the required scopes mentioned above are granted.
 
 For more information, see the '[Implement OAuth for Okta](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)' official documentation article.
@@ -729,8 +729,8 @@ Lists users in your organization.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | after | The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag. | Optional | 
-| limit | The maximum number of results to return, the default is 200. Default is 200. | Optional | 
-| verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of results to return. Default is 200. | Optional | 
+| verbose | Whether to return extended user information. Possible values are: true, false. Default is false. | Optional | 
 | query | Searches the name property of groups for matching values. | Optional | 
 | filter | Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. <br/>The following expressions are supported(among others) for groups with the filter query parameter: <br/> type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP; lastUpdated lt "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq "yyyy-MM-dd''T''HH:mm:ss.SSSZ" - Groups with memberships last updated at a specific timestamp; id eq "00g1emaKYZTWRYYRRTSK" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering. | Optional | 
 
