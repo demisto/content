@@ -111,7 +111,6 @@ script:
     description: Deprecated. Use core-api-multipart instead.
     deprecated: true
   - name: demisto-delete-incidents
-    deprecated: true
     arguments:
     - name: ids
       required: true
@@ -121,7 +120,7 @@ script:
       description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
-    description: Deprecated. Use core-delete-incidents instead.
+    description: Deprecated.
     execution: true
     deprecated: true
   - name: demisto-api-install-packs
@@ -216,7 +215,7 @@ script:
       description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
-    description: Delete Core incidents.
+    description: Deprecated.
     execution: true
   - name: core-api-install-packs
     arguments:
