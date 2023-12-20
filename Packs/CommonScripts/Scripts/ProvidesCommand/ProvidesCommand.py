@@ -16,7 +16,7 @@ def main():
             ENABLED = False
 
     integration_commands_args = {"uri": "/settings/integration-commands"}
-    integration_commands_res = demisto.executeCommand("demisto-api-get", integration_commands_args)
+    integration_commands_res = demisto.executeCommand("core-api-get", integration_commands_args)
 
     integration_search = None
     if ENABLED is not None:
@@ -25,7 +25,7 @@ def main():
             "uri": "/settings/integration/search",
             "body": {"size": 1000}
         }
-        integration_search_res = demisto.executeCommand("demisto-api-post", integration_search_args)
+        integration_search_res = demisto.executeCommand("core-api-post", integration_search_args)
         try:
             integration_search = integration_search_res[0]['Contents']['response']
         except KeyError:
