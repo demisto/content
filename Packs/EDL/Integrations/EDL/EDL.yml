@@ -287,7 +287,7 @@ script:
     - description: Maximum number of items in the list.
       name: edl_size
     - defaultValue: '0'
-      description: The starting entry index from which to export the indicators.
+      description: The starting entry index from which to export the indicators when index 0 is the first position.
       name: offset
     - auto: PREDEFINED
       defaultValue: string
@@ -370,7 +370,7 @@ script:
     - description: Maximum number of items in the list.
       name: edl_size
     - defaultValue: '0'
-      description: The starting entry index from which to export the indicators.
+      description: The starting entry index from which to export the indicators when index 0 is the first position.
       name: offset
     - auto: PREDEFINED
       defaultValue: string
@@ -434,7 +434,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.79973
+  dockerimage: demisto/flask-nginx:1.0.0.83461
   longRunning: true
   longRunningPort: true
   script: '-'
