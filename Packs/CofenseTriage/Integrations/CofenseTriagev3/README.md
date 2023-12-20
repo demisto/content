@@ -862,6 +862,230 @@ Attachment payloads identify the MIME type and MD5 and SHA256 hash signatures of
 >| 78 | image/png; charset=binary | 61da9c47fff9b04e59b951aa700c7980 | 7757f5392a8971b280464ae0d760b04980b82a9a2a3105c2bd6c9293ff7f9b9a |  | 2020-10-21T20:57:56.940Z | 2020-10-21T20:57:56.940Z |
 
 
+### cofense-report-attachment-list
+
+***
+Retrieves attachments based on provided report id in the command arguments.
+For reported emails that contain attachments, Cofense Triage captures the attachment's filename and size.
+
+#### Base Command
+
+`cofense-report-attachment-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Specify ID of the report to retrieve the attachments. | Required | 
+| page_size | Specify the number of attachments to retrieve per page. Note: Possible values are between 1 and 200. Default is 20. | Optional | 
+| page_number | Specify a page number to retrieve the attachments. Default is 1. | Optional | 
+| created_at | Specify the date and time of creation, from when to retrieve the attachments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
+| updated_at | Specify the date and time of updation, from when to retrieve the attachments. Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cofense.Attachment.id | String | Unique identifier of the attachment. | 
+| Cofense.Attachment.type | String | Type of the resource of Cofense Triage. | 
+| Cofense.Attachment.links.self | String | Link of the resource. | 
+| Cofense.Attachment.attributes.filename | String | Name of the attachment file. | 
+| Cofense.Attachment.attributes.size | Number | Attachment size in bytes. | 
+| Cofense.Attachment.attributes.is_child | Boolean | Boolean value indicating that attachment is child or not. | 
+| Cofense.Attachment.attributes.created_at | Date | Date and time, in ISO 8601 format, when the resource was created. | 
+| Cofense.Attachment.attributes.updated_at | Date | Date and time, in ISO 8601 format, when the resource was last updated. | 
+| Cofense.Attachment.relationships.attachment_payload.links.self | String | Link to retrieve the attachment payload associated with the attachment. | 
+| Cofense.Attachment.relationships.attachment_payload.links.related | String | Link to retrieve the detailed information of the attachment payload associated with the attachment. | 
+| Cofense.Attachment.relationships.attachment_payload.data.type | String | Type indicating attachment payload. | 
+| Cofense.Attachment.relationships.attachment_payload.data.id | String | Unique identifier of the attachment payload associated with the attachment. | 
+| Cofense.Attachment.relationships.parent.links.self | String | Link to retrieve the parent of the attachment. | 
+| Cofense.Attachment.relationships.parent.links.related | String | Link to retrieve the detailed information of the parent of the attachment. | 
+| Cofense.Attachment.relationships.parent.data.type | String | Type indicating the parent of the attachment. | 
+| Cofense.Attachment.relationships.parent.data.id | String | Unique identifier of the parent of the attachment. | 
+| Cofense.Attachment.relationships.reports.links.self | String | Link to retrieve the report associated with the attachment. | 
+| Cofense.Attachment.relationships.reports.links.related | String | Link to retrieve the detailed information of the report associated with the attachment. | 
+| Cofense.Attachment.relationships.reports.data.type | String | Type indicating report. | 
+| Cofense.Attachment.relationships.reports.data.id | String | Unique identifier of the report associated with the attachment. | 
+
+
+#### Command Example
+```!cofense-report-attachment-list id=30339 page_size=2```
+
+#### Context Example
+```json
+{
+  "Cofense": {
+    "Attachment": [
+      {
+        "id": "30339",
+        "type": "attachments",
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/attachments/30339"
+        },
+        "attributes": {
+          "filename": "Invoice.xlsm",
+          "size": 100000,
+          "is_child": false,
+          "created_at": "2023-04-09T13:25:28.540Z",
+          "updated_at": "2023-04-09T13:25:28.540Z"
+        },
+        "relationships": {
+          "attachment_payload": {
+            "links": {
+              "self": "https://triage.example.com/api/public/v2/attachments/30339/relationships/attachment_payload",
+              "related": "https://triage.example.com/api/public/v2/attachments/30339/attachment_payload"
+            },
+            "data": {
+              "type": "attachment_payloads",
+              "id": "1452"
+            }
+          },
+          "parent": {
+            "links": {
+              "self": "https://triage.example.com/api/public/v2/attachments/30339/relationships/parent",
+              "related": "https://triage.example.com/api/public/v2/attachments/30339/parent"
+            }
+          },
+          "report": {
+            "links": {
+              "self": "https://triage.example.com/api/public/v2/attachments/30339/relationships/report",
+              "related": "https://triage.example.com/api/public/v2/attachments/30339/report"
+            },
+            "data": {
+              "type": "reports",
+              "id": "47024"
+            }
+          }
+        }
+      },
+      {
+        "id": "30340",
+        "type": "attachments",
+        "links": {
+          "self": "https://triage.example.com/api/public/v2/attachments/30340"
+        },
+        "attributes": {
+          "filename": "docProps/app.xml",
+          "size": 700,
+          "is_child": true,
+          "created_at": "2023-04-09T13:25:29.249Z",
+          "updated_at": "2023-04-09T13:25:29.249Z"
+        },
+        "relationships": {
+          "attachment_payload": {
+            "links": {
+              "self": "https://triage.example.com/api/public/v2/attachments/30340/relationships/attachment_payload",
+              "related": "https://triage.example.com/api/public/v2/attachments/30340/attachment_payload"
+            },
+            "data": {
+              "type": "attachment_payloads",
+              "id": "74"
+            }
+          },
+          "parent": {
+            "links": {
+              "self": "https://triage.example.com/api/public/v2/attachments/30340/relationships/parent",
+              "related": "https://triage.example.com/api/public/v2/attachments/30340/parent"
+            },
+            "data": {
+              "type": "attachments",
+              "id": "30339"
+            }
+          },
+          "report": {
+            "links": {
+              "self": "https://triage.example.com/api/public/v2/attachments/30340/relationships/report",
+              "related": "https://triage.example.com/api/public/v2/attachments/30340/report"
+            },
+            "data": {
+              "type": "reports",
+              "id": "47024"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Attachment(s)
+>|Attachment ID|File Name|File Size in Bytes|Is Child|Created At|Updated At|
+>|---|---|---|---|---|---|
+>| 30339 | Invoice.xlsm | 100000 | false | 2023-04-09T13:25:28.540Z | 2023-04-09T13:25:28.540Z |
+>| 30340 | docProps/app.xml | 700 | true | 2023-04-09T13:25:29.249Z | 2023-04-09T13:25:29.249Z |
+
+
+### cofense-report-attachment-download
+
+***
+Downloads the attachment for the specified attachment ID.
+
+#### Base Command
+
+`cofense-report-attachment-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Specify the ID of the attachment to download the attachment file.<br>Note: To retrieve id, execute cofense-report-attachment-list command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | String | File size in bytes. | 
+| File.SHA1 | String | SHA1 hash of file. | 
+| File.SHA256 | String | SHA256 hash of file. | 
+| File.SHA512 | String | SHA512 hash of file. | 
+| File.Name | String | File name. | 
+| File.SSDeep | String | SSDeep hash of the file. | 
+| File.EntryID | Unknown | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
+#### Command example
+```!cofense-report-attachment-download id=30```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3000@80068006-8006-8006-8006-800680068006",
+        "Extension": "xml",
+        "Type": "text/xml; charset=utf-8",
+        "MD5": "11111111111111111111111111111111",
+        "Name": "xl/sharedStrings.xml",
+        "SHA1": "1111111111111111111111111111111111111111",
+        "SHA256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "SHA512": "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+        "SSDeep": "3:111111111111111111111111111111111111111111111111111111111111:111111111111111111111111",
+        "Size": 206,
+        "Info": "XML 1.0 document, ASCII text, with CRLF line terminators"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Uploaded file: xl/sharedStrings.xml Download
+
+>|Property|Value|
+>|---|---|
+>| Type | text/xml; charset=utf-8 |
+>| Size | 206 bytes |
+>| Info | XML 1.0 document, ASCII text, with CRLF line terminators |
+>| MD5 | 11111111111111111111111111111111 |
+>| SHA1 | 1111111111111111111111111111111111111111 |
+>| SHA256 | 1111111111111111111111111111111111111111111111111111111111111111 |
+>| SHA512 | 11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 |
+>| SSDeep | 3:111111111111111111111111111111111111111111111111111111111111:111111111111111111111111 |
+
+
 ### cofense-category-list
 ***
 Retrieves categories based on the provided parameters.
@@ -2559,3 +2783,5 @@ The ability to mirror incident data has been added.
 * *cofense-threat-indicator-update*
 * *cofense-url-list*
 * *cofense-report-attachment-payload-list*
+* *cofense-report-attachment-list*
+* *cofense-report-attachment-download*

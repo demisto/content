@@ -68,8 +68,8 @@ def main():   # pragma: no cover
         }
 
     args = {"uri": uri, "body": body}
-    res = demisto.executeCommand("demisto-api-post", args)
-    demisto.debug(f'demisto-api-post with {args} returned {res}')
+    res = demisto.executeCommand("core-api-post", args)
+    demisto.debug(f'core-api-post with {args} returned {res}')
     if is_error(res):
         raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
 
@@ -87,8 +87,8 @@ def main():   # pragma: no cover
         else:  # pagination for xsoar-8
             body["request_data"]["search_from"] = page_num  # type: ignore[index]
         args = {"uri": uri, "body": body}
-        res = demisto.executeCommand("demisto-api-post", args)
-        demisto.debug(f'demisto-api-post with {args} returned {res}')
+        res = demisto.executeCommand("core-api-post", args)
+        demisto.debug(f'core-api-post with {args} returned {res}')
         if is_error(res):
             raise DemistoException(f'error occurred when trying to retrieve the audit logs using {args=}, error: {res}')
         response = res[0]["Contents"]["response"]
