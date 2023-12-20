@@ -32,7 +32,7 @@ curl -v -u test:password https://edl-my-xsiam-subdomain.us.paloaltonetworks.com/
 
 **Note**: The External Dynamic List is not accessible via web browsers and you will receive an unauthorized error if accessing the External Dynamic List via a browser.
 
-**Note**: When using instance that running on engine, you can access only with the `Listen Port`, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
+**Note**: When using an instance that is running on an engine, you can access only with the `Listen Port`. Go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 
 1. To access the **Generic Export Indicators Service** by instance name, set up the **username** and **password** values in the **External Dynamic List Integration** page (**Settings & info** > **SETTINGS** > **Long Running Integrations**).
 2. You can access the External Dynamic List at the following url: `https://edl-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`.
