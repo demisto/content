@@ -16,8 +16,10 @@ def run_script(args, files):
             return 1
     except subprocess.CalledProcessError as e:
         print("Error: {e}".format(e=e))  # noqa: T201,UP032
+        return 1
     except Exception as e:
         print("An error occurred: {e}".format(e=e))  # noqa: T201,UP032
+        return 1
     return 0
 
 
