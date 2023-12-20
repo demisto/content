@@ -1,28 +1,32 @@
 import datetime
-import pickle
-import Whois
-import demistomock as demisto
+import json
 import pathlib
-import pytest
+import pickle
+import socket
+import subprocess
+import sys
+import tempfile
+import time
 from typing import Any
 
-from CommonServerPython import DBotScoreReliability, EntryType, ExecutionMetrics, ErrorTypes
+import ipwhois
+import pytest
+import Whois
+from pytest_mock import MockerFixture
 from Whois import (
-    ipwhois_exception_mapping,
-    whois_exception_mapping,
-    increment_metric,
     WhoisInvalidDomain,
-    whois_command,
     domain_command,
     get_domain_from_query,
+    get_root_server,
+    increment_metric,
     ip_command,
-    get_root_server
+    ipwhois_exception_mapping,
+    whois_command,
+    whois_exception_mapping,
 )
-import ipwhois
-import socket
-from pytest_mock import MockerFixture
 
-import json
+import demistomock as demisto
+from CommonServerPython import DBotScoreReliability, EntryType, ErrorTypes, ExecutionMetrics
 
 INTEGRATION_NAME = 'Whois'
 
@@ -80,24 +84,23 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
         assert "Exception thrown calling command" in results[0]['Contents']
 
 
-# Test skipped - CIAC-8779
-# def test_socks_proxy(mocker, request):
-#     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5h://localhost:9980'})
-#     mocker.patch.object(demisto, 'command', return_value='test-module')
-#     mocker.patch.object(demisto, 'results')
-#     tmp = tempfile.TemporaryFile('w+')
-#     microsocks = './test_data/microsocks_darwin' if 'darwin' in sys.platform else './test_data/microsocks'
-#     process = subprocess.Popen([microsocks, "-p", "9980"], stderr=subprocess.STDOUT, stdout=tmp)
-#
-#     def cleanup():
-#         process.kill()
-#
-#     request.addfinalizer(cleanup)
-#     time.sleep(1)
-#     Whois.main()
-#     assert_results_ok()
-#     tmp.seek(0)
-#     assert 'connected to' in tmp.read()  # make sure we went through microsocks
+def test_socks_proxy(mocker, request):
+    mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5h://localhost:9980'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results')
+    tmp = tempfile.TemporaryFile('w+')
+    microsocks = './test_data/microsocks_darwin' if 'darwin' in sys.platform else './test_data/microsocks'
+    process = subprocess.Popen([microsocks, "-p", "9980"], stderr=subprocess.STDOUT, stdout=tmp)
+
+    def cleanup():
+        process.kill()
+
+    request.addfinalizer(cleanup)
+    time.sleep(1)
+    Whois.main()
+    assert_results_ok()
+    tmp.seek(0)
+    assert 'connected to' in tmp.read()  # make sure we went through microsocks
 
 
 TEST_QUERY_RESULT_INPUT = [
@@ -372,6 +375,7 @@ def test_get_raw_response_with_non_recursive_data_query(mocker: MockerFixture):
           queried, without the response of the refer server.
     """
     import socket
+
     from Whois import get_whois_raw
 
     def connect_mocker(curr_server):

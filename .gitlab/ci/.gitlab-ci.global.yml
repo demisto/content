@@ -249,13 +249,13 @@
   # exporting the machine credentials
   - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
   - |
-    if [[ $TEST_XDR_ENV ]]; then
+    if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
       cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
     else
       echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
     fi
   - |
-    if [[ $TEST_XDR_ENV ]]; then
+    if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
       cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
     else
       echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"

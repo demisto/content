@@ -138,6 +138,11 @@
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
+<td style="width: 162.333px;">skip_corrupted</td>
+<td style="width: 506.667px;">If true, will not raise an error if the given image is corrupted and could not be processed. Default is false.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
 <td style="width: 162.333px;">langs</td>
 <td style="width: 506.667px;">A CSV of language codes of the language to use for OCR. Overrides default language. languages.</td>
 <td style="width: 71px;">Optional</td>

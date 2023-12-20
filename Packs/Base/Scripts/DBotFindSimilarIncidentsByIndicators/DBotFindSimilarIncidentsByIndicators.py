@@ -182,7 +182,7 @@ def get_all_indicators_for_incident(incident_id: str) -> list[dict]:
     :param incident_id: incident id
     :return:
     """
-    query = 'incident.id:%s' % incident_id
+    query = 'investigationIDs:%s' % incident_id
     res = demisto.executeCommand("findIndicators", {'query': query})
     if is_error(res):
         get_error(res)

@@ -4,7 +4,7 @@ args:
   predefined:
   - ''
 - defaultValue: '150'
-  description: 'The maximum number of incidents that an indicator can be associated with to be retained. This helps to filter out indicators that appear in many incidents '
+  description: 'The maximum number of incidents that an indicator can be associated with to be retained. This helps to filter out indicators that appear in many incidents.'
   name: maxIncidentsInIndicatorsForWhiteList
 - defaultValue: '1'
   description: The minimum number of indicators related to the incident required before running the model.
@@ -25,7 +25,7 @@ args:
   description: The maximum number of incidents to display.
   name: maxIncidentsToDisplay
 - defaultValue: type, created, name
-  description: Fields to add in the table of incident
+  description: Fields to add in the table of incident.
   name: fieldsIncidentToDisplay
 - defaultValue: 1 month ago
   description: The start date by which we retrieve information on incidents.
@@ -42,7 +42,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.72705
+dockerimage: demisto/ml:1.0.0.83711
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

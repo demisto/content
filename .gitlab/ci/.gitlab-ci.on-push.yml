@@ -260,7 +260,7 @@ xpanse-prepare-testing-bucket:
   - |
     if [[ -n "${NIGHTLY}" && $SERVER_TYPE == "XSOAR SAAS" ]]; then
       ./Tests/scripts/run_tests.sh --generate-empty-result-file
-      if [[ $TEST_XDR_ENV ]]; then
+      if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
         cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
       else
         echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
@@ -758,7 +758,7 @@ test-upload-flow:
     -   echo "Sleeping for 10 seconds before retrying"
     -   sleep 10
     - done
-    - echo "Successful triggered test upload - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - echo "Successful triggered test upload - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"

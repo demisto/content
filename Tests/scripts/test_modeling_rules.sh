@@ -70,7 +70,7 @@ if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  if [ "${TEST_XDR_ENV}" == "true" ]; then
+  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
   else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
@@ -80,7 +80,7 @@ else
 fi
 
 if [ -n "${CLOUD_API_TOKENS}" ]; then
-  if [ "${TEST_XDR_ENV}" == "true" ]; then
+  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
     cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
   else
     echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"

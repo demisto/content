@@ -15,7 +15,7 @@ def run_script(args, files):
         results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.dirname(file)) for file in files])
         pool.close()
         if any(result != 0 for result in results):
-            return 1
+            raise Exception
     except subprocess.CalledProcessError as e:
         print("Error: {e}".format(e=e))  # noqa: T201,UP032
         raise

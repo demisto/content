@@ -344,7 +344,7 @@ def install_packs(client: demisto_client,
                   packs_to_install: list,
                   attempts_count: int = 5,
                   sleep_interval: int = 60,
-                  request_timeout: int = 600,
+                  request_timeout: int = 900,
                   ) -> tuple[bool, list]:
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
