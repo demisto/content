@@ -391,7 +391,7 @@ upload-packs-to-marketplace:
 
     - section_start "Validate Premium Packs"
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
+      if [[ $(cat "${ENV_RESULTS_PATH}") != "[]" ]] && {[[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]}  ; then
         ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
       else
         echo "Skipping Premium Packs Validation"
