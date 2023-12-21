@@ -6,8 +6,13 @@ BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;"  # pragma: 
 
 def main():  # pragma: no cover
     try:
-        alert = demisto.context().get('Core', {}).get('OriginalAlert')[0]
-        event = alert.get('event')
+        alert = demisto.context().get('Core', {}).get('OriginalAlert')
+        if isinstance(alert, list):
+            alert = alert[0]
+        if alert.get("raw_abioc") is None:
+            event = alert.get('event')
+        else:
+            event = alert.get('raw_abioc').get('event')
         resourceType = event.get('resource_type_orig')
 
         html = f"<h1 style='{BLACK_HTML_STYLE}'>{str(resourceType)}</h1>"
