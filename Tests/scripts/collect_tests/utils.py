@@ -132,8 +132,7 @@ class DictBased:
         If xsoar_on_prem marketplace supported add xsoar marketplace.
         """
         pack_marketplaces = {MarketplaceVersions(v)
-                             for v in to_tuple(self.get('marketplaces', (), warn_if_missing=False))} \
-                             or None
+                             for v in to_tuple(self.get('marketplaces', (), warn_if_missing=False))} or None
         if not pack_marketplaces:
             return pack_marketplaces
 
