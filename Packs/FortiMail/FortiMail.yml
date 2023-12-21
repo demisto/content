@@ -40,7 +40,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-  type: python
+script:
   commands:
   - name: get_domains
     arguments: []
