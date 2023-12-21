@@ -152,11 +152,11 @@ HEADERS = AUTH_HEADERS | {
 USE_SSL = not PARAMS['unsecure']
 USE_PROXY = PARAMS.get('proxy', False)
 
-# if not USE_PROXY:
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
+if not USE_PROXY:
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 DATE_FORMAT = '%Y-%m-%d'
 VENDOR = 'tenable'
@@ -718,21 +718,10 @@ def try_get_chunks(client: Client, export_uuid: str):
     return vulnerabilities, status
 
 
-def call_send_data_to_xsiam(assets, vulnerabilities):
-    """Sends assets and vulnerabilities to XSIAM"""
-
-    demisto.info(f"Sending {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM.")
-
-    send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
-    send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
-
-    demisto.info("Done Sending data to XSIAM.")
-
-
 def test_module(client: Client, params):
-    client.list_scan_filters()
     if int(params.get('assetsFetchInterval')) < 60:
         return_error("Assets Fetch Interval is supposed to be 1 hour minimum")
+    client.list_scan_filters()
     return 'ok'
 
 
@@ -1928,7 +1917,6 @@ def main():  # pragma: no cover
             if skip_fetch_assets(assets_last_run):
                 return
             elif not assets_last_run.get("nextTrigger"):
-                # assets_last_run.update({"assets_last_fetch": get_timestamp(datetime.now(tz=timezone.utc))})
                 assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets (no nextTrigger -> new fetch, or assets_export_uuid -> continue prev fetch)
             if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
@@ -1938,7 +1926,12 @@ def main():  # pragma: no cover
             if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run, severity=severity)
 
-            call_send_data_to_xsiam(assets, vulnerabilities)
+            demisto.info(f"Sending {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM.")
+
+            send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
+            send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
+
+            demisto.info("Done Sending data to XSIAM.")
 
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
