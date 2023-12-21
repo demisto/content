@@ -12,7 +12,12 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "checkpoint",
+        "check point", 
+        "SandBlast",
+        "Threat Emulation"
+    ],
     "githubUser": [],
     "certification": "certified",
     "marketplaces": [
