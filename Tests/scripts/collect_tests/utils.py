@@ -133,7 +133,7 @@ class DictBased:
         """
         pack_marketplaces = {MarketplaceVersions(v)
                              for v in to_tuple(self.get('marketplaces', (), warn_if_missing=False))} \
-                            or None
+                             or None
         if not pack_marketplaces:
             return pack_marketplaces
 
