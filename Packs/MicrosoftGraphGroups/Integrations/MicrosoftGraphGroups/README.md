@@ -13,7 +13,15 @@ For more details about the authentication used in this integration, see <a href=
 <h3>Required Permissions</h3>
 <li>Directory.ReadWrite.All - Delegated</li>
 <li>Directory.ReadWrite.All - Application</li>
-<li>Group.ReadWrite.All - Application</li>
+<li>Group.ReadWrite.All - Application Or GroupMember.ReadWrite.All - Delegation permission</li>
+
+<h3>Note</h3>
+Using "GroupMember.ReadWrite.All" permission instead of Group.ReadWrite.All:
+This permission allows the app to list groups, read basic properties, and read and update the membership of the groups the signed-in user has access to.
+Group properties and owners cannot be updated and groups cannot be deleted.
+<strong><br>Using this permission will raise errors on the following commands:
+<li>msgraph-groups-delete-group</li>
+<li>msgraph-groups-create-group</strong></li>
 
 <h2>Configure Azure Active Directory Groups on Cortex XSOAR</h2>
 
