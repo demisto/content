@@ -93,6 +93,6 @@
 <h5>Command Example</h5>
 <pre>!url</pre>
 <h5>Context Example</h5>
-<pre>FortiGuard:{} 1 item<br>Url:[] 1 item<br>0:{} 3 items<br>categoryid:56<br>categoryname:Search Engines and Portals<br>url:google.com</pre>
+<pre>FortiGuard:{} 1 item<br>Url:[] 1 item<br>0:{} 3 items<br>categoryid:41<br>categoryname:Search Engines and Portals<br>url:google.com</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/12241410/49055027-d9087f00-f1fe-11e8-80b2-fa516df50343.png" width="1080" height="295"></p>
+<p><img src="https://github.com/Aceilies/content_demisto/blob/Aceilies-FortiGuard/Packs/FortiGuard/url%20Command.png" width="1080" height="350"></p>
