@@ -14,7 +14,7 @@ detaileddescription: "### Community Contributed Integration\n#### Integration Au
   XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).\n***\n##
   FortiMail - This section explains how to configure the instance of FortiMail in
   Cortex XSOAR:\n- Use the Commands Below to Execute Actions on FortiMail.\n***\n####
-  \ Author GitHub : - https://github.com/Aceilies/content_demisto/upload/master/Packs/FortiMail"
+  \ Author GitHub : - https://github.com/Aceilies/content_demisto/tree/Aceilies-FortiMail/Packs/FortiMail"
 configuration:
 - section: Connect
   display: Server URL (e.g., https://api.xsoar-example.com)
