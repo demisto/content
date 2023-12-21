@@ -16,7 +16,7 @@ from docx.shared import Inches
 # Input2:       Format type needed. Table or Paragraph. Paragraph is default.
 # Input3:       Name of the docx file that will be produced. Give the full name including the ".docx"
 #               extension. (Mandatory)
-# Requirements: This automation requires "Demisto REST API" integration enabled and connected to the XSOAR itself.
+# Requirements: This automation requires "Core REST API" integration enabled and connected to the XSOAR itself.
 #               Automation uses it to read the objects of the playbook.
 
 retVal: dict = {}
@@ -43,7 +43,7 @@ def post_api_request(url, body):
         "body": body
     }
 
-    raw_res = demisto.executeCommand("demisto-api-post", api_args)
+    raw_res = demisto.executeCommand("core-api-post", api_args)
     try:
         res = raw_res[0]['Contents']['response']
         return res
@@ -56,7 +56,6 @@ def post_api_request(url, body):
 def EnterHeader(HeaderStr):
 
     document.add_heading(HeaderStr, level=1)
-    return
 
 
 def StartParagraph(Name, Description):
@@ -69,7 +68,6 @@ def StartParagraph(Name, Description):
 
     Paragraph = document.add_paragraph(Description)
     Paragraph.paragraph_format.left_indent = Inches(0.25)   # type: ignore
-    return
 
 
 def StartTable():
@@ -80,8 +78,6 @@ def StartTable():
     hdr_cells = Table.rows[0].cells   # type: ignore
     hdr_cells[0].text = 'Name'
     hdr_cells[1].text = 'Description'
-
-    return
 
 
 def TraverseTasks(TaskID):
@@ -109,11 +105,7 @@ def TraverseTasks(TaskID):
 
         curTask = retVal[PlaybookIndex]['tasks'][str(TaskID)]
 
-        if 'description' in curTask['task'].keys():
-            taskDescription = curTask['task']['description']
-
-        else:
-            taskDescription = "[Blank]"
+        taskDescription = curTask["task"].get("description", "[Blank]")
 
         Description = taskDescription
         Type = curTask['type']
