@@ -29,7 +29,7 @@ description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
 script:
-  commands:
+  commands:ss
   - arguments:
     - description: Asset ID.
       name: id
