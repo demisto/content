@@ -38,7 +38,7 @@
 <h5>Context Example</h5>
 <pre>File:[] 1 item<br>0:{} 10 items<br>Size:306403565<br>SHA1:65d3106269f0c8a741dc8d8cc2bea5950a96f41d<br>SHA256:d6f5614e9b08e03d608469605f2683f22f4baee0efa503af156419522e51b7ac<br>SHA512:5f0c1f7b5af9a7b2c55fa6df0a1c217cd2f87681ac91730ce8ec04bf57882ae135a115f0ffb3eed1a5f35f25fa66d8866d5dae73eacd0effd2deb6f0d36aa5b2<br>Name:FortiGuard Indicators<br>SSDeep:49152:Lw5QsajTG8gNr1whDz+CxAIcN7sy5nRYJgwPWt/00ejzvVmC85SvZFI+dW5MD6dN:LHvc<br>EntryID:191@c99acbc8-fca1-4f57-8958-2cbbee57d738<br>Info:text/plain<br>Type:ASCII text, with very long lines<br>MD5:8fdc14f47e46aa0e3fe8502435a639ee</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/12241410/49055026-d9087f00-f1fe-11e8-8026-45f8ed443944.png" width="749" height="225"></p>
+<p><img src="https://github.com/Aceilies/content_demisto/blob/Aceilies-FortiGuard/Packs/FortiGuard/Get%20Indicators.png" width="1080" height="525"></p>
 <h3 id="h_549888813401543315025030">2. Return Domain Information and reputation</h3>
 <hr>
 <p>Returns information about FortiGate service groups.</p>
@@ -95,4 +95,4 @@
 <h5>Context Example</h5>
 <pre>FortiGuard:{} 1 item<br>Url:[] 1 item<br>0:{} 3 items<br>categoryid:56<br>categoryname:Search Engines and Portals<br>url:google.com</pre>
 <h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/12241410/49055027-d9087f00-f1fe-11e8-80b2-fa516df50343.png" width="752" height="295"></p>
+<p><img src="https://user-images.githubusercontent.com/12241410/49055027-d9087f00-f1fe-11e8-80b2-fa516df50343.png" width="1080" height="295"></p>
