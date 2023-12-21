@@ -1987,28 +1987,28 @@ def url_to_clickable_markdown(data, url_keys):
     return data
 
 
-def create_clickable_url(link, text = None):
+def create_clickable_url(url, text = None):
     """
     Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
 
-    :type link: ``Union[List[str], str]``
-    :param link: the link of the url or a list of links of urls.
+    :type url: ``Union[List[str], str]``
+    :param url: the url of interest or a list of urls
 
-    :type text: ``Union[List[str], str]``
+    :type text: ``Union[List[str], str, None]``
     :param text: the text of the url or a list of texts of urls.
 
     :return: Markdown format for clickable url
     :rtype: ``Union[List[str], str]``
 
     """
-    if not link:
+    if not url:
         return None
-    elif isinstance(link, list):
+    elif isinstance(url, list):
         if isinstance(text, list):
-            assert len(link) == len(text), 'The link list and the text list must be the same length.'
-            return ['[{}]({})'.format(text, item) for text, item in zip(text, link)]
-        return ['[{}]({})'.format(item, item) for item in link]
-    return '[{}]({})'.format(text or link, link)
+            assert len(url) == len(text), 'The URL list and the text list must be the same length.'
+            return [f'[{text}]({item})' for text, item in zip(text, url)]
+        return [f'[{item}]({item})' for item in url]
+    return f'[{text or url}]({url})'
 
 
 class JsonTransformer:
