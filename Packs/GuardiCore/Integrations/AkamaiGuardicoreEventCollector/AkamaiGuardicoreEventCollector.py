@@ -1,10 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
-from AkamaiGuardicoreApiModule import AkamaiGuardicoreClient
+from AkamaiGuardicoreApiModule import *
 
 
 """ CONSTANTS """
 
+MAX_FETCH = 1000
 VENDOR = "akamai"
 PRODUCT = "guardicore"
 
@@ -150,7 +151,8 @@ def get_events(client: Client, args: dict):
         if "to_time" in args
         else int(datetime.now().timestamp() * 1000)
     )
-    limit = arg_to_number(args.get("limit", 1000))
+    limit = arg_to_number(args.get("limit")) or MAX_FETCH
+    limit = min(limit, MAX_FETCH)
     offset = int(args.get("offset", 0))
     response = client.get_events(start_time, end_time, limit, offset)
     events = response["objects"]
@@ -173,7 +175,8 @@ def fetch_events(
         f"Getting events from: {timestamp_to_datestring(start_time)}, till: {timestamp_to_datestring(end_time)}"
     )
     offset = arg_to_number(last_run.get("offset")) or 0
-    limit = arg_to_number(params.get("max_events_per_fetch")) or 1000
+    limit = arg_to_number(params.get("max_events_per_fetch")) or MAX_FETCH
+    limit = min(limit, MAX_FETCH)
 
     response = client.get_events(start_time, end_time, limit, offset)
     events: list = response["objects"]

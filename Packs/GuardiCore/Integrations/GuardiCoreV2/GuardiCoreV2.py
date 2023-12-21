@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from AkamaiGuardicoreApiModule import AkamaiGuardicoreClient
+from AkamaiGuardicoreApiModule import *
 from typing import Any
 import json
 from dateparser import parse
@@ -401,6 +401,7 @@ def main() -> None:
     insecure = params.get('insecure', False)
     client = Client(username=username, password=password,
                     base_url=base_url, proxy=proxy, verify=(not insecure))
+    client.login()
     demisto.debug(f'Command being called is {demisto.command()}')
 
     # fetch incidents params
