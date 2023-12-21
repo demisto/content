@@ -9244,4 +9244,4 @@ def test_create_clickabe_test_wrong_text_value():
         assert create_clickable_url(['https://example1.com', 'https://example2.com'], ['click here1'])
 
     assert e.type == AssertionError
-    assert 'The link list and the text list must be the same length.' in e.value.args
+    assert 'The URL list and the text list must be the same length.' in e.value.args
