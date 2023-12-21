@@ -1219,6 +1219,24 @@ class DomainNameObject(object):
                 })
 
         return domains
+    
+def detect_indicator_type_file(indicator_value: str):
+    
+    if ":" in indicator_value:
+        return 'ssdeep'
+    
+    if re.match(sha256Regex, indicator_value):
+        return 'sha256'
+
+    if re.match(md5Regex, indicator_value):
+        return 'md5'
+
+    if re.match(sha1Regex, indicator_value):
+        return 'sha1'
+
+    if re.match(sha512Regex, indicator_value):
+        return 'sha512'
+    return None
 
 
 class FileObject(object):
@@ -1253,31 +1271,26 @@ class FileObject(object):
 
         hashes = props.find_all('Hash')
         for h in hashes:
-            htype = h.find('Type')
-            if htype is None:
-                continue
-            htype = htype.string.lower()
-            if htype not in ['md5', 'sha1', 'sha256', 'ssdeep']:
-                continue
-
             value = h.find('Simple_Hash_Value')
             if value is None:
                 continue
             value = value.string.lower()
             value_list = value.split('##comma##')
             for v in value_list:
-                result.append({
-                    'indicator': v.strip(),
-                    'htype': htype,
-                    'type': 'File'
-                })
+                v = v.strip()
+                if type:=detect_indicator_type_file(v):
+                    result.append({
+                                'indicator': v.strip(),
+                                'htype': type,
+                                'type': 'File'
+                    })
 
         for r in result:
             for r2 in result:
                 if r['htype'] == r2['htype']:
                     continue
 
-                r['stix_file_{}'.format(r2['htype'])] = r2['indicator']
+                r[f"stix_file_{r2['htype']}"] = r2['indicator']
 
             r.update(bprops)
 
@@ -1651,7 +1664,11 @@ def main():  # pragma: no cover
                 observables = parse_stix(temp.name)
         else:
             observables = parse_stix(file_path)
-
+    # if not observables:
+    #     res = demisto.executeCommand("extractIndicators", {"text": str.encode(indicator_txt)})
+    #     for entry in res:
+    #         if entry['Contents']:
+    #             observables = entry["Contents"]["data"]
     json_data = json.dumps(observables)
     return_results(json_data)
 
