@@ -1,9 +1,9 @@
 {
     "description": "",
     "feed": false,
-    "id": "Varonis DSP Incident - Incoming Mapper",
+    "id": "Varonis SaaS Incident - Incoming Mapper",
     "mapping": {
-        "Varonis DSP Incident": {
+        "Varonis SaaS Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Alert Category": {
@@ -15,7 +15,7 @@
                 "Alert Name": {
                     "simple": "Name"
                 },
-                "Varonis Data Security Platform Alert Status": {
+                "Varonis SaaS Alert Status": {
                     "simple": "Status"
                 },
                 "Threat Name": {
@@ -24,10 +24,10 @@
                 "Incident Link": {
                     "simple": "Url"
                 },
-                "Varonis Data Security Platform Close Reason": {
+                "Varonis SaaS Close Reason": {
                     "simple": "CloseReason"
                 },
-                "Varonis Data Security Platform Contains Flagged Data": {
+                "Varonis SaaS Contains Flagged Data": {
                     "complex": {
                         "accessor": "ContainsFlaggedData",
                         "filters": [],
@@ -60,7 +60,7 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform Contains Malicious External IP": {
+                "Varonis SaaS Contains Malicious External IP": {
                     "complex": {
                         "accessor": "ContainMaliciousExternalIP",
                         "filters": [],
@@ -93,7 +93,7 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform Contains Sensitive Data": {
+                "Varonis SaaS Contains Sensitive Data": {
                     "complex": {
                         "accessor": "ContainsSensitiveData",
                         "filters": [],
@@ -126,10 +126,10 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform Number of Events": {
+                "Varonis SaaS Number of Events": {
                     "simple": "NumOfAlertedEvents"
                 },
-                "Varonis Data Security Platform Devices": {
+                "Varonis SaaS Devices": {
                     "complex": {
                         "filters": [],
                         "root": "Devices",
@@ -140,7 +140,7 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform Locations": {
+                "Varonis SaaS Locations": {
                     "complex": {
                         "filters": [],
                         "root": "Locations",
@@ -151,7 +151,7 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform Users": {
+                "Varonis SaaS Users": {
                     "complex": {
                         "filters": [],
                         "root": "Users",
@@ -162,7 +162,7 @@
                         ]
                     }
                 },
-                "Varonis Data Security Platform Sources": {
+                "Varonis SaaS Sources": {
                     "complex": {
                         "filters": [],
                         "root": "Sources",
@@ -176,7 +176,7 @@
             }
         }
     },
-    "name": "Varonis DSP Incident - Incoming Mapper",
+    "name": "Varonis SaaS Incident - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

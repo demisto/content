@@ -1,4 +1,4 @@
-This pack enables you to streamline alerts and related forensic information from Varonis DSP.
+This pack enables you to streamline alerts and related forensic information from Varonis.
 
 ## What does this pack do?
 - Enables retrieving alerts and manage alert status.
