@@ -1,0 +1,48 @@
+!fortimail-ip-group-create name=TestT
+!fortimail-ip-group-update name=TestT comment=comment
+!fortimail-ip-group-list
+!fortimail-ip-group-member-add group_name=TestT ip=2.2.2.2
+!fortimail-ip-group-member-replace group_name=TestT ips=3.3.3.3,4.4.4.4
+!fortimail-ip-group-member-delete group_name=TestT ip=4.4.4.4
+!fortimail-ip-group-member-list group_name=TestT
+!fortimail-ip-group-delete name=TestT
+!fortimail-email-group-create name=TestT
+!fortimail-email-group-update name=TestT comment=comment
+!fortimail-email-group-list
+!fortimail-email-group-member-add group_name=TestT email=t@t.com
+!fortimail-email-group-member-replace group_name=TestT emails=d@d.com,r@r.com
+!fortimail-email-group-member-delete group_name=TestT email=r@r.com
+!fortimail-email-group-member-list group_name=TestT
+!fortimail-email-group-delete name=TestT
+!fortimail-system-safe-block-list list_type=Blocklist
+!fortimail-system-safe-block-add values=1.1.1.1 list_type=Blocklist
+!fortimail-system-safe-block-delete values=1.1.1.1 list_type=Blocklist
+!fortimail-ip-policy-create status=enable comment=testTal
+!fortimail-ip-policy-update ip_policy_id=4 comment=test2
+!fortimail-ip-policy-move policy_id=4 action=up
+!fortimail-ip-policy-delete policy_id=9
+!fortimail-ip-policy-list
+!fortimail-access-control-create status=enable comment=TalTest1
+!fortimail-access-control-update access_control_id=1 comment=test2
+!fortimail-access-control-move access_control_id=2 action=down
+!fortimail-access-control-delete access_control_id=19
+!fortimail-access-control-list
+!fortimail-recipient-policy-create comment=TalTest1 resource_profile=Res_Default
+!fortimail-recipient-policy-update recipient_policy_id=1 comment=test2
+!fortimail-recipient-policy-move recipient_policy_id=1 reference_id=5 action=after
+!fortimail-recipient-policy-delete recipient_policy_id=14
+!fortimail-recipient-policy-list
+!fortimail-tls-profile-list
+!fortimail-ldap-group-list
+!fortimail-geoip-group-list
+!fortimail-antispam-profile-list
+!fortimail-antivirus-profile-list
+!fortimail-content-profile-list
+!fortimail-ip-pool-list
+!fortimail-session-profile-list
+!fortimail-radius-auth-profile-list
+!fortimail-pop3-auth-profile-list
+!fortimail-imap-auth-profile-list
+!fortimail-smtp-auth-profile-list
+!fortimail-resource-profile-list
+!fortimail-pki-user-list
