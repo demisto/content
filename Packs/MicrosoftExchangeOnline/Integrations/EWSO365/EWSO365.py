@@ -2044,6 +2044,7 @@ def parse_incident_from_item(item):     # pragma: no cover
     incident = {}
     labels = []
     demisto.debug(f"starting to parse the email with id {item.id} into an incident")
+    demisto.debug(f"The Item to parse is {item=}")
     log_memory()
     try:
         incident["details"] = item.text_body or item.body
@@ -2055,15 +2056,18 @@ def parse_incident_from_item(item):     # pragma: no cover
 
     # handle recipients
     if item.to_recipients:
+        demisto.debug(f'{item.to_recipients=}')
         for recipient in item.to_recipients:
             labels.append({"type": "Email", "value": recipient.email_address})
 
     # handle cc
     if item.cc_recipients:
+        demisto.debug(f'{item.cc_recipients=}')
         for recipient in item.cc_recipients:
             labels.append({"type": "Email/cc", "value": recipient.email_address})
     # handle email from
     if item.sender:
+        demisto.debug(f'{item.sender=}')
         labels.append({"type": "Email/from", "value": item.sender.email_address})
         labels.append({"type": "Email/from/name", "value": item.sender.name})
 
@@ -2071,30 +2075,36 @@ def parse_incident_from_item(item):     # pragma: no cover
     email_format = ""
     try:
         if item.text_body:
+            demisto.debug(f'{item.text_body=}')
             labels.append({"type": "Email/text", "value": item.text_body})
             email_format = "text"
     except AttributeError:
         pass
     if item.body:
+        demisto.debug(f'{item.body=}')
         labels.append({"type": "Email/html", "value": item.body})
         email_format = "HTML"
     labels.append({"type": "Email/format", "value": email_format})
 
     # handle attachments
     if item.attachments:
+        demisto.debug(f'In handle attachments: {item.attachments=}')
         incident["attachment"] = []
         demisto.debug(f"parsing {len(item.attachments)} attachments for item with id {item.id}")
         attachment_counter = 0
         for attachment in item.attachments:
             attachment_counter += 1
             demisto.debug(f'retrieving attachment number {attachment_counter} of email with id {item.id}')
+            demisto.debug(f'The attachment is {attachment=}')
             file_result = None
             label_attachment_type = None
             label_attachment_id_type = None
             if isinstance(attachment, FileAttachment):
+                demisto.debug('The attachment is of type file')
                 try:
                     if attachment.content:
                         # file attachment
+                        demisto.debug(f'{attachment.content}')
                         label_attachment_type = "attachments"
                         label_attachment_id_type = "attachmentId"
 
@@ -2106,6 +2116,7 @@ def parse_incident_from_item(item):     # pragma: no cover
 
                         # check for error
                         if file_result["Type"] == entryTypes["error"]:
+                            demisto.debug('The type file result error.')
                             demisto.error(file_result["Contents"])
                             raise Exception(file_result["Contents"])
 
@@ -2129,20 +2140,25 @@ def parse_incident_from_item(item):     # pragma: no cover
                     continue
             else:
                 # other item attachment
+                demisto.debug('Other type item attachment, not a file')
                 label_attachment_type = "attachmentItems"
                 label_attachment_id_type = "attachmentItemsId"
 
                 # save the attachment
                 if attachment.item.mime_content:
+                    demisto.debug(f'{attachment.item.mime_content=}')
                     mime_content = attachment.item.mime_content
                     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
                     if isinstance(mime_content, str) and not mime_content.isascii():
+                        demisto.debug(f'mime_content isnt ascii: {mime_content}')
                         mime_content = mime_content.encode()
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
+                    demisto.debug(f'{attached_email=}')
                     if attachment.item.headers:
                         # compare header keys case-insensitive
+                        demisto.debug(f'compare header keys case-insensitive {attachment.item.headers=}')
                         attached_email_headers = []
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
@@ -2161,9 +2177,11 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     and header.name.lower() != "content-type"
                             ):
                                 attached_email.add_header(header.name, header.value)
+                    demisto.debug('Before encoding the attachment.')
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
                     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+                    demisto.debug(f'{encoding=}')
                     try:
                         # Trying to decode using the detected encoding
                         data = attached_email_bytes.decode(encoding)
@@ -2182,6 +2200,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                 if file_result:
                     # check for error
                     if file_result["Type"] == entryTypes["error"]:
+                        demisto.debug('There is an error in the file result.')
                         demisto.error(file_result["Contents"])
                         raise Exception(file_result["Contents"])
 
