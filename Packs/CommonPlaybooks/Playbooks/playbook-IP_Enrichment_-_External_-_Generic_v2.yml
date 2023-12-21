@@ -857,7 +857,7 @@ outputs:
   description: The IP Address.
   type: string
 - contextPath: IP.InRange
-  description: Is the IP is in the input ranges? (could be 'yes' or 'no).
+  description: Is the IP in the input ranges? (could be 'yes' or 'no).
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
