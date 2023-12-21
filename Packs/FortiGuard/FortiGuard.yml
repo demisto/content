@@ -1,0 +1,120 @@
+commonfields:
+  id: FortiGuard
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: FortiGuard
+display: FortiGuard
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: FortiGuard Integration for Enrichment and Feeds
+detaileddescription: "### Community Contributed Integration\n #### Integration Author:
+  Mostafa A. Mohamed @Aceilies\n No support or maintenance is provided by the author.
+  Customers are encouraged to engage with the user community for questions and guidance
+  at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).\n***\n##
+  FortiGuard\n- This section explains how to configure the instance of FortiGuard
+  in Cortex XSOAR:\n- Use your FortiGuard API Key.\n- Mark on Fetches Indicators.\n-
+  Use the \"!url\" Command on o Single URL to fetch it's Rating from FortiGuard.\n***\n####
+  Author GitHub: \n- https://github.com/Aceilies/content_demisto/upload/master/Packs/FortiGuard\n"
+configuration:
+- section: Connect
+  display: ""
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- section: Connect
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  advanced: true
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- display: Indicator Verdict
+  name: feedReputation
+  defaultvalue: Malicious
+  type: 18
+  required: true
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    verdict
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- display: Tags
+  name: feedTags
+  type: 0
+  required: false
+  additionalinfo: Supports CSV values.
+script:
+  type: python
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL of Which to get it's Verdict
+      type: unknown
+    description: Return Domain Information and reputation
+  - name: fortiguard-get-indicators
+    arguments: []
+    description: Gets a List of Indicators from FortiGuard
+  dockerimage: demisto/python3:3.10.13.82467
+  feed: true
+  runonce: true
+  subtype: python3
+  isFetchSamples: true
