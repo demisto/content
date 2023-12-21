@@ -17,7 +17,7 @@ PRODUCT = 'world'
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    """Client class to interact with the service API test
 
     This Client implements API calls, and does not contain any Demisto logic.
     Should only do requests and return data.
