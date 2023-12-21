@@ -5624,6 +5624,10 @@
         {
             "integrations": "Netcraft V2",
             "playbookID": "Test - Netcraft"
+        },
+                {
+            "integrations": "Fortimail",
+            "playbookID": "playbook-Fortimail_Test"
         }
     ],
     "skipped_tests": {
