@@ -1,17 +1,18 @@
-import demistomock as demisto
-from CommonServerPython import *
+import requests
+import json
+register_module_line('FortiGate', 'start', __line__())
+
+
 ''' IMPORTS '''
 
-import json
-import requests
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
+requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
 USER_NAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
+PASS_token = demisto.params().get('credentials').get('password')
 SERVER = demisto.params()['server'][:-1] if (demisto.params()['server'] and demisto.params()
                                              ['server'].endswith('/')) else demisto.params()['server']
 USE_SSL = not demisto.params().get('unsecure', False)
@@ -28,66 +29,17 @@ if not demisto.params().get('proxy'):
 
 ''' HELPER FUNCTIONS '''
 
-
 @logger
-def login():
-    """
-    Due to token not providing the right level of access, we are going to create a session
-    and inject into its headers the csrf token provided with the service.
-    This won't work with usual requests as the session must be kept alive during this time.
-    """
-    # create session.
-    session = requests.session()
-    url_suffix = '/logincheck'
-    params = {
-        'username': USER_NAME,
-        'secretkey': PASSWORD,
-        'ajax': 1
-    }
-    response = session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
-    # check for the csrf token in cookies we got, add it to headers of session,
-    # or else we can't perform HTTP request that is not get.
-    for cookie in session.cookies:
-        if cookie.name.startswith('ccsrftoken'):
-            csrftoken = cookie.value[1:-1]  # type: ignore[index]
-            session.headers.update({'X-CSRFTOKEN': csrftoken})
-    if "logindisclaimer" in response.text:
-        params = {'confirm': '1'}
-        url_suffix = '/logindisclaimer'
-        session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
-    return session
+def http_request(method, url_suffix, params={}, headers={}, data=None):
 
-
-SESSION = login()
-
-
-@logger
-def http_request(method, url_suffix, params={}, data=None):
-
-    res = SESSION.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data
-    )
+    res = requests.request(method, BASE_URL + url_suffix, verify=USE_SSL, params=params, headers=headers ,data=data)
     if res.status_code not in {200}:
-        return_error(f'Error in API call to FortiGate [{res.status_code}] - {res.reason}')
+        return_error(
+            f'Error in API call to FortiGate [{res.status_code}] - {res.reason}')
     if method.upper() != 'GET':
         return res.status_code
 
     return res.json()
-
-
-@logger
-def does_path_exist(target_url):
-    """
-    Check if the path itself already exists in the instance, if it does we will not want to resume with certain requests.
-    """
-    res = SESSION.get(BASE_URL + target_url, verify=USE_SSL)
-    if res.status_code == 200:
-        return True
-    return False
 
 
 @logger
@@ -133,10 +85,12 @@ def create_banned_ips_entry_context(ips_data_array):
         }
         if ip_data.get("expires"):
             expiration_in_ms = 1000 * int(ip_data.get("expires", 0))
-            current_ip_context["Expires"] = prettify_date(timestamp_to_datestring(expiration_in_ms))
+            current_ip_context["Expires"] = prettify_date(
+                timestamp_to_datestring(expiration_in_ms))
         if ip_data.get("created"):
             creation_in_ms = 1000 * int(ip_data.get("created", 0))
-            current_ip_context["Created"] = prettify_date(timestamp_to_datestring(creation_in_ms))
+            current_ip_context["Created"] = prettify_date(
+                timestamp_to_datestring(creation_in_ms))
         ips_contexts_array.append(current_ip_context)
     return ips_contexts_array
 
@@ -144,7 +98,8 @@ def create_banned_ips_entry_context(ips_data_array):
 @logger
 def create_banned_ips_human_readable(entry_context):
     banned_ip_headers = ["IP", "Created", "Expires", "Source"]
-    human_readable = tableToMarkdown("Banned IP Addresses", entry_context, banned_ip_headers)
+    human_readable = tableToMarkdown(
+        "Banned IP Addresses", entry_context, banned_ip_headers)
     return human_readable
 
 
@@ -157,35 +112,29 @@ def str_to_bool(str_representing_bool):
 def generate_src_or_dst_request_data(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove):
     address_list_for_request = policy_field_value.split(",")
     if str_to_bool(keep_original_data):
-        policy_data = get_policy_request(policy_id)[0]  # the return value is an array with one element
+        # the return value is an array with one element
+        policy_data = get_policy_request(policy_id)[0]
         existing_adresses_list = policy_data.get(policy_field)
-        existing_adresses_list = [address_data["name"] for address_data in existing_adresses_list]
+        existing_adresses_list = [address_data["name"]
+                                  for address_data in existing_adresses_list]
         if add_or_remove.lower() == "add":
             for address in existing_adresses_list:
                 if address not in address_list_for_request:
                     address_list_for_request.append(address)
         else:
-            address_list_for_request = [address for address in existing_adresses_list if address not in address_list_for_request]
+            address_list_for_request = [
+                address for address in existing_adresses_list if address not in address_list_for_request]
 
-    address_data_dicts_for_request = policy_addr_array_from_arg(address_list_for_request, False)
+    address_data_dicts_for_request = policy_addr_array_from_arg(
+        address_list_for_request, False)
     return address_data_dicts_for_request
-
-
-@logger
-def logout(session):
-    """
-    Due to limited amount of simultaneous connections we log out after each API request.
-    Simple post request to /logout endpoint without params.
-    """
-    url_suffix = '/logout'
-    params = {}  # type: dict
-    session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
 
 
 @logger
 def policy_addr_array_from_arg(policy_addr_data, is_data_string=True):
     # if the data isn't in string format, it's already an array and requires no formatting
-    policy_adr_str_array = policy_addr_data.split(",") if is_data_string else policy_addr_data
+    policy_adr_str_array = policy_addr_data.split(
+        ",") if is_data_string else policy_addr_data
     policy_addr_dict_array = []
     for src_addr_name in policy_adr_str_array:
         cur_addr_dict = {
@@ -203,7 +152,11 @@ def test_module():
     """
     Perform basic login and logout operation, validate connection.
     """
-    http_request('GET', 'cmdb/system/vdom')
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+str(PASS_token)
+        }
+    http_request('GET', 'cmdb/system/vdom', None, headers)
     return True
 
 
@@ -248,9 +201,13 @@ def get_addresses_command():
 def get_addresses_request(address, name):
     uri_suffix = 'cmdb/firewall/address/' + name
     params = {
+        #'action': 'select',
         'vdom': address
     }
-    response = http_request('GET', uri_suffix, params)
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    response = http_request('GET', uri_suffix, params, headers)
     # Different structure if we choose all domains
     if address == '*':
         return response[0].get('results')
@@ -258,258 +215,17 @@ def get_addresses_request(address, name):
 
 
 @logger
-def get_service_groups_command():
-    contents = []
-    context = {}
-    service_groups_context = []
-    name = demisto.args().get('name', '')
-
-    service_groups = get_service_groups_request(name)
-    for service_group in service_groups:
-        service_group_members = []
-        members = service_group.get('member')
-        for member in members:
-            service_group_members.append(member.get('name'))
-        contents.append({
-            'Name': service_group.get('name'),
-            'Members': service_group_members
-        })
-        service_groups_context.append({
-            'Name': service_group.get('name'),
-            'Member': {'Name': service_group_members}
-        })
-
-    context['Fortigate.ServiceGroup(val.Name && val.Name === obj.Name)'] = service_groups_context
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('FortiGate service groups', contents),
-        'EntryContext': context
-    })
-
-
-@logger
-def get_service_groups_request(name):
-    uri_suffix = 'cmdb/firewall.service/group/' + name
-    response = http_request('GET', uri_suffix)
-    return response.get('results')
-
-
-@logger
-def update_service_group_command():
-    context = {}
-
-    group_name = demisto.args().get('groupName')
-    service_name = demisto.args().get('serviceName')
-    action = demisto.args().get('action')
-    if action not in ['add', 'remove']:
-        return_error('Action must be add or remove')
-
-    old_service_groups = get_service_groups_request(group_name)
-    service_group_members = []  # type: list
-    new_service_group_members = []  # type: list
-
-    if isinstance(old_service_groups, list):
-        old_service_group = old_service_groups[0]
-        service_group_members = old_service_group.get('member')
-    if action == 'add':
-        service_group_members.append({'name': service_name})
-        new_service_group_members = service_group_members
-    if action == 'remove':
-        for service_group_member in service_group_members:
-            if service_group_member.get('name') != service_name:
-                new_service_group_members.append(service_group_member)
-
-    update_service_group_request(group_name, new_service_group_members)
-    service_group = get_service_groups_request(group_name)[0]
-
-    service_group_members = []
-    members = service_group.get('member')
-    for member in members:
-        service_group_members.append(member.get('name'))
-
-    contents = {
-        'Name': service_group.get('name'),
-        'Services': service_group_members
-    }
-
-    service_group_context = {
-        'Name': service_group.get('name'),
-        'Service': {
-            'Name': service_group_members
-        }
-    }
-
-    context['Fortigate.ServiceGroup(val.Name && val.Name === obj.Name)'] = service_group_context
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('FortiGate service group: ' + group_name + ' was successfully updated', contents),
-        'EntryContext': context
-    })
-
-
-@logger
-def update_service_group_request(group_name, members_list):
-    uri_suffix = 'cmdb/firewall.service/group/' + group_name
-    if not does_path_exist(uri_suffix):
-        return_error('Requested service group ' + group_name + ' does not exist in Firewall config.')
-
-    payload = {
-        'member': members_list
-    }
-
-    response = http_request('PUT', uri_suffix, {}, json.dumps(payload))
-    return response
-
-
-@logger
-def delete_service_group_command():
-    context = {}
-    group_name = demisto.args().get('groupName').encode('utf-8')
-
-    delete_service_group_request(group_name)
-
-    service_group_context = {
-        'Name': group_name,
-        'Deleted': True
-    }
-
-    contents = service_group_context
-    context['Fortigate.ServiceGroup(val.Name && val.Name === obj.Name)'] = service_group_context
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('FortiGate service group: ' + group_name + ' was deleted successfully', contents),
-        'EntryContext': context
-    })
-
-
-@logger
-def delete_service_group_request(group_name):
-    uri_suffix = 'cmdb/firewall.service/group/' + group_name
-    response = http_request('DELETE', uri_suffix)
-    return response
-
-
-@logger
-def get_firewall_service_command():
-    contents = []
-    context = {}
-    service_context = []
-    service_name = demisto.args().get('serviceName', '')
-    service_title = service_name
-    if not service_name:
-        service_title = 'all services'
-
-    services = get_firewall_service_request(service_name)
-    for service in services:
-        contents.append({
-            'Name': service.get('name'),
-            'Ports': {
-                'TCP': service.get('tcp-portrange'),
-                'UDP': service.get('udp-portrange')
-            }
-        })
-        service_context.append({
-            'Name': service.get('name'),
-            'Ports': {
-                'TCP': service.get('tcp-portrange'),
-                'UDP': service.get('udp-portrange')
-            }
-        })
-
-    context['Fortigate.Service(val.Name && val.Name === obj.Name)'] = service_context
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('FortiGate firewall services ' + service_title, contents),
-        'EntryContext': context
-    })
-
-
-@logger
-def get_firewall_service_request(service_name):
-    uri_suffix = 'cmdb/firewall.service/custom/' + service_name
-    response = http_request('GET', uri_suffix)
-    return response.get('results')
-
-
-@logger
-def create_firewall_service_command():
-    contents = []
-    context = {}
-    service_context = []
-    service_name = demisto.args().get('serviceName')
-    tcp_range = demisto.args().get('tcpRange', '')
-    udp_range = demisto.args().get('udpRange', '')
-
-    create_firewall_service_request(service_name, tcp_range, udp_range)
-
-    contents.append({
-        'Name': service_name,
-        'Ports': {
-            'TCP': tcp_range,
-            'UDP': udp_range
-        }
-    })
-    service_context.append({
-        'Name': service_name,
-        'Ports': {
-            'TCP': tcp_range,
-            'UDP': udp_range
-        }
-    })
-
-    context['Fortigate.Service(val.Name && val.Name === obj.Name)'] = service_context
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('FortiGate firewall service ' + service_name + ' created successfully', contents),
-        'EntryContext': context
-    })
-
-
-@logger
-def create_firewall_service_request(service_name, tcp_range, udp_range):
-    uri_suffix = 'cmdb/firewall.service/custom/'
-    if does_path_exist(uri_suffix + service_name):
-        return_error('Firewall service already exists.')
-
-    payload = {
-        'name': service_name,
-        'tcp-portrange': tcp_range,
-        'udp-portrange': udp_range
-    }
-
-    response = http_request('POST', uri_suffix, {}, json.dumps(payload))
-    return response
-
-
-@logger
 def ban_ip(ip_addresses_array, time_to_expire=0):
     uri_suffix = 'monitor/user/banned/add_users/'
-
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
     payload = {
         'ip_addresses': ip_addresses_array,
         'expiry': time_to_expire
     }
 
-    response = http_request('POST', uri_suffix, data=json.dumps(payload))
+    response = http_request('POST', uri_suffix, None, headers, data=json.dumps(payload))
     return response
 
 
@@ -541,11 +257,13 @@ def ban_ip_command():
 @logger
 def unban_ip(ip_addresses_array):
     uri_suffix = 'monitor/user/banned/clear_users/'
-
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
     payload = {
         'ip_addresses': ip_addresses_array
     }
-    response = http_request('POST', uri_suffix, data=json.dumps(payload))
+    response = http_request('POST', uri_suffix, None, headers, data=json.dumps(payload))
     return response
 
 
@@ -570,7 +288,10 @@ def unban_ip_command():
 @logger
 def get_banned_ips():
     uri_suffix = 'monitor/user/banned/select/'
-    response = http_request('GET', uri_suffix)
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    response = http_request('GET', uri_suffix, None, headers)
     return response
 
 
@@ -606,7 +327,8 @@ def get_policy_command():
                 policy_title = policy.get('name')
             security_profiles = []
             all_security_profiles = [policy.get('webfilter-profile'), policy.get('ssl-ssh-profile'),
-                                     policy.get('dnsfilter-profile'), policy.get('profile-protocol-options'),
+                                     policy.get(
+                                         'dnsfilter-profile'), policy.get('profile-protocol-options'),
                                      policy.get('profile-type'), policy.get('av-profile')]
             for security_profile in all_security_profiles:
                 if security_profile:
@@ -673,7 +395,10 @@ def get_policy_request(policy_id):
                   'dstaddr|webfilter-profile|ssl-ssh-profile|dnsfilter-profile|'
                   'profile-protocol-options|profile-type|av-profile|nat'
     }
-    response = http_request('GET', uri_suffix, params)
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    response = http_request('GET', uri_suffix, params, headers)
     return response.get('results')
 
 
@@ -691,9 +416,11 @@ def update_policy_command():
     add_or_remove = demisto.args().get('add_or_remove')
 
     if keep_original_data and keep_original_data.lower() == 'true' and not add_or_remove:
-        return_error('Error: add_or_remove must be specified if keep_original_data is true.')
+        return_error(
+            'Error: add_or_remove must be specified if keep_original_data is true.')
 
-    update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove)
+    update_policy_request(policy_id, policy_field,
+                          policy_field_value, keep_original_data, add_or_remove)
     policy = get_policy_request(policy_id)[0]
     all_security_profiles = [policy.get('webfilter-profile'), policy.get('ssl-ssh-profile'), policy.get(
         'dnsfilter-profile'), policy.get('profile-protocol-options'), policy.get('profile-type'), policy.get('av-profile')]
@@ -754,8 +481,9 @@ def update_policy_command():
 @logger
 def update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove):
     uri_suffix = 'cmdb/firewall/policy/' + policy_id
-    if not does_path_exist(uri_suffix):
-        return_error('Requested policy ID ' + policy_id + ' does not exist in Firewall config.')
+    # if not does_path_exist(uri_suffix):
+    #     return_error('Requested policy ID ' + policy_id +
+    #                  ' does not exist in Firewall config.')
 
     field_to_api_key = {
         'description': 'comments',
@@ -770,14 +498,17 @@ def update_policy_request(policy_id, policy_field, policy_field_value, keep_orig
     if policy_field in {'srcaddr', 'dstaddr'}:
         policy_field_value = generate_src_or_dst_request_data(
             policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove)
-
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
     payload = {
         'policyid': int(policy_id),
         'q_origin_key': int(policy_id),
         policy_field: policy_field_value
     }
 
-    response = http_request('PUT', uri_suffix, {}, json.dumps(payload))
+    response = http_request('PUT', uri_suffix, None,
+                            headers, json.dumps(payload))
     return response
 
 
@@ -791,8 +522,10 @@ def create_policy_command():
     policy_description = demisto.args().get('description', '')
     policy_srcintf = demisto.args().get('sourceIntf')
     policy_dstintf = demisto.args().get('dstIntf')
-    policy_source_address = policy_addr_array_from_arg(demisto.args().get('source'))
-    policy_destination_address = policy_addr_array_from_arg(demisto.args().get('destination'))
+    policy_source_address = policy_addr_array_from_arg(
+        demisto.args().get('source'))
+    policy_destination_address = policy_addr_array_from_arg(
+        demisto.args().get('destination'))
     policy_service = demisto.args().get('service')
     policy_action = demisto.args().get('action')
     policy_status = demisto.args().get('status')
@@ -856,7 +589,9 @@ def create_policy_request(policy_name, policy_description, policy_srcintf, polic
                           policy_action, policy_status, policy_log, policy_nat):
 
     uri_suffix = 'cmdb/firewall/policy/'
-
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
     payload = {
         'json': {
             'name': policy_name,
@@ -874,7 +609,8 @@ def create_policy_request(policy_name, policy_description, policy_srcintf, polic
         }
     }
 
-    response = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    response = http_request('POST', uri_suffix, None,
+                            headers, json.dumps(payload))
     return response
 
 
@@ -916,8 +652,10 @@ def move_policy_request(policy_id, position, neighbour):
         'action': 'move',
         position: neighbour
     }
-
-    response = http_request('PUT', uri_suffix, params)
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    response = http_request('PUT', uri_suffix, params, headers)
     return response
 
 
@@ -953,7 +691,10 @@ def delete_policy_command():
 @logger
 def delete_policy_request(policy_id):
     uri_suffix = 'cmdb/firewall/policy/' + policy_id
-    response = http_request('DELETE', uri_suffix)
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    response = http_request('DELETE', uri_suffix, None, headers)
     return response
 
 
@@ -999,7 +740,10 @@ def get_address_groups_command():
 @logger
 def get_address_groups_request(address_group_name):
     uri_suffix = 'cmdb/firewall/addrgrp/' + address_group_name
-    response = http_request('GET', uri_suffix)
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    response = http_request('GET', uri_suffix, None, headers)
     return response.get('results')
 
 
@@ -1028,7 +772,6 @@ def update_address_group_command():
         for address_group_member in address_group_members:
             if address_group_member.get('name') != address:
                 new_address_group_members.append(address_group_member)
-
     update_address_group_request(group_name, new_address_group_members)
     address_group = get_address_groups_request(group_name)[0]
     members = address_group.get('member')
@@ -1064,12 +807,16 @@ def update_address_group_command():
 def update_address_group_request(group_name, new_address_group_members):
     uri_suffix = 'cmdb/firewall/addrgrp/' + group_name
     # Check whether target object already exists
-    if not does_path_exist(uri_suffix):
-        return_error('Requested address group' + group_name + 'does not exist in Firewall config.')
+    # if not does_path_exist(uri_suffix):
+    #     return_error('Requested address group' + group_name +
+    #                  'does not exist in Firewall config.')
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
     payload = {
         'member': new_address_group_members
     }
-    result = http_request('PUT', uri_suffix, {}, json.dumps(payload))
+    result = http_request('PUT', uri_suffix, None, headers, json.dumps(payload))
     return result
 
 
@@ -1107,12 +854,15 @@ def create_address_group_command():
 @logger
 def create_address_group_request(group_name, address):
     uri_suffix = 'cmdb/firewall/addrgrp/'
-    if does_path_exist(uri_suffix + group_name):
-        return_error('Address group already exists.')
+    # if does_path_exist(uri_suffix + group_name):
+    #     return_error('Address group already exists.')
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
     payload = {
         'name': group_name, 'member': [{'name': address}]
     }
-    result = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    result = http_request('POST', uri_suffix, None, headers, json.dumps(payload))
     return result
 
 
@@ -1149,7 +899,10 @@ def delete_address_group_command():
 @logger
 def delete_address_group_request(name):
     uri_suffix = 'cmdb/firewall/addrgrp/' + name
-    response = http_request('DELETE', uri_suffix)
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    response = http_request('DELETE', uri_suffix, None, headers)
     return response
 
 
@@ -1165,7 +918,8 @@ def create_address_command():
     fqdn = args.get('fqdn', '')
 
     if fqdn and address:
-        return_error("Please provide only one of the two arguments: fqdn or address")
+        return_error(
+            "Please provide only one of the two arguments: fqdn or address")
 
     create_address_request(address_name, address, mask, fqdn)
 
@@ -1199,8 +953,11 @@ def create_address_command():
 @logger
 def create_address_request(address_name, address, mask, fqdn):
     uri_suffix = 'cmdb/firewall/address/'
-    if does_path_exist(uri_suffix + address_name):
-        return_error('Address already exists.')
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    # if does_path_exist(uri_suffix + address_name):
+    #     return_error('Address already exists.')
     if address:
         subnet = address + " " + mask
         payload = {
@@ -1213,7 +970,7 @@ def create_address_request(address_name, address, mask, fqdn):
             "type": "fqdn",
             "fqdn": fqdn
         }
-    result = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    result = http_request('POST', uri_suffix, None, headers,json.dumps(payload))
     return result
 
 
@@ -1248,7 +1005,10 @@ def delete_address_command():
 @logger
 def delete_address_request(name):
     uri_suffix = 'cmdb/firewall/address/' + name
-    response = http_request('DELETE', uri_suffix)
+    headers = {
+        'Authorization': 'Bearer '+str(PASS_token)
+    }
+    response = http_request('DELETE', uri_suffix, None, headers)
     return response
 
 
@@ -1263,16 +1023,6 @@ try:
         demisto.results('ok')
     elif demisto.command() == 'fortigate-get-addresses':
         get_addresses_command()
-    elif demisto.command() == 'fortigate-get-service-groups':
-        get_service_groups_command()
-    elif demisto.command() == 'fortigate-update-service-group':
-        update_service_group_command()
-    elif demisto.command() == 'fortigate-delete-service-group':
-        delete_service_group_command()
-    elif demisto.command() == 'fortigate-get-firewall-service':
-        get_firewall_service_command()
-    elif demisto.command() == 'fortigate-create-firewall-service':
-        create_firewall_service_command()
     elif demisto.command() == 'fortigate-get-policy':
         get_policy_command()
     elif demisto.command() == 'fortigate-update-policy':
@@ -1307,5 +1057,5 @@ except Exception as e:
     LOG.print_log()
     raise
 
-finally:
-    logout(SESSION)
+
+register_module_line('FortiGate', 'end', __line__())
