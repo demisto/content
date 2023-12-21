@@ -1219,23 +1219,21 @@ class DomainNameObject(object):
                 })
 
         return domains
-    
+
+
 def detect_indicator_type_file(indicator_value: str):
     
     if ":" in indicator_value:
         return 'ssdeep'
-    
     if re.match(sha256Regex, indicator_value):
         return 'sha256'
-
     if re.match(md5Regex, indicator_value):
         return 'md5'
-
     if re.match(sha1Regex, indicator_value):
         return 'sha1'
-
     if re.match(sha512Regex, indicator_value):
         return 'sha512'
+
     return None
 
 
@@ -1278,7 +1276,7 @@ class FileObject(object):
             value_list = value.split('##comma##')
             for v in value_list:
                 v = v.strip()
-                if type:=detect_indicator_type_file(v):
+                if type := detect_indicator_type_file(v):
                     result.append({
                                 'indicator': v.strip(),
                                 'htype': type,
