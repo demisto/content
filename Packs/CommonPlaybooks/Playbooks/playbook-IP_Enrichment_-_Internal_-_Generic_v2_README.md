@@ -204,8 +204,8 @@ This playbook does not use any commands.
 | Core.RiskyHost.reasons.severity | The severity of the incident. | string |
 | Core.RiskyHost.reasons.status | The incident status. | string |
 | Core.RiskyHost.reasons.points | The score. | string |
-| IP.Address | The IP Address. | string |
-| IP.InRange | Is the IP is in the input ranges? \(could be 'yes' or 'no\). | string |
+| IP.Address | The IP address. | string |
+| IP.InRange | Is the IP in the input ranges? \(could be 'yes' or 'no\). | string |
 
 ## Playbook Image
 
