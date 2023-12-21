@@ -1,5 +1,7 @@
 Copies a file from an incident to a specified incident. The file is recorded as an entry in the specified incident's War Room.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,11 +11,14 @@ Copies a file from an incident to a specified incident. The file is recorded as 
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* demisto-api-multipart
+
+* core-api-multipart
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,5 +28,6 @@ This script uses the following commands and scripts.
 | body | Request body |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

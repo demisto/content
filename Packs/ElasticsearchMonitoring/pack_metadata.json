@@ -17,6 +17,6 @@
         "OpenSearch"
     ],
     "marketplaces": [
-        "xsoar"
+        "xsoar_on_prem"
     ]
 }
