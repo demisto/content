@@ -2544,4 +2544,4 @@ def main():  # pragma: no cover
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
-    main()
+    main() # added comment so the test playbook will run

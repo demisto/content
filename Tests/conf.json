@@ -1599,11 +1599,24 @@
             ],
             "playbookID": "EWS search-mailbox test",
             "instance_names": [
-                "ewv2_regular",
+                "ewv2_regular"
+            ],
+            "timeout": 400,
+            "memory_threshold": 150,
+            "marketplaces": ["xsoar_on_prem", "xpanse"]
+        },
+        {
+            "integrations": [
+                "EWSO365",
+                "EWS v2"
+            ],
+            "playbookID": "EWS search-mailbox test",
+            "instance_names": [
                 "ewso365_dev_team"
             ],
             "timeout": 400,
-            "memory_threshold": 150
+            "memory_threshold": 150,
+            "marketplaces": ["xsoar_saas", "marketplacev2"]
         },
         {
             "integrations": "PagerDuty v2",
