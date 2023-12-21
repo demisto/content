@@ -239,7 +239,7 @@ class CollectionResult:
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
-                test_integrations = conf.tests_to_integrations.get(test) or ()
+                test_integrations = conf.tests_to_integrations.get(test) or ()  # type: ignore[union-attr]
                 # test_playbook.implementing_integrations is from id set (always empty), test_integrations is from conf.json
                 for integration in test_playbook.implementing_integrations + test_integrations:
                     if reason := conf.skipped_integrations.get(integration):  # type: ignore[union-attr, assignment]
@@ -248,12 +248,12 @@ class CollectionResult:
                             skip_place='conf.json (integrations)',
                             skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
                         )
-                test_marketplaces = conf.tests_to_marketplace_set[test]
-                logger.info(f'HERE MARKETPLACES: {test_marketplaces=}, {conf.marketplace=}')
-                if test_marketplaces and conf.marketplace not in test_marketplaces:
+                test_marketplaces = conf.tests_to_marketplace_set[test]  # type: ignore[union-attr]
+                logger.info(f'HERE MARKETPLACES: {test_marketplaces=}, {conf.marketplace=}')  # type: ignore[union-attr]
+                if test_marketplaces and conf.marketplace not in test_marketplaces:  # type: ignore[union-attr]
                     raise IncompatibleTestMarketplaceException(test_name=test,
                                                                test_marketplaces=test_marketplaces,
-                                                               expected_marketplace=conf.marketplace)
+                                                               expected_marketplace=conf.marketplace)  # type: ignore[union-attr]
 
             if skip_reason := conf.skipped_tests.get(test):  # type: ignore[union-attr]
                 raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
