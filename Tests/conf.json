@@ -15,8 +15,7 @@
         "runnable_on_docker_only": "Determines whether the test is runnable on docker only. A boolean.",
         "scripts": "Scripts that the test uses. Can hold a list.",
         "timeout": "Test specific timeout, in order to use a different timeout then default testTimeout. A number.",
-        "toversion": "Server version to test up to it. Set it only when a real limit exists, otherwise use the 'marketplaces' field.",
-        "marketplaces": "Marketplaces that the test should run on. Available options are: xsoar (which runs on xsoar_on_prem and xsoar_saas), xsoar_on_prem, xsoar_saas, marketplacev2 and xpanse. Can hold a list."
+        "toversion": "Server version to test up to it."
     },
     "testTimeout": 160,
     "testInterval": 20,
@@ -24,7 +23,7 @@
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
-            "instance_names": "Azure_Log_Analytics_client_cred",
+            "instance_name": "Azure_Log_Analytics_client_cred",
             "timeout": 800,
             "is_mockable": false
         },
@@ -1338,7 +1337,7 @@
             "integrations": "EDL",
             "instance_names": "edl_update_to_7_9_9",
             "fromversion": "5.5.0",
-            "marketplaces": "xsoar_on_prem",
+            "toversion": "7.9.9",
             "pid_threshold": 8,
             "has_api": false
         },
@@ -1350,7 +1349,7 @@
                 "Create-Mock-Feed-Relationships"
             ],
             "fromversion": "6.0.0",
-            "marketplaces": "xsoar_on_prem",
+            "toversion": "7.9.9",
             "timeout": 3500,
             "memory_threshold": 900,
             "pid_threshold": 12,
@@ -1493,7 +1492,7 @@
                 "Core REST API"
             ],
             "fromversion": "5.0.0",
-            "marketplaces": "xsoar_on_prem"
+            "toversion": "7.9.9"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -2089,7 +2088,7 @@
         {
             "integrations": "Demisto Lock",
             "playbookID": "DemistoLockTest",
-            "instance_names": "no_sync"
+            "instance_name": "no_sync"
         },
         {
             "playbookID": "test-domain-indicator",
@@ -2993,7 +2992,7 @@
         {
             "playbookID": "FormattingPerformance - Test",
             "fromversion": "5.0.0",
-            "marketplaces": "xsoar_on_prem"
+            "toversion": "7.9.9"
         },
         {
             "integrations": "AWS - EC2",
@@ -5390,7 +5389,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 300,
-            "marketplaces": "xsoar_on_prem"
+            "toversion": "7.9.9"
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
