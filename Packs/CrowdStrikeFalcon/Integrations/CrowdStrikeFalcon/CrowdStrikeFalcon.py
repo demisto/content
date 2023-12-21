@@ -1270,6 +1270,23 @@ def get_token_request():
     return token_res.get('access_token')
 
 
+def get_behaviors(behavior_ids: list[str]) -> dict:
+    """
+    Get details on behaviors by providing behavior IDs
+
+    Args:
+        behavior_ids: List of behavior IDs to get details on
+
+    Returns:
+        dict: Response data
+    """
+    return http_request(
+        'POST',
+        '/incidents/entities/behaviors/GET/v1',
+        data=json.dumps({'ids': behavior_ids}),
+    )
+
+
 def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     """
         Sends detections request. The function will ignore the arguments passed according to priority:
@@ -6445,15 +6462,53 @@ def cs_falcon_list_users_command(args: dict[str, Any]) -> CommandResults:
     )
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def get_incident_behavior_command(args: dict) -> CommandResults:
+    behavior_ids = argToList(args['behavior_ids'])
+    raw_response = get_behaviors(behavior_ids=behavior_ids)
 
+    results = raw_response.get('resources', [])
 
-LOG(f'Command being called is {demisto.command()}')
+    def table_headers_transformer(header: str) -> str:
+        mapping = {
+            'behavior_id': 'Behavior ID',
+            'incident_ids': 'Incident IDs',
+            'cid': 'CID',
+            'aid': 'AID',
+            'pattern_id': 'Pattern ID',
+            'timestamp': 'Timestamp',
+            'cmdline': 'Command Line',
+            'filepath': 'File Path',
+            'sha256': 'SHA256',
+            'tactic': 'Tactic',
+            'technique': 'Technique',
+            'display_name': 'Display Name',
+            'objective': 'Objective',
+        }
+
+        return mapping.get(header, header)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IncidentBehavior',
+        outputs_key_field='behavior_id',
+        outputs=results,
+        readable_output=tableToMarkdown(
+            name='CrowdStrike Incident Behavior',
+            t=results,
+            headers=['behavior_id', 'incident_ids', 'cid', 'aid', 'pattern_id', 'timestamp', 'cmdline', 'filepath',
+                     'sha256', 'tactic', 'technique', 'display_name', 'objective'],
+            headerTransform=table_headers_transformer,
+            removeNull=True,
+            sort_headers=False,
+        ),
+        raw_response=raw_response,
+    )
 
 
 def main():
     command = demisto.command()
     args = demisto.args()
+    demisto.debug(f'Command being called is {command}')
+
     try:
         if command == 'test-module':
             result = module_test()
@@ -6563,8 +6618,14 @@ def main():
             return_results(remove_host_group_members_command(host_group_id=args.get('host_group_id'),
                                                              host_ids=argToList(args.get('host_ids'))))
         elif command == 'cs-falcon-resolve-incident':
-            return_results(resolve_incident_command(status=args.get('status'),
-                                                    ids=argToList(args.get('ids'))))
+            return_results(resolve_incident_command(ids=argToList(args.get('ids')),
+                                                    status=args.get('status'),
+                                                    user_uuid=args.get('assigned_to_uuid'),
+                                                    user_name=args.get('username'),
+                                                    add_comment=args.get('add_comment'),
+                                                    add_tag=args.get('add_tag'),
+                                                    remove_tag=args.get('remove_tag'),
+                                                    ))
         elif command == 'cs-falcon-update-incident-comment':
             return_results(update_incident_comment_command(comment=args.get('comment'),
                                                            ids=argToList(args.get('ids'))))
@@ -6670,6 +6731,8 @@ def main():
             return_results(cs_falcon_resolve_identity_detection(args=args))
         elif command == 'cs-falcon-list-users':
             return_results(cs_falcon_list_users_command(args=args))
+        elif command == 'cs-falcon-get-incident-behavior':
+            return_results(get_incident_behavior_command(args=args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

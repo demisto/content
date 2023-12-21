@@ -2623,7 +2623,7 @@ script:
     polling: true
   - arguments:
     - default: true
-      description: The incident ID to get detections for.
+      description: The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command.
       name: incident_id
       required: true
     description: Gets the detections for a specific incident.
@@ -4734,6 +4734,100 @@ script:
       - contextPath: CrowdStrike.Users.last_login_at
         type: String
       - contextPath: CrowdStrike.Users.created_at
+        type: String
+  - arguments:
+      - description: ID(s) of behaviors to list. Behavior IDs can be retrieved by running the 'cs-falcon-get-detections-for-incident' command.
+        name: behavior_ids
+        isArray: true
+        required: true
+    description: Get incident behavior information
+    name: cs-falcon-get-incident-behavior
+    outputs:
+      - contextPath: CrowdStrike.IncidentBehavior.behavior_id
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.cid
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.aid
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.incident_id
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.incident_ids
+        type: List
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_id
+        type: Number
+      - contextPath: CrowdStrike.IncidentBehavior.template_instance_id
+        type: Number
+      - contextPath: CrowdStrike.IncidentBehavior.timestamp
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.cmdline
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.filepath
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.domain
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition
+        type: Number
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.indicator
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.detect
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.inddet_mask
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.sensor_only
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.rooting
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_process
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_subprocess
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_machine
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_file
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.policy_disabled
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_parent
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.operation_blocked
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.process_blocked
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.registry_operation_blocked
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.critical_process_disabled
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.bootup_safeguard_enabled
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.fs_operation_blocked
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.handle_operation_downgraded
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_action_failed
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.blocking_unsupported
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_process
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_parent
+        type: Boolean
+      - contextPath: CrowdStrike.IncidentBehavior.sha256
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.user_name
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.tactic
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.tactic_id
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.technique
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.technique_id
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.display_name
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.objective
+        type: String
+      - contextPath: CrowdStrike.IncidentBehavior.compound_tto
         type: String
   dockerimage: demisto/py3-tools:1.0.0.83529
   isfetch: true
