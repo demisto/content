@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Context output of the commands has been changed, and a new 'QueryLimit' parameter with a default value has been added to the 'aws-athena-start-query' command. See the release notes for more information."
+}

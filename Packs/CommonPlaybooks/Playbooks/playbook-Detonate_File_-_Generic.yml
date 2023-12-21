@@ -17,7 +17,7 @@ description: |-
   - VMRay Analyzer
   - Polygon
   - CrowdStrike Falcon Intelligence Sandbox
-  - OPSWAT Filescan
+  - OPSWAT Filescan.
 starttaskid: "0"
 tasks:
   "0":
@@ -34,18 +34,18 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
-      - "13"
       - "14"
       - "15"
       - "18"
       - "19"
       - "20"
-      - "22"
       - "23"
       - "24"
       - "25"
       - "27"
       - "29"
+      - "30"
+      - "31"
     separatecontext: false
     view: |-
       {
@@ -142,55 +142,6 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: cdc7dce0-1029-4a8f-8a7a-eee17d570ea7
-    type: playbook
-    task:
-      id: cdc7dce0-1029-4a8f-8a7a-eee17d570ea7
-      version: -1
-      name: WildFire - Detonate file
-      description: |-
-        Detonate one or more files using the Wildfire integration. This playbook
-        returns relevant reports to the War Room and file reputations to the context data.
-        The detonation supports the following file types -
-        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
-      playbookName: WildFire - Detonate file
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1470,
           "y": 370
         }
       }
@@ -470,67 +421,6 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 2418c5d7-65e3-40ff-8281-fa47ad0369ca
-    type: playbook
-    task:
-      id: 2418c5d7-65e3-40ff-8281-fa47ad0369ca
-      version: -1
-      name: Detonate File - CrowdStrike Falcon Intelligence Sandbox
-      description: |-
-        Detonates a File using CrowdStrike Falcon Intelligence Sandbox sandbox.
-        Accepted file formats:
-        Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
-        Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
-        PDF
-        APK
-        Executable JAR
-        Windows script component: .sct
-        Windows shortcut: .lnk
-        Windows help: .chm
-        HTML application: .hta
-        Windows script file: .wsf
-        Javascript: .js
-        Visual Basic: .vbs, .vbe
-        Shockwave Flash: .swf
-        Perl: .pl
-        Powershell: .ps1, .psd1, .psm1
-        Scalable vector graphics: .svg
-        Python: .py
-        Linux ELF executables
-        Email files: MIME RFC 822 .eml, Outlook .msg.
-      playbookName: Detonate File - CrowdStrike Falcon Intelligence Sandbox
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 4680,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "23":
     id: "23"
     taskid: c28803a1-9938-4fa0-8994-4f1d01f7e800
@@ -585,10 +475,6 @@ tasks:
           root: inputs.File
       InternetAccess:
         simple: "True"
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -651,7 +537,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -702,7 +588,7 @@ tasks:
       id: 8febf391-f313-4539-89c1-bd4df099dc51
       version: -1
       name: Detonate file - CrowdStrike Falcon Sandbox v2
-      description: Detonates a File using CrowdStrike Falcon.
+      description: Detonates a File using CrowdStrike Falcon sandbox.
       playbookName: Detonate file - CrowdStrike Falcon Sandbox v2
       type: playbook
       iscommand: false
@@ -716,6 +602,8 @@ tasks:
       File:
         complex:
           root: inputs.File
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -782,6 +670,125 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: b52cc619-b027-4886-8a06-a0975dbc61a9
+    type: playbook
+    task:
+      id: b52cc619-b027-4886-8a06-a0975dbc61a9
+      version: -1
+      name: Detonate File - CrowdStrike Falcon Intelligence Sandbox v2
+      description: |-
+        Detonates a file using CrowdStrike Falcon Intelligence Sandbox.
+        Accepted file formats:
+        Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
+        Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
+        PDF
+        APK
+        Executable JAR
+        Windows script component: .sct
+        Windows shortcut: .lnk
+        Windows help: .chm
+        HTML application: .hta
+        Windows script file: .wsf
+        Javascript: .js
+        Visual Basic: .vbs, .vbe
+        Shockwave Flash: .swf
+        Perl: .pl
+        Powershell: .ps1, .psd1, .psm1
+        Scalable vector graphics: .svg
+        Python: .py
+        Linux ELF executables
+        Email files: MIME RFC 822 .eml, Outlook .msg.
+      playbookName: Detonate File - CrowdStrike Falcon Intelligence Sandbox v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EnvironmentID:
+        simple: '160: Windows 10'
+      File:
+        complex:
+          root: inputs.File
+          transformers:
+          - operator: uniq
+      FullReport:
+        simple: "True"
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "10"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 4680,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 18f66f67-79fe-416e-86aa-f68470eacfac
+    type: playbook
+    task:
+      id: 18f66f67-79fe-416e-86aa-f68470eacfac
+      version: -1
+      name: WildFire - Detonate file v2
+      playbookName: WildFire - Detonate file v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+          transformers:
+          - operator: uniq
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "8"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -816,202 +823,202 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Joe.Analysis.Status
-  description: Analysis Status
+  description: Analysis Status.
   type: string
 - contextPath: File.Name
-  description: The file's name (only in case of report type=json)
+  description: The file's name (only in case of report type=json).
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: SHA1 hash of the file.
   type: string
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: SHA256 hash of the file.
   type: string
 - contextPath: File.Size
-  description: File size (only in case of report type=json)
+  description: File size (only in case of report type=json).
   type: number
 - contextPath: File.Type
-  description: File type e.g. "PE" (only in case of report type=json)
+  description: File type e.g. "PE" (only in case of report type=json).
   type: string
 - contextPath: File.Malicious
-  description: The File malicious description
+  description: The File malicious description.
   type: unknown
 - contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
+  description: For malicious files, the reason for the vendor to make the decision.
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: For malicious files, the vendor that made the decision.
   type: string
 - contextPath: DBotScore
-  description: The Indicator's object
+  description: The Indicator's object.
   type: unknown
 - contextPath: DBotScore.Indicator
-  description: The indicator that was tested
+  description: The indicator that was tested.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The type of the indicator.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: IP.Address
-  description: IP's relevant to the sample
+  description: IP's relevant to the sample.
   type: string
 - contextPath: DBotScore.Malicious.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Malicious.Detections
-  description: The sub analysis detection statuses
+  description: The sub analysis detection statuses.
   type: string
 - contextPath: DBotScore.Malicious.SHA1
-  description: The SHA1 of the file
+  description: The SHA1 of the file.
   type: string
 - contextPath: File
-  description: The File's object
+  description: The File's object.
   type: unknown
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: MD5 hash of the file.
   type: string
 - contextPath: Joe.Analysis.SampleName
-  description: Sample Data, could be a file name or URL
+  description: Sample Data, could be a file name or URL.
   type: string
 - contextPath: Joe.Analysis.Comments
-  description: Analysis Comments
+  description: Analysis Comments.
   type: string
 - contextPath: Joe.Analysis.Time
-  description: Submitted Time
+  description: Submitted Time.
   type: date
 - contextPath: Joe.Analysis.Runs
-  description: Sub-Analysis Information
+  description: Sub-Analysis Information.
   type: unknown
 - contextPath: Joe.Analysis.Result
-  description: Analysis Results
+  description: Analysis Results.
   type: string
 - contextPath: Joe.Analysis.Errors
-  description: Raised errors during sampling
+  description: Raised errors during sampling.
   type: unknown
 - contextPath: Joe.Analysis.Systems
-  description: Analysis OS
+  description: Analysis OS.
   type: unknown
 - contextPath: Joe.Analysis.MD5
-  description: MD5 of analysis sample
+  description: MD5 of analysis sample.
   type: string
 - contextPath: Joe.Analysis.SHA1
-  description: SHA1 of analysis sample
+  description: SHA1 of analysis sample.
   type: string
 - contextPath: Joe.Analysis.SHA256
-  description: SHA256 of analysis sample
+  description: SHA256 of analysis sample.
   type: string
 - contextPath: InfoFile.Name
-  description: FileName of the report file
+  description: FileName of the report file.
   type: string
 - contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
+  description: The EntryID of the report file.
   type: string
 - contextPath: InfoFile.Size
-  description: File Size
+  description: File Size.
   type: number
 - contextPath: InfoFile.Type
-  description: File type e.g. "PE"
+  description: File type e.g. "PE".
   type: string
 - contextPath: InfoFile.Info
-  description: Basic information of the file
+  description: Basic information of the file.
   type: string
 - contextPath: File.Extension
-  description: The extension of the file
+  description: The extension of the file.
   type: string
 - contextPath: InfoFile
-  description: The report file's object
+  description: The report file's object.
   type: unknown
 - contextPath: WildFire.Report
-  description: The submission object
+  description: The submission object.
   type: unknown
 - contextPath: WildFire.Report.Status
-  description: The status of the submission
+  description: The status of the submission.
   type: string
 - contextPath: WildFire.Report.SHA256
-  description: SHA256 of the submission
+  description: SHA256 of the submission.
   type: string
 - contextPath: WildFire.Report.MD5
-  description: MD5 of the submission
+  description: MD5 of the submission.
   type: string
 - contextPath: WildFire.Report.FileType
-  description: The type of the submission
+  description: The type of the submission.
   type: string
 - contextPath: WildFire.Report.Size
-  description: The size of the submission
+  description: The size of the submission.
   type: number
 - contextPath: Joe.Analysis
-  description: The Analysis object
+  description: The Analysis object.
   type: string
 - contextPath: Cuckoo.Task.Category
-  description: Category of task
+  description: Category of task.
   type: string
 - contextPath: Cuckoo.Task.Machine
-  description: Machine of task
+  description: Machine of task.
   type: string
 - contextPath: Cuckoo.Task.Errors
-  description: Errors of task
+  description: Errors of task.
   type: string
 - contextPath: Cuckoo.Task.Target
-  description: Target of task
+  description: Target of task.
   type: string
 - contextPath: Cuckoo.Task.Package
-  description: Package of task
+  description: Package of task.
   type: string
 - contextPath: Cuckoo.Task.SampleID
-  description: Sample ID of task
+  description: Sample ID of task.
   type: string
 - contextPath: Cuckoo.Task.Guest
-  description: Task guest
+  description: Task guest.
   type: string
 - contextPath: Cuckoo.Task.Custom
-  description: Custom values of task
+  description: Custom values of task.
   type: string
 - contextPath: Cuckoo.Task.Owner
-  description: Task owner
+  description: Task owner.
   type: string
 - contextPath: Cuckoo.Task.Priority
-  description: Priority of task
+  description: Priority of task.
   type: string
 - contextPath: Cuckoo.Task.Platform
-  description: Platform of task
+  description: Platform of task.
   type: string
 - contextPath: Cuckoo.Task.Options
-  description: Task options
+  description: Task options.
   type: string
 - contextPath: Cuckoo.Task.Status
-  description: Task status
+  description: Task status.
   type: string
 - contextPath: Cuckoo.Task.EnforceTimeout
-  description: Is timeout of task enforced
+  description: Is timeout of task enforced.
   type: string
 - contextPath: Cuckoo.Task.Timeout
-  description: Task timeout
+  description: Task timeout.
   type: string
 - contextPath: Cuckoo.Task.Memory
-  description: Task memory
+  description: Task memory.
   type: string
 - contextPath: Cuckoo.Task.Tags
-  description: Task tags
+  description: Task tags.
   type: string
 - contextPath: Cuckoo.Task.ID
-  description: ID of task
+  description: ID of task.
   type: string
 - contextPath: Cuckoo.Task.AddedOn
-  description: Date on which the task was added
+  description: Date on which the task was added.
   type: string
 - contextPath: Cuckoo.Task.CompletedOn
-  description: Date on which the task was completed
+  description: Date on which the task was completed.
   type: string
 - contextPath: Cuckoo.Task.Score
-  description: Reported score of the the task
+  description: Reported score of the the task.
   type: string
 - contextPath: Cuckoo.Task.Monitor
-  description: Monitor of the reported task
+  description: Monitor of the reported task.
   type: string
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -1188,7 +1195,7 @@ outputs:
   description: Task analysis status.
   type: String
 - contextPath: VMRay.Job
-  description: The Job Object
+  description: The Job Object.
   type: unknown
 - contextPath: VMRay.Job.JobID
   description: The ID of a new job.
@@ -1206,7 +1213,7 @@ outputs:
   description: The ID of virtual machine.
   type: number
 - contextPath: VMRay.Sample
-  description: The Sample For Analysis
+  description: The Sample For Analysis.
   type: unknown
 - contextPath: VMRay.Sample.SampleID
   description: The sample ID of the task.
@@ -1245,7 +1252,7 @@ outputs:
   description: The classifications of the sample.
   type: string
 - contextPath: VMRay.Submission
-  description: Submission Object
+  description: Submission Object.
   type: unknown
 - contextPath: VMRay.Submission.SubmissionID
   description: The submission ID.
@@ -1263,7 +1270,7 @@ outputs:
   description: The SHA1 hash of the sample in submission.
   type: string
 - contextPath: VMRay.Submission.SHA256
-  description: 'The SHA256 hash of the sample in submission.'
+  description: The SHA256 hash of the sample in submission.
   type: string
 - contextPath: VMRay.Submission.Verdict
   description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
@@ -1281,7 +1288,7 @@ outputs:
   description: The ID of the sample in submission.
   type: number
 - contextPath: VMRay.Sample.IOC.File
-  description: File Object
+  description: File Object.
   type: unknown
 - contextPath: VMRay.Sample.IOC.File.AnalysisID
   description: The IDs of other analyses that contain the given file.
@@ -1299,10 +1306,10 @@ outputs:
   description: The type of the file.
   type: string
 - contextPath: VMRay.Sample.IOC.File.Hashes
-  description: File Hashes Object
+  description: File Hashes Object.
   type: unknown
 - contextPath: VMRay.Sample.IOC.File.Hashes.MD5
-  description: 'The MD5 hash of the given file.'
+  description: The MD5 hash of the given file.
   type: string
 - contextPath: VMRay.Sample.IOC.File.Hashes.SSDeep
   description: The SSDeep hash of the given file.
@@ -1314,7 +1321,7 @@ outputs:
   description: The SHA1 hash of the given file.
   type: string
 - contextPath: VMRay.Sample.IOC.URL
-  description: URL Object
+  description: URL Object.
   type: unknown
 - contextPath: VMRay.Sample.IOC.URL.AnalysisID
   description: The IDs of the other analyses that contain the given URL.
@@ -1332,13 +1339,13 @@ outputs:
   description: The type of the URL.
   type: string
 - contextPath: VMRay.Sample.IOC.Domain
-  description: Domain Object
+  description: Domain Object.
   type: unknown
 - contextPath: VMRay.Sample.IOC.Domain.AnalysisID
   description: The IDs of the other analyses that contain the given domain.
   type: number
 - contextPath: VMRay.Sample.IOC.Domain.Domain
-  description: 'The domain.'
+  description: The domain.
   type: string
 - contextPath: VMRay.Sample.IOC.Domain.ID
   description: The ID of the domain.
@@ -1347,7 +1354,7 @@ outputs:
   description: The type of the domain.
   type: string
 - contextPath: VMRay.Sample.IOC.IP
-  description: IP Object
+  description: IP Object.
   type: unknown
 - contextPath: VMRay.Sample.IOC.IP.AnalysisID
   description: The IDs of the other analyses that contain the given IP address.
@@ -1356,7 +1363,7 @@ outputs:
   description: The IP address.
   type: string
 - contextPath: VMRay.Sample.IOC.IP.Operation
-  description: 'The operation of the given IP address.'
+  description: The operation of the given IP address.
   type: string
 - contextPath: VMRay.Sample.IOC.IP.ID
   description: The ID of the IP address.
@@ -1365,16 +1372,16 @@ outputs:
   description: The type of the IP address.
   type: string
 - contextPath: VMRay.Sample.IOC.Mutex
-  description: Mutex Object
+  description: Mutex Object.
   type: unknown
 - contextPath: VMRay.Sample.IOC.Mutex.AnalysisID
   description: The IDs of other analyses that contain the given IP address.
   type: number
 - contextPath: VMRay.Sample.IOC.Mutex.Name
-  description: 'The name of the mutex.'
+  description: The name of the mutex.
   type: string
 - contextPath: VMRay.Sample.IOC.Mutex.Operation
-  description: The operation of the given mutex
+  description: The operation of the given mutex.
   type: string
 - contextPath: VMRay.Sample.IOC.Mutex.ID
   description: The ID of the mutex.
@@ -1383,13 +1390,13 @@ outputs:
   description: The type of the mutex.
   type: string
 - contextPath: VMRay.ThreatIndicator
-  description: Indicator Object
+  description: Indicator Object.
   type: unknown
 - contextPath: VMRay.ThreatIndicator.AnalysisID
   description: The list of connected analysis IDs.
   type: number
 - contextPath: VMRay.ThreatIndicator.Category
-  description: 'The category of threat indicators.'
+  description: The category of threat indicators.
   type: string
 - contextPath: VMRay.ThreatIndicator.Classification
   description: The classifications of threat indicators.
@@ -1401,238 +1408,238 @@ outputs:
   description: The operation that caused the indicators.
   type: string
 - contextPath: SecneurXAnalysis.Report.SHA256
-  description: SHA256 value of the analyzed sample
+  description: SHA256 value of the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.Verdict
-  description: 'Summary result of the analyzed sample'
+  description: Summary result of the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.Tags
-  description: More details of the analyzed sample
+  description: More details of the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.IOC
-  description: List of IOC's observed in the analyzed sample
+  description: List of IOC's observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.Status
-  description: Analysis queued sample state
+  description: Analysis queued sample state.
   type: String
 - contextPath: SecneurXAnalysis.Report.DnsRequests
-  description: List of DNS data observed in the analyzed sample
+  description: List of DNS data observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.HttpRequests
-  description: List of HTTP data observed in the analyzed sample
+  description: List of HTTP data observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.JA3Digests
-  description: 'List of JA3 data observed in the analyzed sample'
+  description: List of JA3 data observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.ProcessCreated
-  description: Process behaviour data observed in the analyzed sample
+  description: Process behaviour data observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.RegistrySet
-  description: List of Registry creations observed in the analyzed sample
+  description: List of Registry creations observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.RegistryDeleted
-  description: List of Registry deletions observed in the analyzed sample
+  description: List of Registry deletions observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.FileCreated
-  description: List of File creations observed in the analyzed sample
+  description: List of File creations observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.FileDropped
-  description: List of File drops observed in the analyzed sample
+  description: List of File drops observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.FileDeleted
-  description: 'List of File deletions observed in the analyzed sample'
+  description: List of File deletions observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.FileModified
-  description: List of File changes observed in the analyzed sample
+  description: List of File changes observed in the analyzed sample.
   type: string
 - contextPath: SecneurXAnalysis.Report.Platform
-  description: Platform of the analyzed sample
+  description: Platform of the analyzed sample.
   type: String
 - contextPath: ATD.Task.taskId
-  description: The task ID of the sample uploaded
+  description: The task ID of the sample uploaded.
   type: string
 - contextPath: ATD.Task.jobId
-  description: The job ID of the sample uploaded
+  description: The job ID of the sample uploaded.
   type: string
 - contextPath: ATD.Task.messageId
-  description: The message Id relevant to the sample uploaded
+  description: The message Id relevant to the sample uploaded.
   type: string
 - contextPath: ATD.Task.srcIp
-  description: Source IPv4 address
+  description: Source IPv4 address.
   type: string
 - contextPath: ATD.Task.destIp
-  description: Destination IPv4 address
+  description: Destination IPv4 address.
   type: string
 - contextPath: ATD.Task.MD5
-  description: MD5 of the sample uploaded
+  description: MD5 of the sample uploaded.
   type: string
 - contextPath: ATD.Task.SHA1
-  description: SHA1 of the sample uploaded
+  description: SHA1 of the sample uploaded.
   type: string
 - contextPath: ATD.Task.SHA256
-  description: SHA256 of the sample uploaded
+  description: SHA256 of the sample uploaded.
   type: string
 - contextPath: InfoFile.Extension
-  description: The extension of the report file
+  description: The extension of the report file.
   type: string
 - contextPath: File.EntryID
-  description: The Entry ID of the sample
+  description: The Entry ID of the sample.
   type: string
 - contextPath: URL.Data
-  description: List of malicious URLs identified by Lastline analysis
+  description: List of malicious URLs identified by Lastline analysis.
   type: string
 - contextPath: URL.Malicious.Vendor
-  description: For malicious URLs, the vendor that made the decision
+  description: For malicious URLs, the vendor that made the decision.
   type: string
 - contextPath: URL.Malicious.Description
-  description: For malicious URLs, the reason for the vendor to make the decision
+  description: For malicious URLs, the reason for the vendor to make the decision.
   type: string
 - contextPath: URL.Malicious.Score
-  description: For malicious URLs, the score from the vendor
+  description: For malicious URLs, the score from the vendor.
   type: number
 - contextPath: Lastline.Submission.Status
-  description: Status of the submission
+  description: Status of the submission.
   type: string
 - contextPath: Lastline.Submission.DNSqueries
-  description: List of DNS queries done by the analysis subject
+  description: List of DNS queries done by the analysis subject.
   type: string
 - contextPath: Lastline.Submission.NetworkConnections
-  description: ist of network connections done by the analysis subject
+  description: ist of network connections done by the analysis subject.
   type: string
 - contextPath: Lastline.Submission.DownloadedFiles
   description: List of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
   type: string
 - contextPath: Lastline.Submission.UUID
-  description: Task UUID of submitted sample
+  description: Task UUID of submitted sample.
   type: number
 - contextPath: Lastline.Submission.YaraSignatures.name
-  description: Yara signatures name
+  description: Yara signatures name.
   type: string
 - contextPath: Lastline.Submission.YaraSignatures.score
   description: The score according to the yara signatures. from 0 to 100.
   type: number
 - contextPath: Lastline.Submission.YaraSignatures.internal
-  description: True if the signature is only for internal usage
+  description: True if the signature is only for internal usage.
   type: boolean
 - contextPath: Lastline.Submission.Process.arguments
-  description: Argument of the process
+  description: Argument of the process.
   type: string
 - contextPath: Lastline.Submission.Process.process_id
-  description: The process ID
+  description: The process ID.
   type: string
 - contextPath: Lastline.Submission.Process.executable.abs_path
-  description: Absolute path of the executable of the process
+  description: Absolute path of the executable of the process.
   type: string
 - contextPath: Lastline.Submission.Process.executable.filename
-  description: Filename of the executable
+  description: Filename of the executable.
   type: string
 - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
-  description: Yara signature of the executable of the process
+  description: Yara signature of the executable of the process.
   type: string
 - contextPath: Lastline.Submission.Process.executable.ext_info
-  description: Executable info of the process
+  description: Executable info of the process.
   type: string
 - contextPath: Joe.Analysis.ID
-  description: Web ID
+  description: Web ID.
   type: string
 - contextPath: Domain.Name
-  description: The Domain name
+  description: The Domain name.
   type: string
 - contextPath: Domain.DNS
   description: A list of IP objects resolved by DNS.
   type: string
 - contextPath: RegistryKey.Path
-  description: The path to the registry key
+  description: The path to the registry key.
   type: string
 - contextPath: RegistryKey.Value
   description: The value at the given RegistryKey.
   type: string
 - contextPath: Process.Name
-  description: Process name
+  description: Process name.
   type: string
 - contextPath: Process.PID
-  description: Process PID
+  description: Process PID.
   type: number
 - contextPath: Process.CommandLine
-  description: Process Command Line
+  description: Process Command Line.
   type: string
 - contextPath: Process.Path
-  description: Process path
+  description: Process path.
   type: string
 - contextPath: Process.StartTime
-  description: Process start time
+  description: Process start time.
   type: date
 - contextPath: Process.EndTime
-  description: Process end time
+  description: Process end time.
   type: date
 - contextPath: Polygon.Analysis.ID
-  description: Analysis ID in THF
+  description: Analysis ID in THF.
   type: number
 - contextPath: Polygon.Analysis.Name
-  description: File Name
+  description: File Name.
   type: string
 - contextPath: Polygon.Analysis.Size
-  description: File Size
+  description: File Size.
   type: number
 - contextPath: Polygon.Analysis.Started
-  description: Analysis start timestamp
+  description: Analysis start timestamp.
   type: date
 - contextPath: Polygon.Analysis.Analyzed
-  description: Analysis finish timestamp
+  description: Analysis finish timestamp.
   type: date
 - contextPath: Polygon.Analysis.MD5
-  description: Analyzed file MD5 hash
+  description: Analyzed file MD5 hash.
   type: string
 - contextPath: Polygon.Analysis.SHA1
-  description: Analyzed file SHA1 hash
+  description: Analyzed file SHA1 hash.
   type: string
 - contextPath: Polygon.Analysis.SHA256
-  description: Analyzed file SHA256
+  description: Analyzed file SHA256.
   type: string
 - contextPath: Polygon.Analysis.Result
-  description: Analysis verdict
+  description: Analysis verdict.
   type: string
 - contextPath: Polygon.Analysis.Status
-  description: The analysis status
+  description: The analysis status.
   type: string
 - contextPath: Polygon.Analysis.Verdict
-  description: Analysis verdict
+  description: Analysis verdict.
   type: boolean
 - contextPath: Polygon.Analysis.Probability
-  description: Verdict probability
+  description: Verdict probability.
   type: string
 - contextPath: Polygon.Analysis.Families
-  description: Malware families
+  description: Malware families.
   type: string
 - contextPath: Polygon.Analysis.Score
-  description: Polygon score
+  description: Polygon score.
   type: number
 - contextPath: Polygon.Analysis.Internet-connection
-  description: Internet availability
+  description: Internet availability.
   type: string
 - contextPath: Polygon.Analysis.Type
-  description: File type
+  description: File type.
   type: string
 - contextPath: Polygon.Analysis.DumpExists
-  description: Network activity dump exists
+  description: Network activity dump exists.
   type: boolean
 - contextPath: Polygon.Analysis.File
-  description: The information about files in analysis
+  description: The information about files in analysis.
   type: string
 - contextPath: Polygon.Analysis.URL
-  description: The information about URL indicators
+  description: The information about URL indicators.
   type: string
 - contextPath: Polygon.Analysis.IP
-  description: The information about IP indicators
+  description: The information about IP indicators.
   type: string
 - contextPath: Polygon.Analysis.Domain
-  description: The information about Domain indicators
+  description: The information about Domain indicators.
   type: string
 - contextPath: Polygon.Analysis.RegistryKey
-  description: The information about registry keys which were modified during the analysis
+  description: The information about registry keys which were modified during the analysis.
   type: string
 - contextPath: Polygon.Analysis.Process
-  description: The information about processes started during the analysis
+  description: The information about processes started during the analysis.
   type: string
 - contextPath: csfalconx.resource.id
   description: Analysis ID.
@@ -1695,51 +1702,53 @@ outputs:
   description: The flow ID.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.finalVerdict.verdict
-  description: The final verdict
+  description: The final verdict.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.allTags
-  description: All tags
+  description: All tags.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.overallState
-  description: Overall state of the scan
+  description: Overall state of the scan.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.subtaskReferences
-  description: Status of scan subtasks
+  description: Status of scan subtasks.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.allSignalGroups
-  description: All signal groups
+  description: All signal groups.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.resources
-  description: Resources
+  description: Resources.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.taskReference.name
-  description: Name of the main scan task
+  description: Name of the main scan task.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.taskReference.additionalInfo
-  description: Additional informations about the main scan task
+  description: Additional informations about the main scan task.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.taskReference.ID
-  description: ID of the main scan task
+  description: ID of the main scan task.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.taskReference.state
-  description: State of the main scan task
+  description: State of the main scan task.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.taskReference.resourceReference
-  description: Resource reference of the main scan task
+  description: Resource reference of the main scan task.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.taskReference.opcount
-  description: Counter
+  description: Counter.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.taskReference.processTime
-  description: processTime
+  description: processTime.
   type: string
 - contextPath: OPSWAT.Filescan.Analysis.file.name
-  description: The name of the file
+  description: The name of the file.
 - contextPath: OPSWAT.Filescan.Analysis.file.hash
-  description: The SHA256 of the file
+  description: The SHA256 of the file.
 - contextPath: OPSWAT.Filescan.Analysis.file.type
-  description: The type of the submission
+  description: The type of the submission.
 fromversion: 5.0.0
 tests:
 - Detonate File - No Files test
 - Detonate File - Generic Test
+contentitemexportablefields:
+  contentitemfields: {}

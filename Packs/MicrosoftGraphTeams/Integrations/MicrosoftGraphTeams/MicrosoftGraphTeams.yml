@@ -81,7 +81,7 @@ script:
     - description: An OData query. See README for OData usage examples.
       name: odata
     - defaultValue: "20"
-      description: Limit chats to fetch in one request
+      description: Limit chats to fetch in one request.
       name: limit
     description: Retrieve the list of chats that the user is part of.
     name: msgraph-teams-list-chats
@@ -107,9 +107,8 @@ script:
   - arguments:
     - description: User ID to use Teams as (can be principal ID (email address)).
       name: user_id
-    - description: The title of the chat.
+    - description: The title of the chat. Supported only for "group" type.
       name: subject
-      required: true
     - auto: PREDEFINED
       default: true
       defaultValue: group
@@ -228,7 +227,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: "true"
-      description: Allowing sharing of the whole history of the chat
+      description: Allowing sharing of the whole history of the chat.
       name: share_history
       predefined:
       - "true"
@@ -243,7 +242,7 @@ script:
       required: true
     - default: true
       defaultValue: "50"
-      description: Limit messages to fetch in one request
+      description: Limit messages to fetch in one request.
       name: limit
     description: Retrieve the list of messages in a chat.
     name: msgraph-teams-list-messages
@@ -301,13 +300,13 @@ script:
     name: msgraph-teams-generate-login-url
     arguments: []
   - description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
     name: msgraph-teams-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.68914
+  dockerimage: demisto/crypto:1.0.0.83106
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
