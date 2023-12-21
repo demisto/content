@@ -734,6 +734,7 @@ test-upload-flow:
   script:
     - section_start "Checks Whether to Trigger a Test Upload"
     - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
+    - echo "$SHOULD_SKIP_TEST_UPLOAD"
     - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
     -   echo "No upload-flow related files were modified, skipping upload test"
     -   job-done
