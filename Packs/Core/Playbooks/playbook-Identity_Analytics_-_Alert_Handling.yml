@@ -33,14 +33,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "47"
+      - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": -340
+          "y": -510
         }
       }
     note: false
@@ -108,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 110
+          "x": -280,
+          "y": -230
         }
       }
     note: false
@@ -147,8 +147,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 110
+          "x": 780,
+          "y": -230
         }
       }
     note: false
@@ -172,16 +172,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
+      - "56"
       - "1"
       - "2"
-      - "22"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": -40
+          "y": -380
         }
       }
     note: false
@@ -334,7 +334,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
+          "x": 250,
           "y": 110
         }
       }
@@ -991,7 +991,7 @@ tasks:
     task:
       id: 27faebca-18f3-4660-8e72-910b4ff288f6
       version: -1
-      name: Fetch alert extra data
+      name: Fetch cloud alert extra data
       description: Returns information about each alert ID.
       script: '|||core-get-cloud-original-alerts'
       type: regular
@@ -999,7 +999,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "22"
     scriptarguments:
       alert_ids:
         complex:
@@ -1015,7 +1015,7 @@ tasks:
       {
         "position": {
           "x": 250,
-          "y": -210
+          "y": -50
         }
       }
     note: false
@@ -1500,6 +1500,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 8cea850d-2ff4-4acb-8a52-78ecd733ecdd
+    type: condition
+    task:
+      id: 8cea850d-2ff4-4acb-8a52-78ecd733ecdd
+      version: -1
+      name: Is the resource log is Azure?
+      description: Checks if the resource log is Azure.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: alert.tags
+            iscontext: true
+          right:
+            value:
+              simple: Azure
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1510,14 +1555,16 @@ view: |-
       "32_55_Yes": 0.47,
       "53_30_#default#": 0.43,
       "53_46_yes": 0.41,
+      "56_16_#default#": 0.2,
+      "56_47_yes": 0.47,
       "5_50_yes": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 3135,
+        "height": 3305,
         "width": 2240,
         "x": -540,
-        "y": -340
+        "y": -510
       }
     }
   }
