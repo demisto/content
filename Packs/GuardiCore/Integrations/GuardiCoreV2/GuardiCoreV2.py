@@ -2,15 +2,12 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any, Tuple
-import base64
+from AkamaiGuardicoreApiModule import AkamaiGuardicoreClient
+from typing import Any
 import json
 from dateparser import parse
 from pytz import utc
 
-# Disable insecure warnings
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -25,86 +22,10 @@ INTEGRATION_NAME = 'GuardiCore v2'
 GLOBAL_TIMEOUT = 10
 
 
-class Client(BaseClient):
+class Client(AkamaiGuardicoreClient):
     """
        Client for GuardiCoreV2
-
-       Args:
-          username (str): The GuardiCore username for API access.
-          password (str): The GuardiCore password for API access.
-          base_url (str): The GuardiCore API server URL.
     """
-
-    def __init__(self, proxy: bool, verify: bool, base_url: str, username: str,
-                 password: str):
-        super().__init__(proxy=proxy, verify=verify, base_url=base_url)
-        self.username = username
-        self.password = password
-        self.base_url = base_url
-        self.access_token = ""
-        self._headers = {}
-
-        self.login()
-
-    def login(self):
-        integration_context = get_integration_context()
-
-        if self._is_access_token_valid(integration_context):
-            access_token = integration_context.get('access_token')
-            self._save_access_token(access_token)
-        else:
-            demisto.debug(
-                f"{INTEGRATION_NAME} - Generating a new token (old one isn't valid anymore).")
-            self.generate_new_token()
-
-    def _save_access_token(self, access_token: str):
-        self.access_token = access_token
-        self._headers = {
-            "Authorization": f'bearer {access_token}'}
-
-    def _is_access_token_valid(self, integration_context: dict) -> bool:
-        access_token_expiration = integration_context.get('expires_in')
-        access_token = integration_context.get('access_token')
-        demisto.debug(
-            f'{INTEGRATION_NAME} - Checking if context has valid access token...'
-            + f'expiration: {access_token_expiration}, access_token: {access_token}')
-        if access_token and access_token_expiration:
-            access_token_expiration_datetime = datetime.strptime(
-                access_token_expiration, DATE_FORMAT)
-            return access_token_expiration_datetime > datetime.now()
-        return False
-
-    def generate_new_token(self):
-        token = self.authenticate()
-        self.save_jwt_token(token)
-        self._save_access_token(token)
-
-    def save_jwt_token(self, access_token: str):
-        expiration = get_jwt_expiration(access_token)
-        expiration_timestamp = datetime.fromtimestamp(expiration)
-        context = {"access_token": access_token,
-                   "expires_in": expiration_timestamp.strftime(DATE_FORMAT)}
-        set_integration_context(context)
-        demisto.debug(
-            f"New access token that expires in : {expiration_timestamp.strftime(DATE_FORMAT)}"
-            f" was set to integration_context.")
-
-    def authenticate(self):
-        body = {
-            'username': self.username,
-            'password': self.password
-        }
-        new_token = self._http_request(
-            method='POST',
-            url_suffix='/authenticate',
-            json_data=body)
-
-        if not new_token or not new_token.get('access_token'):
-            raise DemistoException(
-                f"{INTEGRATION_NAME} error: The client credentials are invalid.")
-
-        new_token = new_token.get('access_token')
-        return new_token
 
     def get_assets(self, url_params: dict):
         data = self._http_request(
@@ -134,14 +55,6 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def get_jwt_expiration(token: str):
-    if "." not in token:
-        return 0
-    jwt_token = base64.b64decode(token.split(".")[1] + '==')
-    jwt_token = json.loads(jwt_token)
-    return jwt_token.get("exp")
 
 
 def calculate_fetch_start_time(last_fetch: Optional[str],
@@ -222,7 +135,7 @@ def test_module(client: Client, is_fetch: bool = False) -> str:
     return message
 
 
-def get_incidents(client: Client, args: Dict[str, Any]):
+def get_incidents(client: Client, args: dict[str, Any]):
     from_time = args.get('from_time', None)
     to_time = args.get('to_time', None)
 
@@ -272,7 +185,7 @@ def get_incidents(client: Client, args: Dict[str, Any]):
 
     raw_results = result.get("objects")
 
-    results: List[Dict[str, Any]] = []
+    results: List[dict[str, Any]] = []
     for res in raw_results:
         row = filter_human_readable(res, human_columns=INCIDENT_COLUMNS)
 
@@ -294,8 +207,8 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     )
 
 
-def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
-        Tuple[List[Dict], int, List[str]]:
+def fetch_incidents(client: Client, args: dict[str, Any]) -> \
+        tuple[List[dict], int, List[str]]:
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
     last_ids = last_run.get("last_ids", [])
@@ -359,7 +272,7 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
     return incidents, next_fetch_start_time, last_ids
 
 
-def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_indicent(client: Client, args: dict[str, Any]) -> CommandResults:
     incident_id = args.get('id', None)
     if not incident_id:
         raise DemistoException(
@@ -386,7 +299,7 @@ def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_assets(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     ip_address = args.get('ip_address', None)
     name = args.get('name', None)
     asset_id = args.get('asset_id', None)
@@ -429,7 +342,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return endpoints
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> \
+def endpoint_command(client: Client, args: dict[str, Any]) -> \
         List[CommandResults]:
     id = args.get("id", None)
     ip_address = args.get("ip", None)
@@ -481,9 +394,9 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> \
 def main() -> None:
     global GLOBAL_TIMEOUT
     params = demisto.params()
-    base_url = params.get('base_url')
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    base_url = params.get('base_url', '')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     proxy = params.get('proxy', False)
     insecure = params.get('insecure', False)
     client = Client(username=username, password=password,
@@ -508,11 +421,11 @@ def main() -> None:
     limit = int(params.get("max_fetch", 50))
     GLOBAL_TIMEOUT = int(params.get("timeout", 10))
 
+    args = demisto.args()
+    command = demisto.command()
     try:
-        args = demisto.args()
-        command = demisto.command()
         if command == 'test-module':
-            return_results(test_module(client, demisto.params().get('isFetch')))
+            return_results(test_module(client, params.get('isFetch', False)))
         elif command == 'fetch-incidents':
             incidents, last_fetch, last_ids = fetch_incidents(client, {
                 'severity': severity,

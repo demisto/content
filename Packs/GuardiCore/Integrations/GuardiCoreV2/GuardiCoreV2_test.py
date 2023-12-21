@@ -1,9 +1,7 @@
 from CommonServerPython import *
 
 import json
-import io
 import pytest
-from pytest import raises
 
 from freezegun import freeze_time
 from dateparser import parse
@@ -14,32 +12,8 @@ TEST_API_KEY = '1.eyJleHAiOiAxNjI1NjYxMDc3fQ=='
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
-
-
-@pytest.mark.parametrize(
-    'input, output',
-    [
-        ('', 0),
-        (TEST_API_KEY, 1625661077),
-    ]
-)
-def test_get_jwt_expiration(input, output):
-    """Unit test
-    Given
-    - empty jwt token
-    - a valid jwt token
-    When
-    - we mock the token generation.
-    - we mock the token generation.
-    Then
-    - return an empty expiration
-    - extract the jwt token expiration
-    Validate that the expiration is correct.
-    """
-    from GuardiCoreV2 import get_jwt_expiration
-    assert get_jwt_expiration(input) == output
 
 
 @pytest.mark.parametrize(
@@ -182,25 +156,6 @@ def test_map_guardicore_os(guardicore_os, os_string):
     assert map_guardicore_os(guardicore_os) == os_string
 
 
-def test_authenticate(requests_mock):
-    """Unit test
-    Given
-    - a username and password
-    When
-    - we mock the authentication to the integration api endpoint.
-    Then
-    - Validate that the access_token is returned correctly.
-    """
-    from GuardiCoreV2 import Client
-    requests_mock.post(
-        'https://api.guardicoreexample.com/api/v3.0/authenticate',
-        json={'access_token': TEST_API_KEY})
-    client = Client(base_url='https://api.guardicoreexample.com/api/v3.0',
-                    verify=False, proxy=False, username='test', password='test')
-
-    assert client.access_token == TEST_API_KEY
-
-
 def test_get_incident(mocker, requests_mock):
     """Unit test
     Given
@@ -276,7 +231,7 @@ def test_endpoint_command_fails(mocker, requests_mock):
                     verify=False, proxy=False, username='test', password='test')
     args = {}
     mocker.patch.object(client, '_http_request', return_value=mock_response)
-    with raises(DemistoException):
+    with pytest.raises(DemistoException):
         endpoint_command(client, args)
 
 

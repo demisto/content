@@ -1,0 +1,18 @@
+commonfields:
+  id: AkamaiGuardicoreApiModule
+  version: -1
+name: AkamaiGuardicoreApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common Akamai Guardicore code that will be appended into the Akamai Guardicore integrations when it's deployed.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.10.13.83255
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
