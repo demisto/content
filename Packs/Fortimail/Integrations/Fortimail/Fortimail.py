@@ -2423,7 +2423,7 @@ def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
 
-    url = params.get("url")
+    url: str = params.get("url")
     user_name = params["credentials"]["identifier"]
     password = params["credentials"]["password"]
     verify_certificate: bool = not params.get("insecure", False)
@@ -2452,19 +2452,10 @@ def main() -> None:
             "fortimail-recipient-policy-create": recipient_policy_create_update_command,
             "fortimail-recipient-policy-update": recipient_policy_create_update_command,
         }
-        move_commands = [
-            "fortimail-ip-policy-move",
-            "fortimail-access-control-move",
-            "fortimail-recipient-policy-move",
-        ]
-        group_member_commands = [
-            "fortimail-ip-group-member-add",
-            "fortimail-ip-group-member-replace",
-            "fortimail-email-group-member-add",
-            "fortimail-email-group-member-replace",
-        ]
 
-        list_commands = [
+        if command == "test-module":
+            return_results(test_module(client))
+        elif command in [
             "fortimail-pki-user-list",
             "fortimail-recipient-policy-list",
             "fortimail-tls-profile-list",
@@ -2487,14 +2478,16 @@ def main() -> None:
             "fortimail-imap-auth-profile-list",
             "fortimail-radius-auth-profile-list",
             "fortimail-pop3-auth-profile-list",
-        ]
-        create_update_group_commands = [
+        ]:
+            return_results(list_command(client, args))
+        elif command in [
             "fortimail-email-group-create",
             "fortimail-ip-group-create",
             "fortimail-email-group-update",
             "fortimail-ip-group-update",
-        ]
-        delete_commands = [
+        ]:
+            return_results(group_create_update_command(client, args))
+        elif command in [
             "fortimail-ip-group-delete",
             "fortimail-ip-group-member-delete",
             "fortimail-email-group-delete",
@@ -2503,19 +2496,20 @@ def main() -> None:
             "fortimail-ip-policy-delete",
             "fortimail-access-control-delete",
             "fortimail-recipient-policy-delete",
-        ]
-
-        if command == "test-module":
-            return_results(test_module(client))
-        elif command in list_commands:
-            return_results(list_command(client, args))
-        elif command in create_update_group_commands:
-            return_results(group_create_update_command(client, args))
-        elif command in delete_commands:
+        ]:
             return_results(delete_command(client, args))
-        elif command in move_commands:
+        elif command in [
+            "fortimail-ip-policy-move",
+            "fortimail-access-control-move",
+            "fortimail-recipient-policy-move",
+        ]:
             return_results(move_command(client, args))
-        elif command in group_member_commands:
+        elif command in [
+            "fortimail-ip-group-member-add",
+            "fortimail-ip-group-member-replace",
+            "fortimail-email-group-member-add",
+            "fortimail-email-group-member-replace",
+        ]:
             return_results(group_member_add_replace_command(client, args))
         elif command in commands:
             return_results(commands[command](client, args))
