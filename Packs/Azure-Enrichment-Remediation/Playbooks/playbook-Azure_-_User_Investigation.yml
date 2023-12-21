@@ -1292,7 +1292,7 @@ tasks:
       id: 5b2b1c42-7a11-456d-82a6-421c46feee98
       version: -1
       name: Search for available tables
-      description: Executes an Analytics query for data.
+      description: Executes an analytics query for data.
       script: Azure Log Analytics|||azure-log-analytics-execute-query
       type: regular
       iscommand: true
