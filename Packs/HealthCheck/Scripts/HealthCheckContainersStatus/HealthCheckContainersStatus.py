@@ -7,7 +7,7 @@ def main():
     account_name = incident.get('account')
     account_name = f'acc_{account_name}/' if account_name != "" else ""
 
-    res = execute_command('demisto-api-get', {'uri': f'{account_name}health/containers'})
+    res = execute_command('core-api-get', {'uri': f'{account_name}health/containers'})
     containers = res['response']
 
     return CommandResults(

@@ -74,12 +74,7 @@ tasks:
       id: 1a2f4019-bdd9-44b9-8fec-1d47cadf2a62
       version: -1
       name: Run instances
-      description: Launches the specified number of instances using an AMI for which
-        you have permissions. You can create a launch template , which is a resource
-        that contains the parameters to launch an instance. When you launch an instance
-        using RunInstances , you can specify the launch template instead of specifying
-        the launch parameters. An instance is ready for you to use when its in the
-        running state. You can check the state of your instance using DescribeInstances.
+      description: Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using RunInstances , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using DescribeInstances.
       script: '|||aws-ec2-run-instances'
       type: regular
       iscommand: true
@@ -121,8 +116,7 @@ tasks:
       id: c39d8a36-bf77-442f-87e8-43ada583a8dd
       version: -1
       name: Is instance ready?
-      description: A waiter function that runs every 15  seconds until a successful
-        state is reached
+      description: A waiter function that runs every 15  seconds until a successful state is reached
       script: '|||aws-ec2-waiter-instance-status-ok'
       type: regular
       iscommand: true
@@ -230,8 +224,7 @@ tasks:
       id: 0cb8a3c8-8ef2-412b-8905-e788154bcd2f
       version: -1
       name: Terminate Instance
-      description: Shuts down one or more instances. This operation is idempotent;
-        if you terminate an instance more than once, each call succeeds.
+      description: Shuts down one or more instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds.
       script: '|||aws-ec2-terminate-instances'
       type: regular
       iscommand: true
@@ -263,8 +256,7 @@ tasks:
       id: 22397a92-6566-44dd-8821-1634f3b656d9
       version: -1
       name: Is instance terminated?
-      description: A waiter function that runs every 15  seconds until a successful
-        state is reached
+      description: A waiter function that runs every 15  seconds until a successful state is reached
       script: '|||aws-ec2-waiter-instance-terminated'
       type: regular
       iscommand: true
@@ -423,7 +415,7 @@ tasks:
       version: -1
       name: Configure Tidy Instance
       description: send HTTP PUT request
-      script: '|||demisto-api-put'
+      script: '|||core-api-put'
       type: regular
       iscommand: true
       brand: ""
@@ -553,8 +545,7 @@ tasks:
       id: 0e9a018f-a8b4-4e1d-8384-b8880aa527ad
       version: -1
       name: Check that Tidy integration enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -597,4 +588,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: Test Tidy content developer setup on a aws mac machine
+description: Test Tidy content developer setup on a aws mac machine.
