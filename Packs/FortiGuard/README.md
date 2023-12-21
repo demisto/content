@@ -34,16 +34,16 @@
 <p> Returns a file containing the IoCs. </p>
 <p> </p>
 <h5>Command Example</h5>
-<pre>!fortigate-get-addresses</pre>
+<pre>!fortiguard-get-indicators</pre>
 <h5>Context Example</h5>
-<pre>Fortigate:{} 2 items<br>Address:[] 8 items<br>0:{} 4 items<br>EndIP:0.0.0.0<br>Name:FIREWALL_AUTH_PORTAL_ADDRESS<br>StartIP:0.0.0.0<br>Subnet:0.0.0.0-0.0.0.0<br>1:{} 4 items<br>EndIP:10.212.134.210<br>Name:SSLVPN_TUNNEL_ADDR1<br>StartIP:10.212.134.200<br>Subnet:10.212.134.200-10.212.134.210<br>2:{} 4 items<br>EndIP:0.0.0.0<br>Name:all<br>StartIP:0.0.0.0<br>Subnet:0.0.0.0-0.0.0.0<br>3:{} 4 items<br>EndIP:0.0.0.0<br>Name:autoupdate.opera.com<br>StartIP:0.0.0.0<br>Subnet:0.0.0.0-0.0.0.0<br>4:{} 4 items<br>EndIP:0.0.0.0<br>Name:google-play<br>StartIP:0.0.0.0<br>Subnet:0.0.0.0-0.0.0.0<br>5:{} 4 items<br>EndIP:255.255.255.255<br>Name:none<br>StartIP:0.0.0.0<br>Subnet:0.0.0.0-255.255.255.255<br>6:{} 4 items<br>EndIP:0.0.0.0<br>Name:swscan.apple.com<br>StartIP:0.0.0.0<br>Subnet:0.0.0.0-0.0.0.0<br>7:{} 4 items<br>EndIP:0.0.0.0<br>Name:update.microsoft.com<br>StartIP:0.0.0.0<br>Subnet:0.0.0.0-0.0.0.0</pre>
+<pre>File:[] 1 item<br>0:{} 10 items<br>Size:306403565<br>SHA1:65d3106269f0c8a741dc8d8cc2bea5950a96f41d<br>SHA256:d6f5614e9b08e03d608469605f2683f22f4baee0efa503af156419522e51b7ac<br>SHA512:5f0c1f7b5af9a7b2c55fa6df0a1c217cd2f87681ac91730ce8ec04bf57882ae135a115f0ffb3eed1a5f35f25fa66d8866d5dae73eacd0effd2deb6f0d36aa5b2<br>Name:FortiGuard Indicators<br>SSDeep:49152:Lw5QsajTG8gNr1whDz+CxAIcN7sy5nRYJgwPWt/00ejzvVmC85SvZFI+dW5MD6dN:LHvc<br>EntryID:191@c99acbc8-fca1-4f57-8958-2cbbee57d738<br>Info:text/plain<br>Type:ASCII text, with very long lines<br>MD5:8fdc14f47e46aa0e3fe8502435a639ee</pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://user-images.githubusercontent.com/12241410/49055026-d9087f00-f1fe-11e8-8026-45f8ed443944.png" width="749" height="225"></p>
-<h3 id="h_251291621171543315015519">2. Get information about service groups</h3>
+<h3 id="h_549888813401543315025030">2. Return Domain Information and reputation</h3>
 <hr>
 <p>Returns information about FortiGate service groups.</p>
 <h5>Base Command</h5>
-<p><code>fortigate-get-service-groups</code></p>
+<p><code>url</code></p>
 <h5>Input</h5>
 <table style="width: 748px;" border="2" cellpadding="6">
 <thead>
@@ -55,9 +55,9 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 255px;">name</td>
-<td style="width: 302px;">Filter by group name</td>
-<td style="width: 151px;">Optional</td>
+<td style="width: 255px;">url</td>
+<td style="width: 302px;">URL to be Queried</td>
+<td style="width: 151px;">Required</td>
 </tr>
 </tbody>
 </table>
@@ -73,21 +73,26 @@
 </thead>
 <tbody>
 <tr>
-<td style="width: 333px;">Fortigate.ServiceGroup.Name</td>
-<td style="width: 69px;">string</td>
-<td style="width: 306px;">Service group name</td>
+<td style="width: 333px;">categoryid</td>
+<td style="width: 69px;">Integer</td>
+<td style="width: 306px;">Queried URL Category ID</td>
 </tr>
 <tr>
-<td style="width: 333px;">Fortigate.ServiceGroup.Members</td>
+<td style="width: 333px;">categoryname</td>
 <td style="width: 69px;">string</td>
-<td style="width: 306px;">Service group member name</td>
+<td style="width: 306px;">Queried URL Category Name</td>
+</tr>
+<tr>
+<td style="width: 333px;">url</td>
+<td style="width: 69px;">string</td>
+<td style="width: 306px;">Queried URL</td>
 </tr>
 </tbody>
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>!fortigate-get-service-groups</pre>
+<pre>!url</pre>
 <h5>Context Example</h5>
-<pre>ServiceGroup:[] 5 items<br>0:{} 2 items<br>Members:[] 7 items<br>0:DNS<br>1:IMAP<br>2:IMAPS<br>3:POP3<br>4:POP3S<br>5:SMTP<br>6:SMTPS<br>Name:Email Access<br>1:{} 2 items<br>Members:[] 3 items<br>0:DCE-RPC<br>1:DNS<br>2:HTTPS<br>Name:Exchange Server<br>2:{} 2 items<br>Members:[] 1 item<br>0:SMB<br>Name:Maya<br>3:{} 2 items<br>Members:[] 3 items<br>0:DNS<br>1:HTTP<br>2:HTTPS<br>Name:Web Access<br>4:{} 2 items<br>Members:[] 7 items<br>0:DCE-RPC<br>1:DNS<br>2:KERBEROS<br>3:LDAP<br>4:LDAP_UDP<br>5:SAMBA<br>6:SMB<br>Name:Windows AD</pre>
+<pre>FortiGuard:{} 1 item<br>Url:[] 1 item<br>0:{} 3 items<br>categoryid:56<br>categoryname:Search Engines and Portals<br>url:google.com</pre>
 <h5>Human Readable Output</h5>
 <p><img src="https://user-images.githubusercontent.com/12241410/49055027-d9087f00-f1fe-11e8-80b2-fa516df50343.png" width="752" height="295"></p>
