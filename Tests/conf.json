@@ -5627,7 +5627,8 @@
         },
         {
             "integrations": "AWS-SNS-Listener",
-            "playbookID": "AWS SNS Listener - Test"
+            "playbookID": "AWS SNS Listener - Test",
+            "instance_names": "AWS-SNS-Listener"
         }
     ],
     "skipped_tests": {
