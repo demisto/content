@@ -1,0 +1,61 @@
+[
+    {
+        "Action": "accept",
+        "Description": "A meaningful comment",
+        "Destination": "So you wanna be the master of Pokemon?\nDo you have the skills to be number one?",
+        "DestinationNegate": "disable",
+        "Destination6Negate": "disable",
+        "DestinationInterface": ["Look behind you"],
+        "Log": "utm",
+        "LogStart": "enable",
+        "Name": "Hello there",
+        "NAT": "enable",
+        "ID": 2,
+        "Schedule": "default-darrp-optimize",
+        "Service": ["lior-test1"],
+        "ServiceNegate": "disable",
+        "Source": "FABRIC_DEVICE",
+        "SourceNegate": "disable",
+        "Source6Negate": "disable",
+        "SourceInterface": ["General Cannelloni"],
+        "Status": "enable",
+        "UUID": "00000000-0000-0000-0000-000000000000",
+        "Security": [
+            "wifi-default",
+            "certificate-inspection",
+            "default",
+            "default",
+            "single",
+            "g-default"
+        ],
+        "VDOM": "root"
+    },
+    {
+        "Action": "accept",
+        "Description": "",
+        "Destination": "over the rainbow",
+        "DestinationNegate": "disable",
+        "Destination6Negate": "disable",
+        "DestinationInterface": ["port2"],
+        "Log": "utm",
+        "LogStart": "disable",
+        "Name": "Gengar",
+        "NAT": "enable",
+        "ID": 10,
+        "Schedule": "always",
+        "Service": ["Mom", "Spaghetti"],
+        "ServiceNegate": "disable",
+        "Source": "some where",
+        "SourceNegate": "disable",
+        "Source6Negate": "disable",
+        "SourceInterface": ["port1"],
+        "Status": "enable",
+        "UUID": "00000000-0000-0000-0000-000000000000",
+        "Security": [
+            "no-inspection",
+            "default",
+            "single"
+        ],
+        "VDOM": "root"
+    }
+]
