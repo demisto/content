@@ -1222,7 +1222,6 @@ class DomainNameObject(object):
 
 
 def detect_indicator_type_file(indicator_value: str):
-    
     if ":" in indicator_value:
         return 'ssdeep'
     if re.match(sha256Regex, indicator_value):
@@ -1278,9 +1277,9 @@ class FileObject(object):
                 v = v.strip()
                 if type := detect_indicator_type_file(v):
                     result.append({
-                                'indicator': v.strip(),
-                                'htype': type,
-                                'type': 'File'
+                            'indicator': v.strip(),
+                            'htype': type,
+                            'type': 'File'
                     })
 
         for r in result:
