@@ -23,6 +23,8 @@ filter
     xdm.target.ipv6 = "",
     xdm.source.port = if(source_ipv4 = "0.0.0.0", null, to_integer(0)),
     xdm.target.port = if(source_ipv4 = "0.0.0.0", null, to_integer(0)),
+    xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
+    xdm.logon.type = XDM_CONST.LOGON_TYPE_INTERACTIVE,
     xdm.event.id = _id,
     xdm.source.host.device_id = json_extract_scalar(access_device, "$.epkey"),
     xdm.event.operation = if(reason in ("remembered_device", "trusted_network", "authentication_trusted_by_risk_based_remembered_devices"), "Login", "MFA"),
