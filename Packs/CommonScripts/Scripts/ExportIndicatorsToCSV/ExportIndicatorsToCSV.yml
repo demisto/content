@@ -7,7 +7,7 @@ args:
   name: seenDays
 - description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,indicator_type,value,source,score,relatedIncCount,setBy,sourceBrands,modified).'
   name: columns
-comment: This automation uses the Demisto REST API Integration to batch export Indicators to CSV and return the resulting CSV file to the war room.
+comment: This automation uses the Core REST API Integration to batch export Indicators to CSV and return the resulting CSV file to the war room.
 commonfields:
   id: ExportIndicatorsToCSV
   version: -1
@@ -16,8 +16,8 @@ contentitemexportablefields:
     fromServerVersion: ""
 dependson:
   must:
-  - demisto-api-post
-  - demisto-api-get
+  - core-api-post
+  - core-api-get
 dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: ExportIndicatorsToCSV
