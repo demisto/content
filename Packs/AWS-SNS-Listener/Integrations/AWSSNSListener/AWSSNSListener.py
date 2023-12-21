@@ -44,6 +44,16 @@ async def handle_post(request: Request):
             'type': 'AWS-SNS'
         }
         demisto.debug(f'demisto.createIncidents with:{incident}')
+        if demisto.params().get('store_samples'):
+            try:
+                sample_events_to_store.append(incident)
+                integration_context = get_integration_context()
+                sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+                sample_events += sample_events_to_store
+                integration_context['sample_events'] = list(sample_events)
+                set_to_integration_context_with_retries(integration_context)
+            except Exception as e:
+                demisto.error(f'Failed storing sample events - {e}')
         data = demisto.createIncidents(incidents=[incident])
         if not data:
             demisto.error('Failed creating incident')
