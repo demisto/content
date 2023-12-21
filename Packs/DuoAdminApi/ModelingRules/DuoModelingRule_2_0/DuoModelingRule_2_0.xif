@@ -17,7 +17,8 @@ filter
     source_ipv6 = if(access_device_ip ~= ":", access_device_ip, null), 
     intermediate_ipv4 = if(auth_device_ip !~= ":", auth_device_ip, null),
     intermediate_ipv6 = if(auth_device_ip ~= ":", auth_device_ip, null),
-    establish_os_category = if(os ~= "fedora|ubuntu|chrome|mac|windows|linux|debian", "Computer", os ~= "ios|blackberry|android|phone", "Mobile", os ~= "tizen", "IOT", os = null, null, to_string(os))
+    establish_os_category = if(os ~= "fedora|ubuntu|chrome|mac|windows|linux|debian", "Computer", os ~= "ios|blackberry|android|phone", "Mobile", os ~= "tizen", "IOT", os = null, null, to_string(os)),
+    alert_risks_check = if(reason = "location_restricted", "risky_signin", reason = "anomalous_push", "risky_signin", reason = "anonymous_ip", "risky_signin", result = "fraud", "risky_signin", null)
 | alter
     xdm.target.ipv4 = "",
     xdm.target.ipv6 = "",
@@ -39,7 +40,7 @@ filter
     xdm.target.resource.id = json_extract_scalar(application, "$.key"),
     xdm.target.resource.name = json_extract_scalar(application, "$.name"),
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
-    xdm.alert.risks = arraycreate(if(reason = "location_restricted", "risky_signin", reason = "anomalous_push", "risky_signin", reason = "anonymous_ip", "risky_signin", result = "fraud", "risky_signin", null)),
+    xdm.alert.risks = if(alert_risks_check = null, null, arraycreate(alert_risks_check)),
     xdm.session_context_id = txid,
     xdm.auth.mfa.client_details = adaptive_trust_assessments,
     xdm.source.user.groups = user -> groups[],
