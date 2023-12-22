@@ -49,10 +49,10 @@ tasks:
       version: -1
       name: JoeSecurity Upload File
       description: Submit a sample for sandbox analysis.
-      script: JoeSecurityV2|||joe-submit-sample
+      script: '|||joe-submit-sample'
       type: regular
       iscommand: true
-      brand: JoeSecurityV2
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -95,10 +95,10 @@ tasks:
       version: -1
       name: JoeSecurity Get Report
       description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See the integration README for the full list of supported report types.
-      script: JoeSecurityV2|||joe-download-report
+      script: '|||joe-download-report'
       type: regular
       iscommand: true
-      brand: JoeSecurityV2
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -244,6 +244,14 @@ tasks:
                     right:
                       value:
                         simple: JoeSecurityV2
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: JoeSecurityV2OnPremise
                 - - operator: isEqualString
                     left:
                       value:
@@ -281,10 +289,10 @@ tasks:
       version: -1
       name: JoeSecurity Get Info
       description: Get information about an analysis.
-      script: JoeSecurityV2|||joe-analysis-info
+      script: '|||joe-analysis-info'
       type: regular
       iscommand: true
-      brand: JoeSecurityV2
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
