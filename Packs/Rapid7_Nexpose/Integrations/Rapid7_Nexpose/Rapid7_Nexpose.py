@@ -14,6 +14,7 @@ DEFAULT_PAGE_SIZE = 50  # Default page size to use
 MATCH_DEFAULT_VALUE = "any"  # Default "match" value to use when using search filters. Can be either "all" or "any".
 REMOVE_RESPONSE_LINKS = True  # Whether to remove `links` keys from responses.
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
+DEFAULT_TIMEOUT = 60
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -114,7 +115,15 @@ class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
 class Client(BaseClient):
     """Client class for interactions with Rapid7 Nexpose API."""
 
-    def __init__(self, url: str, username: str, password: str, token: str | None = None, verify: bool = True):
+    def __init__(
+        self,
+        url: str,
+        username: str, 
+        password: str,
+        token: str | None = None,
+        verify: bool = True,
+        timeout: int = DEFAULT_TIMEOUT
+    ):
         """
         Initialize the client.
 
@@ -124,6 +133,8 @@ class Client(BaseClient):
             password (str): Password to use for authentication.
             token (str | None, optional): 2FA token to use for authentication.
             verify (bool | None, optional): Whether to verify SSL certificates. Defaults to True.
+            timeout (int): The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
         """
         self.base_url = url
         self._auth_username = username
@@ -133,6 +144,7 @@ class Client(BaseClient):
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
+        self.timeout = timeout
 
         # Add 2FA token to headers if provided
         if token:
@@ -148,7 +160,7 @@ class Client(BaseClient):
 
     def _http_request(self, **kwargs):
         """Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses."""
-        response = super()._http_request(**kwargs)
+        response = super()._http_request(timeout=self.timeout, **kwargs)
 
         if REMOVE_RESPONSE_LINKS:
             return remove_dict_key(response, "links")
@@ -5373,7 +5385,8 @@ def main():  # pragma: no cover
             username=params["credentials"].get("identifier"),
             password=params["credentials"].get("password"),
             token=token,
-            verify=not params.get("unsecure")
+            verify=not params.get("unsecure"),
+            timeout=arg_to_number(params.get("timeout")) or DEFAULT_TIMEOUT
         )
 
         results: CommandResults | list[CommandResults] | dict | str
