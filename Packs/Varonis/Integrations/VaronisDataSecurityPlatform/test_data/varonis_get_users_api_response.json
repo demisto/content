@@ -1,0 +1,52 @@
+ [
+    {
+        "Id": 509,
+        "Sid": null,
+        "SAMAccountName": "Administrator",
+        "DisplayName": "Administrator",
+        "DomainName": "L1839.com",
+        "Email": "administrator@varonis1.com",
+        "DomainUserName": "L1839.com\\Administrator",
+        "ObjName": "User",
+        "DisplayNameDomain": "Administrator (L1839.com)",
+        "Department": "",
+        "UserType": "",
+        "AccountTypeName": [
+            "Admin"
+        ],
+        "AccountStatus": "",
+        "AccountExpires": null,
+        "Location": null,
+        "Manager": null,
+        "Title": null,
+        "PersonalDevices": [],
+        "WeekendWorkingHours": null,
+        "WorkDaysWorkingHours": null,
+        "LockedOutAccount": null,
+        "StaleUserAccount": null
+    },
+    {
+        "Id": 39,
+        "Sid": null,
+        "SAMAccountName": "ALL APPLICATION PACKAGES",
+        "DisplayName": "ALL APPLICATION PACKAGES",
+        "DomainName": "Abstract",
+        "Email": "",
+        "DomainUserName": "Abstract\\ALL APPLICATION PACKAGES",
+        "ObjName": "User",
+        "DisplayNameDomain": "ALL APPLICATION PACKAGES (Abstract)",
+        "Department": null,
+        "UserType": null,
+        "AccountTypeName": [],
+        "AccountStatus": "",
+        "AccountExpires": null,
+        "Location": null,
+        "Manager": null,
+        "Title": null,
+        "PersonalDevices": [],
+        "WeekendWorkingHours": null,
+        "WorkDaysWorkingHours": null,
+        "LockedOutAccount": null,
+        "StaleUserAccount": null
+    }
+]

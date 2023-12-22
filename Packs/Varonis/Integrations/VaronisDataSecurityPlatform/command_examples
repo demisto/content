@@ -1,0 +1,4 @@
+!varonis-get-alerts page=1 alert_status=Open max_results=1 start_time=2022-02-16T13:00:00+02:00
+!varonis-update-alert-status alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C status="Under Investigation"
+!varonis-close-alert alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C,0D9D657A-A51F-4674-B49A-FFB1EDD35D51 close_reason=Resolved
+!varonis-get-alerted-events page=1 alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C max_results=1
