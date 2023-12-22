@@ -5536,6 +5536,10 @@
             "playbookID": "testplaybook- JoeSecuirtyV2"
         },
         {
+            "integrations": "JoeSecurityV2OnPremise",
+            "playbookID": "testplaybook- JoeSecuirtyV2"
+        },
+        {
             "integrations": "FortinetFortiwebVM",
             "playbookID": "playbook-FortiwebVM_V1_Test",
             "fromversion": "6.2.0"
