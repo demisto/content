@@ -162,14 +162,7 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
             results = executor.map(run_command, accounts)
 
         return list(results)
-    return account_runner
-
-
-run_for_given_accounts = (
-    run_on_all_accounts
-    if ROLE_NAME and not demisto.getArg('roleArn')
-    else lambda x: x
-)
+    return account_runner if (ROLE_NAME and not demisto.getArg('roleArn')) else func
 
 
 """MAIN FUNCTIONS"""
@@ -199,7 +192,7 @@ def test_module() -> str:
     return 'ok'
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_regions_command(args: dict) -> CommandResults:
     client = build_client(args)
     data = []
@@ -222,7 +215,7 @@ def describe_regions_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -279,7 +272,7 @@ def describe_instances_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_iam_instance_profile_associations_command(args: dict) -> CommandResults:
     client = build_client(args)
     data = []
@@ -320,7 +313,7 @@ def describe_iam_instance_profile_associations_command(args: dict) -> CommandRes
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_images_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -374,7 +367,7 @@ def describe_images_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_addresses_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -425,7 +418,7 @@ def describe_addresses_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_snapshots_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -483,7 +476,7 @@ def describe_snapshots_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_volumes_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -532,7 +525,7 @@ def describe_volumes_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_launch_templates_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -586,7 +579,7 @@ def describe_launch_templates_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_key_pairs_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -616,7 +609,7 @@ def describe_key_pairs_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_vpcs_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -664,7 +657,7 @@ def describe_vpcs_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_subnets_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -713,7 +706,7 @@ def describe_subnets_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_security_groups_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -762,7 +755,7 @@ def describe_security_groups_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def allocate_address_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -782,7 +775,7 @@ def allocate_address_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def associate_address_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -813,7 +806,7 @@ def associate_address_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_snapshot_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -867,7 +860,7 @@ def create_snapshot_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def delete_snapshot_command(args: dict) -> CommandResults:
     client = build_client(args)
     response = client.delete_snapshot(SnapshotId=args.get('snapshotId'))
@@ -876,7 +869,7 @@ def delete_snapshot_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Snapshot with ID: {snapshot_id} was deleted".format(snapshot_id=args.get('snapshotId')))
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_image_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -906,7 +899,7 @@ def create_image_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def deregister_image_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -916,7 +909,7 @@ def deregister_image_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The AMI with ID: {image_id} was deregistered".format(image_id=args.get('imageId')))
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def modify_volume_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -964,7 +957,7 @@ def modify_volume_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_tags_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {
@@ -977,7 +970,7 @@ def create_tags_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The recources where taged successfully")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def disassociate_address_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -987,7 +980,7 @@ def disassociate_address_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Elastic IP was disassociated")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def release_address_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -997,7 +990,7 @@ def release_address_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Elastic IP was released")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def start_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -1007,7 +1000,7 @@ def start_instances_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Instances were started")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def stop_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -1017,7 +1010,7 @@ def stop_instances_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Instances were stopped")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def terminate_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -1027,7 +1020,7 @@ def terminate_instances_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Instances were terminated")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_volume_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -1089,7 +1082,7 @@ def create_volume_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def attach_volume_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -1121,7 +1114,7 @@ def attach_volume_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def detach_volume_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -1157,7 +1150,7 @@ def detach_volume_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def delete_volume_command(args: dict) -> CommandResults:
     client = build_client(args)
     response = client.delete_volume(VolumeId=args.get('volumeId'))
@@ -1166,7 +1159,7 @@ def delete_volume_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Volume was deleted")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def run_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -1290,7 +1283,7 @@ def run_instances_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def waiter_instance_running_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -1308,7 +1301,7 @@ def waiter_instance_running_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="success")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def waiter_instance_status_ok_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -1326,7 +1319,7 @@ def waiter_instance_status_ok_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="success")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def waiter_instance_stopped_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -1344,7 +1337,7 @@ def waiter_instance_stopped_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="success")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def waiter_instance_terminated_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -1362,7 +1355,7 @@ def waiter_instance_terminated_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="success")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def waiter_image_available_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -1384,7 +1377,7 @@ def waiter_image_available_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="success")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def waiter_snapshot_completed_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -1406,7 +1399,7 @@ def waiter_snapshot_completed_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="Success")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def get_latest_ami_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -1454,7 +1447,7 @@ def get_latest_ami_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_security_group_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {
@@ -1476,7 +1469,7 @@ def create_security_group_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def delete_security_group_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -1491,7 +1484,7 @@ def delete_security_group_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Security Group was Deleted")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def authorize_security_group_ingress_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
@@ -1517,7 +1510,7 @@ def authorize_security_group_ingress_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Security Group ingress rule was created")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def authorize_security_group_egress_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
@@ -1600,7 +1593,7 @@ def create_user_id_group_pairs_dict(args):
     return UserIdGroupPairs_dict
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def revoke_security_group_ingress_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'GroupId': args.get('groupId')}
@@ -1619,7 +1612,7 @@ def revoke_security_group_ingress_command(args: dict) -> CommandResults:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def revoke_security_group_egress_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -1646,7 +1639,7 @@ def revoke_security_group_egress_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Security Group egress rule was revoked")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def copy_image_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -1678,7 +1671,7 @@ def copy_image_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def copy_snapshot_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -1707,7 +1700,7 @@ def copy_snapshot_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_reserved_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -1763,7 +1756,7 @@ def describe_reserved_instances_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def monitor_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
     data = []
@@ -1783,7 +1776,7 @@ def monitor_instances_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def unmonitor_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
     data = []
@@ -1803,7 +1796,7 @@ def unmonitor_instances_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def reboot_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -1813,7 +1806,7 @@ def reboot_instances_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Instances were rebooted")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def get_password_data_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -1836,7 +1829,7 @@ def get_password_data_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def modify_network_interface_attribute_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'NetworkInterfaceId': args.get('networkInterfaceId')}
@@ -1860,7 +1853,7 @@ def modify_network_interface_attribute_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Network Interface Atttribute was successfully modified")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def modify_instance_attribute_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'InstanceId': args.get('instanceId')}
@@ -1888,7 +1881,7 @@ def modify_instance_attribute_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Instance attribute was successfully modified")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_network_acl_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'VpcId': args.get('VpcId')}
@@ -1920,7 +1913,7 @@ def create_network_acl_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_network_acl_entry_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {
@@ -1952,7 +1945,7 @@ def create_network_acl_entry_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The Instance ACL was successfully modified")
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_fleet_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}  # type: dict
@@ -2155,7 +2148,7 @@ def create_fleet_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def delete_fleet_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -2202,7 +2195,7 @@ def delete_fleet_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_fleets_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)  # noqa:F841
@@ -2260,7 +2253,7 @@ def describe_fleets_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_fleet_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -2306,7 +2299,7 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def modify_fleet_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -2344,7 +2337,7 @@ def modify_fleet_command(args: dict) -> CommandResults:
     return CommandResults(readable_output=readable_output)
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_launch_template_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)  # noqa:F841
@@ -2577,7 +2570,7 @@ def create_launch_template_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def delete_launch_template_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)  # noqa:F841
@@ -2612,7 +2605,7 @@ def delete_launch_template_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def modify_image_attribute_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)  # noqa:F841
@@ -2656,7 +2649,7 @@ def modify_image_attribute_command(args: dict) -> CommandResults:
     return CommandResults(readable_output='Image attribute sucessfully modified')
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def detach_internet_gateway_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -2671,7 +2664,7 @@ def detach_internet_gateway_command(args: dict) -> CommandResults:
     return CommandResults(readable_output='Internet gateway sucessfully detached')
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def delete_subnet_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -2684,7 +2677,7 @@ def delete_subnet_command(args: dict) -> CommandResults:
     return CommandResults(readable_output='Subnet sucessfully deleted')
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def delete_vpc_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -2697,7 +2690,7 @@ def delete_vpc_command(args: dict) -> CommandResults:
     return CommandResults(readable_output='VPC sucessfully deleted')
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def delete_internet_gateway_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -2710,7 +2703,7 @@ def delete_internet_gateway_command(args: dict) -> CommandResults:
     return CommandResults(readable_output='Internet gateway sucessfully deleted')
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def describe_internet_gateway_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
@@ -2757,7 +2750,7 @@ def describe_internet_gateway_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def create_traffic_mirror_session_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {}
@@ -2818,7 +2811,7 @@ def create_traffic_mirror_session_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def allocate_hosts_command(args: dict) -> CommandResults:
     client = build_client(args)
 
@@ -2847,7 +2840,7 @@ def allocate_hosts_command(args: dict) -> CommandResults:
     )
 
 
-@run_for_given_accounts
+@run_on_all_accounts
 def release_hosts_command(args: dict) -> CommandResults:
     client = build_client(args)
     host_id = argToList(args.get('host_id'))

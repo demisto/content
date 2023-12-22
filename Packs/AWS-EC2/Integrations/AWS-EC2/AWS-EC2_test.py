@@ -53,6 +53,9 @@ def create_client():
     return client
 
 
+AWS_EC2.build_client = lambda x: create_client().aws_session(**x)
+
+
 def validate_kwargs(*args, **kwargs):
     normal_kwargs = {'IpPermissions': [{'ToPort': 23, 'FromPort': 23, 'UserIdGroupPairs': [{}], 'IpProtocol': 'TCP'}],
                      'GroupId': 'sg-0566450bb5ae17c7d'}
@@ -81,7 +84,6 @@ def test_aws_ec2_authorize_security_group_ingress_rule(mocker):
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'authorize_security_group_ingress', side_effect=validate_kwargs)
     mocker.patch.object(AWS_EC2, 'return_results')
-    AWS_EC2.build_client = lambda x: create_client().aws_session(**x)
 
     # Case 1
     with pytest.raises(DemistoException, match='Unexpected response from AWS - EC2:'):
@@ -123,7 +125,6 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker):
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'authorize_security_group_egress', side_effect=validate_kwargs)
     mocker.patch.object(AWS_EC2, 'return_results')
-    AWS_EC2.build_client = lambda x: create_client().aws_session(**x)
 
     # Case 1
     with pytest.raises(DemistoException, match='Unexpected response from AWS - EC2:'):
@@ -153,65 +154,72 @@ def test_parse_filter_field(filter, expected_results):
     assert res == expected_results
 
 
-# def mock_command_func(args, aws_client):
-#     return CommandResults(
-#         outputs=[{}],
-#         readable_output='readable_output',
-#         outputs_prefix='prefix',
-#     )
+def mock_command_func(args):
+    return CommandResults(
+        outputs=[{}],
+        readable_output='readable_output',
+        outputs_prefix='prefix',
+    )
 
 
-# def test_run_on_all_accounts(mocker):
-#     """
-#     Given:
-#         - The accounts_to_access and access_role_name params are provided.
+def test_run_on_all_accounts(mocker):
+    """
+    Given:
+        - The accounts_to_access and access_role_name params are provided.
 
-#     When:
-#         - Calling a command function that is decorated with test_account_runner.
+    When:
+        - Calling a command function that is decorated with test_account_runner.
 
-#     Then:
-#         - Ensure account_runner runs the command function for each of the accounts provided.
-#     """
+    Then:
+        - Ensure account_runner runs the command function for each of the accounts provided.
+    """
+    AWS_EC2.ROLE_NAME = 'name'
+    AWS_EC2.PARAMS = {'accounts_to_access': '1,2'}
+    mocker.patch.object(demisto, 'getArg', return_value=None)
 
-#     mocker.patch.object(demisto, 'getParam', side_effect={
-#         'accounts_to_access': '1,2,3', 'access_role_name': 'name'}.get)
-#     mocker.patch.object(demisto, 'getArg', return_value=None)
+    # list as output
+    result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
+    results: list[CommandResults] = result_func({})
 
-#     result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
+    assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
+    assert results[0].outputs == [{'AccountId': '1'}]
+    assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
+    assert results[1].outputs == [{'AccountId': '2'}]
+    
+    # dict as output
+    result_func = AWS_EC2.run_on_all_accounts(lambda _: CommandResults(
+        outputs={},
+        readable_output='readable_output',
+        outputs_prefix='prefix',
+    ))
+    results: list[CommandResults] = result_func({})
+    
+    assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
+    assert results[0].outputs == {'AccountId': '1'}
+    assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
+    assert results[1].outputs == {'AccountId': '2'}
 
-#     results: list[CommandResults] = result_func({}, None)
 
-#     assert results[0].readable_output == '#### Result for account *1*:\nreadable_output'
-#     assert results[0].outputs == [{'AccountId': '1'}]
-#     assert results[1].readable_output == '#### Result for account *2*:\nreadable_output'
-#     assert results[1].outputs == [{'AccountId': '2'}]
-#     assert results[2].readable_output == '#### Result for account *3*:\nreadable_output'
-#     assert results[2].outputs == [{'AccountId': '3'}]
+@pytest.mark.parametrize('role_name, roleArn', [
+    (None, None), ('name', 'role'),
+])
+def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
+    """
+    Given:
+        - 1. The access_role_name param is not provided.
+        - 2. The roleArn arg is provided.
 
+    When:
+        - Calling a command function that is decorated with test_account_runner.
 
-# @pytest.mark.parametrize('get_param_side_effect, roleArn', [
-#     ({'accounts_to_access': '1,2,3', 'access_role_name': None}.get, None),
-#     ({'accounts_to_access': '1,2,3', 'access_role_name': 'name'}.get, 'role'),
-# ])
-# def test_run_on_all_accounts_no_new_func(mocker, get_param_side_effect, roleArn):
-#     """
-#     Given:
-#         - 1. The access_role_name param is not provided.
-#         - 2. The roleArn arg is provided.
+    Then:
+        - Ensure account_runner returns the command function unchanged.
+    """
+    AWS_EC2.ROLE_NAME = role_name
+    mocker.patch.object(demisto, 'getArg', return_value=roleArn)
 
-#     When:
-#         - Calling a command function that is decorated with test_account_runner.
+    result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
+    result: CommandResults = result_func({})
 
-#     Then:
-#         - Ensure account_runner returns the command function unchanged.
-#     """
-
-#     mocker.patch.object(demisto, 'getParam', side_effect=get_param_side_effect)
-#     mocker.patch.object(demisto, 'getArg', return_value=roleArn)
-
-#     result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
-
-#     result: CommandResults = result_func({}, None)
-
-#     assert result.readable_output == 'readable_output'
-#     assert result.outputs == [{}]
+    assert result.readable_output == 'readable_output'
+    assert result.outputs == [{}]
