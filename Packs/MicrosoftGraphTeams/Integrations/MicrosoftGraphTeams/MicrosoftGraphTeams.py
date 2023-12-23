@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 ''' IMPORTS '''
+
 from MicrosoftApiModule import *
 import urllib3
 
@@ -145,11 +146,17 @@ class MsGraphClient:
         user_id = user_id if user_id else self.delegated_user
         suffix = 'chats'
 
-        json_data = {
-            'chatType': type,
-            'topic': subject,
-            'members': self._build_members_input(user_id, members)
-        }
+        if type == "group":
+            json_data = {
+                'chatType': type,
+                'topic': subject,
+                'members': self._build_members_input(user_id, members)
+            }
+        else:
+            json_data = {
+                'chatType': type,
+                'members': self._build_members_input(user_id, members)
+            }
         return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=json_data)
 
     def get_chat(self, chat_id: str, user_id: str = None) -> dict:

@@ -1,0 +1,31 @@
+{
+    "id": "incident_cybersixgillsuspiciousdomain",
+    "version": -1,
+    "modified": "2023-11-09T22:08:56.499540505+05:30",
+    "name": "Cybersixgill Suspicious domain",
+    "ownerOnly": false,
+    "description": "Suspicious Domain",
+    "cliName": "cybersixgillsuspiciousdomain",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cybersixgill Actionable Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
