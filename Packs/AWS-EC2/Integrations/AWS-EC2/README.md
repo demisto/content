@@ -1,5 +1,4 @@
 Amazon Web Services Elastic Compute Cloud (EC2).
-This integration was integrated and tested with version xx of AWS - EC2.
 
 ## Configure AWS - EC2 on Cortex XSOAR
 
