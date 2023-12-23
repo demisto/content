@@ -1,0 +1,1548 @@
+id: Prisma Cloud Compute - Audit Alert v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud Compute - Audit Alert v2
+description: |-
+  Default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
+  The playbook has several sections:
+  Enrichment:
+  - Image details
+  - Similar container events
+  - Owner details
+  - Vulnerabilities
+  - Compliance details
+  - Forensics
+  - Defender logs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b80861e4-761b-4ba3-8718-1753f3d3f8db
+    type: start
+    task:
+      id: b80861e4-761b-4ba3-8718-1753f3d3f8db
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "91"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 132.5,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: efb76bf2-1a60-4ad2-8585-429ef8cd65a3
+    type: title
+    task:
+      id: efb76bf2-1a60-4ad2-8585-429ef8cd65a3
+      version: -1
+      name: Vulnerability
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 68c6cc11-6743-4eb5-88ba-0a6e5f6bcb96
+    type: title
+    task:
+      id: 68c6cc11-6743-4eb5-88ba-0a6e5f6bcb96
+      version: -1
+      name: Compliance
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 352.5,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b6c8573b-6031-403a-8f7a-cc0d85ce1b3c
+    type: title
+    task:
+      id: b6c8573b-6031-403a-8f7a-cc0d85ce1b3c
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "82"
+      - "85"
+      - "93"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 6efd3a5f-89ba-46ac-8395-1717ddf723c2
+    type: regular
+    task:
+      id: 6efd3a5f-89ba-46ac-8395-1717ddf723c2
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 9fe1aceb-b30a-440f-8289-744de3353ddb
+    type: title
+    task:
+      id: 9fe1aceb-b30a-440f-8289-744de3353ddb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: ace0fef6-0a4a-49a3-855d-0b2b27ef5f39
+    type: title
+    task:
+      id: ace0fef6-0a4a-49a3-855d-0b2b27ef5f39
+      version: -1
+      name: Forensics
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 9738728b-02ea-456d-8965-fd69bdb9de55
+    type: regular
+    task:
+      id: 9738728b-02ea-456d-8965-fd69bdb9de55
+      version: -1
+      name: Get Host Profile
+      description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
+      script: '|||prisma-cloud-compute-profile-host-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      hostname:
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 7ebf4ade-5f3f-4efd-8b83-9dd68dcf0db5
+    type: regular
+    task:
+      id: 7ebf4ade-5f3f-4efd-8b83-9dd68dcf0db5
+      version: -1
+      name: Manually Remediate
+      description: Perform manual remediation to ensure full incident resolution
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 04c093e5-186e-4c4c-86ea-88ca13bb0057
+    type: regular
+    task:
+      id: 04c093e5-186e-4c4c-86ea-88ca13bb0057
+      version: -1
+      name: 'Get host''s defenders list '
+      description: Retrieve a list of defenders and their information.
+      script: '|||prisma-cloud-compute-defenders-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      hostname:
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 0ed9edab-867d-4d8f-8eb2-47abeb6d1491
+    type: condition
+    task:
+      id: 0ed9edab-867d-4d8f-8eb2-47abeb6d1491
+      description: ""
+      version: -1
+      name: Check if there's a defender on the host
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "63"
+      - "72"
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloudCompute
+                accessor: DefenderDetails
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 70932739-28c5-4095-87ae-88b3347ed951
+    type: regular
+    task:
+      id: 70932739-28c5-4095-87ae-88b3347ed951
+      version: -1
+      name: Get host forensic
+      description: Get forensics on a specific host.
+      tags:
+      - forensics
+      script: '|||prisma-cloud-compute-host-forensic-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: ef4c8f10-efae-4d2c-836c-25cc918eccd9
+    type: title
+    task:
+      id: ef4c8f10-efae-4d2c-836c-25cc918eccd9
+      version: -1
+      name: Get defender logs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: cda15aaa-862a-4d83-88a7-2d2224e22fdb
+    type: title
+    task:
+      id: cda15aaa-862a-4d83-88a7-2d2224e22fdb
+      version: -1
+      name: Container Forensics
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -377.5,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 4a90bcc4-5a38-483e-8713-5f741acd5050
+    type: title
+    task:
+      id: 4a90bcc4-5a38-483e-8713-5f741acd5050
+      version: -1
+      name: Host Forensics
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 5b726f5c-5b94-41ac-8149-30bbda95814f
+    type: playbook
+    task:
+      id: 5b726f5c-5b94-41ac-8149-30bbda95814f
+      version: -1
+      name: Prisma Cloud Compute - Get Defender Logs
+      description: |-
+        This is a sub-playbook of the “Prisma Cloud Compute - Audit Alert v2” playbook
+        - Gets defender logs and sets them to layout
+        - Downloads defender logs
+        - Gets defender backups.
+      playbookName: Prisma Cloud Compute - Get Defender Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
+      Project:
+        complex:
+          root: inputs.Project
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 080f6b6e-61e7-44b1-80cd-e95ccb90f8a4
+    type: playbook
+    task:
+      id: 080f6b6e-61e7-44b1-80cd-e95ccb90f8a4
+      version: -1
+      name: Prisma Cloud Compute - Container Forensics
+      description: |-
+        This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
+        Gets the container profile and forensics.
+      playbookName: Prisma Cloud Compute - Container Forensics
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      AlertCluster:
+        complex:
+          root: incident
+          accessor: prismacloudcomputecluster
+      AuditAlertType:
+        complex:
+          root: PrismaCloudCompute.DefenderDetails
+          accessor: category
+      DefenderType:
+        complex:
+          root: PrismaCloudCompute.DefenderDetails
+          accessor: type
+      ForensicLink:
+        complex:
+          root: incident
+          accessor: prismacloudcomputeforensic
+      Hostname:
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
+      Image:
+        complex:
+          root: incident
+          accessor: prismacloudcomputeimage
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -377.5,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: b4938bc7-8118-47c0-8630-079f31fddad5
+    type: playbook
+    task:
+      id: b4938bc7-8118-47c0-8630-079f31fddad5
+      version: -1
+      name: Prisma Cloud Compute - Audit Alert Compliance Enrichment
+      description: |-
+        This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
+        Retrieves the following information:
+        - Alert profiles
+        - Container WAAS policies
+        - Image compliance issues
+      playbookName: Prisma Cloud Compute - Audit Alert Compliance Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      ComplianceIssues:
+        complex:
+          root: PrismaCloudCompute.ReportsImagesScan
+          accessor: complianceIssues
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: PrismaCloudCompute.ReportHostScan.complianceIssues
+                iscontext: true
+      Project:
+        complex:
+          root: inputs.Project
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 352.5,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: b5d7f194-e55d-4f30-8ae8-25da8f2cad3c
+    type: playbook
+    task:
+      id: b5d7f194-e55d-4f30-8ae8-25da8f2cad3c
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |-
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2.
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoBlockIndicators
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      Tag:
+        simple: Blocked Indicator In Systems
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: bda50bb5-003b-452a-8dca-e9715d791b58
+    type: playbook
+    task:
+      id: bda50bb5-003b-452a-8dca-e9715d791b58
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        complex:
+          root: inputs.accessKeyRemediationType
+      AWS-resourceRemediationType:
+        complex:
+          root: inputs.resourceRemediationType
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: inputs.resourceRemediationType
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.resourceRemediationType
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Delete
+              rhsB: {}
+              then:
+                value:
+                  simple: Terminate
+      AWS-userRemediationType:
+        complex:
+          root: inputs.userRemediationType
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: inputs.userRemediationType
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.userRemediationType
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Disable
+              rhsB: {}
+              then:
+                value:
+                  simple: Revoke
+      Azure-resourceRemediationType:
+        complex:
+          root: inputs.resourceRemediationType
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: inputs.resourceRemediationType
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.resourceRemediationType
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Stop
+              rhsB: {}
+              then:
+                value:
+                  simple: Poweroff
+      Azure-userRemediationType:
+        complex:
+          root: inputs.userRemediationType
+      GCP-accessKeyRemediationType:
+        complex:
+          root: inputs.accessKeyRemediationType
+      GCP-resourceRemediationType:
+        complex:
+          root: inputs.resourceRemediationType
+      GCP-userRemediationType:
+        complex:
+          root: inputs.userRemediationType
+      autoAccessKeyRemediation:
+        complex:
+          root: inputs.autoAccessKeyRemediation
+      autoBlockIndicators:
+        simple: "False"
+      autoResourceRemediation:
+        complex:
+          root: inputs.autoResourceRemediation
+      autoUserRemediation:
+        complex:
+          root: inputs.autoUserRemediation
+      cloudProvider:
+        complex:
+          root: PrismaCloudCompute.DefenderDetails.cloudMetadata
+          accessor: provider
+      resourceGroup:
+        complex:
+          root: PrismaCloudCompute.DefenderDetails.cloudMetadata
+          accessor: resourceID
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /resourceGroups/
+              fields:
+                value:
+                  simple: "2"
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "1"
+      resourceName:
+        complex:
+          root: PrismaCloudCompute.DefenderDetails.cloudMetadata
+          accessor: name
+      resourceZone:
+        complex:
+          root: PrismaCloudCompute.DefenderDetails.cloudMetadata
+          accessor: region
+      username:
+        complex:
+          root: incident
+          accessor: prismacloudcomputeuser
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 7fa19377-d50b-4ff5-8348-a694e49423c8
+    type: condition
+    task:
+      id: 7fa19377-d50b-4ff5-8348-a694e49423c8
+      description: ""
+      version: -1
+      name: Run "Cloud Response - Generic" playbook?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AdvancedCloudResponseFlow
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 8e62e41d-5e56-40ab-859d-a2423d3946a5
+    type: playbook
+    task:
+      id: 8e62e41d-5e56-40ab-859d-a2423d3946a5
+      version: -1
+      name: Prisma Cloud Compute - Audit Alert Enrichment
+      description: |-
+        This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
+        It does the following:
+        - Runs the "Prisma Cloud - Get Account Owner" playbook in order to retrieve potential owners for the alert.
+        - Sets the incident link to the layout.
+        - Pulls image details and alerts
+        - Pulls host scan results.
+      playbookName: Prisma Cloud Compute - Audit Alert Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    scriptarguments:
+      AccountID:
+        complex:
+          root: incident
+          accessor: accountid
+      AuditAlertType:
+        complex:
+          root: incident
+          accessor: prismacloudcomputetype
+      BaseURL:
+        complex:
+          root: inputs.baseUrl
+      ConsoleLink:
+        complex:
+          root: incident
+          accessor: externallink
+      Hostname:
+        complex:
+          root: incident
+          accessor: prismacloudcomputehost
+      ImageName:
+        complex:
+          root: incident
+          accessor: prismacloudcomputeimage
+      Namespace:
+        complex:
+          root: incident
+          accessor: prismacloudcomputenamespaces
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 132.5,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: a7bbb1bc-1e3f-46c8-8af7-5e9f3f610f39
+    type: title
+    task:
+      id: a7bbb1bc-1e3f-46c8-8af7-5e9f3f610f39
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 132.5,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 68028343-c612-4dc6-86ef-1087b3ab4ca4
+    type: playbook
+    task:
+      id: 68028343-c612-4dc6-86ef-1087b3ab4ca4
+      version: -1
+      name: Prisma Cloud Compute - Audit Alert Vulnerabilities Enrichment
+      playbookName: Prisma Cloud Compute - Audit Alert Vulnerabilities Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      HostVulnerabilities:
+        complex:
+          root: PrismaCloudCompute.ReportHostScan
+          accessor: vulnerabilities
+      ImageVulnerabilities:
+        complex:
+          root: PrismaCloudCompute.ReportsImagesScan
+          accessor: vulnerabilities
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 9cdcce5b-93bd-4dce-8d64-c790f755ab5a
+    type: condition
+    task:
+      id: 9cdcce5b-93bd-4dce-8d64-c790f755ab5a
+      description: ""
+      version: -1
+      name: Manual remediation?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ManualRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 2110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "60_11_#default#": 0.31,
+      "85_26_#default#": 0.41,
+      "85_83_yes": 0.47,
+      "93_26_#default#": 0.43,
+      "93_42_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2845,
+        "width": 1340,
+        "x": -377.5,
+        "y": -90
+      }
+    }
+  }
+inputs:
+- key: baseUrl
+  value:
+    simple: https://app.prismacloud.io
+  required: false
+  description: The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
+  playbookInputQuery:
+- key: Project
+  value:
+    complex:
+      root: PrismaCloudCompute.AlertProfiles.ServiceNow
+      accessor: Project
+  required: false
+  description: A specific project name to get alert profiles for
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Relevant to the "Block Indicators - Generic v3" playbook.
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
+  playbookInputQuery:
+- key: autoResourceRemediation
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Relevant to the "Cloud Response - Generic playbook".
+    Whether to execute the resource remediation flow automatically.
+    Available options:
+    - True
+    - False
+  playbookInputQuery:
+- key: resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |
+    Relevant to the "Cloud Response - Generic playbook".
+    Available options:
+    - Stop
+    - Delete
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Relevant to the "Cloud Response - Generic playbook".
+    Whether to execute the access key remediation flow automatically.
+    Available options:
+    - True
+    - False
+  playbookInputQuery:
+- key: accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Relevant to the "Cloud Response - Generic playbook".
+    Choose the remediation type for the user's access key.
+    Available types:
+    Disable - for disabling the user's access key.
+    Delete - for the user's access key deletion.
+  playbookInputQuery:
+- key: userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Relevant to the "Cloud Response - Generic playbook".
+    Whether to execute the user remediation flow automatically.
+    Choose the remediation type for the user involved.
+
+    - Disable - for disabling the user (GCP + Azure) or revoking the user's credentials (AWS).
+    - Delete - for deleting the user.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Relevant to the "Cloud Response - Generic playbook".
+    Whether to execute the user remediation flow automatically.
+    Available options:
+    - True
+    - False
+  playbookInputQuery:
+- key: AdvancedCloudResponseFlow
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Whether to run the Cloud Response - Generic playbook.
+    Available options:
+    - True
+    - False
+  playbookInputQuery:
+- key: ManualRemediation
+  value: {}
+  required: false
+  description: |-
+    Whether to allow the analyst to manually review the alert before the playbook ends.
+    Available options:
+        - True
+        - False
+  playbookInputQuery:
+outputs: []
+tests:
+- PaloAltoNetworks_PrismaCloudCompute-Test
+fromversion: 6.10.0
