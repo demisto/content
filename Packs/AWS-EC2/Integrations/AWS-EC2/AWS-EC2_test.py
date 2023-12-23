@@ -170,7 +170,7 @@ def test_parse_filter_field(filter, expected_results):
     assert res == expected_results
 
 
-def mock_command_func(args):
+def mock_command_func(_):
     return CommandResults(
         outputs=[{}],
         readable_output='readable_output',
