@@ -1,8 +1,11 @@
 from AWSApiModule import *
 from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 import importlib
 import pytest
+
 
 AWS_EC2 = importlib.import_module("AWS-EC2")
 
@@ -19,6 +22,10 @@ IPPERMISSIONSFULL_ARGS = {"groupId": "sg-0566450bb5ae17c7d",
                           "IpPermissionsFull": """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
                           "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""}
 
+IPPERMISSIONSFULL_ARGS = {"groupId": "sg-0566450bb5ae17c7d",
+                          "IpPermissionsFull": """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                          "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""}
+
 INVALID_ARGS = {"groupId": "sg-0566450bb5ae17c7d",
                 "region": "reg",
                 "roleArn": "role",
@@ -28,6 +35,9 @@ INVALID_ARGS = {"groupId": "sg-0566450bb5ae17c7d",
 
 class Boto3Client:
     def authorize_security_group_egress(self, **kwargs):
+        pass
+
+    def authorize_security_group_ingress(self, **kwargs):
         pass
 
     def authorize_security_group_ingress(self, **kwargs):
@@ -57,6 +67,12 @@ AWS_EC2.build_client = lambda x: create_client().aws_session(**x)
 
 
 def validate_kwargs(*args, **kwargs):
+    normal_kwargs = {'IpPermissions': [{'ToPort': 23, 'FromPort': 23, 'UserIdGroupPairs': [{}], 'IpProtocol': 'TCP'}],
+                     'GroupId': 'sg-0566450bb5ae17c7d'}
+    ippermsfull_kwargs = {'GroupId': 'sg-0566450bb5ae17c7d', 'IpPermissions':
+                          [{'IpProtocol': '-1', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}],
+                           'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': []}]}
+    if kwargs in (normal_kwargs, ippermsfull_kwargs):
     normal_kwargs = {'IpPermissions': [{'ToPort': 23, 'FromPort': 23, 'UserIdGroupPairs': [{}], 'IpProtocol': 'TCP'}],
                      'GroupId': 'sg-0566450bb5ae17c7d'}
     ippermsfull_kwargs = {'GroupId': 'sg-0566450bb5ae17c7d', 'IpPermissions':
