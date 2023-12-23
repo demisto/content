@@ -4,21 +4,15 @@ from datetime import date
 from AWSApiModule import *  # noqa: E402
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date
-from AWSApiModule import *  # noqa: E402
-from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
 
 
 """CONSTANTS"""
+
+
 PARAMS = demisto.params()
 MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
 
-"""CONSTANTS"""
-PARAMS = demisto.params()
-MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
-ROLE_NAME: str = PARAMS.get('access_role_name', '')
 
 """HELPER FUNCTIONS"""
 
@@ -26,11 +20,9 @@ ROLE_NAME: str = PARAMS.get('access_role_name', '')
 def parse_filter_field(filter_str):
     filters = []
     regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)', flags=re.I)
-    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)', flags=re.I)
     for f in filter_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.debug(f'could not parse filter: {f}')
             demisto.debug(f'could not parse filter: {f}')
             continue
 
@@ -48,7 +40,6 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.debug(f'could not parse field: {f}')
             demisto.debug(f'could not parse field: {f}')
             continue
 
@@ -89,12 +80,10 @@ def parse_date(dt):
         parsed_date = (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
     except ValueError as e:
         raise DemistoException(f"Date could not be parsed. Please check the date again.\n{e}")
-        raise DemistoException(f"Date could not be parsed. Please check the date again.\n{e}")
     return parsed_date
 
 
 def build_client(args: dict):
-def build_client(args: dict):
 
     aws_default_region = PARAMS.get('defaultRegion')
     aws_role_arn = PARAMS.get('roleArn')
@@ -108,29 +97,7 @@ def build_client(args: dict):
     retries = PARAMS.get('retries') or 5
     sts_endpoint_url = PARAMS.get('sts_endpoint_url') or None
     endpoint_url = PARAMS.get('endpoint_url') or None
-    aws_default_region = PARAMS.get('defaultRegion')
-    aws_role_arn = PARAMS.get('roleArn')
-    aws_role_session_name = PARAMS.get('roleSessionName')
-    aws_role_session_duration = PARAMS.get('sessionDuration')
-    aws_role_policy = None
-    aws_access_key_id = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('access_key')
-    aws_secret_access_key = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret_key')
-    verify_certificate = not PARAMS.get('insecure', True)
-    timeout = PARAMS.get('timeout')
-    retries = PARAMS.get('retries') or 5
-    sts_endpoint_url = PARAMS.get('sts_endpoint_url') or None
-    endpoint_url = PARAMS.get('endpoint_url') or None
 
-    validate_params(
-        aws_default_region, aws_role_arn, aws_role_session_name,
-        aws_access_key_id, aws_secret_access_key
-    )
-
-    return AWSClient(
-        aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-        aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-        retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url
-    ).aws_session(
     validate_params(
         aws_default_region, aws_role_arn, aws_role_session_name,
         aws_access_key_id, aws_secret_access_key
@@ -145,7 +112,6 @@ def build_client(args: dict):
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
         role_session_duration=args.get('roleSessionDuration'),
     )
 
@@ -250,12 +216,6 @@ def describe_regions_command(args: dict) -> CommandResults:
         outputs_key_field='RegionName',
         readable_output=tableToMarkdown('AWS Regions', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.Regions',
-        outputs_key_field='RegionName',
-        readable_output=tableToMarkdown('AWS Regions', data)
-    )
 
 
 @run_on_all_accounts
@@ -274,14 +234,12 @@ def describe_instances_command(args: dict) -> CommandResults:
 
     if len(response['Reservations']) == 0:
         return CommandResults(readable_output='No reservations were found.')
-        return CommandResults(readable_output='No reservations were found.')
 
     for i, reservation in enumerate(response['Reservations']):
         for instance in reservation['Instances']:
             try:
                 launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
             except ValueError as e:
-                raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
                 raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
             data.append({
                 'InstanceId': instance['InstanceId'],
@@ -308,13 +266,6 @@ def describe_instances_command(args: dict) -> CommandResults:
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as e:
-        raise DemistoException(f'Could not decode/encode the raw response - {e}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Instances',
-        outputs_key_field='InstanceId',
-        readable_output=tableToMarkdown('AWS Instances', data)
-    )
         raise DemistoException(f'Could not decode/encode the raw response - {e}')
     return CommandResults(
         outputs=raw,
@@ -385,7 +336,6 @@ def describe_images_command(args: dict) -> CommandResults:
 
     if len(response['Images']) == 0:
         return CommandResults(readable_output='No images were found.')
-        return CommandResults(readable_output='No images were found.')
 
     for i, image in enumerate(response['Images']):
         data.append({
@@ -418,13 +368,6 @@ def describe_images_command(args: dict) -> CommandResults:
         outputs_key_field='ImageId',
         readable_output=tableToMarkdown('AWS EC2 Images', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {e}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Images',
-        outputs_key_field='ImageId',
-        readable_output=tableToMarkdown('AWS EC2 Images', data)
-    )
 
 
 @run_on_all_accounts
@@ -445,7 +388,6 @@ def describe_addresses_command(args: dict) -> CommandResults:
     response = client.describe_addresses(**kwargs)
 
     if len(response['Addresses']) == 0:
-        return CommandResults(readable_output='No addresses were found.')
         return CommandResults(readable_output='No addresses were found.')
 
     for i, address in enumerate(response['Addresses']):
@@ -476,11 +418,6 @@ def describe_addresses_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.ElasticIPs',
         outputs_key_field='AllocationId',
         readable_output=tableToMarkdown('AWS EC2 ElasticIPs', data)
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.ElasticIPs',
-        outputs_key_field='AllocationId',
-        readable_output=tableToMarkdown('AWS EC2 ElasticIPs', data)
     )
 
 
@@ -505,12 +442,10 @@ def describe_snapshots_command(args: dict) -> CommandResults:
 
     if len(response['Snapshots']) == 0:
         return CommandResults(readable_output='No snapshots were found.')
-        return CommandResults(readable_output='No snapshots were found.')
     for i, snapshot in enumerate(response['Snapshots']):
         try:
             start_time = datetime.strftime(snapshot['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
             raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
         data.append({
             'Description': snapshot['Description'],
@@ -542,13 +477,6 @@ def describe_snapshots_command(args: dict) -> CommandResults:
         outputs_key_field='SnapshotId',
         readable_output=tableToMarkdown('AWS EC2 Snapshots', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {e}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Snapshots',
-        outputs_key_field='SnapshotId',
-        readable_output=tableToMarkdown('AWS EC2 Snapshots', data)
-    )
 
 
 @run_on_all_accounts
@@ -568,12 +496,10 @@ def describe_volumes_command(args: dict) -> CommandResults:
 
     if len(response['Volumes']) == 0:
         return CommandResults(readable_output='No EC2 volumes were found.')
-        return CommandResults(readable_output='No EC2 volumes were found.')
     for i, volume in enumerate(response['Volumes']):
         try:
             create_date = datetime.strftime(volume['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
             raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
         data.append({
             'AvailabilityZone': volume['AvailabilityZone'],
@@ -593,13 +519,6 @@ def describe_volumes_command(args: dict) -> CommandResults:
         raw = json.loads(output)
         raw[0].update({'Region': obj['_user_provided_options']['region_name']})
     except ValueError as e:
-        raise DemistoException(f'Could not decode/encode the raw response - {e}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Volumes',
-        outputs_key_field='VolumeId',
-        readable_output=tableToMarkdown('AWS EC2 Volumes', data)
-    )
         raise DemistoException(f'Could not decode/encode the raw response - {e}')
     return CommandResults(
         outputs=raw,
@@ -628,12 +547,10 @@ def describe_launch_templates_command(args: dict) -> CommandResults:
 
     if len(response['LaunchTemplates']) == 0:
         return CommandResults(readable_output='No launch templates were found.')
-        return CommandResults(readable_output='No launch templates were found.')
     for i, template in enumerate(response['LaunchTemplates']):
         try:
             create_time = datetime.strftime(template['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
             raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
         data.append({
             'LaunchTemplateId': template['LaunchTemplateId'],
@@ -656,13 +573,6 @@ def describe_launch_templates_command(args: dict) -> CommandResults:
         raw = json.loads(output)
         raw[0].update({'Region': obj['_user_provided_options']['region_name']})
     except ValueError as e:
-        raise DemistoException(f'Could not decode/encode the raw response - {e}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.LaunchTemplates',
-        outputs_key_field='LaunchTemplateId',
-        readable_output=tableToMarkdown('AWS EC2 LaunchTemplates', data)
-    )
         raise DemistoException(f'Could not decode/encode the raw response - {e}')
     return CommandResults(
         outputs=raw,
@@ -700,12 +610,6 @@ def describe_key_pairs_command(args: dict) -> CommandResults:
         outputs_key_field='KeyName',
         readable_output=tableToMarkdown('AWS EC2 Key Pairs', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.KeyPairs',
-        outputs_key_field='KeyName',
-        readable_output=tableToMarkdown('AWS EC2 Key Pairs', data)
-    )
 
 
 @run_on_all_accounts
@@ -724,7 +628,6 @@ def describe_vpcs_command(args: dict) -> CommandResults:
     response = client.describe_vpcs(**kwargs)
 
     if len(response['Vpcs']) == 0:
-        return CommandResults(readable_output='No VPCs were found.')
         return CommandResults(readable_output='No VPCs were found.')
     for i, vpc in enumerate(response['Vpcs']):
         data.append({
@@ -755,13 +658,6 @@ def describe_vpcs_command(args: dict) -> CommandResults:
         outputs_key_field='VpcId',
         readable_output=tableToMarkdown('AWS EC2 Vpcs', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {e}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Vpcs',
-        outputs_key_field='VpcId',
-        readable_output=tableToMarkdown('AWS EC2 Vpcs', data)
-    )
 
 
 @run_on_all_accounts
@@ -780,7 +676,6 @@ def describe_subnets_command(args: dict) -> CommandResults:
     response = client.describe_subnets(**kwargs)
 
     if len(response['Subnets']) == 0:
-        return CommandResults(readable_output='No Subnets were found.')
         return CommandResults(readable_output='No Subnets were found.')
     for i, subnet in enumerate(response['Subnets']):
         data.append({
@@ -813,13 +708,6 @@ def describe_subnets_command(args: dict) -> CommandResults:
         outputs_key_field='SubnetId',
         readable_output=tableToMarkdown('AWS EC2 Subnets', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Subnets',
-        outputs_key_field='SubnetId',
-        readable_output=tableToMarkdown('AWS EC2 Subnets', data)
-    )
 
 
 @run_on_all_accounts
@@ -840,7 +728,6 @@ def describe_security_groups_command(args: dict) -> CommandResults:
     response = client.describe_security_groups(**kwargs)
 
     if len(response['SecurityGroups']) == 0:
-        return CommandResults(readable_output='No security groups were found.')
         return CommandResults(readable_output='No security groups were found.')
     for i, sg in enumerate(response['SecurityGroups']):
         data.append({
@@ -870,13 +757,6 @@ def describe_security_groups_command(args: dict) -> CommandResults:
         outputs_key_field='GroupId',
         readable_output=tableToMarkdown('AWS EC2 SecurityGroups', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.SecurityGroups',
-        outputs_key_field='GroupId',
-        readable_output=tableToMarkdown('AWS EC2 SecurityGroups', data)
-    )
 
 
 @run_on_all_accounts
@@ -892,11 +772,6 @@ def allocate_address_command(args: dict) -> CommandResults:
         'Domain': response['Domain'],
         'Region': obj['_user_provided_options']['region_name']
     })
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.ElasticIPs',
-        readable_output=tableToMarkdown('AWS EC2 ElasticIP', data)
-    )
     return CommandResults(
         outputs=data,
         outputs_prefix='AWS.EC2.ElasticIPs',
@@ -934,12 +809,6 @@ def associate_address_command(args: dict) -> CommandResults:
         outputs_key_field='AllocationId',
         readable_output=tableToMarkdown('AWS EC2 ElasticIP', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.ElasticIPs',
-        outputs_key_field='AllocationId',
-        readable_output=tableToMarkdown('AWS EC2 ElasticIP', data)
-    )
 
 
 @run_on_all_accounts
@@ -962,7 +831,6 @@ def create_snapshot_command(args: dict) -> CommandResults:
     try:
         start_time = datetime.strftime(response['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
         raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
 
     data = ({
@@ -995,21 +863,12 @@ def create_snapshot_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.Snapshots',
         readable_output=tableToMarkdown('AWS EC2 Snapshots', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Snapshots',
-        readable_output=tableToMarkdown('AWS EC2 Snapshots', data)
-    )
 
 
 @run_on_all_accounts
 def delete_snapshot_command(args: dict) -> CommandResults:
     client = build_client(args)
     response = client.delete_snapshot(SnapshotId=args.get('snapshotId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Snapshot with ID: {snapshot_id} was deleted".format(snapshot_id=args.get('snapshotId')))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Snapshot with ID: {snapshot_id} was deleted".format(snapshot_id=args.get('snapshotId')))
@@ -1028,7 +887,6 @@ def create_image_command(args: dict) -> CommandResults:
         kwargs.update({'Description': args.get('description')})
     if args.get('noReboot') is not None:
         kwargs.update({'NoReboot': argToBoolean(args.get('noReboot'))})
-        kwargs.update({'NoReboot': argToBoolean(args.get('noReboot'))})
 
     response = client.create_image(**kwargs)
 
@@ -1044,11 +902,6 @@ def create_image_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.Images',
         readable_output=tableToMarkdown('AWS EC2 Images', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Images',
-        readable_output=tableToMarkdown('AWS EC2 Images', data)
-    )
 
 
 @run_on_all_accounts
@@ -1056,9 +909,6 @@ def deregister_image_command(args: dict) -> CommandResults:
     client = build_client(args)
 
     response = client.deregister_image(ImageId=args.get('imageId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The AMI with ID: {image_id} was deregistered".format(image_id=args.get('imageId')))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The AMI with ID: {image_id} was deregistered".format(image_id=args.get('imageId')))
@@ -1085,7 +935,6 @@ def modify_volume_command(args: dict) -> CommandResults:
         start_time = datetime.strftime(volumeModification['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
         raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
-        raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
 
     data = ({
         'VolumeId': volumeModification['VolumeId'],
@@ -1102,16 +951,9 @@ def modify_volume_command(args: dict) -> CommandResults:
     })
 
     output = json.dumps(volumeModification, cls=DatetimeEncoder)
-    output = json.dumps(volumeModification, cls=DatetimeEncoder)
     raw = json.loads(output)
     raw.update({'Region': obj['_user_provided_options']['region_name']})
 
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Volumes.Modification',
-        outputs_key_field='VolumeId',
-        readable_output=tableToMarkdown('AWS EC2 Volume Modification', data)
-    )
     return CommandResults(
         outputs=raw,
         outputs_prefix='AWS.EC2.Volumes.Modification',
@@ -1131,19 +973,12 @@ def create_tags_command(args: dict) -> CommandResults:
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The recources where taged successfully")
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The recources where taged successfully")
 
 
 @run_on_all_accounts
 def disassociate_address_command(args: dict) -> CommandResults:
     client = build_client(args)
-
     response = client.disassociate_address(AssociationId=args.get('associationId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Elastic IP was disassociated")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Elastic IP was disassociated")
@@ -1152,11 +987,7 @@ def disassociate_address_command(args: dict) -> CommandResults:
 @run_on_all_accounts
 def release_address_command(args: dict) -> CommandResults:
     client = build_client(args)
-
     response = client.release_address(AllocationId=args.get('allocationId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Elastic IP was released")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Elastic IP was released")
@@ -1165,11 +996,7 @@ def release_address_command(args: dict) -> CommandResults:
 @run_on_all_accounts
 def start_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
-
     response = client.start_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Instances were started")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Instances were started")
@@ -1178,11 +1005,7 @@ def start_instances_command(args: dict) -> CommandResults:
 @run_on_all_accounts
 def stop_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
-
     response = client.stop_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Instances were stopped")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Instances were stopped")
@@ -1191,11 +1014,7 @@ def stop_instances_command(args: dict) -> CommandResults:
 @run_on_all_accounts
 def terminate_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
-
     response = client.terminate_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Instances were terminated")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Instances were terminated")
@@ -1209,11 +1028,8 @@ def create_volume_command(args: dict) -> CommandResults:
 
     if args.get('encrypted') is not None:
         kwargs.update({'Encrypted': argToBoolean(args.get('encrypted'))})
-        kwargs.update({'Encrypted': argToBoolean(args.get('encrypted'))})
     if args.get('iops') is not None:
         kwargs.update({'Iops': int(args.get('iops'))})
-    if args.get('kmsKeyId') is not None:
-        kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
     if args.get('size') is not None:
         kwargs.update({'Size': int(args.get('size'))})
     if args.get('snapshotId') is not None:
@@ -1234,7 +1050,6 @@ def create_volume_command(args: dict) -> CommandResults:
     try:
         create_time = datetime.strftime(response['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
         raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
 
     data = ({
@@ -1263,11 +1078,6 @@ def create_volume_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.Volumes',
         readable_output=tableToMarkdown('AWS EC2 Volumes', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Volumes',
-        readable_output=tableToMarkdown('AWS EC2 Volumes', data)
-    )
 
 
 @run_on_all_accounts
@@ -1284,7 +1094,6 @@ def attach_volume_command(args: dict) -> CommandResults:
         attach_time = datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
         raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
-        raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
     data = ({
         'AttachTime': attach_time,
         'Device': response['Device'],
@@ -1295,12 +1104,6 @@ def attach_volume_command(args: dict) -> CommandResults:
     if 'DeleteOnTermination' in response:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Volumes.Attachments',
-        outputs_key_field='VolumeId',
-        readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
-    )
     return CommandResults(
         outputs=data,
         outputs_prefix='AWS.EC2.Volumes.Attachments',
@@ -1328,7 +1131,6 @@ def detach_volume_command(args: dict) -> CommandResults:
         attach_time = datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
         raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
-        raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
     data = ({
         'AttachTime': attach_time,
         'Device': response['Device'],
@@ -1345,21 +1147,12 @@ def detach_volume_command(args: dict) -> CommandResults:
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Volumes.Attachments',
-        outputs_key_field='VolumeId',
-        readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
-    )
 
 
 @run_on_all_accounts
 def delete_volume_command(args: dict) -> CommandResults:
     client = build_client(args)
     response = client.delete_volume(VolumeId=args.get('volumeId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Volume was deleted")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Volume was deleted")
@@ -1390,9 +1183,7 @@ def run_instances_command(args: dict) -> CommandResults:
         kwargs.update({'KeyName': args.get('keyName')})
     if args.get('ebsOptimized') is not None:
         kwargs.update({'EbsOptimized': argToBoolean(args.get('ebsOptimized'))})
-        kwargs.update({'EbsOptimized': argToBoolean(args.get('ebsOptimized'))})
     if args.get('disableApiTermination') is not None:
-        kwargs.update({'DisableApiTermination': argToBoolean(args.get('disableApiTermination'))})
         kwargs.update({'DisableApiTermination': argToBoolean(args.get('disableApiTermination'))})
     if args.get('deviceName') is not None:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
@@ -1406,13 +1197,11 @@ def run_instances_command(args: dict) -> CommandResults:
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
             {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
-            {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
     if args.get('ebsKmsKeyId') is not None:
         BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
     if args.get('ebsSnapshotId') is not None:
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
         BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if BlockDeviceMappings:
         kwargs.update({'BlockDeviceMappings': [BlockDeviceMappings]})  # type: ignore
@@ -1457,12 +1246,10 @@ def run_instances_command(args: dict) -> CommandResults:
 
     if len(response['Instances']) == 0:
         return CommandResults(readable_output='No instances were found.')
-        return CommandResults(readable_output='No instances were found.')
     for i, instance in enumerate(response['Instances']):
         try:
             launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
             raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
         data.append({
             'InstanceId': instance['InstanceId'],
@@ -1493,13 +1280,6 @@ def run_instances_command(args: dict) -> CommandResults:
         outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS Instances', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Instances',
-        outputs_key_field='InstanceId',
-        readable_output=tableToMarkdown('AWS Instances', data)
-    )
 
 
 @run_on_all_accounts
@@ -1517,7 +1297,6 @@ def waiter_instance_running_command(args: dict) -> CommandResults:
 
     waiter = client.get_waiter('instance_running')
     waiter.wait(**kwargs)
-    return CommandResults(readable_output="success")
     return CommandResults(readable_output="success")
 
 
@@ -1537,7 +1316,6 @@ def waiter_instance_status_ok_command(args: dict) -> CommandResults:
     waiter = client.get_waiter('instance_status_ok')
     waiter.wait(**kwargs)
     return CommandResults(readable_output="success")
-    return CommandResults(readable_output="success")
 
 
 @run_on_all_accounts
@@ -1556,7 +1334,6 @@ def waiter_instance_stopped_command(args: dict) -> CommandResults:
     waiter = client.get_waiter('instance_stopped')
     waiter.wait(**kwargs)
     return CommandResults(readable_output="success")
-    return CommandResults(readable_output="success")
 
 
 @run_on_all_accounts
@@ -1574,7 +1351,6 @@ def waiter_instance_terminated_command(args: dict) -> CommandResults:
 
     waiter = client.get_waiter('instance_terminated')
     waiter.wait(**kwargs)
-    return CommandResults(readable_output="success")
     return CommandResults(readable_output="success")
 
 
@@ -1598,7 +1374,6 @@ def waiter_image_available_command(args: dict) -> CommandResults:
     waiter = client.get_waiter('image_available')
     waiter.wait(**kwargs)
     return CommandResults(readable_output="success")
-    return CommandResults(readable_output="success")
 
 
 @run_on_all_accounts
@@ -1620,7 +1395,6 @@ def waiter_snapshot_completed_command(args: dict) -> CommandResults:
 
     waiter = client.get_waiter('snapshot_completed')
     waiter.wait(**kwargs)
-    return CommandResults(readable_output="Success")
     return CommandResults(readable_output="Success")
 
 
@@ -1670,12 +1444,6 @@ def get_latest_ami_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.Images',
         readable_output=tableToMarkdown('AWS EC2 Images', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=image,
-        outputs_prefix='AWS.EC2.Images',
-        readable_output=tableToMarkdown('AWS EC2 Images', data)
-    )
 
 
 @run_on_all_accounts
@@ -1700,11 +1468,6 @@ def create_security_group_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.SecurityGroups',
         readable_output=tableToMarkdown('AWS EC2 Security Groups', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.SecurityGroups',
-        readable_output=tableToMarkdown('AWS EC2 Security Groups', data)
-    )
 
 
 @run_on_all_accounts
@@ -1717,9 +1480,6 @@ def delete_security_group_command(args: dict) -> CommandResults:
         kwargs.update({'GroupName': args.get('groupName')})
 
     response = client.delete_security_group(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Security Group was Deleted")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Security Group was Deleted")
@@ -1736,30 +1496,16 @@ def authorize_security_group_ingress_command(args: dict) -> CommandResults:
         UserIdGroupPairs = []
         IpPermissions_dict = create_ip_permissions_dict(args)
         UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
-    if IpPermissionsFull := args.get('IpPermissionsFull', None):
-        IpPermissions = json.loads(IpPermissionsFull)
-    else:
-        IpPermissions = []
-        UserIdGroupPairs = []
-        IpPermissions_dict = create_ip_permissions_dict(args)
-        UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-        kwargs.update(create_policy_kwargs_dict(args))
         kwargs.update(create_policy_kwargs_dict(args))
 
         UserIdGroupPairs.append(UserIdGroupPairs_dict)
         IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
-        UserIdGroupPairs.append(UserIdGroupPairs_dict)
-        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
 
-        IpPermissions.append(IpPermissions_dict)
         IpPermissions.append(IpPermissions_dict)
     kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_ingress(**kwargs)
-    if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Security Group ingress rule was created")
     if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Security Group ingress rule was created")
@@ -1776,26 +1522,13 @@ def authorize_security_group_egress_command(args: dict) -> CommandResults:
         UserIdGroupPairs = []
         IpPermissions_dict = create_ip_permissions_dict(args)
         UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
-    if IpPermissionsFull := args.get('IpPermissionsFull', None):
-        IpPermissions = json.loads(IpPermissionsFull)
-    else:
-        IpPermissions = []
-        UserIdGroupPairs = []
-        IpPermissions_dict = create_ip_permissions_dict(args)
-        UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-        UserIdGroupPairs.append(UserIdGroupPairs_dict)
-        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
-        IpPermissions.append(IpPermissions_dict)
         UserIdGroupPairs.append(UserIdGroupPairs_dict)
         IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
         IpPermissions.append(IpPermissions_dict)
     kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_egress(**kwargs)
-    if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Security Group egress rule was created")
     if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Security Group egress rule was created")
@@ -1887,19 +1620,10 @@ def revoke_security_group_ingress_command(args: dict) -> CommandResults:
         kwargs['IpPermissions'] = IpPermissions
     else:
         kwargs.update(create_policy_kwargs_dict(args))
-    if IpPermissionsFull := args.get('IpPermissionsFull', None):
-        IpPermissions = json.loads(IpPermissionsFull)
-        kwargs['IpPermissions'] = IpPermissions
-    else:
-        kwargs.update(create_policy_kwargs_dict(args))
 
     response = client.revoke_security_group_ingress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
         if 'UnknownIpPermissions' in response:
-            raise DemistoException("Security Group ingress rule not found.")
-        return CommandResults(readable_output="The Security Group ingress rule was revoked")
-    else:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
             raise DemistoException("Security Group ingress rule not found.")
         return CommandResults(readable_output="The Security Group ingress rule was revoked")
     else:
@@ -1909,7 +1633,6 @@ def revoke_security_group_ingress_command(args: dict) -> CommandResults:
 @run_on_all_accounts
 def revoke_security_group_egress_command(args: dict) -> CommandResults:
     client = build_client(args)
-
     kwargs = {
         'GroupId': args.get('groupId')
     }
@@ -1919,27 +1642,13 @@ def revoke_security_group_egress_command(args: dict) -> CommandResults:
     else:
         IpPermissions_dict = create_ip_permissions_dict(args)
         UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
-    if IpPermissionsFull := args.get('IpPermissionsFull'):
-        IpPermissions = json.loads(IpPermissionsFull)
-        kwargs['IpPermissions'] = IpPermissions
-    else:
-        IpPermissions_dict = create_ip_permissions_dict(args)
-        UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-        IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
-        kwargs['IpPermissions'] = [IpPermissions_dict]
         IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
         kwargs['IpPermissions'] = [IpPermissions_dict]
 
     response = client.revoke_security_group_egress(**kwargs)
     if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
-    if not (response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']):
         demisto.debug(response.message)
-        raise DemistoException(f"An error has occurred: {response}")
-    if 'UnknownIpPermissions' in response:
-        raise DemistoException("Security Group egress rule not found.")
-    demisto.info(f"the response is: {response}")
-    return CommandResults(readable_output="The Security Group egress rule was revoked")
         raise DemistoException(f"An error has occurred: {response}")
     if 'UnknownIpPermissions' in response:
         raise DemistoException("Security Group egress rule not found.")
@@ -1962,7 +1671,6 @@ def copy_image_command(args: dict) -> CommandResults:
         kwargs.update({'Description': args.get('description')})
     if args.get('encrypted') is not None:
         kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
-        kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('kmsKeyId') is not None:
         kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
 
@@ -1972,12 +1680,6 @@ def copy_image_command(args: dict) -> CommandResults:
         'Region': obj['_user_provided_options']['region_name']
     })
 
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Images',
-        outputs_key_field='ImageId',
-        readable_output=tableToMarkdown('AWS EC2 Images', data)
-    )
     return CommandResults(
         outputs=data,
         outputs_prefix='AWS.EC2.Images',
@@ -1998,7 +1700,6 @@ def copy_snapshot_command(args: dict) -> CommandResults:
         kwargs.update({'Description': args.get('description')})
     if args.get('encrypted') is not None:
         kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
-        kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('kmsKeyId') is not None:
         kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
 
@@ -2008,12 +1709,6 @@ def copy_snapshot_command(args: dict) -> CommandResults:
         'Region': obj['_user_provided_options']['region_name']
     })
 
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Snapshots',
-        outputs_key_field='SnapshotId',
-        readable_output=tableToMarkdown('AWS EC2 Snapshots', data)
-    )
     return CommandResults(
         outputs=data,
         outputs_prefix='AWS.EC2.Snapshots',
@@ -2040,14 +1735,12 @@ def describe_reserved_instances_command(args: dict) -> CommandResults:
 
     if len(response['ReservedInstances']) == 0:
         return CommandResults(readable_output='No reserved instances were found.')
-        return CommandResults(readable_output='No reserved instances were found.')
 
     for i, reservation in enumerate(response['ReservedInstances']):
         try:
             start_time = datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ')
             end_time = datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
             raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
         data.append({
             'ReservedInstancesId': reservation['ReservedInstancesId'],
@@ -2078,13 +1771,6 @@ def describe_reserved_instances_command(args: dict) -> CommandResults:
         outputs_key_field='ReservedInstancesId',
         readable_output=tableToMarkdown('AWS EC2 Reserved Instances', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.ReservedInstances',
-        outputs_key_field='ReservedInstancesId',
-        readable_output=tableToMarkdown('AWS EC2 Reserved Instances', data)
-    )
 
 
 @run_on_all_accounts
@@ -2099,12 +1785,6 @@ def monitor_instances_command(args: dict) -> CommandResults:
             'MonitoringState': instance['Monitoring']['State']
         })
 
-    return CommandResults(
-        outputs={'PasswordData': response['InstanceMonitorings']},
-        outputs_prefix='AWS.EC2.Instances',
-        outputs_key_field='InstanceId',
-        readable_output=tableToMarkdown('AWS EC2 Instances', data)
-    )
     return CommandResults(
         outputs={'PasswordData': response['InstanceMonitorings']},
         outputs_prefix='AWS.EC2.Instances',
@@ -2131,22 +1811,12 @@ def unmonitor_instances_command(args: dict) -> CommandResults:
         outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
     )
-    return CommandResults(
-        outputs=response['InstanceMonitorings'],
-        outputs_prefix='AWS.EC2.Instances',
-        outputs_key_field='InstanceId',
-        readable_output=tableToMarkdown('AWS EC2 Instances', data)
-    )
 
 
 @run_on_all_accounts
 def reboot_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
-
     response = client.reboot_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Instances were rebooted")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Instances were rebooted")
@@ -2161,7 +1831,6 @@ def get_password_data_command(args: dict) -> CommandResults:
         time_stamp = datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
         raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
-        raise DemistoException(f'Date could not be parsed. Please check the date again.\n{e}')
     data = {
         'InstanceId': response['InstanceId'],
         'PasswordData': response['PasswordData'],
@@ -2174,27 +1843,18 @@ def get_password_data_command(args: dict) -> CommandResults:
         outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Instances',
-        outputs_key_field='InstanceId',
-        readable_output=tableToMarkdown('AWS EC2 Instances', data)
-    )
 
 
 @run_on_all_accounts
 def modify_network_interface_attribute_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {'NetworkInterfaceId': args.get('networkInterfaceId')}
-
     if args.get('sourceDestCheck') is not None:
-        kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
         kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
     if args.get('attachmentId') is not None and args.get('deleteOnTermination') is not None:
         kwargs.update({
             'Attachment': {
                 'AttachmentId': args.get('attachmentId'),
-                'DeleteOnTermination': argToBoolean(args.get('deleteOnTermination'))
                 'DeleteOnTermination': argToBoolean(args.get('deleteOnTermination'))
             }})
     if args.get('description') is not None:
@@ -2206,28 +1866,21 @@ def modify_network_interface_attribute_command(args: dict) -> CommandResults:
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Network Interface Atttribute was successfully modified")
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Network Interface Atttribute was successfully modified")
 
 
 @run_on_all_accounts
 def modify_instance_attribute_command(args: dict) -> CommandResults:
     client = build_client(args)
+    
     kwargs = {'InstanceId': args.get('instanceId')}
-
     if args.get('sourceDestCheck') is not None:
-        kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
         kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
     if args.get('disableApiTermination') is not None:
         kwargs.update(
             {'DisableApiTermination': {'Value': argToBoolean(args.get('disableApiTermination'))}})
-            {'DisableApiTermination': {'Value': argToBoolean(args.get('disableApiTermination'))}})
     if args.get('ebsOptimized') is not None:
         kwargs.update({'EbsOptimized': {'Value': argToBoolean(args.get('ebsOptimized'))}})
-        kwargs.update({'EbsOptimized': {'Value': argToBoolean(args.get('ebsOptimized'))}})
     if args.get('enaSupport') is not None:
-        kwargs.update({'EnaSupport': {'Value': argToBoolean(args.get('enaSupport'))}})
         kwargs.update({'EnaSupport': {'Value': argToBoolean(args.get('enaSupport'))}})
     if args.get('instanceType') is not None:
         kwargs.update({'InstanceType': {'Value': args.get('instanceType')}})
@@ -2241,9 +1894,6 @@ def modify_instance_attribute_command(args: dict) -> CommandResults:
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Instance attribute was successfully modified")
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Instance attribute was successfully modified")
 
 
 @run_on_all_accounts
@@ -2252,7 +1902,6 @@ def create_network_acl_command(args: dict) -> CommandResults:
     kwargs = {'VpcId': args.get('VpcId')}
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
         kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl(**kwargs)
@@ -2277,15 +1926,6 @@ def create_network_acl_command(args: dict) -> CommandResults:
             + tableToMarkdown('AWS EC2 Instance ACL', data, removeNull=True)
         )
     )
-    return CommandResults(
-        outputs=network_acl,
-        outputs_prefix='AWS.EC2.VpcId.NetworkAcl',
-        outputs_key_field='VpcId',
-        readable_output=(
-            tableToMarkdown('AWS EC2 ACL Entries', entries, removeNull=True)
-            + tableToMarkdown('AWS EC2 Instance ACL', data, removeNull=True)
-        )
-    )
 
 
 @run_on_all_accounts
@@ -2293,13 +1933,11 @@ def create_network_acl_entry_command(args: dict) -> CommandResults:
     client = build_client(args)
     kwargs = {
         'Egress': argToBoolean(args.get('Egress')),
-        'Egress': argToBoolean(args.get('Egress')),
         'NetworkAclId': args.get('NetworkAclId'),
         'Protocol': args.get('Protocol'),
         'RuleAction': args.get('RuleAction'),
         'RuleNumber': int(args.get('RuleNumber'))
     }
-
     if args.get('CidrBlock') is not None:
         kwargs.update({'CidrBlock': args.get('CidrBlock')})
     if args.get('Code') is not None:
@@ -2314,12 +1952,8 @@ def create_network_acl_entry_command(args: dict) -> CommandResults:
         kwargs.update({'PortRange': {'To': int(args.get('To'))}})
     if args.get('DryRun') is not None:
         kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
-        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl_entry(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Instance ACL was successfully modified")
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The Instance ACL was successfully modified")
@@ -2331,7 +1965,6 @@ def create_fleet_command(args: dict) -> CommandResults:
     kwargs = {}  # type: dict
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
         kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     if args.get('ClientToken') is not None:
@@ -2357,7 +1990,6 @@ def create_fleet_command(args: dict) -> CommandResults:
     if args.get('SingleAvailabilityZone') is not None:
         SpotOptions.update({
             'SingleAvailabilityZone': argToBoolean(args.get('SingleAvailabilityZone'))
-            'SingleAvailabilityZone': argToBoolean(args.get('SingleAvailabilityZone'))
         })
     if args.get('MinTargetCapacity') is not None:
         SpotOptions.update({
@@ -2375,11 +2007,9 @@ def create_fleet_command(args: dict) -> CommandResults:
     if args.get('OnDemandSingleInstanceType') is not None:
         SpotOptions.update({
             'SingleInstanceType': argToBoolean(args.get('OnDemandSingleInstanceType'))
-            'SingleInstanceType': argToBoolean(args.get('OnDemandSingleInstanceType'))
         })
     if args.get('OnDemandSingleAvailabilityZone') is not None:
         SpotOptions.update({
-            'SingleAvailabilityZone': argToBoolean(args.get('OnDemandSingleAvailabilityZone'))
             'SingleAvailabilityZone': argToBoolean(args.get('OnDemandSingleAvailabilityZone'))
         })
     if args.get('OnDemandMinTargetCapacity') is not None:
@@ -2494,7 +2124,6 @@ def create_fleet_command(args: dict) -> CommandResults:
 
     if args.get('TerminateInstancesWithExpiration') is not None:
         kwargs.update({'TerminateInstancesWithExpiration': argToBoolean(args.get('TerminateInstancesWithExpiration'))})
-        kwargs.update({'TerminateInstancesWithExpiration': argToBoolean(args.get('TerminateInstancesWithExpiration'))})
 
     if args.get('Type') is not None:
         kwargs.update({'Type': (args.get('Type'))})
@@ -2533,11 +2162,6 @@ def create_fleet_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.Fleet',
         readable_output=tableToMarkdown('AWS EC2 Fleet', data)
     )
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Fleet',
-        readable_output=tableToMarkdown('AWS EC2 Fleet', data)
-    )
 
 
 @run_on_all_accounts
@@ -2549,7 +2173,6 @@ def delete_fleet_command(args: dict) -> CommandResults:
     output = []
     if args.get('DryRun') is not None:
         kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
-        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
     if args.get('FleetIds') is not None:
         kwargs.update({'FleetIds': parse_resource_ids(args.get('FleetIds'))})
     if args.get('TerminateInstances') is not None:
@@ -2558,7 +2181,6 @@ def delete_fleet_command(args: dict) -> CommandResults:
     response = client.delete_fleets(**kwargs)
 
     if len(response['SuccessfulFleetDeletions']) > 0:
-        for _i, item in enumerate(response['SuccessfulFleetDeletions']):
         for _i, item in enumerate(response['SuccessfulFleetDeletions']):
             data.append({'SuccessfulFleetDeletions': {
                 'CurrentFleetState': item['CurrentFleetState'],
@@ -2569,7 +2191,6 @@ def delete_fleet_command(args: dict) -> CommandResults:
             output.append(item)
 
     if len(response['UnsuccessfulFleetDeletions']) > 0:
-        for _i, item in enumerate(response['UnsuccessfulFleetDeletions']):
         for _i, item in enumerate(response['UnsuccessfulFleetDeletions']):
             data.append({'UnsuccessfulFleetDeletions': {
                 'Error-Code': item['Error']['Code'],
@@ -2582,12 +2203,6 @@ def delete_fleet_command(args: dict) -> CommandResults:
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as err_msg:
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.DeletedFleets',
-        readable_output=tableToMarkdown('AWS Deleted Fleets', data)
-    )
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
     return CommandResults(
         outputs=raw,
@@ -2615,7 +2230,6 @@ def describe_fleets_command(args: dict) -> CommandResults:
     response = client.describe_fleets(**kwargs)
 
     if len(response['Fleets']) == 0:
-        return CommandResults(readable_output='No fleets were found.')
         return CommandResults(readable_output='No fleets were found.')
     for i, item in enumerate(response['Fleets']):
 
@@ -2653,13 +2267,6 @@ def describe_fleets_command(args: dict) -> CommandResults:
         outputs_key_field='FleetId',
         readable_output=tableToMarkdown('AWS EC2 Fleets', data)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Fleet',
-        outputs_key_field='FleetId',
-        readable_output=tableToMarkdown('AWS EC2 Fleets', data)
-    )
 
 
 @run_on_all_accounts
@@ -2682,9 +2289,7 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
 
     if len(response['ActiveInstances']) == 0:
         return CommandResults(readable_output='No active instances were found.')
-        return CommandResults(readable_output='No active instances were found.')
 
-    for _i, item in enumerate(response['ActiveInstances']):
     for _i, item in enumerate(response['ActiveInstances']):
         demisto.debug(str(item))
         data.append({
@@ -2701,13 +2306,6 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as err_msg:
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Fleet',
-        outputs_key_field='FleetId',
-        readable_output=tableToMarkdown('AWS EC2 Fleets Instances', data)
-    )
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
     return CommandResults(
         outputs=raw,
@@ -2753,12 +2351,6 @@ def modify_fleet_command(args: dict) -> CommandResults:
         else "AWS EC2 Fleet was not successfully modified: " + response['Return']
     )
     return CommandResults(readable_output=readable_output)
-    readable_output = (
-        "AWS EC2 Fleet was successfully modified"
-        if response['Return'] == 'True'
-        else "AWS EC2 Fleet was not successfully modified: " + response['Return']
-    )
-    return CommandResults(readable_output=readable_output)
 
 
 @run_on_all_accounts
@@ -2782,7 +2374,6 @@ def create_launch_template_command(args: dict) -> CommandResults:
         LaunchTemplateData.update({'KernelId': args.get('KernelId')})
     if args.get('EbsOptimized') is not None:
         LaunchTemplateData.update({'EbsOptimized': argToBoolean(args.get('EbsOptimized'))})
-        LaunchTemplateData.update({'EbsOptimized': argToBoolean(args.get('EbsOptimized'))})
 
     if args.get('iamInstanceProfileArn') is not None and args.get('iamInstanceProfileName') is not None:
         LaunchTemplateData.update({
@@ -2805,13 +2396,11 @@ def create_launch_template_command(args: dict) -> CommandResults:
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
             {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
-            {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
     if args.get('ebsKmsKeyId') is not None:
         BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
     if args.get('ebsSnapshotId') is not None:
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
         BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('NoDevice') is not None:
         BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
@@ -2821,9 +2410,7 @@ def create_launch_template_command(args: dict) -> CommandResults:
     NetworkInterfaces = {}  # type: dict
     if args.get('AssociatePublicIpAddress') is not None:
         NetworkInterfaces.update({'AssociatePublicIpAddress': argToBoolean(args.get('AssociatePublicIpAddress'))})
-        NetworkInterfaces.update({'AssociatePublicIpAddress': argToBoolean(args.get('AssociatePublicIpAddress'))})
     if args.get('NetworkInterfacesDeleteOnTermination') is not None:
-        NetworkInterfaces.update({'DeleteOnTermination': argToBoolean(args.get('NetworkInterfacesDeleteOnTermination'))})
         NetworkInterfaces.update({'DeleteOnTermination': argToBoolean(args.get('NetworkInterfacesDeleteOnTermination'))})
     if args.get('NetworkInterfacesDescription') is not None:
         NetworkInterfaces.update({'Description': args.get('NetworkInterfacesDescription')})
@@ -2853,7 +2440,6 @@ def create_launch_template_command(args: dict) -> CommandResults:
     if args.get('KeyName') is not None:
         LaunchTemplateData.update({'KeyName': args.get('KeyName')})
     if args.get('Monitoring') is not None:
-        LaunchTemplateData.update({'Monitoring': {'Enabled': argToBoolean(args.get('Monitoring'))}})
         LaunchTemplateData.update({'Monitoring': {'Enabled': argToBoolean(args.get('Monitoring'))}})
     if args.get('AvailabilityZone') is not None:
         LaunchTemplateData.update({
@@ -2888,7 +2474,6 @@ def create_launch_template_command(args: dict) -> CommandResults:
     if args.get('RamDiskId') is not None:
         LaunchTemplateData.update({'RamDiskId': args.get('RamDiskId')})
     if args.get('DisableApiTermination') is not None:
-        LaunchTemplateData.update({'DisableApiTermination': argToBoolean(args.get('DisableApiTermination'))})
         LaunchTemplateData.update({'DisableApiTermination': argToBoolean(args.get('DisableApiTermination'))})
     if args.get('InstanceInitiatedShutdownBehavior') is not None:
         LaunchTemplateData.update(
@@ -2999,12 +2584,6 @@ def create_launch_template_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.LaunchTemplates',
         readable_output=tableToMarkdown('AWS LaunchTemplates', data_hr)
     )
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.LaunchTemplates',
-        readable_output=tableToMarkdown('AWS LaunchTemplates', data_hr)
-    )
 
 
 @run_on_all_accounts
@@ -3034,12 +2613,6 @@ def delete_launch_template_command(args: dict) -> CommandResults:
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as err_msg:
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.DeletedLaunchTemplates',
-        readable_output=tableToMarkdown('AWS Deleted Launch Templates', data)
-    )
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
     return CommandResults(
         outputs=raw,
@@ -3090,9 +2663,6 @@ def modify_image_attribute_command(args: dict) -> CommandResults:
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output='Image attribute sucessfully modified')
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output='Image attribute sucessfully modified')
 
 
 @run_on_all_accounts
@@ -3105,9 +2675,6 @@ def detach_internet_gateway_command(args: dict) -> CommandResults:
         kwargs.update({'VpcId': args.get('VpcId')})
 
     response = client.detach_internet_gateway(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output='Internet gateway sucessfully detached')
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output='Internet gateway sucessfully detached')
@@ -3124,9 +2691,6 @@ def delete_subnet_command(args: dict) -> CommandResults:
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output='Subnet sucessfully deleted')
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output='Subnet sucessfully deleted')
 
 
 @run_on_all_accounts
@@ -3140,9 +2704,6 @@ def delete_vpc_command(args: dict) -> CommandResults:
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output='VPC sucessfully deleted')
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output='VPC sucessfully deleted')
 
 
 @run_on_all_accounts
@@ -3153,9 +2714,6 @@ def delete_internet_gateway_command(args: dict) -> CommandResults:
         kwargs.update({'InternetGatewayId': args.get('InternetGatewayId')})
 
     response = client.delete_internet_gateway(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output='Internet gateway sucessfully deleted')
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output='Internet gateway sucessfully deleted')
@@ -3176,7 +2734,6 @@ def describe_internet_gateway_command(args: dict) -> CommandResults:
     response = client.describe_internet_gateways(**kwargs)
 
     if len(response['InternetGateways']) == 0:
-        return CommandResults(readable_output='No Internet Gateways were found.')
         return CommandResults(readable_output='No Internet Gateways were found.')
     for i, internet_gateway in enumerate(response['InternetGateways']):
         data.append({
@@ -3200,13 +2757,6 @@ def describe_internet_gateway_command(args: dict) -> CommandResults:
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as err_msg:
-        raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
-    return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.InternetGateways',
-        outputs_key_field='InternetGatewayId',
-        readable_output=tableToMarkdown('AWS EC2 Internet Gateway Ids', data)
-    )
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
     return CommandResults(
         outputs=raw,
@@ -3276,11 +2826,6 @@ def create_traffic_mirror_session_command(args: dict) -> CommandResults:
         outputs_prefix='AWS.EC2.TrafficMirrorSession',
         readable_output=tableToMarkdown('AWS Traffic Mirror Session', data)
     )
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.TrafficMirrorSession',
-        readable_output=tableToMarkdown('AWS Traffic Mirror Session', data)
-    )
 
 
 @run_on_all_accounts
@@ -3304,12 +2849,7 @@ def allocate_hosts_command(args: dict) -> CommandResults:
 
     response = client.allocate_hosts(AvailabilityZone=availability_zone, Quantity=quantity, **kwargs)
     data = {'HostId': response.get('HostIds')}
-    data = {'HostId': response.get('HostIds')}
 
-    return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Host',
-        readable_output=tableToMarkdown('AWS EC2 Dedicated Host ID', data)
     return CommandResults(
         outputs=data,
         outputs_prefix='AWS.EC2.Host',
@@ -3325,9 +2865,6 @@ def release_hosts_command(args: dict) -> CommandResults:
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
     return CommandResults(readable_output="The host was successfully released.")
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The host was successfully released.")
 
 
 def main():
@@ -3336,14 +2873,11 @@ def main():
         args = demisto.args()
 
         LOG(f'Command being called is {command}')
-        LOG(f'Command being called is {command}')
 
         if command == 'test-module':
             return_results(test_module())
-            return_results(test_module())
 
         elif command == 'aws-ec2-describe-regions':
-            return_results(describe_regions_command(args))
             return_results(describe_regions_command(args))
 
         elif command == 'aws-ec2-describe-instances':
@@ -3351,282 +2885,213 @@ def main():
 
         elif command == 'aws-ec2-describe-iam-instance-profile-associations':
             return_results(describe_iam_instance_profile_associations_command(args))
-            return_results(describe_instances_command(args))
 
         elif command == 'aws-ec2-describe-iam-instance-profile-associations':
             return_results(describe_iam_instance_profile_associations_command(args))
 
         elif command == 'aws-ec2-describe-images':
             return_results(describe_images_command(args))
-            return_results(describe_images_command(args))
 
         elif command == 'aws-ec2-describe-addresses':
-            return_results(describe_addresses_command(args))
             return_results(describe_addresses_command(args))
 
         elif command == 'aws-ec2-describe-snapshots':
             return_results(describe_snapshots_command(args))
-            return_results(describe_snapshots_command(args))
 
         elif command == 'aws-ec2-describe-volumes':
-            return_results(describe_volumes_command(args))
             return_results(describe_volumes_command(args))
 
         elif command == 'aws-ec2-describe-launch-templates':
             return_results(describe_launch_templates_command(args))
-            return_results(describe_launch_templates_command(args))
 
         elif command == 'aws-ec2-describe-key-pairs':
-            return_results(describe_key_pairs_command(args))
             return_results(describe_key_pairs_command(args))
 
         elif command == 'aws-ec2-describe-vpcs':
             return_results(describe_vpcs_command(args))
-            return_results(describe_vpcs_command(args))
 
         elif command == 'aws-ec2-describe-subnets':
-            return_results(describe_subnets_command(args))
             return_results(describe_subnets_command(args))
 
         elif command == 'aws-ec2-describe-security-groups':
             return_results(describe_security_groups_command(args))
-            return_results(describe_security_groups_command(args))
 
         elif command == 'aws-ec2-allocate-address':
-            return_results(allocate_address_command(args))
             return_results(allocate_address_command(args))
 
         elif command == 'aws-ec2-associate-address':
             return_results(associate_address_command(args))
-            return_results(associate_address_command(args))
 
         elif command == 'aws-ec2-create-snapshot':
-            return_results(create_snapshot_command(args))
             return_results(create_snapshot_command(args))
 
         elif command == 'aws-ec2-delete-snapshot':
             return_results(delete_snapshot_command(args))
-            return_results(delete_snapshot_command(args))
 
         elif command == 'aws-ec2-create-image':
-            return_results(create_image_command(args))
             return_results(create_image_command(args))
 
         elif command == 'aws-ec2-deregister-image':
             return_results(deregister_image_command(args))
-            return_results(deregister_image_command(args))
 
         elif command == 'aws-ec2-modify-volume':
-            return_results(modify_volume_command(args))
             return_results(modify_volume_command(args))
 
         elif command == 'aws-ec2-create-tags':
             return_results(create_tags_command(args))
-            return_results(create_tags_command(args))
 
         elif command == 'aws-ec2-disassociate-address':
-            return_results(disassociate_address_command(args))
             return_results(disassociate_address_command(args))
 
         elif command == 'aws-ec2-release-address':
             return_results(release_address_command(args))
-            return_results(release_address_command(args))
 
         elif command == 'aws-ec2-start-instances':
-            return_results(start_instances_command(args))
             return_results(start_instances_command(args))
 
         elif command == 'aws-ec2-stop-instances':
             return_results(stop_instances_command(args))
-            return_results(stop_instances_command(args))
 
         elif command == 'aws-ec2-terminate-instances':
-            return_results(terminate_instances_command(args))
             return_results(terminate_instances_command(args))
 
         elif command == 'aws-ec2-create-volume':
             return_results(create_volume_command(args))
-            return_results(create_volume_command(args))
 
         elif command == 'aws-ec2-attach-volume':
-            return_results(attach_volume_command(args))
             return_results(attach_volume_command(args))
 
         elif command == 'aws-ec2-detach-volume':
             return_results(detach_volume_command(args))
-            return_results(detach_volume_command(args))
 
         elif command == 'aws-ec2-delete-volume':
-            return_results(delete_volume_command(args))
             return_results(delete_volume_command(args))
 
         elif command == 'aws-ec2-run-instances':
             return_results(run_instances_command(args))
-            return_results(run_instances_command(args))
 
         elif command == 'aws-ec2-waiter-instance-running':
-            return_results(waiter_instance_running_command(args))
             return_results(waiter_instance_running_command(args))
 
         elif command == 'aws-ec2-waiter-instance-status-ok':
             return_results(waiter_instance_status_ok_command(args))
-            return_results(waiter_instance_status_ok_command(args))
 
         elif command == 'aws-ec2-waiter-instance-stopped':
-            return_results(waiter_instance_stopped_command(args))
             return_results(waiter_instance_stopped_command(args))
 
         elif command == 'aws-ec2-waiter-instance-terminated':
             return_results(waiter_instance_terminated_command(args))
-            return_results(waiter_instance_terminated_command(args))
 
         elif command == 'aws-ec2-waiter-image-available':
-            return_results(waiter_image_available_command(args))
             return_results(waiter_image_available_command(args))
 
         elif command == 'aws-ec2-waiter-snapshot_completed':
             return_results(waiter_snapshot_completed_command(args))
-            return_results(waiter_snapshot_completed_command(args))
 
         elif command == 'aws-ec2-get-latest-ami':
-            return_results(get_latest_ami_command(args))
             return_results(get_latest_ami_command(args))
 
         elif command == 'aws-ec2-create-security-group':
             return_results(create_security_group_command(args))
-            return_results(create_security_group_command(args))
 
         elif command == 'aws-ec2-delete-security-group':
-            return_results(delete_security_group_command(args))
             return_results(delete_security_group_command(args))
 
         elif command == 'aws-ec2-authorize-security-group-ingress-rule':
             return_results(authorize_security_group_ingress_command(args))
-            return_results(authorize_security_group_ingress_command(args))
 
         elif command == 'aws-ec2-authorize-security-group-egress-rule':
-            return_results(authorize_security_group_egress_command(args))
             return_results(authorize_security_group_egress_command(args))
 
         elif command == 'aws-ec2-revoke-security-group-ingress-rule':
             return_results(revoke_security_group_ingress_command(args))
-            return_results(revoke_security_group_ingress_command(args))
 
         elif command == 'aws-ec2-revoke-security-group-egress-rule':
-            return_results(revoke_security_group_egress_command(args))
             return_results(revoke_security_group_egress_command(args))
 
         elif command == 'aws-ec2-copy-image':
             return_results(copy_image_command(args))
-            return_results(copy_image_command(args))
 
         elif command == 'aws-ec2-copy-snapshot':
-            return_results(copy_snapshot_command(args))
             return_results(copy_snapshot_command(args))
 
         elif command == 'aws-ec2-describe-reserved-instances':
             return_results(describe_reserved_instances_command(args))
-            return_results(describe_reserved_instances_command(args))
 
         elif command == 'aws-ec2-monitor-instances':
-            return_results(monitor_instances_command(args))
             return_results(monitor_instances_command(args))
 
         elif command == 'aws-ec2-unmonitor-instances':
             return_results(unmonitor_instances_command(args))
-            return_results(unmonitor_instances_command(args))
 
         elif command == 'aws-ec2-reboot-instances':
-            return_results(reboot_instances_command(args))
             return_results(reboot_instances_command(args))
 
         elif command == 'aws-ec2-get-password-data':
             return_results(get_password_data_command(args))
-            return_results(get_password_data_command(args))
 
         elif command == 'aws-ec2-modify-network-interface-attribute':
-            return_results(modify_network_interface_attribute_command(args))
             return_results(modify_network_interface_attribute_command(args))
 
         elif command == 'aws-ec2-create-network-acl':
             return_results(create_network_acl_command(args))
-            return_results(create_network_acl_command(args))
 
         elif command == 'aws-ec2-create-network-acl-entry':
-            return_results(create_network_acl_entry_command(args))
             return_results(create_network_acl_entry_command(args))
 
         elif command == 'aws-ec2-create-fleet':
             return_results(create_fleet_command(args))
-            return_results(create_fleet_command(args))
 
         elif command == 'aws-ec2-delete-fleet':
-            return_results(delete_fleet_command(args))
             return_results(delete_fleet_command(args))
 
         elif command == 'aws-ec2-describe-fleets':
             return_results(describe_fleets_command(args))
-            return_results(describe_fleets_command(args))
 
         elif command == 'aws-ec2-describe-fleet-instances':
-            return_results(describe_fleet_instances_command(args))
             return_results(describe_fleet_instances_command(args))
 
         elif command == 'aws-ec2-modify-fleet':
             return_results(modify_fleet_command(args))
-            return_results(modify_fleet_command(args))
 
         elif command == 'aws-ec2-create-launch-template':
-            return_results(create_launch_template_command(args))
             return_results(create_launch_template_command(args))
 
         elif command == 'aws-ec2-delete-launch-template':
             return_results(delete_launch_template_command(args))
-            return_results(delete_launch_template_command(args))
 
         elif command == 'aws-ec2-modify-image-attribute':
-            return_results(modify_image_attribute_command(args))
             return_results(modify_image_attribute_command(args))
 
         elif command == 'aws-ec2-modify-instance-attribute':
             return_results(modify_instance_attribute_command(args))
-            return_results(modify_instance_attribute_command(args))
 
         elif command == 'aws-ec2-detach-internet-gateway':
-            return_results(detach_internet_gateway_command(args))
             return_results(detach_internet_gateway_command(args))
 
         elif command == 'aws-ec2-delete-internet-gateway':
             return_results(delete_internet_gateway_command(args))
-            return_results(delete_internet_gateway_command(args))
 
         elif command == 'aws-ec2-describe-internet-gateway':
-            return_results(describe_internet_gateway_command(args))
             return_results(describe_internet_gateway_command(args))
 
         elif command == 'aws-ec2-delete-subnet':
             return_results(delete_subnet_command(args))
-            return_results(delete_subnet_command(args))
 
         elif command == 'aws-ec2-delete-vpc':
-            return_results(delete_vpc_command(args))
             return_results(delete_vpc_command(args))
 
         elif command == 'aws-ec2-create-traffic-mirror-session':
             return_results(create_traffic_mirror_session_command(args))
-            return_results(create_traffic_mirror_session_command(args))
 
         elif command == 'aws-ec2-allocate-hosts':
-            return_results(allocate_hosts_command(args))
             return_results(allocate_hosts_command(args))
 
         elif command == 'aws-ec2-release-hosts':
             return_results(release_hosts_command(args))
-            return_results(release_hosts_command(args))
 
     except Exception as e:
         LOG(e)
-        return_error(f'Error occurred in the AWS EC2 Integration:\n{e}')
         return_error(f'Error occurred in the AWS EC2 Integration:\n{e}')
 
 
