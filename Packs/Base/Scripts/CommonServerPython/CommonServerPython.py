@@ -2006,9 +2006,9 @@ def create_clickable_url(url, text = None):
     elif isinstance(url, list):
         if isinstance(text, list):
             assert len(url) == len(text), 'The URL list and the text list must be the same length.'
-            return [f'[{text}]({item})' for text, item in zip(text, url)]
-        return [f'[{item}]({item})' for item in url]
-    return f'[{text or url}]({url})'
+            return ['[{}]({})'.format(text, item) for text, item in zip(text, url)]
+        return ['[{}]({})'.format(item, item) for item in url]
+    return '[{}]({})'.format(text or url, url)
 
 
 class JsonTransformer:
