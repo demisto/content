@@ -1,8 +1,15 @@
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import entryTypes
-from ImageOCR import list_languages_command, extract_text, run_test_module, main
+from CommonServerPython import CommandResults, EntryType
+from ImageOCR import (
+    CORRUPTED_ERR,
+    list_languages_command,
+    extract_text,
+    extract_text_command,
+    run_test_module,
+    main,
+)
 
 RETURN_ERROR_TARGET = 'ImageOCR.return_error'
 
@@ -67,7 +74,7 @@ def test_extract_text_command(mocker):
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0][0]
-    assert results['Type'] == entryTypes['note']
+    assert results['Type'] == EntryType.NOTE
     assert 'Internal Revenue Service' in results['HumanReadable']
     assert 'Internal Revenue Service' in \
            results['EntryContext']['File(val.EntryID && val.EntryID == obj.EntryID)']['Text']
@@ -97,6 +104,30 @@ def test_extract_text_command_bad(mocker):
     err_msg = return_error_mock.call_args[0][0]
     assert 'Error:' in err_msg
     assert 'bad' in err_msg
+
+
+@pytest.mark.parametrize('skip_corrupted', [True, False])
+def test_extract_text_command_corrupted_image(mocker, skip_corrupted: bool):
+    """
+    Given:
+     - A corrupted image
+     - The skip_corrupted boolean indicating whether or not to raise an error
+    When:
+     - Running the image-ocr-extract-text command
+    Then:
+     - Ensure an error message is returned if skip_corrupted is false, or a warning otherwise.
+    """
+    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/corrupted.gif"})
+    results, errors = extract_text_command(
+        {'entryid': 'test', 'skip_corrupted': skip_corrupted},
+        instance_languages=['eng'],
+    )
+    assert len(results + errors) == 1
+    if skip_corrupted:
+        assert isinstance(results[0], CommandResults)
+        assert results[0].entry_type == EntryType.WARNING
+    else:
+        assert CORRUPTED_ERR in errors[0]
 
 
 def test_run_test_module():
