@@ -284,9 +284,6 @@ configuration:
   type: 0
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
-- display: test
-  name: test_conf
-  type: 0
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
