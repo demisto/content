@@ -1,6 +1,6 @@
 import pytest
 from PerformActionOnCampaignIncidents import *
-
+from pytest_mock import MockerFixture
 
 NUM_OF_INCIDENTS = 5
 INCIDENT_IDS = [str(i) for i in range(NUM_OF_INCIDENTS)]
@@ -17,7 +17,7 @@ SUCCESS_REOPEN = 'The following incidents was successfully reopened {}.'
 SUCCESS_CLOSE = 'The following incidents was successfully closed {}.'
 
 
-def prepare(mocker):
+def prepare(mocker: MockerFixture) -> None:
     mocker.patch.object(demisto, 'incidents', return_value=[MOCKED_INCIDENT])
     mocker.patch.object(demisto, 'executeCommand')
     mocker.patch('PerformActionOnCampaignIncidents.get_campaign_incident_ids', return_value=INCIDENT_IDS)
@@ -26,7 +26,7 @@ def prepare(mocker):
 
 
 @pytest.mark.parametrize('action', ACTIONS_MAPPER.keys())
-def test_perform_action_happy_path(mocker, action):
+def test_perform_action_happy_path(mocker: MockerFixture, action: str) -> None:
     """
         Given -
             Perform action button was clicked and there is Selected incident ids
@@ -52,7 +52,7 @@ def test_perform_action_happy_path(mocker, action):
         assert ','.join(INCIDENT_IDS) in res
 
 
-def test_invalid_action(mocker):
+def test_invalid_action(mocker: MockerFixture):
     """
         Given -
              Invalid action in the perform action field
@@ -77,7 +77,7 @@ def test_invalid_action(mocker):
 
 
 @pytest.mark.parametrize('action', ACTIONS_MAPPER.keys())
-def test_error_in_execute_command(mocker, action):
+def test_error_in_execute_command(mocker: MockerFixture, action):
     """
         Given -
             isError is return true to indicate there is error
@@ -109,7 +109,7 @@ def test_error_in_execute_command(mocker, action):
                                                            error="Error message")
 
 
-def test_no_incidents_in_context(mocker):
+def test_no_incidents_in_context(mocker: MockerFixture):
     """
         Given - there is no email campaign in context
 

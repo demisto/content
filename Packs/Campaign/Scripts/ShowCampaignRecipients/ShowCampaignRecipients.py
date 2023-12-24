@@ -9,7 +9,7 @@ EMAIL_BCC_FIELD = 'emailbcc'
 RECIPIENTS_FIELDS = [EMAIL_TO_FIELD, EMAIL_CC_FIELD, EMAIL_BCC_FIELD]
 
 
-def get_incident_ids() -> list:
+def get_incident_ids() -> list | None:
     """
     Gets all the campaign incident ids.
 
@@ -17,21 +17,21 @@ def get_incident_ids() -> list:
         List of all the ids.
     """
     incidents = demisto.get(demisto.context(), "EmailCampaign.incidents")
-    return [incident["id"] for incident in incidents]
+    return [incident["id"] for incident in incidents] if incidents else None
 
 
-def get_campaign_recipients() -> str:
+def get_campaign_recipients(incident_ids: list[str]) -> str:
     """
     Gets the campaign recipients in a readable table.
 
+    Args:
+        incident_ids: All the campaign incident ids.
     Returns:
         MD table of the recipients and their amount.
     """
-    incident_ids = get_incident_ids()
-
-    res = demisto.executeCommand('GetIncidentsByQuery', {
-        'query': "id:({})".format(' '.join(incident_ids))
-    })
+    res = demisto.executeCommand(
+        'GetIncidentsByQuery', {'query': f"id:({' '.join(incident_ids)})"}
+    )
 
     if isError(res):
         return_error(f'Error occurred while trying to get incidents by query: {get_error(res)}')
@@ -58,9 +58,16 @@ def get_campaign_recipients() -> str:
 
 def main():
     try:
-
-        campaign_recipients = get_campaign_recipients()
-        return_results(CommandResults(readable_output=campaign_recipients, raw_response=campaign_recipients))
+        if incident_ids := get_incident_ids():
+            campaign_recipients = get_campaign_recipients(incident_ids)
+            return_results(CommandResults(readable_output=campaign_recipients, raw_response=campaign_recipients))
+        return_results(CommandResults(
+            content_format='html',
+            raw_response=(
+                "<div style='text-align:center; font-size:17px; padding: 15px;'>Recipients"
+                "</br> <div style='font-size:20px;'> No incident recipients found.</div></div>"
+            )
+        ))
 
     except Exception as err:
         return_error(str(err))

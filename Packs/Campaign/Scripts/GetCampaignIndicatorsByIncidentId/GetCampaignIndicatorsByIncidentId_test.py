@@ -72,7 +72,7 @@ def test_get_indicators_by_incident_id(mocker, incident_ids, indicators, expecte
 
     mocker.patch.object(demisto, 'executeCommand', return_value=indicators)
 
-    indicators_res = get_indicatos_from_incidents(incident_ids)
+    indicators_res = get_indicators_from_incidents(incident_ids)
     result = format_results(indicators_res, incident_ids)
 
     assert result == expected_result

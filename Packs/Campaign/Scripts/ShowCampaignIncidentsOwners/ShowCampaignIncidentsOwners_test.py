@@ -24,4 +24,6 @@ def test_show_incident_owners(mocker):
     ShowCampaignIncidentsOwners.main()
     res = demisto.results.call_args[0][0]['Contents']
 
-    assert 'admin' in res and 'owner_1' in res and 'owner_2' in res
+    assert 'admin' in res
+    assert 'owner_1' in res
+    assert 'owner_2' in res
