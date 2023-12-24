@@ -496,6 +496,12 @@ class DBotScoreCalculator:
 
         }
 
+        indicator_default_score = params.get('indicator_default_score')
+        if indicator_default_score and indicator_default_score == 'Unknown':
+            self.default_score = Common.DBotScore.NONE
+        else:
+            self.default_score = Common.DBotScore.GOOD
+
     def calculate_score(self, ioc_type: str, indicator, threshold=None):
         """
             Calculate the DBot score according the indicator's confidence and thresholds if exist
@@ -506,14 +512,14 @@ class DBotScoreCalculator:
         confidence = indicator.get('confidence', Common.DBotScore.NONE)
         defined_threshold = threshold or self.instance_defined_thresholds.get(ioc_type)
         if defined_threshold:
-            return Common.DBotScore.BAD if confidence >= defined_threshold else Common.DBotScore.GOOD
+            return Common.DBotScore.BAD if confidence >= defined_threshold else self.default_score
         else:
             if confidence > DEFAULT_MALICIOUS_THRESHOLD:
                 return Common.DBotScore.BAD
             if confidence > DEFAULT_SUSPICIOUS_THRESHOLD:
                 return Common.DBotScore.SUSPICIOUS
             else:
-                return Common.DBotScore.GOOD
+                return self.default_score
 
 
 def find_worst_indicator(indicators):
@@ -2495,7 +2501,6 @@ def get_indicators(client: Client, **kwargs):
     """
     page = kwargs.get('page')
     page_size = kwargs.get('page_size')
-    offset = kwargs['offset'] = 0
     limit = kwargs['limit'] = int(kwargs.get('limit', 20))
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     kwargs.update(params)
@@ -2506,18 +2511,20 @@ def get_indicators(client: Client, **kwargs):
     url = "v2/intelligence/"
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"
-    iocs_list = client.http_request("GET", url, params=kwargs).get('objects', None)
+    res = client.http_request("GET", url, params=kwargs)
+    iocs_list = res.get('objects', None)
     if not iocs_list:
         return 'No indicators found from ThreatStream'
 
     iocs_context = parse_indicators_list(iocs_list)
     # handle the issue that the API does not return more than 1000 indicators.
     if limit > 1000:
-        while len(iocs_context) < limit:
-            offset += len(iocs_list)
-            kwargs['limit'] = limit
-            kwargs['offset'] = offset
-            iocs_list = client.http_request("GET", url, params=kwargs).get('objects', None)
+        next_page = res.get('meta', {}).get('next', None)
+        while len(iocs_context) < limit and next_page:
+            next_page = next_page.replace('api/', '')
+            res = client.http_request("GET", next_page)
+            iocs_list = res.get('objects', None)
+            next_page = res.get('meta', {}).get('next', None)
             if iocs_list:
                 iocs_context.extend(parse_indicators_list(iocs_list))
             else:

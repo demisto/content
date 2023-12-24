@@ -194,7 +194,15 @@ def get_next_start_time(latests_incident_fetched_time, latest_time, were_new_inc
     return latest_incident_datetime.strftime(SPLUNK_TIME_FORMAT)
 
 
-def create_incident_custom_id(incident):
+def create_incident_custom_id(incident: dict[str, Any]):
+    """This is used to create a custom incident ID, when fetching events that are **NOT** notables.
+
+    Args:
+        incident (dict[str, Any]): An incident created from a fetched event.
+
+    Returns:
+        str: The custom incident ID.
+    """
     incident_raw_data = json.loads(incident["rawJSON"])
     fields_to_add = ['_cd', 'index', '_time', '_indextime', '_raw']
     fields_supplied_by_user = demisto.params().get('unique_id_fields', '')
@@ -339,13 +347,22 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     latest_time = last_run_latest_time or now
     kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
     fetch_query = build_fetch_query(params)
+    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
+    if late_indexed_pagination := last_run_data.get('late_indexed_pagination'):
+        # This is for handling the case when events get indexed late, and inserted in pages
+        # that we have already went through
+        window = f'{kwargs_oneshot.get("earliest_time")}-{kwargs_oneshot.get("latest_time")}'
+        demisto.debug(f'[SplunkPy] additional fetch for the window {window} to check for late indexed incidents')
+        if last_run_fetched_ids:
+            ids_to_exclude = [f'"{fetched_id}"' for fetched_id in last_run_fetched_ids]
+            exclude_id_where = f'where not event_id in ({",".join(ids_to_exclude)})'
+            fetch_query = f'{fetch_query} | {exclude_id_where}'
+            kwargs_oneshot['offset'] = 0
 
     demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
     demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)
     reader = results.JSONResultsReader(oneshotsearch_results)
-
-    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
 
     incidents = []
     notables = []
@@ -358,16 +375,17 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
         notable_incident = Notable(data=item)
         inc = notable_incident.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
         extensive_log(f'[SplunkPy] Incident data after parsing to notable: {inc}')
-        incident_id = create_incident_custom_id(inc)
+        custom_inc_id = create_incident_custom_id(inc)
+        incident_id = notable_incident.id or custom_inc_id
 
-        if incident_id not in last_run_fetched_ids:
+        if incident_id not in last_run_fetched_ids and custom_inc_id not in last_run_fetched_ids:
             incident_ids_to_add.append(incident_id)
             incidents.append(inc)
             notables.append(notable_incident)
-            extensive_log(f'[SplunkPy] - Fetched incident {item.get("event_id", incident_id)} to be created.')
+            extensive_log(f'[SplunkPy] - Fetched incident {incident_id} to be created.')
         else:
             num_of_dropped += 1
-            extensive_log(f'[SplunkPy] - Dropped incident {item.get("event_id", incident_id)} due to duplication.')
+            extensive_log(f'[SplunkPy] - Dropped incident {incident_id} due to duplication.')
 
     current_epoch_time = int(time.time())
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
@@ -392,10 +410,11 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
             # want to add data to the integration context (which will ruin the logic of the cache object)
             last_run_data.update({DUMMY: DUMMY})
 
-    # we didn't get any new incident or get less then limit
-    # so the next run earliest time will be the latest_time from this iteration
-    # should also set when num_of_dropped == FETCH_LIMIT
-    if not incidents or (len(incidents) + num_of_dropped) < FETCH_LIMIT:
+    # We didn't get any new incidents or got less than limit,
+    # so the next run's earliest time will be the latest_time from this iteration
+    if (len(incidents) + num_of_dropped) < FETCH_LIMIT:
+        demisto.debug(f'[SplunkPy] Number of fetched incidents = {len(incidents)}, dropped = {num_of_dropped}. Sum is less'
+                      f' than {FETCH_LIMIT=}. Starting new fetch')
         next_run_earliest_time = latest_time
         new_last_run = {
             'time': next_run_earliest_time,
@@ -403,17 +422,30 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
             'offset': 0,
             'found_incidents_ids': last_run_fetched_ids
         }
-
     # we get limit notables from splunk
     # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
     else:
+        demisto.debug(f'[SplunkPy] Number of fetched incidents = {len(incidents)}, dropped = {num_of_dropped}. Sum is'
+                      f' equal/greater than {FETCH_LIMIT=}. Continue pagination')
         new_last_run = {
             'time': occured_start_time,
             'latest_time': latest_time,
             'offset': search_offset + FETCH_LIMIT,
             'found_incidents_ids': last_run_fetched_ids
         }
-    demisto.debug(f'SplunkPy - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}')
+    new_last_run['late_indexed_pagination'] = False
+    # Need to fetch again this "window" to be sure no "late" indexed events are missed
+    if num_of_dropped >= FETCH_LIMIT and '`notable`' in fetch_query:
+        demisto.debug('Need to fetch this "window" again to make sure no "late" indexed events are missed')
+        new_last_run['late_indexed_pagination'] = True
+    # If we are in the process of checking late indexed events, and len(fetch_incidents) == FETCH_LIMIT,
+    # that means we need to continue the process of checking late indexed events
+    if len(incidents) == FETCH_LIMIT and late_indexed_pagination:
+        demisto.debug(f'Number of valid incidents equals {FETCH_LIMIT=}, and current fetch checked for late indexed events.'
+                      ' Continue checking for late events')
+        new_last_run['late_indexed_pagination'] = True
+    demisto.debug(f'SplunkPy set last run - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}'
+                  f', late_indexed_pagination={new_last_run.get("late_indexed_pagination")}')
 
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
@@ -2387,7 +2419,7 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
 
     if 'Success' not in response_info.text:
-        return_error('Could not send event to Splunk ' + response_info.text.encode('utf8'))
+        return_error(f"Could not send event to Splunk {response_info.text}")
     else:
         return_results('The event was sent successfully to Splunk.')
 

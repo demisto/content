@@ -639,20 +639,6 @@ class TestCommands:
         get_sync_file()
         assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
 
-    def test_set_sync_time(self, mocker):
-        mocker_reurn_results = mocker.patch('XDR_iocs.return_results')
-        mocker_set_context = mocker.patch.object(demisto, 'setIntegrationContext')
-        set_sync_time('2021-11-25T00:00:00')
-        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 succeeded.')
-        call_args = mocker_set_context.call_args[0][0]
-        assert call_args['ts'] == 1637798400000
-        assert call_args['time'] == '2021-11-25T00:00:00Z'
-        assert call_args['iocs_to_keep_time']
-
-    def test_set_sync_time_with_invalid_time(self):
-        with pytest.raises(ValueError, match='invalid time format.'):
-            set_sync_time('test')
-
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
@@ -1011,3 +997,40 @@ def test_create_validation_errors_response(validation_errors, expected_str):
     """
     from XDR_iocs import create_validation_errors_response
     assert expected_str in create_validation_errors_response(validation_errors)
+
+
+@pytest.mark.parametrize('current_time,next_iocs_to_keep_time,should_run_iocs_to_keep', [
+    ('2020-01-01T02:00:00Z', '2020-01-01T01:00:00Z', True),
+    ('2020-01-01T01:05:00Z', '2020-01-01T02:00:00Z', False),
+    ('2020-01-01T04:00:00Z', '2020-01-01T01:00:00Z', False),
+    ('2020-01-02T02:00:00Z', '2020-01-01T01:00:00Z', True),
+    ('2020-01-02T04:00:00Z', '2020-01-01T01:00:00Z', False),
+])
+def test_is_iocs_to_keep_time(current_time, next_iocs_to_keep_time, should_run_iocs_to_keep, mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"next_iocs_to_keep_time": next_iocs_to_keep_time})
+    with freeze_time(current_time):
+        assert is_iocs_to_keep_time() == should_run_iocs_to_keep
+
+
+def test_is_iocs_to_keep_time_without_integration_context(mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=[{"next_iocs_to_keep_time": None},
+                                                                       {"next_iocs_to_keep_time": None},
+                                                                       {"next_iocs_to_keep_time": '2020-01-02T01:05:00Z'}])
+    with freeze_time('2020-01-02T04:00:00Z'):
+        assert not is_iocs_to_keep_time()
+
+
+@pytest.mark.parametrize('random_int,expected_next_time', [
+    (0, '2023-11-16T01:00:00Z'),
+    (40, '2023-11-16T01:40:00Z'),
+    (60, '2023-11-16T02:00:00Z'),
+    (100, '2023-11-16T02:40:00Z'),
+    (115, '2023-11-16T02:55:00Z'),
+])
+@freeze_time('2023-11-15T18:00:00')
+def test_set_new_iocs_to_keep_time(random_int, expected_next_time, mocker):
+    mocker.patch('XDR_iocs.secrets.randbelow', return_value=random_int)
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+    set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
+    set_new_iocs_to_keep_time()
+    set_integration_context_mock.assert_called_once_with({'next_iocs_to_keep_time': expected_next_time})

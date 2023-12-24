@@ -705,7 +705,7 @@ class TestGetCommands:
             ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1}, {'limit': 20}),
             ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1, 'page': 2, 'page_size': 2},
              {'limit': 2, 'offset': 2}),
-            ('threatstream-get-indicators', {}, {'limit': 20, 'offset': 0}),
+            ('threatstream-get-indicators', {}, {'limit': 20}),
             ('threatstream-get-indicators', {'page': 2, 'page_size': 2}, {'limit': 2, 'offset': 2}),
             ('threatstream-list-user', {'page': 2, 'page_size': 3}, {'limit': 3, 'offset': 3}),
             ('threatstream-list-user', {}, {'limit': 50}),
@@ -1060,13 +1060,13 @@ class TestGetIndicators:
             verify that the requested amount is returned.
         """
         mocker.patch.object(Client, 'http_request', side_effect=[
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': None}},
         ])
         client = Client(
             base_url='',

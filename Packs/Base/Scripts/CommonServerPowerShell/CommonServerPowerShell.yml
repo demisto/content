@@ -7,10 +7,10 @@ type: powershell
 tags:
 - infra
 - server
-comment: Common code that will be merged into each PowerShell script/integration when it runs
+comment: Common code that will be merged into each PowerShell script/integration when it runs.
 system: true
 fromversion: 5.5.0
-dockerimage: demisto/powershell:7.1.3.22028
+dockerimage: demisto/powershell:7.4.0.80528
 tests:
   - PowerShellCommon-Test
   - XsoarPowershellTesting-Test

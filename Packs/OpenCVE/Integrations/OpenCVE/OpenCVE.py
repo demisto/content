@@ -480,7 +480,17 @@ def parse_cve(ocve: OpenCVE, cve: dict):
                 {'metrics': 'Confidentiality', 'value': ocve._map(cvssV2.get('confidentialityImpact', None))}
             ]
 
-    parsed_cve['fields']['nodes'] = cve.get('raw_nvd_data', {}).get('configurations', {}).get('nodes', {})
+    # Backwards compatibility, the configuration used to be a dict. Now it is a list.
+    configurations = cve.get('raw_nvd_data', {}).get('configurations')
+    nodes = []
+    if isinstance(configurations, dict):
+        nodes = configurations.get('nodes', [])
+    elif isinstance(configurations, list):
+        for config in configurations:
+            nodes.extend(config.get('nodes', []))
+    # Design decision: The nodes are aggregated into a single list, this means we won't support 'AND' Statements in CPE matching,
+    # As it's also not supported in XSOAR platform.
+    parsed_cve['fields']['nodes'] = nodes
     parsed_cve['fields']['cwes'] = cve.get('cwes', [])
 
     return relationships, parsed_cve

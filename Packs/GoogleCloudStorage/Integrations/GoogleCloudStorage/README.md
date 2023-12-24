@@ -291,6 +291,16 @@
 <td style="width: 421px;">Name of the bucket in which to list objects.</td>
 <td style="width: 103px;">Required</td>
 </tr>
+<tr>
+<td style="width: 184px;">prefix</td>
+<td style="width: 421px;">Specify to limit blobs within a "folder" i.e., "folder-1/" if blob is "folder-1/file.txt".</td>
+<td style="width: 103px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 184px;">delimiter</td>
+<td style="width: 421px;">Use a delimiter if you want to limit results within a specific "folder" and without any nested blobs i.e., "/".</td>
+<td style="width: 103px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -368,7 +378,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>gcs-list-bucket-objects bucket_name=my-bucket</pre>
+<pre>gcs-list-bucket-objects bucket_name=my-bucket prefix=some/path/ delimiter=/</pre>
 <h5>Human Readable Output</h5>
 <h3>Objects in bucket my-bucket</h3>
 <table style="width: 750px;" border="2" cellpadding="6">
