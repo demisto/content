@@ -35,6 +35,8 @@ from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                FilesToCollect)
 from Tests.scripts.collect_tests.version_range import VersionRange
 
+from packaging._structures import Infinity, NegativeInfinity
+
 PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
 
@@ -120,7 +122,9 @@ class CollectionResult:
         :param pack_to_reinstall: pack name to collect for reinstall test
         """
         self.tests: set[str] = set()
-        self.modeling_rules_to_test: set[str | Path] = set()
+        # CHANGES
+        self.modeling_rules_to_test: dict[str, VersionRange | None] = {}
+        # self.modeling_rules_to_test: set[str | Path] = set()
         self.packs_to_install: set[str] = set()
         self.packs_to_upload: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
@@ -182,7 +186,11 @@ class CollectionResult:
                 logger.info(f'collected {pack=} only to upload, {reason} ({reason_description}, {version_range=})')
 
         if modeling_rule_to_test:
-            self.modeling_rules_to_test = {modeling_rule_to_test}
+            modeling_rule_repr = modeling_rule_to_test.as_posix() if isinstance(modeling_rule_to_test, Path) \
+                else str(modeling_rule_to_test)
+            # {'modeling_rule': modeling_rule_to_test, 'version_range': version_range}
+            self.modeling_rules_to_test = {modeling_rule_repr: self.version_range}
+            # self.modeling_rules_to_test = {modeling_rule_to_test}
             logger.info(f'collected {modeling_rule_to_test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack_to_reinstall:
@@ -616,6 +624,9 @@ class TestCollector(ABC):
         pack = PACK_MANAGER.get_pack_metadata(pack_id)
         pack_to_reinstall = None
 
+        # TODO This will hold the content item range?
+        # If yes, then we will hold the version range of the modeling rule,
+        # and we can right the versions to the file
         version_range = content_item_range \
             if pack.version_range.is_default \
             else (pack.version_range | content_item_range)
@@ -1308,6 +1319,11 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         """
         result = []
         for modeling_rule in self.id_set.modeling_rules:
+            # if modeling_rule.version_range.max_version in VersionRange(min_version=Version('6.0.0'),
+            #                                                            max_version=Version('8.3.0')):
+            #     logger.info(f'modeling rule with id: {modeling_rule.id_}, and name: {modeling_rule.name}, has a lower'
+            #                 'toVersion than the tenant version. Skipping.')
+            #     continue
             try:
                 logger.debug(f'collecting modeling rule with id: {modeling_rule.id_}, with name: {modeling_rule.name}')
                 path = PATHS.content_path / modeling_rule.file_path_str
@@ -1406,32 +1422,50 @@ def output(result: CollectionResult | None):
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
     packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
-    modeling_rules_to_test = sorted(
-        result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
-    ) if result else ()
-    modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
+    # CHANGES
+    modeling_rules_to_test: dict[str, dict[str, str]] = {}
+    for modeling_rule, version_range in (result.modeling_rules_to_test if result else {}).items():
+        toVersion, fromVersion = (version_range.max_version, version_range.min_version) if version_range else \
+            (Infinity, NegativeInfinity)
+        modeling_rules_to_test[modeling_rule] = {}
+        if toVersion != Infinity:
+            modeling_rules_to_test[modeling_rule] |= {'to': str(toVersion)}
+        if fromVersion != NegativeInfinity:
+            modeling_rules_to_test[modeling_rule] |= {'from': str(fromVersion)}
+
+    # modeling_rules_to_test = sorted(
+    #     result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
+    # ) if result else ()
+    # modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
+    # TODO Extract the version range using result.version_range?
     machines = result.machines if result and result.machines else ()
     packs_to_reinstall_test = sorted(result.packs_to_reinstall, key=lambda x: x.lower()) if result else ()
 
     test_str = '\n'.join(tests)
     packs_to_install_str = '\n'.join(packs_to_install)
     packs_to_upload_str = '\n'.join(packs_to_upload)
-    modeling_rules_to_test_str = '\n'.join(modeling_rules_to_test)
+    # modeling_rules_to_test_str = '\n'.join(modeling_rules_to_test)
     machine_str = ', '.join(sorted(map(str, machines)))
     packs_to_reinstall_test_str = '\n'.join(packs_to_reinstall_test)
 
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
-    num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
-    logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
+    # num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
+    # CHANGES
+    num_of_modeling_rules = len(modeling_rules_to_test)
+    logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test.keys()}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
     logger.info(f'collected {len(packs_to_reinstall_test)} packs to reinstall to test:\n{packs_to_reinstall_test_str}')
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)
     PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
-    PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)
+    # CHANGES
+    # write JSON files:
+    with Path(PATHS.output_modeling_rules_to_test_file).open("w", encoding="UTF-8") as modeling_rules_to_test_file: 
+        json.dump(modeling_rules_to_test, modeling_rules_to_test_file)
+    # PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)
     PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
     PATHS.output_packs_to_reinstall_test_file.write_text(packs_to_reinstall_test_str)
 
