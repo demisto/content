@@ -25,9 +25,10 @@
     registryvaluetype: xdm.target.registry.value_type
     reportedemailsubject: xdm.email.subject
   alert_name: Microsoft Graph Security Alert
+  enabled: True
   crontab: null
   dataset: alerts
-  description: testing alert aggregation
+  description: This rule maps Microsoft Graph Security alerts to XSIAM alerts.
   drilldown_query_timeframe: ALERT
   execution_mode: REAL_TIME
   global_rule_id: f20b0f8a-a987-4325-9f6f-8a3089bdfd5d
