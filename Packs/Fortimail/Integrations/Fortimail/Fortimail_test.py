@@ -1060,11 +1060,11 @@ def test_get_removed_item_key():
     [
         (
             {"ip": "127.0.0.1", "group_name": "group_name"},
-            {"Member": {"mkey": "127.0.0.1-127.0.0.1"}, "mkey": "group_name"},
+            {"Member": [{"mkey": "127.0.0.1-127.0.0.1"}], "mkey": "group_name"},
         ),
         (
             {"email": "test@example.com", "group_name": "group_name"},
-            {"Member": {"mkey": "test@example.com"}, "mkey": "group_name"},
+            {"Member": [{"mkey": "test@example.com"}], "mkey": "group_name"},
         ),
         (
             {"ips": ["192.168.0.1", "192.168.0.2"], "group_name": "group_name"},
