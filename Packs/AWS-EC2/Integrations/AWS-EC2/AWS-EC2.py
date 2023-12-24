@@ -180,7 +180,7 @@ def test_module() -> str:
             build_client(args)
             return CommandResults(readable_output='ok')
         fails = [
-            re.search('`(.+)`', result['Contents'])[1]
+            result['Contents'].split('`')[1]
             for result in run_on_all_accounts(test_account)({})
             if isinstance(result, dict) and result['Type'] == entryTypes['error']
         ]
@@ -682,7 +682,6 @@ def describe_subnets_command(args: dict) -> CommandResults:
             'AvailabilityZone': subnet['AvailabilityZone'],
             'AvailableIpAddressCount': subnet['AvailableIpAddressCount'],
             'CidrBlock': subnet.get('CidrBlock', ""),
-            'CidrBlock': subnet.get('CidrBlock', ""),
             'DefaultForAz': subnet['DefaultForAz'],
             'State': subnet['State'],
             'SubnetId': subnet['SubnetId'],
@@ -789,7 +788,6 @@ def associate_address_command(args: dict) -> CommandResults:
     if args.get('instanceId') is not None:
         kwargs.update({'InstanceId': args.get('instanceId')})
     if args.get('allowReassociation') is not None:
-        kwargs.update({'AllowReassociation': argToBoolean(args.get('allowReassociation'))})
         kwargs.update({'AllowReassociation': argToBoolean(args.get('allowReassociation'))})
     if args.get('networkInterfaceId') is not None:
         kwargs.update({'NetworkInterfaceId': args.get('networkInterfaceId')})
@@ -1452,13 +1450,11 @@ def create_security_group_command(args: dict) -> CommandResults:
     kwargs = {
         'GroupName': args.get('groupName'),
         'Description': args.get('description', ''),
-        'Description': args.get('description', ''),
         'VpcId': args.get('vpcId'),
     }
     response = client.create_security_group(**kwargs)
     data = ({
         'GroupName': args.get('groupName'),
-        'Description': args.get('description', ''),
         'Description': args.get('description', ''),
         'VpcId': args.get('vpcId'),
         'GroupId': response['GroupId']
@@ -1550,28 +1546,13 @@ def create_ip_permissions_dict(args):
         if desc:
             IpRanges_dict['Description'] = desc
         IpPermissions_dict.update({'IpRanges': [IpRanges_dict]})  # type: ignore
-        IpRanges_dict = {'CidrIp': args.get('IpRangesCidrIp')}
-        desc = args.get('IpRangesDesc', "") or args.get('IpRangesDescription', "")
-        if desc:
-            IpRanges_dict['Description'] = desc
-        IpPermissions_dict.update({'IpRanges': [IpRanges_dict]})  # type: ignore
     if args.get('Ipv6RangesCidrIp') is not None:
         Ipv6Ranges_dict = {'CidrIp': args.get('Ipv6RangesCidrIp')}
         desc = args.get('Ipv6RangesDesc', "") or args.get('Ipv6RangesDescription', "")
         if desc:
             Ipv6Ranges_dict['Description'] = desc
         IpPermissions_dict.update({'Ipv6Ranges': [Ipv6Ranges_dict]})  # type: ignore
-        Ipv6Ranges_dict = {'CidrIp': args.get('Ipv6RangesCidrIp')}
-        desc = args.get('Ipv6RangesDesc', "") or args.get('Ipv6RangesDescription', "")
-        if desc:
-            Ipv6Ranges_dict['Description'] = desc
-        IpPermissions_dict.update({'Ipv6Ranges': [Ipv6Ranges_dict]})  # type: ignore
     if args.get('PrefixListId') is not None:
-        PrefixListIds_dict = {'PrefixListId': args.get('PrefixListId')}
-        desc = args.get('PrefixListIdDesc', "") or args.get('PrefixListIdDescription', "")
-        if desc:
-            PrefixListIds_dict['Description'] = desc
-        IpPermissions_dict.update({'PrefixListIds': [PrefixListIds_dict]})  # type: ignore
         PrefixListIds_dict = {'PrefixListId': args.get('PrefixListId')}
         desc = args.get('PrefixListIdDesc', "") or args.get('PrefixListIdDescription', "")
         if desc:
@@ -1584,8 +1565,6 @@ def create_policy_kwargs_dict(args):
     policy_kwargs_keys = (('fromPort', 'FromPort'), ('toPort', 'ToPort'))
     policy_kwargs = {}
     for args_key, dict_key in policy_kwargs_keys:
-        if key := args.get(args_key):
-            policy_kwargs.update({dict_key: arg_to_number(key)})
         if key := args.get(args_key):
             policy_kwargs.update({dict_key: arg_to_number(key)})
     policy_kwargs_keys = (('cidrIp', 'CidrIp'), ('ipProtocol', 'IpProtocol'),
@@ -1983,8 +1962,6 @@ def create_fleet_command(args: dict) -> CommandResults:
         SpotOptions.update({
             'InstancePoolsToUseCount': args.get('InstancePoolsToUseCount')
         })
-    if args.get('SpotSingleInstanceType') is not None:
-        SpotOptions.update({'SpotSingleInstanceType': argToBoolean(args.get('SpotSingleInstanceType'))})
     if args.get('SpotSingleInstanceType') is not None:
         SpotOptions.update({'SpotSingleInstanceType': argToBoolean(args.get('SpotSingleInstanceType'))})
     if args.get('SingleAvailabilityZone') is not None:
@@ -2788,7 +2765,6 @@ def create_traffic_mirror_session_command(args: dict) -> CommandResults:
         kwargs.update({'ClientToken': args.get('ClientToken')})
     if args.get('DryRun') is not None:
         kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
-        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     tag_specifications = []  # type: list
     if args.get('Tags') is not None:
@@ -2882,9 +2858,6 @@ def main():
 
         elif command == 'aws-ec2-describe-instances':
             return_results(describe_instances_command(args))
-
-        elif command == 'aws-ec2-describe-iam-instance-profile-associations':
-            return_results(describe_iam_instance_profile_associations_command(args))
 
         elif command == 'aws-ec2-describe-iam-instance-profile-associations':
             return_results(describe_iam_instance_profile_associations_command(args))
