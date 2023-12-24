@@ -309,7 +309,8 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
         data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
-               f"View it on: {server_link}/#/WarRoom/{created_incident.get('id', '')}"
+               f"View it on: {server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link}/" \
+               f"WarRoom/{created_incident.get('id', '')}"
 
     return data
 
@@ -645,7 +646,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    tenant_id: str = integration_context.get('tenant_id', '') or demisto.params().get("tenant_id")
+    tenant_id: str = integration_context.get('tenant_id') or demisto.params().get("tenant_id")
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -2161,7 +2162,7 @@ def mirror_investigation():
         service_url: str = integration_context.get('service_url', '')
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
-        warroom_link = f'{server_link}/#/WarRoom/{investigation_id}'
+        warroom_link = f"{server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link}/WarRoom/{investigation_id}"
         conversation: dict = {
             'type': 'message',
             'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
