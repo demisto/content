@@ -709,6 +709,30 @@ def get_schedule_metadata(context):
     return schedule_metadata
 
 
+def detect_indicator_type_file(indicator_value: str):
+    """
+      Infer the type of the file indicator.
+
+      :type indicator_value: ``str``
+      :param indicator_value: The indicator whose type we want to check. (required)
+
+      :return: The type of the indicator.
+      :rtype: ``str``
+    """
+    if ":" in indicator_value:
+        return 'ssdeep'
+    if re.match(sha256Regex, indicator_value):
+        return 'sha256'
+    if re.match(md5Regex, indicator_value):
+        return 'md5'
+    if re.match(sha1Regex, indicator_value):
+        return 'sha1'
+    if re.match(sha512Regex, indicator_value):
+        return 'sha512'
+
+    return None
+
+
 def auto_detect_indicator_type(indicator_value):
     """
       Infer the type of the indicator.
