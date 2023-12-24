@@ -345,14 +345,23 @@ def fetch_indicators(client: Client,
                      url: Optional[str],
                      reputation: Optional[str],
                      feed_tags: Optional[List],
-                     limit: int = -1,
+                     limit: int = 100,
                      is_fetch: bool = True) -> List[Dict]:
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
 
     if limit and limit not in params_dict:
         params_dict['limit'] = limit
-
-    response = client.search_query(params_dict)
+    response = {}
+    search_query_res = {}
+    if is_fetch:
+        i = 0
+        while i <= 5 and not search_query_res.get('response', {}).get('Event'):
+            search_query_res = client.search_query(params_dict)
+            demisto.debug(f'response temp {search_query_res}')
+            response.update(search_query_res)
+            i += 1
+    else:
+        response = client.search_query(params_dict)
     demisto.debug(f'response of search_query from fetch indicators command:/n{response}')
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
@@ -567,6 +576,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
     # XSUP-31078: adding limit to fetch since large amount of indicators may cause the docker to fail.
+
     demisto.debug("fetch_indicators starts")
     indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color,
                                   params.get('url'), reputation, feed_tags)
