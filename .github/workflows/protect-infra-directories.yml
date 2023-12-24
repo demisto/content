@@ -9,19 +9,20 @@ on:
 jobs:
   check_changes:
     runs-on: ubuntu-latest
-    if: 'startsWith(github.head_ref, ''contrib'') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, ''contrib''))'
+    # if: 'startsWith(github.head_ref, ''contrib'') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, ''contrib''))'
+    if: 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v14.6  # disable-secrets-detection
+        uses: tj-actions/changed-files@v41  # disable-secrets-detection
 
       - name: Check for changes in protected directories
         run: |
