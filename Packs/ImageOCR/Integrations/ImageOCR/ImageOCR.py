@@ -75,8 +75,8 @@ def extract_text_command(args: dict, instance_languages: list) -> tuple[list, li
                 errors.append(
                     f"An error occurred while trying to process {entry_id=}: "
                     f"Failed {cpe.cmd} execution. Return status: {cpe.returncode}.\n"
-                    f"Stdout:\n{cpe.stdout}\n"
-                    f"Error:\n{cpe.stderr}"
+                    f"Error:\n{cpe.stderr}\n"
+                    f"Stdout:\n{cpe.stdout}"
                 )
         except Exception as e:
             errors.append(f"An error occurred while trying to process {entry_id=}: {e}")

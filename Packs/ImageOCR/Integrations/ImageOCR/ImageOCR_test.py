@@ -109,6 +109,7 @@ def test_extract_text_command_bad(mocker):
 @pytest.mark.parametrize('skip_corrupted', [True, False])
 def test_extract_text_command_corrupted_image(mocker, skip_corrupted: bool):
     """
+    Note: if this unittests fails after a docker update, it means tesseract improved corrupted images handling
     Given:
      - A corrupted image
      - The skip_corrupted boolean indicating whether or not to raise an error
@@ -117,7 +118,7 @@ def test_extract_text_command_corrupted_image(mocker, skip_corrupted: bool):
     Then:
      - Ensure an error message is returned if skip_corrupted is false, or a warning otherwise.
     """
-    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/corrupted.gif"})
+    mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/corrupted.png"})
     results, errors = extract_text_command(
         {'entryid': 'test', 'skip_corrupted': skip_corrupted},
         instance_languages=['eng'],
