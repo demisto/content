@@ -225,7 +225,7 @@
 
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
   - section_start "Checkout upload commit content nightly" --collapsed
-  - |
+  - | 
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
       if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
         echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
@@ -477,7 +477,7 @@
             demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" --check-dependent-api-module --docker-image ${DOCKER}
           fi
         fi
-
+      
         if [[ -f "${ARTIFACTS_FOLDER}/coverage_report/.coverage" ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
             demisto-sdk coverage-analyze -i "${ARTIFACTS_FOLDER}/coverage_report/.coverage" --report-dir "${ARTIFACTS_FOLDER}/coverage_report" --report-type all --allowed-coverage-degradation-percentage 100
@@ -508,7 +508,6 @@
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   script:
-    - ./Tests/scripts/test.sh $CI_COMMIT_BRANCH
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
