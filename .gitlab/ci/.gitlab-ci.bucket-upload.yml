@@ -13,7 +13,7 @@
 
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
-  - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist
+  - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist TEST
   - |
     if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "$GCS_PRODUCTION_BUCKET" ]]; then
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
