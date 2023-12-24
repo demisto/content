@@ -1402,9 +1402,7 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
 class SDKNightlyTestCollector(TestCollector):
 
     def _collect(self) -> CollectionResult | None:
-        return CollectionResult.union(
-            self.sanity_tests # type: ignore
-        )
+        return CollectionResult.union((self.sanity_tests))  # type: ignore
 
 
 def output(result: CollectionResult | None):
@@ -1512,7 +1510,7 @@ if __name__ == '__main__':
             case False, True, MarketplaceVersions.XPANSE:
                 collector = XPANSENightlyTestCollector(graph=graph)
             case _:
-                raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
+                raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=} and/or {sdk_nightly=}")
 
     collected = collector.collect()
     output(collected)  # logs and writes to output files
