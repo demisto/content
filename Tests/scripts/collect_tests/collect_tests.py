@@ -1429,9 +1429,9 @@ def output(result: CollectionResult | None):
             (Infinity, NegativeInfinity)
         modeling_rules_to_test[modeling_rule] = {}
         if toVersion != Infinity:
-            modeling_rules_to_test[modeling_rule] |= {'to': str(toVersion)}
+            modeling_rules_to_test[modeling_rule] |= {'toVersion': str(toVersion)}
         if fromVersion != NegativeInfinity:
-            modeling_rules_to_test[modeling_rule] |= {'from': str(fromVersion)}
+            modeling_rules_to_test[modeling_rule] |= {'fromVersion': str(fromVersion)}
 
     # modeling_rules_to_test = sorted(
     #     result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()

@@ -32,6 +32,7 @@ if [[ "${generate_empty_results_file,,}" == "true" ]]; then
   exit 0
 fi
 
+# CHANGES We may need to change it to check modeling_rules_to_test.json and not txt
 if [[ ! -s "${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.txt" ]]; then
   echo "No modeling rules were marked for testing during test collection - writing empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
   write_empty_test_results_file
@@ -45,7 +46,8 @@ echo "CURRENT_DIR: ${CURRENT_DIR}"
 echo "NIGHTLY: ${NIGHTLY}"
 
 MODELING_RULES_ARRAY=($(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.txt"))
-
+# TODO Write a script that will take in the new json file that holds the information about the collected modeling rules,
+# and then create a txt file that will hold the valid modeilng rules, that way, we won't need to change the code a lot
 echo "MODELING_RULES_ARRAY size:${#MODELING_RULES_ARRAY[@]}"
 count=0
 for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
@@ -53,7 +55,6 @@ for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   # If it is nightly, run `test modeling rules` only on modeling rules that have `_testdata.json` file.
   # globbing is needed here, don't quote the variable.
   # shellcheck disable=SC2086
-  # TODO Also add the toVersion and fromVersion here, so we can filter them out in the next step
   if [ -z "${NIGHTLY}" ] || [ -e ${MODELING_RULE_TEST_FILE_PATTERN} ]; then
     count=$((count+1))
     if [[ -n "${MODELING_RULES_TO_TEST}" ]]; then
@@ -100,18 +101,21 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
   for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
 
     # Get XSIAM Tenant Config Details
-    # TODO Extract the version of the machine
     XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "${XSIAM_SERVERS_PATH}")
     XSIAM_URL=$(echo "${XSIAM_SERVER_CONFIG}" | jq -r ".[\"base_url\"]")
+    DEMISTO_VERSION=$(echo "${XSIAM_SERVER_CONFIG}" | jq -r ".[\"demisto_version\"]")
+    # CHANGES Do curl command using XSIAM_URL
     AUTH_ID=$(echo "${XSIAM_SERVER_CONFIG}" | jq -r ".[\"x-xdr-auth-id\"]")
     API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
     XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
     # TODO Check the machine version against the modeling rules version (filter out MODELING_RULES_RESULTS_FILE_NAME
     # with respect to their version)
+    VALID_MODELING_RULES_TO_TEST=$( python ./Tests/scripts/filter_modeling_rules_to_test.py --modeling-rules-to-test-file "${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.json" --demisto-version "${DEMISTO_VERSION}")
+    echo "Valid modeling rules to test for demisto version ${DEMISTO_VERSION}: ${VALID_MODELING_RULES_TO_TEST}"
     # shellcheck disable=SC2086
     demisto-sdk modeling-rules test --xsiam-url="${XSIAM_URL}" --auth-id="${AUTH_ID}" --api-key="${API_KEY}" \
       --xsiam-token="${XSIAM_TOKEN}" --non-interactive --junit-path="${MODELING_RULES_RESULTS_FILE_NAME}" \
-      ${MODELING_RULES_TO_TEST}
+      ${VALID_MODELING_RULES_TO_TEST}
     command_exit_code=$?
     if [ "${command_exit_code}" -ne 0 ]; then
       echo "Failed testing Modeling Rules on machine ${CLOUD_CHOSEN_MACHINE_ID} with exit code:${command_exit_code}"
@@ -124,18 +128,8 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     echo "Failed testing Modeling Rules on at least one of the chosen machines"
   fi
 
-  if [ -n "${FAIL_ON_ERROR}" ]; then
-    if [ "${exit_code}" -eq 0 ]; then
-      echo "Finish running test modeling rules, exiting with code 0"
-      exit 0
-    else
-      echo "Finish running test modeling rules with errors on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 1"
-      exit 1 
-    fi 
-  else
-    echo "Finish running test modeling rules, error handling will be done on the results job, exiting with code 0"
-    exit 0
-  fi
+  echo "Finish running test modeling rules, error handling will be done on the results job, exiting with code 0"
+  exit 0
 
 else
   write_empty_test_results_file
