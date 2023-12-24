@@ -1406,6 +1406,14 @@ def test_debug_logger_replace_strs(mocker):
         assert s not in msg
 
 
+def test_debug_logger_sanitize_curl(mocker):
+    mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
+    debug_logger = DebugLogger()
+    curl = '"Accept: */*" -H "Authorization: Bearer myBearer" -H "Cookie: myCookie"'
+    expected = '"Accept: */*" -H "Authorization: Bearer <XX_REPLACED>" -H "Cookie: <XX_REPLACED>"'
+    assert debug_logger.sanitize_curl(curl) == expected
+
+
 def test_add_sensitive_log_strs(mocker):
     """
     Given:

@@ -8325,6 +8325,12 @@ class DebugLogger(object):
                 self.root_logger.removeHandler(h)
         self.root_logger.addHandler(self.handler)
 
+    def sanitize_curl(curl):
+        ret_value = re.sub(r'Authorization:\sBearer\s(.*)\s', r'Authorization: Bearer <XX_REPLACED> ', curl, 0, re.IGNORECASE)
+        ret_value = re.sub(r'Cookie:\s(.*)(["\'])', r'Cookie: <XX_REPLACED>\2', ret_value, 0, re.IGNORECASE)
+
+        return ret_value
+
     def __del__(self):
         if self.handler:
             self.root_logger.setLevel(self.prev_log_level)
@@ -8342,7 +8348,7 @@ class DebugLogger(object):
                 delattr(self.http_client, 'print')
             if self.int_logger.curl:
                 for curl in self.int_logger.curl:
-                    demisto.info('cURL:\n' + curl)
+                    demisto.info('cURL:\n' + sanitize_curl(curl))
 
     def log_start_debug(self):
         """
