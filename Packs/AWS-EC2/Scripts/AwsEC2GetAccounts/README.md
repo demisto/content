@@ -1,5 +1,9 @@
 Update an AWS - EC2 instance with a list of accounts in an AWS organization, which will allow EC2 commands to run in all of them.
 
+### Prerequisites
+- An ***AWS - EC2*** instance.
+- An ***AWS - Organizations*** instance with a working `aws-org-account-list` command.
+
 ## Script Data
 
 ---
