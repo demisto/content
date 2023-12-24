@@ -13,3 +13,4 @@ filter to_string(createdDateTime) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\d
 | alter
     _time = to_timestamp(to_integer(tmp_epoch_mili), "millis")
 | fields -tmp_get_date, tmp_get_time, tmp_get_mili, tmp_date_time, tmp_create_epoch, tmp_epoch_mili;
+//test
