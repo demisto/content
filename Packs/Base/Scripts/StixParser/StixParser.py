@@ -1277,7 +1277,7 @@ class FileObject(object):
                 v = v.strip()
                 if type := detect_indicator_type_file(v):
                     result.append({
-                        'indicator': v.strip(),
+                        'indicator': v,
                         'htype': type,
                         'type': 'File'
                     })
