@@ -3834,7 +3834,7 @@ script:
       name: roleSessionDuration
     description: Adds or removes permission settings for the specified snapshot.
     name: aws-ec2-modify-snapshot-permission
-  dockerimage: demisto/boto3py3:1.0.0.83677
+  dockerimage: demisto/boto3py3:1.0.0.83941
   runonce: false
   script: '-'
   subtype: python3
