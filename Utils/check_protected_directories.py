@@ -29,7 +29,7 @@ EXCEPTIONS: set[Path] = {
 
 
 def is_path_change_allowed(path: Path) -> bool:
-    first_level_folder = Path(CONTENT_ROOT, path.relative_to(CONTENT_ROOT).parts[0])
+    first_level_folder = Path(CONTENT_ROOT, path.parts[0])
     if first_level_folder in PROTECTED_DIRECTORIES:
         return path in EXCEPTIONS  # if in exception, it's allowed
     return True
