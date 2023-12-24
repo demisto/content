@@ -27,9 +27,10 @@ The collections are defined by a JSON object in the following format:
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
 
-1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. (For Cortex XSOAR 6.x) In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
-3. You can now trigger the webhook URL:
+1. For Cortex XSOAR 6.x:
+   1. Navigate to **Settings > About > Troubleshooting**.
+   2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+2. Trigger the webhook URL:
 
    - For Cortex XSOAR 6.x: **<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>**. For example, https://my.demisto.live/instance/execute/taxiiserver. Note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
 (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
