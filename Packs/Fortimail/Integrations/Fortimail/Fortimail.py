@@ -130,6 +130,7 @@ def validate_authentication(func: Callable) -> Callable:
             updating the integration context or raising a tailored exception.
             """
             try:
+                client: Client = client
                 client.authentication()
                 for cookie in client._session.cookies:
                     if cookie.name.startswith("APSCOOKIE"):
