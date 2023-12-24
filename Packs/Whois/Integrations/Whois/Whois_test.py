@@ -84,7 +84,6 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
         assert "Exception thrown calling command" in results[0]['Contents']
 
 
-# Test skipped - CIAC-8779
 def test_socks_proxy(mocker, request):
     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5h://localhost:9980'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
