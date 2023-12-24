@@ -379,6 +379,34 @@ class Client(CoreClient):
         incident = reply.get('reply')
 
         return incident
+    
+    
+    def get_multiple_incidents_extra_data(self, incident_id):
+        """
+        Returns incident by id
+
+        :param incident_id: The id of incident
+        :return:
+        Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
+        """
+        request_data = {
+            'incident_id': incident_id,
+            "request_data": {"fields_to_exclude": ["network_artifacts"]}
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/public_api/v1/incidents/get_multiple_incidents_extra_data/',
+            json_data={'request_data': request_data},
+            headers=self.headers,
+            timeout=self.timeout
+        )
+
+        incident = reply.get('reply')
+
+        return incident
+    
+    #
 
     def save_modified_incidents_to_integration_context(self):
         last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
@@ -640,8 +668,9 @@ def get_incident_extra_data_command(client, args):
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
 
     demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-
+    raw_incident = client.get_multiple_incidents_extra_data(incident_id)
+    if len(raw_incident.get('incident', {}).get('incident_id').get('alerts').get('data')) >=50:
+        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
     raw_alerts = raw_incident.get('alerts').get('data')
