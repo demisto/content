@@ -3,7 +3,7 @@ import demistomock  # noqa # pylint: disable=unused-wildcard-import
 from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
 from MimecastEventCollector import *
-from test_data.test_data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, \
+from test_data.data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, \
     AUDIT_LOG_RESPONSE, AUDIT_LOG_AFTER_PROCESS, SIEM_LOG_PROCESS_EVENT, SIEM_RESULT_MULTIPLE_EVENTS_PROCESS, \
     SIEM_RESPONSE_MULTIPLE_EVENTS
 
