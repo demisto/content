@@ -1398,24 +1398,15 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
     def get_e2e_packs(self) -> set[str]:
         return {"TAXIIServer", "EDL", "QRadar", "Slack"}
 
+
 class SDKNightlyTestCollector(TestCollector):
 
     def _collect(self) -> CollectionResult | None:
-        return CollectionResult.union(tuple(
-            CollectionResult(
-                test=test,
-                pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
-                modeling_rule_to_test=None,
-                reason=CollectionReason.SANITY_TESTS,
-                version_range=None,
-                reason_description='SDK Nightly sanity',
-                conf=self.conf,
-                id_set=self.id_set,
-                is_sanity=True,
-                only_to_install=True
-            )
-            for test in ['Sanity Test - Playbook with Unmockable Whois Integration', 'Sanity Test - Playbook with no integration']
-        ))  # type: ignore[return-value]
+        return CollectionResult.union(
+            self.sanity_tests # type: ignore
+        )
+
+
 def output(result: CollectionResult | None):
     """
     writes to both log and files
