@@ -9,7 +9,7 @@
       "AND": [
         {
           "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_TYPE": "EQ",
           "SEARCH_VALUE": "GCP Kubernetes Engine Misconfiguration"
         }
       ]
