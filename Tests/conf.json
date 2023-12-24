@@ -199,6 +199,10 @@
             "playbookID": "SetAndHandleEmpty_Test"
         },
         {
+            "playbookID": "ExtractEmailTransformer_Test",
+            "fromversion": "6.11.0"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
@@ -1857,7 +1861,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 1000,
+            "timeout": 5000,
             "is_mockable": false
         },
         {
@@ -3508,6 +3512,11 @@
         {
             "playbookID": "Code42 Suspicious Activity Action v2 - Test",
             "integrations": "Code42",
+            "fromversion": "6.10.0"
+        },
+        {
+            "playbookID": "HasiCoprTerraformTest",
+            "integrations": "HashicorpTerraform",
             "fromversion": "6.10.0"
         },
         {

@@ -169,6 +169,8 @@ parses
 yaml
 indexerror
 gTLD
+qr
+cv
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
