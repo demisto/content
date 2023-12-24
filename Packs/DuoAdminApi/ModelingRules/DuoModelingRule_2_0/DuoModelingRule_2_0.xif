@@ -6,6 +6,7 @@ filter
     os = lowercase(json_extract_scalar(access_device, "$.os")),
     browser = json_extract_scalar(access_device, "$.browser"),
     browser_version = json_extract_scalar(access_device, "$.browser_version"),
+    browser_version = json_extract_scalar(access_device, ""),
     access_device_ip = json_extract_scalar(access_device, "$.ip"),
     result_enum = lowercase(result),
     establish_factor = if(factor = "phone_call", "voice", factor = "sms_refresh", "sms", factor = "sms_passcode", "sms", factor = "duo_mobile_passcode", "application", factor = "duo_push", "application", factor = "duo_mobile_passcode", "application", factor = "bypass_code", "temp_token", factor = "hardware_token", "hardware_token", factor = "yubikey_code", "hardware_token", factor = "yubikey_passcode", "hardware_token", factor = "WebAuthn Security Key ", "hardware_token", factor = "WebAuthn Credential", "hardware_token", factor = "WebAuthn Chrome Touch ID", "hardware_token", factor = "utf_token", "hardware_token", factor = "digipass_go_7_token", "hardware_token", factor = "remembered_device", "trusted_login", factor = "trusted_mobile_authenticator", "trusted_login", reason = "trusted_network", "trusted_login", reason = "allowed_by_policy", "trusted_login", reason = "authentication_trusted_by_risk_based_remembered_devices", "trusted_login", reason = "allow_unenrolled_user_on_trusted_network", "trusted_login", reason = "trusted_location", "trusted_login", reason = "bypass_user", "trusted_login", factor = "not_available", "Generic SSO", factor = "passcode", "Generic SSO", null),
