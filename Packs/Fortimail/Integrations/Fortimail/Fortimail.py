@@ -1676,7 +1676,7 @@ def add_system_safe_block_command(client: Client, args: Dict[str, Any]) -> Comma
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    list_type = args.get("list_type")
+    list_type = args.get("list_type", "")
     list_items = args.get("values")
 
     response = client.add_system_safe_block(list_type, list_items)
@@ -1709,32 +1709,32 @@ def ip_policy_create_update_command(client: Client, args: Dict[str, Any]) -> Com
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    command_name = args.get("command_name")
+    command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
 
     command_args = remove_empty_elements(
         {
             "ip_policy_id": args.get("ip_policy_id"),
-            "status": BOOLEAN_MAPPER.get(args.get("status")),
+            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
             "comment": args.get("comment"),
             "source": args.get("source"),
-            "destination_type": DESTINATION_MAPPER.get(args.get("destination_type")),
-            "destination": args.get("destination"),
-            "action": IP_ACTION_MAPPER.get(args.get("action")),
-            "source_type": AC_SENDER_IP_TYPE_MAPPER.get(args.get("source_type")),
+            "destination_type": DESTINATION_MAPPER.get(args.get("destination_type", "")),
+            "destination": args.get("destination", ""),
+            "action": IP_ACTION_MAPPER.get(args.get("action", "")),
+            "source_type": AC_SENDER_IP_TYPE_MAPPER.get(args.get("source_type", "")),
             "ip_pool_profile": args.get("ip_pool_profile"),
             "antispam_profile": args.get("antispam_profile"),
             "antivirus_profile": args.get("antivirus_profile"),
             "content_profile": args.get("content_profile"),
             "session_profile": args.get("session_profile"),
             "auth_profile": args.get("auth_profile"),
-            "auth_type": RP_AUTH_MAPPER.get(args.get("auth_type")),
-            "use_smtp_auth": BOOLEAN_MAPPER.get(args.get("use_smtp_auth")),
-            "smtp_different": BOOLEAN_MAPPER.get(args.get("smtp_different")),
-            "smtp_diff_identity_ldap": BOOLEAN_MAPPER.get(args.get("smtp_diff_identity_ldap")),
+            "auth_type": RP_AUTH_MAPPER.get(args.get("auth_type", "")),
+            "use_smtp_auth": BOOLEAN_MAPPER.get(args.get("use_smtp_auth", "")),
+            "smtp_different": BOOLEAN_MAPPER.get(args.get("smtp_different", "")),
+            "smtp_diff_identity_ldap": BOOLEAN_MAPPER.get(args.get("smtp_diff_identity_ldap", "")),
             "smtp_diff_identity_ldap_profile": args.get("smtp_diff_identity_ldap_profile"),
-            "exclusive": BOOLEAN_MAPPER.get(args.get("exclusive")),
+            "exclusive": BOOLEAN_MAPPER.get(args.get("exclusive", "")),
         }
     )
 
@@ -1767,27 +1767,27 @@ def access_control_create_update_command(client: Client, args: Dict[str, Any]) -
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    command_name = args.get("command_name")
+    command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
 
     command_args = remove_empty_elements(
         {
             "access_control_id": args.get("access_control_id"),
-            "status": BOOLEAN_MAPPER.get(args.get("status")),
-            "sender_type": AC_PATTERN_TYPE_MAPPER.get(args.get("sender_type")),
+            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
+            "sender_type": AC_PATTERN_TYPE_MAPPER.get(args.get("sender_type", "")),
             "sender": args.get("sender"),
-            "recipient_type": AC_PATTERN_TYPE_MAPPER.get(args.get("recipient_type")),
+            "recipient_type": AC_PATTERN_TYPE_MAPPER.get(args.get("recipient_type", "")),
             "recipient": args.get("recipient"),
             "sender_ldap_profile": args.get("sender_ldap_profile"),
             "recipient_ldap_profile": args.get("recipient_ldap_profile"),
-            "source_type": AC_SENDER_IP_TYPE_MAPPER.get(args.get("source_type")),
+            "source_type": AC_SENDER_IP_TYPE_MAPPER.get(args.get("source_type", "")),
             "source": args.get("source"),
             "reverse_dns_pattern": args.get("reverse_dns_pattern"),
-            "reverse_dns_pattern_regex": BOOLEAN_MAPPER.get(args.get("reverse_dns_pattern_regex")),
-            "authentication_status": AC_AUTH_MAPPER.get(args.get("authentication_status")),
+            "reverse_dns_pattern_regex": BOOLEAN_MAPPER.get(args.get("reverse_dns_pattern_regex", "")),
+            "authentication_status": AC_AUTH_MAPPER.get(args.get("authentication_status", "")),
             "tls_profile": args.get("tls_profile"),
-            "action": AC_ACTION_MAPPER.get(args.get("action")),
+            "action": AC_ACTION_MAPPER.get(args.get("action", "")),
             "comment": args.get("comment"),
         }
     )
@@ -1821,22 +1821,22 @@ def recipient_policy_create_update_command(client: Client, args: Dict[str, Any])
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    command_name = args.get("command_name")
+    command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
 
     command_args = remove_empty_elements(
         {
             "recipient_policy_id": args.get("recipient_policy_id"),
-            "status": BOOLEAN_MAPPER.get(args.get("status")),
+            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
             "comment": args.get("comment"),
-            "direction": RP_DIRECTION_MAPPER.get(args.get("type")),
-            "sender_type": RP_PATTERN_TYPE_MAPPER.get(args.get("sender_type")),
+            "direction": RP_DIRECTION_MAPPER.get(args.get("type", "")),
+            "sender_type": RP_PATTERN_TYPE_MAPPER.get(args.get("sender_type", "")),
             "sender_pattern": args.get("sender_pattern"),
             "sender_ldap_profile": args.get("sender_ldap_profile"),
             "sender_email_address_group": args.get("sender_email_address_group"),
             "recipient_email_address_group": args.get("recipient_email_address_group"),
-            "recipient_type": RP_PATTERN_TYPE_MAPPER.get(args.get("recipient_type")),
+            "recipient_type": RP_PATTERN_TYPE_MAPPER.get(args.get("recipient_type", "")),
             "recipient_pattern": args.get("recipient_pattern"),
             "recipient_ldap_profile": args.get("recipient_ldap_profile"),
             "antispam_profile": args.get("antispam_profile"),
@@ -1845,13 +1845,13 @@ def recipient_policy_create_update_command(client: Client, args: Dict[str, Any])
             "resource_profile": args.get("resource_profile"),
             "auth_profile": args.get("auth_profile"),
             "pki_profile": args.get("pki_profile"),
-            "auth_type": RP_AUTH_MAPPER.get(args.get("auth_type")),
-            "use_smtp_auth": BOOLEAN_MAPPER.get(args.get("use_smtp_auth")),
-            "smtp_different": BOOLEAN_MAPPER.get(args.get("smtp_different")),
-            "smtp_diff_identity_ldap": BOOLEAN_MAPPER.get(args.get("smtp_diff_identity_ldap")),
+            "auth_type": RP_AUTH_MAPPER.get(args.get("auth_type", "")),
+            "use_smtp_auth": BOOLEAN_MAPPER.get(args.get("use_smtp_auth", "")),
+            "smtp_different": BOOLEAN_MAPPER.get(args.get("smtp_different", "")),
+            "smtp_diff_identity_ldap": BOOLEAN_MAPPER.get(args.get("smtp_diff_identity_ldap", "")),
             "smtp_diff_identity_ldap_profile": args.get("smtp_diff_identity_ldap_profile"),
-            "enable_pki": BOOLEAN_MAPPER.get(args.get("enable_pki")),
-            "certificate_validation": BOOLEAN_MAPPER.get(args.get("certificate_validation")),
+            "enable_pki": BOOLEAN_MAPPER.get(args.get("enable_pki", "")),
+            "certificate_validation": BOOLEAN_MAPPER.get(args.get("certificate_validation", "")),
         }
     )
     response = command_request(**command_args)
@@ -1885,7 +1885,7 @@ def move_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    command_name = args.get("command_name")
+    command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
 
@@ -1917,7 +1917,7 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    command_name = args.get("command_name")
+    command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
 
@@ -1972,7 +1972,7 @@ def group_create_update_command(client: Client, args: Dict[str, Any]) -> Command
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    command_name = args.get("command_name")
+    command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
 
     command_args = remove_empty_elements(
@@ -2014,7 +2014,7 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    command_name = args.get("command_name")
+    command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
     command_args = remove_empty_elements(
@@ -2064,7 +2064,7 @@ def group_member_add_replace_command(client: Client, args: Dict[str, Any]) -> Co
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
-    command_name = args.get("command_name")
+    command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
 
     command_request = getattr(client, command_request_name)
@@ -2141,7 +2141,7 @@ def is_valid_email(emails: List[str] | str | None):
             raise DemistoException(f"{email} is not a valid email address.")
 
 
-def get_mapped_response(response: dict[str, Any]) -> dict[str, Any]:
+def get_mapped_response(response: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Update the response integer values to readable strings by existing mappers.
 
@@ -2238,7 +2238,7 @@ def get_removed_item_key(command_args: dict[str, Any]) -> dict[str, Any]:
     return {"mkey": next(iter((command_args.values())))}
 
 
-def get_output_for_replaced_and_added_items(command_args: dict[str, Any]) -> dict[str, str] | list[dict[str, str]]:
+def get_output_for_replaced_and_added_items(command_args: dict[str, Any]) -> dict[str, Any]:
     """
     Get outputs for IPs or emails that replaced or added to a group member.
 
@@ -2251,9 +2251,9 @@ def get_output_for_replaced_and_added_items(command_args: dict[str, Any]) -> dic
     group_name_data = {"mkey": command_args.get("group_name")}
 
     if item := command_args.get("ip"):
-        updated_output = {"mkey": convert_cidr_to_ip_range(item=item)}
+        updated_output = [{"mkey": convert_cidr_to_ip_range(item=item)}]
     elif item := command_args.get("email"):
-        updated_output = {"mkey": item}
+        updated_output = [{"mkey": item}]
     else:
         updated_output = [{"mkey": item} for item in command_args.get("emails", [])]
         updated_output += [{"mkey": convert_cidr_to_ip_range(item=item)} for item in command_args.get("ips", [])]
@@ -2355,7 +2355,8 @@ def get_updated_response_and_readable_output(
         )
 
     if group_name := command_args.get("group_name"):
-        output = {"mkey": group_name, "Member": output}
+        new_output = {"mkey": group_name, "Member": output}
+        return output_table, [new_output]
 
     return output_table, output
 
@@ -2423,7 +2424,7 @@ def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
 
-    url: str = params.get("url")
+    url: str = params.get("url", "")
     user_name = params["credentials"]["identifier"]
     password = params["credentials"]["password"]
     verify_certificate: bool = not params.get("insecure", False)
