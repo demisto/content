@@ -24,6 +24,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
+from Tests.scripts.is_pivot import get_pipelines_and_commits, is_pivot, shame
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -39,7 +40,7 @@ ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE = ARTIFACTS_FOLDER_XPANSE / "server_type_XPA
 ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE = ARTIFACTS_FOLDER_XSIAM / "server_type_XSIAM"
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
-CONTENT_CHANNEL = 'dmst-build-test'
+CONTENT_CHANNEL = 'test_slack_notifier_when_master_is_broken'
 SLACK_USERNAME = 'Content GitlabCI'
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
@@ -318,9 +319,15 @@ def bucket_upload_results(bucket_artifact_folder: Path,
 def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
-                        pull_request: GithubPullRequest | None) -> list[dict[str, Any]]:
+                        pull_request: GithubPullRequest | None,
+                        shame_message: str | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
+    if shame_message:
+        content_fields.append({
+            "title": shame_message,
+            "short": False
+        })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
@@ -510,8 +517,26 @@ def main():
         logging.info("Not a pull request build, skipping PR comment")
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
-    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request)
-
+    shame_message = None    
+    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+        # We check if the previous build failed and this one passed, or wise versa.
+        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
+                                                               project_id=project_id, lookback_hours=48)
+        pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id, 
+                                                         list_of_pipelines=list_of_pipelines, 
+                                                         commits=commits)
+        if pipeline_changed_status is not None:
+            name, email, pr = shame(pivot_commit)
+            msg = "You broke" if pipeline_changed_status else "You fixed"
+            shame_message = f"Hi @{name}, {msg} the build. That was done in this PR: {pr}"
+       
+            computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+        else:
+            computed_slack_channel = "dmst-build-test"
+    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request, shame_message)
+    
+    #slack_msg_data= [
+#{'fallback': 'Nothing 'color': 'warning', 'title': 'Koby, if you see this, you can understand that I did not get to this last week...'}]
     with contextlib.suppress(Exception):
         output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
         logging.info(f'Writing Slack message to {output_file}')
