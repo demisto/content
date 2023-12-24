@@ -1402,7 +1402,7 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
 class SDKNightlyTestCollector(TestCollector):
 
     def _collect(self) -> CollectionResult | None:
-        return CollectionResult.union((self.sanity_tests))  # type: ignore
+        return self.sanity_tests
 
 
 def output(result: CollectionResult | None):
