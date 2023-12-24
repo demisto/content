@@ -446,6 +446,7 @@ script:
       predefined:
       - 'xml'
       - 'pdf'
+      deprecated: true
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire. Only relevant when polling=true.
@@ -1003,6 +1004,7 @@ script:
       predefined:
       - 'xml'
       - 'pdf'
+      deprecated: true
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire. Only relevant when polling=true.
