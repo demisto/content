@@ -4,7 +4,10 @@ from typing import Callable, Tuple
 
 import demistomock as demisto  # noqa: F401
 import requests.utils
+import urllib3
 from CommonServerPython import *
+
+urllib3.disable_warnings()
 
 DEFAULT_COOKIE = {"cookie_name": None, "cookie_value": None}
 AUTHORIZATION_ERROR = (
@@ -2371,7 +2374,9 @@ def modify_group_member_args_before_replace(group_members: list[str]) -> dict[st
     Returns:
         dict[str, Any]: The updated payload for the API request.
     """
-    updated_group_members_payload = {f"mkey_{i}": group_member for i, group_member in enumerate(group_members)}
+    updated_group_members_payload: dict[str, Any] = {
+        f"mkey_{i}": group_member for i, group_member in enumerate(group_members)
+    }
     updated_group_members_payload["reqObjCount"] = len(updated_group_members_payload)
     return updated_group_members_payload
 
@@ -2435,7 +2440,6 @@ def main() -> None:
     demisto.debug(f"\n\n***** Command being called is {command}")
 
     try:
-        requests.packages.urllib3.disable_warnings()
         client: Client = Client(
             server_url=url,
             user_name=user_name,
