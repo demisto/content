@@ -709,7 +709,7 @@ def get_schedule_metadata(context):
     return schedule_metadata
 
 
-def detect_file_indicator_type(indicator_value: str):
+def detect_file_indicator_type(indicator_value):
     """
       Detect the type of the file indicator.
 
