@@ -27,7 +27,7 @@ configuration:
   required: false
 - defaultvalue: 3 days ago
   display: First fetch time interval
-  name: rss
+  name: oldest
   type: 0
   additionalinfo: Data is not available prior to March 2018.
   section: Collect
