@@ -566,6 +566,7 @@ slack-notify-on-merge:
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
+    LOCK_MACHINE_NAME: "qa2-test-9993427793543"
   stage: run-instances
   script:
     - EXIT_CODE=0

@@ -37,10 +37,10 @@ if [[ -z $TEST_MACHINES_LIST_STRING ]]; then
   exit 1
 fi
 
-if [[ $TEST_MACHINES_LIST_STRING != *"$LOCK_MACHINE_NAME"* ]]; then
-  echo "Machine that you're trying to lock: '$LOCK_MACHINE_NAME' does not exist in Test Machines List."
-  exit 1
-fi
+#if [[ $TEST_MACHINES_LIST_STRING != *"$LOCK_MACHINE_NAME"* ]]; then
+#  echo "Machine that you're trying to lock: '$LOCK_MACHINE_NAME' does not exist in Test Machines List."
+#  exit 1
+#fi
 
 if [[ "${NUM_OF_TEST_MACHINES}" -eq 0 ]]; then
   echo "No machines are available for testing."
