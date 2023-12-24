@@ -41,8 +41,8 @@ def main(changed_files: list[str]):
     ):
         for path in unsafe_changes:
             print(  # noqa: T201
-                f"::error file={path},line=1,endLine=1,"
-                "title=Modifying infrastructure files in contribution branches is not allowed."
+                f"::error file={path},line=1,endLine=1,title=Protected folder::"
+                "Modifying infrastructure files in contribution branches is not allowed."
             )
         sys.exit(1)
 
