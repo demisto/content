@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
@@ -20,6 +22,22 @@ class Method(str, Enum):
     HEAD = 'HEAD'
     PATCH = 'PATCH'
     DELETE = 'DELETE'
+
+
+class AssetType(str, Enum):
+    EMAIL_ADDRESS = 'EmailAddress'
+    NETWORK_ACCOUNT = 'NetworkAccount'
+    PHONE = 'Phone'
+    SOCIAL_NETWORK = 'SocialNetwork'
+    WEBSITE = 'WebSite'
+
+
+
+MAP_ASSET_TYPE_TO_REQUEST_KEY = {AssetType.PHONE: 'phone',
+                                 AssetType.EMAIL_ADDRESS: 'address',
+                                 AssetType.NETWORK_ACCOUNT: 'accountName',
+                                 AssetType.SOCIAL_NETWORK: 'accountName',
+                                 AssetType.WEBSITE: 'website'}
 
 
 class Client(BaseClient):
@@ -587,19 +605,27 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
         'ContentsFormat': formats['json'],
         'Contents': json.dumps(response.get('data')),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Incident {name} with ID {ec.get("ID")} Created Successfully',
+        'HumanReadable': f'Incident {name} with ID {ec.get("ID")} Created successfully',
         'EntryContext': {
             'TC.Event(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
     })
 
 
-def set_fields(fields: Optional[list]) -> str:  # pragma: no cover
+def set_fields(fields: Optional[list], is_victim_command: bool = False) -> str:  # pragma: no cover
     fields_str = ''
     if fields:
         if 'include_all_metadata' in fields:
-            return '&fields=tags&fields=associatedIndicators&fields=associatedGroups&fields=securityLabels' \
-                   '&fields=attributes&fields=associatedVictimAssets'
+            # fields used for all commands
+            fields_str += '&fields=tags&fields=securityLabels&fields=attributes&fields=associatedGroups'
+            if is_victim_command:
+                # fields relevant only for victim
+                fields_str += '&fields=assets'
+            else:
+                fields_str += '&fields=associatedIndicators&fields=associatedVictimAssets'
+            return fields_str
+
+
         for field in fields:
             fields_str += f'&fields={field}'
     return fields_str
@@ -898,25 +924,30 @@ def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': f'Indicator {indicator_id} removed Successfully'
+        'Contents': f'Indicator {indicator_id} removed successfully'
     })
 
 
 def create_document_group(client: Client, args: dict) -> None:  # pragma: no cover
-    name = args.get('name')
-    security_label = args.get('security_label')
-    description = args.get('description', '')
-    response = create_group(client, args, security_labels=security_label,  # type: ignore
-                            name=name, group_type='Document', description=description)  # type: ignore
+    group_id = args.get('group_id')
+    if not group_id:
+        # If not provided, a new group is created
+        name = args.get('name')
+        security_label = args.get('security_label')
+        description = args.get('description', '')
+        response = create_group(client, args, security_labels=security_label,  # type: ignore
+                                name=name, group_type='Document', description=description)  # type: ignore
+        group_id = response.get("id")
+
     res = demisto.getFilePath(args.get('entry_id'))
     f = open(res['path'], 'rb')
     contents = f.read()
-    url = f'/api/v3/groups/{response.get("id")}/upload'
+    url = f'/api/v3/groups/{group_id}/upload'
     payload = f"{contents}"  # type: ignore
     client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')  # type: ignore
-
+    # TODO check if context is relevant for group id
     content = {
-        'ID': response.get('id'),
+        'ID': group_id,
         'Name': response.get('name'),
         'Owner': response.get('ownerName', ''),
         'EventDate': response.get('eventDate', ''),
@@ -954,7 +985,7 @@ def tc_create_threat_command(client: Client, args: dict) -> None:  # pragma: no 
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Threat {args.get("name")} Created Successfully with id: {response.get("id")}',
+        'HumanReadable': f'Threat {args.get("name")} Created successfully with id: {response.get("id")}',
         # type: ignore  # noqa
         'EntryContext': {
             'TC.Threat(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
@@ -974,7 +1005,7 @@ def tc_create_campaign_command(client: Client, args: dict) -> None:  # pragma: n
         'Tag': args.get('tags'),
         'SecurityLabel': args.get('securityLabel'),
     }
-    human = f'Campaign {args.get("name")} was created Successfully with id: {response.get("id")}'
+    human = f'Campaign {args.get("name")} was created successfully with id: {response.get("id")}'
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -1008,7 +1039,7 @@ def tc_create_incident_command(client: Client, args: dict) -> None:  # pragma: n
         'ContentsFormat': formats['json'],
         'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Incident {name} Created Successfully with id: {response.get("id")}',
+        'HumanReadable': f'Incident {name} Created successfully with id: {response.get("id")}',
         # type: ignore  # noqa
         'EntryContext': {
             'TC.Incident(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
@@ -1068,7 +1099,6 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
                              description: str = '', tags: list = [],
                              indicator_type: str = '') -> Any:  # pragma: no cover # noqa
     tags = argToList(args.get('tags', tags))
-    description = args.get('description', description)
     confidence = args.get('confidence', confidence)
     rating = args.get('rating', rating)
     indicator = args.get('indicator', indicator)
@@ -1222,6 +1252,7 @@ def tc_incident_associate_indicator_command(client: Client, args: dict) -> None:
 def tc_update_group(client: Client, args: dict, attribute_value: str = '', attribute_type: str = '',
                     custom_field: str = '',
                     associated_indicator_id: str = None,
+                    associated_victim_asset_id: str = None,
                     associated_group_id: str = '', security_labels: list = [], tags: list = [],
                     mode: str = 'append', raw_data=False, group_id=None) -> Any:  # pragma: no cover
     payload = {}
@@ -1242,6 +1273,9 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
         payload['associatedIndicators'] = {
             'data': [{'id': args.get('associated_indicator_id', associated_indicator_id)}],
             'mode': mode}
+    if associated_victim_asset_id := args.get('associated_victim_asset_id', associated_victim_asset_id):
+        payload['associatedVictimAssets'] = {'data': [{'id': associated_victim_asset_id}],
+                                             'mode': mode}
     attribute_type = args.get('attribute_type', attribute_type)
     attribute_value = args.get('attribute_value', attribute_value)
     if attribute_value and attribute_type:
@@ -1271,7 +1305,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
         'ContentsFormat': formats['json'],
         'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Group {response.get("data").get("id")} was Successfully updated',
+        'HumanReadable': f'Group {response.get("data").get("id")} was successfully updated',
         'EntryContext': {
             'TC.Group(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
@@ -1607,6 +1641,331 @@ def add_group_tag(client: Client, args: dict):  # pragma: no cover
     return_results(f'The tag {tags} was added successfully to group {group_id}')
 
 
+def tc_create_victim_command(client: Client, args: dict):
+    name = args.get('name')
+    body = {'name': name}
+    if nationality := args.get('nationality'):
+        body['nationality'] = nationality
+    if org := args.get('org'):
+        body['org'] = org
+    if sub_org := args.get('sub_org'):
+        body['suborg'] = sub_org
+    if security_labels := argToList(args.get('security_labels')):
+        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+    if tags := argToList(args.get('tags')):
+        body['tags'] = {'data': [{'name': tag} for tag in tags]}
+    if work_location := args.get('work_location'):
+        body['workLocation'] = work_location
+    if asset_ids := argToList(args.get('asset_ids')):
+        # TODO build it in the right structure
+        body['assets'] = {'data': [{'id': asset_id} for asset_id in asset_ids]}
+    # TODO build it in the right structure
+    attribute_type = args.get('attribute_type')
+    attribute_value = args.get('attribute_value')
+
+    if associated_groups_ids := argToList(args.get('associated_groups_ids')):
+        body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_groups_ids]}
+
+    response = client.make_request(method=Method.POST, url_suffix='/api/v3/victims', payload=json.dumps(body))
+    outputs = response.get('data', {})
+    readable_output = f'Victim {name} Created successfully with id: {outputs.get("id")} '
+    return_results(CommandResults(
+        outputs_prefix='TC.Victim',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+
+def tc_update_victim_command(client: Client, args: dict):
+    # TODO add mode
+    victim_id = args.get('victim_id')
+    body = {'id': victim_id}
+    if name := args.get('name'):
+        body['name'] = name
+    if nationality := args.get('nationality'):
+        body['nationality'] = nationality
+    if org := args.get('org'):
+        body['org'] = org
+    if sub_org := args.get('sub_org'):
+        body['suborg'] = sub_org
+    if security_labels := argToList(args.get('security_labels')):
+        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+    if tags := argToList(args.get('tags')):
+        body['tags'] = {'data': [{'name': tag} for tag in tags]}
+    if work_location := args.get('work_location'):
+        body['workLocation'] = work_location
+    if asset_ids := argToList(args.get('asset_ids')):
+        # TODO build it in the right structure
+        body['assets'] = asset_ids
+    # TODO build it in the right structure
+    attribute_type = args.get('attribute_type')
+    attribute_value = args.get('attribute_value')
+
+    if associated_groups_ids := argToList(args.get('associated_groups_ids')):
+        body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_groups_ids]}
+
+    url = f'/api/v3/victims/{victim_id}'
+    response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
+    outputs = response.get('data', {})
+    readable_output = f'Victim {outputs.get("id")} was successfully updated.'
+    return_results(CommandResults(
+        outputs_prefix='TC.Victim',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_delete_victim_command(client: Client, args: dict):
+    victim_id = args.get('victim_id')
+    url = f'/api/v3/victims/{victim_id}'
+    response = client.make_request(method=Method.DELETE, url_suffix=url)
+    readable_output = f'Victim {victim_id} was successfully deleted.'
+    return_results(CommandResults(
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_list_victims_command(client: Client, args: dict):
+    include_assets = True # argToBoolean(args.get('include_assets'))
+    include_associated_groups = True # argToBoolean(args.get('include_associated_groups'))
+    include_attributes = True # argToBoolean(args.get('include_attributes'))
+    include_security_labels = True # argToBoolean(args.get('include_security_labels'))
+    include_all_metadata = True # argToBoolean(args.get('include_all_metaData'))
+
+
+    list_of_fields = [field for field, should_include in
+                      {'securityLabels': include_security_labels,
+                       'attributes': include_attributes,
+                       'assets': include_assets,
+                       'associatedGroups': include_associated_groups,
+                       'include_all_metadata': include_all_metadata}.items() if
+                      should_include]
+    fields = set_fields(list_of_fields, is_victim_command=True)
+    filter = args.get('filter')
+    victim_id = args.get('victim_id')
+
+    page = arg_to_number(args.get('page')) or 0
+    limit = arg_to_number(args.get('limit')) or 50
+
+    url = f'/api/v3/victims'
+    if victim_id:
+        url += f'/{victim_id}'
+    url += f'?&resultStart={page}&resultLimit={limit}'
+    if fields:
+        url += f'&{fields}'
+    if filter:
+        filter = urllib.parse.quote(filter.encode('utf8'))
+        url += f'&tql={filter}'
+    response = client.make_request(method=Method.GET, url_suffix=url)
+    outputs = response.get('data', {})
+    readable_output = tableToMarkdown('Victims', outputs, headers=['id', 'name', 'ownerName', 'description', 'org'])
+    return_results(CommandResults(
+        outputs_prefix='TC.Victim',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_create_victim_asset_command(client: Client, args: dict):
+    # Required body parameters
+    victim_id = args.get('victim_id')
+    asset_type = AssetType(args.get('asset_type'))
+
+    body = {'victimId': victim_id, 'type': asset_type}
+
+    asset_value = args.get('asset_value')
+
+    body[MAP_ASSET_TYPE_TO_REQUEST_KEY[asset_type]] = asset_value
+
+    if address_type := args.get('address_type'):
+        body['addressType'] = address_type
+    if network_type := args.get('network_type'):
+        body['networkType'] = network_type
+    if social_network := args.get('social_network'):
+        body['socialNetwork'] = social_network
+    if security_labels := argToList(args.get('security_labels')):
+        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+    if associated_group_ids := argToList(args.get('associated_groups_ids')):
+        body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_group_ids]}
+
+    url = '/api/v3/victimAssets'
+    response = client.make_request(method=Method.POST, url_suffix=url, payload=json.dumps(body))
+    outputs = response.get('data', {})
+    readable_output = f'Victim Asset {outputs.get("id")} created successfully for victim id: {victim_id}'
+    return_results(CommandResults(
+        outputs_prefix='TC.VictimAsset',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+def tc_update_victim_asset_command(client: Client, args: dict):
+    # Required body parameters
+    victim_asset_id = args.get('victim_asset_id')
+    victim_asset = client.make_request(method=Method.GET, url_suffix=f'/api/v3/victimAssets/{victim_asset_id}').get('data', {})
+    asset_type = AssetType(victim_asset.get('type'))
+
+    body = {}
+
+    asset_value = args.get('asset_value')
+
+    body[MAP_ASSET_TYPE_TO_REQUEST_KEY[asset_type]] = asset_value
+
+    if address_type := args.get('address_type'):
+        body['addressType'] = address_type
+    if network_type := args.get('network_type'):
+        body['networkType'] = network_type
+    if social_network := args.get('social_network'):
+        body['socialNetwork'] = social_network
+    if security_labels := argToList(args.get('security_labels')):
+        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+    if associated_group_ids := argToList(args.get('associated_groups_ids')):
+        body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_group_ids]}
+
+    url = f'/api/v3/victimAssets/{victim_asset_id}'
+    response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
+    outputs = response.get('data', {})
+    readable_output = f'Victim Asset {outputs.get("id")} updated successfully for victim id: {victim_id}'
+    return_results(CommandResults(
+        outputs_prefix='TC.VictimAsset',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_delete_victim_asset_command(client: Client, args: dict):
+    victim_asset_id = args.get('victim_asset_id')
+    url = f'/api/v3/victimAssets/{victim_asset_id}'
+    response = client.make_request(method=Method.DELETE, url_suffix=url)
+    readable_output = f'Victim asset {victim_asset_id} was successfully deleted.'
+    return_results(CommandResults(
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_list_victim_assets_command(client: Client, args: dict):
+    filter = args.get('filter')
+    victim_asset_id = args.get('victim_asset_id')
+    page = args.get('page') or '0'
+    limit = args.get('limit') or '50'
+
+    url = f'/api/v3/victimAssets'
+    if victim_asset_id:
+        url += f'/{victim_asset_id}'
+    url += f'?&resultStart={page}&resultLimit={limit}'
+    if filter:
+        filter = urllib.parse.quote(filter.encode('utf8'))
+        url += f'&tql={filter}'
+    response = client.make_request(method=Method.GET, url_suffix=url)
+    outputs = response.get('data', {})
+    # TODO build table
+    readable_output = tableToMarkdown('Victim assets', outputs, headers=['id', 'type', 'victimId'])
+    return_results(CommandResults(
+        outputs_prefix='TC.VictimAssets',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_create_victim_attributes_command(client: Client, args: dict):
+    victim_id = args.get('victim_id')
+    attribute_type = args.get('type')
+    value = args.get('value')
+    body = {'victimId': victim_id, 'type': attribute_type, 'value': value}
+    if source := args.get('source'):
+        body['source'] = source
+    if security_labels := argToList(args.get('security_labels')):
+        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+
+    url = '/api/v3/victimAttributes'
+    response = client.make_request(method=Method.POST, url_suffix=url, payload=json.dumps(body))
+    outputs = response.get('data', {})
+    readable_output = f'Victim attribute {outputs.get("id")} created successfully for victim id: {victim_id}'
+    return_results(CommandResults(
+        outputs_prefix='TC.VictimAttribute',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_update_victim_attributes_command(client: Client, args: dict):
+    body = {}
+    if value := args.get('value'):
+        body['value'] = value
+    if source := args.get('source'):
+        body['source'] = source
+    if security_labels := argToList(args.get('security_labels')):
+        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+
+    url = f'/api/v3/victimAttributes/{args.get("victim_attribute_id")}'
+    response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
+    outputs = response.get('data', {})
+    readable_output = f'Victim attribute {outputs.get("id")} was successfully updated.'
+    return_results(CommandResults(
+        outputs_prefix='TC.VictimAttribute',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_delete_victim_attributes_command(client: Client, args: dict):
+    victim_attribute_id = args.get('victim_attribute_id')
+    url = f'/api/v3/victimAttributes/{victim_attribute_id}'
+    response = client.make_request(method=Method.DELETE, url_suffix=url)
+    readable_output = f'Victim attribute {victim_attribute_id} was successfully deleted.'
+    return_results(CommandResults(
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
+def tc_list_victim_attributes_command(client: Client, args: dict):
+    filter = args.get('filter')
+    victim_attribute_id = args.get('victim_attribute_id')
+    victim_id = args.get('victim_id')
+    page = args.get('page') or '0'
+    limit = args.get('limit') or '50'
+    if victim_id:
+        url = f'/api/v3/victims/{victim_id}?fields=attributes'
+    else:
+        url = f'/api/v3/victimAttributes'
+        if victim_attribute_id:
+            url += f'/{victim_attribute_id}'
+        # TODO check
+        url += f'?&resultStart={page}&resultLimit={limit}'
+    if filter:
+        filter = urllib.parse.quote(filter.encode('utf8'))
+        url += f'&tql={filter}'
+    response = client.make_request(method=Method.GET, url_suffix=url)
+    outputs = response.get('data', {}).get('attributes', {}).get('data') if victim_id else response.get('data', {})
+    readable_output = tableToMarkdown('Victim attributes', outputs, headers=['id', 'type', 'value', 'dateAdded'])
+    return_results(CommandResults(
+        outputs_prefix='TC.VictimAttribute',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
+
 COMMANDS = {
     'test-module': integration_test,
     'ip': get_ip_indicators,
@@ -1652,6 +2011,21 @@ COMMANDS = {
     'tc-get-associated-groups': get_group_associated_groups,
     'tc-get-indicator-owners': tc_get_indicator_owners,
     'tc-download-report': tc_download_report,
+
+    'tc-create-victim': tc_create_victim_command,
+    'tc-update-victim': tc_update_victim_command,
+    'tc-delete-victim': tc_delete_victim_command,
+    'tc-list-victims': tc_list_victims_command,
+
+    'tc-create-victim-asset': tc_create_victim_asset_command,
+    'tc-update-victim-asset': tc_update_victim_asset_command,
+    'tc-delete-victim-asset': tc_delete_victim_asset_command,
+    'tc-list-victim-assets': tc_list_victim_assets_command,
+
+    'tc-create-victim-attribute': tc_create_victim_attributes_command,
+    'tc-update-victim-attribute': tc_update_victim_attributes_command,
+    'tc-delete-victim-attribute': tc_delete_victim_attributes_command,
+    'tc-list-victim-attributes': tc_list_victim_attributes_command,
 }
 
 
