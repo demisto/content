@@ -119,6 +119,7 @@ class ErrorHandler:
 DEMISTO_LOGGER: Handler = Handler()
 ERROR_LOGGER: ErrorHandler = ErrorHandler()
 
+
 def handle_teams_proxy_and_ssl():
     proxies = None
     use_ssl = not PARAMS.get('insecure', False)
