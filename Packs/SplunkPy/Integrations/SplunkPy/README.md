@@ -915,7 +915,7 @@ Searches for specific objects in a store. Search can be a basic key-value pair o
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection\). | 
+| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection. | 
 
 
 #### Command Example
