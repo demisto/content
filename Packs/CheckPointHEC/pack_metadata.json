@@ -14,7 +14,13 @@
         "Security"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "checkpoint",
+        "check point",
+        "Harmony",
+        "Email",
+        "HEC"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
