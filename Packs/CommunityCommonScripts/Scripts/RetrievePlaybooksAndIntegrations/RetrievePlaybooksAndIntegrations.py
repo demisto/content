@@ -21,7 +21,7 @@ def perform_rest_call(method: str, endpoint: str, body=None):
     if body:
         args['body'] = json.dumps(body)
 
-    result = demisto.executeCommand(f"demisto-api-{method}", args)
+    result = demisto.executeCommand(f"core-api-{method}", args)
 
     if len(result) < 1 or 'Contents' not in result[0] or 'response' not in result[0].get('Contents'):
         raise Exception(f"Error with REST call to endpoint {endpoint}")
