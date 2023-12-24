@@ -1657,11 +1657,13 @@ def tc_create_victim_command(client: Client, args: dict):
     if work_location := args.get('work_location'):
         body['workLocation'] = work_location
     if asset_ids := argToList(args.get('asset_ids')):
-        # TODO build it in the right structure
+        #TODO build it in the right structure
         body['assets'] = {'data': [{'id': asset_id} for asset_id in asset_ids]}
-    # TODO build it in the right structure
     attribute_type = args.get('attribute_type')
     attribute_value = args.get('attribute_value')
+    if attribute_value and attribute_type:
+        body['attributes'] = {'data': [{'type': attribute_type, 'value': attribute_value}]}
+
 
     if associated_groups_ids := argToList(args.get('associated_groups_ids')):
         body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_groups_ids]}
@@ -1680,7 +1682,7 @@ def tc_create_victim_command(client: Client, args: dict):
 
 
 def tc_update_victim_command(client: Client, args: dict):
-    # TODO add mode
+    mode = args.get('mode') or 'append'
     victim_id = args.get('victim_id')
     body = {'id': victim_id}
     if name := args.get('name'):
@@ -1692,20 +1694,24 @@ def tc_update_victim_command(client: Client, args: dict):
     if sub_org := args.get('sub_org'):
         body['suborg'] = sub_org
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels],
+                                  'mode': mode}
     if tags := argToList(args.get('tags')):
-        body['tags'] = {'data': [{'name': tag} for tag in tags]}
+        body['tags'] = {'data': [{'name': tag} for tag in tags],
+                        'mode': mode}
     if work_location := args.get('work_location'):
         body['workLocation'] = work_location
     if asset_ids := argToList(args.get('asset_ids')):
-        # TODO build it in the right structure
+        #TODO build it in the right structure
         body['assets'] = asset_ids
-    # TODO build it in the right structure
     attribute_type = args.get('attribute_type')
     attribute_value = args.get('attribute_value')
+    if attribute_value and attribute_type:
+        body['attributes'] = {'data': [{'type': attribute_type, 'value': attribute_value}], 'mode': mode}
 
     if associated_groups_ids := argToList(args.get('associated_groups_ids')):
-        body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_groups_ids]}
+        body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_groups_ids],
+                                    'mode': mode}
 
     url = f'/api/v3/victims/{victim_id}'
     response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
@@ -1732,11 +1738,11 @@ def tc_delete_victim_command(client: Client, args: dict):
 
 
 def tc_list_victims_command(client: Client, args: dict):
-    include_assets = True # argToBoolean(args.get('include_assets'))
-    include_associated_groups = True # argToBoolean(args.get('include_associated_groups'))
-    include_attributes = True # argToBoolean(args.get('include_attributes'))
-    include_security_labels = True # argToBoolean(args.get('include_security_labels'))
-    include_all_metadata = True # argToBoolean(args.get('include_all_metaData'))
+    include_assets = argToBoolean(args.get('include_assets'))
+    include_associated_groups = argToBoolean(args.get('include_associated_groups'))
+    include_attributes = argToBoolean(args.get('include_attributes'))
+    include_security_labels = argToBoolean(args.get('include_security_labels'))
+    include_all_metadata = argToBoolean(args.get('include_all_metaData'))
 
 
     list_of_fields = [field for field, should_include in
@@ -1870,7 +1876,7 @@ def tc_list_victim_assets_command(client: Client, args: dict):
         url += f'&tql={filter}'
     response = client.make_request(method=Method.GET, url_suffix=url)
     outputs = response.get('data', {})
-    # TODO build table
+    #TODO build table
     readable_output = tableToMarkdown('Victim assets', outputs, headers=['id', 'type', 'victimId'])
     return_results(CommandResults(
         outputs_prefix='TC.VictimAssets',
@@ -1949,7 +1955,7 @@ def tc_list_victim_attributes_command(client: Client, args: dict):
         url = f'/api/v3/victimAttributes'
         if victim_attribute_id:
             url += f'/{victim_attribute_id}'
-        # TODO check
+        #TODO check
         url += f'?&resultStart={page}&resultLimit={limit}'
     if filter:
         filter = urllib.parse.quote(filter.encode('utf8'))

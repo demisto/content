@@ -2550,7 +2550,7 @@ script:
         description: The date that the victim attribute was added.
         type: string
       - contextPath: TC.VictimAttribute.default
-        description: Whether the victim attribute is default.
+        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added
         type: string
       - contextPath: TC.VictimAttribute.id
         description: The ID of the victim attribute.
