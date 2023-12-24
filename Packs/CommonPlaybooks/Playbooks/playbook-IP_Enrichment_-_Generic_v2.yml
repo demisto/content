@@ -647,7 +647,7 @@ outputs:
   description: Indicator, Score, Type, Vendor.
   type: unknown
 - contextPath: Endpoint
-  description: The Endpoint's object.
+  description: The endpoint's object.
   type: unknown
 - contextPath: Endpoint.Hostname
   description: The hostname to enrich.
