@@ -709,9 +709,9 @@ def get_schedule_metadata(context):
     return schedule_metadata
 
 
-def detect_indicator_type_file(indicator_value: str):
+def detect_file_indicator_type(indicator_value: str):
     """
-      Infer the type of the file indicator.
+      Detect the type of the file indicator.
 
       :type indicator_value: ``str``
       :param indicator_value: The indicator whose type we want to check. (required)

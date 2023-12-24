@@ -1260,7 +1260,7 @@ class FileObject(object):
             value_list = value.split('##comma##')
             for v in value_list:
                 v = v.strip()
-                if type := detect_indicator_type_file(v):
+                if type := detect_file_indicator_type(v):
                     result.append({
                         'indicator': v,
                         'htype': type,
