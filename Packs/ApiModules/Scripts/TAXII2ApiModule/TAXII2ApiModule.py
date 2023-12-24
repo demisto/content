@@ -1242,7 +1242,7 @@ class Taxii2FeedClient:
                     continue
                 if result := parse_objects_func[obj_type](obj):
                     indicators.extend(result)
-                    self.update_last_modified_indicator_date(obj.get("modified"))
+                    self.update_last_modified_indicator_date(obj.get("created"))
 
                 if reached_limit(limit, len(indicators)):
                     return indicators, relationships_lst

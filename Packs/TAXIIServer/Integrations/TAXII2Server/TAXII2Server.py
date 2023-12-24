@@ -607,7 +607,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         limit=new_limit,
         size=PAGE_SIZE,
         from_date=added_after,
-        sort=[{"field": "modified", "asc": True}],
+        sort=[{"field": "timestamp", "asc": True}],
     )
 
     total = 0
