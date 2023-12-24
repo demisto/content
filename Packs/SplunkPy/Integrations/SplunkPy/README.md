@@ -57,8 +57,8 @@ This integration was integrated and tested with Splunk v7.2.
     | XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
     | SPLUNK user key | The name of the lookup table containing the Splunk username. | False |
     | Incidents Fetch Interval |  | False |
-
-The (!) *Earliest time to fetch* and *Latest time to fetch* are search parameters options. The search uses *All Time* as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as *earliest_time*, *index_earliest*, or *latest_time*.
+    | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
+    | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
