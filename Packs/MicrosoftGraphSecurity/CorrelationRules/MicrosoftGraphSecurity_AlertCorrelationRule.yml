@@ -1,0 +1,63 @@
+  alert_category: User Defined
+  alert_description: $xdm.event.description
+  alert_fields:
+    action_file_sha256: xdm.target.file.sha256
+    action_local_ip: xdm.source.host.ipv4_addresses
+    action_local_ip_v6: xdm.source.host.ipv6_addresses
+    action_process_signature_vendor: xdm.source.process.executable.signer
+    action_registry_data: xdm.target.registry.data
+    actor_effective_username: xdm.source.user.username
+    agent_device_domain: xdm.source.user.domain
+    agent_id: xdm.intermediate.agent.identifier
+    emailmessageid: xdm.email.message_id
+    externalseverity: xdm.alert.severity
+    filesize: xdm.target.file.size
+    firstname: xdm.source.user.first_name
+    fw_email_recipient: xdm.email.recipients
+    lastname: xdm.source.user.last_name
+    parentprocessids: xdm.source.process.parent_id
+    processcmd: xdm.source.process.command_line
+    processid: xdm.source.process.pid
+    processnames: xdm.source.process.executable.filename
+    processsha256: xdm.source.process.executable.sha256
+    registrykey: xdm.target.registry.key
+    registryvalue: xdm.target.registry.value
+    registryvaluetype: xdm.target.registry.value_type
+    reportedemailsubject: xdm.email.subject
+  alert_name: Microsoft Graph Security Alert
+  crontab: null
+  dataset: alerts
+  description: testing alert aggregation
+  drilldown_query_timeframe: ALERT
+  execution_mode: REAL_TIME
+  global_rule_id: f20b0f8a-a987-4325-9f6f-8a3089bdfd5d
+  investigation_query_link: null
+  mapping_strategy: CUSTOM
+  mitre_defs: {}
+  name: Microsoft Graph Security Alert Correlation Rule
+  search_window: null
+  severity: User Defined
+  suppression_duration: null
+  suppression_enabled: false
+  suppression_fields: null
+  user_defined_category: xdm.alert.subcategory
+  user_defined_severity: xdm.alert.severity
+  xql_query: "datamodel dataset = msft_graph_security_alerts_raw \n| fields xdm.alert.description,\
+    \ xdm.alert.mitre_techniques, xdm.alert.original_threat_name, xdm.alert.severity,\
+    \ xdm.alert.subcategory, xdm.email.delivery_timestamp, xdm.email.message_id, xdm.email.recipients,\
+    \ xdm.email.subject, xdm.event.description, xdm.event.id, xdm.event.is_completed,\
+    \ xdm.event.outcome, xdm.event.tags, xdm.intermediate.agent.identifier, xdm.intermediate.host.fqdn,\
+    \ xdm.intermediate.host.hostname, xdm.network.rule, xdm.observer.type, xdm.observer.unique_identifier,\
+    \ xdm.session_context_id, xdm.source.agent.identifier, xdm.source.application.name,\
+    \ xdm.source.cloud.project, xdm.source.host.device_id, xdm.source.host.fqdn, xdm.source.host.ipv4_addresses,\
+    \ xdm.source.host.ipv6_addresses, xdm.source.host.os, xdm.source.host.os_family,\
+    \ xdm.source.process.command_line, xdm.source.process.executable.filename, xdm.source.process.executable.path,\
+    \ xdm.source.process.executable.sha256, xdm.source.process.executable.signer,\
+    \ xdm.source.process.executable.size, xdm.source.process.parent_id, xdm.source.process.pid,\
+    \ xdm.source.user.domain, xdm.source.user.identifier, xdm.source.user.first_name,\
+    \ xdm.source.user.last_name, xdm.source.user.username, xdm.source.user.upn, xdm.target.file.filename,\
+    \ xdm.target.file.path, xdm.target.file.sha256, xdm.target.file.signer, xdm.target.file.size,\
+    \ xdm.target.registry.data, xdm.target.registry.key, xdm.target.registry.value,\
+    \ xdm.target.registry.value_type, xdm.target.url\n| filter xdm.alert.severity\
+    \ in (\"high\")\n"
+  fromversion: 8.4.0 
