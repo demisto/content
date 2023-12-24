@@ -1287,6 +1287,7 @@ script:
     - contextPath: OpsGenie.TeamRoutingRule.notify.type
       description: Notify type of the routing rule.
   - name: opsgenie-get-alert-logs
+    polling: true
     description: Gets logs of an OpsGenie Alert.
     arguments:
     - name: alert_id
@@ -1351,7 +1352,9 @@ script:
     - contextPath: OpsGenie.AddAlertNote.success
       description: Whether the request was successful.
       type: Boolean
+    polling: true
   - name: opsgenie-add-alert-details
+    polling: true
     description: Adds details to an OpsGenie Alert.
     arguments:
     - name: alert_id
@@ -1389,7 +1392,7 @@ script:
     - contextPath: OpsGenie.AddAlertDetails.success
       description: Whether the request was successful.
       type: Boolean
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.81631
   isfetch: true
   script: '-'
   type: python

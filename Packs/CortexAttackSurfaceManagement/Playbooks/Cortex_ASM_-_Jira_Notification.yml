@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 18a8542a-f6ca-474e-82bb-cd023bdf2a69
+    taskid: af645ade-de93-4220-8b4d-2fd0f93b0fe3
     type: start
     task:
-      id: 18a8542a-f6ca-474e-82bb-cd023bdf2a69
+      id: af645ade-de93-4220-8b4d-2fd0f93b0fe3
       version: -1
       name: ""
       iscommand: false
@@ -19,14 +19,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -260
         }
       }
     note: false
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6e358c93-d64a-421a-8191-780a655d3739
+    taskid: 439be49e-ef74-43c7-85f5-116775b1f5d4
     type: regular
     task:
-      id: 6e358c93-d64a-421a-8191-780a655d3739
+      id: 439be49e-ef74-43c7-85f5-116775b1f5d4
       version: -1
       name: Set notification grid field
       description: |-
@@ -105,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e28fdfca-d524-4853-8dc3-285981f0050f
+    taskid: a05fbee9-f55d-4f40-8de4-7e703f0607d9
     type: title
     task:
-      id: e28fdfca-d524-4853-8dc3-285981f0050f
+      id: a05fbee9-f55d-4f40-8de4-7e703f0607d9
       version: -1
       name: Complete
       type: title
@@ -133,10 +133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2a4bf66b-75ae-4202-81db-59723e63c89a
+    taskid: b199902c-b7a6-442f-8d29-68e778079712
     type: regular
     task:
-      id: 2a4bf66b-75ae-4202-81db-59723e63c89a
+      id: b199902c-b7a6-442f-8d29-68e778079712
       version: -1
       name: Create Jira ticket
       description: Creates a new issue in Jira.
@@ -184,8 +184,9 @@ tasks:
                 value:
                   simple: Low,Medium,High,Critical
       projectKey:
-        complex:
-          root: inputs.JiraProjectKey
+        simple: ${inputs.JiraProjectKey}${Please insert Jira Project Key.Answers.0}
+      project_key:
+        simple: ${inputs.JiraProjectKey}${Please insert Jira Project Key.Answers.0}
       summary:
         complex:
           root: alert
@@ -203,7 +204,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 210
+          "y": 230
         }
       }
     note: false
@@ -213,15 +214,123 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7a4f2026-ef32-4866-844b-65c8e7a64c07
+    type: condition
+    task:
+      id: 7a4f2026-ef32-4866-844b-65c8e7a64c07
+      version: -1
+      name: Is Jira project key set?
+      description: Determines if a Jira project key has been provided or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.JiraProjectKey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8310b832-eff8-4d36-8256-fd00a8aad548
+    type: collection
+    task:
+      id: 8310b832-eff8-4d36-8256-fd00a8aad548
+      version: -1
+      name: Provide Jira project key
+      description: Determines who to send notification emails to based on analyst input.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Select owners to notify
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please type in Jira project key:'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Add a single Jira project key that the Jira ticket will be created in.
+        readonly: false
+      title: Please insert Jira Project Key
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 595,
-        "width": 380,
+        "height": 905,
+        "width": 630,
         "x": 450,
-        "y": 50
+        "y": -260
       }
     }
   }
@@ -232,9 +341,8 @@ inputs:
   description: Body of the notification (email or ticket) sent to the potential service owner.
   playbookInputQuery:
 - key: JiraProjectKey
-  value:
-    simple: XPANSE
-  required: true
+  value: {}
+  required: false
   description: The Jira project key to associate with the issue.
   playbookInputQuery:
 - key: RemediationGuidance

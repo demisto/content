@@ -40,8 +40,7 @@ tasks:
       id: 2350d695-cdd4-4ab3-8e6e-ff8e164b9d86
       version: -1
       name: Add a new server config
-      description: Edit the server configuration (under *settings/troubleshooting*).
-        You can either add a new configuration or update and remove an existing one.
+      description: Edit the server configuration (under *settings/troubleshooting*). You can either add a new configuration or update and remove an existing one.
       scriptName: EditServerConfig
       type: regular
       iscommand: false
@@ -80,7 +79,7 @@ tasks:
       version: -1
       name: Get server config
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -182,8 +181,7 @@ tasks:
       id: bf7fa05f-7184-4df0-89da-20770d338ca6
       version: -1
       name: Remove server config
-      description: Edit the server configuration (under *settings/troubleshooting*).
-        You can either add a new configuration or update and remove an existing one.
+      description: Edit the server configuration (under *settings/troubleshooting*). You can either add a new configuration or update and remove an existing one.
       scriptName: EditServerConfig
       type: regular
       iscommand: false
@@ -220,7 +218,7 @@ tasks:
       version: -1
       name: Get server config
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -292,8 +290,7 @@ tasks:
       id: ddf0e02f-560d-4331-8f66-0eadcdd7e335
       version: -1
       name: Update an existing server config
-      description: Edit the server configuration (under *settings/troubleshooting*).
-        You can either add a new configuration or update and remove an existing one.
+      description: Edit the server configuration (under *settings/troubleshooting*). You can either add a new configuration or update and remove an existing one.
       scriptName: EditServerConfig
       type: regular
       iscommand: false
@@ -332,7 +329,7 @@ tasks:
       version: -1
       name: Get server config
       description: send HTTP GET requests
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -478,9 +475,8 @@ tasks:
     task:
       id: 05bcecfa-4041-45c8-869d-35bb3b6e88a4
       version: -1
-      name: Is Demisto Rest API Instance Available
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      name: Is Core REST API Instance Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -492,7 +488,7 @@ tasks:
       - "1"
     scriptarguments:
       brandname:
-        simple: Demisto REST API
+        simple: Core REST API
     results:
     - brandInstances
     separatecontext: false
@@ -525,4 +521,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: Test EditServerConfig script
+description: Test EditServerConfig script.

@@ -2,34 +2,39 @@ Automate your AppID Adoption by using this integration together with your Palo A
 This integration was integrated and tested with version 8 up to version 10.1.6 and version 10.2.0 of PAN-OS Policy Optimizer.
 Moved to beta due to the lack of a formal API.
 
-## Configure PAN-OS Policy Optimizer on Cortex XSOAR (beta)
+## Configure PAN-OS Policy Optimizer (Beta) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for PAN-OS Policy Optimizer (beta).
+2. Search for PAN-OS Policy Optimizer (Beta).
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                              | **Required** |
+    | **Parameter** | **Required** |
     | --- | --- |
     | Server URL (e.g., https://192.168.0.1:443) | True |
-    | Username                                   | True |
-    | Vsys - Firewall instances only             | False |
-    | Device Group - Panorama instances only     | False |
-    | PAN-OS Version(e.g. 8.2.3, 9, 10.1.6)      | False |
-    | Trust any certificate (not secure)         | False |
-    | Use system proxy settings                  | False |
+    | Username | True |
+    | Password | True |
+    | Vsys - Firewall instances only | False |
+    | Device Group - Panorama instances only | False |
+    | PAN-OS Version (The exact version, e.g., 10.1.4, 1.1, 9) | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
-1. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### pan-os-po-get-stats
+
 ***
 Gets the Policy Optimizer statistics.
-
 
 #### Base Command
 
 `pan-os-po-get-stats`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -80,13 +85,14 @@ Gets the Policy Optimizer statistics.
 
 
 ### pan-os-po-no-apps
+
 ***
 Shows all security policies with no apps specified.
-
 
 #### Base Command
 
 `pan-os-po-no-apps`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -97,7 +103,7 @@ Shows all security policies with no apps specified.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PanOS.PolicyOptimizer.NoApps | Unknown | Contains information about the rules that have no apps specified. i.e., Source, Destination, etc. | 
+| PanOS.PolicyOptimizer.NoApps | Unknown | Contains information about the rules that have no apps specified. For example, Source and Destination. | 
 
 
 #### Command Example
@@ -187,15 +193,15 @@ Shows all security policies with no apps specified.
 
 
 
-
 ### pan-os-po-unused-apps
+
 ***
 Gets the unused apps.
-
 
 #### Base Command
 
 `pan-os-po-unused-apps`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -208,30 +214,27 @@ Gets the unused apps.
 | --- | --- | --- |
 | PanOS.PolicyOptimizer.UnusedApps | String | Shows all security rules with unused apps. | 
 
-
-#### Command Example
-```!pan-os-po-unused-apps```
-
-#### Human Readable Output
-
-
-
 ### pan-os-po-get-rules
-***
-Gets unused, used, or any rules
 
+***
+Gets unused, used, or any rules.
 
 #### Base Command
 
 `pan-os-po-get-rules`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timeframe | The time frame in days for which to show the unused rules. Default is 30. Default is 30. | Optional | 
-| usage | Rule usage type. The values by which you want to filter. Possible values are: Unused, Used, Any. Default is Unused. | Optional | 
+| timeframe | The time frame in days to show the unused rules. Default is 30. | Optional | 
+| usage | Rule usage type to filter by. Can be Unused, Used, or Any. Possible values are: Unused, Used, Any. Default is Unused. | Optional | 
 | exclude | Whether to exclude rules reset during the last x days, where x is the value defined in the timeframe argument. It will not exclude rules by default. Possible values are: false, true. Default is false. | Optional | 
-
+| position | Whether to get pre-rules, post-rules or both. 'pre' for pre rules, 'post' for post-rules, only for panorama instances. Possible values are: pre, post, both. Default is both. | Optional | 
+| rule_type | Which type of rules to query. Possible values are: security, nat, qos, pbf, decryption, tunnel-inspect, application-override, authentication, dos, sdwan. Default is security. | Optional | 
+| limit | The maximum number of rules to return. Default is 200. | Optional | 
+| page_size | The amount of items to return in each paginated call. Can only be a value of up to 200. Default is 200. | Optional | 
+| page | A specific pagination page to get items from. | Optional | 
 
 #### Context Output
 
@@ -330,19 +333,19 @@ Gets unused, used, or any rules
 
 
 ### pan-os-po-app-and-usage
+
 ***
 Gets the app usage statistics for a specific security rule.
-
 
 #### Base Command
 
 `pan-os-po-app-and-usage`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_uuid | The UUID of the security rule. | Required | 
-
 
 #### Context Output
 
@@ -359,27 +362,20 @@ Gets the app usage statistics for a specific security rule.
 >Rule with UUID:{uuid} does not use apps.
 
 ### pan-os-get-dag
+
 ***
 Gets a specific dynamic address group.
-
 
 #### Base Command
 
 `pan-os-get-dag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | dag | Dynamic address group name. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-

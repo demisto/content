@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 from _pytest.fixtures import SubRequest
+from requests.exceptions import RequestException
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common.clients import XsoarSaasClient
@@ -13,12 +14,11 @@ from Tests.tests_e2e.client_utils import (
     get_integration_instance_name,
     get_fetched_incident,
     save_integration_instance,
-    is_incident_state_as_expected,
-    is_playbook_state_as_expected,
     save_incident,
     save_playbook,
     save_indicators
 )
+from demisto_sdk.commands.common.constants import InvestigationPlaybookState, IncidentState
 
 install_logging('e2e-xsoar-saas.log', logger=logging)
 
@@ -94,7 +94,7 @@ def test_taxii2_server_returns_indicators(
         )
         # there are cases where the port can be taken in the machine, trying in a few other ports
         try:
-            for port in ("8000", "8001", "8002"):
+            for port in ("8000", "8001", "8002", "8003", "8004"):
                 integration_params["longRunningPort"] = port
                 with save_integration_instance(
                     xsoar_saas_client,
@@ -134,9 +134,15 @@ def test_taxii2_server_returns_indicators(
                     indicators = get_json_response(response).get("objects")
                     assert indicators, f'could not get indicators from url={response.request.url} with available ' \
                         f'indicators={available_indicators}, status code={response.status_code}, response={indicators}'
-        except ApiException as error:
-            logging.info(f'Got error when running test_taxii2_server_returns_indicators with {port=} error:\n{error}')
-            if port == "8002":
+        except (ApiException, RequestException) as error:
+            if isinstance(error, ApiException):
+                logging.error(f'Got error when running test_taxii2_server_returns_indicators with {port=}, error:\n{error}')
+            else:
+                logging.error(
+                    f'Got error response {error.response} when running '
+                    f'test_taxii2_server_returns_indicators with {port=} when sending request {error.request}'
+                )
+            if port == "8004":
                 raise
 
 
@@ -171,8 +177,8 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
             playbook_name=playbook_id_name
         ), save_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
             # make sure the playbook finished successfully
-            assert is_playbook_state_as_expected(
-                xsoar_saas_client, incident_id=incident_response.id, expected_states={"completed"}
+            assert xsoar_saas_client.poll_playbook_state(
+                incident_response.id, expected_states=(InvestigationPlaybookState.COMPLETED,)
             )
 
             context = xsoar_saas_client.get_investigation_context(incident_response.investigation_id)
@@ -220,11 +226,11 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
             assert investigation_id, f'investigation ID is empty in {qradar_incident_response}'
 
             # close the qradar offense
-            context = xsoar_saas_client.run_cli_command(
+            _, context = xsoar_saas_client.run_cli_command(
                 f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
                 investigation_id=investigation_id
             )
             assert context.get("QRadar", {}).get("Offense", {}).get("Status") == "CLOSED"
 
             # make sure the incident gets closed after closing it in Qradar
-            assert is_incident_state_as_expected(xsoar_saas_client, incident_id, expected_state="closed")
+            assert xsoar_saas_client.poll_incident_state(incident_id, expected_states=(IncidentState.CLOSED,), timeout=300)
