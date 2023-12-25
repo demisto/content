@@ -10,7 +10,7 @@ import traceback
 import getpass
 
 
-# workaround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
+# workaround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448..
 class FixGetPass(object):
     def __init__(self):
         self.getpass_getuser_org = getpass.getuser

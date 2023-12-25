@@ -45,7 +45,7 @@ tasks:
       name: Get File Sample By Hash - Generic v3
       description: |-
         This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:
-        - Get the binary file from Carbon Black by its MD5 hash
+        - Get the binary file from Carbon Black by its MD5 hash.
         - Get File Sample By Hash - Cylance Protect v2
         - Code42 File Download
       playbookName: Get File Sample By Hash - Generic v3

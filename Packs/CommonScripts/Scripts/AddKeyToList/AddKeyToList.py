@@ -21,7 +21,7 @@ def add_key_to_list(list_name: str, key_name: str, value: str, append: bool = Fa
         or not isinstance(res[0]['Contents'], str)
         or res[0]['Contents'] == 'Item not found (8)'
     ):
-        raise ValueError(f'Cannot retrieve list {list_name}')
+        raise ValueError(f'Cannot retrieve list: {list_name}')
 
     list_data: Dict = {}
     data: str = res[0]['Contents']

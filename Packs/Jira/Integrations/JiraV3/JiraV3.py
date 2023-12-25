@@ -12,7 +12,7 @@ from copy import deepcopy
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
-""" CONSTANTS """
+""" CONSTANTS: """
 JIRA_INCIDENT_TYPE_NAME = 'JiraV3 Incident'
 ISSUE_INCIDENT_FIELDS = {'issue_id': 'The ID of the issue to edit',
                          'summary': 'The summary of the issue.',

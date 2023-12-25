@@ -89,7 +89,7 @@ SECURITY_RULE_ARGS = {
     'log-setting': 'LogForwarding',
     'tag': 'Tags',
     'profile-setting': 'ProfileSetting',
-    'audit-comment': 'AuditComment'
+    'audit-comment': 'AuditComment',
 }
 
 PAN_OS_ERROR_DICT = {

@@ -23,7 +23,7 @@ try:
 
 except Exception:
     html = f"""<div style='text-align:center; padding: 40px; font-size:15px; {BLACK_COLOR};'
-    >This incident is part of a phishing campaign (incident #{campaign_incident_id}).</div>"""
+    >This incident is part of a phishing campaign  (incident #{campaign_incident_id}).</div>"""
 
 
 demisto.results({

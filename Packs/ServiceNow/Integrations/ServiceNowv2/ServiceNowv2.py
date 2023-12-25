@@ -170,7 +170,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
     Returns:
         returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
         returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
+        otherwise throws an Exception.
     """
     if arg is None and required is True:
         raise ValueError(f'Missing "{arg_name}"')

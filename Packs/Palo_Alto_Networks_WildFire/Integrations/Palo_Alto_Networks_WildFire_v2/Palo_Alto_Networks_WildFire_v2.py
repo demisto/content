@@ -27,6 +27,7 @@ MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_bound
 WILDFIRE_REPORT_DT_FILE = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 ||" \
                           " val.URL && val.URL == obj.URL)"
 
+
 # update the default headers with the correct agent version based on the selection in the instance config
 API_KEY_SOURCE = PARAMS.get('credentials_source')
 AGENT_VALUE = None
@@ -77,6 +78,7 @@ VERDICTS_DICT = {
     '-102': 'unknown, cannot find sample record in the database',
     '-103': 'invalid hash value',
     '-104': 'flawed submission, please re-submit the file',
+    '33848484':'test'
 }
 
 VERDICTS_TO_DBOTSCORE = {

@@ -4,7 +4,7 @@ commonfields:
 name: Core REST API
 display: Core REST API
 category: Utilities
-description: Use Core REST APIs.
+description: Use Core REST APIs..
 configuration:
 - display: Core Server URL
   name: url

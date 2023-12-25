@@ -21,7 +21,7 @@ RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
     the following - https://github.com/joepie91/python-whois
 """
 
-''' HELPER FUNCTIONS '''
+''' HELPER FUNCTIONS: '''
 # About the drop some mean regex right now disable-secrets-detection-start
 tlds = {
     "_": {

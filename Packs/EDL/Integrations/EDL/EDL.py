@@ -1241,7 +1241,7 @@ def main():
 
     try:
         if check_platform_and_version(params):
-            raise DemistoException('Please specify a Listen Port, in the integration configuration')
+            raise DemistoException('Please specify   a Listen Port, in the integration configuration')
 
         initialize_edl_context(params)
         if command == 'long-running-execution':

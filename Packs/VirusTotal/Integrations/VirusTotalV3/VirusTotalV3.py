@@ -35,7 +35,7 @@ verdicts = {'VERDICT_UNKNOWN': 'UNKNOWN',
             'VERDICT_MALICIOUS': 'MALICIOUS'}
 
 
-"""RELATIONSHIP TYPE"""
+"""RELATIONSHIP TYPE  """
 RELATIONSHIP_TYPE = {
     'file': {
         'carbonblack_children': EntityRelationship.Relationships.CREATES,
