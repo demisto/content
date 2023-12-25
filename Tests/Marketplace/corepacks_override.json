@@ -1,6 +1,6 @@
 {
   "server_version": "8.4.0",
-  "file_version": "2",
+  "file_version": "3",
   "marketplaces": [
     "xsoar_saas"
   ],
