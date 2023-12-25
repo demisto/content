@@ -4,6 +4,7 @@
   "suggestion_reason": "Provides a comprehensive response to Prisma Cloud Compute audit alerts.",
   "description": "This trigger is responsible for running the Prisma Cloud Compute - Audit Alert v3 playbook on audit alerts.",
   "trigger_name": "Prisma Cloud Compute - Audit Alert v3 Trigger",
+  "fromVersion": "6.10.0",
   "alerts_filter": {
     "filter": {
       "AND": [
