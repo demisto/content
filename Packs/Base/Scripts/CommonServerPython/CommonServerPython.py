@@ -938,7 +938,7 @@ def urljoin(url, suffix=""):
     return url + suffix
 
 
-def positiveUrl(entry):
+def positiveUrl(entry):    # pragma: no cover
     """
        Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
 
