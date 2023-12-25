@@ -262,6 +262,7 @@ def did_not_found_duplicates():
     sys.exit(0)
 
 
+@logger
 def merge_incident_fields(incident):
     custom_fields = incident.get('CustomFields', {}) or {}
     for k, v in list(custom_fields.items()):
@@ -323,6 +324,7 @@ def main():
     SIMILAR_INCIDENTS_FIELDS_MAP = {k: v for k, v in list(SIMILAR_INCIDENTS_FIELDS_MAP.items()) if v != EXACT_MATCH}
     similar_incident_fields = get_map_from_nested_dict(incident, list(SIMILAR_INCIDENTS_FIELDS_MAP.keys()),
                                                        raise_error=RAISE_ERROR_MISSING_VALUES)
+    demisto.debug(f'Incident with labels {incident}')
     labels_map = get_incident_labels_map(incident.get('labels', []))
     incident_similar_labels = get_map_from_nested_dict(labels_map, list(SIMILAR_LABELS_MAP.keys()),
                                                        raise_error=RAISE_ERROR_MISSING_VALUES)
