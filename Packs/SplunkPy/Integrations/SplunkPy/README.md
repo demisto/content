@@ -294,7 +294,7 @@ For example:
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### Get results
+### splunk-results
 ***
 Returns the results of a previous Splunk search. This command can be used in conjunction with the `splunk-job-create` command.
 
@@ -317,7 +317,7 @@ There is no context output for this command.
 ##### Command Example
 ``` !splunk-results sid="1566221331.1186" limit="200" ```
 
-### Search for events
+### splunk-search
 ***
 Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
 
@@ -362,7 +362,7 @@ Searches Splunk for events. For human readable output, the table command is supp
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | main~445~66D21DF4-F4FD-4886-A986-82E72ADCBFE9 | 445:897774 | 1585462906 | 1 | InsertedAt="2020-03-29 06:21:43"; EventID="837005"; EventType="Application control"; Action="None"; ComputerName="ACME-code-007"; ComputerDomain="DOMAIN"; ComputerIPAddress="127.0.0.1"; EventTime="2020-03-29 06:21:43"; EventTypeID="5"; Name="LogMeIn"; EventName="LogMeIn"; UserName=""; ActionID="6"; ScanTypeID="200"; ScanType="Unknown"; SubTypeID="23"; SubType="Remote management tool"; GroupName="";\u003cbr\u003e | 2 | ip-172-31-44-193, main | sophos:appcontrol | 2020-03-28T23:21:43.000-07:00 | 127.0.0.1 | main | 2 | eventgen | sophos:appcontrol | ip-172-31-44-193 |
 
-### Create event
+### splunk-submit-event
 ***
 Creates a new event in Splunk.
 
@@ -393,7 +393,7 @@ There is no context output for this command.
 ![image](https://user-images.githubusercontent.com/50324325/63268589-2fda4b00-c29d-11e9-95b5-4b9fcf6c08ee.png)
 
 
-### Print all index names
+### splunk-get-indexes
 ***
 Prints all Splunk index names.
 ##### Base Command
@@ -416,7 +416,7 @@ There is no context output for this command.
 ![image](https://user-images.githubusercontent.com/50324325/63268447-d8d47600-c29c-11e9-88a4-5003971a492e.png)
 
 
-### Update notable events
+### splunk-notable-event-edit
 ***
 Update an existing notable event in Splunk ES.
 
@@ -447,7 +447,7 @@ There is no context output for this command.
 ![image](https://user-images.githubusercontent.com/50324325/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
 
 
-### Create a new job
+### splunk-job-create
 ***
 Creates a new search job in Splunk.
 
@@ -484,7 +484,7 @@ Creates a new search job in Splunk.
 ![image](https://user-images.githubusercontent.com/50324325/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
 
 
-### Parse an event
+### splunk-parse-raw
 ***
 Parses the raw part of the event.
 
@@ -511,7 +511,7 @@ Parses the raw part of the event.
 ``` !splunk-parse-raw ```
 
 
-### Submit an event 
+### splunk-submit-event-hec
 ***
 Sends events to an HTTP event collector using the Splunk platform JSON event protocol.
 ##### Base Command
@@ -539,7 +539,7 @@ There is no context output for this command.
 ##### Human Readable Output
 The event was sent successfully to Splunk.
 
-### Get job status
+### splunk-job-status
 ***
 Returns the status of a job.
 
@@ -571,7 +571,7 @@ Splank.JobStatus = {
 ##### Human Readable Output
 ![image](https://user-images.githubusercontent.com/50324325/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
 
-### Get Mapping Fields
+### get-mapping-fields
 ***
 Gets one sample alert per alert type. Used only for creating a mapping with `Select Schema`. 
 ##### Base Command
