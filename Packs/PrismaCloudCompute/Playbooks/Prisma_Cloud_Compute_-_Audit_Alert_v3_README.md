@@ -1,5 +1,5 @@
 Default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
-The playbook has several sections:
+The playbook has the following sections:
 Enrichment:
 - Image details
 - Similar container events
@@ -7,7 +7,12 @@ Enrichment:
 - Vulnerabilities
 - Compliance details
 - Forensics
-- Defender logs
+- Defender logs.
+
+Remediation:
+- Block Indicators - Generic v3
+- Cloud Response - Generic
+- Manual Remediation
 
 ## Dependencies
 
