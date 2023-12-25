@@ -9203,9 +9203,9 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
 
 @pytest.mark.parametrize("indicator,expected_result", [
     ("e61fcc6a06420106fa6642ef833b9c38", "md5"), 
-    ("12323c96a2ba1a4d7cd8d179641aac32f0d","md5")
+    ("12323c96a2ba1a4d7cd8d179641aac32f0d","md5"),
     ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "sha256"), 
-    ("bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa", "sha256")
+    ("bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa", "sha256"),
     ("193:iAklVz3fzvBk5oFblLPBN1iXf2bCRErwyN4aEbwyiNwyiQwNeDAi4XMG:iAklVzfzvBTFblLpN1iXOYpyuapyiWym", "ssdeep"),
     ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
     ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069","sha512"),
