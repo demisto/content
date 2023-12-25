@@ -5,7 +5,7 @@ contentitemexportablefields:
     propagationLabels: []
 name: Block URL - Generic v2
 description: |-
-  This playbook blocks malicious URLs using all integrations that are enabled.
+  This playbook blocks malicious URLs using all integrations that are enabled..
 
   Supported integrations for this playbook:
   * Palo Alto Networks PAN-OS

@@ -5,7 +5,7 @@ args:
 - description: Maximal file size to load, in bytes. Default is 1000000 (1MB).
   name: maxFileSize
 comment: |-
-  Extract indicators from a text-based file.
+  Extract indicators from a text-based file..
   Indicators that can be extracted:
   * IP
   * Domain

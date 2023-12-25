@@ -42,7 +42,7 @@ tasks:
       id: aa832f55-5765-4bfc-8e0a-29ed6493ef1b
       version: -1
       name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary data.
+      description: Deletes the context of the incident to start the test with no unnecessary data..
       scriptName: DeleteContext
       type: regular
       iscommand: false

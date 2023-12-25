@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Block Email - Generic v2
 description: |
-  This playbook will block emails at your mail relay integration.
+  This playbook will block emails at your mail relay integration..
 
   Supported integrations for this playbook:
   * Mimecast

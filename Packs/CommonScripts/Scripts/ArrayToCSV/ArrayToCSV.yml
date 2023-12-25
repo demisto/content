@@ -2,7 +2,7 @@ args:
 - default: true
   isArray: true
   name: value
-  description: An array of strings input
+  description: An array of strings input.
 comment: Converts a simple Array into a textual comma separated string
 commonfields:
   id: ArrayToCSV

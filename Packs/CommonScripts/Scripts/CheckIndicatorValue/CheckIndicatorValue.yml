@@ -7,7 +7,7 @@ type: python
 tags:
 - evaluation
 - polling
-comment: Check if indicators exist in the Threat Intel database.
+comment: Check if indicators exist in the Threat Intel database..
 enabled: true
 args:
 - name: indicator

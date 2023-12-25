@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Detonate URL - Generic v1.5
 description: |-
-  Detonate URL through one or more active integrations that support URL detonation.
+  Detonate URL through one or more active integrations that support URL detonation..
   Supported integrations:
   - SecneurX Analysis
   - ANY.RUN

@@ -4,7 +4,7 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: 'True'
-  description: Whether to auto-detect the indicator type from the file.
+  description: Whether to auto-detect the indicator type from the file..
   name: auto_detect
   predefined:
   - 'True'

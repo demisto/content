@@ -6,7 +6,7 @@ fromversion: 5.0.0
 id: Field Polling - Generic
 version: -1
 name: Field Polling - Generic
-description: This playbook polls a field to check if a specific value exists.
+description: This playbook polls a field to check if a specific value exists.,
 starttaskid: "0"
 tasks:
   "0":

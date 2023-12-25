@@ -8,7 +8,7 @@ tags:
 - Condition
 comment: Extract user's response from EmailAskUser reply. Returns the first textual
   response line of the provided entry that contains the reply body. Use ${lastCompletedTaskEntries}
-  to analyze the previous playbook task containing the user's reply.
+  to analyze the previous playbook task containing the user's reply..
 enabled: true
 args:
 - name: responseEntryId

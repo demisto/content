@@ -12,7 +12,7 @@ comment: |
 enabled: true
 args:
 - name: entryIDs
-  description: Entry IDs to add its output to Evidence Board
+  description: Entry IDs to add its output to Evidence Board.
   defaultValue: ${lastCompletedTaskEntries}
   required: true
   default: true

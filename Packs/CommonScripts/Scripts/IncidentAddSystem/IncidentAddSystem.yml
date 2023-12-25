@@ -12,7 +12,7 @@ system: true
 args:
 - name: name
   default: true
-  description: (default) a unique name that will be used in the investigation e.g.
+  description: (default) a unique name that will be used in the investigation e.g..
     when installing an agent.
 - name: username
   description: User name in the remote system.

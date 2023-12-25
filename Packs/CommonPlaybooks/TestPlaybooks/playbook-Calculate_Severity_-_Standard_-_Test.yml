@@ -1,7 +1,7 @@
 id: Calculate Severity - Standard - Test
 version: -1
 name: Calculate Severity - Standard - Test
-description: A test playbook for the Calculate Severity - Standard playbook. playbook.
+description: A test playbook for the Calculate Severity - Standard playbook. playbook..
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:

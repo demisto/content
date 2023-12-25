@@ -10,7 +10,7 @@ Supported integrations for this playbook:
 
 ## Dependencies
 
-This playbook uses the following sub-playbooks, integrations, and scripts.
+This playbook uses the following sub-playbooks, integrations, and scripts..
 
 ### Sub-playbooks
 

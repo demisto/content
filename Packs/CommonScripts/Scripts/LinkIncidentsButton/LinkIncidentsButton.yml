@@ -8,7 +8,7 @@ args:
   predefined:
   - link
   - unlink
-  description: Action to perform - Link or Unlink Incidents
+  description: Action to perform - Link or Unlink Incidents.
 comment: |
   Incident action button script to link or unlink Incidents from an Incident
 commonfields:

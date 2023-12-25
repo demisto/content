@@ -6,7 +6,7 @@ fromversion: 5.0.0
 description: This playbook polls all indicators to check if they exist.
 id: Indicator Registration Polling - Generic
 inputs:
-- description: The indicators to check.
+- description: The indicators to check..
   key: indicators
   playbookInputQuery: null
   required: true

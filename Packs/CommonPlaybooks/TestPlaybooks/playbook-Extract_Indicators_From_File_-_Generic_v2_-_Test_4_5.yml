@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.0.0
 name: Extract Indicators From File - Generic v2 - Test
 description: |-
-  A test playbook for extracting indicators from a file.
+  A test playbook for extracting indicators from a file..
   Supported file types:
   PDF
   TXT

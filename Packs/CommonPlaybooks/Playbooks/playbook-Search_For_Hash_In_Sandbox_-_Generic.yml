@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Search For Hash In Sandbox - Generic
-description: 'This playbook searches for a specific hash in the supported sandboxes. If the hash is known, the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire and Joe Sandbox. '
+description: 'This playbook searches for a specific hash in the supported sandboxes. If the hash is known, the playbook provides a detailed analysis of the sandbox report.. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire and Joe Sandbox. '
 starttaskid: "0"
 tasks:
   "0":

@@ -10,7 +10,7 @@ comment: Create indicators to the Threat Intel database only if they are not reg
 enabled: true
 args:
 - name: indicator_values
-  description: The indicator values.
+  description: The indicator values..
   isArray: true
 - name: type
   auto: PREDEFINED

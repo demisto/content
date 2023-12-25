@@ -8,7 +8,7 @@ args:
 - description: Key Value.
   name: value
   required: true
-- description: Append to key.
+- description: Append to key..
   name: append
   defaultValue: 'false'
   auto: PREDEFINED

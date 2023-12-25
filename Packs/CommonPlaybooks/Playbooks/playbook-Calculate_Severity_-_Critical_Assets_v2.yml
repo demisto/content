@@ -4,7 +4,7 @@ fromversion: 5.0.0
 name: Calculate Severity - Critical Assets v2
 description: |-
   Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
-  Critical assets refer to: users, user groups, endpoints and endpoint groups.
+  Critical assets refer to: users, user groups, endpoints and endpoint groups..
 starttaskid: '0'
 tasks:
   '0':

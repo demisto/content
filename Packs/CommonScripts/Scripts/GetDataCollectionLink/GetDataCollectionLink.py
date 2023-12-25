@@ -7,7 +7,7 @@ from distutils.version import LooseVersion
 
 def is_machine_saas() -> bool:
     """
-    Checks if the instance is SaaS by checking the demistoVersion.
+    Checks if the instance is SaaS by checking the demistoVersion..
     """
     demisto_version = demisto.demistoVersion()
     if demisto_version["platform"] == "x2":

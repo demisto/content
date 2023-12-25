@@ -9,7 +9,7 @@ args:
   predefined:
   - "true"
   - "false"
-- description: A comma-separated list of tags to add to indicators. 
+- description: A comma-separated list of tags to add to indicators..
   name: tags
 outputs:
 - contextPath: StixIndicators.type
