@@ -150,10 +150,10 @@ def test_create_last_run():
         {"id": "2", "start_time": 1222222223555},
         {"id": "3", "start_time": 1222222223755},
     ]
-    result = create_last_run(events, 0)
+    result = create_last_run(events, 0, [])
     assert result == {
         "from_ts": 1222222223755,
-        "ids_in_start_time_last_event": ["2", "3"],
+        "last_events_ids": ["2", "3"],
     }
 
 
@@ -243,10 +243,10 @@ def test_fetch_events_partial_fetch(mocker: MockerFixture):
     client = mocker.Mock()
     client.get_events.return_value = {"objects": [{"id": 1}, {"id": 2}, {"id": 3}]}
 
-    last_run = {"ids_in_start_time_last_event": [3]}
+    last_run = {"last_events_ids": [1]}
     params = {"max_events_per_fetch": 2}
 
     events, _ = fetch_events(client, params, last_run)
 
     assert len(events) == 2
-    assert not any(event["id"] == 3 for event in events)
+    assert not any(event["id"] == 1 for event in events)

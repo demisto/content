@@ -95,20 +95,23 @@ def format_events(events: list[dict]) -> None:
     handle_events_labels(events)
 
 
-def create_last_run(events: list[dict], end_time: int) -> dict:
+def create_last_run(
+    events: list[dict], start_time: int, last_events_ids: list[int]
+) -> dict:
     if events:
-        start_time_last_event = events[-1]["start_time"]
-        ids_in_start_time_last_event = [
+        start_time = events[-1]["start_time"]
+        # Since the API returns an event if its start_time is equal to from_time or to_time,
+        # it is necessary to save the ids of the events that occurred in the last second
+        # to avoid duplication in the next API call.
+        # The API refers only to seconds and not to milliseconds, so we divide the time by 1000.
+        last_events_ids = [
             event["id"]
             for event in events
-            if event["start_time"] // 1000 == start_time_last_event // 1000
+            if event["start_time"] // 1000 == start_time // 1000
         ]
-        return {
-            "from_ts": start_time_last_event,
-            "ids_in_start_time_last_event": ids_in_start_time_last_event,
-        }
-    else:
-        return {"from_ts": end_time}
+    # If no events are returned, we will still use the same start_time,
+    # since sometimes it takes time for the events to return in the API.
+    return {"from_ts": start_time, "last_events_ids": last_events_ids}
 
 
 """ COMMAND FUNCTIONS """
@@ -181,13 +184,12 @@ def fetch_events(
     response = client.get_events(start_time, end_time, limit, offset)
     events: list = response["objects"]
     format_events(events)
-    if ids_in_start_time_last_event := last_run.get("ids_in_start_time_last_event"):
-        events = [
-            event for event in events if event["id"] not in ids_in_start_time_last_event
-        ]
+    last_events_ids = last_run.get("last_events_ids", [])
+    if last_events_ids:
+        events = [event for event in events if event["id"] not in last_events_ids]
     demisto.debug(f"Fetched {len(events)} events.")
 
-    last_run = create_last_run(events, end_time)
+    last_run = create_last_run(events, start_time, last_events_ids)
 
     return events, last_run
 
