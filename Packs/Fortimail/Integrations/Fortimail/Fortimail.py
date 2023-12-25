@@ -109,7 +109,7 @@ def validate_authentication(func: Callable) -> Callable:
     """
 
     @wraps(wrapped=func)
-    def wrapper(client: BaseClient, *args, **kwargs):
+    def wrapper(client: "Client", *args, **kwargs):
         def try_request():
             """Attempts to execute the API request function.
             If a 'FORBIDDEN' HTTP status code is encountered, indicating an authentication issue,
@@ -130,7 +130,6 @@ def validate_authentication(func: Callable) -> Callable:
             updating the integration context or raising a tailored exception.
             """
             try:
-                client: Client = client
                 client.authentication()
                 for cookie in client._session.cookies:
                     if cookie.name.startswith("APSCOOKIE"):
