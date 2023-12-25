@@ -1479,10 +1479,18 @@ def device_search_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
     device_os = argToList(args.get('os'))
     device_status = argToList(args.get('status'))
-    last_location = {
-        'start': args.get('start_time'),
-        'end': args.get('end_time')
-    }
+    start_time, end_time = args.get("start_time"), args.get("end_time")
+
+    if start_time and end_time:
+        last_location = {
+            'start': args.get('start_time'),
+            'end': args.get('end_time')
+        }
+    elif (not start_time and end_time) or (start_time and not end_time):
+        raise ValueError("both start_time and end_time must be set")
+    else:
+        last_location = None
+
     target_priority = argToList(args.get('target_priority'))
     query = args.get('query')
     rows = args.get('rows')
