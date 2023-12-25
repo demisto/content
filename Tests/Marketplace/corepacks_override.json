@@ -2,7 +2,7 @@
   "server_version": "8.4.0",
   "file_version": "2",
   "marketplaces": [
-    "xsoar"
+    "xsoar_saas"
   ],
   "updated_corepacks_content": {
     "corePacks": [
