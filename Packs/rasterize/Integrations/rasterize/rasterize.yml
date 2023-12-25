@@ -24,7 +24,7 @@ configuration:
   additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced troubleshooting. See Help.
   required: false
 - defaultvalue: '64'
-  display: Number of maximum Chrome instances to keep running simulateously.
+  display: Number of maximum Chrome instances to keep running simultaneously.
   name: max_chromes_count
   type: 0
   required: false
