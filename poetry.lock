@@ -1464,8 +1464,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
-reference = "devbug/CIAC-8955/replace-ec3-user-in-demisto-sdk"
-resolved_reference = "460b6dff4371218d0cf1863b118bb8de2ebdc9da"
+reference = "d9d4b2c27eb4e5a4e2b9d243e6e7f130ce217646"
+resolved_reference = "d9d4b2c27eb4e5a4e2b9d243e6e7f130ce217646"
 
 [[package]]
 name = "deprecated"
@@ -7180,4 +7180,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "23f8f00b3f2244d359edc211e3361650b47c769c8c61c9d8ce5a51659b3bbe12"
+content-hash = "c829854b065b5c066d5f3f2a3ca5a3e49ac422ff4adbeef739430ea551f47729"
