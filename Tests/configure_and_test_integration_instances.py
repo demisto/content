@@ -221,7 +221,7 @@ class Build(ABC):
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
         self.is_nightly = options.is_nightly
-        self.is_sdk_nightly = options.is_sdk_nightly
+        self.is_sdk_nightly = options.sdk_nightly
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
