@@ -1162,7 +1162,6 @@ class Taxii2FeedClient:
 
         try:
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-            demisto.info(f"envelopes = {list(envelopes)}")
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
         except InvalidJSONError as e:
             demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')

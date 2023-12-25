@@ -69,14 +69,12 @@ def fetch_indicators_command(
         initial_interval, _ = parse_date_range(
             initial_interval, date_format=TAXII_TIME_FORMAT
         )
-        demisto.info(f"{initial_interval=}")
 
     last_fetch_time = (
         last_run_ctx.get(client.collection_to_fetch.id)
         if client.collection_to_fetch
         else None
     )
-    demisto.info(f"{last_fetch_time=}")
 
     if not client.collection_to_fetch:
         # fetch all collections
@@ -98,21 +96,14 @@ def fetch_indicators_command(
                 if limit <= 0:
                     break
     else:
-        demisto.info(f"in the else statement, {fetch_full_feed=}")
-        demisto.info(f"in the else statement, {initial_interval=}")
-        demisto.info(f"in the else statement, {last_fetch_time=}")
         # fetch from a single collection
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
-        demisto.info(f"in the else statement, after get_added_after, {added_after=}")
         indicators = client.build_iterator(limit, added_after=added_after)
-        demisto.info(f"in the else statement, after indicators, {indicators=}")
-        demisto.info(f"in the else statement, after indicators, {client.last_fetched_indicator__modified}")
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
             if client.last_fetched_indicator__modified
             else added_after
         )
-    demisto.info(f"at the end of the execution, {last_run_ctx=}")
     demisto.debug(f'{indicators=}')
     return indicators, last_run_ctx
 
@@ -286,7 +277,6 @@ def main():  # pragma: no cover
                 limit = -1
 
             last_run_indicators = get_feed_last_run()
-            demisto.info(f"before execution, {last_run_indicators=}")
             (indicators, last_run_indicators) = fetch_indicators_command(
                 client,
                 initial_interval,
@@ -296,8 +286,6 @@ def main():  # pragma: no cover
             )
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
-            demisto.info(f"after execution, {indicators=}")
-            demisto.info(f"after execution, {last_run_indicators=}")
             set_feed_last_run(last_run_indicators)
         else:
             return_results(commands[command](client, **args))  # type: ignore[operator]
