@@ -5,7 +5,8 @@
         "Prisma Cloud Compute Audit",
         "Prisma Cloud Compute Cloud Discovery",
         "Prisma Cloud Compute Compliance",
-        "Prisma Cloud Compute Audit v2"
+        "Prisma Cloud Compute Audit v2".,
+        "Prisma Cloud Compute Audit v3"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -36,7 +37,8 @@
         "Prisma Cloud Compute Audit",
         "Prisma Cloud Compute Cloud Discovery",
         "Prisma Cloud Compute Compliance",
-        "Prisma Cloud Compute Audit v2"
+        "Prisma Cloud Compute Audit v2",
+        "Prisma Cloud Compute Audit v3"
     ],
     "threshold": 72,
     "type": "shortText",

@@ -12,17 +12,17 @@
     },
     "hours": 0,
     "hoursR": 0,
-    "id": "Prisma Cloud Compute Audit v2",
-    "layout": "Prisma Cloud Compute Audit Layout v2",
+    "id": "Prisma Cloud Compute Audit v3",
+    "layout": "Prisma Cloud Compute Audit Layout v3",
     "locked": false,
-    "name": "Prisma Cloud Compute Audit v2",
+    "name": "Prisma Cloud Compute Audit v3",
     "onChangeRepAlg": 1,
-    "playbookId": "Prisma Cloud Compute - Audit Alert v2",
+    "playbookId": "Prisma Cloud Compute - Audit Alert v3",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.10.0"
 }

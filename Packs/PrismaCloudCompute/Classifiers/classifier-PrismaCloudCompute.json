@@ -5,7 +5,7 @@
     "description": "Classifies Palo Alto Networks Prisma Cloud Compute events.",
 	"defaultIncidentType": "",
 	"keyTypeMap": {
-		"audit": "Prisma Cloud Compute Audit v2",
+		"audit": "Prisma Cloud Compute Audit v3",
 		"cloudDiscovery": "Prisma Cloud Compute Cloud Discovery",
 		"compliance": "Prisma Cloud Compute Compliance",
 		"vulnerability": "Prisma Cloud Compute Vulnerability"

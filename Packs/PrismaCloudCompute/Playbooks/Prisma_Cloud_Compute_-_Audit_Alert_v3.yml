@@ -1,8 +1,8 @@
-id: Prisma Cloud Compute - Audit Alert v2
+id: Prisma Cloud Compute - Audit Alert v3
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Prisma Cloud Compute - Audit Alert v2
+name: Prisma Cloud Compute - Audit Alert v3
 description: |-
   Default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
   The playbook has several sections:
@@ -1525,7 +1525,7 @@ inputs:
   playbookInputQuery:
 - key: AdvancedCloudResponseFlow
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
     Whether to run the Cloud Response - Generic playbook.
@@ -1534,7 +1534,8 @@ inputs:
     - False
   playbookInputQuery:
 - key: ManualRemediation
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: |-
     Whether to allow the analyst to manually review the alert before the playbook ends.

@@ -1,5 +1,6 @@
 id: Prisma Cloud Compute - Audit Alert
 version: -1
+deprecated: true
 name: Prisma Cloud Compute - Audit Alert
 description: Default playbook for parsing Prisma Cloud Compute audit alerts
 fromversion: 5.0.0

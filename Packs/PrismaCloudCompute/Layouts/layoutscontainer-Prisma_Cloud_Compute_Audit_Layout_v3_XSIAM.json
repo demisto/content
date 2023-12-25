@@ -925,8 +925,8 @@
         ]
     },
     "group": "incident",
-    "id": "Prisma Cloud Compute Audit Layout v2",
-    "name": "Prisma Cloud Compute Audit Layout v2",
+    "id": "Prisma Cloud Compute Audit Layout v3",
+    "name": "Prisma Cloud Compute Audit Layout v3",
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
