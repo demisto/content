@@ -248,18 +248,8 @@
 .export_cloud_machine_constants: &export_cloud_machine_constants
   # exporting the machine credentials
   - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-  - |
-    if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
-      cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-    else
-      echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-    fi
-  - |
-    if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
-      cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
-    else
-      echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
-    fi
+  - cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  - cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
 
   - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
   - |

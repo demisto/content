@@ -267,12 +267,7 @@ install-packs-in-server-master:
     - section_end "Lock Machine"
 
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-    - |
-      if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
-        cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-      else
-        echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-      fi
+    - cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Run XSIAM end to end sanity tests"
