@@ -1,0 +1,31 @@
+{
+    "name": "FortiMail",
+    "description": "Use the Fortinet FortiMail integration to manage MailGateway settings and groups",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Mostafa A. Mohamed",
+    "url": "https://aceilies.tech",
+    "email": "mostafaahmed169@gmail.com",
+    "devEmail": "mostafaahmed169@gmail.com",
+    "categories": [
+        "Email Gateway"
+    ],
+    "tags": [],
+    "created": "2023-12-21T11:00:00Z",
+    "useCases": [
+		"Phishing"
+	],
+    "keywords": [
+		"Fortinet",
+		"FortiMail"
+	],
+    "dependencies": {"Base": {
+            "mandatory": true,
+            "name": "Base"
+        }},
+    "githubUser": [
+        "aceilies",
+		"karimelmeniawy",
+		"saratarik"
+    ]    
+}
