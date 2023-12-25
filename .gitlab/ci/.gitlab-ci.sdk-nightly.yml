@@ -143,7 +143,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - ./Documentation/commonServerDocs.sh
     - section_end "Common Server Documentation"
     - section_start "Collect Test List and Content Packs" --collapsed
-    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n "${IS_NIGHTLY}" --is-sdk-nightly "${DEMISTO_SDK_NIGHTLY}"
+    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n "${IS_NIGHTLY}" --sdk-nightly "${DEMISTO_SDK_NIGHTLY}"
     - section_end "Collect Test List and Content Packs"
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp "${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json" --output-path "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --all-packs-dependencies
