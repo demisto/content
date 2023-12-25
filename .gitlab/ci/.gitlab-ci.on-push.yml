@@ -575,7 +575,7 @@ slack-notify-on-merge:
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt" || -s "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" ]]; then
-        # The files are empty.
+        # The files are empty .
         echo "Not running the instance flow, no tests to run were found."
         ./Tests/scripts/run_tests.sh --generate-empty-result-file
         ./Tests/scripts/test_modeling_rules.sh --generate-empty-result-file
