@@ -336,7 +336,7 @@ class TAXII2Server:
         first_added = None
         last_added = None
         limited_extensions = None
-        
+
         limited_iocs = iocs[offset:offset + limit]
         if iocs and not limited_iocs:
             raise RequestedRangeNotSatisfiable
