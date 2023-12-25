@@ -337,6 +337,7 @@ class TAXII2Server:
         last_added = None
         limited_extensions = None
         limited_iocs = iocs[offset:offset + limit]
+
         if iocs and not limited_iocs:
             raise RequestedRangeNotSatisfiable
 
@@ -609,12 +610,11 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         sort=[{"field": "timestamp", "asc": True}],
     )
 
-
     total = 0
     extensions_dict: dict = {}
     for ioc in indicator_searcher:
         found_indicators = ioc.get('iocs') or []
-        found_indicators = [indicator for indicator in found_indicators if indicator['timestamp'] >= added_after]      
+        found_indicators = [indicator for indicator in found_indicators if indicator['timestamp'] >= added_after]
         total = len(found_indicators)
         for xsoar_indicator in found_indicators:
             xsoar_type = xsoar_indicator.get('indicator_type')
