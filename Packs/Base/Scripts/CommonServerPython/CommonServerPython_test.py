@@ -30,6 +30,48 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
     is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam
 
+EVENTS_LOG_ERROR = \
+    """Error sending new events into XSIAM.
+Parameters used:
+\tURL: https://api-url
+\tHeaders: {{
+        "authorization": "TOKEN",
+        "format": "json",
+        "product": "some product",
+        "vendor": "some vendor",
+        "content-encoding": "gzip",
+        "collector-name": "test_brand",
+        "instance-name": "test_integration_instance",
+        "final-reporting-device": "www.test_url.com",
+        "collector-type": "events"
+}}
+
+Response status code: {status_code}
+Error received:
+\t{error_received}"""
+
+ASSETS_LOG_ERROR = \
+    """Error sending new assets into XSIAM.
+Parameters used:
+\tURL: https://api-url
+\tHeaders: {{
+        "authorization": "TOKEN",
+        "format": "json",
+        "product": "some product",
+        "vendor": "some vendor",
+        "content-encoding": "gzip",
+        "collector-name": "test_brand",
+        "instance-name": "test_integration_instance",
+        "final-reporting-device": "www.test_url.com",
+        "collector-type": "assets",
+        "snapshot-id": "123000",
+        "total-items-count": "2"
+}}
+
+Response status code: {status_code}
+Error received:
+\t{error_received}"""
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -8497,10 +8539,10 @@ def test_content_type(content_format, outputs, expected_type):
 
 
 class TestSendEventsToXSIAMTest:
-    from test_data.send_events_to_xsiam_data import events_dict, events_log_error, assets_log_error
-    test_data = events_dict
-    events_test_log_data = events_log_error
-    assets_test_log_data = assets_log_error
+    with open('test_data/events.json') as f:
+        test_data = json.load(f)
+    events_test_log_data = EVENTS_LOG_ERROR
+    assets_test_log_data = ASSETS_LOG_ERROR
     orig_xsiam_file_size = 2 ** 20  # 1Mib
 
     @staticmethod
@@ -8661,7 +8703,7 @@ class TestSendEventsToXSIAMTest:
         error_log_mocker = mocker.patch.object(demisto, 'error')
 
         events = self.test_data['json_events']['events']
-        expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_log_error
+        expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_test_log_data
         expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
         with pytest.raises(
