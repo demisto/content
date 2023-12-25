@@ -1648,6 +1648,7 @@ class IntegrationLogger(object):
             url = ''
             headers = []
             headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            headers_to_sanitize = ['Authorization', 'Cookie']
             request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
             for line, part in enumerate(request_parts):
                 if line == 0:
@@ -1658,6 +1659,10 @@ class IntegrationLogger(object):
                         url = 'https://{}{}'.format(host, url)
                     else:
                         if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        if any(header_to_sanitize in part for header_to_sanitize in headers_to_sanitize):
+                            part_splitted = part[1:].split(maxsplit=1)
+                            headers.append(f" {part[0]}: {XX_REPLACED}")
                             continue
                         headers.append(part)
             curl_headers = ''
@@ -8327,12 +8332,6 @@ class DebugLogger(object):
                 self.root_logger.removeHandler(h)
         self.root_logger.addHandler(self.handler)
 
-    def sanitize_curl(curl):
-        ret_value = re.sub(r'Authorization:\sBearer\s(.*)\s', rf'Authorization: Bearer {XX_REPLACED} ', curl, 0, re.IGNORECASE)
-        ret_value = re.sub(r'Cookie:\s(.*)(["\'])', rf'Cookie: {XX_REPLACED}\2', ret_value, 0, re.IGNORECASE)
-
-        return ret_value
-
     def __del__(self):
         if self.handler:
             self.root_logger.setLevel(self.prev_log_level)
@@ -8350,7 +8349,7 @@ class DebugLogger(object):
                 delattr(self.http_client, 'print')
             if self.int_logger.curl:
                 for curl in self.int_logger.curl:
-                    demisto.info('cURL:\n' + sanitize_curl(curl))
+                    demisto.info('cURL:\n' + curl)
 
     def log_start_debug(self):
         """
