@@ -49,6 +49,8 @@ ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 
+XX_REPLACED = '<XX_REPLACED>'
+
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
@@ -1567,7 +1569,7 @@ class IntegrationLogger(object):
             else:
                 res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
-            res = res.replace(s, '<XX_REPLACED>')
+            res = res.replace(s, XX_REPLACED)
         return res
 
     def __call__(self, message):
@@ -8326,8 +8328,8 @@ class DebugLogger(object):
         self.root_logger.addHandler(self.handler)
 
     def sanitize_curl(curl):
-        ret_value = re.sub(r'Authorization:\sBearer\s(.*)\s', r'Authorization: Bearer <XX_REPLACED> ', curl, 0, re.IGNORECASE)
-        ret_value = re.sub(r'Cookie:\s(.*)(["\'])', r'Cookie: <XX_REPLACED>\2', ret_value, 0, re.IGNORECASE)
+        ret_value = re.sub(r'Authorization:\sBearer\s(.*)\s', rf'Authorization: Bearer {XX_REPLACED} ', curl, 0, re.IGNORECASE)
+        ret_value = re.sub(r'Cookie:\s(.*)(["\'])', rf'Cookie: {XX_REPLACED}\2', ret_value, 0, re.IGNORECASE)
 
         return ret_value
 
