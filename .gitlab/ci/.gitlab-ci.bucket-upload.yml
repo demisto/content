@@ -45,7 +45,7 @@
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload packs_dependencies.json to GCP" --collapsed
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-        gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json"
+        gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json"
         section_end "Upload packs_dependencies.json to GCP"
       fi
 
@@ -230,11 +230,6 @@ install-packs-in-server-master:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "testing"
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
     - if: $TEST_UPLOAD == "true" && $BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"
       when: always
       variables:
@@ -305,7 +300,7 @@ install-packs-in-xsiam-ga:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
     CLOUD_API_TOKENS: $XSIAM_TOKENS
@@ -347,7 +342,7 @@ upload-packs-to-marketplace:
         PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
         PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-        GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
+        GCS_BUILD_BUCKET="marketplace-ci-build"
         if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
           STORAGE_BASE_PATH="content"
         fi
@@ -432,7 +427,7 @@ upload-packs-to-marketplace-v2:
         PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
         PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-        GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
+        GCS_BUILD_BUCKET="marketplace-ci-build"
         if [[ -z $STORAGE_BASE_PATH ]]; then
           if [[ $GCS_MARKET_V2_BUCKET == $GCS_PRODUCTION_V2_BUCKET ]]; then
             STORAGE_BASE_PATH="content"
@@ -507,7 +502,7 @@ upload-packs-to-xpanse-marketplace:
         PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
         PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-        GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
+        GCS_BUILD_BUCKET="marketplace-ci-build"
         if [[ -z $STORAGE_BASE_PATH ]]; then
           if [[ $GCS_MARKET_XPANSE_BUCKET == $GCS_PRODUCTION_XPANSE_BUCKET ]]; then
             STORAGE_BASE_PATH="content"
@@ -585,7 +580,7 @@ upload-packs-to-xsoar-saas-marketplace:
         PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
         PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-        GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
+        GCS_BUILD_BUCKET="marketplace-ci-build"
         if [[ -z $STORAGE_BASE_PATH ]]; then
           if [[ "$GCS_MARKET_XSOAR_SAAS_BUCKET" == "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET" ]]; then
             STORAGE_BASE_PATH="content"
@@ -676,7 +671,7 @@ xpanse-force-pack-upload:
     - PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
     - PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
     - CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-    - GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
+    - GCS_BUILD_BUCKET="marketplace-ci-build"
     - |
       if [[ $GCS_MARKET_BUCKET_TO_UPLOAD == $GCS_CURRENT_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
         STORAGE_BASE_PATH="content"
@@ -764,11 +759,6 @@ sync-buckets-between-projects:
     - |
       if [[ $TEST_UPLOAD == "true" ]]; then
         echo "Skipping syncing buckets in test upload-flow"
-        exit 0
-      fi
-      
-      if [[ $TEST_XDR_ENV == "true" ]]; then
-        echo "Skipping syncing buckets in xdr env when testing"
         exit 0
       fi
 
