@@ -9225,5 +9225,4 @@ def test_detect_file_indicator_type(indicator,expected_result):
         Case 4: invalid type.
     """
     from CommonServerPython import detect_file_indicator_type
-    result = detect_file_indicator_type(indicator)
-    assert result == expected_result
+    assert detect_file_indicator_type(indicator) == expected_result
