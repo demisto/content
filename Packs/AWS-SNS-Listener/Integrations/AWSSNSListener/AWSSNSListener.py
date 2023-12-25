@@ -17,7 +17,7 @@ basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 
-@app.post('/incident/aws/sns')
+@app.post('/incident/aws/snsv2')
 async def handle_post(request: Request):
     data = ''
     try:
