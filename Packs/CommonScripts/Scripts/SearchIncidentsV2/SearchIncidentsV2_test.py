@@ -14,9 +14,9 @@ data_test_check_if_found_incident = [
 def create_sample_incidents(start, end, incident_type):
     return [
         {
-            u'id': u'{i}'.format(i=i),
-            u'type': u'{type}'.format(type=incident_type),
-            u'name': u'incident-{i}'.format(i=i),
+            'id': f'{i}',
+            'type': f'{incident_type}',
+            'name': f'incident-{i}',
         } for i in range(start, end + 1)
     ]
 
@@ -36,7 +36,7 @@ def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
                 {
                     'Contents': {
                         'data': create_sample_incidents(start, end, incident_type),
-                        'total': amount_of_mocked_incidents
+                        'total': 0
                     }
                 }
             ]
@@ -119,24 +119,24 @@ def test_is_incident_id_valid(id_value, expected_output):
 
 EXAMPLE_INCIDENTS_RAW_RESPONSE = [
     {
-        u'id': u'1',
-        u'type': u'TypeA',
-        u'name': u'Phishing',
+        'id': '1',
+        'type': 'TypeA',
+        'name': 'Phishing',
     },
     {
-        u'id': u'2',
-        u'type': u'Type-A',
-        u'name': u'Phishing Campaign',
+        'id': '2',
+        'type': 'Type-A',
+        'name': 'Phishing Campaign',
     },
     {
-        u'id': u'3',
-        u'type': u'SomeType-A',
-        u'name': u'Go Phish',
+        'id': '3',
+        'type': 'SomeType-A',
+        'name': 'Go Phish',
     },
     {
-        u'id': u'4',
-        u'type': u'Another Type-A',
-        u'name': u'Hello',
+        'id': '4',
+        'type': 'Another Type-A',
+        'name': 'Hello',
     },
 ]
 
@@ -168,7 +168,7 @@ def test_apply_filters(args, expected_incident_ids):
     assert [incident['id'] for incident in incidents] == expected_incident_ids
 
 
-def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True):
+def get_incidents_mock(_, args, extract_contents=True, fail_on_error=True):
     ids = args.get('id', '').split(',')
     incidents_list = [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]
     if not extract_contents:
@@ -178,8 +178,8 @@ def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True)
 
 @pytest.mark.parametrize('args,filtered_args,expected_result', [
     ({}, {}, []),
-    (dict(trimevents='0'), {}, []),
-    (dict(trimevents='1'), dict(trimevents='1'), []),
+    ({'trimevents': '0'}, {}, []),
+    ({'trimevents': '1'}, {'trimevents': '1'}, []),
     ({'id': 1}, {'id': '1'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
     ({'id': [1, 2]}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
     ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
