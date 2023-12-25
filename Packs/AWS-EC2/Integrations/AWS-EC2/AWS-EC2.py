@@ -2991,7 +2991,7 @@ def modify_snapshot_permission_command(args, aws_client):
     group_names = argToList(args.get('groupNames'))
     user_ids = argToList(args.get('userIds'))
     if group_names and user_ids or not (group_names or user_ids):
-        raise DemistoException('You should provide one of "groupNames" or "userIds"')
+        raise DemistoException('Please provide either "groupNames" or "userIds"')
 
     accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
 
