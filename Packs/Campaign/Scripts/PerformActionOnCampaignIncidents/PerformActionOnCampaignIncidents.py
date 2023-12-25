@@ -104,8 +104,7 @@ def _set_incidents_to_campaign(campaign_id: str, incidents_context: list | dict,
 
     if isError(res):
         return_error(
-            f"Error occurred while trying to set incidents to campaign with ID {campaign_id}."
-            f" Incidents context: {incidents_context}. Append: {append}. Error: {get_error(res)}"
+            f"Error occurred while trying to set incidents to campaign with ID {campaign_id}. Error: {get_error(res)}"
         )
 
 
@@ -173,9 +172,11 @@ def extract_single_or_list(data: list | str | None) -> str | list | None:
             the original list.
 
     """
-    if data:
-        return data[0] if len(data) == 1 else data
-    return None
+    if not data:
+        return None
+    if isinstance(data, list) and len(data) == 1:
+        return data[0]
+    return data
 
 
 def _get_data_from_incident(incident_context, field: str) -> Any:
@@ -267,15 +268,19 @@ def _parse_incident_context_to_valid_incident_campaign_context(incident_id: str,
     incident_context = _get_incident(incident_id)
     emails = _get_email_fields(incident_context)
     recipients = _get_recipients(emails)
-    all_fields = _extract_incident_fields(incident_context, recipients)
+    requested_fields = _extract_incident_fields(incident_context, recipients)
 
-    additional_context_fields = {
+    # if the user add more fields to the fields_to_display list.
+    # by adding to the fieldsToDisplay argument in `Detect & Manage Phishing Campaigns` playbook
+    # the default value is FIELDS_TO_DISPLAY argument
+    # you can see it in `Packs/Campaign/Playbooks/Detect_&_Manage_Phishing_Campaigns.yml`
+    additional_requested_fields = {
         field: _get_data_from_incident(incident_context, field)
         for field in fields_to_display
-        if field not in all_fields
+        if field not in requested_fields
     }
 
-    all_fields.update(additional_context_fields)
+    requested_fields.update(additional_requested_fields)
 
     # Ensure 'emailfromdomain' is in the results when 'emailfrom' is requested, and same with 'recipients'.
     if 'emailfrom' in fields_to_display:
@@ -283,7 +288,7 @@ def _parse_incident_context_to_valid_incident_campaign_context(incident_id: str,
     if 'recipients' in fields_to_display:
         fields_to_display.append('recipientsdomain')
 
-    return {field: all_fields[field] for field in fields_to_display}
+    return {field: requested_fields[field] for field in fields_to_display}
 
 
 def get_custom_field(filed_name: str) -> Any:
@@ -333,10 +338,13 @@ def perform_add_to_campaign(ids: list[str], action: str) -> str:
     campaign_id = demisto.incident()["id"]
     campaign_context = _get_context(campaign_id)
     campaign_incidents_context = demisto.dt(campaign_context, "Contents.context.EmailCampaign.incidents")
+
     campaign_incidents_ids = [incident["id"] for incident in campaign_incidents_context]
     fields_to_display = demisto.dt(campaign_context, "Contents.context.EmailCampaign.fieldsToDisplay") or FIELDS_TO_DISPLAY
     # contains only new incidents not already in the campaign
     ids_to_add_to_campaign = list(set(ids) - set(campaign_incidents_ids))
+    if not ids_to_add_to_campaign:
+        return "No new incidents to add to campaign."
     involved_incidents_count = int(demisto.dt(campaign_context, "Contents.context.EmailCampaign.involvedIncidentsCount")[0])
     involved_incidents_count += len(ids_to_add_to_campaign)
 
@@ -345,10 +353,10 @@ def perform_add_to_campaign(ids: list[str], action: str) -> str:
     for id in ids_to_add_to_campaign:
         _set_part_of_campaign_filed(id, campaign_id)
     _set_incidents_to_campaign(campaign_id, campaign_incidents_context, True)
-    _link_or_unlink_between_incidents(campaign_id, ids_to_add_to_campaign, action)
+    _link_or_unlink_between_incidents(campaign_id, ids_to_add_to_campaign, "link")
     _set_involved_incidents_count(campaign_id, involved_incidents_count)
 
-    return COMMAND_SUCCESS.format(action=f"{action}ed", ids=ids_to_add_to_campaign)
+    return COMMAND_SUCCESS.format(action="added to campaign", ids=ids_to_add_to_campaign)
 
 
 def perform_remove_from_campaign(ids: list[str], action: str) -> str:
@@ -377,6 +385,8 @@ def perform_remove_from_campaign(ids: list[str], action: str) -> str:
 
     campaign_incidents_ids = [incident["id"] for incident in campaign_incidents_context]
     ids_to_remove_from_campaign = list(set(ids) & set(campaign_incidents_ids))
+    if not ids_to_remove_from_campaign:
+        return "No incidents to remove from the campaign."
     involved_incidents_count = int(demisto.dt(campaign_context, "Contents.context.EmailCampaign.involvedIncidentsCount")[0])
     involved_incidents_count -= len(ids_to_remove_from_campaign)
     campaign_incidents_context = [
@@ -388,7 +398,7 @@ def perform_remove_from_campaign(ids: list[str], action: str) -> str:
     _link_or_unlink_between_incidents(campaign_id, ids_to_remove_from_campaign, "unlink")
     _set_involved_incidents_count(campaign_id, involved_incidents_count)
 
-    return COMMAND_SUCCESS.format(action=f"{action}ed", ids=ids_to_remove_from_campaign)
+    return COMMAND_SUCCESS.format(action="removed from campaign", ids=ids_to_remove_from_campaign)
 
 
 def perform_reopen(ids: list[str], action: str) -> str:
