@@ -684,6 +684,10 @@ tasks:
         simple: "1"
       query:
         simple: event from cloud.audit_logs where cloud.type = 'aws'
+      time_range_unit:
+        simple: day
+      time_range_value:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1070,9 +1074,9 @@ tasks:
       limit:
         simple: "5"
       repository:
-        simple: kyle9021/testing-iac
+        simple: 807152304871829504_sarasaida/ecommerce-fastapi-stripe
       source_types:
-        simple: Github
+        simple: githubActions
     separatecontext: false
     continueonerrortype: ""
     view: |-
