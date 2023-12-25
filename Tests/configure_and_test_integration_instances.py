@@ -964,7 +964,7 @@ def options_handler(args=None):
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
-    parser.add_argument('-sn', '--is-sdk-nightly', type=str2bool, help='Is SDK nightly build')
+    parser.add_argument('-sn', '--sdk-nightly', type=str2bool, help='Is SDK nightly build')
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
