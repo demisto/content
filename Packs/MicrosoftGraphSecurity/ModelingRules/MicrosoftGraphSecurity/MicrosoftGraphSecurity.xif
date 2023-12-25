@@ -31,6 +31,7 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     analyzedMessageEvidence_receivedDateTime = json_extract_scalar(analyzedMessageEvidence_json, "$.receivedDateTime"),
     analyzedMessageEvidence_subject = json_extract_scalar(analyzedMessageEvidence_json, "$.subject"),
     analyzedMessageEvidence_recipientEmailAddress = arraymap(analyzedMessageEvidence2_json, json_extract_scalar("@element", "$.recipientEmailAddress")),
+    analyzedMessageEvidence_senderEmailAddress = coalesce(analyzedMessageEvidence_json -> p2Sender.emailAddress, analyzedMessageEvidence_json -> p1Sender.emailAddress),
 // cloudApplicationEvidence Fields
     cloudApplicationEvidence_tags = json_extract_scalar(cloudApplicationEvidence_json, "$.tags"),
     cloudApplicationEvidence_displayName = json_extract_scalar(cloudApplicationEvidence_json, "$.displayName"),
@@ -107,6 +108,7 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     xdm.email.delivery_timestamp = parse_timestamp("%m/%d/%Y %H:%M:%S %p %z", arraystring(arraycreate(get_email_timestamp, get_email_zone), " ")),
     xdm.email.message_id = analyzedMessageEvidence_internetMessageId,
     xdm.email.recipients = analyzedMessageEvidence_recipientEmailAddress,
+    xdm.email.sender = analyzedMessageEvidence_senderEmailAddress,
     xdm.email.subject = analyzedMessageEvidence_subject,
     xdm.event.description = title,
     xdm.event.id = coalesce(to_string(incidentId), to_string(providerAlertId)),

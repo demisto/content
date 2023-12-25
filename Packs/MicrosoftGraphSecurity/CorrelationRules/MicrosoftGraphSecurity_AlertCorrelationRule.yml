@@ -25,7 +25,6 @@
     registryvaluetype: xdm.target.registry.value_type
     reportedemailsubject: xdm.email.subject
   alert_name: Microsoft Graph Security Alert
-  enabled: True
   crontab: null
   dataset: alerts
   description: This rule maps Microsoft Graph Security alerts to XSIAM alerts.
