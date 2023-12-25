@@ -76,7 +76,7 @@ class AddressObject:
 
 class DomainNameObject:
     """
-    Implements domain object indicator decoding
+    Implements domain object indicator decoding 
     based on: https://stixproject.github.io/data-model/1.2/DomainNameObj/DomainNameObjectType/
     """
 

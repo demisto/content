@@ -24,7 +24,7 @@ class Client(BaseClient):
         return self.http_request(ip)
 
     def http_request(self, ip: str) -> Dict[str, Any]:
-        """ constructs url with token (if existent), then returns request """
+        """ constructs url with token (if existent), then returns request. """
         return self._http_request(method='GET',
                                   url_suffix=f'{ip}/json',
                                   params=assign_params(token=self.api_key),

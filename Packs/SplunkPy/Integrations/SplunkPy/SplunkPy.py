@@ -230,7 +230,7 @@ def extensive_log(message):
 
 def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind):
     """Remove all the IDs of all the incidents that were found more than twice the look behind time frame,
-    to stop our IDs dict from becoming too large.
+    to stop our IDs dict from becoming too large..
 
     Args:
         last_run_fetched_ids (list): All the event IDs that weren't out of date in the last run + all the new event IDs

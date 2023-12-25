@@ -7,7 +7,7 @@ sectionOrder:
 name: Demisto Lock
 display: Demisto Lock
 category: Utilities
-description: Locking mechanism that prevents concurrent execution of different tasks
+description: Locking mechanism that prevents concurrent execution of different tasks.
 configuration:
 - display: Default timeout (seconds) for wait on locks to be released
   name: timeout

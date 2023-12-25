@@ -20,7 +20,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
         :param last_run:
             Previous fetch run data that holds the fetch time in utc Y-m-dTH:M:SZ format,
             ids of fetched emails, id and path of folder to fetch incidents from
-        :return: Next run data and parsed fetched incidents
+        :return: Next run data and parsed fetched incidents.
         :rtype: ``dict`` and ``list``
         """
         if 'time' not in last_run and (last_run_time := last_run.get('LAST_RUN_TIME')):

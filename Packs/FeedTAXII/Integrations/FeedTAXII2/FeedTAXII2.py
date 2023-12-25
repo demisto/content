@@ -116,7 +116,7 @@ def get_added_after(
     :param fetch_full_feed: when set to true, will limit added_after
     :param initial_interval: initial_interval if no
     :param last_fetch_time: last_fetch time value (str)
-    :return: added_after
+    :return: added_after 
     """
     if fetch_full_feed:
         return initial_interval

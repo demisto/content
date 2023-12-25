@@ -98,7 +98,7 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
     :param incidents: List of incident - must be list
     :param limit: the maximum number of incident per fetch
     :param number_of_already_filtered_incidents: number of incidents that were fetched already
-    :return: the filtered incidents.
+    :return: the filtered incidents..
     """
     last_run_obj = demisto.getLastRun()
     fetched_starred_incidents = last_run_obj.pop('fetched_starred_incidents', {})

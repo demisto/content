@@ -146,7 +146,7 @@ $UserCredential = New-Object System.Management.Automation.PSCredential ($usernam
 $searchName = [guid]::NewGuid().ToString() -replace '[-]'
 $searchName = "DemistoSearch" + $searchName
 
-# open remote PS session to Office 365 Security & Compliance Center
+# open remote PS session to Office 365 Security & Compliance Center.
 $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
 https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
 -Authentication Basic -AllowRedirection

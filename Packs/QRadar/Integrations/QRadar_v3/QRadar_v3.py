@@ -979,7 +979,7 @@ def insert_to_updated_context(context_data: dict,
                               should_add_reset_key: bool = False,
                               should_force_update: bool = False
                               ):
-    """When we have a race condition, insert the changed data from context_data to the updated context data
+    """When we have a race condition, ,insert the changed data from context_data to the updated context data
 
     Args:
         context_data (dict): Context data with relevant changes.

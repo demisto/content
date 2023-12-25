@@ -9,7 +9,7 @@ def get_default_from_date(date_range: str) -> str:
     :param date_range: string
         Range (eg. 2 months) to create the date string from
     :return: string
-        Date string in the relevant Demisto query format.
+        Date string in the relevant Demisto query format..
     """
     from_date, _ = parse_date_range(date_range=date_range)
     str_from_date = from_date.strftime('%Y-%m-%dT%H:%M:%SZ')
