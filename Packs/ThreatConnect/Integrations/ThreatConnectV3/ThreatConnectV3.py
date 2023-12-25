@@ -612,6 +612,21 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
     })
 
 
+def set_security_labels(security_labels: list, mode: str = '') -> dict:
+    """
+    Sets the security labels in the api structure
+    Args:
+        security_labels: list of security labels
+        mode: mode for update commands
+    Returns:
+        Security labels dictionary
+    """
+    security_labels = {'data': [{'name': security_label} for security_label in security_labels]}
+    if mode:
+        security_labels['mode'] = mode
+    return security_labels
+
+
 def set_fields(fields: Optional[list], is_victim_command: bool = False) -> str:  # pragma: no cover
     fields_str = ''
     if fields:
@@ -1651,7 +1666,7 @@ def tc_create_victim_command(client: Client, args: dict):
     if sub_org := args.get('sub_org'):
         body['suborg'] = sub_org
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+        body['securityLabels'] = set_security_labels(security_labels=security_labels)
     if tags := argToList(args.get('tags')):
         body['tags'] = {'data': [{'name': tag} for tag in tags]}
     if work_location := args.get('work_location'):
@@ -1694,8 +1709,7 @@ def tc_update_victim_command(client: Client, args: dict):
     if sub_org := args.get('sub_org'):
         body['suborg'] = sub_org
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels],
-                                  'mode': mode}
+        body['securityLabels'] = set_security_labels(security_labels=security_labels, mode=mode)
     if tags := argToList(args.get('tags')):
         body['tags'] = {'data': [{'name': tag} for tag in tags],
                         'mode': mode}
@@ -1798,7 +1812,7 @@ def tc_create_victim_asset_command(client: Client, args: dict):
     if social_network := args.get('social_network'):
         body['socialNetwork'] = social_network
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+        body['securityLabels'] = set_security_labels(security_labels=security_labels)
     if associated_group_ids := argToList(args.get('associated_groups_ids')):
         body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_group_ids]}
 
@@ -1833,7 +1847,7 @@ def tc_update_victim_asset_command(client: Client, args: dict):
     if social_network := args.get('social_network'):
         body['socialNetwork'] = social_network
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+        body['securityLabels'] = set_security_labels(security_labels=security_labels)
     if associated_group_ids := argToList(args.get('associated_groups_ids')):
         body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_group_ids]}
 
@@ -1895,7 +1909,7 @@ def tc_create_victim_attributes_command(client: Client, args: dict):
     if source := args.get('source'):
         body['source'] = source
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+        body['securityLabels'] = set_security_labels(security_labels=security_labels)
 
     url = '/api/v3/victimAttributes'
     response = client.make_request(method=Method.POST, url_suffix=url, payload=json.dumps(body))
@@ -1917,7 +1931,7 @@ def tc_update_victim_attributes_command(client: Client, args: dict):
     if source := args.get('source'):
         body['source'] = source
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = {'data': [{'name': security_label} for security_label in security_labels]}
+        body['securityLabels'] = set_security_labels(security_labels=security_labels)
 
     url = f'/api/v3/victimAttributes/{args.get("victim_attribute_id")}'
     response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
