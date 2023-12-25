@@ -147,14 +147,16 @@ def get_incident_by_query(query):
     # In order to avoid performance issues, limit the number of days to query back for modified incidents.
     # By default, the limit is 60 days and can be modified by the user by adding a list called
     # `XSOAR - Email Communication Days To Query` (see README for more information).
+    demisto.debug("PreProcessEmail - calling get_incident_by_query")
     query_time = get_query_window()
-
     query_from_date = str(parse_date_range(query_time)[0])
     query += f' modified:>="{query_from_date}"'
+    demisto.debug(f"PreProcessEmail - calling getIncidents with query: {query}")
     res = demisto.executeCommand("getIncidents",
                                  {"query": query, "populateFields": "id,status,type,emailsubject"})[0]
 
     if is_error(res):
+        demisto.debug(f"PreProcessEmail - Failed to getIncidents: {res}")
         return_results(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
 
@@ -162,7 +164,7 @@ def get_incident_by_query(query):
     if incidents_details is None:
         demisto.debug(f'incident was not found. query: {query}')
         return []
-
+    demisto.debug(f"PreProcessEmail - Got {len(incidents_details)} incidents")
     for inc in incidents_details:
         if inc.get('CustomFields'):
             inc['emailsubject'] = inc.get('CustomFields', {}).get('emailsubject')
@@ -269,14 +271,17 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
             f'or (emailgeneratedcodes:*{email_related_incident_code}*)'
 
     incidents_details = get_incident_by_query(query)
-
+    demisto.debug(f"PreProcessEmail - Searching for related incident")
     for incident in incidents_details:
         email_subject = incident.get('emailsubject', '')
         if email_subject and email_original_subject in email_subject:
+            demisto.debug(f"PreProcessEmail - Found email subject {email_original_subject} in incident id {incident.get('id')}")
             return str(incident.get('id'))
         else:
             # If 'emailsubject' doesn't match, check 'EmailThreads' context entries
             try:
+                demisto.debug(
+                    f"PreProcessEmail - Could not find related subject for {email_original_subject} original subject.\n Checking EmailThreads context.")
                 incident_context = demisto.executeCommand("getContext", {"id": str(incident.get('id'))})
                 incident_email_threads = dict_safe_get(incident_context[0], ['Contents', 'context', 'EmailThreads'])
                 if incident_email_threads:
@@ -285,9 +290,13 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
                     search_result = next((i for i, item in enumerate(incident_email_threads) if
                                           email_original_subject in item["EmailSubject"]), None)
                     if search_result is not None:
+                        demisto.debug(f"PreProcessEmail - Found incident email threads with id {incident.get('id')}")
                         return str(incident.get('id'))
+                else:
+                    demisto.debug(f"PreProcessEmail - Could not find context for incident id {incident.get('id')}")
             except Exception as e:
                 demisto.error(f'Exception while retrieving thread context: {e}')
+
     return None
 
 
