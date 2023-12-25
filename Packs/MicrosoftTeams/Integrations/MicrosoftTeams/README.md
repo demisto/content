@@ -58,9 +58,9 @@ In this configuration, we will use Cortex XSOAR functionality, which reroutes HT
 
 The messaging endpoint needs to be:
 
-For XSOAR version less than 8.0.0: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`.
+For Cortex XSOAR version 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`.
 
-For XSOAR version 8.0.0. and greater: `https://ext-<CORTEX-XSOAR-Domain>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
+For Cortex XSOAR version 8: `https://ext-<CORTEX-XSOAR-Domain>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step.
 
