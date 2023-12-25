@@ -206,38 +206,38 @@ def get_incidents(api_token,args):
     return result
 
 def main():
-    try:
+
         args=demisto.args()
         command=demisto.command()
         params=demisto.params()
         api_token=params.get('credentials',{}).get('password')
-
-        if command == 'branddefense_get_assets':
-            result=get_assets(api_token)
-        elif command == 'branddefense_get_specific_asset':
-            result=get_specific_asset(api_token,args)
-        elif command == 'branddefense_get_audit_logs':
-            result=get_audit_logs(api_token)
-        elif command == 'get_specific_audit_log':
-            result=get_specific_audit_log(api_token,args)
-        elif command == 'branddefense_get_threat_search':
-            result =get_threat_search(api_token,args)
-        elif command == 'branddefense_requested_incident':
-            result =get_specific_incident(api_token,args)
-        elif command == 'branddefense_change_incident_status':
-            result = change_incident_status(api_token,args)
-        elif command == 'branddefense_requested_incident_indicators':
-            result=get_incident_indicators(api_token,args)
-        elif command == 'branddefense_get_indicators':
-            result=get_indicator(api_token,args)
-        elif command =='branddefense_get_ioc':
-            result=get_ioc(api_token,args)
-        elif command =='branddefense_get_cti_rules':
-            result=get_cti_rules(api_token,args)
-        elif command == 'branddefense_create_threat_search':
-            result=create_threat_search(api_token,args)
-        elif command == 'branddefense_get_incidents':
-            result=get_incidents(api_token,args)
+    try:
+        if command == 'branddefense-get-assets':
+            get_assets(api_token)
+        elif command == 'branddefense-get-specific-asset':
+            get_specific_asset(api_token,args)
+        elif command == 'branddefense-get-audit-logs':
+            get_audit_logs(api_token)
+        elif command == 'branddefense-get-specific-audit-log':
+            get_specific_audit_log(api_token,args)
+        elif command == 'branddefense-get-threat-search':
+            get_threat_search(api_token,args)
+        elif command == 'branddefense-get-specific-incident':
+            get_specific_incident(api_token,args)
+        elif command == 'branddefense-change-incident-status':
+            change_incident_status(api_token,args)
+        elif command == 'branddefense-get-incident-indicators':
+            get_incident_indicators(api_token,args)
+        elif command == 'branddefense-get-indicators':
+            get_indicator(api_token,args)
+        elif command =='branddefense-get-ioc':
+            get_ioc(api_token,args)
+        elif command =='branddefense-get-cti-rules':
+            get_cti_rules(api_token,args)
+        elif command == 'branddefense-create-threat-search':
+            create_threat_search(api_token,args)
+        elif command == 'branddefense-get-incidents':
+            get_incidents(api_token,args)
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 

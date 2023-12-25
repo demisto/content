@@ -1,39 +1,14 @@
-category: Utilities
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Branddefense Complete Integration
   version: -1
 configuration:
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Fairly reliable
-  display: Source Reliability
-  name: integrationReliability
-  options:
-  - A+ - 3rd party enrichment
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: false
-  section: Collect
-  type: 15
 - defaultvalue: https://api.brandefense.io/api/v1/incidents
-  display: Server URL (e.g., https://api.xsoar-example.com)
+  display: Server URL (e.g., https://api.brandefense.io/api/v1/incidents)
   name: url
   required: true
   section: Connect
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  section: Collect
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  section: Connect
-  type: 13
 - defaultvalue: "10"
   display: Maximum number of alerts per fetch
   name: max_fetch
@@ -56,17 +31,6 @@ configuration:
   required: false
   section: Collect
   type: 0
-- defaultvalue: low
-  display: Severity of alerts to fetch
-  name: severity
-  options:
-  - low
-  - medium
-  - high
-  - critical
-  required: true
-  section: Collect
-  type: 15
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -74,6 +38,7 @@ configuration:
   section: Collect
   type: 0
 - advanced: true
+  defaultvalue: "true"
   display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -85,66 +50,72 @@ configuration:
   required: false
   section: Connect
   type: 8
-- defaultvalue: "1"
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 contentitemexportablefields:
   contentitemfields:
     definitionid: ""
     fromServerVersion: ""
     itemVersion: ""
-    packID: c99e8e23-506a-45a0-8194-8d2db733b5d4
-    packName: Branddefense Complete Integration
+    packID: 47765952-8363-4655-843b-d965aba7db2f
+    packName: Branddefense Complete Integration Contribution Pack
     prevname: ""
     propagationLabels: []
     toServerVersion: ""
 description: Branddefense Integration
-detaileddescription: |-
+detaileddescription: |
   ### Community Contributed Integration
    #### Integration Author: Asim Sarp Kurt
    No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
   ***
-  ## Hello World
-  - This section explains how to configure the instance of HelloWorld in Cortex XSOAR:
-  - You can use the following API Key: `dummy-key`
-
+  ## Brandefense Configuration
+  - This section explains how to create token on Brandefense and configure the instance of Brandefense in Cortex XSOAR:
+  1) Login to your Brandefense account.
+  2)Next to the notification bar section on your GUI, click your profile and choose API Management.
+  3) On the access token sections create an API TOKEN.
+  4)On XSOAR go to integrations page.
+  5)Search for Brandefense and click Add Instance.
+  6)Copy this token and paste it under the API KEY parameter on the instance settings section.
+  7)Click Save and Exit.
 
   ---
-  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)
 display: Branddefense Complete Integration
 image: data:image/png;base64,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
 name: Branddefense Complete Integration
 script:
   commands:
   - arguments: []
-    name: branddefense_get_assets
+    description: Gets assets from Brandefense
+    name: branddefense-get-assets
     outputs:
     - contextPath: branddefense_assets
   - arguments:
     - name: assetid
       required: true
-    name: branddefense_get_specific_asset
+    description: Call a specific asset from Brandefense
+    name: branddefense-get-specific-asset
     outputs:
     - contextPath: branddefense_requested_asset
   - arguments: []
-    name: branddefense_get_audit_logs
+    description: Get audit logs from Brandefense platform
+    name: branddefense-get-audit-logs
     outputs:
     - contextPath: branddefense_audit_logs
   - arguments:
     - name: audit_log_id
       required: true
-    name: branddefense_get_specific_audit_log
+    description: Get a specific audit log from Brandefense platform
+    name: branddefense-get-specific-audit-log
     outputs:
     - contextPath: branddefense_requested_audit_log
   - arguments:
     - name: search_uuid
-    name: branddefense_get_threat_search
+    description: Get Threat Search endpoint allows you to investigate indicator of
+      compromises by UUID.
+    name: branddefense-get-threat-search
   - arguments:
     - name: incident_code
       required: true
-    name: branddefense_get_specific_incident
+    description: Search for a specific incident on Brandefense
+    name: branddefense-get-specific-incident
     outputs:
     - contextPath: branddefense_requested_incident
   - arguments:
@@ -158,19 +129,24 @@ script:
       isArray: true
       name: incident_status
       required: true
-    name: branddefense_change_incident_status
+    description: Change the status of an existing incident on Brandefense
+    name: branddefense-change-incident-status
   - arguments:
     - description: The required code parameter should be given to perform incident
         searches on Brandefense.
       name: incident_code
       required: true
-    name: branddefense_get_incident_indicators
+    description: Get indicators related to an incident on Brandefense using incident's
+      code.
+    name: branddefense-get-incident-indicators
     outputs:
     - contextPath: branddefense_requested_incident_indicators
   - arguments:
     - name: indicator_type
       required: true
-    name: branddefense_get_indicators
+    description: The required ioc_type parameter allows you to select Indicators of
+      Compromise (IoCs) types from the threat lists on Brandefense.
+    name: branddefense-get-indicators
     outputs:
     - contextPath: branddefense_requested_indicator
   - arguments:
@@ -178,7 +154,8 @@ script:
         of Compromise (IoCs) types from the threat lists.
       name: ioc_type
       required: true
-    name: branddefense_get_ioc
+    description: Get IOCs from Brandefense
+    name: branddefense-get-ioc
     outputs:
     - contextPath: branddefense_ioc
       description: hash,domain,url veya ip address girilmeli
@@ -189,21 +166,23 @@ script:
       name: search
     - name: tag
     - name: source__ilike
-    name: branddefense_get_cti_rules
+    description: Get CTI rules from Brandefense
+    name: branddefense-get-cti-rules
   - arguments:
     - name: value
+      required: true
     description: Create Threat Search endpoint allows you to post indicator of compromises
       to investigate suspicious/malicious IP, Domain, URL address or Hash values.
-    name: branddefense_create_threat_search
+    name: branddefense-create-threat-search
     outputs:
     - contextPath: search_result
   - arguments:
     - name: created_at
-    name: branddefense_get_incidents
+    description: Get incidents from the Brandefense platform
+    name: branddefense-get-incidents
     outputs:
     - contextPath: branddefense_all_incidents
   dockerimage: demisto/python3:3.10.13.74666
-  isfetch: true
   runonce: false
   script: |
     import requests
@@ -412,38 +391,38 @@ script:
         return result
 
     def main():
-        try:
+
             args=demisto.args()
             command=demisto.command()
             params=demisto.params()
             api_token=params.get('credentials',{}).get('password')
-
-            if command == 'branddefense_get_assets':
-                result=get_assets(api_token)
-            elif command == 'branddefense_get_specific_asset':
-                result=get_specific_asset(api_token,args)
-            elif command == 'branddefense_get_audit_logs':
-                result=get_audit_logs(api_token)
-            elif command == 'get_specific_audit_log':
-                result=get_specific_audit_log(api_token,args)
-            elif command == 'branddefense_get_threat_search':
-                result =get_threat_search(api_token,args)
-            elif command == 'branddefense_requested_incident':
-                result =get_specific_incident(api_token,args)
-            elif command == 'branddefense_change_incident_status':
-                result = change_incident_status(api_token,args)
-            elif command == 'branddefense_requested_incident_indicators':
-                result=get_incident_indicators(api_token,args)
-            elif command == 'branddefense_get_indicators':
-                result=get_indicator(api_token,args)
-            elif command =='branddefense_get_ioc':
-                result=get_ioc(api_token,args)
-            elif command =='branddefense_get_cti_rules':
-                result=get_cti_rules(api_token,args)
-            elif command == 'branddefense_create_threat_search':
-                result=create_threat_search(api_token,args)
-            elif command == 'branddefense_get_incidents':
-                result=get_incidents(api_token,args)
+        try:
+            if command == 'branddefense-get-assets':
+                get_assets(api_token)
+            elif command == 'branddefense-get-specific-asset':
+                get_specific_asset(api_token,args)
+            elif command == 'branddefense-get-audit-logs':
+                get_audit_logs(api_token)
+            elif command == 'branddefense-get-specific-audit-log':
+                get_specific_audit_log(api_token,args)
+            elif command == 'branddefense-get-threat-search':
+                get_threat_search(api_token,args)
+            elif command == 'branddefense-get-specific-incident':
+                get_specific_incident(api_token,args)
+            elif command == 'branddefense-change-incident-status':
+                change_incident_status(api_token,args)
+            elif command == 'branddefense-get-incident-indicators':
+                get_incident_indicators(api_token,args)
+            elif command == 'branddefense-get-indicators':
+                get_indicator(api_token,args)
+            elif command =='branddefense-get-ioc':
+                get_ioc(api_token,args)
+            elif command =='branddefense-get-cti-rules':
+                get_cti_rules(api_token,args)
+            elif command == 'branddefense-create-threat-search':
+                create_threat_search(api_token,args)
+            elif command == 'branddefense-get-incidents':
+                get_incidents(api_token,args)
         except Exception as e:
             return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
