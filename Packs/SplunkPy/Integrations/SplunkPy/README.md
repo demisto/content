@@ -797,7 +797,7 @@ Lists all data within a specific KV store collection or collections.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. Default is search. | Required | 
 | kv_store_collection_name | A comma-separated list of KV store collections. | Required | 
 | limit | Maximum number of records to return. The default is 50. | Optional | 
 
