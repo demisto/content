@@ -1,0 +1,226 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "CyCognito - Incoming Mapper",
+    "mapping": {
+        "CyCognito Issue": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Comment": {
+                    "complex": {
+                        "filters": [],
+                        "root": "comment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "content"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            }
+                        ]
+                    }
+                },
+                "CyCognito Affected Asset": {
+                    "simple": "affected_asset"
+                },
+                "CyCognito Detection Complexity": {
+                    "simple": "detection_complexity"
+                },
+                "CyCognito Exploitation Method": {
+                    "simple": "exploitation_method"
+                },
+                "CyCognito Exploitation Score": {
+                    "simple": "exploitation_score"
+                },
+                "CyCognito Investigation Status": {
+                    "simple": "investigation_status"
+                },
+                "CyCognito Issue ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {},
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "issue/"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "CyCognito Issue Organizations": {
+                    "complex": {
+                        "filters": [],
+                        "root": "organizations",
+                        "transformers": []
+                    }
+                },
+                "CyCognito Issue Status": {
+                    "simple": "issue_status"
+                },
+                "CyCognito Issue Type": {
+                    "simple": "issue_type"
+                },
+                "CyCognito Issue Type ID": {
+                    "simple": "issue_id"
+                },
+                "CyCognito Potential Impact": {
+                    "simple": "potential_impact"
+                },
+                "CyCognito Potential Threat": {
+                    "simple": "potential_threat"
+                },
+                "CyCognito References": {
+                    "complex": {
+                        "filters": [],
+                        "root": "references",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": "\n"
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "CyCognito Remediation Step": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation_steps",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "1. "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": "\n"
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "CyCognito Resolved Time": {
+                    "simple": "resolved_at"
+                },
+                "CyCognito Severity Score": {
+                    "simple": "severity_score"
+                },
+                "CyCognito Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {},
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "| "
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "CyCognito Tags": {
+                    "simple": "tags"
+                },
+                "First Seen": {
+                    "simple": "first_detected"
+                },
+                "Last Seen": {
+                    "simple": "last_detected"
+                },
+                "Source Geolocation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "locations",
+                        "transformers": [
+                            {
+                                "operator": "ThreeDigitAlphaCountryCodeToCountryName"
+                            },
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "Title": {
+                    "simple": "title"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {},
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "issue/"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "CyCognito - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
