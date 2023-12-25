@@ -12,9 +12,9 @@ tasks:
       id: f123daa4-a999-4747-84df-d8d1ca3b6fcd
       version: -1
       name: ""
-      description: ''
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -42,10 +42,10 @@ tasks:
       id: 736269a0-79d7-4b4c-8acd-acbfa32952d5
       version: -1
       name: Enrichment
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -250,10 +250,10 @@ tasks:
       id: 30d51313-90b0-4191-813d-cd41bba866de
       version: -1
       name: Remediation
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -327,10 +327,10 @@ tasks:
       id: 149f64f6-f6a8-4a72-8ab1-7f90e642b778
       version: -1
       name: Done
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -355,14 +355,14 @@ tasks:
       id: ec109fc1-abef-4b6a-80e8-9c0021c97731
       version: -1
       name: Investigation & Analysis
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "33"
       - "13"
+      - "42"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -558,10 +558,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: cb19df10-32f3-4ad5-8112-b82d5425acf7
+    taskid: 19e960f5-0b99-40b7-82ae-6ff603dc2b03
     type: playbook
     task:
-      id: cb19df10-32f3-4ad5-8112-b82d5425acf7
+      id: 19e960f5-0b99-40b7-82ae-6ff603dc2b03
       version: -1
       name: Threat Hunting - Generic
       description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
@@ -575,7 +575,8 @@ tasks:
     scriptarguments:
       IPAddress:
         complex:
-          root: inputs.SrcIPAddress
+          root: ExtractedIndicators
+          accessor: IP
           transformers:
           - operator: uniq
       MD5:
@@ -613,7 +614,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 690
+          "y": 860
         }
       }
     note: false
@@ -931,6 +932,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: c136bf29-105d-4456-8efd-25ac39c064d6
+    type: regular
+    task:
+      id: c136bf29-105d-4456-8efd-25ac39c064d6
+      version: -1
+      name: Extract source IP address indicator
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      text:
+        simple: ${alert.details}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -950,25 +986,6 @@ view: |-
     }
   }
 inputs:
-- key: SrcIPAddress
-  value:
-    complex:
-      root: alert
-      accessor: details
-      transformers:
-      - operator: splitAndTrim
-        args:
-          delimiter:
-            value:
-              simple: ' '
-      - operator: atIndex
-        args:
-          index:
-            value:
-              simple: "3"
-  required: false
-  description: The remote IP address which executed the process
-  playbookInputQuery:
 - key: alerts_ids
   value:
     simple: ${alert.id}

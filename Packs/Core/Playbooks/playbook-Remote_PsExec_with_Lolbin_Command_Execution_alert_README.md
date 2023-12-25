@@ -17,11 +17,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Command-Line Analysis
 * Get entity alerts by MITRE tactics
-* Enrichment for Verdict
 * Threat Hunting - Generic
 * Block Indicators - Generic v3
-* Command-Line Analysis
+* Enrichment for Verdict
 
 ### Integrations
 
@@ -33,10 +33,11 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* core-run-script-execute-commands
+* setIncident
+* extractIndicators
 * setAlert
 * core-get-endpoints
-* setIncident
+* core-run-script-execute-commands
 
 ## Playbook Inputs
 
@@ -44,7 +45,6 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SrcIPAddress | The remote IP address which executed the process | alert.details | Optional |
 | alerts_ids | The ID's of the relevant alerts | ${alert.id} | Optional |
 | AutoRemediation | Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic. | false | Optional |
 | LOLBASFeedLimit | LOLBAS Feed results limit | 100 | Optional |
