@@ -1,0 +1,34 @@
+{
+    "name": "FortiGuard",
+    "description": "FortiGuard Integration for Enrichment (URL Rating) and Feeds",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Mostafa A. Mohamed",
+    "url": "https://aceilies.tech",
+    "email": "mostafaahmed169@gmail.com",
+    "devEmail": "mostafaahmed169@gmail.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "created": "2023-12-21T11:00:00Z",
+    "useCases": [
+		"Threat Intel",
+		"Enrichment"
+	],
+    "keywords": [
+		"Feed",
+		"Enrichment",
+		"Fortinet",
+		"FortiGuard",
+		"Threat Intelligence",
+		"Threat Intel"
+	],
+    "dependencies": {"Base": {
+            "mandatory": true,
+            "name": "Base"
+        }},
+    "githubUser": [
+        "aceilies"
+    ]    
+}
