@@ -24,6 +24,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, person_in_charge
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -48,6 +49,7 @@ CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
 CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
+LOOK_BACK_HOURS = 48
 
 
 def options_handler() -> argparse.Namespace:
@@ -318,9 +320,17 @@ def bucket_upload_results(bucket_artifact_folder: Path,
 def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
-                        pull_request: GithubPullRequest | None) -> list[dict[str, Any]]:
+                        pull_request: GithubPullRequest | None,
+                        shame_message: tuple[str, str] | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
+    if shame_message:
+        shame_title, shame_value = shame_message
+        content_fields.append({
+            "title": shame_title,
+            "value": shame_value,
+            "short": False
+        })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
@@ -510,7 +520,25 @@ def main():
         logging.info("Not a pull request build, skipping PR comment")
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
-    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request)
+    shame_message = None
+    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+        # We check if the previous build failed and this one passed, or wise versa.
+        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
+                                                               project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
+        pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
+                                                         list_of_pipelines=list_of_pipelines,
+                                                         commits=commits)
+        logging.info(f'we are investigating pipeline {pipeline_id}')
+        logging.info(f'Pivot commit is {pivot_commit}, pipeline changed status is {pipeline_changed_status}')
+        if pipeline_changed_status is not None:
+            name, email, pr = person_in_charge(pivot_commit)
+            msg = "broke" if pipeline_changed_status else "fixed"
+            shame_message = (f"Hi @{name}, You {msg} the build.", f" That was done in this {slack_link(pr,'PR.')}")
+
+            computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+        else:
+            computed_slack_channel = "dmst-build-test"
+    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request, shame_message)
 
     with contextlib.suppress(Exception):
         output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
