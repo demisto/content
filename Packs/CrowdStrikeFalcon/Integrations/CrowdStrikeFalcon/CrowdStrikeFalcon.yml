@@ -2385,8 +2385,18 @@ script:
       - In Progress
       - Reopened
       - Closed
-      required: true
-    description: Resolve incidents.
+      required: false
+    - description: UUID of a user to assign the incident to. Mutually exclusive with the 'username' argument.
+      name: assigned_to_uuid
+    - description: Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user.
+      name: username
+    - description: Add a new tag to the incidents.
+      name: add_tag
+    - description: Remove a tag from the incidents.
+      name: remove_tag
+    - description: Add a comment to the incident.
+      name: add_comment
+    description: Resolve and update incidents using the specified settings.
     name: cs-falcon-resolve-incident
   - arguments:
     - description: A JSON object with list of CS Falcon indicators to upload.

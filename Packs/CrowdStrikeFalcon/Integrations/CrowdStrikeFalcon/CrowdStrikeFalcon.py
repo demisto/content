@@ -1952,24 +1952,25 @@ def host_group_members(filter: str | None,
 def resolve_incident(ids: list[str], status: str):
     if status not in STATUS_TEXT_TO_NUM:
         raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
-    return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
+                               f"Status '{status}' is not a valid status ({' | '.join(STATUS_TEXT_TO_NUM.keys())}).")
+    return update_incident_request(ids=ids, action_parameters={'update_status': STATUS_TEXT_TO_NUM[status]})
 
 
 def update_incident_comment(ids: list[str], comment: str):
-    return update_incident_request(ids, comment, 'add_comment')
+    return update_incident_request(ids=ids, action_parameters={'add_comment': comment})
 
 
-def update_incident_request(ids: list[str], value: str, action_name: str):
+def update_incident_request(ids: list[str], action_parameters: dict[str, Any]):
     data = {
         "action_parameters": [
             {
                 "name": action_name,
-                "value": value
-            }
+                "value": action_value
+            } for action_name, action_value in action_parameters.items()
         ],
-        "ids": ids
+        "ids": ids,
     }
+
     return http_request(method='POST',
                         url_suffix='/incidents/entities/incident-actions/v1',
                         json=data)
@@ -4696,10 +4697,43 @@ def remove_host_group_members_command(host_group_id: str, host_ids: list[str]) -
                           raw_response=response)
 
 
-def resolve_incident_command(ids: list[str], status: str):
-    resolve_incident(ids, status)
-    readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
-    return CommandResults(readable_output=readable)
+def resolve_incident_command(ids: list[str], status: str | None = None, user_uuid: str | None = None,
+                             user_name: str | None = None, add_comment: str | None = None, add_tag: str | None = None,
+                             remove_tag: str | None = None) -> CommandResults:
+    if not any([status, user_uuid, user_name, add_comment, add_tag, remove_tag]):
+        raise DemistoException('At least one of the following arguments must be provided:'
+                               'status, assigned_to_uuid, username, add_tag, remove_tag, add_comment')
+
+    if user_name and not user_uuid:
+        user_uuid = get_username_uuid(username=user_name)
+
+    action_parameters = {}
+    readable_output = f"Incident IDs '{', '.join(ids)}' have been updated successfully:\n"
+
+    if status:
+        action_parameters['update_status'] = status
+        readable_output += f'Status has been updated to {status}.\n'
+
+    if user_uuid:
+        action_parameters['update_assigned_to_v2'] = user_uuid
+        readable_output += f'Assigned user has been updated to {user_uuid}.\n'
+
+    if add_tag:
+        action_parameters['add_tag'] = add_tag
+        readable_output += f"Tag '{add_tag}' has been added.\n"
+
+    if remove_tag:
+        action_parameters['delete_tag'] = remove_tag
+        readable_output += f"Tag '{remove_tag}' has been removed.\n"
+
+    if add_comment:
+        action_parameters['add_comment'] = add_comment
+        readable_output += f"Comment has been added: '{add_comment}'\n"
+
+    update_incident_request(ids=ids,
+                            action_parameters=action_parameters)
+
+    return CommandResults(readable_output=readable_output)
 
 
 def update_incident_comment_command(ids: list[str], comment: str):
