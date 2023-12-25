@@ -22,7 +22,7 @@ args:
   isArray: true
 - name: join
   required: true
-  description: Separator
+  description: Separator.
   defaultValue: '='
 scripttarget: 0
 subtype: python3

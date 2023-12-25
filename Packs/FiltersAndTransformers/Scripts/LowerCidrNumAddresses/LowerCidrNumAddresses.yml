@@ -1,5 +1,5 @@
 args:
-- description: IPv4/CIDR, e.g. 192.168.0.0/24
+- description: IPv4/CIDR, e.g. 192.168.0.0/24.
   name: left
   required: true
 - description: The number of addresses to lower from.

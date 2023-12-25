@@ -13,9 +13,9 @@ enabled: true
 args:
 - name: value
   required: true
-  description: Time stamp to convert
+  description: Time stamp to convert.
 - name: formatter
-  description: Python 'strptime' formatter string
+  description: Python 'strptime' formatter string.
 scripttarget: 0
 dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole

@@ -7,13 +7,13 @@ type: python
 subtype: python3
 tags:
 - Algosec
-comment: Find applications containing network objects related to IP address using BusinessFlow
+comment: Find applications containing network objects related to IP address using BusinessFlow.
 system: true
 args:
 - name: address
   required: true
   default: true
-  description: The IP/Subnet to search
+  description: The IP/Subnet to search.
 - name: type
   auto: PREDEFINED
   predefined:
@@ -21,7 +21,7 @@ args:
   - CONTAINED
   - CONTAINING
   - EXACT
-  description: The search method for the address
+  description: The search method for the address.
 scripttarget: 0
 timeout: 0s
 dependson:

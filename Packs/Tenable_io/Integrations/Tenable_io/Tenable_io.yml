@@ -349,7 +349,7 @@ script:
       description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: String
   - arguments:
-    - description: IP Address of the asset
+    - description: IP Address of the asset.
       name: ip
       required: true
     description: Retrieves details for the specified asset including custom attributes.
@@ -708,10 +708,10 @@ script:
       - 'summary'
       - 'third-party'
       - 'reputation'
-    - description: 'A comma-separated list of severities of the vulnerabilities to include in the export. Defaults to all severity levels. The severity of a vulnerability is defined using the Common Vulnerability Scoring System (CVSS) base score. Supported array values are: info, low, medium, high, critical'
+    - description: 'A comma-separated list of severities of the vulnerabilities to include in the export. Defaults to all severity levels. The severity of a vulnerability is defined using the Common Vulnerability Scoring System (CVSS) base score. Supported array values are: info, low, medium, high, critical.'
       name: severity
       isArray: true
-    - description: 'The start date for the range of data you want to export. Date format will be epoch date format or relational expressions like “7 days ago”. Note: This filter cannot be used in conjunction with the firstFound, lastFound, or lastFixed'
+    - description: 'The start date for the range of data you want to export. Date format will be epoch date format or relational expressions like “7 days ago”. Note: This filter cannot be used in conjunction with the firstFound, lastFound, or lastFixed.'
       name: since
       isArray: true
     - description: 'A comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only.'
@@ -722,7 +722,7 @@ script:
     - description: When specified, the results returned in the list are limited to assets with the specified tag value.
       name: tagValue
     - auto: PREDEFINED
-      description: 'An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal'
+      description: 'An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal.'
       name: vprScoreOperator
       predefined:
       - 'gte'
@@ -731,10 +731,10 @@ script:
       - 'lt'
       - 'equal'
       - 'not equal'
-    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. VPR values range are 0.1-10.0'
+    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. VPR values range are 0.1-10.0.'
       name: vprScoreValue
       isArray: true
-    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5'
+    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5.'
       name: vprScoreRange
     - name: exportUuid
       description: The export UUID.
@@ -768,7 +768,7 @@ script:
       description: The last date credentials that were used successfully to scan the asset.
       type: Date
     - contextPath: TenableIO.Vulnerability.asset.last_unauthenticated_results
-      description: The last date when the asset was scanned without using credentials
+      description: The last date when the asset was scanned without using credentials.
       type: Date
     - contextPath: TenableIO.Vulnerability.asset.mac_address
       description: The MAC address of the asset where a scan found the vulnerability.
@@ -855,7 +855,7 @@ script:
       description: The CVSSv2 Remediation Level (RL) temporal metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss_temporal_vector.report_confidence
-      description: The CVSSv2 Report Confidence (RC) temporal metric for the vulnerability the plugin covers
+      description: The CVSSv2 Report Confidence (RC) temporal metric for the vulnerability the plugin covers.
       type: String
     - contextPath: TenableIO.Vulnerability.plugin.cvss_temporal_vector.raw
       description: The complete CVSS temporal vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
@@ -1242,10 +1242,10 @@ script:
       description: ''
       hidden: true
     polling: true
-    description: |
+    description: |-
       Export and download a scan report.
       Scan results older than 35 days are supported in Nessus and CSV formats only, and filters cannot be applied.
-      Scans that are actively running cannot be exported (run "tenable-io-list-scans" to view scan statuses)
+      Scans that are actively running cannot be exported (run "tenable-io-list-scans" to view scan statuses).
     name: tenable-io-export-scan
     outputs:
     - contextPath: InfoFile.Size

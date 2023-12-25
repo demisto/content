@@ -16,10 +16,10 @@ enabled: true
 args:
 - name: value
   required: true
-  description: 'The input url '
+  description: 'The input url.'
 outputs:
 - contextPath: DecodedURL
-  description: Parsed url as key/value
+  description: Parsed url as key/value.
   type: string
 scripttarget: 0
 dockerimage: demisto/python3:3.10.13.83255
