@@ -1661,7 +1661,7 @@ class IntegrationLogger(object):
                         if any(header_to_skip in part for header_to_skip in headers_to_skip):
                             continue
                         if any(header_to_sanitize in part for header_to_sanitize in headers_to_sanitize):
-                            part_splitted = part[1:].split(maxsplit=1)
+                            part_splitted = part[1:].split()
                             headers.append(" " + part[0] + ": " + XX_REPLACED)
                             continue
                         headers.append(part)
