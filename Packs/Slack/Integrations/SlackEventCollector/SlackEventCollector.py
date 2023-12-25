@@ -79,12 +79,13 @@ class Client(BaseClient):
 
         2. Reaches the user-defined limit (parameter).
            In this case, stores the last used cursor and the id of the next event to collect (`last_search_stop_point`)
-           and if it is the first run in this search it saves the newest event details as 'next_event_last_id' and 'next_event_last_time'
+           and if it is the first run in this search it saves the newest event details as 'newest_event_fetched'
+           to be used when the cursor is exhausted and a new search query should be performed.
            and returns the events that have been accumulated so far.
 
         3. Reaches a rate limit.
            In this case, stores the last cursor used in the lastRun obj
-           if it is the first run in this search it saves the newest event details as 'next_last_event_id' and 'next_last_event_time'
+           if it is the first run in this search it saves the newest event details as 'newest_event_fetched'
            and returns the events that have been accumulated so far.
         """
         aggregated_logs: list[dict] = []
@@ -125,22 +126,31 @@ class Client(BaseClient):
                 raise e
             demisto.debug('Reached API rate limit, storing last used cursor.')
             cursor = query_params['cursor']
+            last_run['cursor'] = cursor
 
         if aggregated_logs:
-            if not last_run.get('next_last_event'):
+            '''
+            If didn't fetch logs, we are not changing the last run
+            If fetched logs, There are 4 scenarios
+                1. This run we did a new query and finished fetching all the events, so we save the newest event as 'last_fetched_event'.
+                2. We did a new query this time and did not finish fetching all the events, so we save the newest event as 'newest_event_fetched' and the 'cursor' for the next run.
+                3. We continued to fetch events by 'cursor' and finished fetching them all, saving the 'newest_event_fetched' as 'last_fetched_event'.
+                3. We continued to fetch events by 'cursor', and we still haven't finished fetching them all, so we only need to save the 'cursor'.
+            '''
+            if not last_run.get('newest_event_fetched'):
+                newest_event = {'last_event_id': aggregated_logs[0].get('id'),
+                                'last_event_time': aggregated_logs[0].get('date_create')}
                 if cursor:
-                    last_run['next_last_event'] = {'last_event_id': aggregated_logs[0].get('id'),
-                                                   'last_event_time': aggregated_logs[0].get('date_create')}
+                    last_run['newest_event_fetched'] = newest_event
                     last_run['cursor'] = cursor
                 else:
-                    last_run['last_fetched_event'] = {'last_event_id': aggregated_logs[0].get('id'),
-                                                      'last_event_time': aggregated_logs[0].get('date_create')}
+                    last_run['last_fetched_event'] = newest_event
             else:
                 if cursor:
                     last_run['cursor'] = cursor
                 else:
-                    last_run['last_fetched_event'] = last_run['next_last_event']
-                    last_run.pop('next_last_event')
+                    last_run['last_fetched_event'] = last_run['newest_event_fetched']
+                    last_run.pop('newest_event_fetched')
 
         return aggregated_logs
 
