@@ -51,6 +51,7 @@ def main():
     # Fetch alert mapped fields
     incident = demisto.incident()
     fields = incident.get('CustomFields', {})
+    fields = fields if isinstance(fields, dict) else {}
 
     # Extract the keys with values
     items = extract_keys_with_values(fields)
