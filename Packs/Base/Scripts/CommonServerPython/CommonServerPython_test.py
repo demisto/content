@@ -9211,7 +9211,7 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
     ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
     ("6c5360d41bd2b14b1565f5b18e5c203cf512e493", "sha1"),
     ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069","sha512"),
-    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211","sha512" ),
+    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211","sha512"),
     ("@", None)
 ])
 def test_detect_file_indicator_type(indicator,expected_result):
@@ -9227,7 +9227,7 @@ def test_detect_file_indicator_type(indicator,expected_result):
         Case 3: ssdeep indicator type.
         Case 4: sha1 indicator type.
         Case 5: sha512 indicator type.
-        Case 4: invalid type.
+        Case 6: invalid type.
     """
     from CommonServerPython import detect_file_indicator_type
     assert detect_file_indicator_type(indicator) == expected_result
