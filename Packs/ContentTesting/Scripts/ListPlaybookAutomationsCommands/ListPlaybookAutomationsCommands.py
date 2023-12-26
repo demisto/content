@@ -2,21 +2,19 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # Final Test: 6.10
 import uuid
-from typing import Dict
 
 
 def GetAutomationName(id):
-    results = demisto.executeCommand("demisto-api-post", {
+    results = demisto.executeCommand("core-api-post", {
         "uri": f"/automation/load/{id}"
     })[0]['Contents']
-    if 'response' in results:
-        if 'name' in results['response']:
-            return results['response']['name']
+    if 'response' in results and 'name' in results['response']:
+        return results['response']['name']
     return ""
 
 
 def GetPlaybooks():
-    response = demisto.executeCommand("demisto-api-post", {
+    response = demisto.executeCommand("core-api-post", {
         "uri": "/playbook/search",
         "body": {"query": "hidden:F AND deprecated:F"}
     })[0]['Contents']['response']['playbooks']
@@ -28,11 +26,11 @@ def GetPlaybooks():
 
 
 def GetAutomationsUsed(playbooks):
-    automations: Dict[str, Dict[str, str]]
+    automations: dict[str, dict[str, str]]
     automations = {}
     for p in playbooks:
-        for key, t in p['tasks'].items():
-            if "scriptId" in t['task'].keys():
+        for _key, t in p['tasks'].items():
+            if "scriptId" in t['task']:
                 s = t['task']['scriptId']
                 try:
                     uuid.UUID(s)
@@ -52,7 +50,7 @@ def main():
         output = ""
         for key, val in scripts.items():
             output += f"### {key}\n"
-            for akey, aval in val.items():
+            for akey, _aval in val.items():
                 output += f"{akey}\n"
         demisto.executeCommand("setIncident", {'customFields': json.dumps({"contenttestingcontentautomations": output})})
     except Exception as ex:

@@ -6,7 +6,7 @@ Input1:       Name of the playbook (Mandatory)
 Input2:       Format type needed. Table or Paragraph. Paragraph is default.
 Input3:       Name of the docx file that will be produced. Give the full name including the ".docx" extension. (Mandatory)
 
-Requirements: This automation requires "Demisto REST API" integration enabled and connected to the XSOAR itself. Automation uses it to read the objects of the playbook.
+Requirements: This automation requires "Core REST API" integration enabled and connected to the XSOAR itself. Automation uses it to read the objects of the playbook.
 
 ## Script Data
 ---

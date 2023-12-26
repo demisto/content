@@ -23,25 +23,25 @@ enabled: true
 name: ExtractIndicatorsFromTextFile
 outputs:
 - contextPath: Domain.Name
-  description: Extracted domains
+  description: Extracted domains.
   type: string
 - contextPath: Account.Email.Address
-  description: Extracted emails
+  description: Extracted emails.
   type: string
 - contextPath: File.MD5
-  description: Extracted MD5
+  description: Extracted MD5.
   type: string
 - contextPath: File.SHA1
-  description: Extracted SHA1
+  description: Extracted SHA1.
   type: string
 - contextPath: File.SHA256
-  description: Extracted SHA256
+  description: Extracted SHA256.
   type: string
 - contextPath: IP.Address
-  description: Extracted IPs
+  description: Extracted IPs.
   type: string
 - contextPath: URL.Data
-  description: Extracted URLs
+  description: Extracted URLs.
   type: string
 script: '-'
 timeout: '0'
@@ -52,4 +52,4 @@ tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
 tags: []
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255

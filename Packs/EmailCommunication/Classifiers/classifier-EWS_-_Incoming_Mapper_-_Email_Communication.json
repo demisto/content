@@ -158,7 +158,20 @@
     },
     "Email BCC": {
      "complex": null,
-     "simple": "bcc_recipients.email_address"
+     "simple": "bcc_recipients.email_address",
+     "transformers": [
+        {
+            "args": {
+                "separator": {
+                    "isContext": false,
+                    "value": {
+                        "simple": ","
+                    }
+                }
+            },
+            "operator": "join"
+        }
+    ]
     },
     "Email Body": {
      "complex": null,
@@ -533,7 +546,21 @@
     },
     "Email BCC": {
      "complex": null,
-     "simple": "bcc_recipients.email_address"
+     "simple": "bcc_recipients.email_address",
+     "transformers": [
+        {
+            "args": {
+                "separator": {
+                    "isContext": false,
+                    "value": {
+                        "simple": ","
+                    }
+                }
+            },
+            "operator": "join"
+        }
+    ]
+     
     },
     "Email Body": {
      "complex": null,

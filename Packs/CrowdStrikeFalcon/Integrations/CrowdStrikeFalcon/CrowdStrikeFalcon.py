@@ -3809,7 +3809,8 @@ def run_command():
     output = []
 
     if target == 'batch':
-        batch_id = init_rtr_batch_session(host_ids, offline)
+        batch_id = args.get('batch_id', None) if args.get('batch_id', None) else init_rtr_batch_session(host_ids, offline)
+        demisto.debug(f"{args.get('batch_id', None)=} , {batch_id=}")
         timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
         timer.start()
         try:
@@ -3837,7 +3838,8 @@ def run_command():
                 'Stdout': resource.get('stdout'),
                 'Stderr': resource.get('stderr'),
                 'BaseCommand': resource.get('base_command'),
-                'Command': full_command
+                'Command': full_command,
+                'BatchID': batch_id
             })
 
         human_readable = tableToMarkdown(f'Command {full_command} results', output, removeNull=True)

@@ -13,13 +13,13 @@ comment: Stops the "Time To Assign" timer if the owner of the incident was chang
 enabled: true
 args:
 - name: old
-  description: The old value of the changed field
+  description: The old value of the changed field.
 - name: new
-  description: The new value of the changed field
+  description: The new value of the changed field.
 scripttarget: 0
 runas: DBotWeakRole
 marketplaces:
 - xsoar
 tests:
 - SLA Scripts - Test
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
