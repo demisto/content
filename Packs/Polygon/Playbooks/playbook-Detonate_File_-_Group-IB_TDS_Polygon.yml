@@ -1,15 +1,9 @@
 id: Detonate File - Group-IB TDS Polygon
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Detonate File - Group-IB TDS Polygon
-description: 'Detonate file using Group-IB THF Polygon integration. This playbook
-  returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types: 7z, ace, ar, arj, bat, bz2, cab,
-  chm, cmd, com, cpgz, cpl, csv, dat, doc, docm, docx, dot, dotm, dotx, eml, exe,
-  gz, gzip, hta, htm, html, iqy, iso, jar, js, jse, lnk, lz, lzma, lzo,  lzh, mcl,
-  mht, msg, msi, msp, odp, ods, odt, ots, ott, pdf, pif, potm, potx, pps, ppsm, ppsx,
-  ppt, pptm, pptx, ps1, pub, py, pyc, r*, rar, reg, rtf, scr, settingcontent-ms, stc,
-  svg, sxc, sxw, tar, taz,  .tb2, .tbz, .tbz2, tgz, tlz, txz, tzo, txt, url, uue,
-  vbe, vbs, wsf, xar, xls, xlsb, xlsm, xlsx, xml, xz, z*, zip.'
+description: 'Detonate file using Group-IB THF Polygon integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types: 7z, ace, ar, arj, bat, bz2, cab, chm, cmd, com, cpgz, cpl, csv, dat, doc, docm, docx, dot, dotm, dotx, eml, exe, gz, gzip, hta, htm, html, iqy, iso, jar, js, jse, lnk, lz, lzma, lzo,  lzh, mcl, mht, msg, msi, msp, odp, ods, odt, ots, ott, pdf, pif, potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, ps1, pub, py, pyc, r*, rar, reg, rtf, scr, settingcontent-ms, stc, svg, sxc, sxw, tar, taz,  .tb2, .tbz, .tbz2, tgz, tlz, txz, tzo, txt, url, uue, vbe, vbs, wsf, xar, xls, xlsb, xlsm, xlsx, xml, xz, z*, zip.'
 starttaskid: "0"
 tasks:
   "0":
@@ -27,6 +21,7 @@ tasks:
       '#none#':
       - "18"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -37,6 +32,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: fc02e787-ad1e-4381-8e8a-96bd716a9255
@@ -56,21 +55,57 @@ tasks:
     scriptarguments:
       file_id:
         complex:
-          root: inputs.file_id
+          root: File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:7Z|ACE|AR|BAT|ARJ|BAT|BZ2|CAB|CHM|CMD|COM|CPGZ|CPL|CSV|DAT|DOC|DOCM|DOCX|DOCT|DOTM|DOTX|EML|EXE|GZ|GZIP|HTA|THM|HTML|IQY|ISO|JAR|JS|JS|JSE|LNK|LZ|LZMA|IZO|IZH|MCL|MHTMSG|MSI|MSP|ODP|ODS|ODT|OTS|OTT|PDF|PIF|POTM|POTX|PPS|PPT|PPTM|PPTX|PS1|PUB|PY|PYC|RAR|REG|RTF|SCR|SETTINGSCONTENT-MS|STC|SVG|SXC|SXW|TAR|TAZ|TB2|TBZ|TBZ2|TGZ|TLZ|TXZ|TZO|TXT|URL|UUE|VBE|VBS|WSF|XAR|XLS|XLSB|XLSM|XLSX|XML|XZ|ZIP)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:7Z|ACE|AR|BAT|ARJ|BAT|BZ2|CAB|CHM|CMD|COM|CPGZ|CPL|CSV|DAT|DOC|DOCM|DOCX|DOCT|DOTM|DOTX|EML|EXE|GZ|GZIP|HTA|THM|HTML|IQY|ISO|JAR|JS|JS|JSE|LNK|LZ|LZMA|IZO|IZH|MCL|MHTMSG|MSI|MSP|ODP|ODS|ODT|OTS|OTT|PDF|PIF|POTM|POTX|PPS|PPT|PPTM|PPTX|PS1|PUB|PY|PYC|RAR|REG|RTF|SCR|SETTINGSCONTENT-MS|STC|SVG|SXC|SXW|TAR|TAZ|TB2|TBZ|TBZ2|TGZ|TLZ|TXZ|TZO|TXT|URL|UUE|VBE|VBS|WSF|XAR|XLS|XLSB|XLSM|XLSX|XML|XZ|ZIP)\b
+              ignorecase: true
+          - - operator: in
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.file_id
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
       language:
         simple: en
       password: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 360
+          "x": 1030,
+          "y": 510
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 3515a2f8-6b03-4061-8125-756cc50294fd
@@ -84,16 +119,21 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 560,
-          "y": 1630
+          "y": 1730
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 70256af8-c846-4973-86a8-9c3361ee58b3
@@ -137,20 +177,26 @@ tasks:
       dt:
         simple: Polygon.Analysis(val.Status !== 'Finished').ID
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 530
+          "x": 1030,
+          "y": 690
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: d2123158-1ae0-4f5e-87fd-ed63ac94647f
@@ -175,16 +221,21 @@ tasks:
           transformers:
           - operator: LastArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 880
+          "x": 1030,
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 4a79b7e8-4212-4b47-8078-bfb2dde6e1b4
@@ -201,6 +252,7 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+      - "20"
     scriptarguments:
       tds_analysis_id:
         complex:
@@ -215,16 +267,21 @@ tasks:
           transformers:
           - operator: LastArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 700
+          "x": 1030,
+          "y": 860
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 7d9a2924-35c5-4686-8ecb-7de719029f3f
@@ -249,16 +306,21 @@ tasks:
           transformers:
           - operator: LastArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 1450
+          "x": 1040,
+          "y": 1550
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 93f7ba3c-51fa-46f0-8b14-fc6609f50f2f
@@ -283,16 +345,21 @@ tasks:
           transformers:
           - operator: LastArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 1295
+          "x": 1040,
+          "y": 1395
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 6bf891c0-3f7e-4265-8eb9-17931764bff6
@@ -301,8 +368,7 @@ tasks:
       id: 6bf891c0-3f7e-4265-8eb9-17931764bff6
       version: -1
       name: Is THF Polygon integration enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -311,7 +377,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "1"
+      - "21"
     scriptarguments:
       value:
         complex:
@@ -335,16 +401,21 @@ tasks:
                   simple: active
           accessor: brand
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 560,
-          "y": 170
+          "y": 150
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: e4ad7e47-59bc-45b2-8408-0d9da0ab7da2
@@ -371,23 +442,121 @@ tasks:
           transformers:
           - operator: LastArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 1060
+          "x": 1030,
+          "y": 1220
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2cec22a6-b48e-474b-84ee-4aec0f057084
+    type: regular
+    task:
+      id: 2cec22a6-b48e-474b-84ee-4aec0f057084
+      version: -1
+      name: 'Set report number to content '
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: report number
+      value:
+        complex:
+          root: Polygon.Analysis
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 1ce58e07-640e-41d0-8e8d-713959491e1c
+    type: condition
+    task:
+      id: 1ce58e07-640e-41d0-8e8d-713959491e1c
+      version: -1
+      name: Is the file type supported?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:7Z|ACE|AR|BAT|ARJ|BAT|BZ2|CAB|CHM|CMD|COM|CPGZ|CPL|CSV|DAT|DOC|DOCM|DOCX|DOCT|DOTM|DOTX|EML|EXE|GZ|GZIP|HTA|THM|HTML|IQY|ISO|JAR|JS|JS|JSE|LNK|LZ|LZMA|IZO|IZH|MCL|MHTMSG|MSI|MSP|ODP|ODS|ODT|OTS|OTT|PDF|PIF|POTM|POTX|PPS|PPT|PPTM|PPTX|PS1|PUB|PY|PYC|RAR|REG|RTF|SCR|SETTINGSCONTENT-MS|STC|SVG|SXC|SXW|TAR|TAZ|TB2|TBZ|TBZ2|TGZ|TLZ|TXZ|TZO|TXT|URL|UUE|VBE|VBS|WSF|XAR|XLS|XLSB|XLSM|XLSX|XML|XZ|ZIP)\b
+          ignorecase: true
+        - operator: match
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:7Z|ACE|AR|BAT|ARJ|BAT|BZ2|CAB|CHM|CMD|COM|CPGZ|CPL|CSV|DAT|DOC|DOCM|DOCX|DOCT|DOTM|DOTX|EML|EXE|GZ|GZIP|HTA|THM|HTML|IQY|ISO|JAR|JS|JS|JSE|LNK|LZ|LZMA|IZO|IZH|MCL|MHTMSG|MSI|MSP|ODP|ODS|ODT|OTS|OTT|PDF|PIF|POTM|POTX|PPS|PPT|PPTM|PPTX|PS1|PUB|PY|PYC|RAR|REG|RTF|SCR|SETTINGSCONTENT-MS|STC|SVG|SXC|SXW|TAR|TAZ|TB2|TBZ|TBZ2|TGZ|TLZ|TXZ|TZO|TXT|URL|UUE|VBE|VBS|WSF|XAR|XLS|XLSB|XLSM|XLSX|XML|XZ|ZIP)\b
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1675,
-        "width": 660,
+        "height": 1775,
+        "width": 1280,
         "x": 560,
         "y": 20
       }
@@ -401,149 +570,151 @@ inputs:
       accessor: EntryID
   required: false
   description: File to detonate
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: true
   description: Report requests frequency (minutes)
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "60"
   required: true
   description: Report waiting timeout (minutes)
+  playbookInputQuery:
 outputs:
 - contextPath: File.Name
   description: The full file name (including file extension).
   type: string
 - contextPath: File.MD5
-  description: The MD5 hash of the file
+  description: The MD5 hash of the file.
   type: string
 - contextPath: File.SHA1
-  description: The SHA1 hash of the file
+  description: The SHA1 hash of the file.
   type: string
 - contextPath: File.SHA256
-  description: The SHA256 hash of the file
+  description: The SHA256 hash of the file.
   type: string
 - contextPath: File.Type
-  description: File type
+  description: File type.
   type: string
 - contextPath: File.Malicious.Vendor
-  description: The vendor that reported the file as malicious
+  description: The vendor that reported the file as malicious.
   type: string
 - contextPath: File.Malicious.Description
-  description: A description explaining why the file was determined to be malicious
+  description: A description explaining why the file was determined to be malicious.
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator that was tested
+  description: The indicator that was tested.
   type: string
 - contextPath: DBotScore.Type
-  description: The indicator type
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: The vendor used to calculate the score
+  description: The vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 - contextPath: IP.Address
-  description: IP address
+  description: IP address.
   type: string
 - contextPath: Domain.Name
-  description: The Domain name
+  description: The Domain name.
   type: string
 - contextPath: Domain.DNS
   description: A list of IP objects resolved by DNS.
   type: string
 - contextPath: URL.Data
-  description: The URL
+  description: The URL.
   type: string
 - contextPath: RegistryKey.Path
-  description: The path to the registry key
+  description: The path to the registry key.
   type: string
 - contextPath: RegistryKey.Value
   description: The value at the given RegistryKey.
   type: string
 - contextPath: Process.Name
-  description: Process name
+  description: Process name.
   type: string
 - contextPath: Process.PID
-  description: Process PID
+  description: Process PID.
   type: number
 - contextPath: Process.CommandLine
-  description: Process Command Line
+  description: Process Command Line.
   type: string
 - contextPath: Process.Path
-  description: Process path
+  description: Process path.
   type: string
 - contextPath: Process.StartTime
-  description: Process start time
+  description: Process start time.
   type: date
 - contextPath: Process.EndTime
-  description: Process end time
+  description: Process end time.
   type: date
 - contextPath: Polygon.Analysis.ID
-  description: Analysis ID in THF
+  description: Analysis ID in THF.
   type: number
 - contextPath: Polygon.Analysis.Name
-  description: File Name
+  description: File Name.
   type: string
 - contextPath: Polygon.Analysis.Size
-  description: File Size
+  description: File Size.
   type: number
 - contextPath: Polygon.Analysis.Started
-  description: Analysis start timestamp
+  description: Analysis start timestamp.
   type: date
 - contextPath: Polygon.Analysis.Analyzed
-  description: Analysis finish timestamp
+  description: Analysis finish timestamp.
   type: date
 - contextPath: Polygon.Analysis.MD5
-  description: Analyzed file MD5 hash
+  description: Analyzed file MD5 hash.
   type: string
 - contextPath: Polygon.Analysis.SHA1
-  description: Analyzed file SHA1 hash
+  description: Analyzed file SHA1 hash.
   type: string
 - contextPath: Polygon.Analysis.SHA256
-  description: Analyzed file SHA256
+  description: Analyzed file SHA256.
   type: string
 - contextPath: Polygon.Analysis.Result
-  description: Analysis verdict
+  description: Analysis verdict.
   type: string
 - contextPath: Polygon.Analysis.Status
-  description: The analysis status
+  description: The analysis status.
   type: string
 - contextPath: Polygon.Analysis.Verdict
-  description: Analysis verdict
+  description: Analysis verdict.
   type: boolean
 - contextPath: Polygon.Analysis.Probability
-  description: Verdict probability
+  description: Verdict probability.
   type: string
 - contextPath: Polygon.Analysis.Families
-  description: Malware families
+  description: Malware families.
   type: string
 - contextPath: Polygon.Analysis.Score
-  description: Polygon score
+  description: Polygon score.
   type: number
 - contextPath: Polygon.Analysis.Internet-connection
-  description: Internet availability
+  description: Internet availability.
   type: string
 - contextPath: Polygon.Analysis.Type
-  description: File type
+  description: File type.
   type: string
 - contextPath: Polygon.Analysis.DumpExists
-  description: Network activity dump exists
+  description: Network activity dump exists.
   type: boolean
 - contextPath: Polygon.Analysis.File
-  description: The information about files in analysis
+  description: The information about files in analysis.
   type: unknown
 - contextPath: Polygon.Analysis.URL
-  description: The information about URL indicators
+  description: The information about URL indicators.
 - contextPath: Polygon.Analysis.IP
-  description: The information about IP indicators
+  description: The information about IP indicators.
 - contextPath: Polygon.Analysis.Domain
-  description: The information about Domain indicators
+  description: The information about Domain indicators.
 - contextPath: Polygon.Analysis.RegistryKey
-  description: The information about registry keys which were modified during the
-    analysis
+  description: The information about registry keys which were modified during the analysis.
 - contextPath: Polygon.Analysis.Process
   description: The information about processes started during the analysis
 fromversion: 5.0.0
