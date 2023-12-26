@@ -181,9 +181,9 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
                 incident_response.id, expected_states=(InvestigationPlaybookState.COMPLETED,)
             )
 
-            context = xsoar_saas_client.get_investigation_context(incident_response.investigation_id)
+            war_room_entries, context = xsoar_saas_client.get_investigation_context(incident_response.investigation_id)
             # make sure the context is populated with thread id(s) from slack ask
-            assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
+            assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}, war-room-entires errors: {xsoar_saas_client.get_formatted_error_entries(war_room_entries)}'
 
 
 def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
