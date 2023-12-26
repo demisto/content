@@ -9261,3 +9261,14 @@ def test_scoreToReputation(score,expected_result):
     from CommonServerPython import scoreToReputation
     assert scoreToReputation(score) == expected_result
 
+
+@pytest.mark.parametrize("timestamp,expected_result", [
+    (1541494441222, '2018-11-06T08:54:01.000Z'), 
+    (1541495441000,'2018-11-06T09:10:41.000Z'),
+
+])
+def test_timestamp_to_datestring(timestamp,expected_result):
+    from CommonServerPython import timestamp_to_datestring
+    assert timestamp_to_datestring(timestamp) == expected_result
+    
+

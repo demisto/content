@@ -1161,7 +1161,7 @@ def shortFile(entry):   # pragma: no cover
             'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-def shortIp(entry):
+def shortIp(entry):     # pragma: no cover
     """
        Formats an ip reputation entry into a short table (deprecated)
 
@@ -1187,7 +1187,7 @@ def shortIp(entry):
             'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-def shortDomain(entry):
+def shortDomain(entry):      # pragma: no cover
     """
        Formats a domain reputation entry into a short table (deprecated)
 
