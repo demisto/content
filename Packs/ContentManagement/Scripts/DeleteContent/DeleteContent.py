@@ -72,20 +72,20 @@ class PlaybookAPI(EntityAPI):
     name = 'playbook'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': f'/playbook/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/playbook/search',
                                 'body': {'page': 0, 'size': 100},
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/playbook/delete',
                                 'body': {'id': specific_id},
                                 'using': INSTANCE_NAME},
@@ -105,21 +105,21 @@ class IntegrationAPI(EntityAPI):
     name = 'integration'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/settings/integration/search',
                                 'body': {'page': 0, 'size': 100, 'query': f'name:"{specific_id}"'},
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/settings/integration/search',
                                 'body': {'page': 0, 'size': 100},
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/settings/integration-conf/delete',
                                 'body': {'id': specific_id},
                                 'using': INSTANCE_NAME},
@@ -143,21 +143,21 @@ class ScriptAPI(EntityAPI):
     always_excluded = ['CommonServerUserPowerShell', 'CommonServerUserPython', 'CommonUserServer', SCRIPT_NAME]
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/automation/search',
                                 'body': {'page': 0, 'size': 1, 'query': f'id:"{specific_id}"'},
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/automation/search',
                                 'body': {'page': 0, 'size': 100},
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/automation/delete',
                                 'body': {'script': {'id': specific_id}},
                                 'using': INSTANCE_NAME},
@@ -179,19 +179,19 @@ class IncidentFieldAPI(EntityAPI):
     name = 'incidentfield'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/incidentfields',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/incidentfields',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'/incidentfield/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
@@ -207,19 +207,19 @@ class PreProcessingRuleAPI(EntityAPI):
     name = 'pre-process-rule'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/preprocess/rules',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/preprocess/rules',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'/preprocess/rule/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
@@ -235,19 +235,19 @@ class WidgetAPI(EntityAPI):
     name = 'widget'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': f'/widgets/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/widgets',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'/widgets/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
@@ -268,19 +268,19 @@ class DashboardAPI(EntityAPI):
     name = 'dashboard'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': f'/dashboards/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/dashboards',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'/dashboards/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
@@ -301,19 +301,19 @@ class ReportAPI(EntityAPI):
     name = 'report'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': f'/reports/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/reports',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'/report/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
@@ -329,19 +329,19 @@ class IncidentTypeAPI(EntityAPI):
     name = 'incidenttype'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/incidenttypes/export',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/incidenttypes/export',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/incidenttype/delete',
                                 'body': {'id': specific_id},
                                 'using': INSTANCE_NAME},
@@ -358,20 +358,20 @@ class ClassifierAPI(EntityAPI):
     name = 'classifier'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': f'/classifier/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/classifier/search',
                                 'body': {'page': 0, 'size': 100},
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'/classifier/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
@@ -395,19 +395,19 @@ class ReputationAPI(EntityAPI):
     name = 'reputation'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/reputation/export',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/reputation/export',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'/reputation/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
@@ -423,19 +423,19 @@ class LayoutAPI(EntityAPI):
     name = 'layoutscontainer'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': f'/layout/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/layouts',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': f'/layout/{specific_id}/remove',
                                 'body': {},
                                 'using': INSTANCE_NAME},
@@ -452,21 +452,21 @@ class JobAPI(EntityAPI):
     name = 'job'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/jobs/search',
                                 'body': {'page': 0, 'size': 1, 'query': f'name:"{specific_id}"'},
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/jobs/search',
                                 'body': {'page': 0, 'size': 100},
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'jobs/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
@@ -492,19 +492,19 @@ class ListAPI(EntityAPI):
     name = 'list'
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': f'/lists/download/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/lists/names',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-post',
+        return execute_command('core-api-post',
                                {'uri': '/lists/delete',
                                 'body': {'id': specific_id},
                                 'using': INSTANCE_NAME},
@@ -531,19 +531,19 @@ class InstalledPackAPI(EntityAPI):
         self.always_excluded = json.loads(core_packs_response.text).get("core_packs_list") + self.always_excluded
 
     def search_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': f'/contentpacks/installed/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def search_all(self) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-get',
+        return execute_command('core-api-get',
                                {'uri': '/contentpacks/installed-expired',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)
 
     def delete_specific_id(self, specific_id: str) -> tuple[bool, dict | str]:
-        return execute_command('demisto-api-delete',
+        return execute_command('core-api-delete',
                                {'uri': f'/contentpacks/installed/{specific_id}',
                                 'using': INSTANCE_NAME},
                                fail_on_error=False)

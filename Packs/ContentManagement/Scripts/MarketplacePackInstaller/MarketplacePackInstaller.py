@@ -32,7 +32,7 @@ class ContentPackInstaller:
             args['using'] = self.instance_name
 
         status, res = execute_command(
-            'demisto-api-get',
+            'core-api-get',
             args,
             fail_on_error=False,
         )
@@ -68,7 +68,7 @@ class ContentPackInstaller:
             args['using'] = self.instance_name
 
         status, res = execute_command(
-            'demisto-api-get',
+            'core-api-get',
             args,
             fail_on_error=False,
         )
@@ -108,7 +108,7 @@ class ContentPackInstaller:
             args['using'] = self.instance_name
 
         status, res = execute_command(
-            'demisto-api-post',
+            'core-api-post',
             args,
             fail_on_error=False,
         )
@@ -184,7 +184,7 @@ class ContentPackInstaller:
             args['using'] = self.instance_name
 
         execute_command(
-            'demisto-api-post',
+            'core-api-post',
             args,
             extract_contents=False
         )
