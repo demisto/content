@@ -53,6 +53,7 @@ merge-dev-secrets:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
+    - echo "====starting===="
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - section_start "Merging and deleting dev secrets"
