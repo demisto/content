@@ -1495,22 +1495,21 @@ if __name__ == '__main__':
         else:
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
-    else:
-        match (sdk_nightly, nightly, marketplace):
-            case False, False, _:  # not nightly
-                collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
-            case (True, _, _):
-                collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
-            case (False, True, (MarketplaceVersions.XSOAR)):
+    elif sdk_nightly:
+            collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
+            
+    elif nightly:
+        match marketplace:
+            case MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
-            case (False, True, MarketplaceVersions.XSOAR_SAAS):
+            case MarketplaceVersions.XSOAR_SAAS:
                 collector = XsoarSaasE2ETestCollector(marketplace=marketplace, graph=graph)
-            case False, True, MarketplaceVersions.MarketplaceV2:
+            case MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
-            case False, True, MarketplaceVersions.XPANSE:
-                collector = XPANSENightlyTestCollector(graph=graph)
-            case _:
-                raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=} and/or {sdk_nightly=}")
+            case MarketplaceVersions.XPANSE:
+                collector = XPANSENightlyTestCollector(graph=graph)    
+    else: 
+        collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
 
     collected = collector.collect()
     output(collected)  # logs and writes to output files
