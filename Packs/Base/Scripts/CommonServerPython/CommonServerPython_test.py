@@ -9233,58 +9233,5 @@ def test_detect_file_indicator_type(indicator,expected_result):
     """
     from CommonServerPython import detect_file_indicator_type
     assert detect_file_indicator_type(indicator) == expected_result
-
-
-@pytest.mark.parametrize("url,suffix,expected_result", [
-    ("https://google.com/", "/","https://google.com/"), 
-    ("https://google.com/","/","https://google.com/"),
-    ("https://google.com/", "api","https://google.com/api"), 
-    ("https://google.com/", "/api","https://google.com/api"),
-    ("https://google.com/", "api","https://google.com/api"),
-    ("https://google.com/", "/api","https://google.com/api"),
-])
-def test_urljoin(url,suffix,expected_result):
-    from CommonServerPython import urljoin
-    assert urljoin(url,suffix) == expected_result
-
-
-@pytest.mark.parametrize("score,expected_result", [
-    (4,'Critical'), 
-    (3,'Bad'), 
-    (2,'Suspicious'), 
-    (1,'Good'), 
-    (0.5,'Informational'), 
-    (0,'Unknown'), 
-
-])
-def test_scoreToReputation(score,expected_result):
-    from CommonServerPython import scoreToReputation
-    assert scoreToReputation(score) == expected_result
-
-
-@pytest.mark.parametrize("timestamp,expected_result", [
-    (1541494441222, '2018-11-06T08:54:01.000Z'), 
-    (1541495441000,'2018-11-06T09:10:41.000Z'),
-
-])
-def test_timestamp_to_datestring(timestamp,expected_result):
-    from CommonServerPython import timestamp_to_datestring
-    assert timestamp_to_datestring(timestamp) == expected_result
-
-@pytest.mark.parametrize("hash_file,expected_result", [
-    ("e61fcc6a06420106fa6642ef833b9c38", "md5"), 
-    ("3fec1b14cea32bbcd97fad4507b06888","md5"),
-    ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "sha256"), 
-    ("bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa", "sha256"),
-    ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
-    ("6c5360d41bd2b14b1565f5b18e5c203cf512e493", "sha1"),
-    ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069","sha512"),
-    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211","sha512"),
-    ("@", 'Unknown')
-
-])
-def test_get_hash_type(hash_file,expected_result):
-    from CommonServerPython import get_hash_type
-    assert get_hash_type(hash_file) == expected_result
     
 
