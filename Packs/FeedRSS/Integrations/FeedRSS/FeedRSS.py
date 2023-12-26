@@ -42,12 +42,13 @@ class Client(BaseClient):
         parsed_indicators: list = []
         if not self.feed_data:
             raise DemistoException(f"Could not parse feed data {self._base_url}")
-
         for indicator in reversed(self.feed_data.entries):
+            demisto.debug(f'{indicator=}')
             publications = []
             if indicator:
                 published = dateparser.parse(indicator.published)
                 if not published:
+                    demisto.debug(f"skips indicator as it wasn't found published")
                     continue
                 published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
                 publications.append({
@@ -58,6 +59,7 @@ class Client(BaseClient):
                 })
                 text = self.get_url_content(indicator.get('link'))
                 if not text:
+                    demisto.debug(f"skips indicator as it wasn't found text")
                     continue
                 indicator_obj = {
                     "type": 'Report',
@@ -74,7 +76,6 @@ class Client(BaseClient):
                 }
                 if self.tlp_color:
                     indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
-
             parsed_indicators.append(indicator_obj)
 
         return parsed_indicators
@@ -106,8 +107,10 @@ class Client(BaseClient):
 
 def fetch_indicators(client: Client):
     feed_response = client.request_feed_url()
+    demisto.debug(f'response content-type = {feed_response.headers["content-type"]}')
     client.parse_feed_data(feed_response)
     parsed_indicators = client.create_indicators_from_response()
+    demisto.debug(f'was returned {len(parsed_indicators)} parsed_indicators')
     return parsed_indicators
 
 
@@ -156,6 +159,7 @@ def main():
             reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
             raise Exception("Please provide a valid value for the Source Reliability parameter.")
+        demisto.debug(f'{server_url=}')
         client = Client(server_url=server_url,
                         use_ssl=not params.get('insecure', False),
                         proxy=params.get('proxy'),
