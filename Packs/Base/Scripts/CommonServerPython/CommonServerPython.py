@@ -1661,7 +1661,7 @@ class IntegrationLogger(object):
                         if any(header_to_skip in part for header_to_skip in headers_to_skip):
                             continue
                         if any(header_to_sanitize in part for header_to_sanitize in headers_to_sanitize):
-                            headers.append(" " + part.split(' ')[0] + " " + XX_REPLACED)
+                            headers.append(part.split(' ')[0] + " " + XX_REPLACED)
                             continue
                         headers.append(part)
             curl_headers = ''
