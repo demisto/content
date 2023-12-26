@@ -47,11 +47,6 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: Fetch Assets and Vulnerabilities
-  name: isFetchAssets
-  type: 8
-  section: Collect - assets
-  required: false
 - display: Events Settings
   name: events
   type: 20
