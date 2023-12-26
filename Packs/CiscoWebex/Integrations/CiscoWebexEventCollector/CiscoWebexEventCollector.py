@@ -18,11 +18,6 @@ COMMAND_FUNCTION_TO_EVENT_TYPE = {
     'get_security_audits': 'Security Audit Events',
     'get_compliance_officer_events': 'Events',
 }
-EVENT_TYPE_TO_XSIAM_EVENT_TYPE = {
-    'admin_audits': 'Admin Audit Events',
-    'security_audits': 'Admin Audit Events',
-    'compliance_officer_events': 'Events',
-}
 
 
 ''' HELPER FUNCTIONS '''
@@ -44,7 +39,7 @@ def create_last_run() -> dict:
 def add_fields_to_events(events: list[dict], evnet_type: str):
     for event in events:
         event['_time'] = event.get('created')
-        event['source_log_type'] = EVENT_TYPE_TO_XSIAM_EVENT_TYPE.get(evnet_type)
+        event['source_log_type'] = evnet_type
 
 
 def increase_datetime_for_next_fetch(events: list) -> str:
@@ -169,6 +164,7 @@ class AdminClient(Client):
             'to': date_time_to_iso_format(datetime.utcnow()),
             'max': min(limit, 200),
         }
+
         return self._http_request(method='GET', url_suffix='adminAudit/events', params=params, resp_type='response')
 
     def get_security_audits(self, from_date: str, limit: int = 100, next_url: str = '') -> requests.Response:
@@ -254,6 +250,8 @@ def get_events_with_pagination(client_function: callable, from_date: str, limit:
         response_json = response.json()
         events.extend(response_json.get('items', []))
 
+    add_fields_to_events(events, evnet_type=COMMAND_FUNCTION_TO_EVENT_TYPE.get(client_function.__name__))
+
     return events, next_url
 
 
@@ -291,7 +289,6 @@ def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient,
         if events:
             last_run[event_type]['next_url'] = next_url
             last_run[event_type]['since_datetime'] = increase_datetime_for_next_fetch(events)
-            add_fields_to_events(events, event_type)
             all_events.extend(events)
 
     demisto.debug(f'finished fetching {len(all_events)} events, last_run will be set to: {last_run}')
