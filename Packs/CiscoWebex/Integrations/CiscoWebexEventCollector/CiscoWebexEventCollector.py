@@ -244,8 +244,7 @@ def oauth_test(client: Client) -> CommandResults:
     )
 
 
-def get_events_with_pagination(client_function: Callable, from_date: str, limit: int | None = DEFAULT_MAX_FETCH,
-                               next_url: str = '') -> tuple[list, str]:
+def get_events_with_pagination(client_function: Callable, from_date: str, limit: int, next_url: str = '') -> tuple[list, str]:
     events: list[dict] = []
 
     response = client_function(from_date, limit, next_url)
@@ -264,7 +263,7 @@ def get_events_with_pagination(client_function: Callable, from_date: str, limit:
 
 def get_events_command(command_function: Callable, args: dict) -> tuple[CommandResults, list]:
     from_date = args.get('since_datetime', date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
-    limit = arg_to_number(args.get('limit', 5))
+    limit = arg_to_number(args.get('limit', 5)) or DEFAULT_MAX_FETCH
 
     events, _ = get_events_with_pagination(command_function, from_date=from_date, limit=limit)
 
@@ -274,8 +273,8 @@ def get_events_command(command_function: Callable, args: dict) -> tuple[CommandR
     return command_results, events
 
 
-def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient,
-                 last_run: dict, max_fetch: int | None = DEFAULT_MAX_FETCH) -> tuple[list, dict]:
+def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient, last_run: dict,
+                 max_fetch: int) -> tuple[list, dict]:
     all_events = []
 
     if not last_run:
