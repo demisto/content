@@ -929,14 +929,11 @@ def main():
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except HTTPError as http_error:
-        if hasattr(http_error, 'response'):
-            status_code = http_error.response.status_code
-            if hasattr(http_error.response, 'content'):
-                error_message = str(http_error.response.content)
-                demisto.debug(error_message)
-                return_error(f"Error in API request: {error_message} with status_code {status_code}")
+        if hasattr(http_error, 'response') and hasattr(http_error.response, 'content'):
+            demisto.debug(str(http_error.response.content))
+            return_error(f"Error in API request {str(http_error.response.content)}")
         else:
-            return_error(f"Error in API request: {str(http_error)}")
+            return_error(f"Error in API request {str(http_error)}")
     except Exception as err:
         return_error(str(err))
 
