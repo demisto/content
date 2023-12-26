@@ -86,7 +86,7 @@ configuration:
   required: false
   section: Collect - assets
 - defaultvalue: '1440'
-  display: Assets Fetch Interval
+  display: Assets and vulnerabilities fetch Interval
   name: assetsFetchInterval
   type: 19
   required: false
