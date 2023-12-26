@@ -1587,7 +1587,7 @@ function ListRulesCommand {
     $display_all = ConvertTo-Boolean $kwargs.display_all
     $raw_response = $client.GetRules($mailbox, $limit, $display_all)
     $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority
-    $human_readable = TableToMarkdown $md_columns "Results of $command"
+    $human_readable = TableToMarkdown $md_columns "Results of $command:"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
