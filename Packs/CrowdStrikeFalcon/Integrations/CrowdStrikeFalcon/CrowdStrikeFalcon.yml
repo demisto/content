@@ -386,7 +386,7 @@ script:
       name: ids
       required: true
     - auto: PREDEFINED
-      description: 'The status to transition a detection to. Possible values: "new", "in_progress", "true_positive", "false_positive", "closed", "reopened" and "ignored".'
+      description: 'The status to transition a detection to.'
       name: status
       predefined:
       - new
@@ -1669,7 +1669,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: 'The type of indicator. Possible values are: "domain", "ipv4", "ipv6", "md5", "sha1", or "sha256".'
+      description: The type of indicator.
       name: type
       predefined:
       - domain
