@@ -38,7 +38,7 @@ ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE = ARTIFACTS_FOLDER_XSOAR / "server_type_XSOAR
 ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE = ARTIFACTS_FOLDER_XSOAR / "server_type_XSOAR SAAS"
 ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE = ARTIFACTS_FOLDER_XPANSE / "server_type_XPANSE"
 ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE = ARTIFACTS_FOLDER_XSIAM / "server_type_XSIAM"
-GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
+GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
@@ -323,13 +323,13 @@ def construct_slack_msg(triggering_workflow: str,
                         shame_message: tuple[str, str] | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
-    # if shame_message:
-    #     shame_title, shame_value = shame_message
-    #     content_fields.append({
-    #         "title": shame_title,
-    #         "value": shame_value,
-    #         "short": False
-    #     })
+    if shame_message:
+        shame_title, shame_value = shame_message
+        content_fields.append({
+            "title": shame_title,
+            "value": shame_value,
+            "short": False
+        })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:

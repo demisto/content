@@ -356,7 +356,7 @@ def get_slack_user_name(name:str, name_mapping: str) -> str:
     mapping = load_json(
         name_mapping
     )
-    # FIXME comment what were doing here!
+    # If the name is 'github-actions[bot]', then return the owner of the docker image update bot.
     if name == 'github-actions[bot]':
         return mapping["docker_images"]["owner"]
     else:
