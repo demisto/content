@@ -54,6 +54,7 @@ LOOK_BACK_HOURS = 48
 
 def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
+    parser.add_argument('-n', '--name-mapping', help='Path to name mapping file.', required=True)
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
     parser.add_argument('-p', '--pipeline_id', help='The pipeline id to check the status of', required=True)
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
@@ -540,7 +541,7 @@ def main():
             name, email, pr = shame(pivot_commit)
             if name == 'content-bot':
                 name = get_reviewer(pr)
-            name = get_slack_user_name(name)
+            name = get_slack_user_name(name, options.name_mapping)
             msg = "broke" if pipeline_changed_status else "fixed" 
             color = "danger" if pipeline_changed_status else "good"  
             emoji = ":cry:" if pipeline_changed_status else ":muscle:"
