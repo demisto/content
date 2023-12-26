@@ -9,7 +9,7 @@ COMMAND_ERROR_MSG = (
     'Error occurred while trying to perform "{action}" on the selected incident ids: {ids}\n'
     "Error details: {error}"
 )
-ACTION_ON_CAMPAIGN_FIELD_NAME = "actionsoncampaignincidentscopy"
+ACTION_ON_CAMPAIGN_FIELD_NAME = "actionsoncampaignincidents"
 ACTION_ON_CAMPAIGN_LOWER_FIELD_NAME = "actionsonlowsimilarityincidents"
 
 SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME = "selectcampaignincidents"
