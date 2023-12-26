@@ -10,7 +10,7 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "disableMap": { "correlations": ["f60c8c3c-48db-4f40-afd0-1e755910521e"]},
+    "disableMap": { "correlations": [{"id": "f60c8c3c-48db-4f40-afd0-1e755910521e", "status": false}]},
     "tags": [],
     "useCases": [],
     "keywords": [],
