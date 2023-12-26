@@ -2,10 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 from dateutil import parser
+from typing import Callable
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'cisco'
 PRODUCT = 'webex'
 URL = 'https://webexapis.com/v1/'
@@ -18,7 +18,7 @@ COMMAND_FUNCTION_TO_EVENT_TYPE = {
     'get_security_audits': 'Security Audit Events',
     'get_compliance_officer_events': 'Events',
 }
-
+DEFAULT_MAX_FETCH = 200
 
 ''' HELPER FUNCTIONS '''
 
@@ -36,7 +36,7 @@ def create_last_run() -> dict:
     }
 
 
-def add_fields_to_events(events: list[dict], evnet_type: str):
+def add_fields_to_events(events: list[dict], evnet_type: str | None):
     for event in events:
         event['_time'] = event.get('created')
         event['source_log_type'] = evnet_type
@@ -52,8 +52,8 @@ def increase_datetime_for_next_fetch(events: list) -> str:
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
-    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str, scope: str,
-                 user: str):
+    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
+                 scope: str | None, user: str):
         super().__init__(base_url=url, verify=verify, proxy=proxy)
         self.client_id = client_id
         self.client_secret = client_secret
@@ -61,7 +61,7 @@ class Client(BaseClient):
         self.scope = scope
         self.user = user
 
-    def create_access_token(self, grant_type: str, code: str = None, refresh_token: str = None) -> dict:
+    def create_access_token(self, grant_type: str, code: str | None = None, refresh_token: str | None = None) -> dict:
         """Generates refresh & and access tokens.
         Args:
             grant_type: the grant_type could be `authorization_code` or `refresh_token`.
@@ -85,17 +85,17 @@ class Client(BaseClient):
         now = datetime.utcnow()
         context = assign_params(
             access_token=result.get('access_token'),
-            access_token_expires_in=date_time_to_iso_format(now + timedelta(seconds=result.get('expires_in'))),
+            access_token_expires_in=date_time_to_iso_format(now + timedelta(seconds=result.get('expires_in', 0))),
             refresh_token=result.get('refresh_token'),
             refresh_token_expires_in=date_time_to_iso_format(
-                now + timedelta(seconds=result.get('refresh_token_expires_in'))
+                now + timedelta(seconds=result.get('refresh_token_expires_in', 0))
             ),
         )
         integration_context = get_integration_context()
         integration_context[self.user] = context
         set_integration_context(integration_context)
 
-    def get_access_token(self) -> str:
+    def get_access_token(self) -> str | None:
         """
             Returns the access token from the integration context or generates a new one using the refresh_token.
 
@@ -116,6 +116,8 @@ class Client(BaseClient):
 
             return user_integration_context.get('access_token')  # Return the access token from the integration context.
 
+        return None
+
     def oauth_start(self) -> str:
         """returns a URL as a string to use in the oauth start command."""
         params = assign_params(
@@ -126,7 +128,7 @@ class Client(BaseClient):
         )
         return f'{urljoin(URL, "authorize?")}{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}'
 
-    def oauth_complete(self, code: str):
+    def oauth_complete(self, code: str | None):
         """Completes the authentication process.
         It gets a code returned from the `oauth_start` command and sets the access & refresh token.
 
@@ -144,7 +146,8 @@ class Client(BaseClient):
 
 
 class AdminClient(Client):
-    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str, scope: str,
+    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
+                 scope: str | None,
                  org_id: str):
         super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='admin')
         self.org_id = org_id
@@ -155,19 +158,19 @@ class AdminClient(Client):
     def oauth_test(self):
         self.get_admin_audits(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
-    def get_admin_audits(self, from_date: str, limit: int = 100, next_url: str = '') -> requests.Response:
+    def get_admin_audits(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
         if next_url:
             return self._http_request(method='GET', full_url=next_url, resp_type='response')
         params = {
             'orgId': self.org_id,
             'from': from_date,
             'to': date_time_to_iso_format(datetime.utcnow()),
-            'max': min(limit, 200),
+            'max': min(limit, DEFAULT_MAX_FETCH),
         }
 
         return self._http_request(method='GET', url_suffix='adminAudit/events', params=params, resp_type='response')
 
-    def get_security_audits(self, from_date: str, limit: int = 100, next_url: str = '') -> requests.Response:
+    def get_security_audits(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
         if next_url:
             return self._http_request(method='GET', full_url=next_url, resp_type='response')
         params = {
@@ -180,7 +183,8 @@ class AdminClient(Client):
 
 
 class ComplianceOfficerClient(Client):
-    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str, scope: str):
+    def __init__(self, url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, redirect_uri: str,
+                 scope: str | None):
         super().__init__(url, verify, proxy, client_id, client_secret, redirect_uri, scope, user='compliance_officer')
         self._headers = {
             'Authorization': f'Bearer {self.get_access_token()}'
@@ -189,7 +193,7 @@ class ComplianceOfficerClient(Client):
     def oauth_test(self):
         self.get_compliance_officer_events(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
-    def get_compliance_officer_events(self, from_date: str, limit: int = 100, next_url: str = '') -> requests.Response:
+    def get_compliance_officer_events(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
         if next_url:
             return self._http_request(method='GET', full_url=next_url, resp_type='response')
         params = {
@@ -233,12 +237,15 @@ def oauth_complete(client: Client, args: dict) -> CommandResults:
     )
 
 
-def oauth_test(client: Client) -> str:
+def oauth_test(client: Client) -> CommandResults:
     client.oauth_test()
-    return 'ok'
+    return CommandResults(
+        readable_output='### Test succeeded!'
+    )
 
 
-def get_events_with_pagination(client_function: callable, from_date: str, limit: int, next_url: str = '') -> tuple[list, str]:
+def get_events_with_pagination(client_function: Callable, from_date: str, limit: int | None = DEFAULT_MAX_FETCH,
+                               next_url: str = '') -> tuple[list, str]:
     events: list[dict] = []
 
     response = client_function(from_date, limit, next_url)
@@ -246,7 +253,7 @@ def get_events_with_pagination(client_function: callable, from_date: str, limit:
     events.extend(response_json.get('items', []))
 
     while (next_url := demisto.get(response.links, 'next.url', '')) and len(events) < limit:
-        response: client_function(from_date, limit, next_url)
+        response = client_function(from_date, limit, next_url)
         response_json = response.json()
         events.extend(response_json.get('items', []))
 
@@ -255,7 +262,7 @@ def get_events_with_pagination(client_function: callable, from_date: str, limit:
     return events, next_url
 
 
-def get_events_command(command_function: callable, args: dict) -> tuple[CommandResults, list]:
+def get_events_command(command_function: Callable, args: dict) -> tuple[CommandResults, list]:
     from_date = args.get('since_datetime', date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
     limit = arg_to_number(args.get('limit', 5))
 
@@ -268,7 +275,7 @@ def get_events_command(command_function: callable, args: dict) -> tuple[CommandR
 
 
 def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient,
-                 last_run: dict, max_fetch: int = 200) -> tuple[list, dict]:
+                 last_run: dict, max_fetch: int | None = DEFAULT_MAX_FETCH) -> tuple[list, dict]:
     all_events = []
 
     if not last_run:
@@ -299,7 +306,7 @@ def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient,
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
 
     params = demisto.params()
@@ -307,18 +314,18 @@ def main() -> None:
     command = demisto.command()
 
     # parse parameters
-    admin_client_id = params.get('admin_credentials').get('identifier')
-    admin_client_secret = params.get('admin_credentials').get('password')
+    admin_client_id = demisto.get(params, 'admin_credentials.identifier', '')
+    admin_client_secret = demisto.get(params, 'admin_credentials.password', '')
     admin_redirect_uri = params.get('admin_app_redirect_uri')
     admin_org_id = params.get('admin_org_id')
-    compliance_officer_client_id = params.get('compliance_officer_credentials').get('identifier')
-    compliance_officer_client_secret = params.get('compliance_officer_credentials').get('password')
+    compliance_officer_client_id = demisto.get(params, 'compliance_officer_credentials.identifier', '')
+    compliance_officer_client_secret = demisto.get(params, 'compliance_officer_credentials.password', '')
     compliance_officer_redirect_uri = params.get('compliance_officer_redirect_uri')
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_fetch = arg_to_number(args.get('max_fetch', 200))
+    max_fetch = arg_to_number(args.get('max_fetch', DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     if not 0 < max_fetch <= 2000:
-        max_fetch = 2000
+        max_fetch = DEFAULT_MAX_FETCH
 
     demisto.debug(f'Command being called is {demisto.command()}')
 

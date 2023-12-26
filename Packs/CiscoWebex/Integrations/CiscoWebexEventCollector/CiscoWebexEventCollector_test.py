@@ -202,7 +202,7 @@ def test_oauth_test(client):
         m.get('https://url.com/events', text=util_load_text('test_data/events.json'))
         result = oauth_test(client)
 
-    assert result == 'ok'
+    assert result.readable_output == '### Test succeeded!'
 
 
 @pytest.mark.parametrize('command_function, args', [

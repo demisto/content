@@ -1,5 +1,5 @@
 Cisco Webex Event Collector fetches Events and Admin Audit Events and Security Audit Events.
-This integration was integrated and tested with version xx of CiscoWebexEventCollector.
+This integration was integrated and tested with version 1 of CiscoWebex API.
 
 ## Configure Cisco Webex Event Collector on Cortex XSOAR
 
