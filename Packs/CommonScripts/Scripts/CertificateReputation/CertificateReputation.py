@@ -203,7 +203,7 @@ def dbot_context(value: str, certificate_context: dict[str, Any]
 
         if (subject_key_identifier_digest is not None
             and authority_key_identifier_ki is not None
-                and subject_key_identifier_digest == authority_key_identifier_ki):
+            and subject_key_identifier_digest == authority_key_identifier_ki):
             comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
             tags.append(CertificateValidationTag.SELF_SIGNED)
             current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
@@ -221,7 +221,7 @@ def dbot_context(value: str, certificate_context: dict[str, Any]
         if (CertificateValidationTag.SELF_SIGNED in tags
             and subject_dn is not None
             and issuer_dn is not None
-                and subject_dn != issuer_dn):
+            and subject_dn != issuer_dn):
             comments.append(f'{CertificateValidationTag.INVALID_DISTINGUISHED_NAMES.value}'
                             ' Self-Signed Certificate with different Issuer DN and Subject DN')
             tags.append(CertificateValidationTag.INVALID_DISTINGUISHED_NAMES)

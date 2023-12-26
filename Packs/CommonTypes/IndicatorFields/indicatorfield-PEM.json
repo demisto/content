@@ -1,6 +1,7 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
     "associatedTypes": [
+        "X509 Certificate"
     ],
     "caseInsensitive": true,
     "cliName": "pem",
