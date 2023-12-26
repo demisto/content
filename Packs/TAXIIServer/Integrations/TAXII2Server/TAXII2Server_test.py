@@ -553,13 +553,15 @@ def test_taxii21_with_taxii20_header(mocker, taxii2_server_v21, header: str):
 
 @pytest.mark.parametrize('query,types,added_after,expected_response', (
     ('my custom query', [], "2023-07-06T10:57:15.133309Z", 'my custom query and modified:>="2023-07-06T10:57:15.133309Z"'),
-    ('my custom query', ['file'], "2023-07-06T10:57:15.133309Z", '(my custom query) and (type:"File") and modified:>="2023-07-06T10:57:15.133309Z"'),
-    ('my custom query', ['file', 'domain'], "2023-07-06T10:57:15.133309Z", '(my custom query) and (type:"File" or type:"domain") and modified:>="2023-07-06T10:57:15.133309Z"'),
+    ('my custom query', ['file'], "2023-07-06T10:57:15.133309Z",
+     '(my custom query) and (type:"File") and modified:>="2023-07-06T10:57:15.133309Z"'),
+    ('my custom query', ['file', 'domain'], "2023-07-06T10:57:15.133309Z",
+     '(my custom query) and (type:"File" or type:"domain") and modified:>="2023-07-06T10:57:15.133309Z"'),
 ))
 def test_create_query(query: str, types: list[str], added_after, expected_response: str):
     """
         Given
-            a query and types to match
+            a query, types to match, and added after.
         When
             calling create_query
         Then
