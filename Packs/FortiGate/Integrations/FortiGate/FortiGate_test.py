@@ -4,9 +4,8 @@ from typing import Any, Callable
 from urllib.parse import urljoin
 
 import CommonServerPython
-import pytest
-
 import FortiGate
+import pytest
 
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com"
@@ -156,12 +155,13 @@ def test_get_address_type_error(args: dict[str, Any], error_message: str):
 @pytest.mark.parametrize(
     "args, expected_result",
     [
-        # Successful identification of each service type
-        ({"start_ip": "0.0.0.0", "end_ip": "0.0.0.0", "tcpRange": "80"}, "TCP/UDP/SCTP"),
-        ({"ip_protocol": "6"}, "IP"),
-        ({"icmp_version": "icmp", "icmp_type": "8", "icmp_code": "0"}, "icmp"),
-        ({"icmp_version": "icmp6", "icmp_type": "128", "icmp_code": "0"}, "icmp6"),
-        # Add more cases for each type
+        ({"start_ip": "0.0.0.0", "end_ip": "0.0.0.0", "tcpRange": "80"}, FortiGate.TCP_UDP_SCTP),
+        ({"tcpRange": "80"}, FortiGate.TCP_UDP_SCTP),
+        ({"udpRange": "80"}, FortiGate.TCP_UDP_SCTP),
+        ({"sctpRange": "80"}, FortiGate.TCP_UDP_SCTP),
+        ({"ip_protocol": "6"}, FortiGate.IP),
+        ({"icmp_version": "icmp", "icmp_type": "8", "icmp_code": "0"}, FortiGate.ICMP),
+        ({"icmp_version": "icmp6", "icmp_type": "128", "icmp_code": "0"}, FortiGate.ICMP6),
     ],
 )
 def test_get_service_type_success(args: dict[str, Any], expected_result: str):
@@ -493,7 +493,7 @@ def test_to_kebab_case(given: str, expected: str):
                 {
                     "Name": "Service1",
                     "Category": "Cat1",
-                    "Protocol": "TCP/UDP/SCTP",
+                    "Protocol": FortiGate.TCP_UDP_SCTP,
                     "Ports": {"TCP": "80", "UDP": "53", "SCTP": "10000"},
                     "IPRange": "0.0.0.0-0.0.0.0",
                 }
@@ -502,110 +502,137 @@ def test_to_kebab_case(given: str, expected: str):
                 {
                     "Name": "Service1",
                     "Category": "Cat1",
-                    "Protocol": "TCP/UDP/SCTP",
+                    "Protocol": FortiGate.TCP_UDP_SCTP,
                     "Details": "TCP/80 UDP/53 SCTP/10000",
                     "IP/FQDN": "0.0.0.0-0.0.0.0",
                 }
             ],
         ),
+        (
+            FortiGate.build_service_group_table,
+            [
+                {
+                    "Name": "Group1",
+                    "Comment": "A sample group",
+                    "Member": {"Name": ["Member1", "Member2"]},
+                }
+            ],
+            [
+                {
+                    "Name": "Group1",
+                    "Comments": "A sample group",
+                    "Members": ["Member1", "Member2"],
+                }
+            ],
+        ),
+        (
+            FortiGate.build_policy_table,
+            [
+                {
+                    "ID": "1",
+                    "Name": "Policy1",
+                    "SourceInterface": "Interface1",
+                    "DestinationInterface": "Interface2",
+                    "Schedule": "Always",
+                    "Service": "Web",
+                    "Action": "Allow",
+                    "NAT": "Enabled",
+                    "Security": "Profile1",
+                    "Log": "Enabled",
+                    "Source": "0.0.0.0",
+                    "Destination": "0.0.0.0",
+                },
+                {
+                    "ID": "2",
+                    "Name": "Policy2",
+                    "SourceInterface": "Interface3",
+                    "DestinationInterface": "Interface4",
+                    "Schedule": "Night",
+                    "Service": "Email",
+                    "Action": "Deny",
+                    "NAT": "Disabled",
+                    "Security": "Profile2",
+                    "Log": "Disabled",
+                    "Source6": "0000::0",
+                    "Destination6": "0000::0",
+                },
+            ],
+            [
+                {
+                    "ID": "1",
+                    "Name": "Policy1",
+                    "From": "Interface1",
+                    "To": "Interface2",
+                    "Schedule": "Always",
+                    "Service": "Web",
+                    "Action": "Allow",
+                    "NAT": "Enabled",
+                    "Security Profiles": "Profile1",
+                    "Log": "Enabled",
+                    "Source": "0.0.0.0",
+                    "Destination": "0.0.0.0",
+                },
+                {
+                    "ID": "2",
+                    "Name": "Policy2",
+                    "From": "Interface3",
+                    "To": "Interface4",
+                    "Schedule": "Night",
+                    "Service": "Email",
+                    "Action": "Deny",
+                    "NAT": "Disabled",
+                    "Security Profiles": "Profile2",
+                    "Log": "Disabled",
+                    "Source": "0000::0",
+                    "Destination": "0000::0",
+                },
+            ],
+        ),
     ],
 )
-def test_build_service_table(build_table: Callable, items: dict[str, Any], expected_table: dict[str, Any]):
+def test_build_table(build_table: Callable, items: dict[str, Any], expected_table: dict[str, Any]):
     """
     Scenario:
-    - Test the build_service_table function's ability to correctly format data into a service table.
+    - Test the build table function's ability to correctly format data into a different tables.
     """
     assert build_table(items) == expected_table
 
 
-def testbuild_service_group_table():
-    """
-    Scenario:
-    - Test the build_service_group_table function's ability to correctly format data into a service group table.
-    """
-    items = [
-        {
-            "Name": "Group1",
-            "Comment": "A sample group",
-            "Member": {"Name": ["Member1", "Member2"]},
-        }
-    ]
-    expected_result = [
-        {
-            "Name": "Group1",
-            "Comments": "A sample group",
-            "Members": ["Member1", "Member2"],
-        }
-    ]
-    assert FortiGate.build_service_group_table(items) == expected_result
+@pytest.mark.parametrize(
+    "item, expected_result",
+    [
+        ({"Ports": {"TCP": "80 443", "UDP": "53", "SCTP": "10000"}}, "TCP/80 TCP/443 UDP/53 SCTP/10000"),
+        ({"Ports": {}}, ""),
+        ({"Ports": {"TCP": "22"}}, "TCP/22"),
+    ],
+)
+def test_handle_tcp_udp_sctp(item: dict[str, Any], expected_result: str):
+    """Validates that the function correctly handles different combinations of TCP, UDP, and SCTP port ranges."""
+    assert FortiGate.handle_tcp_udp_sctp(item) == expected_result
 
 
-def test_build_policy_table():
-    """
-    Test the build_policy_table function to ensure it correctly builds the policy table from given items.
-    """
-    items = [
-        {
-            "ID": "1",
-            "Name": "Policy1",
-            "SourceInterface": "Interface1",
-            "DestinationInterface": "Interface2",
-            "Schedule": "Always",
-            "Service": "Web",
-            "Action": "Allow",
-            "NAT": "Enabled",
-            "Security": "Profile1",
-            "Log": "Enabled",
-            "Source": "0.0.0.0",
-            "Destination": "0.0.0.0",
-        },
-        {
-            "ID": "2",
-            "Name": "Policy2",
-            "SourceInterface": "Interface3",
-            "DestinationInterface": "Interface4",
-            "Schedule": "Night",
-            "Service": "Email",
-            "Action": "Deny",
-            "NAT": "Disabled",
-            "Security": "Profile2",
-            "Log": "Disabled",
-            "Source6": "0000::0",
-            "Destination6": "0000::0",
-        },
-    ]
-    expected_result = [
-        {
-            "ID": "1",
-            "Name": "Policy1",
-            "From": "Interface1",
-            "To": "Interface2",
-            "Schedule": "Always",
-            "Service": "Web",
-            "Action": "Allow",
-            "NAT": "Enabled",
-            "Security Profiles": "Profile1",
-            "Log": "Enabled",
-            "Source": "0.0.0.0",
-            "Destination": "0.0.0.0",
-        },
-        {
-            "ID": "2",
-            "Name": "Policy2",
-            "From": "Interface3",
-            "To": "Interface4",
-            "Schedule": "Night",
-            "Service": "Email",
-            "Action": "Deny",
-            "NAT": "Disabled",
-            "Security Profiles": "Profile2",
-            "Log": "Disabled",
-            "Source": "0000::0",
-            "Destination": "0000::0",
-        },
-    ]
+@pytest.mark.parametrize(
+    "item, expected_result",
+    [({"ProtocolNumber": 4}, "IP/4"), ({"ProtocolNumber": 0}, "Any"), ({}, "Any")],
+)
+def test_handle_ip(item, expected_result):
+    """Checks if the function correctly handles the IP protocol number."""
+    assert FortiGate.handle_ip(item) == expected_result
 
-    assert FortiGate.build_policy_table(items) == expected_result
+
+@pytest.mark.parametrize(
+    "item, expected_result",
+    [
+        ({"Protocol": "ICMP", "ICMPType": 8, "ICMPCode": 1}, "ICMP/1"),
+        ({"Protocol": "ICMP", "ICMPType": 8, "ICMPCode": 0}, "ICMP/ANY"),
+        ({"Protocol": "ICMP6", "ICMPType": 128}, "ICMP6/ANY"),
+        ({"Protocol": "ICMP"}, "ANY"),
+        ({}, "ANY"),
+    ],
+)
+def test_handle_icmp_icmp6(item, expected_result):
+    """Ensures that the function correctly processes ICMP and ICMP6 protocol types and codes."""
+    assert FortiGate.handle_icmp_icmp6(item) == expected_result
 
 
 def test_map_keys():
@@ -631,6 +658,104 @@ def test_map_keys():
     }
 
     assert FortiGate.map_keys(old_dict, mappings) == expected_result
+
+
+@pytest.mark.parametrize(
+    "input_items, action, current_items, expected_result",
+    [
+        (
+            ["item3", "item4"],
+            "add",
+            ["item1", "item2"],
+            ["item1", "item2", "item3", "item4"],
+        ),
+        (
+            ["item2", "item3"],
+            "remove",
+            ["item1", "item2", "item3"],
+            ["item1"],
+        ),
+        (
+            ["item3"],
+            None,
+            ["item1", "item2"],
+            ["item1", "item2"],
+        ),
+        (
+            ["item2", "item3"],
+            "add",
+            ["item1", "item2"],
+            ["item1", "item2", "item3"],
+        ),
+    ],
+)
+def test_handle_group_items_by_action(input_items, action, current_items, expected_result):
+    """
+    Scenario:
+    - Test adding or removing items from a group.
+
+    Given:
+    - A list of input items and a list of current items in the group.
+    - An action specifying whether to add or remove items.
+
+    When:
+    - handle_group_items_by_action is invoked with different combinations of input items, actions, and current items.
+
+    Then:
+    - Ensure that the returned list of items is correct for each scenario.
+    """
+    result = FortiGate.handle_group_items_by_action(input_items, action, current_items)
+    assert set(result) == set(expected_result)
+
+
+@pytest.mark.parametrize(
+    "obj, action, tcp_port_ranges, udp_port_ranges, sctp_port_ranges, expected_result",
+    [
+        (
+            {"tcp-portrange": "80 443", "udp-portrange": "53", "sctp-portrange": "10000"},
+            "add",
+            ["8080"],
+            ["69"],
+            ["12345"],
+            {
+                "tcp_port_ranges": ["80", "443", "8080"],
+                "udp_port_ranges": ["53", "69"],
+                "sctp_port_ranges": ["10000", "12345"],
+            },
+        ),
+        (
+            {"tcp-portrange": "80 443", "udp-portrange": "53", "sctp-portrange": "10000"},
+            "remove",
+            ["443"],
+            ["53"],
+            ["10000"],
+            {"tcp_port_ranges": ["80"], "udp_port_ranges": [], "sctp_port_ranges": []},
+        ),
+        (
+            {},
+            "add",
+            ["22"],
+            ["123"],
+            ["9999"],
+            {"tcp_port_ranges": ["22"], "udp_port_ranges": ["123"], "sctp_port_ranges": ["9999"]},
+        ),
+    ],
+)
+def test_handle_action_for_port_ranges(
+    obj, action, tcp_port_ranges, udp_port_ranges, sctp_port_ranges, expected_result
+):
+    """Test the handle_action_for_port_ranges function with different actions and port ranges.
+
+    Scenarios:
+        - Adding new port ranges.
+        - Removing existing port ranges.
+        - Handling None action.
+        - Handling empty initial port ranges.
+    """
+    result = FortiGate.handle_action_for_port_ranges(obj, action, tcp_port_ranges, udp_port_ranges, sctp_port_ranges)
+
+    for key in expected_result:
+        assert set(result[key]) == set(expected_result[key])
 
 
 @pytest.mark.parametrize(
@@ -1156,7 +1281,7 @@ def test_delete_commands(
             FortiGate.SERVICE_CONTEXT,
             "service",
             {
-                "protocol": "TCP/UDP/SCTP",
+                "protocol": FortiGate.TCP_UDP_SCTP,
                 "tcp-portrange": "1-2 3-4",
                 "udp-portrange": "1-2",
             },
@@ -1533,14 +1658,14 @@ def test_banned_ip_commands(
     "args, response, expected_error",
     [
         (
-            {"name": "testService", "tcpRange": "80", "icmp_version": "icmp"},
-            {"protocol": "TCP/UDP/SCTP"},
+            {"name": "testService", "tcpRange": "80", "icmp_version": "icmp", "action": "remove"},
+            {"protocol": FortiGate.TCP_UDP_SCTP},
             "Arguments must only come from one protocol type. Mixed protocol types: TCP/UDP/SCTP, ICMP/ICMP6",
         ),
         (
             {"name": "testService", "action": "add"},
             {},
-            "The action 'add' is only compatible with TCP/UDP/SCTP.",
+            f"'action' and '{FortiGate.TCP_UDP_SCTP}' must be set together.",
         ),
     ],
 )

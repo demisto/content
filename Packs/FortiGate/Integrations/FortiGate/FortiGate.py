@@ -228,6 +228,9 @@ class Client(BaseClient):
     def _get_filter(self, field: str | None, value: str | None) -> str | None:
         """Formats the filter to be used in the API call.
 
+        The filter is used to decide what objects to include in the response
+        according to a specific criteria when making API calls.
+
         Args:
             field (str | None): "name"
             value (str | None): "@value"
@@ -244,7 +247,9 @@ class Client(BaseClient):
         return None
 
     def _get_format(self, fields: list[str] | None) -> str | None:
-        """Formats the fields to be used in the API call.
+        """Formats the fields to be returned in the API call.
+
+        The format is used to select what fields are returned in the response when making API calls.
 
         Args:
             fields (list[str]): ["name", "type"]
@@ -2037,9 +2042,11 @@ def get_service_type(args: dict[str, Any]) -> str:
     partially_set_protocol_types = []
 
     for protocol_type, count in protocol_type_to_arg_counts.items():
-        if count >= len(protocol_type_to_arg_names[protocol_type]):
+        total_args = len(protocol_type_to_arg_names[protocol_type])
+
+        if count == total_args:
             fully_set_protocol_types.append(protocol_type)
-        elif 0 < count < len(protocol_type_to_arg_names[protocol_type]):
+        elif 0 < count < total_args:
             partially_set_protocol_types.append(protocol_type)
 
     mixed_groups = fully_set_protocol_types + partially_set_protocol_types
@@ -2055,7 +2062,7 @@ def get_service_type(args: dict[str, Any]) -> str:
         return IP
 
     if icmp_version := args.get("icmp_version"):
-        return icmp_version
+        return icmp_version.upper()
 
     if any(
         (
@@ -2604,6 +2611,72 @@ def handle_group_items_by_action(input_items: list[str], action: str | None, ite
         return [item for item in items if item not in input_items]
 
     return items
+
+
+def handle_action_for_port_ranges(
+    obj: dict[str, Any],
+    action: str,
+    tcp_port_ranges: list[str],
+    udp_port_ranges: list[str],
+    sctp_port_ranges: list[str],
+) -> dict[str, Any]:
+    """Handle adding or removing the given port ranges in obj.
+
+    Args:
+        obj (dict[str, Any]): Object to add or remove port ranges.
+        action (str): add or remove.
+        tcp_port_ranges (list[str]): TCP port ranges to add or remove.
+        udp_port_ranges (list[str]): UDP port ranges to add or remove.
+        sctp_port_ranges (list[str]): SCTP port ranges to add or remove.
+
+    Returns:
+        dict[str, Any]: Handled port ranges according to the given action.
+    """
+    port_ranges = {
+        "tcp_port_ranges": tcp_port_ranges,
+        "udp_port_ranges": udp_port_ranges,
+        "sctp_port_ranges": sctp_port_ranges,
+    }
+
+    for (key, value), api_key in zip(
+        port_ranges.items(),
+        ("tcp-portrange", "udp-portrange", "sctp-portrange"),
+    ):
+        api_port_range = obj.get(api_key, "").split()
+        port_ranges[key] = handle_group_items_by_action(value, action, api_port_range)
+
+    return port_ranges
+
+
+def build_policy_outputs(raw_response: list | dict, name: str | None) -> list:
+    """Given a raw response build context outputs for policy.
+
+    Args:
+        raw_response (list | dict): The response from policy endpoint.
+        name (str | None): A name of a specific policy to extract outputs for.
+
+    Returns:
+        list: The context outputs.
+    """
+    outputs: list = []
+    found_output = None
+    # Handle VDOM == *
+    responses = raw_response if isinstance(raw_response, list) else [raw_response]
+
+    for response in responses:
+        response_results = response.get("results", [])
+        response_vdom = response.get("vdom")
+
+        for result in response_results:
+            output = map_keys(result, POLICY_MAPPINGS) | build_security(result) | {"VDOM": response_vdom}
+
+            if name and name == result.get("name"):
+                found_output = [output]
+                break
+
+            outputs.append(output)
+
+    return remove_empty_elements(found_output or outputs)
 
 
 """ Mappings + Params with helpers """
@@ -3662,6 +3735,7 @@ def create_firewall_address_ipv4_group_command(client: Client, args: dict[str, A
     name = args.get("groupName", "")
     type_ = args.get("type", "group")
     comment = args.get("comment")
+    # Keep users input for the context output to avoid breaking changes.
     address = args.get("address")
     members = argToList(address)
     excluded_members = argToList(args.get("excluded_addresses"))
@@ -3852,6 +3926,7 @@ def create_firewall_address_ipv6_group_command(client: Client, args: dict[str, A
     vdom = args.get("vdom", DEFAULT_VDOM)
     name = args.get("name", "")
     comment = args.get("comment")
+    # Keep users input for the context output to avoid breaking changes.
     address = args.get("members")
     members = argToList(address)
 
@@ -4118,6 +4193,11 @@ def update_firewall_service_command(client: Client, args: dict[str, Any]) -> Com
     ip_protocol = arg_to_number(args.get("ip_protocol"))
     action = args.get("action")
 
+    if bool(action) != any((tcp_port_ranges, udp_port_ranges, sctp_port_ranges)):
+        raise DemistoException(f"'action' and '{TCP_UDP_SCTP}' must be set together.")
+
+    validate_optional_ipv4_addresses(start_ip, end_ip)
+
     input_protocol_type = None
     response = client.list_firewall_services(name, vdom)
     result = extract_first_result(response)
@@ -4145,28 +4225,13 @@ def update_firewall_service_command(client: Client, args: dict[str, Any]) -> Com
                 f" which is not compatible with the requested type '{input_protocol_type}'."
             )
 
-    if bool(action) != any((tcp_port_ranges, udp_port_ranges, sctp_port_ranges)):
-        raise DemistoException(f"The action '{action}' is only compatible with TCP/UDP/SCTP.")
-
-    port_ranges = {
-        "tcp_port_ranges": tcp_port_ranges,
-        "udp_port_ranges": udp_port_ranges,
-        "sctp_port_ranges": sctp_port_ranges,
-    }
-
-    if action:
-        for (key, value), api_key in zip(
-            port_ranges.items(),
-            ("tcp-portrange", "udp-portrange", "sctp-portrange"),
-        ):
-            api_port_range = set(result.get(api_key, "").split())
-
-            if action == "add":
-                port_ranges[key] = list(api_port_range.union(value))
-            else:  # action == "remove"
-                port_ranges[key] = list(api_port_range.difference(value))
-
-    validate_optional_ipv4_addresses(start_ip, end_ip)
+    port_ranges = handle_action_for_port_ranges(
+        obj=result,
+        action=action,
+        tcp_port_ranges=tcp_port_ranges,
+        udp_port_ranges=udp_port_ranges,
+        sctp_port_ranges=sctp_port_ranges,
+    )
 
     response = client.update_firewall_service(
         name=name,
@@ -4281,6 +4346,7 @@ def create_firewall_service_group_command(client: Client, args: dict[str, Any]) 
     name = args.get("name", "")
     vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
+    # Keep users input for the context output to avoid breaking changes.
     member_str = args.get("members")
     members = argToList(member_str)
 
@@ -4403,26 +4469,7 @@ def list_firewall_policies_command(client: Client, args: dict[str, Any]) -> Comm
         filter_value=args.get("filter_value"),
         format_fields=format_fields,
     )
-
-    # Handle VDOM == *
-    responses = raw_response if isinstance(raw_response, list) else [raw_response]
-    outputs: list = []
-    found_output = None
-
-    for response in responses:
-        response_results = response.get("results", [])
-        response_vdom = response.get("vdom")
-
-        for result in response_results:
-            output = map_keys(result, POLICY_MAPPINGS) | build_security(result) | {"VDOM": response_vdom}
-
-            if name and name == result.get("name"):
-                found_output = [output]
-                break
-
-            outputs.append(output)
-
-    outputs = remove_empty_elements(found_output or outputs)
+    outputs = build_policy_outputs(raw_response, name)
 
     if format_fields:
         readable_output = tableToMarkdown(
@@ -4479,20 +4526,27 @@ def create_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comm
     name = args.get("policyName", "")
     vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("description")
+    # Keep users input for the context output to avoid breaking changes.
     source_interface = args.get("sourceIntf")
     source_interfaces = argToList(source_interface)
+    # Keep users input for the context output to avoid breaking changes.
     destination_interface = args.get("dstIntf")
     destination_interfaces = argToList(destination_interface)
+    # Keep users input for the context output to avoid breaking changes.
     source_address = args.get("source", "")
     source_addresses = argToList(source_address)
+    # Keep users input for the context output to avoid breaking changes.
     destination_address = args.get("destination", "")
     destination_addresses = argToList(destination_address)
+    # Keep users input for the context output to avoid breaking changes.
     source_address6 = args.get("source6", "")
     source_addresses6 = argToList(source_address6)
+    # Keep users input for the context output to avoid breaking changes.
     destination_address6 = args.get("destination6", "")
     destination_addresses6 = argToList(destination_address6)
     negate_source_address = args.get("negate_source_address")
     negate_destination_address = args.get("negate_destination_address")
+    # Keep users input for the context output to avoid breaking changes.
     service = args.get("service")
     services = argToList(service)
     negate_service = args.get("negate_service")
@@ -4579,7 +4633,7 @@ def update_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comm
     """
     vdom = args.get("vdom", DEFAULT_VDOM)
     id_ = args.get("policyID", "")
-    field = args.get("field", "")
+    input_field = args.get("field", "")
     value = args.get("value", "")
     keep_original_data = argToBoolean(args.get("keep_original_data", False))
     add_or_remove = args.get("add_or_remove")
@@ -4587,7 +4641,7 @@ def update_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comm
     if keep_original_data and not add_or_remove:
         raise DemistoException("If 'keep_original_data' is set to True, 'add_or_remove' must also be set.")
 
-    field_to_api_key = {
+    input_field_to_api_field = {
         "source_interface": "srcintf",
         "destination_interface": "dstintf",
         "description": "comments",
@@ -4602,9 +4656,9 @@ def update_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comm
         "negate_destination6": "dstaddr6-negate",
         "negate_service": "service-negate",
     }
-    api_key = field_to_api_key.get(field, field)
+    api_field = input_field_to_api_field.get(input_field, input_field)
 
-    if field in {
+    if input_field in {
         "source_interface",
         "destination_interface",
         "source",
@@ -4618,7 +4672,7 @@ def update_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comm
         if keep_original_data:
             response = client.list_firewall_policies(id_, vdom)
             result = extract_first_result(response)
-            api_addresses = extract_key_from_items("name", result.get(api_key))
+            api_addresses = extract_key_from_items("name", result.get(api_field))
 
             value = handle_group_items_by_action(
                 input_items=value,
@@ -4626,7 +4680,7 @@ def update_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comm
                 items=api_addresses,
             )
 
-    client.update_firewall_policy(id_=id_, vdom=vdom, field=api_key, value=value)
+    client.update_firewall_policy(id_=id_, vdom=vdom, field=api_field, value=value)
     response = client.list_firewall_policies(id_, vdom)
     result = extract_first_result(response)
 
@@ -5395,8 +5449,9 @@ def get_policy_command(client: Client, args: dict[str, Any]):
 
 @logger
 def policy_addr_array_from_arg(policy_addr_data, is_data_string=True):
-    """DEPRECATED COMMAND"""
-    # if the data isn't in string format, it's already an array and requires no formatting
+    """Builds the a list of dicts from the given string
+    If the data isn't in string format, it's already an array and requires no formatting
+    """
     policy_adr_str_array = policy_addr_data.split(",") if is_data_string else policy_addr_data
     policy_addr_dict_array = []
     for src_addr_name in policy_adr_str_array:
