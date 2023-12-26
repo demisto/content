@@ -3683,6 +3683,7 @@ INDICATOR_VALUE_AND_TYPE = [
     ('https[:]//www[.]test[.]com/abc', 'URL'),
     ('test[.]com', 'Domain'),
     ('https://192.168.1.1:8080', 'URL'),
+    ('2001:db8:a0b:12f0::1/64',"IPv6CIDR")
 ]
 
 
