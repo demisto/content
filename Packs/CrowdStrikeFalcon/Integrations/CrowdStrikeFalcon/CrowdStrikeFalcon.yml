@@ -3602,8 +3602,9 @@ script:
     - description: A comment added to the CrowdStrike incident.
       name: comment
       required: true
-    description: Updates CrowdStrike Incident with the comment.
+    description: Deprecated. Use the 'cs-falcon-resolve-incident' command using the 'add_comment' parameter instead.
     name: cs-falcon-update-incident-comment
+    deprecated: true
   - arguments:
     - description: Whether to poll for results.
       auto: PREDEFINED
