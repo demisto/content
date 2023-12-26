@@ -14,17 +14,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* Exists
 * Set
+* Exists
 * IsTrue
 
 ### Commands
 
 * polygon-export-video
 * polygon-analysis-info
-* polygon-export-pcap
 * polygon-upload-file
 * polygon-export-report
+* polygon-export-pcap
 
 ## Playbook Inputs
 
@@ -87,7 +87,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Polygon.Analysis.IP | The information about IP indicators. | unknown |
 | Polygon.Analysis.Domain | The information about Domain indicators. | unknown |
 | Polygon.Analysis.RegistryKey | The information about registry keys which were modified during the analysis. | unknown |
-| Polygon.Analysis.Process | The information about processes started during the analysis | unknown |
+| Polygon.Analysis.Process | The information about processes started during the analysis. | unknown |
 
 ## Playbook Image
 

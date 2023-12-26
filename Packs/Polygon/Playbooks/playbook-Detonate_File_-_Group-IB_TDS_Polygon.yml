@@ -716,7 +716,7 @@ outputs:
 - contextPath: Polygon.Analysis.RegistryKey
   description: The information about registry keys which were modified during the analysis.
 - contextPath: Polygon.Analysis.Process
-  description: The information about processes started during the analysis
+  description: The information about processes started during the analysis.
 fromversion: 5.0.0
 tests:
 - No tests
