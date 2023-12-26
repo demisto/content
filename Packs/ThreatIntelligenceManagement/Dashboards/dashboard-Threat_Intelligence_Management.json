@@ -566,7 +566,7 @@
 				"name": "Active Indicators by Type",
 				"dataType": "indicators",
 				"widgetType": "pie",
-				"query": "expirationStatus:active or expirationStatus:\"\"",
+				"query": "(expirationStatus:active or expirationStatus:\"\")",
 				"sort": null,
 				"isPredefined": false,
 				"dateRange": {
