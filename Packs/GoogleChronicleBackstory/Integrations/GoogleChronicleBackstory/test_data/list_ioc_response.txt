@@ -1,79 +1,94 @@
 {
-  "Domain(val.Name && val.Name == obj.Name)": [
-    {
-      "Name": "test.com"
-    },
-    {
-      "Name": "secondtest.com"
-    }
-  ],
-  "GoogleChronicleBackstory.Iocs(val.Artifact && val.Artifact == obj.Artifact)": [
-    {
-      "Artifact": "test.com",
-      "IocIngestTime": "2019-03-31T18:00:00Z",
-      "FirstAccessedTime": "2020-01-20T12:10:26Z",
-      "LastAccessedTime": "2020-03-21T12:10:26Z",
-      "Sources": [
-        {
-          "Category": "Not Known",
-          "IntRawConfidenceScore": 0,
-          "NormalizedConfidenceScore": "Low",
-          "RawSeverity": "Low",
-          "Source": "3rd Party"
+  "response": {
+    "matches": [
+      {
+        "artifact": {
+          "domainName": "test.com"
         },
-        {
-          "Category": "Not Known",
-          "IntRawConfidenceScore": 0,
-          "NormalizedConfidenceScore": "Low",
-          "RawSeverity": "Low",
-          "Source": "External"
-        }
-      ]
-    },
-    {
-      "Artifact": "secondtest.com",
-      "IocIngestTime": "2019-03-30T18:00:00Z",
-      "FirstAccessedTime": "2020-01-21T12:10:26Z",
-      "LastAccessedTime": "2020-01-21T12:10:26Z",
-      "Sources": [
-        {
-          "Category": "Not Known",
-          "IntRawConfidenceScore": 0,
-          "NormalizedConfidenceScore": "Low",
-          "RawSeverity": "Low",
-          "Source": "3rd Party"
-        }
-      ]
-    },
-    {
-      "Artifact": "0.0.0.1",
-      "IocIngestTime": "2023-11-30T19:26:41.266555Z",
-      "FirstAccessedTime": "2023-01-17T09:54:19Z",
-      "LastAccessedTime": "2023-01-17T09:54:19Z",
-      "Sources": [
-        {
-          "Category": "Unwanted",
-          "IntRawConfidenceScore": 0,
-          "NormalizedConfidenceScore": "Medium",
-          "RawSeverity": "Medium",
-          "Source": "Threat Intelligence"
-        }
-      ]
-    },
-    {
-      "Artifact": "0000000000000000000000000000000000000000000000000000000000000001",
-      "IocIngestTime": "2023-11-03T19:30:34.254760Z",
-      "FirstAccessedTime": "2023-05-05T09:52:57.409114Z",
-      "LastAccessedTime": "2023-05-05T09:53:25.558Z",
-      "Sources": [
-        {
-          "Category": "",
-          "IntRawConfidenceScore": 0,
-          "NormalizedConfidenceScore": "unknown",
-          "RawSeverity": "",
-          "Source": "Open Source Intel"
-        }
-      ]
-    }
-  ]
+        "sources": [
+          {
+            "source": "3rd Party",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          },
+          {
+            "source": "External",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          }
+        ],
+        "iocIngestTime": "2019-03-31T18:00:00Z",
+        "firstSeenTime": "2020-01-20T12:10:26Z",
+        "lastSeenTime": "2020-03-21T12:10:26Z"
+      },
+      {
+        "artifact": {
+          "domainName": "secondtest.com"
+        },
+        "sources": [
+          {
+            "source": "3rd Party",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          }
+        ],
+        "iocIngestTime": "2019-03-30T18:00:00Z",
+        "firstSeenTime": "2020-01-21T12:10:26Z",
+        "lastSeenTime": "2020-01-21T12:10:26Z"
+      },
+      {
+        "artifact": {
+            "destinationIpAddress": "0.0.0.1"
+        },
+        "sources": [
+            {
+                "source": "Threat Intelligence",
+                "confidenceScore": {
+                    "normalizedConfidenceScore": "Medium",
+                    "intRawConfidenceScore": 0
+                },
+                "rawSeverity": "Medium",
+                "category": "Unwanted"
+            }
+        ],
+        "iocIngestTime": "2023-11-30T19:26:41.266555Z",
+        "firstSeenTime": "2023-01-17T09:54:19Z",
+        "lastSeenTime": "2023-01-17T09:54:19Z",
+        "uri": [
+            "https://demo.backstory.chronicle.security/destinationIpResults?ip=0.0.0.1"
+        ]
+      },
+      {
+        "artifact": {
+            "hashSha256": "0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        "sources": [
+            {
+                "source": "Open Source Intel",
+                "confidenceScore": {
+                    "intRawConfidenceScore": 0
+                }
+            }
+        ],
+        "iocIngestTime": "2023-11-03T19:30:34.254760Z",
+        "firstSeenTime": "2023-05-05T09:52:57.409114Z",
+        "lastSeenTime": "2023-05-05T09:53:25.558Z",
+        "uri": [
+            "https://demo.backstory.chronicle.security/hashResults?sha256=0000000000000000000000000000000000000000000000000000000000000001"
+        ]
+      }
+    ]
+  }
 }

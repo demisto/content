@@ -7,7 +7,7 @@ from httplib2 import Response
 
 import demistomock as demisto
 
-from GoogleChronicleBackstory import MESSAGES, ASSET_IDENTIFIER_NAME_DICT, USER_IDENTIFIER_NAME_DICT, \
+from Packs.GoogleChronicleBackstory.Integrations.GoogleChronicleBackstory.GoogleChronicleBackstory import MESSAGES, ASSET_IDENTIFIER_NAME_DICT, USER_IDENTIFIER_NAME_DICT, \
     CHRONICLE_OUTPUT_PATHS
 
 PROXY_MOCK = {
