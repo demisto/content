@@ -198,8 +198,8 @@ class Client(BaseClient):
         # The X-CSRFTOKEN header is required for POST/PUT/DELETE requests.
         # https://community.fortinet.com/t5/FortiGate/Technical-Tip-About-REST-API/ta-p/195425
         for cookie in response.cookies:
-            if cookie.name.startswith("ccsrftoken"):
-                csrftoken = cookie.value and cookie.value[1:-1]
+            if cookie.name.startswith("ccsrftoken") and cookie.value:
+                csrftoken = cookie.value[1:-1]
                 self._session.headers.update({"X-CSRFTOKEN": csrftoken})
 
         # Bypass the login disclaimer page after logging in to the system to finalize the authentication.
