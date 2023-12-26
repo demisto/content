@@ -146,7 +146,7 @@ def update_last_run(last_run, alerts=None, audit_logs=None):
         last_run[LAST_ALERT_TIME] = last_alert_time = alerts[-1][ALERT_TIMESTAMP]
         last_run[LAST_ALERT_IDS] = [alert[ALERT_ID] for alert in alerts if alert[ALERT_TIMESTAMP] == last_alert_time]
     if audit_logs:
-        last_run[LAST_AUDIT_TIME] = audit_logs[:-1]['_time']
+        last_run[LAST_AUDIT_TIME] = audit_logs[-1]['_time']
     return last_run
 
 
@@ -160,7 +160,7 @@ def prepare_audit_logs_result(audit_logs, last_audit_time):
     new_audits = []
     for audit in audit_logs:
         audit_time = timestamp_to_datestring(audit[AUDIT_TIMESTAMP], is_utc=True)
-        if not last_audit_time or last_audit_time > audit_time:
+        if not last_audit_time or last_audit_time < audit_time:
             audit['_time'] = audit_time
             new_audits.append(audit)
     audit_logs = new_audits
@@ -207,6 +207,7 @@ def test_module(client: Client) -> str:
 
 
 def init_last_run(last_run: dict) -> dict:
+    """ Initializes the last run for first run """
     if not last_run:
         last_run = {
             LAST_ALERT_TIME: datetime.now().strftime(DATE_FORMAT),
