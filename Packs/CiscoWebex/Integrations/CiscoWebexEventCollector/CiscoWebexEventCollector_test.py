@@ -25,6 +25,7 @@ def mock_get_access_token():
         "refresh_token_expires_in": 2222,
     }
 
+
 def mocked_admin_client():
     from CiscoWebexEventCollector import AdminClient
 
@@ -184,7 +185,10 @@ def test_oauth_complete(client):
     from CiscoWebexEventCollector import oauth_complete
 
     with requests_mock.Mocker() as m:
-        m.post('https://url.com/access_token?grant_type=authorization_code&code=123456&client_id=1&client_secret=1&redirect_uri=https%3A%2F%2Fredirect.com', json=mock_get_access_token())
+        m.post(
+            'https://url.com/access_token?grant_type=authorization_code&code=123456&client_id=1&client_secret=1&redirect_uri=https%3A%2F%2Fredirect.com',
+            json=mock_get_access_token()
+        )
         results = oauth_complete(client, {'code': '123456'})
 
     assert 'Logged in successfully.' in results.readable_output
@@ -255,22 +259,31 @@ def test_fetch_events():
     from CiscoWebexEventCollector import create_last_run, fetch_events
 
     with requests_mock.Mocker() as m:
-        m.get('https://url.com/adminAudit/events?orgId=1&from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1',
-              text=util_load_text('test_data/admin_audits.json'),
-              headers={'Link': '<https://url.com/adminAudit/events?nexturl=true>; rel="next"'})
-        m.get('https://url.com/admin/securityAudit/events?orgId=1&startTime=2023-12-13T13%3A40%3A00.000Z&endTime=2023-12-20T13%3A40%3A00.000Z&max=1',
-              text=util_load_text('test_data/security_audits.json'),
-              headers={'Link': '<https://url.com/securityAudit/events?nexturl=true>; rel="next"'})
-        m.get('https://url.com/events?from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1',
-              text=util_load_text('test_data/events.json'),
-              headers={'Link': '<https://url.com/events?nexturl=true>; rel="next"'})
+        m.get(
+            'https://url.com/adminAudit/events?orgId=1&from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1',
+            text=util_load_text('test_data/admin_audits.json'),
+            headers={'Link': '<https://url.com/adminAudit/events?nexturl=true>; rel="next"'}
+        )
+        m.get(
+            'https://url.com/admin/securityAudit/events?orgId=1&startTime=2023-12-13T13%3A40%3A00.000Z&endTime=2023-12-20T13%3A40%3A00.000Z&max=1',
+            text=util_load_text('test_data/security_audits.json'),
+            headers={'Link': '<https://url.com/securityAudit/events?nexturl=true>; rel="next"'}
+        )
+        m.get(
+            'https://url.com/events?from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1',
+            text=util_load_text('test_data/events.json'),
+            headers={'Link': '<https://url.com/events?nexturl=true>; rel="next"'}
+        )
         events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), create_last_run(), max_fetch=1)
 
     assert len(events) > 0
     assert next_run == {
-        'admin_audits': {'since_datetime': '2023-11-02T09:33:26.409Z', 'next_url': 'https://url.com/adminAudit/events?nexturl=true'},
-        'security_audits': {'since_datetime': '2023-12-19T06:47:38.174Z', 'next_url': 'https://url.com/securityAudit/events?nexturl=true'},
-        'compliance_officer_events': {'since_datetime': '2023-12-04T07:40:06.691Z', 'next_url': 'https://url.com/events?nexturl=true'}
+        'admin_audits': {'since_datetime': '2023-11-02T09:33:26.409Z',
+                         'next_url': 'https://url.com/adminAudit/events?nexturl=true'},
+        'security_audits': {'since_datetime': '2023-12-19T06:47:38.174Z',
+                            'next_url': 'https://url.com/securityAudit/events?nexturl=true'},
+        'compliance_officer_events': {'since_datetime': '2023-12-04T07:40:06.691Z',
+                                      'next_url': 'https://url.com/events?nexturl=true'}
     }
 
     with requests_mock.Mocker() as m:

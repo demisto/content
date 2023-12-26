@@ -246,7 +246,8 @@ class ComplianceOfficerClient(Client):
         """Runs the `get_compliance_officer_events` method in order to tes the connection."""
         self.get_compliance_officer_events(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
-    def get_compliance_officer_events(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
+    def get_compliance_officer_events(self, from_date: str, limit: int = DEFAULT_MAX_FETCH,
+                                      next_url: str = '') -> requests.Response:
         """
         Returns events either with a `next_url` or according to filter parameters.
         Args:
