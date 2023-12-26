@@ -40,6 +40,7 @@ jobs:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       run: |
+        exit 1
         source .venv/bin/activate
         demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
 
