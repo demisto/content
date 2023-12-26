@@ -7,7 +7,7 @@ from httplib2 import Response
 
 import demistomock as demisto
 
-from Packs.GoogleChronicleBackstory.Integrations.GoogleChronicleBackstory.GoogleChronicleBackstory import MESSAGES, ASSET_IDENTIFIER_NAME_DICT, USER_IDENTIFIER_NAME_DICT, \
+from GoogleChronicleBackstory import MESSAGES, ASSET_IDENTIFIER_NAME_DICT, USER_IDENTIFIER_NAME_DICT, \
     CHRONICLE_OUTPUT_PATHS
 
 PROXY_MOCK = {
@@ -102,6 +102,7 @@ def test_gcb_list_ioc_success(client):
     assert ec["Domain(val.Name && val.Name == obj.Name)"] == dummy_ec["Domain(val.Name && val.Name == obj.Name)"]
     key = "GoogleChronicleBackstory.Iocs(val.Artifact && val.Artifact == obj.Artifact)"
     assert ec[key] == dummy_ec[key]
+    assert json_data == json.loads(dummy_response)
 
 
 def test_gcb_list_ioc_failure_response(client):
@@ -497,11 +498,13 @@ def test_fetch_incident_success_with_no_param_no_alerts(client):
 
 def validate_ioc_domain_incident(incidents):
     """Validate ioc domain key for fetch incident event."""
-    assert len(incidents) == 2
+    assert len(incidents) == 4
     for incident_alert in incidents:
         assert incident_alert['name']
         assert incident_alert['details']
         assert incident_alert['rawJSON']
+        raw_data = json.loads(incident_alert['rawJSON'])
+        assert raw_data['Artifact']
 
 
 def test_fetch_incident_run_ioc_domain_matches(mocker, client):
