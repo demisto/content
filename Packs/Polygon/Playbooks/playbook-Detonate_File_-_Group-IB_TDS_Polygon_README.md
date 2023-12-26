@@ -14,16 +14,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* Exists
 * IsTrue
+* Exists
 * Set
 
 ### Commands
 
 * polygon-export-report
-* polygon-export-video
 * polygon-export-pcap
 * polygon-analysis-info
+* polygon-export-video
 * polygon-upload-file
 
 ## Playbook Inputs
