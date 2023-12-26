@@ -168,7 +168,7 @@
             "type": "string",
             "is_array": false
         },
-        "eventTypeXsiam": {
+        "source_log_type": {
             "type": "string",
             "is_array": false
         }
