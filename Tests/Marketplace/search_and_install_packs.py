@@ -34,7 +34,7 @@ PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH
 WLM_TASK_FAILED_ERROR_CODE = 101704
 
 GITLAB_SESSION = Session()
-CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
+CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '1061')
 PACKS_DIR = "Packs"
 PACK_METADATA_FILE = Pack.PACK_METADATA
 GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
@@ -344,7 +344,7 @@ def install_packs(client: demisto_client,
                   packs_to_install: list,
                   attempts_count: int = 5,
                   sleep_interval: int = 60,
-                  request_timeout: int = 600,
+                  request_timeout: int = 900,
                   ) -> tuple[bool, list]:
     """ Make a packs installation request.
        If a pack fails to install due to malformed pack, this function catches the corrupted pack and call another
