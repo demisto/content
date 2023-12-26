@@ -4711,7 +4711,7 @@ def resolve_incident_command(ids: list[str], status: str | None = None, user_uui
     readable_output = f"Incident IDs '{', '.join(ids)}' have been updated successfully:\n"
 
     if status:
-        action_parameters['update_status'] = status
+        action_parameters['update_status'] = STATUS_TEXT_TO_NUM[status]
         readable_output += f'Status has been updated to {status}.\n'
 
     if user_uuid:
