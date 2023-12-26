@@ -24,10 +24,23 @@ DEFAULT_MAX_FETCH = 200
 
 
 def date_time_to_iso_format(date_time: datetime) -> str:
+    """
+    Gets a datetime object and returns s string represents a datetime is ISO format. 
+    Args:
+        date_time: A datetime object.
+
+    Returns:
+        A string represents a datetime is ISO format.
+    """
     return f'{date_time.isoformat(timespec="milliseconds")}Z'
 
 
 def create_last_run() -> dict:
+    """
+    Creates a dict fetch data (last event datetime, next link) for each event type.
+    Returns:
+        A dict used in the fetch events command for the first fetch.
+    """
     start_fetch = datetime.utcnow() - timedelta(weeks=1)
     return {
         'admin_audits': {'since_datetime': date_time_to_iso_format(start_fetch), 'next_url': ''},
@@ -37,12 +50,26 @@ def create_last_run() -> dict:
 
 
 def add_fields_to_events(events: list[dict], evnet_type: str | None):
+    """
+    Gets a list of events of a specific event type and adds the `_time` & `source_log_type` fields to the event.
+    Args:
+        events: A list of events.
+        evnet_type: The event type.
+    """
     for event in events:
         event['_time'] = event.get('created')
         event['source_log_type'] = evnet_type
 
 
 def increase_datetime_for_next_fetch(events: list) -> str:
+    """
+    Gets a list of events and returns the latest event create time + a timedelta of a millisecond using for the next fetch.
+    Args:
+        events: A list of events.
+
+    Returns:
+        A string represents a datetime is ISO format.
+    """
     return date_time_to_iso_format(parser.parse(events[-1].get('created'), ignoretz=True) + timedelta(milliseconds=1))
 
 
@@ -62,10 +89,11 @@ class Client(BaseClient):
         self.user = user
 
     def create_access_token(self, grant_type: str, code: str | None = None, refresh_token: str | None = None) -> dict:
-        """Generates refresh & and access tokens.
+        """
+        Generates a refresh & and access tokens.
         Args:
-            grant_type: the grant_type could be `authorization_code` or `refresh_token`.
-            refresh_token: the `refresh_token` to generate the `access_token`.
+            grant_type: the grant_type could be either `authorization_code` or `refresh_token`.
+            refresh_token: the `refresh_token` to generate the `access_token` when expires.
             code: string returns as a query parameter from the `!cisco-webex-oauth-start` command.
         """
         headers = {
@@ -82,6 +110,11 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='access_token', headers=headers, params=params)
 
     def save_tokens_to_integration_context(self, result: dict):
+        """
+        Saves the access & refresh tokens in the integration context.
+        Args:
+            result: The API json response from the `create_access_token` method.
+        """
         now = datetime.utcnow()
         context = assign_params(
             access_token=result.get('access_token'),
@@ -97,10 +130,9 @@ class Client(BaseClient):
 
     def get_access_token(self) -> str | None:
         """
-            Returns the access token from the integration context or generates a new one using the refresh_token.
-
+        Returns the access token from the integration context or generates a new one using the refresh_token.
         Returns:
-            The access token.
+            The access token or None if the integration context is not set yet.
         """
         if user_integration_context := get_integration_context().get(self.user):
             if datetime.utcnow() > parser.parse(user_integration_context.get('refresh_token_expires_in'), ignoretz=True):
@@ -129,11 +161,11 @@ class Client(BaseClient):
         return f'{urljoin(URL, "authorize?")}{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}'
 
     def oauth_complete(self, code: str | None):
-        """Completes the authentication process.
+        """
+        Completes the authentication process.
         It gets a code returned from the `oauth_start` command and sets the access & refresh token.
-
-        :type code: ``str``
-        :param code: For the code parader.
+        Args:
+            code: The code return from the `oauth_start` command as a query parameter.
         """
         result = self.create_access_token('authorization_code', code=code)
         self.save_tokens_to_integration_context(result)
@@ -141,7 +173,7 @@ class Client(BaseClient):
     @abstractmethod
     def oauth_test(self) -> str:
         """
-            Abstract function to test the client connection to the API.
+        Abstract function to test the client connection with the API.
         """
 
 
@@ -156,9 +188,20 @@ class AdminClient(Client):
         }
 
     def oauth_test(self):
+        """Runs the `get_admin_audits` method in order to tes the connection."""
         self.get_admin_audits(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
     def get_admin_audits(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
+        """
+        Returns admin audit events either with a `next_url` or according to filter parameters.
+        Args:
+            from_date: A string represents a datetime is ISO format from when to get the events.
+            limit: A number of how mny events to return.
+            next_url: A URL (returned from the previous run) to get the events (using for pagination).
+
+        Returns:
+            A response object with the events returned dform the API.
+        """
         if next_url:
             return self._http_request(method='GET', full_url=next_url, resp_type='response')
         params = {
@@ -167,10 +210,19 @@ class AdminClient(Client):
             'to': date_time_to_iso_format(datetime.utcnow()),
             'max': min(limit, DEFAULT_MAX_FETCH),
         }
-
         return self._http_request(method='GET', url_suffix='adminAudit/events', params=params, resp_type='response')
 
     def get_security_audits(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
+        """
+        Returns admin security events either with a `next_url` or according to filter parameters.
+        Args:
+            from_date: A string represents a datetime is ISO format from when to get the events.
+            limit: A number of how mny events to return.
+            next_url: A URL (returned from the previous run) to get the events (using for pagination).
+
+        Returns:
+            A response object with the events returned dform the API.
+        """
         if next_url:
             return self._http_request(method='GET', full_url=next_url, resp_type='response')
         params = {
@@ -191,9 +243,20 @@ class ComplianceOfficerClient(Client):
         }
 
     def oauth_test(self):
+        """Runs the `get_compliance_officer_events` method in order to tes the connection."""
         self.get_compliance_officer_events(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
     def get_compliance_officer_events(self, from_date: str, limit: int = DEFAULT_MAX_FETCH, next_url: str = '') -> requests.Response:
+        """
+        Returns events either with a `next_url` or according to filter parameters.
+        Args:
+            from_date: A string represents a datetime is ISO format from when to get the events.
+            limit: A number of how mny events to return.
+            next_url: A URL (returned from the previous run) to get the events (using for pagination).
+
+        Returns:
+            A response object with the events returned dform the API.
+        """
         if next_url:
             return self._http_request(method='GET', full_url=next_url, resp_type='response')
         params = {
@@ -208,6 +271,7 @@ class ComplianceOfficerClient(Client):
 
 
 def test_module():
+    """Raises an exception with the message to run the `!cisco-webex-oauth-start` command."""
     raise DemistoException(
         'In order to authorize the instance, first run the command `!cisco-webex-oauth-start`, '
         'and complete the process in the URL that is returned. You will then be redirected '
@@ -218,6 +282,14 @@ def test_module():
 
 
 def oauth_start(client: Client) -> CommandResults:
+    """
+    Runs the client `oauth_start` method in order to create a URL to start the authenticate process.
+    Args:
+        client: A client object either an AdminClient or a ComplianceOfficerClient.
+
+    Returns:
+        A CommandResult with a URL generated according to the client attributes to start the authentication.
+    """
     url = client.oauth_start()
     return CommandResults(
         readable_output=f'In order to retrieve the authorization code [click here]({url}).\n'
@@ -227,6 +299,16 @@ def oauth_start(client: Client) -> CommandResults:
 
 
 def oauth_complete(client: Client, args: dict) -> CommandResults:
+    """
+    Gets a code returned from the `oath_start` command as a query parameter and creates an access & refresh token to save them in
+    the integration_context.
+    Args:
+        client: A client object either an AdminClient or a ComplianceOfficerClient.
+        args: An authorization code provided as a query parameter called `code` returned from the `oauth_start` command.
+
+    Returns:
+        A CommandResult with a message that the tokens was created and saved successfully.
+    """
     code = args.get('code')
     client.oauth_complete(code)
     return CommandResults(
@@ -238,6 +320,14 @@ def oauth_complete(client: Client, args: dict) -> CommandResults:
 
 
 def oauth_test(client: Client) -> CommandResults:
+    """
+    Runs the `oauth_test` command in order to test the connection.
+    Args:
+        client: A client object either an AdminClient or a ComplianceOfficerClient.
+
+    Returns:
+        A CommandResult with a message that the Test succeeded.
+    """
     client.oauth_test()
     return CommandResults(
         readable_output='### Test succeeded!'
@@ -245,6 +335,17 @@ def oauth_test(client: Client) -> CommandResults:
 
 
 def get_events_with_pagination(client_function: Callable, from_date: str, limit: int, next_url: str = '') -> tuple[list, str]:
+    """
+    Returns events with pagination mechanism.
+    Args:
+        client_function: The function used to return the events (for each event type).
+        from_date: A string represents a datetime is ISO format from when to get the events.
+        limit: A number of how mny events to return.
+        next_url: A URL (returned from the previous run) to get the events (using for pagination).
+
+    Returns:
+        A list of events and a string of the next_url (a URL to return events).
+    """
     events: list[dict] = []
 
     response = client_function(from_date, limit, next_url)
@@ -262,6 +363,15 @@ def get_events_with_pagination(client_function: Callable, from_date: str, limit:
 
 
 def get_events_command(command_function: Callable, args: dict) -> tuple[CommandResults, list]:
+    """
+    Returns a list of events
+    Args:
+        command_function: The function used to return the events (for each event type).
+        args: A dict with fetch data.
+
+    Returns:
+        A CommandResult with a readable output of the events and a list of the events.
+    """
     from_date = args.get('since_datetime', date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
     limit = arg_to_number(args.get('limit', 5)) or DEFAULT_MAX_FETCH
 
@@ -275,6 +385,19 @@ def get_events_command(command_function: Callable, args: dict) -> tuple[CommandR
 
 def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient, last_run: dict,
                  max_fetch: int) -> tuple[list, dict]:
+    """
+    Fetches three types of events (Admin Audits, Security Audits, Events),
+    It fetches from the latest event `create` date or with a `next_url` returned form the previous fetch,
+    And saves the latest evnet create date and the `next_url` from the current fetch to use in the next fetch.
+    Args:
+        admin_client: An instance of the AdminClient.
+        co_client: An instance of the ComplianceOfficesClient.
+        last_run: A dict with the latest fetch data.
+        max_fetch: A number of how many events to return per fetch.
+
+    Returns:
+        A list of events and a dict with fetch info to use in the next fetch.
+    """
     all_events = []
 
     if not last_run:

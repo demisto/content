@@ -25,25 +25,6 @@ def mock_get_access_token():
         "refresh_token_expires_in": 2222,
     }
 
-
-def mock_get_integration_context():
-    expires_in = (datetime.datetime.utcnow() + datetime.timedelta(weeks=3)).isoformat()
-    return {
-        "admin": {
-            "access_token": "123456",
-            "access_token_expires_in": expires_in,
-            "refresh_token": "123456",
-            "refresh_token_expires_in": expires_in,
-        },
-        "compliance_officer": {
-            "access_token": "123456",
-            "access_token_expires_in": expires_in,
-            "refresh_token": "123456",
-            "refresh_token_expires_in": expires_in,
-        },
-    }
-
-
 def mocked_admin_client():
     from CiscoWebexEventCollector import AdminClient
 
@@ -88,11 +69,11 @@ def mocked_compliance_officer_client():
 def test_create_last_run():
     """
         Given:
-            - A list of set_ids.
+            - An expected `last_run` dict.
         When:
             - create_last_run function is running.
         Then:
-            - Validates that the function works as expected.
+            - Validates that the function creates a dict with the expected items.
     """
     from CiscoWebexEventCollector import create_last_run
 
@@ -113,7 +94,7 @@ def test_date_time_to_iso_format():
         When:
             - date_time_to_iso_format function is running.
         Then:
-            - Validates that the function works as expected.
+            - Validates that the function returns a string is ISO format as expected.
     """
     from CiscoWebexEventCollector import date_time_to_iso_format
     assert date_time_to_iso_format(datetime.datetime.utcnow()) == '2023-12-20T13:40:00.000Z'
@@ -122,14 +103,14 @@ def test_date_time_to_iso_format():
 def test_add_fields_to_events():
     """
         Given:
-            - lists of events
+            - lists of events of the following types.
                 1. Admin Audit Events.
                 2. Admin Audit Events.
                 3. Events.
         When:
             - add_fields_to_events function is running.
         Then:
-            - Validates that the function works as expected.
+            - Validates that the function adds the fields as expected.
     """
     from CiscoWebexEventCollector import add_fields_to_events, COMMAND_FUNCTION_TO_EVENT_TYPE
 
@@ -160,7 +141,7 @@ def test_increase_datetime_for_next_fetch():
         When:
             - increase_datetime_for_next_fetch function is running.
         Then:
-            - Validates that the function works as expected.
+            - Validates that the function returns the latest event `create` time + a timedelta of 1 millisecond.
     """
     from CiscoWebexEventCollector import increase_datetime_for_next_fetch
     events = util_load_json('test_data/events.json').get('items')
@@ -177,6 +158,14 @@ def test_increase_datetime_for_next_fetch():
      'https://webexapis.com/v1/authorize?response_type=code&scope=co_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
 ])
 def test_oauth_start(client, expected_url):
+    """
+        Given:
+            - An AdminClient and a ComplianceOfficerClient.
+        When:
+            - oauth_start function is running.
+        Then:
+            - Validates that the expected URL is in the result.
+    """
     from CiscoWebexEventCollector import oauth_start
     results = oauth_start(client)
     assert expected_url in results.readable_output
@@ -184,6 +173,14 @@ def test_oauth_start(client, expected_url):
 
 @pytest.mark.parametrize('client', [mocked_admin_client(), mocked_compliance_officer_client()])
 def test_oauth_complete(client):
+    """
+        Given:
+            - An AdminClient and a ComplianceOfficerClient.
+        When:
+            - oauth_complete function is running.
+        Then:
+            - Validates that the expected text (`Logged in successfully.`) is in the result.
+    """
     from CiscoWebexEventCollector import oauth_complete
 
     with requests_mock.Mocker() as m:
@@ -195,6 +192,14 @@ def test_oauth_complete(client):
 
 @pytest.mark.parametrize('client', [mocked_admin_client(), mocked_compliance_officer_client()])
 def test_oauth_test(client):
+    """
+        Given:
+            - An AdminClient and a ComplianceOfficerClient.
+        When:
+            - oauth_test function is running.
+        Then:
+            - Validates that the expected text (`### Test succeeded!`) is in the result.
+    """
     from CiscoWebexEventCollector import oauth_test
 
     with requests_mock.Mocker() as m:
@@ -213,12 +218,12 @@ def test_oauth_test(client):
 def test_get_events_command(command_function, args):
     """
         Given:
-            - A list of set_ids and a date form where to fetch with a CyberArkEPM (mock) client.
+            - Three types of events to fetch.
         When:
             - get_events_command function is running.
-                1. with event type `admin_audits`
-                2. with event type `policy_audits`
-                3. with event type `detailed_events`
+                1. with event type `Admin audits`
+                2. with event type `Security audits`
+                3. with event type `Events`
         Then:
             - Validates that the function works as expected.
     """
@@ -238,11 +243,14 @@ def test_get_events_command(command_function, args):
 def test_fetch_events():
     """
         Given:
-            - A cyberArk client.
+            - An AdminClient and a ComplianceOfficerClient.
         When:
-            - fetch-events command is running.
+            - fetch_events function is running.
         Then:
-            - Validates that the function works as expected.
+            - Validates that the function returns
+                1. A list of events and a dict with fetch data including a `next_url` link.
+                2. The second interval of fetch_events uses the `next_url` link from the previous fetch,
+                and returns an empty list of events and a dict with fetch data including a `next_url` link set to an empty string.
     """
     from CiscoWebexEventCollector import create_last_run, fetch_events
 
