@@ -16,6 +16,7 @@ if [ "$#" -lt "1" ]; then
   [-ct, --ci-token]      The ci gitlab trigger token.
   [-b, --branch]         The branch name. Default is the current branch.
   [-ch, --slack-channel] A Slack channel to send notifications to. Default is dmst-build-test.
+  [-m, --machine]         The machine to clean, default both nightly machines.
   "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection  TODO
   exit 1
@@ -41,6 +42,10 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -m|--machine) _machine="$2"
+    shift
+    shift;;
+
   *)    # unknown option.
     shift;;
   esac
@@ -50,7 +55,8 @@ if [ -z "$_ci_token" ]; then
     echo "You must provide a ci token."
     exit 1
 fi
-
+echo "machine id"
+echo "$_ci_token"
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source "${SCRIPT_DIR}/trigger_build_url.sh"
 
