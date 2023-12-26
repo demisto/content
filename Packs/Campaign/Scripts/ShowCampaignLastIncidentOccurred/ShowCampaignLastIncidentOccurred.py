@@ -44,7 +44,10 @@ def get_last_incident_occurred(incident_ids: list[str]) -> str:
 def main():
 
     try:
-        if incident_ids := get_incident_ids():
+        if (
+            (incident_ids := get_incident_ids())
+            and (last_incident_occurred := get_last_incident_occurred(incident_ids))
+        ):
             last_incident_occurred = get_last_incident_occurred(incident_ids)
             html_readable_output = f"<div style='text-align:center; font-size:17px; padding: 15px;'>" \
                                    f"Last Incident Occurred</br> <div style='font-size:24px;'> " \

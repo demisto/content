@@ -56,13 +56,14 @@ def main():
         if incident_ids := get_incident_ids():
             campaign_senders = get_campaign_senders(incident_ids)
             return_results(CommandResults(readable_output=campaign_senders, raw_response=campaign_senders))
-        return_results(CommandResults(
-            content_format='html',
-            raw_response=(
-                "<div style='text-align:center; font-size:17px; padding: 15px;'>Senders"
-                "</br> <div style='font-size:20px;'> No incident senders found.</div></div>"
-            )
-        ))
+        else:
+            return_results(CommandResults(
+                content_format='html',
+                raw_response=(
+                    "<div style='text-align:center; font-size:17px; padding: 15px;'>Senders"
+                    "</br> <div style='font-size:20px;'> No incident senders found.</div></div>"
+                )
+            ))
 
     except Exception as err:
         return_error(str(err))

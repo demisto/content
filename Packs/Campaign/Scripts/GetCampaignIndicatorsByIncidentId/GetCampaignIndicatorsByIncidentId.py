@@ -10,7 +10,7 @@ def get_incidents_ids_from_context() -> list:
     Returns:
         List of incident ids.
     """
-    relevant_incidents = demisto.get(demisto.context(), 'EmailCampaign.incidents')
+    relevant_incidents: list | None = demisto.get(demisto.context(), 'EmailCampaign.incidents')
     ids = [item.get('id') for item in relevant_incidents] if relevant_incidents else []
 
     return ids
@@ -35,7 +35,7 @@ def get_indicators_from_incidents(incident_ids: list):
     return res
 
 
-def format_results(indicators: list, incident_ids: list):
+def format_results(indicators: list, incident_ids: list) -> str:
     """
     Format the indicators result to a readable markdown table.
 
@@ -81,18 +81,17 @@ def associate_to_current_incident(indicators: list[dict[str, str]]):
 
 
 def main():  # pragma: no cover
-    """ This script should run from a campaign incident, and expect to have incidents
+    """This script should run from a campaign incident, and expect to have incidents
     to get indicators from."""
     try:
         if incident_ids := get_incidents_ids_from_context():
             indicators = get_indicators_from_incidents(incident_ids)
-            formated_results = format_results(indicators, incident_ids)
-            execute_command('setIncident', {'campaignmutualindicators': formated_results})
-        return_results(CommandResults(
-            content_format='html',
-            raw_response=("<div style='font-size:17px; text-align:center; padding: 50px;'> Mutual Indicators"
-                          "</br> <div style='font-size:17px;'> No mutual indicators were found. </div></div>")
-        ))
+            formatted_results = format_results(indicators, incident_ids)
+        else:
+            formatted_results = 'No mutual indicators were found.'
+
+        execute_command('setIncident', {'campaignmutualindicators': formatted_results})
+
     except Exception as ex:
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
 

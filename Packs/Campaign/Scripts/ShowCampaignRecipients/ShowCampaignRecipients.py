@@ -48,7 +48,7 @@ def get_campaign_recipients(incident_ids: list[str]) -> str:
     if not recipients:
         return 'No incident recipients found.'
 
-    recipients_counter = Counter(filter(None, recipients)).most_common()  # type: ignore
+    recipients_counter: list = Counter(filter(None, recipients)).most_common()
 
     recipients_table_content = [{"Email": item[0], "Number Of Appearances": item[1]} for item in recipients_counter]
     headers = ['Email', 'Number Of Appearances']
@@ -61,13 +61,14 @@ def main():
         if incident_ids := get_incident_ids():
             campaign_recipients = get_campaign_recipients(incident_ids)
             return_results(CommandResults(readable_output=campaign_recipients, raw_response=campaign_recipients))
-        return_results(CommandResults(
-            content_format='html',
-            raw_response=(
-                "<div style='text-align:center; font-size:17px; padding: 15px;'>Recipients"
-                "</br> <div style='font-size:20px;'> No incident recipients found.</div></div>"
-            )
-        ))
+        else:
+            return_results(CommandResults(
+                content_format='html',
+                raw_response=(
+                    "<div style='text-align:center; font-size:17px; padding: 15px;'>Recipients"
+                    "</br> <div style='font-size:20px;'> No incident recipients found.</div></div>"
+                )
+            ))
 
     except Exception as err:
         return_error(str(err))
