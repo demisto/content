@@ -953,8 +953,8 @@ def modify_volume_command(args: dict) -> CommandResults:
     raw.update({'Region': obj['_user_provided_options']['region_name']})
 
     return CommandResults(
-        outputs=raw,
-        outputs_prefix='AWS.EC2.Volumes.Modification',
+        outputs={'Modification': raw},
+        outputs_prefix='AWS.EC2.Volumes',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Modification', data)
     )
@@ -1103,8 +1103,8 @@ def attach_volume_command(args: dict) -> CommandResults:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
     return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Volumes.Attachments',
+        outputs={'Attachments': data},
+        outputs_prefix='AWS.EC2.Volumes',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
     )
@@ -1140,8 +1140,8 @@ def detach_volume_command(args: dict) -> CommandResults:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
     return CommandResults(
-        outputs=data,
-        outputs_prefix='AWS.EC2.Volumes.Attachments',
+        outputs={'Attachments': data},
+        outputs_prefix='AWS.EC2.Volumes',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
     )
@@ -1817,7 +1817,7 @@ def get_password_data_command(args: dict) -> CommandResults:
     }
 
     return CommandResults(
-        outputs=data,
+        outputs={'PasswordData': data},
         outputs_prefix='AWS.EC2.Instances',
         outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
@@ -2285,7 +2285,7 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
     except ValueError as err_msg:
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
     return CommandResults(
-        outputs=raw,
+        outputs={'ActiveInstances': raw},
         outputs_prefix='AWS.EC2.Fleet',
         outputs_key_field='FleetId',
         readable_output=tableToMarkdown('AWS EC2 Fleets Instances', data)
