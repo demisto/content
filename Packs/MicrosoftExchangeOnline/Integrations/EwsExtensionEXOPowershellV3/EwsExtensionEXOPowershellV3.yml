@@ -2133,7 +2133,7 @@ script:
     description: Remove an Inbox rule.
   script: ''
   type: powershell
-  dockerimage: devdemisto/pwsh-exchangev3:1.0.0.83855
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
 fromversion: 5.5.0
 tests:
 - playbook-O365-EWS-Extension-Powershell-Online-V3-Test

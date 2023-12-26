@@ -128,7 +128,7 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
@@ -1146,7 +1146,7 @@ class ExchangeOnlinePowershellV3Client
 
     [PSObject]GetRule(
         [string]$mailbox,
-        [int]$identity,
+        [string]$identity,
         [bool]$display_all
     )
     {
@@ -1196,7 +1196,7 @@ class ExchangeOnlinePowershellV3Client
 
     [PSObject]RemoveRule(
         [string]$mailbox,
-        [int]$identity
+        [string]$identity
     )
     {
         $response = ""
