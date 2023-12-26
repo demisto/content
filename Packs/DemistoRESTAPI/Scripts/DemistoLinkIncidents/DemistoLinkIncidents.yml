@@ -12,24 +12,28 @@ args:
 - name: masterID
   required: true
   default: true
-  description: Incident ID used for linking to other incidents
+  description: Incident ID used for linking to other incidents.
 - name: otherIDs
   required: true
-  description: Incidet IDs to link
+  description: Incidet IDs to link.
 - name: unlink
   auto: PREDEFINED
   predefined:
   - "yes"
   - "no"
-  description: Unlink incidents (default 'no')
+  description: Unlink incidents (default 'no').
   defaultValue: "no"
 scripttarget: 0
 dependson:
   must:
-  - demisto-api-post
+  - core-api-post
 fromversion: 5.0.0
 marketplaces:
 - xsoar
 tests:
 - no test
+<<<<<<< HEAD
 deprecated: true
+=======
+deprecated: true
+>>>>>>> master

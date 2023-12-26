@@ -1,5 +1,9 @@
 args:
+<<<<<<< HEAD
 - description: List to Save Context To
+=======
+- description: List to Save Context To.
+>>>>>>> master
   name: list
   required: true
 commonfields:
@@ -8,7 +12,11 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
+<<<<<<< HEAD
 dockerimage: demisto/python3:3.10.13.72123
+=======
+dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 enabled: true
 name: UnitTestSaveContextList
 comment: ''

@@ -1666,7 +1666,11 @@ script:
       description: The analysis ID.
       type: String
 
+<<<<<<< HEAD
   dockerimage: demisto/python3:3.10.13.82467
+=======
+  dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test

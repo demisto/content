@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from packaging.version import parse, Version, LegacyVersion
+from packaging.version import parse, Version
 
 SCRIPT_NAME = 'ContentPackInstaller'
 
@@ -12,12 +12,21 @@ class ContentPackInstaller:
     PACK_ID_VERSION_FORMAT = '{}::{}'
 
     def __init__(self, instance_name: str = None):
+<<<<<<< HEAD
         self.installed_packs: Dict[str, Union[Version, LegacyVersion]] = dict()
         self.newly_installed_packs: Dict[str, Version] = dict()
         self.already_on_machine_packs: Dict[str, Union[Version, LegacyVersion]] = dict()
         self.packs_data: Dict[str, Dict[str, str]] = dict()
         self.packs_dependencies: Dict[str, Dict[str, Dict[str, str]]] = dict()
         self.packs_failed: Dict[str, str] = dict()
+=======
+        self.installed_packs: Dict[str, Version] = {}
+        self.newly_installed_packs: Dict[str, Version] = {}
+        self.already_on_machine_packs: Dict[str, Version] = {}
+        self.packs_data: Dict[str, Dict[str, str]] = {}
+        self.packs_dependencies: Dict[str, Dict[str, Dict[str, str]]] = {}
+        self.packs_failed: Dict[str, str] = {}
+>>>>>>> master
         self.instance_name: Optional[str] = instance_name
 
         self.get_installed_packs()
@@ -33,7 +42,11 @@ class ContentPackInstaller:
             args['using'] = self.instance_name
 
         status, res = execute_command(
+<<<<<<< HEAD
             'demisto-api-get',
+=======
+            'core-api-get',
+>>>>>>> master
             args,
             fail_on_error=False,
         )
@@ -73,7 +86,11 @@ class ContentPackInstaller:
             args['using'] = self.instance_name
 
         status, res = execute_command(
+<<<<<<< HEAD
             'demisto-api-get',
+=======
+            'core-api-get',
+>>>>>>> master
             args,
             fail_on_error=False,
         )
@@ -111,7 +128,11 @@ class ContentPackInstaller:
             args['using'] = self.instance_name
 
         status, res = execute_command(
+<<<<<<< HEAD
             'demisto-api-post',
+=======
+            'core-api-post',
+>>>>>>> master
             args,
             fail_on_error=False,
         )
@@ -186,7 +207,11 @@ class ContentPackInstaller:
                 args['using'] = self.instance_name
 
             status, res = execute_command(
+<<<<<<< HEAD
                 'demisto-api-install-packs',
+=======
+                'core-api-install-packs',
+>>>>>>> master
                 args,
                 fail_on_error=False,
             )

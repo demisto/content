@@ -1,8 +1,12 @@
-comment: Trend graph for incidents created per day
+comment: Trend graph for incidents created per day.
 commonfields:
   id: HealthCheckIncidentsCreatedDaily
   version: -1
+<<<<<<< HEAD
 dockerimage: demisto/python3:3.10.11.58677
+=======
+dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 enabled: true
 name: HealthCheckIncidentsCreatedDaily
 runas: DBotWeakRole

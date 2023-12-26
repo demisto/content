@@ -5,14 +5,22 @@ import uuid
 
 
 def GetAutomationId(name):
+<<<<<<< HEAD
     autoId = demisto.executeCommand("demisto-api-post", {
+=======
+    autoId = demisto.executeCommand("core-api-post", {
+>>>>>>> master
         'uri': f"/automation/load/{name}"
     })[0]['Contents']['response']['id']
     return autoId
 
 
 def GetPlaybookId(name):
+<<<<<<< HEAD
     playbook = demisto.executeCommand("demisto-api-post", {
+=======
+    playbook = demisto.executeCommand("core-api-post", {
+>>>>>>> master
         'uri': "/playbook/search",
         "body": {"query": "name:" + f'"{name}"'}
     })[0]['Contents']['response']['playbooks']
@@ -56,7 +64,11 @@ def RunUTResults(args):
         # Add the task to display unit test results
         attempts = 0
         while attempts < 5:
+<<<<<<< HEAD
             results = demisto.executeCommand("demisto-api-post", {
+=======
+            results = demisto.executeCommand("core-api-post", {
+>>>>>>> master
                 'uri': f"/inv-playbook/task/add/{incid}",
                 'body': task
             })[0]['Contents']
@@ -71,7 +83,11 @@ def RunUTResults(args):
         new_id = "0"
         task_id = "0"
         if attempts < 5:
+<<<<<<< HEAD
             for key, val in tasks.items():
+=======
+            for _key, val in tasks.items():
+>>>>>>> master
                 if "scriptId" in val['task']:
                     if val['task']['scriptId'] == scriptid and val['task']['name'] == "DisplayUnitTestResults":
                         new_id = val['id']
@@ -85,7 +101,11 @@ def RunUTResults(args):
         contents = demisto.executeCommand("demisto-lock-get", {'name': gridfld, 'timeout': 60})[0]['Contents']
         if "Lock acquired successfully" in contents:
             while attempts < 5:
+<<<<<<< HEAD
                 start_response = demisto.executeCommand("demisto-api-post", {
+=======
+                start_response = demisto.executeCommand("core-api-post", {
+>>>>>>> master
                     'uri': "/inv-playbook/task/execute",
                     'body': {
                         'taskinfo': {
@@ -130,13 +150,18 @@ def RunAdhocPlaybook(playbookname, taskname, addafter, incid):
             'version': -1
         }
         # Add the playbook as a task
+<<<<<<< HEAD
         tasks = demisto.executeCommand("demisto-api-post", {
+=======
+        tasks = demisto.executeCommand("core-api-post", {
+>>>>>>> master
             'uri': f"/inv-playbook/task/add/{incid}",
             'body': task
         })[0]['Contents']['response']['tasks']
 
         # Find the new task ID in the updated playbook and execute the task
         for key, task in tasks.items():
+<<<<<<< HEAD
             if "name" in task['task']:
                 if task['task']['name'] == taskname:
                     demisto.executeCommand("demisto-api-post", {
@@ -153,6 +178,23 @@ def RunAdhocPlaybook(playbookname, taskname, addafter, incid):
                             'pageSize': 50
                         }
                     })
+=======
+            if "name" in task['task'] and task['task']['name'] == taskname:
+                demisto.executeCommand("core-api-post", {
+                    'uri': "/inv-playbook/task/execute",
+                    'body': {
+                        'taskinfo': {
+                            'invId': incid,
+                            'inTaskID': key,
+                            'version': -1,
+                            'args': {},
+                            'loopArgs': {}
+                        },
+                        'playbooksdebuginfo': {},
+                        'pageSize': 50
+                    }
+                })
+>>>>>>> master
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(f"RunAdhocPlaybook: Exception failed to execute. Error: {str(ex)}")

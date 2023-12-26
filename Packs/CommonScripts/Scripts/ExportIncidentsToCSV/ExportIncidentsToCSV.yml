@@ -7,7 +7,11 @@ args:
   name: fetchdays
 - description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,name,type,severity,status,owner,roles,playbookId,occurred,created,modified,closed).'
   name: columns
+<<<<<<< HEAD
 comment: This automation uses the Demisto REST API Integration to batch export Incidents to CSV and return the resulting CSV file to the war room.
+=======
+comment: This automation uses the Core REST API Integration to batch export Incidents to CSV and return the resulting CSV file to the war room.
+>>>>>>> master
 commonfields:
   id: ExportIncidentsToCSV
   version: -1
@@ -16,8 +20,13 @@ contentitemexportablefields:
     fromServerVersion: ""
 dependson:
   must:
+<<<<<<< HEAD
   - demisto-api-post
   - demisto-api-get
+=======
+  - core-api-post
+  - core-api-get
+>>>>>>> master
 dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: ExportIncidentsToCSV

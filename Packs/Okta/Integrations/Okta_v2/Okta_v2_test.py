@@ -4,11 +4,14 @@ from Okta_v2 import Client, get_user_command, get_group_members_command, create_
     create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command
 import pytest
 import json
+<<<<<<< HEAD
 import io
+=======
+>>>>>>> master
 import requests_mock
 
 
-client = Client(base_url="demisto.com")
+client = Client(base_url="demisto.com", api_token="XXX")
 
 user_data = {
     "id": "TestID",
@@ -607,7 +610,7 @@ def util_load_json(path: str):
     """
     Utility to load json data from a local folder.
     """
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 
@@ -766,7 +769,7 @@ def test_get_groups_for_user_command(mocker, args):
     mocker.patch.object(client, 'get_groups_for_user', return_value=group_data)
     _, outputs, _ = get_groups_for_user_command(client, args)
     assert outputs.get('Account(val.ID && val.ID === obj.ID)').get('Group')[0] == expected_context
-    assert 'TestID' == outputs.get('Account(val.ID && val.ID === obj.ID)').get('ID')
+    assert outputs.get('Account(val.ID && val.ID === obj.ID)').get('ID') == 'TestID'
 
 
 @pytest.mark.parametrize(
@@ -848,14 +851,14 @@ def test_get_zone_command(mocker, args):
     mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     readable, outputs, _ = get_zone_command(client, args)
     assert 'Test Zone' in readable
-    assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
+    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '') == 'nzoqsmcx1qWYJ6wYF7q0'
 
 
 def test_list_zones_command(mocker):
     mocker.patch.object(client, 'list_zones', return_value=okta_zone)
     readable, outputs, _ = list_zones_command(client, {})
     assert 'Test Zone' in readable
-    assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
+    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '') == 'nzoqsmcx1qWYJ6wYF7q0'
 
 
 @pytest.mark.parametrize(
@@ -869,7 +872,7 @@ def test_update_zone_command(mocker, args):
     mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     mocker.patch.object(client, 'update_zone', return_value=my_okta_zone)
     readable, outputs, _ = update_zone_command(client, args)
-    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
+    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '') == 'NewZoneName'
 
 
 @pytest.mark.parametrize(
@@ -882,7 +885,7 @@ def test_create_zone_command(mocker, args):
     my_okta_zone['name'] = 'NewZoneName'
     mocker.patch.object(client, 'create_zone', return_value=okta_zone)
     readable, outputs, _ = create_zone_command(client, args)
-    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
+    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '') == 'NewZoneName'
 
 
 EXPEXTED_LOGS_RESULT = \
@@ -924,10 +927,17 @@ def test_get_readable_logs():
 
 
 def test_set_password_command():
+<<<<<<< HEAD
     client = Client('https://demisto.com')
     with requests_mock.Mocker() as m:
         m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
         mock_request = m.post('https://demisto.com/users/1234', json={'passwordChanged': '2020-03-26T13:57:13.000Z'})
+=======
+    client = Client(base_url='https://demisto.com', api_token="XXX")
+    with requests_mock.Mocker() as m:
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        mock_request = m.post('https://demisto.com/api/v1/users/1234', json={'passwordChanged': '2020-03-26T13:57:13.000Z'})
+>>>>>>> master
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3'})
 
@@ -936,11 +946,19 @@ def test_set_password_command():
 
 
 def test_set_temp_password_command():
+<<<<<<< HEAD
     client = Client('https://demisto.com')
     with requests_mock.Mocker() as m:
         m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
         m.post('https://demisto.com/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
         m.post('https://demisto.com/users/1234/lifecycle/expire_password', json={})
+=======
+    client = Client(base_url='https://demisto.com', api_token="XXX")
+    with requests_mock.Mocker() as m:
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        m.post('https://demisto.com/api/v1/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
+        m.post('https://demisto.com/api/v1/users/1234/lifecycle/expire_password', json={})
+>>>>>>> master
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'temporary_password': 'true'})
 

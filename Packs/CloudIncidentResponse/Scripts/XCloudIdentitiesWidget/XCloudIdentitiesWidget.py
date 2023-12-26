@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -7,11 +8,27 @@ from CommonServerPython import *  # noqa: F401
 
 def get_additonal_info() -> List[Dict]:
     alerts = demisto.context().get('Core', {}).get('OriginalAlert')[0]
+=======
+import demistomock as demisto  # noqa: F401  # pragma: no cover
+from CommonServerPython import *  # noqa: F401  # pragma: no cover
+
+
+''' COMMAND FUNCTION '''  # pragma: no cover
+
+
+def get_additonal_info() -> List[Dict]:  # pragma: no cover
+    alerts = demisto.context().get('Core', {}).get('OriginalAlert')
+    if isinstance(alerts, list):
+        alerts = alerts[0]
+>>>>>>> master
     if not alerts:
         raise DemistoException('Original Alert is not configured in context')
     if not isinstance(alerts, list):
         alerts = [alerts]
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
     results = []
     for alert in alerts:
         if alert == {}:
@@ -28,10 +45,17 @@ def get_additonal_info() -> List[Dict]:
     return results
 
 
+<<<<<<< HEAD
 ''' MAIN FUNCTION '''
 
 
 def main():
+=======
+''' MAIN FUNCTION '''  # pragma: no cover
+
+
+def main():  # pragma: no cover
+>>>>>>> master
     try:
         results = get_additonal_info()
         command_results = CommandResults(
@@ -42,7 +66,14 @@ def main():
         return_error(f'Failed to execute XCloudIdentitiesWidget. Error: {str(ex)}')
 
 
+<<<<<<< HEAD
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+=======
+''' ENTRY POINT '''  # pragma: no cover
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+    main()  # pragma: no cover
+>>>>>>> master

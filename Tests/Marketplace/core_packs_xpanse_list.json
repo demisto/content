@@ -16,8 +16,11 @@
     "Core",
     "CoreAlertFields",
     "CortexAttackSurfaceManagement",
+<<<<<<< HEAD
     "CortexXDR",
     "FeedMitreAttackv2",
+=======
+>>>>>>> master
     "FiltersAndTransformers",
     "GCP-Enrichment-Remediation",
     "GCP-IAM",
@@ -25,7 +28,10 @@
     "GoogleKeyManagementService",
     "Identity",
     "Malware",
+<<<<<<< HEAD
     "MalwareInvestigationAndResponse",
+=======
+>>>>>>> master
     "MicrosoftGraphIdentityandAccess",
     "MicrosoftGraphUser",
     "Jira",
@@ -54,8 +60,11 @@
     "Core",
     "CoreAlertFields",
     "CortexAttackSurfaceManagement",
+<<<<<<< HEAD
     "CortexXDR",
     "FeedMitreAttackv2",
+=======
+>>>>>>> master
     "FiltersAndTransformers",
     "GCP-Enrichment-Remediation",
     "GCP-IAM",
@@ -63,7 +72,10 @@
     "GoogleKeyManagementService",
     "Identity",
     "Malware",
+<<<<<<< HEAD
     "MalwareInvestigationAndResponse",
+=======
+>>>>>>> master
     "MicrosoftGraphIdentityandAccess",
     "MicrosoftGraphUser",
     "Jira",

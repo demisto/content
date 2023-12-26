@@ -518,7 +518,11 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
     """
     for item in response_items:
         for member in item.get('members', []):  # members is a list of dict or strs
+<<<<<<< HEAD
             if isinstance(member, str):
+=======
+            if isinstance(member, str | int):
+>>>>>>> master
                 continue
             if item_namespace := member.get('namespaces', []):
                 item['namespaces'] = item_namespace

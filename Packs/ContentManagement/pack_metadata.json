@@ -2,7 +2,11 @@
     "name": "XSOAR CI/CD",
     "description": "This pack enables you to orchestrate your XSOAR system configuration.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "1.2.14",
+=======
+    "currentVersion": "1.2.15",
+>>>>>>> master
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -23,7 +23,11 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
+<<<<<<< HEAD
 dockerimage: demisto/python3:3.10.12.63474
+=======
+dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 fromversion: 6.0.0
 tests:
 - No test

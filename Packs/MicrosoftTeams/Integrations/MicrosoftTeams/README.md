@@ -56,18 +56,25 @@ In order to verify that the messaging endpoint is open as expected, you can surf
 ### 1. Using Cortex XSOAR rerouting
 In this configuration, we will use Cortex XSOAR functionality, which reroutes HTTPS requests that hit the default port (443) to the web server that the integration spins up.
 
-The messaging endpoint needs to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`
+The messaging endpoint needs to be:
+
+For Cortex XSOAR version 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`.
+
+For Cortex XSOAR version 8: `https://ext-<CORTEX-XSOAR-Domain>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step.
 
 The port to be configured in [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step should be any available port that is not used by another service.
 
-In addition, make sure ***Instance execute external*** is enabled.
+In addition, make sure ***Instance execute external*** is enabled (for Cortex XSOAR 6.x).
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** (`instance.execute.external.teams` in this example) key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
+<<<<<<< HEAD
  - Note: This option is available from Cortex XSOAR v5.5.0. Currently, Cortex XSOAR 8 is not supported.
+=======
+>>>>>>> master
 
 ### 2. Using NGINX as reverse proxy
 In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. NGINX) which relays the HTTPS requests posted from Microsoft Teams
@@ -275,7 +282,11 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
     | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
     | Allow external users to create incidents via direct message |  | False |
     | The header of an external form hyperlink. |  | False |
+<<<<<<< HEAD
     | Trust any certificate (not secure) |  | False |
+=======
+    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 | False |
+>>>>>>> master
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
     | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | longRunningPort | False |

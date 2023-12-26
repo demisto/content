@@ -6,7 +6,11 @@ def main():
     try:
         listname = demisto.args()['list']
         context = demisto.context()
+<<<<<<< HEAD
         res = demisto.executeCommand('demisto-api-post', {
+=======
+        res = demisto.executeCommand('core-api-post', {
+>>>>>>> master
             "uri": '/lists/save',
             "body": {
                 'name': listname,

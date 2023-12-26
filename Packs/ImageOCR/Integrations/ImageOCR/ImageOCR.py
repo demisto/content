@@ -3,6 +3,8 @@ from CommonServerPython import *
 import subprocess
 
 TESSERACT_EXE = 'tesseract'
+CORRUPTED_ERR = 'pix not read'
+CORRUPTED_MSG = 'WARNING: failed to extract text - image is corrupted'
 
 
 def list_languages() -> list[str]:
@@ -16,7 +18,11 @@ def list_languages() -> list[str]:
 
 
 def extract_text(image_path: str, languages: list[str] = None) -> str:
+<<<<<<< HEAD
     exe_params = [TESSERACT_EXE, image_path, 'stdout']
+=======
+    exe_params = [TESSERACT_EXE, "-v", image_path, 'stdout']
+>>>>>>> master
     if languages:
         exe_params.extend(['-l', '+'.join(languages)])
     res = subprocess.run(exe_params, capture_output=True, check=True, text=True)
@@ -58,11 +64,32 @@ def extract_text_command(args: dict, instance_languages: list) -> tuple[list, li
                 )
             )
         except subprocess.CalledProcessError as cpe:
+<<<<<<< HEAD
             errors.append(
                 f"An error occurred while trying to process {entry_id=}: "
                 f"Failed {cpe.cmd} execution. Return status: {cpe.returncode}.\n"
                 f"Error:\n{cpe.stderr}"
             )
+=======
+            if CORRUPTED_ERR in cpe.stderr and argToBoolean(args.get("skip_corrupted")):
+                file_entry = {"EntryID": entry_id, "Text": CORRUPTED_MSG}
+                results.append(
+                    CommandResults(
+                        readable_output=f"## Could not process file with entry ID {entry_id} - image is corrupted",
+                        outputs_prefix='File',
+                        outputs_key_field='EntryID',
+                        outputs=file_entry,
+                        entry_type=EntryType.WARNING,
+                    )
+                )
+            else:
+                errors.append(
+                    f"An error occurred while trying to process {entry_id=}: "
+                    f"Failed {cpe.cmd} execution. Return status: {cpe.returncode}.\n"
+                    f"Error:\n{cpe.stderr}\n"
+                    f"Stdout:\n{cpe.stdout}"
+                )
+>>>>>>> master
         except Exception as e:
             errors.append(f"An error occurred while trying to process {entry_id=}: {e}")
 

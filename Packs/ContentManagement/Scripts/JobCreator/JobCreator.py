@@ -28,7 +28,11 @@ def configure_job(job_name: str, existing_job: Optional[Dict[str, Any]] = None, 
         args['using'] = instance_name
 
     status, res = execute_command(
+<<<<<<< HEAD
         'demisto-api-post',
+=======
+        'core-api-post',
+>>>>>>> master
         args,
         fail_on_error=False,
     )
@@ -46,7 +50,11 @@ def search_existing_job(job_name: str, instance_name: str = None) -> Dict[str, A
 
     Args:
         job_name (str): The name of the job to update it's past configurations.
+<<<<<<< HEAD
         instance_name (str): Demisto REST API instance name.
+=======
+        instance_name (str): Core REST API instance name.
+>>>>>>> master
 
     Returns:
         Dict[str, Any]. The job data as configured on the machine.
@@ -63,7 +71,11 @@ def search_existing_job(job_name: str, instance_name: str = None) -> Dict[str, A
         args['using'] = instance_name
 
     status, res = execute_command(
+<<<<<<< HEAD
         'demisto-api-post',
+=======
+        'core-api-post',
+>>>>>>> master
         args,
         fail_on_error=False,
     )

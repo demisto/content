@@ -196,6 +196,13 @@ tasks:
         simple: alert.status=open,policy.remediable=true
       limit:
         simple: "1"
+<<<<<<< HEAD
+=======
+      time_range_unit:
+        simple: hour
+      time_range_value:
+        simple: "1"
+>>>>>>> master
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -600,7 +607,15 @@ tasks:
       limit:
         simple: "1"
       query:
+<<<<<<< HEAD
         simple: 'config from cloud.resource where cloud.region = ''AWS Ohio'' '
+=======
+        simple: 'config from cloud.resource where cloud.region = ''AWS Ohio'' AND cloud.service = ''Amazon EC2'''
+      time_range_unit:
+        simple: hour
+      time_range_value:
+        simple: "1"
+>>>>>>> master
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -683,7 +698,15 @@ tasks:
       limit:
         simple: "1"
       query:
+<<<<<<< HEAD
         simple: event from cloud.audit_logs where cloud.type = 'aws'
+=======
+        simple: event from cloud.audit_logs where cloud.type = 'aws' AND cloud.region = 'AWS Oregon'
+      time_range_unit:
+        simple: hour
+      time_range_value:
+        simple: "1"
+>>>>>>> master
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1070,9 +1093,15 @@ tasks:
       limit:
         simple: "5"
       repository:
+<<<<<<< HEAD
         simple: kyle9021/testing-iac
       source_types:
         simple: Github
+=======
+        simple: 807152304871829504_sarasaida/ecommerce-fastapi-stripe
+      source_types:
+        simple: githubActions
+>>>>>>> master
     separatecontext: false
     continueonerrortype: ""
     view: |-

@@ -24,8 +24,13 @@ Azure Log Analytics
 
 ### Scripts
 
+<<<<<<< HEAD
 * SetMultipleValues
 * SetAndHandleEmpty
+=======
+* SetAndHandleEmpty
+* SetMultipleValues
+>>>>>>> master
 
 ### Commands
 

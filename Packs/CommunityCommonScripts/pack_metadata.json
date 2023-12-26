@@ -2,7 +2,11 @@
     "name": "Community Common Scripts",
     "description": "A pack that contains community scripts",
     "support": "community",
+<<<<<<< HEAD
     "currentVersion": "1.1.2",
+=======
+    "currentVersion": "1.1.3",
+>>>>>>> master
     "author": "",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",

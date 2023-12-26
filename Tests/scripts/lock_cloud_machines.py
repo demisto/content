@@ -11,12 +11,20 @@ from Utils.github_workflow_scripts.utils import get_env_var
 import os
 
 TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
+<<<<<<< HEAD
 GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
+=======
+GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
+>>>>>>> master
 LOCKS_BUCKET = f'{TEST_XDR_PREFIX}xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
 MACHINES_LOCKS_REPO = 'machines_locks'
 JOB_STATUS_URL = '{}/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
+<<<<<<< HEAD
 CONTENT_GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
+=======
+CONTENT_GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '1061')
+>>>>>>> master
 
 
 def options_handler() -> argparse.Namespace:

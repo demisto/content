@@ -70,7 +70,11 @@ if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
+<<<<<<< HEAD
   if [ "${TEST_XDR_ENV}" == "true" ]; then
+=======
+  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
+>>>>>>> master
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
   else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
@@ -80,7 +84,11 @@ else
 fi
 
 if [ -n "${CLOUD_API_TOKENS}" ]; then
+<<<<<<< HEAD
   if [ "${TEST_XDR_ENV}" == "true" ]; then
+=======
+  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
+>>>>>>> master
     cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
   else
     echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
@@ -121,8 +129,23 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     echo "Failed testing Modeling Rules on at least one of the chosen machines"
   fi
 
+<<<<<<< HEAD
   echo "Finish running test modeling rules, error handling will be done on the results job, exiting with code 0"
   exit 0
+=======
+  if [ -n "${FAIL_ON_ERROR}" ]; then
+    if [ "${exit_code}" -eq 0 ]; then
+      echo "Finish running test modeling rules, exiting with code 0"
+      exit 0
+    else
+      echo "Finish running test modeling rules with errors on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 1"
+      exit 1 
+    fi 
+  else
+    echo "Finish running test modeling rules, error handling will be done on the results job, exiting with code 0"
+    exit 0
+  fi
+>>>>>>> master
 
 else
   write_empty_test_results_file

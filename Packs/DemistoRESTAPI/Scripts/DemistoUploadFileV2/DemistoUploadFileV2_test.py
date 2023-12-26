@@ -3,7 +3,7 @@ from DemistoUploadFileV2 import upload_file_command
 
 RAW_RESPONSE = [
     {
-        "Brand": "Demisto REST API",
+        "Brand": "Core REST API",
         "Category": "Utilities",
         "Contents": {
             "response": {
@@ -125,7 +125,7 @@ RAW_RESPONSE = [
         "Metadata": {
             "IndicatorTimeline": None,
             "ShardID": 0,
-            "brand": "Demisto REST API",
+            "brand": "Core REST API",
             "category": "",
             "contents": "",
             "contentsSize": 0,
@@ -141,13 +141,13 @@ RAW_RESPONSE = [
             "format": "json",
             "hasRole": False,
             "id": "",
-            "instance": "Demisto REST API_instance_1",
+            "instance": "Core REST API_instance_1",
             "investigationId": "737",
             "isTodo": False,
             "mirrored": False,
             "modified": "0001-01-01T00:00:00Z",
             "note": False,
-            "parentContent": "!demisto-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
+            "parentContent": "!core-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
             "parentEntryTruncated": False,
             "parentId": "726@737",
             "pinned": False,
@@ -171,7 +171,7 @@ RAW_RESPONSE = [
             "user": "",
             "version": 0
         },
-        "ModuleName": "Demisto REST API_instance_1",
+        "ModuleName": "Core REST API_instance_1",
         "Note": False,
         "ReadableContentsFormat": "",
         "System": "",
@@ -200,7 +200,7 @@ def test_demisto_upload_file(mocker):
 
 RAW_RESPONSE_ERROR = [
     {
-        "Brand": "Demisto REST API",
+        "Brand": "Core REST API",
         "Category": "Utilities",
         "Contents": {
             "response": {
@@ -322,7 +322,7 @@ RAW_RESPONSE_ERROR = [
         "Metadata": {
             "IndicatorTimeline": None,
             "ShardID": 0,
-            "brand": "Demisto REST API",
+            "brand": "Core REST API",
             "category": "",
             "contents": "",
             "contentsSize": 0,
@@ -338,13 +338,13 @@ RAW_RESPONSE_ERROR = [
             "format": "json",
             "hasRole": False,
             "id": "",
-            "instance": "Demisto REST API_instance_1",
+            "instance": "Core REST API_instance_1",
             "investigationId": "737",
             "isTodo": False,
             "mirrored": False,
             "modified": "0001-01-01T00:00:00Z",
             "note": False,
-            "parentContent": "!demisto-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
+            "parentContent": "!core-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
             "parentEntryTruncated": False,
             "parentId": "726@737",
             "pinned": False,
@@ -368,7 +368,7 @@ RAW_RESPONSE_ERROR = [
             "user": "",
             "version": 0
         },
-        "ModuleName": "Demisto REST API_instance_1",
+        "ModuleName": "Core REST API_instance_1",
         "Note": False,
         "ReadableContentsFormat": "",
         "System": "",

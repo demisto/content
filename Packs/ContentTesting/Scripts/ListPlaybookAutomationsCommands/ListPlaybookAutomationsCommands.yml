@@ -1,12 +1,21 @@
+<<<<<<< HEAD
 comment: |
   Check Upgrade and Display Changes
+=======
+comment: |-
+  Check Upgrade and Display Changes.
+>>>>>>> master
 commonfields:
   id: ListPlaybookAutomationsCommands
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
+<<<<<<< HEAD
 dockerimage: demisto/python3:3.10.12.68300
+=======
+dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 enabled: true
 name: ListPlaybookAutomationsCommands
 runas: DBotWeakRole

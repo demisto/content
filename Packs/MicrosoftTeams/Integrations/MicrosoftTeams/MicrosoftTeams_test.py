@@ -2317,3 +2317,29 @@ def test_error_parser_with_exception(mocker, error_content, status_code, expecte
     assert demisto.setIntegrationContext.call_count == 1
 
     assert str(ex.value) == expected_response
+<<<<<<< HEAD
+=======
+
+
+@pytest.mark.parametrize('is_xsoar_8, expected_result', [
+    (True, ({"http": "xsoar_8_proxy", "https": "xsoar_8_proxy"}, True)),
+    (False, (None, False))
+])
+def test_handle_teams_proxy_and_ssl(mocker, is_xsoar_8, expected_result):
+    """
+    Given:
+        - If the xsoar version is greater or less than 8, and the expected reuslts of the integration proxies.
+    When:
+        - The version of xsoar is greater than 8 or less than 8
+    Then:
+        - Assert that when the version is greater than 8, proxies dict is not empty and use_ssl is true
+        - Assert that when the version is less than 8, proxies dict is empty and use_ssl is false.
+    """
+    import MicrosoftTeams as ms_teams
+    os.environ['CRTX_HTTP_PROXY'] = 'xsoar_8_proxy'
+    mocker.patch.object(ms_teams, 'is_demisto_version_ge', return_value=is_xsoar_8)
+    mocker.patch.object(ms_teams, 'PARAMS', return_value={'insecure': True})
+
+    proxies, use_ssl = ms_teams.handle_teams_proxy_and_ssl()
+    assert (proxies, use_ssl) == expected_result
+>>>>>>> master

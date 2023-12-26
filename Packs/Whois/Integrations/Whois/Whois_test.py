@@ -1,4 +1,5 @@
 import datetime
+<<<<<<< HEAD
 import pickle
 import Whois
 import demistomock as demisto
@@ -22,7 +23,36 @@ import ipwhois
 import socket
 from pytest_mock import MockerFixture
 
+=======
+>>>>>>> master
 import json
+import pathlib
+import pickle
+import socket
+import subprocess
+import sys
+import tempfile
+import time
+from typing import Any
+
+import ipwhois
+import pytest
+import Whois
+from pytest_mock import MockerFixture
+from Whois import (
+    WhoisInvalidDomain,
+    domain_command,
+    get_domain_from_query,
+    get_root_server,
+    increment_metric,
+    ip_command,
+    ipwhois_exception_mapping,
+    whois_command,
+    whois_exception_mapping,
+)
+
+import demistomock as demisto
+from CommonServerPython import DBotScoreReliability, EntryType, ErrorTypes, ExecutionMetrics
 
 INTEGRATION_NAME = 'Whois'
 
@@ -372,6 +402,7 @@ def test_get_raw_response_with_non_recursive_data_query(mocker: MockerFixture):
           queried, without the response of the refer server.
     """
     import socket
+
     from Whois import get_whois_raw
 
     def connect_mocker(curr_server):

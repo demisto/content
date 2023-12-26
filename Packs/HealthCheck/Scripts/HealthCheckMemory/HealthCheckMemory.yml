@@ -6,11 +6,15 @@ args:
   predefined:
   - 'True'
   - 'False'
-comment: Present or analyze memory usage
+comment: Present or analyze memory usage.
 commonfields:
   id: HealthCheckMemory
   version: -1
+<<<<<<< HEAD
 dockerimage: demisto/python3:3.10.9.42476
+=======
+dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 enabled: true
 name: HealthCheckMemory
 runas: DBotWeakRole

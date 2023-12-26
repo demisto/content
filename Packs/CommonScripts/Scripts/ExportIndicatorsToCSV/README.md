@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 This automation uses the Demisto REST API Integration to batch export Indicators to CSV and return the resulting CSV file to the war room.
 
 ## Script Data
+=======
+This automation uses the Core REST API Integration to batch export Indicators to CSV and return the resulting CSV file to the war room.
+
+## Script Data
+
+>>>>>>> master
 ---
 
 | **Name** | **Description** |
@@ -9,12 +16,24 @@ This automation uses the Demisto REST API Integration to batch export Indicators
 | Tags | Utility |
 
 ## Dependencies
+<<<<<<< HEAD
 ---
 This script uses the following commands and scripts.
 * demisto-api-get
 * demisto-api-post
 
 ## Inputs
+=======
+
+---
+This script uses the following commands and scripts.
+
+* core-api-get
+* core-api-post
+
+## Inputs
+
+>>>>>>> master
 ---
 
 | **Argument Name** | **Description** |
@@ -24,5 +43,9 @@ This script uses the following commands and scripts.
 | columns | Comma separated list of columns \(fields\) for the CSV.  \(Default is: id,indicator_type,value,source,score,relatedIncCount,setBy,sourceBrands,modified\) |
 
 ## Outputs
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 ---
 There are no outputs for this script.

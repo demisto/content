@@ -30,8 +30,13 @@ def BuildTask(t) -> dict:
 
 
 def GetSubpbTasks(subplaybook, t, tasks):
+<<<<<<< HEAD
     if "subPlaybook" in t.keys():
         for k, ts in t['subPlaybook']['tasks'].items():
+=======
+    if "subPlaybook" in t:
+        for _k, ts in t['subPlaybook']['tasks'].items():
+>>>>>>> master
             if subplaybook == t['subPlaybook']['name']:
                 if (ts['type'] in ["regular", "condition", "playbook", "collection"]):
                     tasks.append(BuildTask(ts))
@@ -41,11 +46,19 @@ def GetSubpbTasks(subplaybook, t, tasks):
 
 
 def GetTasks(incid: str, subplaybook: str) -> list:
+<<<<<<< HEAD
     resp = execute_command("demisto-api-get", {
         "uri": f"/inv-playbook/{incid}"})
     tasks: list = []
 
     for key, t in resp['response']['tasks'].items():
+=======
+    resp = execute_command("core-api-get", {
+        "uri": f"/inv-playbook/{incid}"})
+    tasks: list = []
+
+    for _key, t in resp['response']['tasks'].items():
+>>>>>>> master
         if (t['type'] in ["regular", "condition", "playbook", "collection"]):
             if t['type'] == "playbook" and subplaybook != "":
                 tasks = GetSubpbTasks(subplaybook, t, tasks)
@@ -90,7 +103,11 @@ def TaskStats(task: list, taskstat: dict) -> dict:
             taskstat[taskid]['notexecuted'] += t['notexecuted']
         taskstat[taskid]['count'] += 1
 
+<<<<<<< HEAD
     for key, ts in taskstat.items():
+=======
+    for _key, ts in taskstat.items():
+>>>>>>> master
         ts['avgdur'] = int(ts['totdur'] / ts['count'])
 
     return taskstat
@@ -128,7 +145,11 @@ def StatsInfoMarkdown(stats: dict) -> str:
     markdown += "|Task Name|Minimum Duration(ms)|Average Duration(ms)|Maximum Duration(ms)|\n"
     markdown += "|---|:---:|:---:|:---:|\n"
 
+<<<<<<< HEAD
     for key, val in stats.items():
+=======
+    for _key, val in stats.items():
+>>>>>>> master
         if val['mindur'] is None:
             val['mindur'] = 0
         markdown += f"|{val['name']}|{val['mindur']}|{val['avgdur']}|{val['maxdur']}|\n"

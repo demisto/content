@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -8,6 +9,23 @@ def main():
     try:
         alert = demisto.context().get('Core', {}).get('OriginalAlert')[0]
         event = alert.get('event')
+=======
+import demistomock as demisto  # noqa: F401   # pragma: no cover
+from CommonServerPython import *  # noqa: F401  # pragma: no cover
+
+BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;"  # pragma: no cover
+
+
+def main():  # pragma: no cover
+    try:
+        alert = demisto.context().get('Core', {}).get('OriginalAlert')
+        if isinstance(alert, list):
+            alert = alert[0]
+        if alert.get("raw_abioc") is None:
+            event = alert.get('event')
+        else:
+            event = alert.get('raw_abioc').get('event')
+>>>>>>> master
         resourceType = event.get('resource_type_orig')
 
         html = f"<h1 style='{BLACK_HTML_STYLE}'>{str(resourceType)}</h1>"
@@ -21,5 +39,10 @@ def main():
         return_error(f"An error occurred: {str(e)}")
 
 
+<<<<<<< HEAD
 if __name__ in ["__main__", "builtin", "builtins"]:
     return_results(main())
+=======
+if __name__ in ["__main__", "builtin", "builtins"]:  # pragma: no cover
+    return_results(main())  # pragma: no cover
+>>>>>>> master

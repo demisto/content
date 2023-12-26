@@ -7,7 +7,11 @@ import requests
 import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+<<<<<<< HEAD
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content project in code.pan.run
+=======
+GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID', '1061')
+>>>>>>> master
 
 
 def arguments_handler():

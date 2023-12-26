@@ -705,7 +705,11 @@ tasks:
                       iscontext: true
                     right:
                       value:
+<<<<<<< HEAD
                         simple: Demisto REST API
+=======
+                        simple: Core REST API
+>>>>>>> master
                 - - operator: isEqualString
                     left:
                       value:
@@ -717,7 +721,11 @@ tasks:
             iscontext: true
           right:
             value:
+<<<<<<< HEAD
               simple: Demisto REST API
+=======
+              simple: Core REST API
+>>>>>>> master
     continueonerrortype: ""
     view: |-
       {

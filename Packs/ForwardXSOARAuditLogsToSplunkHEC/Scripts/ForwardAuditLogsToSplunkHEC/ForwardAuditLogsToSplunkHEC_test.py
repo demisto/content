@@ -7,7 +7,11 @@ from CommonServerPython import *
 def execute_command_side_effect(command: str, args: Dict):
     if command == "splunk-submit-event-hec":
         return [{'Contents': {'response': ["result1"]}}]
+<<<<<<< HEAD
     if command == "demisto-api-post":
+=======
+    if command == "core-api-post":
+>>>>>>> master
         if args["uri"] == '/settings/audits':
             return [{'Contents': {'response': {'total': 2, "audits": ["audit1", "audit2"]}}, "Type": entryTypes["note"]}]
         return [{'Contents': {'response': {'total': 2, "reply": {"data": ["audit1", "audit2"]}}}, "Type": entryTypes["note"]}]

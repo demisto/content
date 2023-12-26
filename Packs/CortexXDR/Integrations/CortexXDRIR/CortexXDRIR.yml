@@ -3472,8 +3472,14 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
+<<<<<<< HEAD
   dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
+=======
+  dockerimage: demisto/python3:3.10.13.83255
+  isfetch: true
+  isfetch:xpanse: false
+>>>>>>> master
   script: ''
   subtype: python3
   ismappable: true

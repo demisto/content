@@ -156,6 +156,7 @@ In order to get the list of all available fields to search by, you can configure
 **Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled.
+<<<<<<< HEAD
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. (Cortex XSOAR 6.x only) In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
@@ -163,6 +164,17 @@ To access the Export Indicators service by instance name, make sure ***Instance 
    (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
   (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
 
+=======
+
+1. For Cortex XSOAR 6.x:
+   1. Navigate to **Settings > About > Troubleshooting**.
+   2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+2. In a web browser, go to:
+ 
+   - (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
+   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+
+>>>>>>> master
 
 ### URL Inline Arguments
 
@@ -171,7 +183,7 @@ Use the following arguments in the URL to change the request:
 | **Argument Name** | **Description**                                                                                                                                                     | **Example**                                                                                         |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
 | n                 | The maximum number of entries in the output. If no value is provided, uses the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50`                                       |
-| s                 | The starting entry index from which to export the indicators.                                                                                                       | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50`                                  |
+| s                 | The starting entry index from which to export the indicators when index 0 is the first position.                                                                    | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50`                                  |
 | v                 | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`).                                                                | `https://{server_host}/instance/execute/{instance_name}?v=JSON`                                     |
 | q                 | The query used to retrieve indicators from the system. If you are using this argument, no more than 100,000 can be exported through the EDL.                                                                                                             | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"`      |
 | t                 | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex.    | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip`                                 |

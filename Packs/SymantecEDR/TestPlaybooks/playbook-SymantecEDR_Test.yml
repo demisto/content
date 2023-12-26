@@ -259,7 +259,11 @@ tasks:
       id: dc1ce88a-c13c-4147-8795-3a6515876e19
       version: -1
       name: Provides Command
+<<<<<<< HEAD
       description: Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Demisto REST API" integration must first be enabled.
+=======
+      description: Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Core REST API" integration must first be enabled.
+>>>>>>> master
       scriptName: ProvidesCommand
       type: regular
       iscommand: false

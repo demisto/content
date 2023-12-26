@@ -11,7 +11,7 @@ from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
-                         ItemAttachment, Version)
+                         ItemAttachment, Version, Body)
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorInvalidIdMalformed,
                                 ErrorInvalidPropertyRequest,
@@ -49,7 +49,11 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
+<<<<<<< HEAD
 class exchangelibSSLAdapter(SSLAdapter):
+=======
+class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
+>>>>>>> master
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
@@ -377,7 +381,7 @@ def get_endpoint_autodiscover(context_dict):  # pragma: no cover
     return context_dict["service_endpoint"]
 
 
-def get_version(version_str):
+def get_version(version_str):  # pragma: no cover
     if version_str not in VERSIONS:
         raise Exception("{} is unsupported version: {}. Choose one of".format(version_str, "\\".join(list(VERSIONS.keys()))))
     return Version(VERSIONS[version_str])
@@ -482,7 +486,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE, time_zone=N
                 primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args),
                 access_type=access_type, default_timezone=time_zone
             )
-            account.root.effective_rights.read  # pylint: disable=E1101
+            account.root.effective_rights.read  # noqa: B018 pylint: disable=E1101
             return account
         except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
@@ -587,12 +591,16 @@ def filter_dict_null(d):  # pragma: no cover
 
 
 def is_empty_object(obj):
+<<<<<<< HEAD
     size = 0
     if isinstance(obj, map):
         size = obj.__sizeof__()
     else:
         size = len(obj)
     return size == 0
+=======
+    return (obj.__sizeof__() if isinstance(obj, map) else len(obj)) == 0
+>>>>>>> master
 
 
 def get_time_zone() -> EWSTimeZone | None:
@@ -710,12 +718,20 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
+<<<<<<< HEAD
 def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_body=None, attachments=None,
+=======
+def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_to, html_body=None, attachments=None,
+>>>>>>> master
                           raw_message=None, from_address=None):  # pragma: no cover
     """
     Send an email to a mailbox.
 
     Args:
+<<<<<<< HEAD
+=======
+        body_type: type of the body. Can be 'html' or 'text'.
+>>>>>>> master
         account (Account): account from which to send an email.
         to (list[str]): a list of emails to send an email.
         subject (str): subject of the mail.
@@ -731,7 +747,11 @@ def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_bo
     """
     if not attachments:
         attachments = []
+<<<<<<< HEAD
     message_body = HTMLBody(html_body) if html_body else body
+=======
+    message_body = HTMLBody(html_body) if body_type == 'html' and html_body else Body(body)
+>>>>>>> master
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
@@ -778,7 +798,11 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
     return m
 
 
+<<<<<<< HEAD
 class GetSearchableMailboxes(EWSService):
+=======
+class GetSearchableMailboxes(EWSService):  # pragma: no cover
+>>>>>>> master
     SERVICE_NAME = 'GetSearchableMailboxes'
     element_container_name = '{%s}SearchableMailboxes' % MNS
 
@@ -917,7 +941,7 @@ class ExpandGroup(EWSService):
                     non_dl_emails[member['mailbox']] = member
 
 
-def get_expanded_group(protocol, email_address, recursive_expansion=False):
+def get_expanded_group(protocol, email_address, recursive_expansion=False):  # pragma: no cover
     group_members = ExpandGroup(protocol=protocol).call(email_address, recursive_expansion)
     group_details = {
         "name": email_address,
@@ -928,7 +952,7 @@ def get_expanded_group(protocol, email_address, recursive_expansion=False):
     return entry_for_object
 
 
-def get_searchable_mailboxes(protocol):
+def get_searchable_mailboxes(protocol):  # pragma: no cover
     searchable_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
@@ -1033,7 +1057,11 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
 
 def keys_to_camel_case(value):
     def str_to_camel_case(snake_str):
+<<<<<<< HEAD
         # Add condtion as Email object arrived in list and raised error
+=======
+        # Add condition as Email object arrived in list and raised error
+>>>>>>> master
         if not isinstance(snake_str, str):
             return snake_str
         components = snake_str.split('_')
@@ -1050,7 +1078,7 @@ def keys_to_camel_case(value):
     return str_to_camel_case(value)
 
 
-def email_ec(item):
+def email_ec(item):  # pragma: no cover
     return {
         'CC': None if not item.cc_recipients else [mailbox.email_address for mailbox in item.cc_recipients],
         'BCC': None if not item.bcc_recipients else [mailbox.email_address for mailbox in item.bcc_recipients],
@@ -1931,7 +1959,7 @@ def get_folder(folder_path, target_mailbox=None, is_public=None):  # pragma: no 
     return get_entry_for_object(f"Folder {folder_path}", CONTEXT_UPDATE_FOLDER, folder)
 
 
-def folder_to_context_entry(f):
+def folder_to_context_entry(f):  # pragma: no cover
     f_entry = {
         'name': f.name,
         'totalCount': f.total_count,
@@ -1950,7 +1978,7 @@ def check_cs_prereqs():  # pragma: no cover
         raise Exception("This command is only supported for Office 365")
 
 
-def get_cs_error(stderr):
+def get_cs_error(stderr):  # pragma: no cover
     return {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["text"],
@@ -1958,7 +1986,7 @@ def get_cs_error(stderr):
     } if stderr else None
 
 
-def get_cs_status(search_name, status):
+def get_cs_status(search_name, status):  # pragma: no cover
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -2263,8 +2291,14 @@ def send_email(args):
     attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
+<<<<<<< HEAD
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), bcc=bcc, cc=cc, reply_to=replyTo,
+=======
+    body_type = args.get('bodyType') or args.get('body_type') or 'text'
+    send_email_to_mailbox(
+        account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
+>>>>>>> master
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
         from_address=args.get('from')
     )
@@ -2351,7 +2385,11 @@ def get_protocol():  # pragma: no cover
     return protocol
 
 
+<<<<<<< HEAD
 def encode_and_submit_results(obj):
+=======
+def encode_and_submit_results(obj):  # pragma: no cover
+>>>>>>> master
     demisto.results(obj)
 
 
@@ -2517,7 +2555,7 @@ def sub_main():  # pragma: no cover
                 demisto.error(f"EWS: unexpected exception when trying to remove log handler: {ex}")
 
 
-def process_main():
+def process_main():  # pragma: no cover
     """setup stdin to fd=0 so we can read from the server"""
     sys.stdin = os.fdopen(0, "r")
     sub_main()
@@ -2546,5 +2584,9 @@ def main():  # pragma: no cover
 
 
 # python2 uses __builtin__ python3 uses builtins
+<<<<<<< HEAD
 if __name__ in ("__builtin__", "builtins", "__main__"):
+=======
+if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
+>>>>>>> master
     main()

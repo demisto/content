@@ -23,7 +23,11 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
+<<<<<<< HEAD
   if [ "${TEST_XDR_ENV}" == "true" ]; then
+=======
+  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
+>>>>>>> master
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
   else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"

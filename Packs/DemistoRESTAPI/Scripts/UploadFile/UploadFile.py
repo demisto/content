@@ -1,15 +1,26 @@
+<<<<<<< HEAD
 from typing import Tuple
+=======
+>>>>>>> master
 
 from CommonServerPython import *
 
 
 def upload_file(incident_id: str, entry_id: str, body: str = '', as_incident_attachment: bool = True):
     service_name = 'incident' if as_incident_attachment else 'entry'
+<<<<<<< HEAD
     return demisto.executeCommand("demisto-api-multipart",
                                   {"uri": f'{service_name}/upload/{incident_id}', "entryID": entry_id, "body": body})
 
 
 def upload_file_command(args: dict) -> Tuple[str, str]:
+=======
+    return demisto.executeCommand("core-api-multipart",
+                                  {"uri": f'{service_name}/upload/{incident_id}', "entryID": entry_id, "body": body})
+
+
+def upload_file_command(args: dict) -> tuple[str, str]:
+>>>>>>> master
     incident_id = args.get('incID', '')
     entry_id = args.get('entryID', '')
     body = args.get('body', '')

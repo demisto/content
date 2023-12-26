@@ -18,7 +18,11 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
+<<<<<<< HEAD
 dockerimage: demisto/python3:3.10.13.78960
+=======
+dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 enabled: true
 name: RetrievePlaybookDependencies
 outputs:

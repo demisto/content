@@ -446,6 +446,10 @@ script:
       predefined:
       - 'xml'
       - 'pdf'
+<<<<<<< HEAD
+=======
+      deprecated: true
+>>>>>>> master
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire. Only relevant when polling=true.
@@ -1003,6 +1007,10 @@ script:
       predefined:
       - 'xml'
       - 'pdf'
+<<<<<<< HEAD
+=======
+      deprecated: true
+>>>>>>> master
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire. Only relevant when polling=true.
@@ -1262,7 +1270,11 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
+<<<<<<< HEAD
   dockerimage: demisto/python3:3.10.13.80593
+=======
+  dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
   runonce: false
   script: '-'
   subtype: python3

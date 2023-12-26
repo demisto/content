@@ -1,6 +1,7 @@
 Returns a dict of all incident fields that exist in the system.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,11 +10,14 @@ Returns a dict of all incident fields that exist in the system.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* demisto-api-get
+
+* core-api-get
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,14 +26,19 @@ This script uses the following commands and scripts.
 | short_names | Whether to shorten the incident field names. If "true", will cause output to use shortened field names. The default value is "true". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 
 ## Script Examples
+
 ### Example command
+
 ```!IncidentFields exclude_system_fields="false" short_names="true"```
+
 ### Context Example
+
 ```json
 {}
 ```
@@ -135,6 +144,10 @@ There are no outputs for this script.
 >```
 
 ### Troubleshooting
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
 automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
 to ensure that API calls are made to the current tenant instead of the master tenant.

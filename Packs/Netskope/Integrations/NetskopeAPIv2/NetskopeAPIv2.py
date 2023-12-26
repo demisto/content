@@ -749,7 +749,11 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
     last_run: dict[str, Any] = {}
 
     event_types = argToList(params.get("event_types"))
+<<<<<<< HEAD
     alert_query = params.get("alert_query")
+=======
+    alert_query = params.get("alerts_query")
+>>>>>>> master
     alert_max_fetch = arg_to_number(params["max_fetch"]) or MAX_LIMIT
 
     if (

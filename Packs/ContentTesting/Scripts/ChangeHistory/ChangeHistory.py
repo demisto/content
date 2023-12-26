@@ -1,7 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+<<<<<<< HEAD
 from typing import Dict, Any
+=======
+from typing import Any
+>>>>>>> master
 
 vcuris = [
     "/vc/history/list/all/-1",
@@ -20,20 +24,32 @@ vcuris = [
 def main():
     try:
         # Get the local, uncommitted changed objects
+<<<<<<< HEAD
         changes = demisto.executeCommand("demisto-api-get", {
+=======
+        changes = demisto.executeCommand("core-api-get", {
+>>>>>>> master
             'uri': "/vc/changes/uncommitted"
         })[0]['Contents']['response']
 
         # Build the changed object dictionary
+<<<<<<< HEAD
         itypes: Dict[str, Dict[str, Dict[str, Any]]]
+=======
+        itypes: dict[str, dict[str, dict[str, Any]]]
+>>>>>>> master
         itypes = {}
 
         if changes is not None:
             for item in changes:
+<<<<<<< HEAD
                 if "message" in item:
                     msg = item['message']
                 else:
                     msg = "no message"
+=======
+                msg = item.get("message", "no message")
+>>>>>>> master
                 if item['type'] not in itypes:
                     itypes[item['type']] = {}
                 itypes[item['type']][item['name']] = {"action": item['action'], "message": msg, "history": []}
@@ -41,7 +57,11 @@ def main():
         # Get all the commit histories
         commits = []
         for uri in vcuris:
+<<<<<<< HEAD
             commits.append(demisto.executeCommand("demisto-api-get", {
+=======
+            commits.append(demisto.executeCommand("core-api-get", {
+>>>>>>> master
                 "uri": uri
             })[0]['Contents']['response']['commits'])
 

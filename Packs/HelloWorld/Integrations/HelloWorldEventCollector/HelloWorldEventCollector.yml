@@ -76,7 +76,11 @@ script:
     description: Gets events from Hello World.
     execution: false
     name: hello-world-get-events
+<<<<<<< HEAD
   dockerimage: demisto/python3:3.10.13.80593
+=======
+  dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
   isfetchevents: true
   runonce: false
   script: '-'

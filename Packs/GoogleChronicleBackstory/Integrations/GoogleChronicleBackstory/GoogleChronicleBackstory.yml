@@ -6698,7 +6698,11 @@ script:
     - contextPath: GoogleChronicleBackstory.Events.securityResult.urlBackToProduct
       description: URL to direct you to the source product console for this security event.
       type: String
+<<<<<<< HEAD
   dockerimage: demisto/googleapi-python3:1.0.0.83610
+=======
+  dockerimage: demisto/googleapi-python3:1.0.0.83805
+>>>>>>> master
   isfetch: true
   runonce: false
   script: '-'

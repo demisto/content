@@ -129,7 +129,11 @@ def main():
         useCasePlaybook.endPlaybook()
         playbookPostJSON = useCasePlaybook.createPlaybookJSON()
 
+<<<<<<< HEAD
         demisto.executeCommand("demisto-api-post", {"uri": "/playbook/save", "body": playbookPostJSON})
+=======
+        demisto.executeCommand("core-api-post", {"uri": "/playbook/save", "body": playbookPostJSON})
+>>>>>>> master
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')

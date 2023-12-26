@@ -621,6 +621,8 @@ class ScoreCalculator:
     """
     Calculating DBotScore of files, ip, etc.
     """
+    DEFAULT_SUSPICIOUS_THRESHOLD = 5
+
     logs: List[str]
 
     # General
@@ -663,7 +665,11 @@ class ScoreCalculator:
                 arg_name='File Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
+<<<<<<< HEAD
                 params['fileSuspiciousThreshold'],
+=======
+                params['fileSuspiciousThreshold'] or self.DEFAULT_SUSPICIOUS_THRESHOLD,
+>>>>>>> master
                 arg_name='File Suspicious Threshold',
                 required=True)
         }
@@ -673,7 +679,11 @@ class ScoreCalculator:
                 arg_name='IP Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
+<<<<<<< HEAD
                 params['ipSuspiciousThreshold'],
+=======
+                params['ipSuspiciousThreshold'] or self.DEFAULT_SUSPICIOUS_THRESHOLD,
+>>>>>>> master
                 arg_name='IP Suspicious Threshold',
                 required=True)
         }
@@ -683,7 +693,11 @@ class ScoreCalculator:
                 arg_name='URL Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
+<<<<<<< HEAD
                 params['urlSuspiciousThreshold'],
+=======
+                params['urlSuspiciousThreshold'] or self.DEFAULT_SUSPICIOUS_THRESHOLD,
+>>>>>>> master
                 arg_name='URL Suspicious Threshold',
                 required=True)
         }
@@ -693,7 +707,11 @@ class ScoreCalculator:
                 arg_name='Domain Malicious Threshold',
                 required=True),
             'suspicious': arg_to_number_must_int(
+<<<<<<< HEAD
                 params['domainSuspiciousThreshold'],
+=======
+                params['domainSuspiciousThreshold'] or self.DEFAULT_SUSPICIOUS_THRESHOLD,
+>>>>>>> master
                 arg_name='Domain Suspicious Threshold',
                 required=True)
         }

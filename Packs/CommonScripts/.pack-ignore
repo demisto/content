@@ -258,3 +258,9 @@ ignore=BA124
 
 [file:ContextContains.yml]
 ignore=BA124
+<<<<<<< HEAD
+=======
+
+[file:VerdictResult.yml]
+ignore=BA124
+>>>>>>> master

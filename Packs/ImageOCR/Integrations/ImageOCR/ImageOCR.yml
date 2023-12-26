@@ -26,6 +26,16 @@ script:
       name: entryid
       required: true
       isArray: true
+<<<<<<< HEAD
+=======
+    - description: If true, will not raise an error if the given image is corrupted and could not be processed.
+      name: skip_corrupted
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+>>>>>>> master
     - description: A CSV of language codes of the language to use for OCR. Overrides the default configured language list.
       isArray: true
       name: langs
@@ -35,7 +45,11 @@ script:
     - contextPath: File.Text
       description: Extracted text from the passed image file.
       type: String
+<<<<<<< HEAD
   dockerimage: demisto/tesseract:1.0.0.82701
+=======
+  dockerimage: demisto/tesseract:1.0.0.83850
+>>>>>>> master
   runonce: false
   script: '-'
   type: python

@@ -10,8 +10,17 @@ comment: This script retrieves the identity fields from the incident context.
 enabled: true
 scripttarget: 0
 subtype: python3
+<<<<<<< HEAD
 dockerimage: demisto/python3:3.10.12.63474
+=======
+dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 runas: DBotWeakRole
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
+<<<<<<< HEAD
+=======
+marketplaces:
+- marketplacev2
+>>>>>>> master

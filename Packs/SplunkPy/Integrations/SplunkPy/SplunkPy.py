@@ -19,6 +19,8 @@ OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xm
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DEFAULT_ASSET_ENRICH_TABLES = 'asset_lookup_by_str,asset_lookup_by_cidr'
+DEFAULT_IDENTITY_ENRICH_TABLE = 'identity_lookup_expanded'
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
@@ -989,10 +991,18 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
         fields=["user", "src_user"],
         add_backslash=True,
     ):
+<<<<<<< HEAD
         kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
         query = f'| inputlookup identity_lookup_expanded where {users}'
+=======
+        tables = argToList(demisto.params().get('identity_enrich_lookup_tables', DEFAULT_IDENTITY_ENRICH_TABLE))
+        query = ''
+        for table in tables:
+            query += f'| inputlookup {table} where {users}'
+>>>>>>> master
         demisto.debug(f"Identity query for notable {notable_data[EVENT_ID]}: {query}")
         try:
+            kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
             demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
@@ -1019,14 +1029,25 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
         prefix="asset",
         fields=["src", "dest", "src_ip", "dst_ip"],
     ):
+<<<<<<< HEAD
         kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
         query = f'| inputlookup append=T asset_lookup_by_str where {assets} \
                 | inputlookup append=t asset_lookup_by_cidr where {assets} \
                 | rename _key as asset_id \
                 | stats values(*) as * by asset_id'
 
+=======
+        tables = argToList(demisto.params().get('asset_enrich_lookup_tables', DEFAULT_ASSET_ENRICH_TABLES))
+
+        query = ''
+        for table in tables:
+            query += f'| inputlookup append=T {table} where {assets}'
+        query += '| rename _key as asset_id | stats values(*) as * by asset_id'
+
+>>>>>>> master
         demisto.debug(f"Asset query for notable {notable_data[EVENT_ID]}: {query}")
         try:
+            kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
             demisto.error(f"Caught an exception in asset_enrichment function: {str(e)}")

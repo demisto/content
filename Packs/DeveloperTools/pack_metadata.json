@@ -2,7 +2,11 @@
     "name": "Developer Tools",
     "description": "Basic tools for content development.",
     "support": "community",
+<<<<<<< HEAD
     "currentVersion": "1.3.7",
+=======
+    "currentVersion": "1.3.8",
+>>>>>>> master
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

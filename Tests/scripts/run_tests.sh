@@ -33,7 +33,11 @@ if [ -n "${CLOUD_SERVERS_FILE}" ]; then
   echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
 fi
 if [ -n "${CLOUD_API_KEYS}" ]; then
+<<<<<<< HEAD
   if [ "${TEST_XDR_ENV}" == "true" ]; then
+=======
+  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
+>>>>>>> master
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
   else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
@@ -81,6 +85,7 @@ elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
     echo "Failed to run test content with exit code:${exit_code}"
 else
   exit_on_error 1 "Unknown server type: ${SERVER_TYPE}"
+<<<<<<< HEAD
 fi
 
 if [ "${exit_code}" -eq 0 ]; then
@@ -94,3 +99,29 @@ fi
 
 echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - Error handling will be done on the results job, exiting with code 0"
 exit 0
+=======
+fi
+
+if [ "${exit_code}" -eq 0 ]; then
+  role="$(echo -e "${INSTANCE_ROLE}" | tr -d '[:space:]')"
+  filepath="${ARTIFACTS_FOLDER}/is_build_passed_${role}.txt"
+  echo "Build passed for instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} writing it passed to artifacts folder in file: ${filepath}"
+  touch "${filepath}"
+else
+  echo "Build failed for instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} with exit code: ${exit_code}"
+fi
+
+if [ -n "${FAIL_ON_ERROR}" ]; then
+  if [ "${exit_code}" -eq 0 ]; then
+    echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 0"
+    exit 0
+  else
+    echo "Finish running server tests with errors on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 1"
+    exit 1 
+  fi 
+else
+  echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - Error handling will be done on the results job, exiting with code 0"
+  exit 0
+fi
+
+>>>>>>> master

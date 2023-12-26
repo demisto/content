@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def GetTasks(incid: str, playbookname: str) -> dict:
+<<<<<<< HEAD
     response = execute_command("demisto-api-get", {
         "uri": f"/inv-playbook/{incid}"})
 
@@ -12,6 +13,17 @@ def GetTasks(incid: str, playbookname: str) -> dict:
             sub = t['subPlaybook']
             if sub['name'] == playbookname:
                 for key, task in sub['tasks'].items():
+=======
+    response = execute_command("core-api-get", {
+        "uri": f"/inv-playbook/{incid}"})
+
+    tasks = {}
+    for _key, t in response['response']['tasks'].items():
+        if t['type'] == "playbook":
+            sub = t['subPlaybook']
+            if sub['name'] == playbookname:
+                for _key, task in sub['tasks'].items():
+>>>>>>> master
                     if task['type'] == "regular" or task['type'] == "playbook" or task['type'] == "condition":
                         completed = 0
                         if 'state' in task:
@@ -34,14 +46,22 @@ def TaskCoverageMarkdown(tasks: Dict) -> str:
     if len(tasks) == 0:
         markdown += "|No Tasks Found||||\n"
         return markdown
+<<<<<<< HEAD
     for key, val in tasks.items():
+=======
+    for _key, val in tasks.items():
+>>>>>>> master
         markdown += f"|{val['name']}|{val['count']}|{val['completed']}|{val['completed']/val['count']*100}%|\n"
 
     return markdown
 
 
 def GetAutomationName(scriptid) -> str:
+<<<<<<< HEAD
     results = demisto.executeCommand("demisto-api-post", {
+=======
+    results = demisto.executeCommand("core-api-post", {
+>>>>>>> master
         "uri": f"/automation/load/{scriptid}"
     })[0]
     if "response" not in results.keys():

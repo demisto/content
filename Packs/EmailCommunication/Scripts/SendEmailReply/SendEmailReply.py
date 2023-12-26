@@ -1,7 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 import json
 import random
 import re
@@ -38,7 +41,11 @@ def append_email_signature(html_body):
     return html_body
 
 
+<<<<<<< HEAD
 def validate_email_sent(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, service_mail,
+=======
+def validate_email_sent(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, body_type, service_mail,
+>>>>>>> master
                         email_cc, email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
                         mail_sender_instance):
     """
@@ -49,6 +56,7 @@ def validate_email_sent(incident_id, email_subject, subject_include_incident_id,
         subject_include_incident_id: Should we include the incident id in the email subject.
         email_to: The email's recipients.
         reply_body: The email body.
+        body_type: The type of the email body.
         service_mail: The service mail (mail listener).
         email_cc: The email cc.
         email_bcc: The email bcc.
@@ -60,7 +68,11 @@ def validate_email_sent(incident_id, email_subject, subject_include_incident_id,
     Returns:
         str: a message which indicates that the mail was sent successfully or an error message.
     """
+<<<<<<< HEAD
     email_reply = execute_reply_mail(incident_id, email_subject, subject_include_incident_id, email_to, reply_body,
+=======
+    email_reply = execute_reply_mail(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, body_type,
+>>>>>>> master
                                      service_mail, email_cc, email_bcc, reply_html_body, entry_id_list,
                                      email_latest_message, email_code, mail_sender_instance)
 
@@ -76,7 +88,11 @@ def validate_email_sent(incident_id, email_subject, subject_include_incident_id,
     return msg
 
 
+<<<<<<< HEAD
 def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, service_mail,
+=======
+def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, email_to, reply_body, body_type, service_mail,
+>>>>>>> master
                        email_cc, email_bcc, reply_html_body, entry_id_list, email_latest_message, email_code,
                        mail_sender_instance):
     if subject_include_incident_id and f'[{incident_id}]' not in email_subject:
@@ -97,6 +113,7 @@ def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, 
         subject_with_id = email_subject
 
     # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
+<<<<<<< HEAD
     if mail_sender_instance:
         mail_content = {
             "to": email_to,
@@ -110,11 +127,29 @@ def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, 
             "replyTo": service_mail,
             "using": mail_sender_instance
         }
+=======
+    mail_content = {
+        "to": email_to,
+        "inReplyTo": email_latest_message,
+        "subject": subject_with_id,
+        "cc": email_cc,
+        "bcc": email_bcc,
+        "htmlBody": reply_html_body,
+        "body": reply_body,
+        "bodyType": body_type,
+        "attachIDs": ",".join(entry_id_list),
+        "replyTo": service_mail
+    }
+    if mail_sender_instance:
+        mail_content["using"] = mail_sender_instance
+
+>>>>>>> master
         # If using Gmail Single User,
         # add references header to mail_content to properly group replies into conversations in user's inbox.
         instances = demisto.getModules()
         if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
             mail_content["references"] = email_latest_message
+<<<<<<< HEAD
     else:
         mail_content = {
             "to": email_to,
@@ -127,6 +162,8 @@ def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, 
             "attachIDs": ",".join(entry_id_list),
             "replyTo": service_mail
         }
+=======
+>>>>>>> master
     return demisto.executeCommand("reply-mail", mail_content)
 
 
@@ -222,7 +259,11 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
 
 
 def send_new_email(incident_id, email_subject, subject_include_incident_id, email_to, email_body, service_mail,
+<<<<<<< HEAD
                    email_cc, email_bcc, email_html_body, entry_id_list, email_code, mail_sender_instance,
+=======
+                   email_cc, email_bcc, email_html_body, body_type, entry_id_list, email_code, mail_sender_instance,
+>>>>>>> master
                    new_attachment_names):
     """Send new email.-
     Args:
@@ -235,6 +276,7 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
         email_cc: The email cc.
         email_bcc: The email bcc.
         email_html_body: The email html body.
+        body_type: The body type of the email
         entry_id_list: The files entry ids list.
         email_code: The random code that was generated when the incident was created.
         mail_sender_instance: The name of the mail sender integration instance
@@ -244,7 +286,11 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
     email_html_body = append_email_signature(email_html_body)
 
     email_result = send_new_mail_request(incident_id, email_subject, subject_include_incident_id, email_to, email_body,
+<<<<<<< HEAD
                                          service_mail, email_cc, email_bcc, email_html_body, entry_id_list,
+=======
+                                         service_mail, email_cc, email_bcc, email_html_body, body_type, entry_id_list,
+>>>>>>> master
                                          new_attachment_names, email_code, mail_sender_instance)
 
     if is_error(email_result):
@@ -260,7 +306,11 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
 
 
 def send_new_mail_request(incident_id, email_subject, subject_include_incident_id, email_to, email_body, service_mail,
+<<<<<<< HEAD
                           email_cc, email_bcc, email_html_body, entry_id_list, new_attachment_names, email_code,
+=======
+                          email_cc, email_bcc, email_html_body, body_type, entry_id_list, new_attachment_names, email_code,
+>>>>>>> master
                           mail_sender_instance):
     """
             Use message details from the selected thread to construct a new mail message, since
@@ -274,6 +324,7 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
             email_cc: The email cc
             email_bcc: The email bcc
             email_html_body: The email html body
+            body_type: The body type of the email
             entry_id_list: The files entry ids list
             new_attachment_names: List of attachment file names
             email_code: The random code that was generated when the incident was created
@@ -289,30 +340,24 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
     else:
         subject_with_id = email_subject
 
+<<<<<<< HEAD
+=======
+    mail_content = {
+        "to": email_to,
+        "subject": subject_with_id,
+        "cc": email_cc,
+        "bcc": email_bcc,
+        "htmlBody": email_html_body,
+        "bodyType": body_type,
+        "body": email_body,
+        "attachIDs": ",".join(entry_id_list),
+        "replyTo": service_mail,
+    }
+>>>>>>> master
     # If a mail sender instance has been set, set the "using" parameter with it. Otherwise, do not set "using"
     if mail_sender_instance:
-        mail_content = {
-            "to": email_to,
-            "subject": subject_with_id,
-            "cc": email_cc,
-            "bcc": email_bcc,
-            "htmlBody": email_html_body,
-            "body": email_body,
-            "attachIDs": ",".join(entry_id_list),
-            "replyTo": service_mail,
-            "using": mail_sender_instance
-        }
-    else:
-        mail_content = {
-            "to": email_to,
-            "subject": subject_with_id,
-            "cc": email_cc,
-            "bcc": email_bcc,
-            "htmlBody": email_html_body,
-            "body": email_body,
-            "attachIDs": ",".join(entry_id_list),
-            "replyTo": service_mail
-        }
+        mail_content["using"] = mail_sender_instance
+
     # Send email
     email_result = demisto.executeCommand("send-mail", mail_content)
 
@@ -352,7 +397,6 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
     Returns:
         list. Attachments entries ids list.
     """
-    entry_id_list = []
     if attachments:
         attachment_list = attachments
         field_name = 'attachment'
@@ -360,13 +404,14 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
         attachment_list = new_email_attachments
         field_name = 'emailnewattachment'
     else:
-        attachment_list = False
+        return []
 
+    entry_id_list = []
     if attachment_list and files:
         for attachment in attachment_list:
             attachment_name = attachment.get('name', '')
             file_data = create_file_data_json(attachment, field_name)
-            demisto.executeCommand("demisto-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data})
+            demisto.executeCommand("core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data})
             if not isinstance(files, list):
                 files = [files]
             for file in files:
@@ -413,6 +458,7 @@ def create_file_data_json(attachment, field_name):
 def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False):
     """ Get the notes and the incident id and return the reply body
     Args:
+        reputation_calc_async:
         notes (list): The notes of the email.
         incident_id (str): The incident id.
         attachments (list): The email's attachments.
@@ -439,7 +485,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
         entry_tags_res = demisto.executeCommand(
             "addEntries", {"entries": entry_note, 'id': incident_id, 'reputationCalcAsync': reputation_calc_async})
 
-        entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
+        entry_note_res = demisto.executeCommand("core-api-post", {"uri": "/entry/note", "body": json.dumps(
             {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
         if is_error(entry_note_res):
             return_error(get_error(entry_note_res))
@@ -580,7 +626,11 @@ def reset_fields():
 
 
 def resend_first_contact(email_selected_thread, email_thread, incident_id, new_email_attachments, files, new_email_body,
+<<<<<<< HEAD
                          add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+=======
+                         body_type, add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+>>>>>>> master
                          subject_include_incident_id):
     """
         Use message details from the selected thread to construct a new mail message, since resending a first-contact
@@ -590,6 +640,7 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
         email_thread: Dict containing the thread details
         incident_id: ID of the current incident
         new_email_attachments: Dict of attachment details
+        body_type: The body type of the email
         files: Incident files
         new_email_body: The email body
         add_cc: The email CC list
@@ -614,8 +665,13 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
         final_email_cc = get_email_cc(thread_cc, add_cc)
         final_email_bcc = get_email_cc(thread_bcc, add_bcc)
         result = send_new_email(incident_id, reply_subject, subject_include_incident_id, new_email_recipients,
+<<<<<<< HEAD
                                 new_email_body, service_mail, final_email_cc, final_email_bcc, html_body, entry_id_list,
                                 reply_code, mail_sender_instance, new_attachment_names)
+=======
+                                new_email_body, service_mail, final_email_cc, final_email_bcc, html_body, body_type,
+                                entry_id_list, reply_code, mail_sender_instance, new_attachment_names)
+>>>>>>> master
 
         return result
     else:
@@ -640,7 +696,11 @@ def format_body(new_email_body):
     return html_body
 
 
+<<<<<<< HEAD
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
+=======
+def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
+>>>>>>> master
                         subject_include_incident_id, email_to_str, service_mail, email_latest_message,
                         mail_sender_instance, reputation_calc_async=False):
     """
@@ -651,6 +711,7 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         email_cc: The email cc.
         add_cc: The email bcc.
         notes: Entry IDs of notes containing the reply email body
+        body_type: The body type of the email
         attachments: Entry IDs of file attachments
         files: Dictionary of incident file details
         email_subject: The email subject
@@ -673,7 +734,11 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments, reputation_calc_async)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
+<<<<<<< HEAD
         result = validate_email_sent(incident_id, email_subject, subject_include_incident_id, email_to_str, reply_body,
+=======
+        result = validate_email_sent(incident_id, email_subject, subject_include_incident_id, email_to_str, reply_body, body_type,
+>>>>>>> master
                                      service_mail, final_email_cc, '', reply_html_body, entry_id_list,
                                      email_latest_message, email_code, mail_sender_instance)
         return_results(result)
@@ -682,7 +747,11 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         return_error(f"Failed to send email via new_thread = 'n/a' branch. Reason: {error}")
 
 
+<<<<<<< HEAD
 def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body, incident_id,
+=======
+def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body, body_type, incident_id,
+>>>>>>> master
                      email_codes, new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
                      new_attachment_names):
     """Validates that all necessary fields are set to send a new email, gets a unique code to associate replies
@@ -690,6 +759,7 @@ def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_r
     Args:
         email_codes: The random code that was generated when the incident was created.
         new_email_body: The email body
+        body_type: The body type of the email
         incident_id: The incident ID.
         add_cc: The email cc.
         add_bcc: The email bcc.
@@ -736,7 +806,11 @@ def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_r
         html_body = format_body(new_email_body)
 
         result = send_new_email(incident_id, new_email_subject, subject_include_incident_id, new_email_recipients,
+<<<<<<< HEAD
                                 new_email_body, service_mail, add_cc, add_bcc, html_body, entry_id_list, thread_code,
+=======
+                                new_email_body, service_mail, add_cc, add_bcc, html_body, body_type, entry_id_list, thread_code,
+>>>>>>> master
                                 mail_sender_instance, new_attachment_names)
         return_results(result)
 
@@ -823,13 +897,18 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
         reply_mailbox, thread_cc, thread_bcc, last_thread_processed
 
 
+<<<<<<< HEAD
 def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
+=======
+def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
+>>>>>>> master
                        add_bcc, service_mail, mail_sender_instance, new_attachment_names, subject_include_incident_id):
     """Validates that all necessary fields are set to send a reply email, retrieves details about the thread from
     incident context (subject, list of recipients, etc.).  In the event this reply is for an email thread that has no
      inbound messages from end users this function will re-use details from the previous outbound first-contact email
      and create a new email to send. Prepares the final HTML email message body, then sends the email.
     Args:
+        body_type: The body type of the email
         new_email_body: The email body
         incident_id: The incident ID.
         email_selected_thread: Thread Number currently selected
@@ -857,14 +936,18 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
 
         first_contact_resent = False
 
-        if type(incident_email_threads) == dict:
+        if isinstance(incident_email_threads, dict):
             """
             A 'dict' input means only one email message exists in the context.  This also means
             this was an 'outbound' message, as it is not possible for an an initial incoming message
             to be stored as a thread without an existing incident to link to.
             """
             result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id,
+<<<<<<< HEAD
                                           new_email_attachments, files, new_email_body, add_cc, add_bcc, service_mail,
+=======
+                                          new_email_attachments, files, new_email_body, body_type, add_cc, add_bcc, service_mail,
+>>>>>>> master
                                           mail_sender_instance, new_attachment_names, subject_include_incident_id)
 
             # Clear fields for re-use
@@ -874,7 +957,7 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
 
             first_contact_resent = True
 
-        elif type(incident_email_threads) == list:
+        elif isinstance(incident_email_threads, list):
             # Process existing thread entries in this email chain to gather re-usable data for new message
             thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients, \
                 reply_mailbox, thread_cc, thread_bcc, \
@@ -889,7 +972,11 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
                 # If this thread does not contain any inbound messages, then this is an update to the original
                 # first-contact message and must be sent as a new email message.
                 result = resend_first_contact(email_selected_thread, incident_email_threads[last_thread_processed],
+<<<<<<< HEAD
                                               incident_id, new_email_attachments, files, new_email_body, add_cc,
+=======
+                                              incident_id, new_email_attachments, files, new_email_body, body_type, add_cc,
+>>>>>>> master
                                               add_bcc, service_mail, mail_sender_instance, new_attachment_names,
                                               subject_include_incident_id)
 
@@ -923,7 +1010,11 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
 
             # Send the email reply
             result = validate_email_sent(incident_id, reply_subject, subject_include_incident_id,
+<<<<<<< HEAD
                                          final_reply_recipients, new_email_body, service_mail, final_email_cc,
+=======
+                                         final_reply_recipients, new_email_body, body_type, service_mail, final_email_cc,
+>>>>>>> master
                                          final_email_bcc, reply_html_body, entry_id_list, reply_to_message_id,
                                          reply_code, mail_sender_instance)
             return_results(result)
@@ -981,6 +1072,10 @@ def main():
     new_email_body = custom_fields.get('emailnewbody')
     email_selected_thread = custom_fields.get('emailselectedthread')
     subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
+<<<<<<< HEAD
+=======
+    body_type = args.get("bodyType")
+>>>>>>> master
 
     argToBoolean(args.get('reputation_calc_async', False))
 
@@ -991,19 +1086,31 @@ def main():
 
     if new_thread == 'n/a':
         # This case is run when replying to an email from the 'Email Communication' layout
+<<<<<<< HEAD
         single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
+=======
+        single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
+>>>>>>> master
                             subject_include_incident_id, email_to_str, service_mail, email_latest_message,
                             mail_sender_instance, reputation_calc_async=False)
 
     elif new_thread == 'true':
         # This case is run when using the 'Email Threads' layout to send a new first-contact email message
+<<<<<<< HEAD
         multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body,
+=======
+        multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body, body_type,
+>>>>>>> master
                          incident_id, email_codes, new_email_attachments, files, service_mail, add_cc, add_bcc,
                          mail_sender_instance, new_attachment_names)
 
     elif new_thread == 'false':
         # This case is run when using the 'Email Threads' layout to reply to an existing email thread
+<<<<<<< HEAD
         multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
+=======
+        multi_thread_reply(new_email_body, body_type, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
+>>>>>>> master
                            add_bcc, service_mail, mail_sender_instance, new_attachment_names,
                            subject_include_incident_id)
 

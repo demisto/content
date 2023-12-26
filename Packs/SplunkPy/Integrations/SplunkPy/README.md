@@ -3,7 +3,7 @@ Use the SplunkPy integration to:
 - Push events from Cortex XSOAR to SplunkPy
 - Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
-This integration was integrated and tested with Splunk v7.2.
+This integration was integrated and tested with Splunk v9.0.4.
 
 ## Use Cases
 ---
@@ -47,6 +47,11 @@ This integration was integrated and tested with Splunk v7.2.
     | HEC Token (HTTP Event Collector) |  | False |
     | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
     | Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). For more info about enrichment types see the integration additional info. | False |
+<<<<<<< HEAD
+=======
+    | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
+    | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
+>>>>>>> master
     | Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
     | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). To retrieve all events, enter "0" \(not recommended\). | False |
     | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |

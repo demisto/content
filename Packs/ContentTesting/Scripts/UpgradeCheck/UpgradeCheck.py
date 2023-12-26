@@ -1,7 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+<<<<<<< HEAD
 from typing import Dict, List
+=======
+>>>>>>> master
 
 INDENT = "##### "
 
@@ -55,7 +58,11 @@ def CheckUpdates(packs, types, playbook, layout):
 
 
 def GetUpgradedPacks():
+<<<<<<< HEAD
     response = demisto.executeCommand("demisto-api-get", {
+=======
+    response = demisto.executeCommand("core-api-get", {
+>>>>>>> master
         'uri': "/contentpacks/installed-expired",
         'body': ""
     })[0]['Contents']['response']
@@ -70,6 +77,7 @@ def GetUpgradedPacks():
             breaking = ""
 
             newver = NewVersion(r['currentVersion'])
+<<<<<<< HEAD
             if newver in r['changelog'].keys():
                 changes = r['changelog'][newver]['releaseNotes']
                 breaking = r['changelog'][newver]['breakingChangesNotes']
@@ -79,6 +87,17 @@ def GetUpgradedPacks():
                 breaking = r['changelog'][newver]['breakingChangesNotes']
             newver = NewMajVersion(r['currentVersion'])
             if newver in r['changelog'].keys():
+=======
+            if newver in r['changelog']:
+                changes = r['changelog'][newver]['releaseNotes']
+                breaking = r['changelog'][newver]['breakingChangesNotes']
+            newver = NewMinVersion(r['currentVersion'])
+            if newver in r['changelog']:
+                changes = r['changelog'][newver]['releaseNotes']
+                breaking = r['changelog'][newver]['breakingChangesNotes']
+            newver = NewMajVersion(r['currentVersion'])
+            if newver in r['changelog']:
+>>>>>>> master
                 changes = r['changelog'][newver]['releaseNotes']
                 breaking = r['changelog'][newver]['breakingChangesNotes']
 
@@ -93,7 +112,11 @@ def FilterPacks(packs, upgradePacks, changesPacks):
         return upgradePacks, changesPacks
 
     upgrade = upgradePacks.copy()
+<<<<<<< HEAD
     for packid, pack in upgrade.items():
+=======
+    for packid, _pack in upgrade.items():
+>>>>>>> master
         if packid.lower().replace(" ", "") in packlist:
             continue
         else:
@@ -104,7 +127,11 @@ def FilterPacks(packs, upgradePacks, changesPacks):
 
 
 def GetUpgradedIntegrations(packs):
+<<<<<<< HEAD
     response = demisto.executeCommand("demisto-api-post", {
+=======
+    response = demisto.executeCommand("core-api-post", {
+>>>>>>> master
         'uri': "/settings/integration/search",
         "body": {}
     })[0]['Contents']['response']
@@ -123,7 +150,11 @@ def GetUpgradedIntegrations(packs):
         instid = c['id']
         if c['packName'] == "Palo Alto Networks Cortex XDR - Investigation and Response":
             instid = "Palo Alto Networks Cortex XDR - Investigation and Response"
+<<<<<<< HEAD
         if instid in integmap.keys():
+=======
+        if instid in integmap:
+>>>>>>> master
             packid = integmap[instid]
             integrations[packid] = {
                 "classifier": c.get('defaultClassifier', ""),
@@ -137,7 +168,11 @@ def GetUpgradedIntegrations(packs):
         name = i['name']
         if instid == "Cortex XDR - IR":
             instid = "Palo Alto Networks Cortex XDR - Investigation and Response"
+<<<<<<< HEAD
         if instid in integmap.keys():
+=======
+        if instid in integmap:
+>>>>>>> master
             packid = integmap[instid]
             integrations[packid]['instance'] = name
 
@@ -145,7 +180,11 @@ def GetUpgradedIntegrations(packs):
 
 
 def GetCustomPlaybooks():
+<<<<<<< HEAD
     response = demisto.executeCommand("demisto-api-post", {
+=======
+    response = demisto.executeCommand("core-api-post", {
+>>>>>>> master
         'uri': "/playbook/search",
         "body": {'query': "system:F AND hidden:F AND deprecated:F"}
     })[0]['Contents']['response']['playbooks']
@@ -174,7 +213,11 @@ def GetFieldKey(inoutfield):
 
 
 def GetFieldsUsed(playbooks):
+<<<<<<< HEAD
     usedfields: Dict[str, List[str]]
+=======
+    usedfields: dict[str, list[str]]
+>>>>>>> master
     usedfields = {}
     regex = re.compile("\$\{incident\.[^}]+\}")
 
@@ -186,8 +229,13 @@ def GetFieldsUsed(playbooks):
         if p['outputs'] is not None:
             usedfields[name].append(GetFieldKey(p['outputs']))
 
+<<<<<<< HEAD
         for key, t in p['tasks'].items():
             if "scriptArguments" in t.keys():
+=======
+        for _key, t in p['tasks'].items():
+            if "scriptArguments" in t:
+>>>>>>> master
                 for m in regex.findall(json.dumps(t)):
                     usedfields[name].append(GetFieldKey(m))
 
@@ -197,10 +245,16 @@ def GetFieldsUsed(playbooks):
 def GetSubplaybooksUsed(playbooks):
     usedplaybooks = []
     for p in playbooks:
+<<<<<<< HEAD
         for key, t in p['tasks'].items():
             if t['type'] == 'playbook':
                 if 'name' in p and 'name' in t['task']:
                     usedplaybooks.append({"parent": p['name'], "child": t['task']['name']})
+=======
+        for _key, t in p['tasks'].items():
+            if t['type'] == 'playbook' and 'name' in p and 'name' in t['task']:
+                usedplaybooks.append({"parent": p['name'], "child": t['task']['name']})
+>>>>>>> master
 
     return (usedplaybooks)
 
@@ -218,12 +272,20 @@ def GetAutomationsUsed(playbooks):
 
 def GetUpgradedScripts(packs, scripts):
     scriptdict = {}
+<<<<<<< HEAD
     for index, value in enumerate(scripts):
+=======
+    for _index, value in enumerate(scripts):
+>>>>>>> master
         scriptdict[value['scripts']] = value
     upgscripts = []
 
     for p in packs:
+<<<<<<< HEAD
         response = demisto.executeCommand("demisto-api-get", {
+=======
+        response = demisto.executeCommand("core-api-get", {
+>>>>>>> master
             "uri": f"/contentpacks/marketplace/{p}",
             "body": ""
         }
@@ -232,7 +294,11 @@ def GetUpgradedScripts(packs, scripts):
 
         if automations is not None:
             for a in automations:
+<<<<<<< HEAD
                 if a['name'] in scriptdict.keys():
+=======
+                if a['name'] in scriptdict:
+>>>>>>> master
                     s = scriptdict[a['name']]
                     upgscripts.append({"playbook": s['playbook'], "pack": p, "script": s['scripts']})
 
@@ -240,7 +306,11 @@ def GetUpgradedScripts(packs, scripts):
 
 
 def GetUpgradedIncidentTypes(packs):
+<<<<<<< HEAD
     response = demisto.executeCommand("demisto-api-get", {
+=======
+    response = demisto.executeCommand("core-api-get", {
+>>>>>>> master
         'uri': "/incidenttype",
         'body': ""
     }
@@ -254,7 +324,11 @@ def GetUpgradedIncidentTypes(packs):
             custype = {'id': r['id'], 'playbook': pb, 'layout': lo, 'packid': "<none>"}
             custtypes.append(custype)
         pi = r.get('packID', "<none>")
+<<<<<<< HEAD
         if pi in packs.keys():
+=======
+        if pi in packs:
+>>>>>>> master
             uptypes[pi] = {'playbook': pb, 'layout': lo, 'packid': pi}
     return (uptypes, custtypes)
 

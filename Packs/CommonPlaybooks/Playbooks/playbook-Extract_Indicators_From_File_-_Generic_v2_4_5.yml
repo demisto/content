@@ -43,7 +43,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 915,
           "y": -10
         }
       }
@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 180
+          "x": 915,
+          "y": 120
         }
       }
     note: false
@@ -128,7 +128,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 915,
           "y": 350
         }
       }
@@ -156,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2340
+          "x": 915,
+          "y": 1650
         }
       }
     note: false
@@ -187,12 +187,16 @@ tasks:
       - "15"
       - "20"
       - "21"
+<<<<<<< HEAD
+=======
+      - "23"
+>>>>>>> master
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 915,
           "y": 535
         }
       }
@@ -347,7 +351,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 92.5,
+          "x": 112.5,
           "y": 700
         }
       }
@@ -489,7 +493,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 92.5,
+          "x": 112.5,
           "y": 960
         }
       }
@@ -556,7 +560,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 1320,
           "y": 700
         }
       }
@@ -615,7 +619,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 1320,
           "y": 960
         }
       }
@@ -860,7 +864,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -455,
+          "x": -555,
           "y": 975
         }
       }
@@ -1085,7 +1089,11 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1980,
+=======
+          "x": 2150,
+>>>>>>> master
           "y": 960
         }
       }
@@ -1162,7 +1170,11 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 2040,
+=======
+          "x": 2150,
+>>>>>>> master
           "y": 1280
         }
       }
@@ -1313,7 +1325,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
+          "x": 1740,
           "y": 700
         }
       }
@@ -1452,7 +1464,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
+          "x": 1740,
           "y": 960
         }
       }
@@ -1493,8 +1505,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2120
+          "x": 915,
+          "y": 1470
         }
       }
     note: false
@@ -1548,7 +1560,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
+          "x": -290,
           "y": 700
         }
       }
@@ -1632,8 +1644,138 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< HEAD
           "x": 1980,
           "y": 690
+=======
+          "x": 2150,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: c6d6607d-0730-49a4-8cbd-261b527fcd1e
+    type: regular
+    task:
+      id: c6d6607d-0730-49a4-8cbd-261b527fcd1e
+      version: -1
+      name: Extract indicators from docx file
+      description: Extracts indicators from word files (DOC, DOCX).
+      scriptName: ExtractIndicatorsFromWordFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Zip archive data
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 915,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 912fbde6-c00b-486e-873f-da77400cacbe
+    type: condition
+    task:
+      id: 912fbde6-c00b-486e-873f-da77400cacbe
+      version: -1
+      name: Is there a Word docx file?
+      description: Checks if there is a Word file (DOC, DOCX) in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Zip archive data
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: docx
+                    ignorecase: true
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 915,
+          "y": 700
+>>>>>>> master
         }
       }
     note: false
@@ -1646,11 +1788,20 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+<<<<<<< HEAD
       "13_19_#default#": 0.3,
       "15_10_#default#": 0.13,
+=======
+      "13_19_#default#": 0.14,
+      "15_10_#default#": 0.11,
+>>>>>>> master
       "15_16_yes": 0.38,
       "1_10_#default#": 0.15,
-      "5_10_#default#": 0.23,
+      "1_2_yes": 0.39,
+      "21_10_#default#": 0.1,
+      "23_10_#default#": 0.14,
+      "23_22_yes": 0.43,
+      "5_10_#default#": 0.33,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.15,
       "7_8_yes": 0.38,
@@ -1659,9 +1810,15 @@ view: |-
     },
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
         "height": 2415,
         "width": 2875,
         "x": -455,
+=======
+        "height": 1725,
+        "width": 3085,
+        "x": -555,
+>>>>>>> master
         "y": -10
       }
     }

@@ -1,5 +1,9 @@
 import pytest
+<<<<<<< HEAD
 from test_data.test_data import *  # nopycln: import
+=======
+from test_data.data import *  # nopycln: import
+>>>>>>> master
 from Netcraft import Client
 import demistomock as demisto
 from CommonServerPython import ScheduledCommand, DemistoException

@@ -11,4 +11,11 @@ ignore=IF100
 ignore=IF115
 
 [file:incidentfield-User_Risk_level.json]
+<<<<<<< HEAD
 ignore=IF115
+=======
+ignore=IF115
+
+[file:incidentfield-Alert_Search_Results.json]
+ignore=IF100
+>>>>>>> master

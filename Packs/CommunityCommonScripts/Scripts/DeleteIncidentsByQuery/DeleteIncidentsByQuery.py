@@ -20,13 +20,22 @@ def main():
             ids.append(i)
 
         text_ids = ','.join(ids)
+<<<<<<< HEAD
         demisto.executeCommand('demisto-delete-incidents', {'ids': text_ids})
+=======
+        demisto.executeCommand('core-delete-incidents', {'ids': text_ids})
+>>>>>>> master
     except TypeError:
         demisto.results("No incidents to delete according to the query")
 
     except ValueError as err:
+<<<<<<< HEAD
         if "demisto-delete-incidents" in str(err):
             raise Exception("Please enable Demisto REST API integration")
+=======
+        if "core-delete-incidents" in str(err):
+            raise Exception("Please enable Core REST API integration")
+>>>>>>> master
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

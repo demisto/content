@@ -17,7 +17,11 @@ dependson:
   should:
   - Cybersixgill_Actionable_Alerts|||cybersixgill-update-alert-status
 timeout: 180ns
+<<<<<<< HEAD
 dockerimage: demisto/sixgill:1.0.0.28665
+=======
+dockerimage: demisto/sixgill:1.0.0.83420
+>>>>>>> master
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

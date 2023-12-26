@@ -12,7 +12,11 @@ from demisto_client.demisto_api.rest import ApiException
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
 
+<<<<<<< HEAD
 CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
+=======
+CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '1061')
+>>>>>>> master
 TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 
 

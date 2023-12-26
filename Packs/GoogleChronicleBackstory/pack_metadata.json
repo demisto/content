@@ -2,7 +2,11 @@
     "name": "Chronicle",
     "description": "Retrieve Chronicle detections, impacted assets, IOC matches, and 3P alerts to enrich your XSOAR workflows.",
     "support": "partner",
+<<<<<<< HEAD
     "currentVersion": "3.0.8",
+=======
+    "currentVersion": "3.0.9",
+>>>>>>> master
     "certification": "certified",
     "author": "Chronicle",
     "url": "https://go.chronicle.security/contact",

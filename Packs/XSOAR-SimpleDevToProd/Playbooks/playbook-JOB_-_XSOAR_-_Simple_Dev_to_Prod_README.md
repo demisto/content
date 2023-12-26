@@ -1,4 +1,4 @@
-This playbook is intended to be run as an adhoc job to quickly create a custom content bundle with only selected items from the servers custom content.  You can import this new zip on the other XSOAR server, or push it to production using the Demisto REST API integration.
+This playbook is intended to be run as an adhoc job to quickly create a custom content bundle with only selected items from the servers custom content.  You can import this new zip on the other XSOAR server, or push it to production using the Core REST API integration.
 
 Please ensure to read the setup instructions for this pack carefully.
 
@@ -14,7 +14,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
+<<<<<<< HEAD
 * Demisto REST API
+=======
+* Core REST API
+>>>>>>> master
 
 ### Scripts
 
@@ -23,9 +27,13 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
+<<<<<<< HEAD
 * demisto-api-download
+=======
+* core-api-download
+>>>>>>> master
 * closeInvestigation
-* demisto-api-multipart
+* core-api-multipart
 * setIncident
 
 ## Playbook Inputs

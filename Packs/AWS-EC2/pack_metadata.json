@@ -2,7 +2,11 @@
     "name": "AWS - EC2",
     "description": "Amazon Web Services Elastic Compute Cloud (EC2)",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "1.2.40",
+=======
+    "currentVersion": "1.2.41",
+>>>>>>> master
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

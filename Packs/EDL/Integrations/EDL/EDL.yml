@@ -64,7 +64,10 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+<<<<<<< HEAD
   - xsoar_saas
+=======
+>>>>>>> master
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
@@ -87,7 +90,10 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+<<<<<<< HEAD
   - xsoar_saas
+=======
+>>>>>>> master
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
@@ -287,7 +293,11 @@ script:
     - description: Maximum number of items in the list.
       name: edl_size
     - defaultValue: '0'
+<<<<<<< HEAD
       description: The starting entry index from which to export the indicators.
+=======
+      description: The starting entry index from which to export the indicators when index 0 is the first position.
+>>>>>>> master
       name: offset
     - auto: PREDEFINED
       defaultValue: string
@@ -370,7 +380,11 @@ script:
     - description: Maximum number of items in the list.
       name: edl_size
     - defaultValue: '0'
+<<<<<<< HEAD
       description: The starting entry index from which to export the indicators.
+=======
+      description: The starting entry index from which to export the indicators when index 0 is the first position.
+>>>>>>> master
       name: offset
     - auto: PREDEFINED
       defaultValue: string
@@ -434,7 +448,11 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
+<<<<<<< HEAD
   dockerimage: demisto/flask-nginx:1.0.0.79973
+=======
+  dockerimage: demisto/flask-nginx:1.0.0.83461
+>>>>>>> master
   longRunning: true
   longRunningPort: true
   script: '-'

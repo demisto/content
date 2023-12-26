@@ -2,7 +2,11 @@
     "name": "Netskope",
     "description": "Cloud access security broker that enables to find, understand, and secure cloud apps.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "3.3.1",
+=======
+    "currentVersion": "3.3.2",
+>>>>>>> master
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

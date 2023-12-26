@@ -1,21 +1,29 @@
 args:
 - defaultValue: EDL_PORT_LIST
-  description: The Listname in XSOAR of ports in use
+  description: The Listname in XSOAR of ports in use.
   name: PortListName
   required: true
-- description: The Name of the EDL instance to create
+- description: The Name of the EDL instance to create.
   name: InstanceName
   required: true
-- description: The indicator query used to populate the EDL
+- description: The indicator query used to populate the EDL.
   name: Query
   required: true
 - name: Port
+<<<<<<< HEAD
   description: Specify specific port to use when creating the EDL instance., else it will be random (3000-50000)
+=======
+  description: Specify specific port to use when creating the EDL instance., else it will be random (3000-50000).
+>>>>>>> master
 comment: Use this automation to create an EDL instance on XSOAR.
 commonfields:
   id: CreateEDLInstance
   version: -1
+<<<<<<< HEAD
 dockerimage: demisto/python3:3.10.12.63474
+=======
+dockerimage: demisto/python3:3.10.13.83255
+>>>>>>> master
 enabled: true
 name: CreateEDLInstance
 runas: DBotWeakRole

@@ -2,7 +2,11 @@
     "name": "SentinelOne",
     "description": "Endpoint protection",
     "support": "partner",
+<<<<<<< HEAD
     "currentVersion": "3.2.14",
+=======
+    "currentVersion": "3.2.15",
+>>>>>>> master
     "author": "SentinelOne",
     "url": "https://www.sentinelone.com/support/",
     "email": "support@sentinelone.com",

@@ -56,15 +56,25 @@ script:
       description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident).
     - name: body
       description: Body of HTTP POST.
+<<<<<<< HEAD
     description: send HTTP POST request.
+=======
+    description: Deprecated. Use core-api-post instead.
+>>>>>>> master
     execution: true
+    deprecated: true
   - name: demisto-api-get
     arguments:
     - name: uri
       required: true
       default: true
       description: Request endpoint (e.g. /user or /public_api/v1/rbac/get_users).
+<<<<<<< HEAD
     description: send HTTP GET requests.
+=======
+    description: Deprecated. Use core-api-get instead.
+    deprecated: true
+>>>>>>> master
   - name: demisto-api-put
     arguments:
     - name: uri
@@ -73,16 +83,26 @@ script:
       description: Request endpoint (e.g. /user).
     - name: body
       description: Request body.
+<<<<<<< HEAD
     description: send HTTP PUT request.
+=======
+    description: Deprecated. Use core-api-put instead.
+>>>>>>> master
     execution: true
+    deprecated: true
   - name: demisto-api-delete
     arguments:
     - name: uri
       required: true
       default: true
       description: Request endpoint (e.g. /user).
+<<<<<<< HEAD
     description: send HTTP DELETE request.
+=======
+    description: Deprecated. Use core-api-delete instead.
+>>>>>>> master
     execution: true
+    deprecated: true
   - name: demisto-api-download
     arguments:
     - name: uri
@@ -92,7 +112,12 @@ script:
       description: File name of download.
     - name: description
       description: Description of file entry.
+<<<<<<< HEAD
     description: Download files from Demisto server.
+=======
+    description: Deprecated. Use core-api-download instead.
+    deprecated: true
+>>>>>>> master
   - name: demisto-api-multipart
     arguments:
     - name: uri
@@ -103,7 +128,12 @@ script:
       description: File entry ID.
     - name: body
       description: Request body.
+<<<<<<< HEAD
     description: Send HTTP Multipart request to upload files to Demisto server.
+=======
+    description: Deprecated. Use core-api-multipart instead.
+    deprecated: true
+>>>>>>> master
   - name: demisto-delete-incidents
     arguments:
     - name: ids
@@ -114,8 +144,14 @@ script:
       description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
+<<<<<<< HEAD
     description: Delete Demisto incidents.
     execution: true
+=======
+    description: Deprecated. Use core-delete-incidents instead.
+    execution: true
+    deprecated: true
+>>>>>>> master
   - name: demisto-api-install-packs
     arguments:
     - name: packs_to_install
@@ -139,7 +175,12 @@ script:
       predefined:
       - 'true'
       - 'false'
+<<<<<<< HEAD
     description: Upload packs to Demisto server from url or the marketplace.
+=======
+    description: Deprecated. Use core-api-install-packs instead.
+    deprecated: true
+>>>>>>> master
   - name: core-api-post
     arguments:
     - name: uri

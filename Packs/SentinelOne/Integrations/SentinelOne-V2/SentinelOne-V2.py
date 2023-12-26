@@ -940,9 +940,29 @@ class Client(BaseClient):
                 "requiresApproval": requires_approval
             }
         }
+<<<<<<< HEAD
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
+=======
+        payload["data"] = self.remove_empty_fields(payload.get("data", {}))
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def remove_empty_fields(self, json_payload):
+        """
+        Removes empty fields from a JSON payload and returns a new JSON object with non-empty fields.
+
+        Parameters:
+        - json_payload (dict): The input JSON payload.
+
+        Returns:
+        - dict: A new JSON object containing only non-empty fields.
+        """
+        # Returning updated dictionary with non-empty fields
+        return {key: value for key, value in json_payload.items() if str(value)}
+
+>>>>>>> master
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 

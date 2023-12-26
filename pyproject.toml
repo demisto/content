@@ -10,9 +10,15 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
+<<<<<<< HEAD
 demisto-sdk = "1.24.0"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
+=======
+demisto-sdk = "1.25.0"
+requests = "^2.22.0"
+pre-commit = "^3.5.0"
+>>>>>>> master
 google-cloud-compute = "^1.8.0"
 dateparser = "^1.1.8"
 
@@ -513,7 +519,15 @@ exclude = [
 max_line_length = 130
 
 [tool.pytest]
+<<<<<<< HEAD
 junit_family = "xunit1"
+=======
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+relative_files = true
+omit = ["*/test_data/*", "*_test.py", "demistomock.py", "conftest.py", "**/conftest.py"]
+>>>>>>> master
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

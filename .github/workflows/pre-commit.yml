@@ -1,6 +1,7 @@
 name: pre-commit
 on: pull_request
 
+<<<<<<< HEAD
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
@@ -156,3 +157,25 @@ jobs:
       id: append-coverage
       run: |
         cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
+=======
+
+
+jobs:
+  pre-commit:
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+
+    if: "!contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
+    uses: ./.github/workflows/pre-commit-reuse.yml
+      
+  pre-commit-community-level:
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+
+    if: contains(github.event.pull_request.labels.*.name, 'Community Support Level')
+    uses: ./.github/workflows/pre-commit-reuse.yml
+>>>>>>> master

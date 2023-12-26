@@ -14,7 +14,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
+<<<<<<< HEAD
 * Demisto REST API
+=======
+* Core REST API
+>>>>>>> master
 
 ### Scripts
 
@@ -24,7 +28,7 @@ This playbook does not use any sub-playbooks.
 ### Commands
 
 * setIncident
-* demisto-api-download
+* core-api-download
 * closeInvestigation
 
 ## Playbook Inputs
