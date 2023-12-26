@@ -612,8 +612,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     extensions_dict: dict = {}
     for ioc in indicator_searcher:
         found_indicators = ioc.get('iocs') or []
-        found_indicators = [indicator for indicator in found_indicators if indicator['timestamp'] >= added_after]
-        total = len(found_indicators)
+        total = ioc.get('total')
         for xsoar_indicator in found_indicators:
             xsoar_type = xsoar_indicator.get('indicator_type')
             if is_manifest:
