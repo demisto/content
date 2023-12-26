@@ -196,6 +196,10 @@ tasks:
         simple: alert.status=open,policy.remediable=true
       limit:
         simple: "1"
+      time_range_unit:
+        simple: hour
+      time_range_value:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -600,7 +604,11 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: 'config from cloud.resource where cloud.region = ''AWS Ohio'' '
+        simple: 'config from cloud.resource where cloud.region = ''AWS Ohio'' AND cloud.service = ''Amazon EC2'''
+      time_range_unit:
+        simple: hour
+      time_range_value:
+        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -683,9 +691,9 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: event from cloud.audit_logs where cloud.type = 'aws'
+        simple: event from cloud.audit_logs where cloud.type = 'aws' AND cloud.region = 'AWS Oregon'
       time_range_unit:
-        simple: day
+        simple: hour
       time_range_value:
         simple: "1"
     separatecontext: false
