@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerUserPython import *
+from requests import HTTPError
 
 from CommonServerPython import *
 
@@ -109,7 +110,7 @@ def http_request(method: str, url: str, params_dict=None, data=None, json_data=N
         return unicode_to_str_recur(res.json())
 
     except Exception as e:
-        demisto.debug(e)
+        demisto.debug(str(e))
         raise
 
 
@@ -927,6 +928,15 @@ def main():
             return_results(run_response_play(**args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
+    except HTTPError as http_error:
+        if hasattr(http_error, 'response'):
+            status_code = http_error.response.status_code
+            if hasattr(http_error.response, 'content'):
+                error_message = str(http_error.response.content)
+                demisto.debug(error_message)
+                return_error(f"Error in API request: {error_message} with status_code {status_code}")
+        else:
+            return_error(f"Error in API request: {str(http_error)}")
     except Exception as err:
         return_error(str(err))
 
