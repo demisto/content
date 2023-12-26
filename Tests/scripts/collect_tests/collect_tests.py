@@ -1496,8 +1496,8 @@ if __name__ == '__main__':
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
     elif sdk_nightly:
-            collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
-            
+        collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
+
     elif nightly:
         match marketplace:
             case MarketplaceVersions.XSOAR:
@@ -1507,8 +1507,8 @@ if __name__ == '__main__':
             case MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case MarketplaceVersions.XPANSE:
-                collector = XPANSENightlyTestCollector(graph=graph)    
-    else: 
+                collector = XPANSENightlyTestCollector(graph=graph)
+    else:
         collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
 
     collected = collector.collect()
