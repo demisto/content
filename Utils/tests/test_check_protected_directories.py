@@ -6,7 +6,7 @@ import pytest
 from Utils.check_protected_directories import (
     CONTENT_ROOT,
     EXCEPTIONS,
-    PROTECTED_DIRECTORIES,
+    PROTECTED_DIRECTORY_PATHS,
     is_path_change_allowed,
 )
 
@@ -35,7 +35,7 @@ def test_allowed_path(path_str: str):
             Path(root_dir, "some_file.py"),
             Path(root_dir, "subfolder", "some_file.py"),
         )
-        for root_dir in sorted(PROTECTED_DIRECTORIES)
+        for root_dir in sorted(PROTECTED_DIRECTORY_PATHS)
     ),
 )
 def test_prohibited_path(path: Path):

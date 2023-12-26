@@ -5,7 +5,7 @@ from pathlib import Path
 CONTENT_ROOT = Path(__file__).parents[1]
 assert CONTENT_ROOT.name == "content"
 
-PROTECTED_DIRECTORIES: set[Path] = {
+PROTECTED_DIRECTORY_PATHS: set[Path] = {
     Path(CONTENT_ROOT, dir_name)
     for dir_name in (
         ".circleci",
@@ -29,8 +29,12 @@ EXCEPTIONS: set[Path] = {
 
 
 def is_path_change_allowed(path: Path) -> bool:
-    first_level_folder = Path(CONTENT_ROOT, path.parts[0])
-    if first_level_folder in PROTECTED_DIRECTORIES:
+    try:
+        first_level_dir = path.relative_to(CONTENT_ROOT).parts[0]  # e.g. Packs, Utils
+    except ValueError as e:
+        raise ValueError(f"Expected {path} to be under {CONTENT_ROOT}") from e
+
+    if Path(CONTENT_ROOT, first_level_dir) in PROTECTED_DIRECTORY_PATHS:
         return path in EXCEPTIONS  # if in exception, it's allowed
     return True
 
