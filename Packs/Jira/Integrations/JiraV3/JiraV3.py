@@ -1939,6 +1939,8 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
     issue_fields = create_issue_fields(client=client, issue_args=args_for_api,
                                        issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+    if "summary" not in issue_fields.get("fields", {}):
+        raise DemistoException('The summary argument must be provided.')
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
     markdown_dict = outputs | {'Ticket Link': res.get('self', ''),
