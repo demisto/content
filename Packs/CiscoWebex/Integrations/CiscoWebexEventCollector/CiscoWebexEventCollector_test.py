@@ -117,7 +117,7 @@ def test_date_time_to_iso_format():
             - Validates that the function works as expected.
     """
     from CiscoWebexEventCollector import date_time_to_iso_format
-    assert date_time_to_iso_format(datetime.datetime.utcnow()) == '2023-12-20T13:40:00.000Z'
+    assert date_time_to_iso_format(datetime.utcnow()) == '2023-12-20T13:40:00.000Z'
 
 
 def test_add_fields_to_events():
@@ -132,26 +132,26 @@ def test_add_fields_to_events():
         Then:
             - Validates that the function works as expected.
     """
-    from CiscoWebexEventCollector import add_fields_to_events, EVENT_TYPE_TO_XSIAM_EVENT_TYPE
+    from CiscoWebexEventCollector import add_fields_to_events, COMMAND_FUNCTION_TO_EVENT_TYPE
 
     admin_audits = util_load_json('test_data/admin_audits.json').get('items')
     security_audits = util_load_json('test_data/security_audits.json').get('items')
     compliance_officer_events = util_load_json('test_data/events.json').get('items')
 
-    assert not any(key in admin_audits[0] for key in ('_time', 'eventTypeXsiam'))
-    assert not any(key in security_audits[0] for key in ('_time', 'eventTypeXsiam'))
-    assert not any(key in compliance_officer_events[0] for key in ('_time', 'eventTypeXsiam'))
+    assert not any(key in admin_audits[0] for key in ('_time', 'source_log_type'))
+    assert not any(key in security_audits[0] for key in ('_time', 'source_log_type'))
+    assert not any(key in compliance_officer_events[0] for key in ('_time', 'source_log_type'))
 
-    add_fields_to_events(admin_audits, 'admin_audits')
-    add_fields_to_events(security_audits, 'security_audits')
-    add_fields_to_events(compliance_officer_events, 'compliance_officer_events')
+    add_fields_to_events(admin_audits, 'Admin Audit Events')
+    add_fields_to_events(security_audits, 'Security Audit Events')
+    add_fields_to_events(compliance_officer_events, 'Events')
 
     assert admin_audits[0]['_time'] == admin_audits[0]['created']
-    assert admin_audits[0]['eventTypeXsiam'] == EVENT_TYPE_TO_XSIAM_EVENT_TYPE.get('admin_audits')
+    assert admin_audits[0]['source_log_type'] == COMMAND_FUNCTION_TO_EVENT_TYPE.get('get_admin_audits')
     assert security_audits[0]['_time'] == security_audits[0]['created']
-    assert security_audits[0]['eventTypeXsiam'] == EVENT_TYPE_TO_XSIAM_EVENT_TYPE.get('security_audits')
+    assert security_audits[0]['source_log_type'] == COMMAND_FUNCTION_TO_EVENT_TYPE.get('get_security_audits')
     assert compliance_officer_events[0]['_time'] == compliance_officer_events[0]['created']
-    assert compliance_officer_events[0]['eventTypeXsiam'] == EVENT_TYPE_TO_XSIAM_EVENT_TYPE.get('compliance_officer_events')
+    assert compliance_officer_events[0]['source_log_type'] == COMMAND_FUNCTION_TO_EVENT_TYPE.get('get_compliance_officer_events')
 
 
 def test_increase_datetime_for_next_fetch():
@@ -195,7 +195,12 @@ def test_oauth_complete(client):
 @pytest.mark.parametrize('client', [mocked_admin_client(), mocked_compliance_officer_client()])
 def test_oauth_test(client):
     from CiscoWebexEventCollector import oauth_test
-    result = oauth_test(client)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://url.com/adminAudit/events', text=util_load_text('test_data/admin_audits.json'))
+        m.get('https://url.com/events', text=util_load_text('test_data/events.json'))
+        result = oauth_test(client)
+
     assert result == 'ok'
 
 
@@ -228,6 +233,7 @@ def test_get_events_command(command_function, args):
     assert COMMAND_FUNCTION_TO_EVENT_TYPE.get(command_function.__name__) in command_results.readable_output
 
 
+@freeze_time("2023-12-20 13:40:00 UTC")
 def test_fetch_events():
     """
         Given:
@@ -240,12 +246,29 @@ def test_fetch_events():
     from CiscoWebexEventCollector import create_last_run, fetch_events
 
     with requests_mock.Mocker() as m:
-        m.get('https://url.com/adminAudit/events', text=util_load_text('test_data/admin_audits.json'), response_list=json.dumps({'links': {'next': {'url': 'https://next_url.com/admin_audits'}}}))
-        m.get('https://url.com/admin/securityAudit/events', text=util_load_text('test_data/security_audits.json'))
-        m.get('https://url.com/events', text=util_load_text('test_data/events.json'))
-        events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), create_last_run())
+        m.get('https://url.com/adminAudit/events?orgId=1&from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1', text=util_load_text('test_data/admin_audits.json'),
+              headers={'Link': '<https://url.com/adminAudit/events?nexturl=true>; rel="next"'})
+        m.get('https://url.com/admin/securityAudit/events?orgId=1&startTime=2023-12-13T13%3A40%3A00.000Z&endTime=2023-12-20T13%3A40%3A00.000Z&max=1', text=util_load_text('test_data/security_audits.json'),
+              headers={'Link': '<https://url.com/securityAudit/events?nexturl=true>; rel="next"'})
+        m.get('https://url.com/events?from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1', text=util_load_text('test_data/events.json'),
+              headers={'Link': '<https://url.com/events?nexturl=true>; rel="next"'})
+        events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), create_last_run(), max_fetch=1)
 
     assert len(events) > 0
+    assert next_run == {
+        'admin_audits': {'since_datetime': '2023-11-02T09:33:26.409Z', 'next_url': 'https://url.com/adminAudit/events?nexturl=true'},
+        'security_audits': {'since_datetime': '2023-12-19T06:47:38.174Z', 'next_url': 'https://url.com/securityAudit/events?nexturl=true'},
+        'compliance_officer_events': {'since_datetime': '2023-12-04T07:40:06.691Z', 'next_url': 'https://url.com/events?nexturl=true'}
+    }
+
+    with requests_mock.Mocker() as m:
+        m.get('https://url.com/adminAudit/events?nexturl=true', text=util_load_text('test_data/no_events.json'))
+        m.get('https://url.com/securityAudit/events?nexturl=true', text=util_load_text('test_data/no_events.json'))
+        m.get('https://url.com/events?nexturl=true', text=util_load_text('test_data/no_events.json'))
+
+        events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), next_run, max_fetch=1)
+
+    assert len(events) == 0
     assert next_run == {
         'admin_audits': {'since_datetime': '2023-11-02T09:33:26.409Z', 'next_url': ''},
         'security_audits': {'since_datetime': '2023-12-19T06:47:38.174Z', 'next_url': ''},

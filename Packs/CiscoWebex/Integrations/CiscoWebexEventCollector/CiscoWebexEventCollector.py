@@ -286,8 +286,8 @@ def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient,
         since_datetime = demisto.get(last_run, f'{event_type}.since_datetime')
         next_url = demisto.get(last_run, f'{event_type}.next_url', '')
         events, next_url = get_events_with_pagination(client_function, since_datetime, max_fetch, next_url)
+        last_run[event_type]['next_url'] = next_url
         if events:
-            last_run[event_type]['next_url'] = next_url
             last_run[event_type]['since_datetime'] = increase_datetime_for_next_fetch(events)
             all_events.extend(events)
 
