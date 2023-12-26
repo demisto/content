@@ -5,11 +5,10 @@ Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable y
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
 ### Required Permissions
-
-- `Sites.ReadWrite.All - Application`
+The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
+- `Sites.ReadWrite.All - Application`: Provides read and write access to all sites.
 
 OR
-
 - `Site.Selected - Application`: Provides read and write access to specific sites.
 
 Note: Using `Site.Selected` requires additional configuration steps outlined below.
@@ -78,9 +77,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Deletes an item from OneDrive.
 
-#### Permission required
-
-`Files.ReadWrite.All - Application`
 
 #### Base Command
 
@@ -114,9 +110,6 @@ There is no context output for this command.
 ***
 Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
-#### Permission required
-
-`Files.ReadWrite.All - Application`
 
 #### Base Command
 
@@ -322,9 +315,6 @@ Replaces the content of the file in the specified MS Graph resource.
 ***
 Creates a new folder in a drive with the specified parent item or path.
 
-#### Permission required
-
-`Files.ReadWrite.All - Application`
 
 #### Base Command
 
@@ -422,9 +412,6 @@ Creates a new folder in a drive with the specified parent item or path.
 ***
 Returns the list of document libraries (drives) available for a target site.
 
-#### Permission required
-
-`Sites.Read.All - Application` or `Files.Read.All - Application`
 
 #### Base Command
 
@@ -507,10 +494,6 @@ Returns the list of document libraries (drives) available for a target site.
 ***
 Returns a list of files and folders in the specified drive.
 
-#### Permission required
-
-`Files.Read.All - Application` or
-`Sites.Read.All - Application`
 
 #### Base Command
 
@@ -616,9 +599,6 @@ Returns a list of files and folders in the specified drive.
 ***
 Returns a list of the tenant sites.
 
-#### Permission required
-
-`Sites.Read.All - Application`
 
 #### Base Command
 
@@ -688,9 +668,6 @@ Returns a list of the tenant sites.
 ***
 Downloads the file contents of the drive item.
 
-#### Permission required
-
-`Files.Read.All - Application` or `Site.Read.All - Application`
 
 #### Base Command
 
