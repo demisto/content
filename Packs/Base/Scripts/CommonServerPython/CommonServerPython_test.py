@@ -3489,6 +3489,7 @@ IP_TO_INDICATOR_TYPE_PACK = [
     ('192.168.1.1/32', FeedIndicatorType.CIDR),
     ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
     ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
+    ('a', None)
 ]
 
 
@@ -9232,3 +9233,16 @@ def test_detect_file_indicator_type(indicator,expected_result):
     """
     from CommonServerPython import detect_file_indicator_type
     assert detect_file_indicator_type(indicator) == expected_result
+
+
+@pytest.mark.parametrize("url,suffix,expected_result", [
+    ("https://google.com/", "/","https://google.com/"), 
+    ("https://google.com/","/","https://google.com/"),
+    ("https://google.com/", "api","https://google.com/api"), 
+    ("https://google.com/", "/api","https://google.com/api"),
+    ("https://google.com/", "api","https://google.com/api"),
+    ("https://google.com/", "/api","https://google.com/api"),
+])
+def test_urljoin(url,suffix,expected_result):
+    from CommonServerPython import urljoin
+    assert urljoin(url,suffix) == expected_result
