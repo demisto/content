@@ -516,15 +516,11 @@
     - section_end "Copy conf.json To Server Type Artifacts Folder"
     - section_start "Validate Files and Yaml"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
-        echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
+      ./Tests/scripts/linters_runner.sh
+      if [ $VALIDATE_SCRIPT == "old-validate-flow" ]; then
+        ./Tests/scripts/validate.sh
       else
-        ./Tests/scripts/linters_runner.sh
-        if [ $VALIDATE_SCRIPT == "old-validate-flow" ]; then
-          ./Tests/scripts/validate.sh
-        else
-          ./Tests/scripts/new_validate.sh
-        fi
+        ./Tests/scripts/new_validate.sh
       fi
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
