@@ -11441,6 +11441,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
