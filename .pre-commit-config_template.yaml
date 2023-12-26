@@ -94,16 +94,21 @@ repos:
     language: docker
     files: Packs\/.*_test\.py$
     exclude: test_data
+    env:
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
     - /src/Tests/scripts/script_runner.py
+    - coverage
+    - run
+    - -p
+    - --source=.
+    - -m
     - pytest
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
-    - --cov=.
-    - --cov-report=
     - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
@@ -262,6 +267,7 @@ repos:
   rev: v0.982
   hooks:
   - id: mypy
+    min_py_version: "3.7"
     args:
     - --ignore-missing-imports
     - --check-untyped-defs
