@@ -4225,13 +4225,14 @@ def update_firewall_service_command(client: Client, args: dict[str, Any]) -> Com
                 f" which is not compatible with the requested type '{input_protocol_type}'."
             )
 
-    port_ranges = handle_action_for_port_ranges(
-        obj=result,
-        action=action,
-        tcp_port_ranges=tcp_port_ranges,
-        udp_port_ranges=udp_port_ranges,
-        sctp_port_ranges=sctp_port_ranges,
-    )
+    if action:
+        port_ranges = handle_action_for_port_ranges(
+            obj=result,
+            action=action,
+            tcp_port_ranges=tcp_port_ranges,
+            udp_port_ranges=udp_port_ranges,
+            sctp_port_ranges=sctp_port_ranges,
+        )
 
     response = client.update_firewall_service(
         name=name,
@@ -4710,7 +4711,7 @@ def move_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comman
     vdom = args.get("vdom", DEFAULT_VDOM)
     id_ = args.get("policyID", "")
     position = args.get("position", "")
-    neighbor = args.get("neighbor")
+    neighbor = args.get("neighbor", "")
 
     response = client.move_firewall_policy(
         id_=id_,
@@ -5052,7 +5053,7 @@ def get_address_groups_command(client: Client, args: dict[str, Any]):
 
     address_groups = client.list_firewall_address_ipv4_groups(address_group_name).get("results")
 
-    for address_group in address_groups:
+    for address_group in address_groups or []:
         members = address_group.get("member")
         members_list = []
         for member in members:
