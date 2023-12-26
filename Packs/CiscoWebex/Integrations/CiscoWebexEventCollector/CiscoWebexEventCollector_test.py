@@ -3,7 +3,7 @@ import datetime
 import pytest
 import requests_mock
 from freezegun import freeze_time
-from CommonServerPython import *
+
 """ UTILS """
 
 
@@ -27,7 +27,7 @@ def mock_get_access_token():
 
 
 def mock_get_integration_context():
-    expires_in = (datetime.utcnow() + timedelta(weeks=3)).isoformat()
+    expires_in = (datetime.datetime.utcnow() + datetime.timedelta(weeks=3)).isoformat()
     return {
         "admin": {
             "access_token": "123456",
@@ -116,7 +116,7 @@ def test_date_time_to_iso_format():
             - Validates that the function works as expected.
     """
     from CiscoWebexEventCollector import date_time_to_iso_format
-    assert date_time_to_iso_format(datetime.utcnow()) == '2023-12-20T13:40:00.000Z'
+    assert date_time_to_iso_format(datetime.datetime.utcnow()) == '2023-12-20T13:40:00.000Z'
 
 
 def test_add_fields_to_events():
@@ -247,11 +247,14 @@ def test_fetch_events():
     from CiscoWebexEventCollector import create_last_run, fetch_events
 
     with requests_mock.Mocker() as m:
-        m.get('https://url.com/adminAudit/events?orgId=1&from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1', text=util_load_text('test_data/admin_audits.json'),
+        m.get('https://url.com/adminAudit/events?orgId=1&from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1',
+              text=util_load_text('test_data/admin_audits.json'),
               headers={'Link': '<https://url.com/adminAudit/events?nexturl=true>; rel="next"'})
-        m.get('https://url.com/admin/securityAudit/events?orgId=1&startTime=2023-12-13T13%3A40%3A00.000Z&endTime=2023-12-20T13%3A40%3A00.000Z&max=1', text=util_load_text('test_data/security_audits.json'),
+        m.get('https://url.com/admin/securityAudit/events?orgId=1&startTime=2023-12-13T13%3A40%3A00.000Z&endTime=2023-12-20T13%3A40%3A00.000Z&max=1',
+              text=util_load_text('test_data/security_audits.json'),
               headers={'Link': '<https://url.com/securityAudit/events?nexturl=true>; rel="next"'})
-        m.get('https://url.com/events?from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1', text=util_load_text('test_data/events.json'),
+        m.get('https://url.com/events?from=2023-12-13T13%3A40%3A00.000Z&to=2023-12-20T13%3A40%3A00.000Z&max=1',
+              text=util_load_text('test_data/events.json'),
               headers={'Link': '<https://url.com/events?nexturl=true>; rel="next"'})
         events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), create_last_run(), max_fetch=1)
 
