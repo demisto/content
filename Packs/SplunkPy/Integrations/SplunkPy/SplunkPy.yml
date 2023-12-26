@@ -197,6 +197,20 @@ configuration:
   - Asset
   - Identity
   required: false
+- additionalinfo: CSV of the Splunk lookup tables from which to take the Asset enrichment data.
+  defaultvalue: asset_lookup_by_str,asset_lookup_by_cidr
+  display: Asset enrichment lookup tables
+  name: asset_enrich_lookup_tables
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: CSV of the Splunk lookup tables from which to take the Identity enrichment data.
+  defaultvalue: identity_lookup_expanded
+  display: Identity enrichment lookup tables
+  name: identity_enrich_lookup_tables
+  type: 0
+  required: false
+  section: Collect
 - display: 'Enrichment Timeout (Minutes)'
   name: enrichment_timeout
   type: 0
@@ -652,7 +666,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.80777
+  dockerimage: demisto/splunksdk-py3:1.0.0.83421
   isfetch: true
   ismappable: true
   isremotesyncin: true

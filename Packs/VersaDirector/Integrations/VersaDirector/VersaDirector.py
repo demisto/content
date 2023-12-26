@@ -430,14 +430,13 @@ class Client(BaseClient):
     def template_list_by_datastore_request(self, organization: str, offset: int | None = None, limit: int | None = None):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers['Accept'] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{organization}-DataStore/config/orgs/org",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
 
         return response
@@ -498,15 +497,14 @@ class Client(BaseClient):
     ):
         params = assign_params(url_category_name=url_category_name, offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"/api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
             + "/url-filtering/user-defined-url-categories/url-category",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
 
         return response
@@ -610,10 +608,8 @@ class Client(BaseClient):
             suffix += f"/{url_category_name}"
 
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
 
-        response = self._http_request("GET", url_suffix=suffix, params=params, headers=headers, resp_type="xml")
+        response = self._http_request("GET", url_suffix=suffix, params=params, headers=headers)
         return response
 
     def appliance_custom_url_category_create_request(
@@ -705,15 +701,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
             + "/security/access-policies/access-policy-group",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -727,15 +722,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
             + f"/security/access-policies/access-policy-group/{access_policy_name}/rules/access-policy",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -844,8 +838,7 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
@@ -853,7 +846,7 @@ class Client(BaseClient):
             params=params,
             headers=headers,
             ok_codes=(200, 201),
-            resp_type="xml",
+
         )
         return response
 
@@ -867,15 +860,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
             + f"/security/access-policies/access-policy-group/{access_policy_name}/rules/access-policy",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -984,15 +976,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
             + "/sd-wan/policies/sdwan-policy-group",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -1006,15 +997,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
             + f"/sd-wan/policies/sdwan-policy-group/{sdwan_policy_name}/rules/rule",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -1144,15 +1134,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
             + "/sd-wan/policies/sdwan-policy-group",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -1166,15 +1155,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
             + f"/sd-wan/policies/sdwan-policy-group/{sdwan_policy_name}/rules/rule",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -1303,15 +1291,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/"
             + f"{organization}/objects/addresses/address",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -1386,15 +1373,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
             + "/objects/addresses/address",
             params=params,
             headers=headers,
-            resp_type="xml",
+
         )
         return response
 
@@ -1469,15 +1455,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
             + "/application-identification/user-defined-applications/user-defined-application",
             params=params,
             headers=headers,
-            resp_type="xml",
+
             ok_codes=(200, 201, 204),
         )
         return response
@@ -1491,15 +1476,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
             + "/application-identification/user-defined-applications/user-defined-application",
             params=params,
             headers=headers,
-            resp_type="xml",
+
             ok_codes=(200, 201),
         )
         return response
@@ -1513,15 +1497,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
             + "/application-identification/application-specific-options/app-specific-option-list",
             params=params,
             headers=headers,
-            resp_type="xml",
+
             ok_codes=(200, 201),
         )
         return response
@@ -1535,15 +1518,14 @@ class Client(BaseClient):
     ):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
-        headers["Content-Type"] = "application/xml"
-        headers["Accept"] = "application/xml"
+
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
             + "/application-identification/application-specific-options/app-specific-option-list",
             params=params,
             headers=headers,
-            resp_type="xml",
+
             ok_codes=(200, 201),
         )
         return response
@@ -2195,7 +2177,6 @@ def template_list_by_datastore_command(client: Client, args: dict[str, Any]) -> 
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_list_by_datastore_request(organization, offset, limit)
-    response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".DataStoreTemplate",
@@ -2203,7 +2184,7 @@ def template_list_by_datastore_command(client: Client, args: dict[str, Any]) -> 
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Templates associated with {organization} Data-Store",
-            t=response.get("collection", {}).get("org", {}),
+            t=response.get("org", {}),
             headerTransform=pascalToSpace,
             removeNull=True,
             headers=[
@@ -2319,7 +2300,6 @@ def template_custom_url_category_list_command(client: Client, args: dict[str, An
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_custom_url_category_list_request(organization, template_name, url_category_name, offset, limit)
-    response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".TemplateCustomUrlCategory",
@@ -2327,7 +2307,7 @@ def template_custom_url_category_list_command(client: Client, args: dict[str, An
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Application Service Templates associated with {organization}",
-            t=response.get("collection", {}).get("url-category", {}),
+            t=response.get("url-category", {}),
             headerTransform=pascalToSpace,
             headers=["category-name", "category-description", "confidence", "urls"],
             is_auto_json_transform=True,
@@ -2440,7 +2420,6 @@ def appliance_custom_url_category_list_command(client: Client, args: dict[str, A
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.appliance_custom_url_category_list_request(organization, appliance_name, url_category_name, offset, limit)
-    response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".ApplianceCustomUrlCategory",
@@ -2448,7 +2427,7 @@ def appliance_custom_url_category_list_command(client: Client, args: dict[str, A
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Application Service Appliances associated with {organization}",
-            t=response.get("collection", {}).get("url-category", {}),
+            t=response.get("url-category", {}),
             headerTransform=pascalToSpace,
             headers=["category-name", "category-description", "confidence", "urls"],
             is_auto_json_transform=True,
@@ -2565,7 +2544,6 @@ def template_access_policy_list_command(client: Client, args: dict[str, Any]) ->
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_access_policy_list_request(organization, template_name, offset, limit)
-    response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".TemplateAccessPolicy",
@@ -2573,7 +2551,7 @@ def template_access_policy_list_command(client: Client, args: dict[str, Any]) ->
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Access policies associated with {organization}",
-            t=response.get("collection", {}).get("access-policy-group", {}),
+            t=response.get("access-policy-group", {}),
             headerTransform=pascalToSpace,
             headers=["name", "rules"],
             is_auto_json_transform=True,
@@ -2596,7 +2574,6 @@ def template_access_policy_rule_list_command(client: Client, args: dict[str, Any
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_access_policy_rule_list_request(organization, template_name, access_policy_name, offset, limit)
-    response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".TemplateAccessPolicyRule",
@@ -2604,7 +2581,7 @@ def template_access_policy_rule_list_command(client: Client, args: dict[str, Any
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Access policies associated with {organization}",
-            t=response.get("collection", {}).get("access-policy", {}),
+            t=response.get("access-policy", {}),
             headerTransform=pascalToSpace,
             headers=["name", "description", "tag", "rule-disable"],
             is_auto_json_transform=True,
@@ -2693,7 +2670,6 @@ def appliance_access_policy_list_command(client: Client, args: dict[str, Any]) -
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.appliance_access_policy_list_request(organization, appliance_name, offset, limit)
-    response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".ApplianceAccessPolicy",
@@ -2701,7 +2677,7 @@ def appliance_access_policy_list_command(client: Client, args: dict[str, Any]) -
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Access policies associated with {organization}",
-            t=response.get("collection", {}).get("access-policy-group", {}),
+            t=response.get("access-policy-group", {}),
             headerTransform=pascalToSpace,
             headers=["name", "rules"],
             is_auto_json_transform=True,
@@ -2724,7 +2700,6 @@ def appliance_access_policy_rule_list_command(client: Client, args: dict[str, An
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.appliance_access_policy_rule_list_request(organization, appliance_name, access_policy_name, offset, limit)
-    response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".ApplianceAccessPolicyRule",
@@ -2732,7 +2707,7 @@ def appliance_access_policy_rule_list_command(client: Client, args: dict[str, An
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Access policies associated with {organization}",
-            t=response.get("collection", {}).get("access-policy", {}),
+            t=response.get("access-policy", {}),
             headerTransform=pascalToSpace,
             headers=["name", "description", "tag", "rule-disable"],
             is_auto_json_transform=True,
@@ -2821,7 +2796,6 @@ def template_sdwan_policy_list_command(client: Client, args: dict[str, Any]) -> 
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_sdwan_policy_list_request(organization, template_name, offset, limit)
-    response = json.loads(xml2json(response.content))
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".TemplateSdwanPolicy",
@@ -2829,7 +2803,7 @@ def template_sdwan_policy_list_command(client: Client, args: dict[str, Any]) -> 
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"SD-WAN policies associated with {organization}",
-            t=response.get("collection", {}).get("sdwan-policy-group", {}),
+            t=response.get("sdwan-policy-group", {}),
             headerTransform=pascalToSpace,
             headers=["name", "rules"],
             is_auto_json_transform=True,
@@ -2852,7 +2826,6 @@ def template_sdwan_policy_rule_list_command(client: Client, args: dict[str, Any]
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_sdwan_policy_rule_request(organization, template_name, sdwan_policy_name, offset, limit)
-    response = json.loads(xml2json(response.content)).get("collection").get("rule")
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".TemplateSdwanPolicyRule",
@@ -2860,7 +2833,7 @@ def template_sdwan_policy_rule_list_command(client: Client, args: dict[str, Any]
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"SD-WAN policy rules associated with {organization}",
-            t=response,
+            t=response.get("rule"),
             headerTransform=string_to_table_header,
             headers=["name", "match", "set"],
             is_auto_json_transform=True,
@@ -2955,7 +2928,6 @@ def appliance_sdwan_policy_list_command(client: Client, args: dict[str, Any]) ->
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.appliance_sdwan_policy_list_request(organization, appliance_name, offset, limit)
-    response = json.loads(xml2json(response.content)).get("collection", {}).get("sdwan-policy-group")
 
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".ApplianceSdwanPolicy",
@@ -2963,7 +2935,7 @@ def appliance_sdwan_policy_list_command(client: Client, args: dict[str, Any]) ->
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"SD-WAN policies associated with {organization}",
-            t=response,
+            t=response.get("sdwan-policy-group"),
             headerTransform=pascalToSpace,
             headers=["name", "rules"],
             is_auto_json_transform=True,
@@ -2986,14 +2958,14 @@ def appliance_sdwan_policy_rule_list_command(client: Client, args: dict[str, Any
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.appliance_sdwan_policy_rule_list_request(organization, appliance_name, sdwan_policy_name, offset, limit)
-    response = json.loads(xml2json(response.content)).get("collection", {}).get("rule", {})
+
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".ApplianceSdwanPolicyRule",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"SD-WAN policy rules associated with {organization}",
-            t=response,
+            t=response.get("rule", {}),
             headerTransform=pascalToSpace,
             headers=["name", "description", "rule-disable", "action"],
             is_auto_json_transform=True,
@@ -3080,14 +3052,14 @@ def template_address_object_list_command(client: Client, args: dict[str, Any]) -
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_address_object_list_request(organization, template_name, offset, limit)
-    response = json.loads(xml2json(response.content)).get("collection", {}).get("address", {})
+
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".TemplateAddressObject",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Address objects associated with {organization}",
-            t=response,
+            t=response.get("address", {}),
             headerTransform=pascalToSpace,
             headers=[
                 "name",
@@ -3206,14 +3178,14 @@ def appliance_address_object_list_command(client: Client, args: dict[str, Any]) 
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.appliance_address_object_list_request(organization, appliance_name, offset, limit)
-    response = json.loads(xml2json(response.content)).get("collection", {}).get("address", {})
+
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".ApplianceAddressObject",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"Address objects associated with {organization}",
-            t=response,
+            t=response.get("address", {}),
             headerTransform=pascalToSpace,
             headers=[
                 "name",
@@ -3328,14 +3300,14 @@ def template_user_defined_application_list_command(client: Client, args: dict[st
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_user_defined_application_list_request(organization, template_name, offset, limit)
-    response = json.loads(xml2json(response.content)).get("collection", {}).get("user-defined-application", {})
+
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".TemplateUserDefinedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User defined application objects associated with {organization}",
-            t=response,
+            t=response.get("user-defined-application", {}),
             headerTransform=pascalToSpace,
             headers=["app-name", "description", "precedence", "tag", "risk", "family"],
             is_auto_json_transform=True,
@@ -3359,14 +3331,13 @@ def appliance_user_defined_application_list_command(client: Client, args: dict[s
 
     response = client.appliance_user_defined_application_list_request(organization, appliance_name, offset, limit)
 
-    response = json.loads(xml2json(response.content)).get("collection", {}).get("user-defined-application", {})
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".ApplianceUserDefinedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User defined application objects associated with {organization}",
-            t=response,
+            t=response.get("user-defined-application", {}),
             headerTransform=pascalToSpace,
             headers=["app-name", "description", "precedence", "tag", "risk", "family"],
             is_auto_json_transform=True,
@@ -3389,14 +3360,14 @@ def template_user_modified_application_list_command(client: Client, args: dict[s
     organization = set_organization(organization_args, client.organization_params)
 
     response = client.template_user_modified_application_list_request(organization, template_name, offset, limit)
-    response = json.loads(xml2json(response.content)).get("collection", {}).get("app-specific-option-list", {})
+
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".TemplateUserModifiedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User modified predefined application objects associated with {organization}",
-            t=response,
+            t=response.get("app-specific-option-list", {}),
             headerTransform=pascalToSpace,
             headers=[
                 "app-name",
@@ -3426,14 +3397,13 @@ def appliance_user_modified_application_list_command(client: Client, args: dict[
 
     response = client.appliance_user_modified_application_list_request(organization, appliance_name, offset, limit)
 
-    response = json.loads(xml2json(response.content)).get("collection", {}).get("app-specific-option-list", {})
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".ApplianceUserModifiedApplication",
         outputs=response,
         raw_response=response,
         readable_output=tableToMarkdown(
             name=f"User modified predefined application objects associated with {organization}",
-            t=response,
+            t=response.get("app-specific-option-list", {}),
             headerTransform=pascalToSpace,
             headers=[
                 "app-name",

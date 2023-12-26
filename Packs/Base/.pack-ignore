@@ -52,6 +52,9 @@ ignore=BA124
 [file:DBotTrainClustering.yml]
 ignore=BA124
 
+[file:CommonServer_6_10.yml]
+ignore=BA108,BA109
+
 [known_words]
 createindicatorrelationship
 commonserverpython

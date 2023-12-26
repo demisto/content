@@ -33,7 +33,7 @@ if [ -n "${CLOUD_SERVERS_FILE}" ]; then
   echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
 fi
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  if [ "${TEST_XDR_ENV}" == "true" ]; then
+  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
   else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
@@ -92,5 +92,16 @@ else
   echo "Build failed for instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} with exit code: ${exit_code}"
 fi
 
-echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - Error handling will be done on the results job, exiting with code 0"
-exit 0
+if [ -n "${FAIL_ON_ERROR}" ]; then
+  if [ "${exit_code}" -eq 0 ]; then
+    echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 0"
+    exit 0
+  else
+    echo "Finish running server tests with errors on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 1"
+    exit 1 
+  fi 
+else
+  echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - Error handling will be done on the results job, exiting with code 0"
+  exit 0
+fi
+

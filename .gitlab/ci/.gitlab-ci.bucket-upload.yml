@@ -13,7 +13,7 @@
 
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
-  - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist
+  - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist TEST
   - |
     if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "$GCS_PRODUCTION_BUCKET" ]]; then
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
@@ -158,6 +158,17 @@ xpanse-prepare-testing-bucket-upload-flow:
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
     - section_end "Secrets Fetch"
     - !reference [.ssh-config-setup]
+    - section_start "Check if should run Instance role"
+    - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
+    - |
+      echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE} Instances created for role:${INSTANCES_CREATED_FOR_ROLE}"
+      if [[ "${INSTANCES_CREATED_FOR_ROLE}" -eq 0 ]]; then
+        echo "Instances with role ${INSTANCE_ROLE} were not created, not running the instance flow."
+        rm -f "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt" # delete the instance_role.txt file so the job will not be collected by slack notifier.
+        job-done
+        exit 0
+      fi
+    - section_end "Check if should run Instance role"
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
@@ -262,16 +273,16 @@ install-packs-in-server-master:
 
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
     - |
-      if [[ "${TEST_XDR_ENV}" == "true" ]]; then
+      if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
         cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
       else
         echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
       fi
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
-    - section_start "Run end to end sanity tests"
-    - ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
-    - section_end "Run end to end sanity tests"
+    - section_start "Run XSIAM end to end sanity tests"
+    - ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
+    - section_end "Run XSIAM end to end sanity tests"
 
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
@@ -349,6 +360,16 @@ upload-packs-to-marketplace:
           PACKS_TO_UPLOAD="All"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
+        
+        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+        if [ "${core_packs_files_count}" -eq 0 ]; then
+          echo "No core packs files were found, skipping uploading."
+        else
+          echo "Uploading ${core_packs_files_count} core packs files."
+          # Copy core packs files from the artifacts folder to the build bucket:
+          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs" \;
+          echo "Successfully uploaded core packs files."
+        fi
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -380,7 +401,7 @@ upload-packs-to-marketplace:
 
     - section_start "Validate Premium Packs"
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
+      if [[ $(cat "${ENV_RESULTS_PATH}") != "[]" ]] && ( [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]])  ; then
         ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
       else
         echo "Skipping Premium Packs Validation"
@@ -434,6 +455,16 @@ upload-packs-to-marketplace-v2:
           PACKS_TO_UPLOAD="All"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
+        
+        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+        if [ "${core_packs_files_count}" -eq 0 ]; then
+          echo "No core packs files were found, skipping uploading."
+        else
+          echo "Uploading ${core_packs_files_count} core packs files."
+          # Copy core packs files from the artifacts folder to the build bucket:
+          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_V2_BUCKET/$STORAGE_BASE_PATH/packs" \;
+          echo "Successfully uploaded core packs files."
+        fi
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -509,6 +540,16 @@ upload-packs-to-xpanse-marketplace:
           PACKS_TO_UPLOAD="All"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XPANSE_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xpanse
+        
+        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+        if [ "${core_packs_files_count}" -eq 0 ]; then
+          echo "No core packs files were found, skipping uploading."
+        else
+          echo "Uploading ${core_packs_files_count} core packs files."
+          # Copy core packs files from the artifacts folder to the build bucket:
+          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_XPANSE_BUCKET/$STORAGE_BASE_PATH/packs" \;
+          echo "Successfully uploaded core packs files."
+        fi
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -584,6 +625,16 @@ upload-packs-to-xsoar-saas-marketplace:
           echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XSOAR_SAAS_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar_saas
+        
+        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+        if [ "${core_packs_files_count}" -eq 0 ]; then
+          echo "No core packs files were found, skipping uploading."
+        else
+          echo "Uploading ${core_packs_files_count} core packs files."
+          # Copy core packs files from the artifacts folder to the build bucket:
+          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_XSOAR_SAAS_BUCKET/$STORAGE_BASE_PATH/packs" \;
+          echo "Successfully uploaded core packs files."
+        fi
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -743,7 +794,7 @@ sync-buckets-between-projects:
     - .bucket-upload-rule
     - .default-job-settings
   stage: upload-to-marketplace
-  needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
+  needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace", "upload-packs-to-xsoar-saas-marketplace"]
   when: always
   variables:
     MARKETPLACE_XSOAR_PROD: "marketplace-xsoar"
@@ -781,7 +832,7 @@ sync-buckets-between-projects:
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_PROD_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
 
         echo "Syncing gs://marketplace-xsoar-prod-us"
-        gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-prod-us
+        gsutil -m rsync -r gs://marketplace-saas-dist gs://marketplace-xsoar-prod-us
         echo "Syncing gs://marketplace-xsiam-prod-us"
         gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-prod-us
         echo "Syncing gs://marketplace-xpanse-prod-us"

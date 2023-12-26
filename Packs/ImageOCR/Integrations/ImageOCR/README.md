@@ -134,8 +134,13 @@
 <tbody>
 <tr>
 <td style="width: 162.333px;">entryid</td>
-<td style="width: 506.667px;">Entry ID of the image file to process.</td>
+<td style="width: 506.667px;">A comma-separated list of Entry IDs of image files to process.</td>
 <td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 162.333px;">skip_corrupted</td>
+<td style="width: 506.667px;">If true, will not raise an error if the given image is corrupted and could not be processed. Default is false.</td>
+<td style="width: 71px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 162.333px;">langs</td>

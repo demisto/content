@@ -1,0 +1,172 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Abnormal Security - Incoming Mapper",
+    "mapping": {
+        "AbnormalSecurity": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Abnormal Security Abuse Campaign Attack Type": {
+                    "simple": "attackType"
+                },
+                "Abnormal Security Abuse Campaign First Reported": {
+                    "simple": "firstReported"
+                },
+                "Abnormal Security Abuse Campaign From Address": {
+                    "simple": "fromAddress"
+                },
+                "Abnormal Security Abuse Campaign From Name": {
+                    "simple": "fromName"
+                },
+                "Abnormal Security Abuse Campaign ID": {
+                    "simple": "campaignId"
+                },
+                "Abnormal Security Abuse Campaign Judgement Status": {
+                    "simple": "judgementStatus"
+                },
+                "Abnormal Security Abuse Campaign Last Reported": {
+                    "simple": "lastReported"
+                },
+                "Abnormal Security Abuse Campaign Message ID": {
+                    "simple": "messageId"
+                },
+                "Abnormal Security Abuse Campaign Overall Status": {
+                    "simple": "overallStatus"
+                },
+                "Abnormal Security Abuse Campaign Recipient Address": {
+                    "simple": "recipientAddress"
+                },
+                "Abnormal Security Abuse Campaign Recipient Name": {
+                    "simple": "recipientName"
+                },
+                "Abnormal Security Abuse Campaign Subject": {
+                    "simple": "subject"
+                },
+                "Abnormal Security Affected Employee": {
+                    "simple": "affectedEmployee"
+                },
+                "Abnormal Security Analysis": {
+                    "simple": "analysis"
+                },
+                "Abnormal Security Attachment Count": {
+                    "simple": "messages.attachmentCount"
+                },
+                "Abnormal Security Attachment Names": {
+                    "simple": "messages.attachmentNames"
+                },
+                "Abnormal Security Attack Strategy": {
+                    "simple": "messages.attackStrategy"
+                },
+                "Abnormal Security Attack Type": {
+                    "simple": "messages.attackType"
+                },
+                "Abnormal Security Attack Vector": {
+                    "simple": "messages.attackVector"
+                },
+                "Abnormal Security Attacked Party": {
+                    "simple": "messages.attackedParty"
+                },
+                "Abnormal Security Auto Remediated": {
+                    "simple": "messages.autoRemediated"
+                },
+                "Abnormal Security CC Emails": {
+                    "simple": "messages.ccEmails"
+                },
+                "Abnormal Security Case ID": {
+                    "simple": "caseId"
+                },
+                "Abnormal Security Case Status": {
+                    "simple": "case_status"
+                },
+                "Abnormal Security Customer Visible Time": {
+                    "simple": "customerVisibleTime"
+                },
+                "Abnormal Security First Observed Time": {
+                    "simple": "firstObserved"
+                },
+                "Abnormal Security From Address": {
+                    "simple": "messages.fromAddress"
+                },
+                "Abnormal Security From Name": {
+                    "simple": "messages.fromName"
+                },
+                "Abnormal Security Impersonated Party": {
+                    "simple": "messages.impersonatedParty"
+                },
+                "Abnormal Security Internet Message ID": {
+                    "simple": "messages.internetMessageId"
+                },
+                "Abnormal Security Is Read": {
+                    "simple": "messages.isRead"
+                },
+                "Abnormal Security Message ID": {
+                    "simple": "messages.abxMessageId"
+                },
+                "Abnormal Security Portal URL": {
+                    "simple": "messages.abxPortalUrl"
+                },
+                "Abnormal Security Post Remediated": {
+                    "simple": "messages.postRemediated"
+                },
+                "Abnormal Security Received Time": {
+                    "simple": "messages.receivedTime"
+                },
+                "Abnormal Security Recipient Address": {
+                    "simple": "messages.recipientAddress"
+                },
+                "Abnormal Security Remediation Status": {
+                    "simple": "messages.remediationStatus"
+                },
+                "Abnormal Security Remediation Timestamp": {
+                    "simple": "messages.remediationTimestamp"
+                },
+                "Abnormal Security Reply To Emails": {
+                    "simple": "messages.replyToEmails"
+                },
+                "Abnormal Security Return Path": {
+                    "simple": "messages.returnPath"
+                },
+                "Abnormal Security Sender Domain": {
+                    "simple": "messages.senderDomain"
+                },
+                "Abnormal Security Sender IP Address": {
+                    "simple": "messages.senderIpAddress"
+                },
+                "Abnormal Security Sent Time": {
+                    "simple": "messages.sentTime"
+                },
+                "Abnormal Security Severity": {
+                    "simple": "severity"
+                },
+                "Abnormal Security Severity Level": {
+                    "simple": "severity_level"
+                },
+                "Abnormal Security Subject": {
+                    "simple": "messages.subject"
+                },
+                "Abnormal Security Summary Insights": {
+                    "simple": "messages.summaryInsights"
+                },
+                "Abnormal Security Threat ID": {
+                    "simple": "messages.threatId"
+                },
+                "Abnormal Security Threat IDs": {
+                    "simple": "threatIds"
+                },
+                "Abnormal Security To Addresses": {
+                    "simple": "messages.toAddresses"
+                },
+                "Abnormal Security Url Count": {
+                    "simple": "messages.urlCount"
+                },
+                "URLs": {
+                    "simple": "messages.urls"
+                }
+            }
+        }
+    },
+    "name": "Abnormal Security - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

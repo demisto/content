@@ -1,0 +1,463 @@
+id: IsEmailAddressInternal_Test
+version: -1
+name: IsEmailAddressInternal_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 66a949cd-1099-4df5-8cae-086f995dccbf
+    type: start
+    task:
+      id: 66a949cd-1099-4df5-8cae-086f995dccbf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f235836d-af12-4b51-8bd3-a4a2f4f62594
+    type: regular
+    task:
+      id: f235836d-af12-4b51-8bd3-a4a2f4f62594
+      version: -1
+      name: Set domains key
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: domains
+      value:
+        simple: '["domain.com", "test.com"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bad2b9cd-06f7-484d-84f0-ef1e67c5e229
+    type: regular
+    task:
+      id: bad2b9cd-06f7-484d-84f0-ef1e67c5e229
+      version: -1
+      name: IsEmailAddressInternal
+      description: Checks if the email address is part of the internal domains
+      scriptName: IsEmailAddressInternal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: ${domains}
+      email:
+        simple: ${emails}
+      include_subdomains:
+        simple: "no"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 08c9749a-c1e0-4561-8617-93b9e259d85e
+    type: regular
+    task:
+      id: 08c9749a-c1e0-4561-8617-93b9e259d85e
+      version: -1
+      name: Set emails key
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: emails
+      value:
+        simple: '["email@domain.com", "email@sub.test.com", "invalidmail"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f2ad839d-0911-4926-83a5-93ec29948d1f
+    type: regular
+    task:
+      id: f2ad839d-0911-4926-83a5-93ec29948d1f
+      version: -1
+      name: IsEmailAddressInternal include_subdomains
+      description: Checks if the email address is part of the internal domains
+      scriptName: IsEmailAddressInternal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domain:
+        simple: ${domains}
+      email:
+        simple: ${emails}
+      include_subdomains:
+        simple: "yes"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6240a0a0-8d24-4458-80b6-e392577517d1
+    type: condition
+    task:
+      id: 6240a0a0-8d24-4458-80b6-e392577517d1
+      version: -1
+      name: Checking the results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: email@domain.com
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: NetworkType
+                    stringify: {}
+            iscontext: true
+          right:
+            value:
+              simple: Internal
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: email@sub.test.com
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: NetworkType
+                    stringify: {}
+            iscontext: true
+          right:
+            value:
+              simple: External
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e5aebdc7-1f45-4225-8246-72a8642f73e5
+    type: title
+    task:
+      id: e5aebdc7-1f45-4225-8246-72a8642f73e5
+      version: -1
+      name: Test IsEmailAddressInternal
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8a2b4c2b-f20f-4340-8aab-e4649e8ceb64
+    type: condition
+    task:
+      id: 8a2b4c2b-f20f-4340-8aab-e4649e8ceb64
+      version: -1
+      name: Checking the results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: email@domain.com
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: NetworkType
+                    stringify: {}
+            iscontext: true
+          right:
+            value:
+              simple: Internal
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: email@sub.test.com
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: NetworkType
+                    stringify: {}
+            iscontext: true
+          right:
+            value:
+              simple: Internal
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3f8cca12-12f9-4818-81f8-44d2ec1200a9
+    type: title
+    task:
+      id: 3f8cca12-12f9-4818-81f8-44d2ec1200a9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: f7e77ece-0799-43d4-8b0c-f341891a5376
+    type: regular
+    task:
+      id: f7e77ece-0799-43d4-8b0c-f341891a5376
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1580,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: eb884611-de10-45e7-8433-f33b0c0a9bdd
+fromversion: 6.9.0
+description: Test for IsEmailAddressInternal automation

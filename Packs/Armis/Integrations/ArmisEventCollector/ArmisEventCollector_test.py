@@ -253,7 +253,7 @@ class TestHelperFunction:
         ]
         mocker.patch.object(Client, 'fetch_by_aql_query', return_value=response)
 
-        fetch_by_event_type(event_type, events, next_run, dummy_client, 1, last_run, fetch_start_time_param)
+        fetch_by_event_type(dummy_client, event_type, events, 1, last_run, next_run, fetch_start_time_param)
 
         assert events['events'] == [{'unique_id': '3', 'time': '2023-01-01T01:00:30.123456+00:00'}]
         assert next_run == {'events_last_fetch_ids': ['3'], 'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00'}
@@ -551,21 +551,26 @@ class TestFetchFlow:
               to fetch events for the current event type iteration.
         """
         from ArmisEventCollector import fetch_events
-        events_with_different_time = [
-            {
-                'unique_id': '1',
-                'time': '2023-01-01T01:00:10.123456+00:00'
-            },
-            {
-                'unique_id': '2',
-                'time': '2023-01-01T01:00:20.123456+00:00'
-            },
-            {
-                'unique_id': '3',
-                'time': '2023-01-01T01:00:30.123456+00:00'
-            }]
+        events_with_different_time = {
+            'data':
+                {
+                    'results': [
+                        {
+                            'unique_id': '1',
+                            'time': '2023-01-01T01:00:10.123456+00:00'
+                        },
+                        {
+                            'unique_id': '2',
+                            'time': '2023-01-01T01:00:20.123456+00:00'
+                        },
+                        {
+                            'unique_id': '3',
+                            'time': '2023-01-01T01:00:30.123456+00:00'
+                        }
+                    ]
+                }}
         fetch_start_time = arg_to_datetime('2023-01-01T01:00:00')
-        mocker.patch.object(Client, 'fetch_by_aql_query', side_effect=[DemistoException(
+        mocker.patch.object(Client, '_http_request', side_effect=[DemistoException(
             message='Invalid access token'), events_with_different_time])
         mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events', 'time', 'events')})
         mocker.patch.object(Client, 'update_access_token')
@@ -574,4 +579,54 @@ class TestFetchFlow:
                         'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00',
                         'access_token': 'test_access_token'}
             assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, [
-                'Events'], None) == ({'events': events_with_different_time}, last_run)
+                'Events'], None) == ({'events': events_with_different_time['data']['results']}, last_run)
+
+    def test_fetch_alert_flow(self, mocker, dummy_client):
+        """
+        Given:
+            - Access token has expired in runtime.
+        When:
+            - Fetching events.
+        Then:
+            - Catch the specific exception, updated the access token and perform a second attempt
+              to fetch events for the current event type iteration.
+        """
+        from ArmisEventCollector import fetch_events
+        alerts_response = {
+            'data':
+                {
+                    'results': [{
+                        'alertId': '1',
+                        'activityUUIDs': ['123', '456'],
+                        'deviceIds': ['789', '012'],
+                        'time': '2023-01-01T01:00:10.123456+00:00'
+                    }]
+                }}
+        activities_response = {
+            'data':
+                {
+                    'results': [{
+                        'activityUUID': 123,
+                        'time': '2023-01-01T01:00:10.123456+00:00'
+                    }]
+                }}
+        devices_response = {
+            'data':
+                {
+                    'results': [{
+                        'id': '789',
+                        'time': '2023-01-01T01:00:10.123456+00:00',
+                    }]
+                }}
+        fetch_start_time = arg_to_datetime('2023-01-01T01:00:00')
+        mocker.patch.object(Client, '_http_request', side_effect=[alerts_response, activities_response, devices_response])
+        mocker.patch.dict(EVENT_TYPES, {'Alerts': EVENT_TYPE('unique_id', 'events_query', 'alerts', 'time', 'alerts')})
+        expected_result = alerts_response['data']['results'][0]
+        expected_result['activitiesData'] = activities_response['data']['results']
+        expected_result['devicesData'] = devices_response['data']['results']
+        if fetch_start_time:
+            last_run = {'alerts_last_fetch_ids': [''],
+                        'alerts_last_fetch_time': '2023-01-01T01:00:10.123456+00:00',
+                        'access_token': 'test_access_token'}
+            assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, [
+                'Alerts'], None) == ({'alerts': [expected_result]}, last_run)

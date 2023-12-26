@@ -8,7 +8,7 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.                 | True |
+| Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the Generic Webhook will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.                 | True |
 | username | Username (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory.  |
 | password | Password (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory.  |
 | certificate | (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported. | False |
@@ -17,8 +17,9 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 | store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
 
 4. Click **Done**.
-5. Navigate to  **Settings > About > Troubleshooting**.
-6. (For Cortex XSOAR 6.x) In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+5. For Cortex XSOAR 6.x:
+     1. Navigate to  **Settings > About > Troubleshooting**.
+     2. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
 You can now trigger the webhook URL:
 

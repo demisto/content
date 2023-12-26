@@ -129,117 +129,144 @@ var createContextReportsAndScore = function(records) {
 }
 
 var basicSearchIP = function(ip) {
-    var records = basicSearch('ip', ip);
-
-    if (!records) {
-        return {
-            Type: entryTypes.note,
-            Contents: "No items match your search",
-            ContentsFormat: formats.text,
-            EntryContext: {
-                DBotScore: {
-                    Indicator: ip,
-                    Type: 'IP',
-                    Vendor: VENDOR_NAME,
-                    Score: 0,
-                    Reliability: params.integrationReliability
+    var ips = ip.split(',')
+    var results = new Array(urls.length)
+    for (var i = 0; i < ips.length; i++) {
+        var records = basicSearch('ip', ips[i]);
+        if (!records) {
+            results[i] = {
+                Type: entryTypes.note,
+                Contents: "No items match your search",
+                ContentsFormat: formats.text,
+                EntryContext: {
+                    DBotScore: {
+                        Indicator: ips[i],
+                        Type: 'IP',
+                        Vendor: VENDOR_NAME,
+                        Score: 0,
+                        Reliability: params.integrationReliability
+                    }
                 }
+            };
+        }
+        else{
+            var res = createContextReportsAndScore(records);
+            var context = {
+                DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore},
+                'Report(val.ID && val.ID == obj.ID)': res.reports,
+                'IP.Address': ips[i]
+            };
+    
+            if (res.dbotScore > 2) {
+                addMalicious(context, outputPaths.ip,{
+                    Address: ips[i],
+                    Malicious: {Vendor: VENDOR_NAME, Description: 'IP was identified as ' + res.highetsRecordType}
+                });
             }
-        };
+            results[i] = createTableEntry("Results:", records, records, context);
+        }
     }
-
-    var res = createContextReportsAndScore(records);
-    var context = {
-        DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore},
-        'Report(val.ID && val.ID == obj.ID)': res.reports,
-        'IP.Address': ip
-    };
-
-    if (res.dbotScore > 2) {
-        addMalicious(context, outputPaths.ip,{
-            Address: ip,
-            Malicious: {Vendor: VENDOR_NAME, Description: 'IP was identified as ' + res.highetsRecordType}
-        });
-    }
-
-    return createTableEntry("Results:", records, records, context);
+    return results
 }
 
 var basicSearchDomain = function(domain) {
-    var records = basicSearch('domain', domain);
+    var domains = domain.split(',')
+    var results = new Array(urls.length)
+    for (var i = 0; i < domains.length; i++) {
+        var records = basicSearch('domain', domains[i]);
 
-    if (!records) {
-        return {
-            Type: entryTypes.note,
-            Contents: "No items match your search",
-            ContentsFormat: formats.text,
-            EntryContext: {
-                DBotScore: {
-                    Indicator: domain,
-                    Type: 'domain',
-                    Vendor: VENDOR_NAME,
-                    Score: 0,
-                    Reliability: params.integrationReliability
+        if (!records) {
+            return {
+                Type: entryTypes.note,
+                Contents: "No items match your search",
+                ContentsFormat: formats.text,
+                EntryContext: {
+                    DBotScore: {
+                        Indicator: domains[i],
+                        Type: 'domain',
+                        Vendor: VENDOR_NAME,
+                        Score: 0,
+                        Reliability: params.integrationReliability
+                    }
                 }
-            }
+            };
+        }
+
+        var res = createContextReportsAndScore(records);
+        var context = {
+            DBotScore: {Indicator: domains[i], Type: 'domain', Vendor: VENDOR_NAME, Score: res.dbotScore},
+            'Report(val.ID && val.ID == obj.ID)': res.reports,
+            'Domain.Name': domains[i]
         };
+
+        if (res.dbotScore > 2) {
+            addMalicious(context, outputPaths.domain,{
+                Name: domains[i],
+                Malicious: {Vendor: VENDOR_NAME, Description: 'domain was identified as ' + res.highetsRecordType}
+            });
+        }
+
+        results[i] = createTableEntry("Results:", records, records, context);
     }
-
-    var res = createContextReportsAndScore(records);
-    var context = {
-        DBotScore: {Indicator: domain, Type: 'domain', Vendor: VENDOR_NAME, Score: res.dbotScore},
-        'Report(val.ID && val.ID == obj.ID)': res.reports,
-        'Domain.Name': domain
-    };
-
-    if (res.dbotScore > 2) {
-        addMalicious(context, outputPaths.domain,{
-            Name: domain,
-            Malicious: {Vendor: VENDOR_NAME, Description: 'domain was identified as ' + res.highetsRecordType}
-        });
-    }
-
-    return createTableEntry("Results:", records, records, context);
+    return results
 }
 
-var basicSearchfile = function(key, value) {
-    var records = basicSearch(key, value);
+var basicSearchfile = function(args) {   
+    var hashes = args.hash.split(",")
+    var results = new Array(hashes.length)
+    for (var i = 0; i < hashes.length; i++) {
+        var value = hashes[i]
+        var hashLength = value && value.length
+        var key = ""
+        if(hashLength === 32) {
+            key = 'md5'
+        } else if(hashLength === 40) {
+            key = 'sha1'
+        } 
+        if (key != "") {
+            var records = basicSearch(key, value);
 
-    if (!records) {
-        return {
-            Type: entryTypes.note,
-            Contents: "No items match your search",
-            ContentsFormat: formats.text,
-            EntryContext: {
-                DBotScore: {
-                    Indicator: value,
-                    Type: 'file',
-                    Vendor: VENDOR_NAME,
-                    Score: 0,
-                    Reliability: params.integrationReliability
-                }
+            if (!records) {
+                return {
+                    Type: entryTypes.note,
+                    Contents: "No items match your search",
+                    ContentsFormat: formats.text,
+                    EntryContext: {
+                        DBotScore: {
+                            Indicator: value,
+                            Type: 'file',
+                            Vendor: VENDOR_NAME,
+                            Score: 0,
+                            Reliability: params.integrationReliability
+                        }
+                    }
+                };
             }
-        };
-    }
 
-    var res = createContextReportsAndScore(records);
-    var context = {
-        DBotScore: {Indicator: value, Type: 'file', Vendor: VENDOR_NAME, Score: res.dbotScore},
-        'Report(val.ID && val.ID == obj.ID)': res.reports
-    };
+            var res = createContextReportsAndScore(records);
+            var context = {
+                DBotScore: {Indicator: value, Type: 'file', Vendor: VENDOR_NAME, Score: res.dbotScore},
+                'Report(val.ID && val.ID == obj.ID)': res.reports
+            };
 
-    if (res.dbotScore > 2) {
-        var malicuousObj = {
-            Malicious: {
-                Vendor: VENDOR_NAME,
-                Description: 'file was identified as ' + res.highetsRecordType
+            if (res.dbotScore > 2) {
+                var malicuousObj = {
+                    Malicious: {
+                        Vendor: VENDOR_NAME,
+                        Description: 'file was identified as ' + res.highetsRecordType
+                    }
+                };
+                malicuousObj[key.toUpperCase()] = value;
+                addMalicious(context, outputPaths.file, malicuousObj);
             }
-        };
-        malicuousObj[key.toUpperCase()] = value;
-        addMalicious(context, outputPaths.file, malicuousObj);
-    }
 
-    return createTableEntry("Results:", records, records, context);
+            results[i] = createTableEntry("Results:", records, records, context);
+        }
+        else{
+            throw 'the file argument' + value + 'must be md5(32 charecters) or sha1(40 charecters) ';
+        }
+    }
+    return results
 }
 
 var getReport = function(reportID) {
@@ -318,15 +345,7 @@ switch (command) {
     case 'domain':
         return basicSearchDomain(args.domain);
     case 'file':
-        var hash = args.file;
-        var hashLength = hash && hash.length
-        if(hashLength === 32) {
-            return basicSearchfile('md5', hash);
-        } else if(hashLength === 40) {
-            return basicSearchfile('sha1', hash);
-        } else {
-            throw 'file argument must be md5(32 charecters) or sha1(40 charecters) ';
-        }
+        return basicSearchfile(args)
     case 'isight-get-report':
         return getReport(args.reportID);
     case 'isight-submit-file':
