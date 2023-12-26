@@ -137,7 +137,7 @@ class Client(BaseClient):
                                     })
         demisto.info(f'Executing Prisma Cloud alert search with payload: {data}')
 
-        return self._http_request('POST', 'v2/alert', params=params, json_data=data)
+        return self._http_request('POST', 'v2/alert', params=params, json_data=data, retries=2)
 
     def alert_get_details_request(self, alert_id: str, detailed: Optional[str] = None):
         params = assign_params(detailed=detailed)
@@ -588,9 +588,11 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                            sort_by=['alertTime:asc'],  # adding sort by 'id:asc' doesn't work
                                            limit=limit + len(fetched_ids),
                                            )
+    demisto.debug(f"[test] - Finished request, got response: {response}")
     response_items = response.get('items', [])
     updated_last_run_time_epoch = response_items[-1].get('alertTime') if response_items else now
     incidents = filter_alerts(client, fetched_ids, response_items, limit)
+    demisto.debug(f"[test] - Finished filtering incidents: {len(incidents)=}, {limit=}, {incidents}")
 
     # there is a 'nextPageToken' value even if we already got all the results
     while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
@@ -603,10 +605,12 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                                limit=limit + len(fetched_ids),
                                                page_token=response.get('nextPageToken'),
                                                )
+        demisto.debug(f"[test] - Finished another request, got response: {response}")
         response_items = response.get('items', [])
         updated_last_run_time_epoch = \
             response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
         incidents.extend(filter_alerts(client, fetched_ids, response_items, limit, len(incidents)))
+        demisto.debug(f"[test] - Finished another filtering incidents: {len(incidents)=}, {limit=}, {incidents}")
 
     return incidents, fetched_ids, updated_last_run_time_epoch
 
