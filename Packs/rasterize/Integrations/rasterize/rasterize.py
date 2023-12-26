@@ -35,6 +35,7 @@ WITH_ERRORS = demisto.params().get('with_error', True)
 # The default wait time before taking a screenshot
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
+TAB_CLOSE_WAIT_TIME = 1
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
 
@@ -71,6 +72,9 @@ class RasterizeType(Enum):
 # region utility classes
 
 def excepthook_recv_loop(args):
+    """
+    Suppressing exceptions that might happen after the tab was closed.
+    """
     exc_value = args.exc_value
     if args.exc_type == json.decoder.JSONDecodeError:
         demisto.debug(f"Caught a JSONDecodeError exception in _recv_loop, suppressing, {exc_value}")
@@ -105,12 +109,13 @@ class TabLifecycleManager:
         if exc_type or exc_val or exc_tb:
             demisto.info(f'TabLifecycleManager, __exit__ with exception, {self.chrome_port=}, {exc_type=}, {exc_val=}, {exc_tb=}')
 
-        if self.tab and self.tab.id:
+        if self.tab:
             tab_id = self.tab.id
+            # Suppressing exceptions that might happen after the tab was closed.
             threading.excepthook = excepthook_recv_loop
 
             try:
-                time.sleep(1)  # pylint: disable=E9003
+                time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
                 demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, disabling page')
                 self.tab.Page.disable()
             except Exception as ex:
@@ -145,7 +150,7 @@ class TabLifecycleManager:
 
             demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, sleeping, allowing the tab to close,'
                           f' active tabs len: {len(self.browser.list_tab())}')
-            time.sleep(1)  # pylint: disable=E9003
+            time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
             demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
 
 
@@ -173,8 +178,8 @@ class PychromeEventHandler:
                     activation_result = self.browser.activate_tab(self.tab.id)
                     activation_result, operation_time = backoff(activation_result)
                     self.tab_ready_event.set()
-            except pychrome.exceptions.PyChromeException:
-                pass
+            except pychrome.exceptions.PyChromeException as pce:
+                demisto.info(f'Exception when Frame stopped loading: {frameId}, {pce}')
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
         if requestId and not self.request_id:
