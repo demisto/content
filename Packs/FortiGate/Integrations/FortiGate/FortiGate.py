@@ -2129,7 +2129,11 @@ def build_security(policy: dict[str, Any]) -> dict[str, Any]:
 
 
 @logger
-def create_addr_string(list_of_addr_data_dicts):
+def create_addr_string(list_of_addr_data_dicts: list) -> str:
+    """Builds the address string from the given list of address data dictionaries.
+
+    The address string is a list of address names separated by newlines.
+    """
     addr_string = ""
     for addr_index in range(0, len(list_of_addr_data_dicts)):
         cur_addr_data = list_of_addr_data_dicts[addr_index]
@@ -2559,7 +2563,7 @@ def build_dicts_from_list(items: list | None, key: str = "name") -> list[dict[st
 
 
 @logger
-def prettify_date(date):
+def prettify_date(date: int | str) -> str:
     """
     This function receives a string representing a date, for example 2018-07-28T10:47:55.000Z.
     It returns the same date in a readable format - for example, 2018-07-28 10:47:55.
