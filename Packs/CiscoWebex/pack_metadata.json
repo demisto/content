@@ -1,6 +1,6 @@
 {
     "name": "Cisco Webex",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "This is the Cisco Webex Event Collector integration to fetch data from various events within the Cisco Webex ecosystem.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

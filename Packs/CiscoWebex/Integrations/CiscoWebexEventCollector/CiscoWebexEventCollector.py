@@ -14,10 +14,16 @@ SCOPE = {
     'compliance_officer': 'spark-compliance:events_read spark:kms',
 }
 COMMAND_FUNCTION_TO_EVENT_TYPE = {
-    'get_admin_audits': 'Admin Audits',
-    'get_security_audits': 'Security Audits',
-    'get_compliance_officer_events': 'Compliance Officer Events',
+    'get_admin_audits': 'Admin Audit Events',
+    'get_security_audits': 'Security Audit Events',
+    'get_compliance_officer_events': 'Events',
 }
+EVENT_TYPE_TO_XSIAM_EVENT_TYPE = {
+    'admin_audits': 'Admin Audit Events',
+    'security_audits': 'Admin Audit Events',
+    'compliance_officer_events': 'Events',
+}
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -27,7 +33,7 @@ def date_time_to_iso_format(date_time: datetime) -> str:
 
 
 def create_last_run() -> dict:
-    start_fetch = datetime.utcnow()-timedelta(weeks=20)
+    start_fetch = datetime.utcnow()-timedelta(weeks=1)
     return {
         'admin_audits': {'since_datetime': date_time_to_iso_format(start_fetch), 'next_url': ''},
         'security_audits': {'since_datetime': date_time_to_iso_format(start_fetch), 'next_url': ''},
@@ -35,9 +41,10 @@ def create_last_run() -> dict:
     }
 
 
-def add_fields_to_events(events: list[dict]):
+def add_fields_to_events(events: list[dict], evnet_type: str):
     for event in events:
         event['_time'] = event.get('created')
+        event['source_log_type'] = EVENT_TYPE_TO_XSIAM_EVENT_TYPE.get(evnet_type)
 
 
 def increase_datetime_for_next_fetch(events: list) -> str:
@@ -225,7 +232,8 @@ def oauth_complete(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         readable_output='### Logged in successfully.\n'
                         'A refresh token was saved to the integration context. This token will be used to '
-                        'generate a new access token once the current one expires.'
+                        'generate a new access token once the current one expires.\n'
+                        'In order to complete the test process please run the `!cisco-oauth-test command`.'
     )
 
 
@@ -283,6 +291,7 @@ def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient,
         if events:
             last_run[event_type]['next_url'] = next_url
             last_run[event_type]['since_datetime'] = increase_datetime_for_next_fetch(events)
+            add_fields_to_events(events, event_type)
             all_events.extend(events)
 
     demisto.debug(f'finished fetching {len(all_events)} events, last_run will be set to: {last_run}')
@@ -301,12 +310,12 @@ def main() -> None:
     command = demisto.command()
 
     # parse parameters
-    admin_client_id = params.get('admin_app_client_id')
-    admin_client_secret = params.get('admin_app_client_secret')
+    admin_client_id = params.get('admin_credentials').get('identifier')
+    admin_client_secret = params.get('admin_credentials').get('password')
     admin_redirect_uri = params.get('admin_app_redirect_uri')
     admin_org_id = params.get('admin_org_id')
-    compliance_officer_client_id = params.get('compliance_officer_app_client_id')
-    compliance_officer_client_secret = params.get('compliance_officer_client_secret')
+    compliance_officer_client_id = params.get('compliance_officer_credentials').get('identifier')
+    compliance_officer_client_secret = params.get('compliance_officer_credentials').get('password')
     compliance_officer_redirect_uri = params.get('compliance_officer_redirect_uri')
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)

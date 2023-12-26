@@ -1,8 +1,23 @@
-## BaseIntegration Help
+## Cisco Webex Event Collector Help
 
-Markdown file for integration configuration  help snippet. In this file add:
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### Cisco Webex Event Collector collects three types of events.
+* Admin Audit Events.
+* Security Audit Events (user sign-in and sign-out data).
+* Events.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### There are two application clients to set up.
+[Click here to create a new client](https://developer.webex.com/my-apps)
+* Admin client (for `Admin Audit Events` and `Security Audit Events`).
+* Compliance Officer client (for `Events`).
+
+
+### Each client needs three parameters:
+* client ID.
+* client secret.
+* client redirect URI.
+
+_Note the Admin client needs a fourth parameter: `organization ID`._\
+Run [this](https://developer.webex.com/docs/api/v1/organizations/list-organizations) HTTP request (login with admin credentials) to get the organization ID.
+![get_organization_id](../../doc_files/get_organization_id.png)
+

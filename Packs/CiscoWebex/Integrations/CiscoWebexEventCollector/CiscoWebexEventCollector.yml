@@ -6,16 +6,12 @@ commonfields:
   id: CiscoWebexEventCollector
   version: -1
 configuration:
-- display: Admin APP Client ID
-  name: admin_app_client_id
+- name: admin_credentials
+  display: Admin APP Client ID
   required: true
-  type: 0
-  section: Connect
-- display: Admin APP Client Secret
-  name: admin_app_client_secret
-  required: true
-  type: 0
-  section: Connect
+  type: 9
+  additionalinfo: Admin APP Client ID and Secret.
+  displaypassword: Admin APP Client Secret
 - display: Admin APP Redirect URI
   name: admin_app_redirect_uri
   required: true
@@ -26,16 +22,12 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Compliance Officer APP Client ID
-  name: compliance_officer_app_client_id
+- name: compliance_officer_credentials
+  display: Compliance Officer Client ID
   required: true
-  type: 0
-  section: Connect
-- display: Compliance Officer Client Secret
-  name: compliance_officer_client_secret
-  required: true
-  type: 0
-  section: Connect
+  type: 9
+  additionalinfo: Compliance Officer Client ID and Secret.
+  displaypassword: Compliance Officer Client Secret
 - display: Compliance Officer Redirect URI
   name: compliance_officer_redirect_uri
   required: true
@@ -60,7 +52,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-description: Cisco Webex Event Collector fetches Events and Admin Audit Events.
+description: Cisco Webex Event Collector fetches Events and Admin Audit Events and Security Audit Events.
 display: Cisco Webex Event Collector
 name: CiscoWebexEventCollector
 script:
@@ -149,6 +141,7 @@ script:
   script: ''
   subtype: python3
   type: python
+"marketplaces": ["marketplacev2"]
 fromversion: 6.12.0
 tests:
 - No tests (auto formatted)
