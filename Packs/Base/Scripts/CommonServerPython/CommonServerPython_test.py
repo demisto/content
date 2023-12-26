@@ -9246,3 +9246,18 @@ def test_detect_file_indicator_type(indicator,expected_result):
 def test_urljoin(url,suffix,expected_result):
     from CommonServerPython import urljoin
     assert urljoin(url,suffix) == expected_result
+
+
+@pytest.mark.parametrize("score,expected_result", [
+    (4,'Critical'), 
+    (3,'Bad'), 
+    (2,'Suspicious'), 
+    (1,'Good'), 
+    (0.5,'Informational'), 
+    (0,'Unknown'), 
+
+])
+def test_scoreToReputation(score,expected_result):
+    from CommonServerPython import scoreToReputation
+    assert scoreToReputation(score) == expected_result
+
