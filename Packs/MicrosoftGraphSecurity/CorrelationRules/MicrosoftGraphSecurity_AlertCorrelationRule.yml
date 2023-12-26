@@ -9,12 +9,17 @@
     actor_effective_username: xdm.source.user.username
     agent_device_domain: xdm.source.user.domain
     agent_id: xdm.intermediate.agent.identifier
-    emailmessageid: xdm.email.message_id
+    detectionid: graph_incident_id
     externalseverity: xdm.alert.severity
     filesize: xdm.target.file.size
     firstname: xdm.source.user.first_name
+    fw_app_id: xdm.source.application.name
     fw_email_recipient: xdm.email.recipients
+    fw_email_sender: xdm.email.sender
+    incidentlink: graph_incident_url
     lastname: xdm.source.user.last_name
+    originalalertid: graph_alert_id
+    originalalertsource: graph_detectionSource
     parentprocessids: xdm.source.process.parent_id
     processcmd: xdm.source.process.command_line
     processid: xdm.source.process.pid
@@ -23,41 +28,66 @@
     registrykey: xdm.target.registry.key
     registryvalue: xdm.target.registry.value
     registryvaluetype: xdm.target.registry.value_type
-    reportedemailsubject: xdm.email.subject
   alert_name: Microsoft Graph Security Alert
   crontab: null
   dataset: alerts
   description: This rule maps Microsoft Graph Security alerts to XSIAM alerts.
   drilldown_query_timeframe: ALERT
   execution_mode: REAL_TIME
-  global_rule_id: f20b0f8a-a987-4325-9f6f-8a3089bdfd5d
-  investigation_query_link: null
-  mapping_strategy: CUSTOM
-  mitre_defs: {}
-  name: Microsoft Graph Security Alert Correlation Rule
-  search_window: null
-  severity: User Defined
-  suppression_duration: null
-  suppression_enabled: false
-  suppression_fields: null
-  user_defined_category: xdm.alert.subcategory
-  user_defined_severity: xdm.alert.severity
-  xql_query: "datamodel dataset = msft_graph_security_alerts_raw \n| fields xdm.alert.description,\
-    \ xdm.alert.mitre_techniques, xdm.alert.original_threat_name, xdm.alert.severity,\
-    \ xdm.alert.subcategory, xdm.email.delivery_timestamp, xdm.email.message_id, xdm.email.recipients,\
-    \ xdm.email.subject, xdm.event.description, xdm.event.id, xdm.event.is_completed,\
-    \ xdm.event.outcome, xdm.event.tags, xdm.intermediate.agent.identifier, xdm.intermediate.host.fqdn,\
-    \ xdm.intermediate.host.hostname, xdm.network.rule, xdm.observer.type, xdm.observer.unique_identifier,\
-    \ xdm.session_context_id, xdm.source.agent.identifier, xdm.source.application.name,\
-    \ xdm.source.cloud.project, xdm.source.host.device_id, xdm.source.host.fqdn, xdm.source.host.ipv4_addresses,\
-    \ xdm.source.host.ipv6_addresses, xdm.source.host.os, xdm.source.host.os_family,\
-    \ xdm.source.process.command_line, xdm.source.process.executable.filename, xdm.source.process.executable.path,\
+  global_rule_id: ae5b0887-4086-4e05-a9f3-af1ddfb50f80
+  investigation_query_link: "datamodel dataset = msft_graph_security_alerts_raw \n\
+    | alter \n    graph_incident_url = msft_graph_security_alerts_raw.incidentWebUrl,\n\
+    \    graph_alert_id = msft_graph_security_alerts_raw.id,\n    graph_detectionSource\
+    \ = msft_graph_security_alerts_raw.detectionSource,\n    graph_incident_id = to_integer(msft_graph_security_alerts_raw.incidentId)\n\
+    | fields xdm.alert.description, xdm.alert.mitre_techniques, xdm.alert.original_threat_name,\
+    \ xdm.alert.severity, xdm.alert.subcategory, xdm.email.delivery_timestamp, xdm.email.message_id,\
+    \ xdm.email.recipients, xdm.email.sender, xdm.email.subject, xdm.event.description,\
+    \ xdm.event.id, xdm.event.is_completed, xdm.event.outcome, xdm.event.tags, xdm.intermediate.agent.identifier,\
+    \ xdm.intermediate.host.fqdn, xdm.intermediate.host.hostname, xdm.network.rule,\
+    \ xdm.observer.type, xdm.observer.unique_identifier, xdm.session_context_id, xdm.source.agent.identifier,\
+    \ xdm.source.application.name, xdm.source.cloud.project, xdm.source.host.device_id,\
+    \ xdm.source.host.fqdn, xdm.source.host.ipv4_addresses, xdm.source.host.ipv6_addresses,\
+    \ xdm.source.host.os, xdm.source.host.os_family, xdm.source.process.command_line,\
+    \ xdm.source.process.executable.filename, xdm.source.process.executable.path,\
     \ xdm.source.process.executable.sha256, xdm.source.process.executable.signer,\
     \ xdm.source.process.executable.size, xdm.source.process.parent_id, xdm.source.process.pid,\
     \ xdm.source.user.domain, xdm.source.user.identifier, xdm.source.user.first_name,\
     \ xdm.source.user.last_name, xdm.source.user.username, xdm.source.user.upn, xdm.target.file.filename,\
     \ xdm.target.file.path, xdm.target.file.sha256, xdm.target.file.signer, xdm.target.file.size,\
     \ xdm.target.registry.data, xdm.target.registry.key, xdm.target.registry.value,\
-    \ xdm.target.registry.value_type, xdm.target.url\n| filter xdm.alert.severity\
-    \ in (\"high\")\n"
-  fromversion: 8.4.0 
+    \ xdm.target.registry.value_type, xdm.target.url, graph_incident_url, graph_alert_id,\
+    \ graph_detectionSource,  graph_incident_id\n| filter graph_incident_id = $graph_incident_id\n\
+    | view column order = populated \n"
+  mapping_strategy: CUSTOM
+  mitre_defs: {}
+  name: Microsoft Graph Security Alert Correlation Rule
+  search_window: null
+  severity: User Defined
+  suppression_duration: 1 days
+  suppression_enabled: true
+  suppression_fields: graph_incident_id
+  user_defined_category: xdm.alert.subcategory
+  user_defined_severity: xdm.alert.severity
+  xql_query: "datamodel dataset = msft_graph_security_alerts_raw \n| alter \n    graph_incident_url\
+    \ = msft_graph_security_alerts_raw.incidentWebUrl,\n    graph_alert_id = msft_graph_security_alerts_raw.id,\n\
+    \    graph_detectionSource = msft_graph_security_alerts_raw.detectionSource,\n\
+    \    graph_incident_id = to_integer(msft_graph_security_alerts_raw.incidentId)\n\
+    | fields xdm.alert.description, xdm.alert.mitre_techniques, xdm.alert.original_threat_name,\
+    \ xdm.alert.severity, xdm.alert.subcategory, xdm.email.delivery_timestamp, xdm.email.message_id,\
+    \ xdm.email.recipients, xdm.email.sender, xdm.email.subject, xdm.event.description,\
+    \ xdm.event.id, xdm.event.is_completed, xdm.event.outcome, xdm.event.tags, xdm.intermediate.agent.identifier,\
+    \ xdm.intermediate.host.fqdn, xdm.intermediate.host.hostname, xdm.network.rule,\
+    \ xdm.observer.type, xdm.observer.unique_identifier, xdm.session_context_id, xdm.source.agent.identifier,\
+    \ xdm.source.application.name, xdm.source.cloud.project, xdm.source.host.device_id,\
+    \ xdm.source.host.fqdn, xdm.source.host.ipv4_addresses, xdm.source.host.ipv6_addresses,\
+    \ xdm.source.host.os, xdm.source.host.os_family, xdm.source.process.command_line,\
+    \ xdm.source.process.executable.filename, xdm.source.process.executable.path,\
+    \ xdm.source.process.executable.sha256, xdm.source.process.executable.signer,\
+    \ xdm.source.process.executable.size, xdm.source.process.parent_id, xdm.source.process.pid,\
+    \ xdm.source.user.domain, xdm.source.user.identifier, xdm.source.user.first_name,\
+    \ xdm.source.user.last_name, xdm.source.user.username, xdm.source.user.upn, xdm.target.file.filename,\
+    \ xdm.target.file.path, xdm.target.file.sha256, xdm.target.file.signer, xdm.target.file.size,\
+    \ xdm.target.registry.data, xdm.target.registry.key, xdm.target.registry.value,\
+    \ xdm.target.registry.value_type, xdm.target.url, graph_incident_url, graph_alert_id,\
+    \ graph_detectionSource,  graph_incident_id\n| filter xdm.alert.severity in (\"\
+    high\")\n"
