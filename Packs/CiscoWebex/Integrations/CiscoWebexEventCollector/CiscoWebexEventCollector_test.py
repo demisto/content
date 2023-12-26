@@ -1,7 +1,6 @@
 import json
 import datetime
 import pytest
-import requests
 import requests_mock
 from freezegun import freeze_time
 from CommonServerPython import *
@@ -28,7 +27,7 @@ def mock_get_access_token():
 
 
 def mock_get_integration_context():
-    expires_in = (datetime.utcnow()+timedelta(weeks=3)).isoformat()
+    expires_in = (datetime.utcnow() + timedelta(weeks=3)).isoformat()
     return {
         "admin": {
             "access_token": "123456",
@@ -172,8 +171,10 @@ def test_increase_datetime_for_next_fetch():
 
 
 @pytest.mark.parametrize('client, expected_url', [
-    (mocked_admin_client(), 'https://webexapis.com/v1/authorize?response_type=code&scope=admin_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
-    (mocked_compliance_officer_client(), 'https://webexapis.com/v1/authorize?response_type=code&scope=co_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
+    (mocked_admin_client(),
+     'https://webexapis.com/v1/authorize?response_type=code&scope=admin_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
+    (mocked_compliance_officer_client(),
+     'https://webexapis.com/v1/authorize?response_type=code&scope=co_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
 ])
 def test_oauth_start(client, expected_url):
     from CiscoWebexEventCollector import oauth_start

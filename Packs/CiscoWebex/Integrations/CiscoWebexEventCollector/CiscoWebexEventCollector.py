@@ -28,7 +28,7 @@ def date_time_to_iso_format(date_time: datetime) -> str:
 
 
 def create_last_run() -> dict:
-    start_fetch = datetime.utcnow()-timedelta(weeks=1)
+    start_fetch = datetime.utcnow() - timedelta(weeks=1)
     return {
         'admin_audits': {'since_datetime': date_time_to_iso_format(start_fetch), 'next_url': ''},
         'security_audits': {'since_datetime': date_time_to_iso_format(start_fetch), 'next_url': ''},
@@ -43,7 +43,7 @@ def add_fields_to_events(events: list[dict], evnet_type: str):
 
 
 def increase_datetime_for_next_fetch(events: list) -> str:
-    return date_time_to_iso_format(parser.parse(events[-1].get('created'), ignoretz=True)+timedelta(milliseconds=1))
+    return date_time_to_iso_format(parser.parse(events[-1].get('created'), ignoretz=True) + timedelta(milliseconds=1))
 
 
 ''' CLIENT CLASS '''
@@ -153,7 +153,7 @@ class AdminClient(Client):
         }
 
     def oauth_test(self):
-        self.get_admin_audits(date_time_to_iso_format(datetime.utcnow()-timedelta(hours=3)))
+        self.get_admin_audits(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
     def get_admin_audits(self, from_date: str, limit: int = 100, next_url: str = '') -> requests.Response:
         if next_url:
@@ -187,7 +187,7 @@ class ComplianceOfficerClient(Client):
         }
 
     def oauth_test(self):
-        self.get_compliance_officer_events(date_time_to_iso_format(datetime.utcnow()-timedelta(hours=3)))
+        self.get_compliance_officer_events(date_time_to_iso_format(datetime.utcnow() - timedelta(hours=3)))
 
     def get_compliance_officer_events(self, from_date: str, limit: int = 100, next_url: str = '') -> requests.Response:
         if next_url:
