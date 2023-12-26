@@ -145,3 +145,24 @@ def test_is_pivot_positive(mocker):
     result = common.is_pivot(pipeline_id, pipelines, commits)
 
     assert result == expected
+    
+def test_is_pivot_positive_2(mocker):
+    """
+    Given a pipeline id, list of pipelines and commits
+    When previous pipeline failed and current succeeded and in order
+    Then it should return False, commit
+
+    """
+    pipeline_id = '2'
+    pipelines = [
+        mocker.Mock(id=1, status='failed'),
+        mocker.Mock(id=2, status='success')
+    ]
+    commit = mocker.Mock()
+    commits = [commit]
+
+    expected = (False, commit)
+    mocker.patch.object(common, 'are_pipelines_in_order_as_commits', return_value=(True, commit))
+    result = common.is_pivot(pipeline_id, pipelines, commits)
+
+    assert result == expected
