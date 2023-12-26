@@ -132,20 +132,20 @@ def test_add_fields_to_events():
     admin_audits = util_load_json('test_data/admin_audits.json').get('AdminAudits')
     events = util_load_json('test_data/events.json').get('events')
 
-    assert not any(key in policy_audits[0] for key in ('_time', 'eventTypeXsiam'))
-    assert not any(key in admin_audits[0] for key in ('_time', 'eventTypeXsiam'))
-    assert not any(key in events[0] for key in ('_time', 'eventTypeXsiam'))
+    assert not any(key in policy_audits[0] for key in ('_time', 'source_log_type'))
+    assert not any(key in admin_audits[0] for key in ('_time', 'source_log_type'))
+    assert not any(key in events[0] for key in ('_time', 'source_log_type'))
 
     add_fields_to_events(policy_audits, 'arrivalTime', 'policy_audits')
     add_fields_to_events(admin_audits, 'EventTime', 'admin_audits')
     add_fields_to_events(events, 'arrivalTime', 'detailed_events')
 
     assert policy_audits[0]['_time'] == policy_audits[0]['arrivalTime']
-    assert policy_audits[0]['eventTypeXsiam'] == XSIAM_EVENT_TYPE.get('policy_audits')
+    assert policy_audits[0]['source_log_type'] == XSIAM_EVENT_TYPE.get('policy_audits')
     assert admin_audits[0]['_time'] == admin_audits[0]['EventTime']
-    assert admin_audits[0]['eventTypeXsiam'] == XSIAM_EVENT_TYPE.get('admin_audits')
+    assert admin_audits[0]['source_log_type'] == XSIAM_EVENT_TYPE.get('admin_audits')
     assert events[0]['_time'] == events[0]['arrivalTime']
-    assert events[0]['eventTypeXsiam'] == XSIAM_EVENT_TYPE.get('detailed_events')
+    assert events[0]['source_log_type'] == XSIAM_EVENT_TYPE.get('detailed_events')
 
 
 def test_get_set_ids_by_set_names(mocker, requests_mock):
