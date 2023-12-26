@@ -184,7 +184,7 @@ def add_fields_to_events(events: list, date_field: str, event_type: str):
     """
     for event in events:
         event['_time'] = event.get(date_field)
-        event['eventTypeXsiam'] = XSIAM_EVENT_TYPE.get(event_type)
+        event['source_log_type'] = XSIAM_EVENT_TYPE.get(event_type)
 
 
 def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:

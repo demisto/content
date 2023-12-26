@@ -2,7 +2,7 @@
 // Modeling for admin audit events
 filter eventTypeXsiam = "set admin audit data"
 | alter
-        xdm.event.type = eventTypeXsiam,
+        xdm.event.type = source_log_type,
         xdm.event.description = concat(Description, ". ", "PermissionDescription:", PermissionDescription, ". ", "Role:", Role),
         xdm.source.zone = SetName,
         xdm.source.user.upn = Administrator,
@@ -14,14 +14,14 @@ filter eventTypeXsiam = "set admin audit data"
         xdm.source.ipv6 = if(LoggedFrom ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", LoggedFrom, null);
 
 // Modeling for detailed raw events
-filter eventTypeXsiam = "detailed raw"
+filter source_log_type = "detailed raw"
 | alter
         accessAction = if (accessAction = "true", "allow", "restrict"),
         userName_extracted = if(userName contains """\\""", arrayindex(regextract(userName, "\\([^\\]+)"), 0), userName),
         operatingSystemType = lowercase(operatingSystemType),
         winEventType = to_string(winEventType)
 | alter
-        xdm.event.type = eventTypeXsiam,
+        xdm.event.type = source_log_type,
         xdm.source.process.executable.filename = coalesce(fileName, packageName),
         xdm.source.process.executable.extension = arrayindex(regextract(fileName, "\.([^\.]+)$"), 0),
         xdm.alert.original_threat_name = policyName,
@@ -51,14 +51,14 @@ filter eventTypeXsiam = "detailed raw"
         xdm.event.outcome = if(logonStatusId = 3221225566, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225572, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225578, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225581, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225582, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225583, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225584, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225585, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225586, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225692, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225779, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225819, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225868, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225874, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225875, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221226036, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221226222, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221226515, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221226020, XDM_CONST.OUTCOME_PARTIAL, logonStatusId = 3221226021, XDM_CONST.OUTCOME_PARTIAL, logonStatusId = 0, XDM_CONST.OUTCOME_SUCCESS, to_string(logonStatusId));
 
 // Modeling for policy audit events
-filter eventTypeXsiam = "policy audit raw event details"
+filter source_log_type = "policy audit raw event details"
 | alter
         winEventType = to_string(winEventType),
         userName_extracted = if(userName contains """\\""", arrayindex(regextract(userName, "\\([^\\]+)"), 0), userName),
         operatingSystemType = lowercase(operatingSystemType)
 
 | alter
-        xdm.event.type = eventTypeXsiam,
+        xdm.event.type = source_log_type,
         xdm.source.application.publisher = publisher,
         xdm.event.original_event_type = coalesce(eventType, winEventType),
         xdm.source.user.username =  coalesce(userName_extracted, runAsUsername),
