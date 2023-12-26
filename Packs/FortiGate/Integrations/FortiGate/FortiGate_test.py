@@ -1,7 +1,6 @@
 import json
 import os
 from typing import Any, Callable
-from urllib.parse import urljoin
 
 import CommonServerPython
 import FortiGate
