@@ -938,7 +938,7 @@ def urljoin(url, suffix=""):
     return url + suffix
 
 
-def positiveUrl(entry):    # pragma: no cover
+def positiveUrl(entry):
     """
        Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
 
@@ -1161,7 +1161,7 @@ def shortFile(entry):   # pragma: no cover
             'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-def shortIp(entry):   # pragma: no cover
+def shortIp(entry):
     """
        Formats an ip reputation entry into a short table (deprecated)
 
@@ -1187,7 +1187,7 @@ def shortIp(entry):   # pragma: no cover
             'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-def shortDomain(entry):   # pragma: no cover
+def shortDomain(entry):
     """
        Formats a domain reputation entry into a short table (deprecated)
 
