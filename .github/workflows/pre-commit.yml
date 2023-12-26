@@ -40,7 +40,8 @@ jobs:
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       run: |
         source .venv/bin/activate
-        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+        # temporary workaround: use v1.24.0 sdk
+        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=ci --sdk-ref v1.24.0
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
       if: always() # always run even if the previous step fails
@@ -114,7 +115,9 @@ jobs:
     - name: run pre-commit community-level
       run: |
         source .venv/bin/activate
-        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=nightly
+        # temporary workaround: use v1.24.0 sdk
+
+        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=nightly --sdk-ref v1.24.0
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
