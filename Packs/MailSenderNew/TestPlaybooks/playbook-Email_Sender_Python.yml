@@ -94,7 +94,7 @@ tasks:
         simple: special test via playbook (1)
       templateParams: {}
       to:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
       transientFile:
         simple: test.txt
       transientFileCID: {}
@@ -193,7 +193,7 @@ tasks:
       subject: {}
       to: {}
       user-id:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -411,7 +411,7 @@ tasks:
           root: Testmail
           accessor: ID
       user-id:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -628,7 +628,7 @@ tasks:
       subject: {}
       to: {}
       user-id:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -749,7 +749,7 @@ tasks:
         simple: special test via playbook (2)
       templateParams: {}
       to:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
       transientFile:
         simple: test.txt,test2.txt
       transientFileCID: {}
@@ -1068,7 +1068,7 @@ tasks:
           root: Testmail
           accessor: ID
       user-id:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1355,7 +1355,7 @@ tasks:
       subject: {}
       to: {}
       user-id:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1457,7 +1457,7 @@ tasks:
       subject: {}
       to: {}
       user-id:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1520,7 +1520,7 @@ tasks:
       subject: {}
       to: {}
       user-id:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1583,7 +1583,7 @@ tasks:
       subject: {}
       to: {}
       user-id:
-        simple: yarden@demistodev.com
+        simple: test@demistodev.com
     separatecontext: false
     view: |-
       {
