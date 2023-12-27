@@ -5535,12 +5535,10 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
 @pytest.mark.parametrize(
     'args, is_scheduled, body',
     (
-        (
-            {'quarantine': 'false', 'schedule_interval': 'every other week', 'schedule_start_timestamp': 'tomorrow'}, True,
-            {'quarantine': False, 'schedule': {'interval': 14, 'start_timestamp': '2020-09-27T17:22:10Z'}}),
-        (
-            {'cpu_priority': 'Low'}, False, {'cpu_priority': 2},
-        ),
+        ({'quarantine': 'false', 'schedule_interval': 'every other week',
+          'schedule_start_timestamp': 'tomorrow'}, True,
+         {'quarantine': False, 'schedule': {'interval': 14, 'start_timestamp': '2020-09-27T17:22'}}),
+        ({'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
     )
 )
 @freeze_time("2020-09-26 17:22:13 UTC")
@@ -5548,25 +5546,21 @@ def test_ODS_create_scan_request(mocker, args, is_scheduled, body):
     """
     Test ODS_create_scan_request.
 
-    Given:
-        Arguments to create a scan/scheduled-scan.
+    Given
+        - Arguments to create a scan/scheduled-scan.
 
-    When:
-        The user runs the "cs-falcon-ods-create-scan" command
+    When
+        - The user runs the "cs-falcon-ods-create-scan" command
 
-    Then:
-        Create a scan/scheduled-scan.
+    Then
+        - Create a scan/scheduled-scan.
     """
-    import CrowdStrikeFalcon
 
-    http_request = mocker.patch.object(CrowdStrikeFalcon, 'http_request')
-    CrowdStrikeFalcon.ODS_create_scan_request(args, is_scheduled)
+    from CrowdStrikeFalcon import ODS_create_scan_request
 
-    if is_scheduled:
-        http_request.assert_called_with('POST', '/ods/entities/scheduled-scans/v1', json=body)
-
-    else:
-        http_request.assert_called_with('POST', '/ods/entities/scans/v1', json=body)
+    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
+    ODS_create_scan_request(args, is_scheduled)
+    http_request.assert_called_with('POST', f'/ods/entities/{"scheduled-scans" if is_scheduled else "scans"}/v1', json=body)
 
 
 @pytest.mark.parametrize(
