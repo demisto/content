@@ -4713,7 +4713,7 @@ script:
     description: Perform actions on alerts.
     name: cs-falcon-resolve-identity-detection
   - arguments:
-    - description: ID(s) of specific users to list.
+    - description: IDs (UUID) of specific users to list.
       name: id
       isArray: true
       required: false
