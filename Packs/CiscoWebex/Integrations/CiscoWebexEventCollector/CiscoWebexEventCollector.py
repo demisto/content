@@ -25,7 +25,7 @@ DEFAULT_MAX_FETCH = 200
 
 def date_time_to_iso_format(date_time: datetime) -> str:
     """
-    Gets a datetime object and returns s string represents a datetime is ISO format. 
+    Gets a datetime object and returns s string represents a datetime is ISO format.
     Args:
         date_time: A datetime object.
 
