@@ -2070,6 +2070,19 @@ script:
       - 'true'
       description: Get a list of all mailbox rules.
       defaultValue: 'false'
+    outputs:
+      - contextPath: EWS.Rule.RuleIdentity
+        description: The rule identity.
+        type: string
+      - contextPath: EWS.Rule.Name
+        description: The rule name.
+        type: string
+      - contextPath: EWS.Rule.Enabled
+        description: Wheather the rule is enabled or not.
+        type: string
+      - contextPath: EWS.Rule.Priority
+        description: The priorty of the rule.
+        type: string
     description: Retrieve a list of an Inbox rules.
   - name: ews-get-rule
     arguments:
@@ -2087,27 +2100,27 @@ script:
       description: Display all properties of the rule as a list .
       defaultValue: 'false'
     outputs:
-    - contextPath: MSGraphMail.Rule.Rule
+    - contextPath: EWSl.Rule.Rule
       description: The rule identity.
       type: string
-    - contextPath: MSGraphMail.Rule.RuleName
+    - contextPath: EWS.Rule.RuleName
       description: The rule name.
       type: string
-    - contextPath: MSGraphMail.Rule.IsEnabled
+    - contextPath: EWS.Rule.IsEnabled
       description: Wheather the rule is enabled or not.
-      type: string
-    - contextPath: MSGraphMail.Rule.Priority
+      type: boolean
+    - contextPath: EWS.Rule.Priority
       description: The priorty of the rule.
       type: string
-    - contextPath: MSGraphMail.Rule.Description
+    - contextPath: EWS.Rule.Description
       description: The description of the rule.
       type: string
-    - contextPath: MSGraphMail.Rule.StopProcessingRules
+    - contextPath: EWS.Rule.StopProcessingRules
       description: Stop Processing Rules.
       type: string
-    - contextPath: MSGraphMail.Rule.IsValid
+    - contextPath: EWS.Rule.IsValid
       description: wheather the rule is valid or not.
-      type: string
+      type: boolean
     description: Retrieve information about the Inbox rule properties.
   - name: ews-remove-rule
     arguments:

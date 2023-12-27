@@ -1211,6 +1211,7 @@ class ExchangeOnlinePowershellV3Client
             if ($identity) {
                 $cmd_params.Identity = $identity
             }
+            # $response = "tmp res"
             $response = Remove-InboxRule @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
@@ -1613,7 +1614,9 @@ function RemoveRuleCommand {
     )
     $mailbox = $kwargs.mailbox
     $identity = $kwargs.identity
+    $Demisto.Debug("before removing")
     $client.RemoveRule($mailbox, $identity)
+    $Demisto.Debug("after removing")
     $raw_response = @{}
     $human_readable = "Rule $identity has been deleted successfully"
     $entry_context = @{}

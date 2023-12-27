@@ -1445,7 +1445,13 @@ Get a list of all mailbox rules.
 
 
 #### Context Output
-There are no context outputs for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.Rule.RuleIdentity | String | The rule identity. | 
+| EWS.Rule.Name | String | The rule name. | 
+| EWS.Rule.Enabled | Boolean| If the rules is enabled or not. | 
+| EWS.Rule.Priority | String | the rule priority. | 
+
 
 #### Human Readable Output
 
@@ -1472,7 +1478,16 @@ Get a mailbox rule.
 
 
 #### Context Output
-There are no context outputs for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.Rule.Rule | String | The rule identity. | 
+| EWS.Rule.Name | String | The rule name. | 
+| EWS.Rule.Enabled | Boolean| If the rules is enabled or not. | 
+| EWS.Rule.Priority | String | the rule priority. |
+| EWS.Rule.Description | String | The description of the rule. | 
+| EWS.Rule.StopProcessingRules | Boolean| If to stop processing the rule or not. | 
+| EWS.Rule.IsValid | Boolean | If the rule is valid or not. | 
+
 
 #### Human Readable Output
 
