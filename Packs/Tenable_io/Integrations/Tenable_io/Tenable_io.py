@@ -286,7 +286,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/chunks/{chunk_id}',
                                   headers=self._headers)
 
-    def export_assets_request(self, fetch_from):
+    def get_asset_export_uuid(self, fetch_from):
         """
 
         Args:
@@ -307,7 +307,7 @@ class Client(BaseClient):
                                  headers=self._headers)
         return res.get('export_uuid')
 
-    def get_export_assets_status(self, export_uuid):
+    def get_assets_export_status(self, export_uuid):
         """
         Args:
                 export_uuid: The UUID of the assets export job.
@@ -354,21 +354,6 @@ class Client(BaseClient):
 
         res = self._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
         return res.get('export_uuid', '')
-
-    def get_export_status(self, export_uuid: str):
-        """
-
-        Args:
-            export_uuid: The UUID of the vulnerabilities export job.
-
-        Returns: The status of the job, and number of chunks available if succeeded.
-
-        """
-        res = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/status',
-                                 headers=self._headers)
-        status = res.get('status')
-        chunks_available = res.get('chunks_available', [])
-        return status, chunks_available
 
 
 def flatten(d):
@@ -655,7 +640,7 @@ def generate_assets_export_uuid(client: Client, assets_last_run):
     demisto.info("Getting assets export uuid.")
     fetch_from = round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
 
-    export_uuid = client.export_assets_request(fetch_from=fetch_from)
+    export_uuid = client.get_asset_export_uuid(fetch_from=fetch_from)
     demisto.debug(f'assets export uuid is {export_uuid}')
 
     assets_last_run.update({'assets_export_uuid': export_uuid})
@@ -668,7 +653,6 @@ def handle_assets_chunks(client: Client, assets_last_run):
     assets = []
     for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
         assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
-        # demisto.debug(f"extended assets are: {assets}")
         updated_stored_chunks.remove(chunk_id)
     if updated_stored_chunks:
         assets_last_run.update({'assets_available_chunks': updated_stored_chunks,
@@ -681,7 +665,7 @@ def handle_assets_chunks(client: Client, assets_last_run):
     return assets, assets_last_run
 
 
-def try_get_assets_chunks(client: Client, assets_last_run):
+def get_asset_export_job_status(client: Client, assets_last_run):
     """
     If job has succeeded (status FINISHED) get all information from all chunks available.
     Args:
@@ -691,7 +675,7 @@ def try_get_assets_chunks(client: Client, assets_last_run):
     Returns: All information from all chunks available.
 
     """
-    status, chunks_available = client.get_export_assets_status(export_uuid=assets_last_run.get("assets_export_uuid"))
+    status, chunks_available = client.get_assets_export_status(export_uuid=assets_last_run.get("assets_export_uuid"))
     demisto.info(f'Assets report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
         assets_last_run.update({'assets_available_chunks': chunks_available})
@@ -699,7 +683,7 @@ def try_get_assets_chunks(client: Client, assets_last_run):
     return status
 
 
-def try_get_chunks(client: Client, export_uuid: str):
+def get_vulnerabilities_chunks(client: Client, export_uuid: str):
     """
     If job has succeeded (status FINISHED) get all information from all chunks available.
     Args:
@@ -1749,7 +1733,7 @@ def fetch_assets_command(client: Client, assets_last_run):
     if available_chunks:
         assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
     elif export_uuid:
-        status = try_get_assets_chunks(client=client, assets_last_run=assets_last_run)
+        status = get_asset_export_job_status(client=client, assets_last_run=assets_last_run)
 
         if status in ['PROCESSING', 'QUEUED']:
             assets_last_run.update({'nextTrigger': '30', "type": 1})
@@ -1757,7 +1741,7 @@ def fetch_assets_command(client: Client, assets_last_run):
         if status == 'FINISHED':
             assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
         elif status in ['CANCELLED', 'ERROR']:
-            export_uuid = client.export_assets_request(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
+            export_uuid = client.get_asset_export_uuid(fetch_from=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
             assets_last_run.update({'assets_export_uuid': export_uuid})
             assets_last_run.update({'nextTrigger': '30', "type": 1})
 
@@ -1790,7 +1774,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
     export_uuid = last_run.get('vuln_export_uuid')
     if export_uuid:
         demisto.info(f'Got export uuid from API {export_uuid}')
-        vulnerabilities, status = try_get_chunks(client=client, export_uuid=export_uuid)
+        vulnerabilities, status = get_vulnerabilities_chunks(client=client, export_uuid=export_uuid)
         if status in ['PROCESSING', 'QUEUED']:
             last_run.update({'nextTrigger': '30', "type": 1})
         # set params for next run
