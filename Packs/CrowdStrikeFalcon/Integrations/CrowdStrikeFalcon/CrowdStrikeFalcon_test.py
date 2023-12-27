@@ -3621,11 +3621,57 @@ def test_update_hostgroup_invalid(requests_mock):
             assignment_rule="device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']")
 
 
+def test_resolve_incidents(mocker):
+    """
+    Given
+     -
+    When
+     - Calling resolve incident command
+    Then
+
+     """
+    import CrowdStrikeFalcon
+    http_request_mock = mocker.patch.object(CrowdStrikeFalcon, 'http_request')
+    CrowdStrikeFalcon.resolve_incident_command(ids=['test_id'], user_uuid='test', status='New', add_tag='test', remove_tag='test', add_comment='test')
+    assert http_request_mock.call_count == 1
+    assert http_request_mock.call_args.kwargs == {
+        "method": "POST",
+        "url_suffix": "/incidents/entities/incident-actions/v1",
+        "json": {
+            "action_parameters": [
+                {
+                "name": "update_status",
+                "value": "20"
+                },
+                {
+                    "name": "update_assigned_to_v2",
+                    "value": "test"
+                },
+                {
+                    "name": "add_tag",
+                    "value": "test"
+                },
+                {
+                    "name": "delete_tag",
+                    "value": "test"
+                },
+                {
+                    "name": "add_comment",
+                    "value": "test"
+                }
+            ],
+            "ids": [
+                "test_id"
+            ]
+        }
+    }
+
+
 @pytest.mark.parametrize('status, expected_status_api', [('New', "20"),
                                                          ('Reopened', "25"),
                                                          ('In Progress', "30"),
                                                          ('Closed', "40")])
-def test_resolve_incidents(requests_mock, status, expected_status_api):
+def test_resolve_incidents_statuses(requests_mock, status, expected_status_api):
     """
     Test Create resolve incidents with valid status code
     Given
@@ -6624,3 +6670,36 @@ def test_run_command_without_batch_id(requests_mock, mocker):
         }
     }
     assert results['EntryContext'] == expected_results
+
+
+def test_list_users_command(mocker):
+    """
+    Test cs-falcon-list-users command.
+
+    Given:
+     - No arguments.
+    When:
+     - Running the command cs-falcon-list-users
+    Then:
+     - Check that the command returns the correct results.
+    """
+    import CrowdStrikeFalcon
+    entities_api_mock = load_json('test_data/list_users_command/entities_users_response.json')
+    queries_api_mock = load_json('test_data/list_users_command/queries_users_response.json')
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', side_effect=[entities_api_mock, queries_api_mock])
+
+    result = CrowdStrikeFalcon.cs_falcon_list_users_command(args={})
+    assert result.outputs_prefix == 'CrowdStrike.Users'
+    assert result.outputs_key_field == 'uuid'
+    assert result.outputs == queries_api_mock['resources']
+
+
+def test_get_incident_behavior_command(mocker):
+    import CrowdStrikeFalcon
+    api_mock = load_json('test_data/entities_behaviors_response.json')
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value=api_mock)
+
+    result = CrowdStrikeFalcon.get_incident_behavior_command(args={'behavior_ids': 'ind:XX:XX'})
+    assert result.outputs_prefix == 'CrowdStrike.IncidentBehavior'
+    assert result.outputs_key_field == 'behavior_id'
+    assert result.outputs == api_mock['resources']
