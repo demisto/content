@@ -192,6 +192,8 @@ tasks:
       - "24"
       - "25"
     scriptarguments:
+      filters:
+        simple: name=snapshot-id,values=snap-21b17358
       ownerIds:
         simple: "099720109477"
     separatecontext: false
