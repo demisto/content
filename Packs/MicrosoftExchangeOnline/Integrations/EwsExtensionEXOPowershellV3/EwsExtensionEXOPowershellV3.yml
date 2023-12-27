@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: EWS Extension Online Powershell v3 test
+  id: EWS Extension Online Powershell v3
   version: -1
 configuration:
 - defaultvalue: https://outlook.office365.com
@@ -36,8 +36,8 @@ configuration:
   type: 0
   section: Connect
 description: Use the EWS Extension Online Powershell v3 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
-display: EWS Extension Online Powershell v3 test
-name: EWS Extension Online Powershell v3 test
+display: EWS Extension Online Powershell v3
+name: EWS Extension Online Powershell v3
 script:
   commands:
   - arguments:
@@ -181,7 +181,7 @@ script:
       description: Whether Outlook on the web (OWA) is enabled.
       type: Boolean
     - contextPath: EWS.CASMailbox.OrganizationId
-      description: Organization ID
+      description: Organization ID.
       type: String
     - contextPath: EWS.CASMailbox.PopEnabled
       description: Whether Post Office Protocol (POP) is enabled.
@@ -321,9 +321,9 @@ script:
       predefined:
       - Block
       - Allow
-      description: Action to set for new entries
+      description: Action to set for new entries.
     - name: notes
-      description: Notes to include on new list entries
+      description: Notes to include on new list entries.
     - name: expiration_date
       description: Enter a specific date and time for the new entries to expire using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
     - name: no_expiration
@@ -335,51 +335,51 @@ script:
       defaultValue: 'false'
     outputs:
     - contextPath: EWS.NewTenantBlocks.Action
-      description: List type ('Block' or 'Allow')
+      description: List type ('Block' or 'Allow').
       type: string
     - contextPath: EWS.NewTenantBlocks.EntryValueHash
-      description: Entry Value Hash
+      description: Entry Value Hash.
       type: string
     - contextPath: EWS.NewTenantBlocks.Error
-      description: Error (if any) returned by remote command
+      description: Error (if any) returned by remote command.
     - contextPath: EWS.NewTenantBlocks.ExpirationDate
-      description: DateTime the entry will expire and be removed
+      description: DateTime the entry will expire and be removed.
       type: string
     - contextPath: EWS.NewTenantBlocks.Identity
-      description: Unique identifier for the entry
+      description: Unique identifier for the entry.
       type: string
     - contextPath: EWS.NewTenantBlocks.LastModifiedDateTime
-      description: DateTime of last modification
+      description: DateTime of last modification.
       type: string
     - contextPath: EWS.NewTenantBlocks.ListSubType
-      description: List sub type (Tenant or AdvancedDelivery)
+      description: List sub type (Tenant or AdvancedDelivery).
       type: string
     - contextPath: EWS.NewTenantBlocks.ModifiedBy
-      description: User / App Registration which last modified this entry
+      description: User / App Registration which last modified this entry.
       type: string
     - contextPath: EWS.NewTenantBlocks.Notes
       description: Custom notes added to the entry.
       type: string
     - contextPath: EWS.NewTenantBlocks.ObjectState
-      description: State of the object (e.g. New/Modified/Deleted)
+      description: State of the object (e.g. New/Modified/Deleted).
       type: string
     - contextPath: EWS.NewTenantBlocks.PSComputerName
-      description: Name of Remote Powershell endpoint
+      description: Name of Remote Powershell endpoint.
       type: string
     - contextPath: EWS.NewTenantBlocks.PSShowComputerName
-      description: Flag whether or not remote computer name is shown in PS prompt
+      description: Flag whether or not remote computer name is shown in PS prompt.
       type: boolean
     - contextPath: EWS.NewTenantBlocks.RunspaceId
-      description: RunspaceID of the entry
+      description: RunspaceID of the entry.
       type: string
     - contextPath: EWS.NewTenantBlocks.SubmissionID
-      description: SubmissionID of the entry
+      description: SubmissionID of the entry.
       type: string
     - contextPath: EWS.NewTenantBlocks.SysManaged
-      description: SysManaged property of the entry
+      description: SysManaged property of the entry.
       type: boolean
     - contextPath: EWS.NewTenantBlocks.Value
-      description: The value of the new entry created
+      description: The value of the new entry created.
       type: string
     description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
     execution: true
@@ -420,51 +420,51 @@ script:
       description: Specific entry value to retrieve.
     outputs:
     - contextPath: EWS.CurrentTenantBlocks.Action
-      description: List type ('Block' or 'Allow')
+      description: List type ('Block' or 'Allow').
       type: string
     - contextPath: EWS.CurrentTenantBlocks.EntryValueHash
-      description: Entry Value Hash
+      description: Entry Value Hash.
       type: string
     - contextPath: EWS.CurrentTenantBlocks.Error
-      description: Error (if any) returned by remote command
+      description: Error (if any) returned by remote command.
       type: boolean
     - contextPath: EWS.CurrentTenantBlocks.ExpirationDate
-      description: DateTime the entry will expire and be removed
+      description: DateTime the entry will expire and be removed.
       type: string
     - contextPath: EWS.CurrentTenantBlocks.Identity
-      description: Unique identifier for the entry
+      description: Unique identifier for the entry.
       type: string
     - contextPath: EWS.CurrentTenantBlocks.LastModifiedDateTime
-      description: DateTime of last modification
+      description: DateTime of last modification.
       type: string
     - contextPath: EWS.CurrentTenantBlocks.ListSubType
-      description: List sub type (Tenant or AdvancedDelivery)
+      description: List sub type (Tenant or AdvancedDelivery).
       type: string
     - contextPath: EWS.CurrentTenantBlocks.ModifiedBy
-      description: User / App Registration which last modified this entry
+      description: User / App Registration which last modified this entry.
       type: string
     - contextPath: EWS.CurrentTenantBlocks.Notes
       description: Custom notes added to the entry.
       type: string
     - contextPath: EWS.CurrentTenantBlocks.ObjectState
-      description: State of the object (e.g. New/Modified/Deleted)
+      description: State of the object (e.g. New/Modified/Deleted).
       type: string
     - contextPath: EWS.CurrentTenantBlocks.PSComputerName
-      description: Name of Remote Powershell endpoint
+      description: Name of Remote Powershell endpoint.
     - contextPath: EWS.CurrentTenantBlocks.PSShowComputerName
-      description: Flag whether or not remote computer name is shown in PS prompt
+      description: Flag whether or not remote computer name is shown in PS prompt.
       type: boolean
     - contextPath: EWS.CurrentTenantBlocks.RunspaceId
-      description: RunspaceID of the entry
+      description: RunspaceID of the entry.
       type: string
     - contextPath: EWS.CurrentTenantBlocks.SubmissionID
-      description: SubmissionID of the entry
+      description: SubmissionID of the entry.
       type: string
     - contextPath: EWS.CurrentTenantBlocks.SysManaged
-      description: SysManaged property of the entry
+      description: SysManaged property of the entry.
       type: boolean
     - contextPath: EWS.CurrentTenantBlocks.Value
-      description: The value of the new entry created
+      description: The value of the new entry created.
       type: string
     description: Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
   - name: ews-get-tenant-allow-block-list-count
@@ -485,13 +485,13 @@ script:
       defaultValue: Tenant
     outputs:
     - contextPath: EWS.CurrentListCount.Count
-      description: Number of entries presently in the specified list
+      description: Number of entries presently in the specified list.
       type: number
     - contextPath: EWS.CurrentListCount.ListSubType
-      description: List sub type (Tenant or AdvancedDelivery)
+      description: List sub type (Tenant or AdvancedDelivery).
       type: string
     - contextPath: EWS.CurrentListCount.ListType
-      description: List type
+      description: List type.
       type: string
     description: Retrieve current count of defined Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
   - arguments:
@@ -610,7 +610,7 @@ script:
     - description: The destination IP address by which to filter the results. For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
       isArray: true
       name: to_ip
-    - description: The Message-ID header field of the message by which to filter the results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message. The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way. Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").        '
+    - description: The Message-ID header field of the message by which to filter the results. This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message. The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way. Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").        '.
       name: message_id
     - description: The message trace ID to be used with the recipient address to uniquely identify a message trace and obtain more details. A message trace ID is generated for every message that''s processed by the system.
       name: message_trace_id
@@ -2007,7 +2007,7 @@ script:
       defaultValue: Tenant
     outputs:
     - contextPath: EWS.RemovedTenantBlocks.Action
-      description: Action
+      description: Action.
       type: string
     - contextPath: EWS.RemovedTenantBlocks.EntryValueHash
       description: Null for deleted items.
@@ -2034,25 +2034,25 @@ script:
       description: Null for deleted items.
       type: string
     - contextPath: EWS.RemovedTenantBlocks.ObjectState
-      description: State of the object (Deleted)
+      description: State of the object (Deleted).
       type: string
     - contextPath: EWS.RemovedTenantBlocks.PSComputerName
-      description: Name of Remote Powershell endpoint
+      description: Name of Remote Powershell endpoint.
       type: string
     - contextPath: EWS.RemovedTenantBlocks.PSShowComputerName
-      description: Flag whether or not remote computer name is shown in PS prompt
+      description: Flag whether or not remote computer name is shown in PS prompt.
       type: boolean
     - contextPath: EWS.RemovedTenantBlocks.RunspaceId
-      description: RunspaceID of the entry
+      description: RunspaceID of the entry.
       type: string
     - contextPath: EWS.RemovedTenantBlocks.SubmissionID
-      description: SubmissionID of the entry
+      description: SubmissionID of the entry.
       type: string
     - contextPath: EWS.RemovedTenantBlocks.SysManaged
-      description: SysManaged property of the entry
+      description: SysManaged property of the entry.
       type: boolean
     - contextPath: EWS.RemovedTenantBlocks.Value
-      description: The value of the entry that was removed
+      description: The value of the entry that was removed.
       type: string
     description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
   - name: ews-rules-list
