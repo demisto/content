@@ -2086,7 +2086,7 @@ script:
       description: The Inbox rule that you want to view.
       required: true
     outputs:
-    - contextPath: EWSl.Rule.Rule
+    - contextPath: EWS.Rule.Rule
       description: The rule identity.
       type: string
     - contextPath: EWS.Rule.RuleName
