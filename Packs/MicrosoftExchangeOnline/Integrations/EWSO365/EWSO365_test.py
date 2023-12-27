@@ -780,3 +780,62 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     get_item_as_eml(MockEWSClient(), "item", "account@test.com")
 
     mock_file_result.assert_called_once_with(expected_file_name, expected_data)
+
+
+def test_parse_incident_from_item_with_eml_attachment_header_mime_Version(mocker):
+    """
+    Given:
+        1. Message with EML attachment
+        2. Attachment Item Header Keys differ in case from mime content case
+
+    When:
+        - Parsing incident from item
+
+    Verify:
+        - Result EML attachment headers are intact
+
+    """
+    # raw mime data
+    content = b'Message-ID:\r\n' \
+              b' <message-test-idRANDOMVALUES@testing.com>' \
+              b'Content-Type: text/plain; charset="us-ascii"\r\n' \
+              b'X-FAKE-Header: HVALue\r\n' \
+              b'X-Who-header: whovALUE\r\n' \
+              b'\r\nHello'
+    # headers set in the Item
+    item_headers = [
+        # these headers may have different casing than what exists in the raw content
+        MessageHeader(name="MIME-Version", value="1.0"),
+        MessageHeader(name="Mime-Version", value="1.0"),
+        MessageHeader(name="Content-Type", value="text/plain; charset=\"us-ascii\""),
+        MessageHeader(name="X-Fake-Header", value="HVALue"),
+        MessageHeader(name="X-WHO-header", value="whovALUE"),
+        # This is an extra header logged by exchange in the item -> add to the output
+        MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
+    ]
+
+    # sent to "fileResult", original headers from content with matched casing, with additional header
+
+    expected_data = 'Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n' \
+                    'X-FAKE-Header: HVALue\r\n' \
+                    'X-Who-header: whovALUE\r\n' \
+                    'MIME-Version: 1.0\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
+                    '\r\nHello'
+
+    message = Message(
+        datetime_received=EWSDate(year=2021, month=1, day=25),
+        datetime_created=EWSDate(year=2021, month=1, day=25),
+        to_recipients=[],
+        attachments=[
+            ItemAttachment(
+                item=Item(mime_content=content, headers=item_headers),
+                attachment_id=AttachmentId(),
+                last_modified_time=EWSDate(year=2021, month=1, day=25),
+            ),
+        ],
+    )
+    mock_file_result = mocker.patch('EWSO365.fileResult')
+    parse_incident_from_item(message)
+    # assert the fileResult is created with the expected results
+    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)

@@ -2128,6 +2128,8 @@ def parse_incident_from_item(item):     # pragma: no cover
                                   f'\nError: {e.getMessage()}')
                     continue
             else:
+                demisto.debug(f"EWSO365: Attachment number {attachment_counter} of email with id {item.id} \
+                              not an FileAttachment instance")
                 # other item attachment
                 label_attachment_type = "attachmentItems"
                 label_attachment_id_type = "attachmentItemsId"
@@ -2136,11 +2138,13 @@ def parse_incident_from_item(item):     # pragma: no cover
                 if attachment.item.mime_content:
                     mime_content = attachment.item.mime_content
                     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
+                    demisto.debug(f"email with id {item.id} email policy is {email_policy}")
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
+                    demisto.debug(f"The current email headers are: {attached_email.keys()} of email with id {item.id}")
                     if attachment.item.headers:
                         # compare header keys case-insensitive
                         attached_email_headers = []
@@ -2154,7 +2158,14 @@ def parse_incident_from_item(item):     # pragma: no cover
 
                             v = ' '.join(map(str.strip, v.split('\r\n')))
                             attached_email_headers.append((h.lower(), v))
+                        demisto.debug(
+                            f"The attachment headers are: {[header.name for header in attachment.item.headers]} \
+                            of email with id {item.id}")
                         for header in attachment.item.headers:
+                            # if header.name.lower() == "mime-version" and
+                            # header.name.lower() in (header.lower() for header in attached_email.keys()):
+                            #     continue
+                            # el
                             if (
                                     (header.name.lower(), header.value)
                                     not in attached_email_headers
