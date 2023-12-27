@@ -1,7 +1,7 @@
-id: FortiGate
+id: Fortigate Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: FortiGate
+name: Fortigate Test
 starttaskid: "0"
 tasks:
   "0":
