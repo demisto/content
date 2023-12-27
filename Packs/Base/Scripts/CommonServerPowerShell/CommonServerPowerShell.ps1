@@ -1,5 +1,4 @@
-### pack version: 1.32.50
-
+. $PSScriptRoot\demistomock.ps1
 
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Scope = "", Justification = "Use of globals set by the Demisto Server")]
 
