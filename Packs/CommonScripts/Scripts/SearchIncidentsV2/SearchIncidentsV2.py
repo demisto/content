@@ -102,8 +102,8 @@ def add_incidents_link(data: List, platform: str):
     # For XSOAR links
     else:
         server_url = demisto.demistoUrls().get('server')
+        prefix = '' if is_demisto_version_ge('8.4.0') else '#'
         for incident in data:
-            prefix = '' if is_demisto_version_ge('8.4.0') else '#'
             incident_link = urljoin(server_url, f'{prefix}/Details/{incident.get("id")}')
             incident['incidentLink'] = incident_link
     return data
