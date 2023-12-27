@@ -99,8 +99,9 @@ def run_test_module(instance_languages: list) -> str:
 def main() -> None:
     command = demisto.command()
     args = demisto.args()
-    instance_languages = argToList(demisto.params().get('langs'))
-    skip_corrupted = argToBoolean(demisto.params().get('skip_corrupted'))
+    params = demisto.params()
+    instance_languages = argToList(params.get('langs'))
+    skip_corrupted = params.get('skip_corrupted')
     try:
         if command == 'test-module':
             return_results(run_test_module(instance_languages))
