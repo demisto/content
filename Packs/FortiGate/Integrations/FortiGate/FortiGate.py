@@ -3735,11 +3735,11 @@ def create_firewall_address_ipv4_group_command(client: Client, args: dict[str, A
     name = args.get("groupName", "")
     type_ = args.get("type", "group")
     comment = args.get("comment")
-    # Keep users input for the context output to avoid breaking changes.
-    address = args.get("address")
-    members = argToList(address)
     excluded_members = argToList(args.get("excluded_addresses"))
     allow_routing = args.get("allow_routing")
+    # Preserve deprecated command outputs.
+    address = args.get("address")
+    members = argToList(address)
 
     response = client.create_firewall_address_ipv4_group(
         vdom=vdom,
@@ -3926,7 +3926,7 @@ def create_firewall_address_ipv6_group_command(client: Client, args: dict[str, A
     vdom = args.get("vdom", DEFAULT_VDOM)
     name = args.get("name", "")
     comment = args.get("comment")
-    # Keep users input for the context output to avoid breaking changes.
+    # Preserve deprecated command outputs.
     address = args.get("members")
     members = argToList(address)
 
@@ -4347,7 +4347,7 @@ def create_firewall_service_group_command(client: Client, args: dict[str, Any]) 
     name = args.get("name", "")
     vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
-    # Keep users input for the context output to avoid breaking changes.
+    # Preserve deprecated command outputs.
     member_str = args.get("members")
     members = argToList(member_str)
 
@@ -4527,35 +4527,30 @@ def create_firewall_policy_command(client: Client, args: dict[str, Any]) -> Comm
     name = args.get("policyName", "")
     vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("description")
-    # Keep users input for the context output to avoid breaking changes.
-    source_interface = args.get("sourceIntf")
-    source_interfaces = argToList(source_interface)
-    # Keep users input for the context output to avoid breaking changes.
-    destination_interface = args.get("dstIntf")
-    destination_interfaces = argToList(destination_interface)
-    # Keep users input for the context output to avoid breaking changes.
-    source_address = args.get("source", "")
-    source_addresses = argToList(source_address)
-    # Keep users input for the context output to avoid breaking changes.
-    destination_address = args.get("destination", "")
-    destination_addresses = argToList(destination_address)
-    # Keep users input for the context output to avoid breaking changes.
-    source_address6 = args.get("source6", "")
-    source_addresses6 = argToList(source_address6)
-    # Keep users input for the context output to avoid breaking changes.
-    destination_address6 = args.get("destination6", "")
-    destination_addresses6 = argToList(destination_address6)
     negate_source_address = args.get("negate_source_address")
     negate_destination_address = args.get("negate_destination_address")
-    # Keep users input for the context output to avoid breaking changes.
-    service = args.get("service")
-    services = argToList(service)
     negate_service = args.get("negate_service")
     action = args.get("action", "")
     status = args.get("status", "enable")
     log_traffic = args.get("log", "enable")
     schedule = args.get("schedule", "always")
     nat = args.get("nat", "enable")
+    # Preserve deprecated command outputs.
+    source_interface = args.get("sourceIntf")
+    destination_interface = args.get("dstIntf")
+    source_address = args.get("source", "")
+    destination_address = args.get("destination", "")
+    source_address6 = args.get("source6", "")
+    destination_address6 = args.get("destination6", "")
+    service = args.get("service")
+
+    source_interfaces = argToList(source_interface)
+    destination_interfaces = argToList(destination_interface)
+    source_addresses = argToList(source_address)
+    destination_addresses = argToList(destination_address)
+    source_addresses6 = argToList(source_address6)
+    destination_addresses6 = argToList(destination_address6)
+    services = argToList(service)
 
     is_address_v4 = bool(source_addresses and destination_addresses)
     is_address_v6 = bool(source_addresses6 and destination_addresses6)

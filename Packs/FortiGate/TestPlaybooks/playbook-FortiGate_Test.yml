@@ -1,5 +1,5 @@
 id: FortiGate
-version: 62
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: FortiGate
 starttaskid: "0"
