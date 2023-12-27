@@ -1949,17 +1949,6 @@ def host_group_members(filter: str | None,
     return response
 
 
-def resolve_incident(ids: list[str], status: str):
-    if status not in STATUS_TEXT_TO_NUM:
-        raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f"Status '{status}' is not a valid status ({' | '.join(STATUS_TEXT_TO_NUM.keys())}).")
-    return update_incident_request(ids=ids, action_parameters={'update_status': STATUS_TEXT_TO_NUM[status]})
-
-
-def update_incident_comment(ids: list[str], comment: str):
-    return update_incident_request(ids=ids, action_parameters={'add_comment': comment})
-
-
 def update_incident_request(ids: list[str], action_parameters: dict[str, Any]):
     data = {
         "action_parameters": [
@@ -2511,12 +2500,18 @@ def update_remote_incident(delta: dict[str, Any], inc_status: IncidentStatus, in
 def update_remote_incident_status(delta, inc_status: IncidentStatus, incident_id: str) -> str:
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
-        return str(resolve_incident([incident_id], 'Closed'))
+        return str(update_incident_request(ids=[incident_id], action_parameters={'update_status': STATUS_TEXT_TO_NUM['Closed']}))
 
     # status field in CS Falcon is mapped to Source Status field in XSOAR. Don't confuse with state field
     elif 'status' in delta:
         demisto.debug(f'Incident with remote ID {incident_id} status will change to "{delta.get("status")}" in remote system.')
-        return str(resolve_incident([incident_id], delta.get('status')))
+        status = delta.get('status')
+
+        if status not in STATUS_TEXT_TO_NUM:
+            raise DemistoException(f'CrowdStrike Falcon Error: '
+                                   f"Status '{status}' is not a valid status ({' | '.join(STATUS_TEXT_TO_NUM.keys())}).")
+
+        return str(update_incident_request(ids=[incident_id], action_parameters={'update_status': STATUS_TEXT_TO_NUM[status]}))
 
     return ''
 
@@ -2543,7 +2538,7 @@ def remote_incident_handle_tags(tags: Set, request: str, incident_id: str) -> st
     result = ''
     for tag in tags:
         demisto.debug(f'{request} will be requested for incident with remote ID {incident_id} and tag "{tag}" in remote system.')
-        result += str(update_incident_request([incident_id], tag, request))
+        result += str(update_incident_request(ids=[incident_id], action_parameters={request: tag}))
     return result
 
 
@@ -4737,7 +4732,7 @@ def resolve_incident_command(ids: list[str], status: str | None = None, user_uui
 
 
 def update_incident_comment_command(ids: list[str], comment: str):
-    update_incident_comment(ids, comment)
+    update_incident_request(ids=ids, action_parameters={'add_comment': comment})
     readable = '\n'.join([f'{incident_id} updated successfully with comment \"{comment}\"' for incident_id in ids])
     return CommandResults(readable_output=readable)
 

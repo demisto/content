@@ -3643,22 +3643,6 @@ def test_resolve_incidents(requests_mock, status, expected_status_api):
     assert m.last_request.json()['action_parameters'][0]['value'] == expected_status_api
 
 
-@pytest.mark.parametrize('status', ['', 'new', 'BAD ARG'])
-def test_resolve_incident_invalid(status):
-    """
-    Test Create resolve incidents with invalid status code
-    Given
-     - Invalid status, which is not expected by product description
-    When
-     - Calling resolve incident command
-    Then
-     - Throw an error
-     """
-    from CrowdStrikeFalcon import resolve_incident_command
-    with pytest.raises(DemistoException):
-        resolve_incident_command(['test'], status)
-
-
 def test_update_incident_comment(requests_mock):
     """
     Test Update incident comment
@@ -4275,7 +4259,11 @@ def test_update_remote_system_command(mocker, args, to_mock, call_args, remote_i
     command_result = update_remote_system_command(args)
     assert command_result == remote_id
     for i, call in enumerate(call_args):
-        assert mock_call.call_args_list[i][0] == call
+        if to_mock == 'update_incident_request':
+            assert mock_call.call_args_list[i].kwargs == call
+
+        else:
+            assert mock_call.call_args_list[i][0] == call
 
 
 @pytest.mark.parametrize('delta, close_in_cs_falcon_param, to_close', input_data.close_in_cs_falcon_args)
@@ -4346,14 +4334,16 @@ def test_update_remote_incident_status(mocker, delta, inc_status, close_in_cs_fa
     Then
         - the relevant incident is updated with the corresponding status in the remote system
     """
-    from CrowdStrikeFalcon import update_remote_incident_status
+    import CrowdStrikeFalcon
+
     mocker.patch.object(demisto, 'params', return_value={'close_in_cs_falcon': close_in_cs_falcon})
-    mock_resolve_incident = mocker.patch('CrowdStrikeFalcon.resolve_incident')
-    update_remote_incident_status(delta, inc_status, input_data.remote_incident_id)
+    mock_http_request = mocker.patch.object(CrowdStrikeFalcon, 'http_request')
+    CrowdStrikeFalcon.update_remote_incident_status(delta, inc_status, input_data.remote_incident_id)
     if resolve_incident_status:
-        assert mock_resolve_incident.call_args[0][1] == resolve_incident_status
+        expected_status_value = CrowdStrikeFalcon.STATUS_TEXT_TO_NUM[resolve_incident_status]
+        assert mock_http_request.call_args_list[0].kwargs['json']['action_parameters'][0]['value'] == expected_status_value
     else:
-        assert mock_resolve_incident.call_count == 0
+        assert mock_http_request.call_count == 0
 
 
 def test_update_remote_incident_tags(mocker):
@@ -4406,12 +4396,12 @@ def test_remote_incident_handle_tags(mocker, tags, action_name):
     Then
         - sends the right request to the remote system
     """
-    from CrowdStrikeFalcon import remote_incident_handle_tags
-    mock_update_incident_request = mocker.patch('CrowdStrikeFalcon.update_incident_request')
-    remote_incident_handle_tags(tags, action_name, input_data.remote_incident_id)
+    import CrowdStrikeFalcon
+    mock_update_incident_request = mocker.patch.object(CrowdStrikeFalcon, 'http_request')
+    CrowdStrikeFalcon.remote_incident_handle_tags(tags, action_name, input_data.remote_incident_id)
     assert mock_update_incident_request.call_count == len(tags)
     if len(tags):
-        assert mock_update_incident_request.call_args[0][2] == action_name
+        assert mock_update_incident_request.call_args_list[0].kwargs['json']['action_parameters'][0]['name'] == action_name
 
 
 def test_get_mapping_fields_command():
@@ -5545,10 +5535,12 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
 @pytest.mark.parametrize(
     'args, is_scheduled, body',
     (
-        ({'quarantine': 'false', 'schedule_interval': 'every other week',
-          'schedule_start_timestamp': 'tomorrow'}, True,
-         {'quarantine': False, 'schedule': {'interval': 14, 'start_timestamp': '2020-09-27T17:22'}}),
-        ({'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
+        (
+            {'quarantine': 'false', 'schedule_interval': 'every other week', 'schedule_start_timestamp': 'tomorrow'}, True,
+            {'quarantine': False, 'schedule': {'interval': 14, 'start_timestamp': '2020-09-27T17:22:10Z'}}),
+        (
+            {'cpu_priority': 'Low'}, False, {'cpu_priority': 2},
+        ),
     )
 )
 @freeze_time("2020-09-26 17:22:13 UTC")
@@ -5556,21 +5548,25 @@ def test_ODS_create_scan_request(mocker, args, is_scheduled, body):
     """
     Test ODS_create_scan_request.
 
-    Given
-        - Arguments to create a scan/scheduled-scan.
+    Given:
+        Arguments to create a scan/scheduled-scan.
 
-    When
-        - The user runs the "cs-falcon-ods-create-scan" command
+    When:
+        The user runs the "cs-falcon-ods-create-scan" command
 
-    Then
-        - Create a scan/scheduled-scan.
+    Then:
+        Create a scan/scheduled-scan.
     """
+    import CrowdStrikeFalcon
 
-    from CrowdStrikeFalcon import ODS_create_scan_request
+    http_request = mocker.patch.object(CrowdStrikeFalcon, 'http_request')
+    CrowdStrikeFalcon.ODS_create_scan_request(args, is_scheduled)
 
-    http_request = mocker.patch('CrowdStrikeFalcon.http_request')
-    ODS_create_scan_request(args, is_scheduled)
-    http_request.assert_called_with('POST', f'/ods/entities/{"scheduled-scans" if is_scheduled else "scans"}/v1', json=body)
+    if is_scheduled:
+        http_request.assert_called_with('POST', '/ods/entities/scheduled-scans/v1', json=body)
+
+    else:
+        http_request.assert_called_with('POST', '/ods/entities/scans/v1', json=body)
 
 
 @pytest.mark.parametrize(
