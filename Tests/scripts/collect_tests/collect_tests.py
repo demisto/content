@@ -1399,6 +1399,12 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
         return {"TAXIIServer", "EDL", "QRadar", "Slack"}
 
 
+class SDKNightlyTestCollector(TestCollector):
+
+    def _collect(self) -> CollectionResult | None:
+        return self.sanity_tests
+
+
 def output(result: CollectionResult | None):
     """
     writes to both log and files
@@ -1450,6 +1456,7 @@ if __name__ == '__main__':
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
+    parser.add_argument('-sn', '--sdk-nightly', type=str2bool, help='Is SDK nightly')
     parser.add_argument('-p', '--changed_pack_path', type=str,
                         help='Path to a changed pack. Used for private content')
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
@@ -1471,6 +1478,7 @@ if __name__ == '__main__':
     marketplace = MarketplaceVersions(args.marketplace)
 
     nightly = args.nightly
+    sdk_nightly = args.sdk_nightly
     service_account = args.service_account
     graph = args.graph
     pack_to_upload = args.pack_names
@@ -1487,20 +1495,21 @@ if __name__ == '__main__':
         else:
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
-    else:
-        match (nightly, marketplace):
-            case False, _:  # not nightly
-                collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
-            case (True, (MarketplaceVersions.XSOAR)):
+    elif sdk_nightly:
+        collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
+
+    elif nightly:
+        match marketplace:
+            case MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
-            case (True, MarketplaceVersions.XSOAR_SAAS):
+            case MarketplaceVersions.XSOAR_SAAS:
                 collector = XsoarSaasE2ETestCollector(marketplace=marketplace, graph=graph)
-            case True, MarketplaceVersions.MarketplaceV2:
+            case MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
-            case True, MarketplaceVersions.XPANSE:
+            case MarketplaceVersions.XPANSE:
                 collector = XPANSENightlyTestCollector(graph=graph)
-            case _:
-                raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
+    else:
+        collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
 
     collected = collector.collect()
     output(collected)  # logs and writes to output files
