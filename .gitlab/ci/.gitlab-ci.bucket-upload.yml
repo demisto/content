@@ -360,6 +360,16 @@ upload-packs-to-marketplace:
           PACKS_TO_UPLOAD="All"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
+        
+        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+        if [ "${core_packs_files_count}" -eq 0 ]; then
+          echo "No core packs files were found, skipping uploading."
+        else
+          echo "Uploading ${core_packs_files_count} core packs files."
+          # Copy core packs files from the artifacts folder to the build bucket:
+          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs" \;
+          echo "Successfully uploaded core packs files."
+        fi
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -445,6 +455,16 @@ upload-packs-to-marketplace-v2:
           PACKS_TO_UPLOAD="All"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
+        
+        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+        if [ "${core_packs_files_count}" -eq 0 ]; then
+          echo "No core packs files were found, skipping uploading."
+        else
+          echo "Uploading ${core_packs_files_count} core packs files."
+          # Copy core packs files from the artifacts folder to the build bucket:
+          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_V2_BUCKET/$STORAGE_BASE_PATH/packs" \;
+          echo "Successfully uploaded core packs files."
+        fi
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -520,6 +540,16 @@ upload-packs-to-xpanse-marketplace:
           PACKS_TO_UPLOAD="All"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XPANSE_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xpanse
+        
+        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+        if [ "${core_packs_files_count}" -eq 0 ]; then
+          echo "No core packs files were found, skipping uploading."
+        else
+          echo "Uploading ${core_packs_files_count} core packs files."
+          # Copy core packs files from the artifacts folder to the build bucket:
+          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_XPANSE_BUCKET/$STORAGE_BASE_PATH/packs" \;
+          echo "Successfully uploaded core packs files."
+        fi
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -595,6 +625,16 @@ upload-packs-to-xsoar-saas-marketplace:
           echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XSOAR_SAAS_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar_saas
+        
+        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+        if [ "${core_packs_files_count}" -eq 0 ]; then
+          echo "No core packs files were found, skipping uploading."
+        else
+          echo "Uploading ${core_packs_files_count} core packs files."
+          # Copy core packs files from the artifacts folder to the build bucket:
+          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_XSOAR_SAAS_BUCKET/$STORAGE_BASE_PATH/packs" \;
+          echo "Successfully uploaded core packs files."
+        fi
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
