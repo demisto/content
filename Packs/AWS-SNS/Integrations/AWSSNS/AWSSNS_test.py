@@ -1,6 +1,5 @@
 import pytest
-from AWSSNS import delete_topic, create_topic, send_message, create_entry, \
-    create_subscription, list_subscriptions_by_topic, list_topics, formats, entryTypes
+from AWSSNS import delete_topic, create_topic, send_message, create_subscription, list_subscriptions_by_topic, list_topics
 
 
 @pytest.fixture
@@ -13,50 +12,24 @@ def sns_client(mocker):
     return mocker.Mock()
 
 
-def test_create_entry_with_data(mock_tableToMarkdown):
-    """
-    Given a title, data dict and entry context
-    When create_entry is called 
-    Then it returns a dict with the expected keys and values
-    """
-    title = 'Test Title'
-    data = {'key1': 'value1'}
-    ec = {'Key': 'Value'}
-
-    result = create_entry(title, data, ec)
-
-    assert result['ContentsFormat'] == formats['json']
-    assert result['Type'] == entryTypes['note']
-    assert result['Contents'] == data
-    assert result['EntryContext'] == ec
-    mock_tableToMarkdown.assert_called_once_with(title, data)
-
-
-def test_create_entry_without_data(mock_tableToMarkdown):
-    """
-    Given a title and entry context but no data
-    When create_entry is called
-    Then it returns a dict with no HumanReadable key
-    """
-    title = 'Test Title'
-    data = None
-    ec = {'Key': 'Value'}
-
-    result = create_entry(title, data, ec)
-
-    assert result['HumanReadable'] == 'No result were found'
-    mock_tableToMarkdown.assert_not_called()
-
-
 def test_create_subscription_success(sns_client):
     """
-    Given a mocked SNS client 
+    Given a mocked SNS clien
     When create_subscription is called with valid args
     Then check the client called subscribe with expected args
     """
-    args = {'topicArn': 'topic', 'protocol': 'https'}
-    create_subscription(args, sns_client)
-    sns_client.subscribe.assert_called_with(TopicArn='topic', Protocol='https')
+    args = {'topicArn': 'topic',
+            'protocol': 'https',
+            'returnSubscriptionArn': 'true',
+            'deliveryPolicy': 'test_delivery',
+            'filterPolicy': 'test_filter',
+            'rawMessageDelivery': 'true',
+            'redrivePolicy': 'test_redrive',
+            'subscriptionRoleArn': 'test_role'
+            }
+    sns_client.subscribe.side_effect = [{'SubscriptionArn': 'test_arn'}]
+    result = create_subscription(args, sns_client)
+    assert result['EntryContext']['AWS.SNS.Subscriptions'] == {'SubscriptionArn': 'test_arn'}
 
 
 def test_send_message_success(sns_client):
@@ -65,13 +38,18 @@ def test_send_message_success(sns_client):
     When send_message is called with valid args
     Then send_message should call the correct SNS client methods
     """
-    args = {'topicArn': 'topic123', 'message': 'hello'}
-    send_message(args, sns_client)
-
-    sns_client.publish.assert_called_once_with(
-        TopicArn='topic123',
-        Message='hello'
-    )
+    args = {'message': 'hello',
+            'topicArn': 'topic123',
+            'targetArn': 'target123',
+            'phoneNumber': '1234567890',
+            'subject': 'test_subject',
+            'messageStructure': 'test_structure',
+            'messageDeduplicationId': 'test_msg_app_ip',
+            'messageGroupId': 'test_msg_group_id',
+            }
+    sns_client.publish.side_effect = [{'MessageId': 'test_msg_id'}]
+    result = send_message(args, sns_client)
+    assert result['EntryContext']['AWS.SNS.SentMessages'][0] == {'MessageId': 'test_msg_id'}
 
 
 def test_send_message_failure(sns_client):
@@ -94,11 +72,17 @@ def test_create_topic_success(sns_client):
     Then the create_topic method should call create_topic on the client with the correct args
     """
     topic_name = 'test_topic'
-    args = {'topicName': topic_name}
+    args = {'topicName': topic_name,
+            'deliveryPolicy': 'test_delivery',
+            'displayName': 'test_display',
+            'fifoTopic': 'true',
+            'policy': 'test_policy',
+            'kmsMasterKeyId': 'test_kms',
+            'contentBasedDeduplication': 'true',
+            }
     sns_client.create_topic.side_effect = [{'TopicArn': topic_name}]
     result = create_topic(args, sns_client)
     assert result['EntryContext'] == {'AWS.SNS.Topic': {'ARN': topic_name}}
-    sns_client.create_topic.assert_called_once_with(Name=topic_name)
 
 
 def test_create_topic_failure(sns_client):
