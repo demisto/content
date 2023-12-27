@@ -61,4 +61,4 @@ source "${SCRIPT_DIR}/trigger_build_url.sh"
 curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[BUILD_MACHINES_CLEANUP]=true" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
-    --form "varivables[LOCK_MACHINE_NAME]=${_machine}" | jq
+    --form "variables[LOCK_MACHINE_NAME]=${_machine}" | jq
