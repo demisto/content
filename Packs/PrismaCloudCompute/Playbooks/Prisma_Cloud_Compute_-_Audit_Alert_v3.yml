@@ -14,11 +14,11 @@ description: |-
   - Compliance details
   - Forensics
   - Defender logs.
-  
+
   Remediation:
   - Block Indicators - Generic v3
   - Cloud Response - Generic
-  - Manual Remediation
+  - Manual Remediation.
 starttaskid: "0"
 tasks:
   "0":
@@ -129,7 +129,6 @@ tasks:
       '#none#':
       - "82"
       - "85"
-      - "93"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -168,7 +167,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 2490
+          "y": 2850
         }
       }
     note: false
@@ -196,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 2690
+          "y": 3050
         }
       }
     note: false
@@ -276,12 +275,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7ebf4ade-5f3f-4efd-8b83-9dd68dcf0db5
+    taskid: da456a79-8436-4dd1-8ad9-8fa554f48b02
     type: regular
     task:
-      id: 7ebf4ade-5f3f-4efd-8b83-9dd68dcf0db5
+      id: da456a79-8436-4dd1-8ad9-8fa554f48b02
       version: -1
-      name: Manually Remediate
+      name: Manually Review
       description: Perform manual remediation to ensure full incident resolution
       type: regular
       iscommand: false
@@ -294,8 +293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 2320
+          "x": 420,
+          "y": 2670
         }
       }
     note: false
@@ -715,7 +714,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "93"
     scriptarguments:
       AutoBlockIndicators:
         complex:
@@ -963,8 +962,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 122.5,
-          "y": 2110
+          "x": 342.5,
+          "y": 2060
         }
       }
     note: false
@@ -999,7 +998,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "93"
     scriptarguments:
       AWS-accessKeyRemediationType:
         complex:
@@ -1164,8 +1163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 2310
+          "x": -110,
+          "y": 2260
         }
       }
     note: false
@@ -1189,7 +1188,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "26"
+      - "93"
       "yes":
       - "83"
     separatecontext: false
@@ -1210,8 +1209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 2110
+          "x": -110,
+          "y": 2060
         }
       }
     note: false
@@ -1372,13 +1371,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: 9cdcce5b-93bd-4dce-8d64-c790f755ab5a
+    taskid: 2100d92f-ae62-4f12-8c5c-e2551d3def52
     type: condition
     task:
-      id: 9cdcce5b-93bd-4dce-8d64-c790f755ab5a
+      id: 2100d92f-ae62-4f12-8c5c-e2551d3def52
       description: ""
       version: -1
-      name: Manual remediation?
+      name: Pause for a manual review?
       type: condition
       iscommand: false
       brand: ""
@@ -1395,7 +1394,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.ManualRemediation
+                root: inputs.PauseForReview
             iscontext: true
           right:
             value:
@@ -1405,8 +1404,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 2110
+          "x": 122.5,
+          "y": 2450
         }
       }
     note: false
@@ -1421,14 +1420,14 @@ view: |-
   {
     "linkLabelsPosition": {
       "60_11_#default#": 0.31,
-      "85_26_#default#": 0.41,
       "85_83_yes": 0.47,
-      "93_26_#default#": 0.43,
+      "85_93_#default#": 0.22,
+      "93_26_#default#": 0.2,
       "93_42_yes": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 2845,
+        "height": 3205,
         "width": 1340,
         "x": -377.5,
         "y": -90
@@ -1437,10 +1436,11 @@ view: |-
   }
 inputs:
 - key: baseUrl
-  value:
-    simple: https://app.prismacloud.io
+  value: {}
   required: false
-  description: The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
+  description: |-
+    The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
+    For example: https://app.prismacloud.io
   playbookInputQuery:
 - key: Project
   value:
@@ -1538,7 +1538,7 @@ inputs:
     - True
     - False
   playbookInputQuery:
-- key: ManualRemediation
+- key: PauseForReview
   value:
     simple: "False"
   required: false
