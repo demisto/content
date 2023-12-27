@@ -246,7 +246,6 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
-      - "20"
     scriptarguments:
       tds_analysis_id:
         complex:
@@ -451,45 +450,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 2cec22a6-b48e-474b-84ee-4aec0f057084
-    type: regular
-    task:
-      id: 2cec22a6-b48e-474b-84ee-4aec0f057084
-      version: -1
-      name: 'Set report number to content '
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      key:
-        simple: report number
-      value:
-        complex:
-          root: Polygon.Analysis
-          accessor: ID
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1460,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: 1ce58e07-640e-41d0-8e8d-713959491e1c
@@ -515,7 +475,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.file_id
+                root: File
                 accessor: Type
             iscontext: true
           right:
@@ -526,13 +486,24 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.file_id
+                root: File
                 accessor: Extension
             iscontext: true
           right:
             value:
               simple: .*(?:7Z|ACE|AR|BAT|ARJ|BAT|BZ2|CAB|CHM|CMD|COM|CPGZ|CPL|CSV|DAT|DOC|DOCM|DOCX|DOCT|DOTM|DOTX|EML|EXE|GZ|GZIP|HTA|THM|HTML|IQY|ISO|JAR|JS|JS|JSE|LNK|LZ|LZMA|IZO|IZH|MCL|MHTMSG|MSI|MSP|ODP|ODS|ODT|OTS|OTT|PDF|PIF|POTM|POTX|PPS|PPT|PPTM|PPTX|PS1|PUB|PY|PYC|RAR|REG|RTF|SCR|SETTINGSCONTENT-MS|STC|SVG|SXC|SXW|TAR|TAZ|TB2|TBZ|TBZ2|TGZ|TLZ|TXZ|TZO|TXT|URL|UUE|VBE|VBS|WSF|XAR|XLS|XLSB|XLSM|XLSX|XML|XZ|ZIP)\b
           ignorecase: true
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: File
+                accessor: EntryID
+            iscontext: true
+          right:
+            value:
+              simple: inputs.file_id
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -554,7 +525,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1775,
-        "width": 1280,
+        "width": 860,
         "x": 560,
         "y": 20
       }
