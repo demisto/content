@@ -501,6 +501,9 @@ def rasterize(path: str,
             rasterization_threads = []
             rasterization_results = []
             for current_path in paths:
+                if not (current_path.startswith('http')):
+                    current_path = f'http://{current_path}'
+
                 # start a new thread in group of max_tabs
                 rasterization_threads.append(executor.submit(rasterize_thread,
                                             browser=browser, chrome_port=chrome_port,
@@ -673,8 +676,6 @@ def rasterize_command():  # pragma: no cover
     file_name = demisto.args().get('file_name', 'url')
     include_url = argToBoolean(demisto.args().get('include_url', False))
 
-    if not (url.startswith('http')):
-        url = f'http://{url}'
     file_extension = "png"
     if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
         file_extension = "pdf"
