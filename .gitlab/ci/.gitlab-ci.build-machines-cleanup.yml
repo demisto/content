@@ -29,7 +29,8 @@ build-machines-cleanup:
   timeout: 4 hours
   variables:
     CLOUD_MACHINES_TYPE: "nightly"
-    CLOUD_MACHINES_COUNT: "all"
+    CLOUD_MACHINES_COUNT: "1"
+    LOCK_MACHINE_NAME: $LOCK_MACHINE_NAME
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
     INSTANCE_ROLE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
