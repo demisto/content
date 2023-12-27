@@ -141,11 +141,11 @@ class Client(BaseClient):
             If fetched logs, There are 4 scenarios
                 1. This run we did a new query and finished fetching all the events,
                     so we save the newest event as 'last_fetched_event'.
-                2. We did a new query this time and did not finish fetching all the events, 
+                2. We did a new query this time and did not finish fetching all the events,
                     so we save the newest event as 'newest_event_fetched' and the 'cursor' for the next run.
-                3. We continued to fetch events by 'cursor' and finished fetching them all, 
+                3. We continued to fetch events by 'cursor' and finished fetching them all,
                     saving the 'newest_event_fetched' as 'last_fetched_event'.
-                3. We continued to fetch events by 'cursor', and we still haven't finished fetching them all, 
+                3. We continued to fetch events by 'cursor', and we still haven't finished fetching them all,
                     so we only need to save the 'cursor'.
             '''
             if not last_run.get('newest_event_fetched'):
