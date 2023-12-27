@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from mypy_boto3_wafv2.type_defs import (
         RegexTypeDef,
         UpdateRuleGroupResponseTypeDef,
-        RuleOutputTypeDef,
+        RuleTypeDef,
         VisibilityConfigTypeDef
     )
 
@@ -431,7 +431,7 @@ def append_new_rule(rules: list, rule: dict) -> list:
 
 
 def get_required_response_fields_from_rule_group(client: "WAFV2Client", kwargs: dict
-                                                 ) -> Tuple[List["RuleOutputTypeDef"], "VisibilityConfigTypeDef", str]:
+                                                 ) -> Tuple[List["RuleTypeDef"], "VisibilityConfigTypeDef", str]:
     """
     Gets all the fields from the response that are required for the update request
     Args:
