@@ -139,13 +139,17 @@ def test_fetch_events_(mocker):
         - fetch-events command execution.
     When:
         - The first call to the "fetch_events_command": the last run is empty, and there are 6 results (in 2 pages)
-           assert we returned 4 events according to the limit, and returned the "last_search_stop_point_event_id", "cursor", and newest_event_fetched.
-        - Second call to "fetch_events_command": last run has a 'cursor' and API returned a response with 3 events (that were already fetched)
-            assert we return only 2 events (the remaining from the first round) and the last run contains only the "last_fetched_event".
+           assert we returned 4 events according to the limit, and returned the "last_search_stop_point_event_id", "cursor",
+           and newest_event_fetched.
+        - Second call to "fetch_events_command": last run has a 'cursor' and API returned a response with 3 events
+          (that were already fetched)
+            assert we return only 2 events (the remaining from the first round) and the last run contains only the
+            "last_fetched_event".
         - Third, call "fetch_events_command" we got an empty response.
             assert the last run stayed the same.
         - The fourth call "fetch_events_command" was in the "last run" the "last_fetched_event", There were 6 results (in 2 pages)
-           assert we returned 4 events according to the limit, and returned the "last_fetched_event" "last_search_stop_point_event_id", "cursor", and newest_event_fetched.
+           assert we returned 4 events according to the limit,
+           and returned the "last_fetched_event" "last_search_stop_point_event_id", "cursor", and newest_event_fetched.
     """
     from SlackEventCollector import fetch_events_command, Client
 
@@ -166,11 +170,11 @@ def test_fetch_events_(mocker):
     events, last_run = fetch_events_command(Client(base_url=''), params={'limit': 4}, last_run={})
     assert len(events) == 4  # 4 events according to the limit
     assert last_run == {'cursor': 'mock_response2',  # The cursor was returned because we still haven't finished
-                                                      # fetching the events from the mock_response2.
+                                                     # fetching the events from the mock_response2.
                         'last_search_stop_point_event_id': '2',  # the id where to start collect next run.
-                        'newest_event_fetched': {'last_event_id': '6', 'last_event_time': 6}}  # the next nowest event thet we fetchd alredy.
-                                                                                          # This is just the next one because we haven't
-                                                                                          # finished bringing all the previous events yet
+                        'newest_event_fetched': {'last_event_id': '6', 'last_event_time': 6}}
+    # the next nowest event thet we fetchd alredy. This is just the next one because we haven't
+    # finished bringing all the previous events yet
 
     # Second round
     mocker.patch.object(Client, '_http_request', side_effect=[mock_response2.data])
@@ -199,9 +203,11 @@ def test_fetch_events_(mocker):
     ])
     mocker.patch.object(Client, '_http_request', side_effect=[mock_response3.data, mock_response4.data])
     events, last_run = fetch_events_command(Client(base_url=''), params={'limit': 4}, last_run=last_run)
-    assert len(events) == 4 # 4 events according to the limit
+    assert len(events) == 4  # 4 events according to the limit
     assert last_run == {'cursor': 'mock_response4',  # The cursor was returned because we still haven't finished
                                                      # fetching the events from the mock_response4.
-                        'last_fetched_event': {'last_event_id': '6', 'last_event_time': 6},  # The last event we collected (in the previous search)
+                        'last_fetched_event': {'last_event_id': '6', 'last_event_time': 6},  # The last event we collected
+                                                                                             # (in the previous search)
                         'last_search_stop_point_event_id': '7',  # the id where to start (downwards) collect next run.
-                        'newest_event_fetched': {'last_event_id': '11', 'last_event_time': 11}}  # The last event we collected (in this search)
+                        'newest_event_fetched': {'last_event_id': '11', 'last_event_time': 11}}  # The last event we collected
+    # (in this search)

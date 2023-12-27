@@ -53,13 +53,20 @@ class Client(BaseClient):
         If `last_search_stop_point` exists in the lastRun obj, finds it in the response and
         returns only the subsequent events (that weren't collected yet).
         """
+        if last_id := last_run.get('last_id'):
+            # Maintain compatibility when moving from versions 3.3.0 and lower to 3.4.0 by updating the 'last-run'.
+            # This code should only be performed once for each integration instance,
+            # when upgrading the pack from version 3.3.0 or lower to 3.4.0 or higher.
+            last_run['last_fetched_event'] = {'last_event_id': last_id, 'last_event_time': None}
+            last_run.pop('last_id')
+
         cursor = last_run.pop('cursor', None)
         last_event = last_run.get('last_fetched_event', None)
         if cursor:
             query_params['cursor'] = cursor
             query_params.pop('oldest')
         elif last_event:
-            query_params['oldest'] = last_event['last_event_time']
+            query_params['oldest'] = last_event.get('last_event_time')
         _, events, cursor = self.get_logs(query_params)
 
         if last_run.get('last_search_stop_point_event_id'):
@@ -132,10 +139,14 @@ class Client(BaseClient):
             '''
             If didn't fetch logs, we are not changing the last run
             If fetched logs, There are 4 scenarios
-                1. This run we did a new query and finished fetching all the events, so we save the newest event as 'last_fetched_event'.
-                2. We did a new query this time and did not finish fetching all the events, so we save the newest event as 'newest_event_fetched' and the 'cursor' for the next run.
-                3. We continued to fetch events by 'cursor' and finished fetching them all, saving the 'newest_event_fetched' as 'last_fetched_event'.
-                3. We continued to fetch events by 'cursor', and we still haven't finished fetching them all, so we only need to save the 'cursor'.
+                1. This run we did a new query and finished fetching all the events,
+                    so we save the newest event as 'last_fetched_event'.
+                2. We did a new query this time and did not finish fetching all the events, 
+                    so we save the newest event as 'newest_event_fetched' and the 'cursor' for the next run.
+                3. We continued to fetch events by 'cursor' and finished fetching them all, 
+                    saving the 'newest_event_fetched' as 'last_fetched_event'.
+                3. We continued to fetch events by 'cursor', and we still haven't finished fetching them all, 
+                    so we only need to save the 'cursor'.
             '''
             if not last_run.get('newest_event_fetched'):
                 newest_event = {'last_event_id': aggregated_logs[0].get('id'),
@@ -143,12 +154,14 @@ class Client(BaseClient):
                 if cursor:
                     last_run['newest_event_fetched'] = newest_event
                     last_run['cursor'] = cursor
+                elif last_run.get('last_search_stop_point_event_id'):
+                    last_run['newest_event_fetched'] = newest_event
                 else:
                     last_run['last_fetched_event'] = newest_event
             else:
                 if cursor:
                     last_run['cursor'] = cursor
-                else:
+                elif not last_run.get('last_search_stop_point_event_id'):
                     last_run['last_fetched_event'] = last_run['newest_event_fetched']
                     last_run.pop('newest_event_fetched')
 
