@@ -337,6 +337,21 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
     return []
 
 
+def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]:
+    params_dict['page'] = 0
+    response = {}
+    has_next_page = True
+    demisto.debug(' IN search_query_indicators_pagination')
+    while has_next_page:
+        params_dict['page'] += 1
+        search_query_per_page = client.search_query(params_dict)
+        demisto.debug(f'search_query_per_page:{params_dict["page"]} {search_query_per_page}')
+        response.update(search_query_per_page)
+        has_next_page = search_query_per_page.get('response', {}).get('Attribute')
+    return response
+    
+
+
 def fetch_indicators(client: Client,
                      tags: List[str],
                      attribute_type: List[str],
@@ -345,23 +360,13 @@ def fetch_indicators(client: Client,
                      url: Optional[str],
                      reputation: Optional[str],
                      feed_tags: Optional[List],
-                     limit: int = 100,
+                     limit: int = -1,
                      is_fetch: bool = True) -> List[Dict]:
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
-
     if limit and limit not in params_dict:
         params_dict['limit'] = limit
-    response = {}
-    search_query_res = {}
-    if is_fetch:
-        i = 0
-        while i <= 5 and not search_query_res.get('response', {}).get('Event'):
-            search_query_res = client.search_query(params_dict)
-            demisto.debug(f'response temp {search_query_res}')
-            response.update(search_query_res)
-            i += 1
-    else:
-        response = client.search_query(params_dict)
+    demisto.debug('before search_query_indicators_pagination')
+    response = search_query_indicators_pagination(client, params_dict) if is_fetch else client.search_query(params_dict)
     demisto.debug(f'response of search_query from fetch indicators command:/n{response}')
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
