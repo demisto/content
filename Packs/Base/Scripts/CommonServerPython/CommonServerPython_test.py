@@ -9199,3 +9199,37 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
         assert str(e.value) == "Failed to parse timestamp: invalid"
     else:
         assert has_passed_time_threshold(timestamp_str, seconds_threshold) == expected
+
+
+@pytest.mark.parametrize("indicator,expected_result", [
+    ("e61fcc6a06420106fa6642ef833b9c38", "md5"), 
+    ("3fec1b14cea32bbcd97fad4507b06888","md5"),
+    ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "sha256"), 
+    ("bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa", "sha256"),
+    ("193:iAklVz3fzvBk5oFblLPBN1iXf2bCRErwyN4aEbwyiNwyiQwNeDAi4XMG:iAklVzfzvBTFblLpN1iXOYpyuapyiWym", "ssdeep"),
+    ("3:Wg8oEIjOH9+KS3qvRBTdRi690oVqzBUGyT0/n:Vx0HgKnTdE6eoVafY8", "ssdeep"),
+    ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
+    ("6c5360d41bd2b14b1565f5b18e5c203cf512e493", "sha1"),
+    ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069","sha512"),
+    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211","sha512"),
+    ("@", None)
+])
+def test_detect_file_indicator_type(indicator,expected_result):
+    """
+    Given:
+        An indicator string.
+    When:
+        Running detect_file_indicator_type function.
+    Then:
+        Test - Assert the function returns the expected result.
+        Case 1: md5 indicator type.
+        Case 2: sha256 indicator type.
+        Case 3: ssdeep indicator type.
+        Case 4: sha1 indicator type.
+        Case 5: sha512 indicator type.
+        Case 6: invalid type.
+    """
+    from CommonServerPython import detect_file_indicator_type
+    assert detect_file_indicator_type(indicator) == expected_result
+    
+
