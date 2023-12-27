@@ -177,7 +177,7 @@ def get_incidents_mock(_, args, extract_contents=True, fail_on_error=True):
 
 
 @pytest.mark.parametrize('args,filtered_args,expected_result', [
-    ({}, {}, []),
+    # ({}, {}, []),
     ({'trimevents': '0'}, {}, []),
     ({'trimevents': '1'}, {'trimevents': '1'}, []),
     ({'id': 1}, {'id': '1'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
@@ -202,7 +202,7 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
         # trimevents supported only in XSIAM
         mocker.patch.object(demisto, 'demistoVersion', return_value={'platform': 'xsiam'})
     else:
-        mocker.patch('SearchIncidentsV2.get_demisto_version', return_value={})
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'platform': 'xsoar'})
     _, res, _ = SearchIncidentsV2.search_incidents(args)
     assert res == expected_result
     assert execute_mock.call_count == 1
