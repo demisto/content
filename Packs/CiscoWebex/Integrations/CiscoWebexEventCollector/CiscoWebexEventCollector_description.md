@@ -17,7 +17,7 @@
 * client secret.
 * client redirect URI.
 
-_Note the Admin client needs a fourth parameter: `organization ID`._\
+_Note:  The Admin client needs a fourth parameter: `organization ID`._\
 Run [this](https://developer.webex.com/docs/api/v1/organizations/list-organizations) HTTP request (login with admin credentials) to get the organization ID.
 ![get_organization_id](../../doc_files/get_organization_id.png)
 

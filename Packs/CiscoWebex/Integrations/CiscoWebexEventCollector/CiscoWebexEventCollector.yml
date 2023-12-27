@@ -59,7 +59,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: The user to start authenticate.
+      description: The user to start authorization.
       name: user
       predefined:
       - 'admin'
@@ -69,7 +69,7 @@ script:
     name: cisco-webex-oauth-start
   - arguments:
     - auto: PREDEFINED
-      description: The user to complete authenticate.
+      description: The user to complete authorization.
       name: user
       predefined:
       - 'admin'
@@ -82,7 +82,7 @@ script:
     name: cisco-webex-oauth-complete
   - arguments:
     - auto: PREDEFINED
-      description: The user to complete authenticate.
+      description: The user to complete authorization.
       name: user
       predefined:
       - 'admin'
@@ -101,7 +101,7 @@ script:
       required: true
     - description: Maximum number of events to return.
       name: limit
-    - description: Date to return events from.
+    - description: Date in ISO format (2023-10-01T20:33:22.123Z) to return events from.
       name: since_datetime
     description: Gets admin audit events from Cisco Webex.
     name: cisco-webex-get-admin-audit-events
@@ -116,7 +116,7 @@ script:
       required: true
     - description: Maximum number of events to return.
       name: limit
-    - description: Date to return events from.
+    - description: Date in ISO format (2023-10-01T20:33:22.123Z) to return events from.
       name: since_datetime
     description: Gets security audit events from Cisco Webex.
     name: cisco-webex-get-security-audit-events
@@ -131,7 +131,7 @@ script:
       required: true
     - description: Maximum number of events to return.
       name: limit
-    - description: Date to return events from.
+    - description: Date in ISO format (2023-10-01T20:33:22.123Z) to return events from.
       name: since_datetime
     description: Gets events from Cisco Webex.
     name: cisco-webex-get-compliance-officer-events

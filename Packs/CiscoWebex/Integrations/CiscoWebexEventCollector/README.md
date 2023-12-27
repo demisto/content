@@ -40,7 +40,7 @@ Use this command to start the authorization process. In order to authorize the i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The user to start authenticate. Possible values are: admin, compliance_officer. | Required | 
+| user | The user to start authorization. Possible values are: admin, compliance_officer. | Required | 
 
 #### Context Output
 
@@ -58,7 +58,7 @@ Use this command to complete the authorization process. After copying the author
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The user to complete authenticate. Possible values are: admin, compliance_officer. | Required | 
+| user | The user to complete authorization. Possible values are: admin, compliance_officer. | Required | 
 | code | The authorization code retrieved from the callback URL according to the documentation. | Required | 
 
 #### Context Output
@@ -77,7 +77,7 @@ Use this command to complete the authorization process. After copying the author
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The user to complete authenticate. Possible values are: admin, compliance_officer. | Required | 
+| user | The user to complete authorization. Possible values are: admin, compliance_officer. | Required | 
 
 #### Context Output
 
@@ -97,7 +97,7 @@ Gets admin audit events from Cisco Webex.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | limit | Maximum number of events to return. | Optional | 
-| since_datetime | Date to return events from. | Optional | 
+| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional | 
 
 #### Human Readable Output
 
@@ -125,7 +125,7 @@ Gets security audit events from Cisco Webex.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | limit | Maximum number of events to return. | Optional | 
-| since_datetime | Date to return events from. | Optional | 
+| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional | 
 
 #### Human Readable Output
 
@@ -153,7 +153,7 @@ Gets events from Cisco Webex.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | limit | Maximum number of events to return. | Optional | 
-| since_datetime | Date to return events from. | Optional | 
+| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional | 
 
 #### Human Readable Output
 
