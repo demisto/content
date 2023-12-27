@@ -601,7 +601,7 @@ inputs:
   playbookInputQuery:
 - key: UseReputationCommand
   value:
-    simple: "True"
+    simple: "False"
   required: true
   description: |-
     Define if you would like to use the !IP command.
