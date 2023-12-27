@@ -103,7 +103,8 @@ def add_incidents_link(data: List, platform: str):
     else:
         server_url = demisto.demistoUrls().get('server')
         for incident in data:
-            incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
+            prefix = '' if is_demisto_version_ge('8.4.0') else '#'
+            incident_link = urljoin(server_url, f'{prefix}/Details/{incident.get("id")}')
             incident['incidentLink'] = incident_link
     return data
 
@@ -122,6 +123,7 @@ def transform_to_alert_data(incidents: List):
 
 def search_incidents(args: Dict):   # pragma: no cover
     is_summarized_version = argToBoolean(args.get('summarizedversion', False))
+    platform = get_demisto_version().get('platform', 'xsoar')
     if not is_valid_args(args):
         return
 
@@ -134,14 +136,11 @@ def search_incidents(args: Dict):   # pragma: no cover
         args['todate'] = to_date
 
     if args.get('trimevents'):
-        platform = demisto.demistoVersion().get('platform', 'xsoar')
         if platform == 'xsoar' or platform == 'xsoar_hosted':
             raise ValueError('The trimevents argument is not supported in XSOAR.')
 
         if args.get('trimevents') == '0':
             args.pop('trimevents')
-
-    platform = get_demisto_version().get('platform')
 
     # handle list of ids
     if args.get('id'):
@@ -197,7 +196,7 @@ def search_incidents(args: Dict):   # pragma: no cover
             if args.get("add_fields_to_summarize_context"):
                 add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
                 headers = headers + add_headers
-        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers)
+        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers, url_keys=['incidentLink'])
     demisto.debug(f'amount of all the incidents that were found {len(all_found_incidents)}')
     return md, all_found_incidents, res
 

@@ -209,13 +209,16 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
     assert execute_mock.call_args[0][1] == filtered_args
 
 
-@pytest.mark.parametrize('platform, link_type, expected_result', [
-    ('x2', 'alertLink', 'alerts?action:openAlertDetails='),
-    ('xsoar', 'incidentLink', '#/Details/'),
+@pytest.mark.parametrize('platform, version, link_type, expected_result', [
+    ('x2', '', 'alertLink', 'alerts?action:openAlertDetails='),
+    ('xsoar', '6.10.0', 'incidentLink', '#/Details/'),
+    ('xsoar', '8.4.0', 'incidentLink', '/Details/')
 ])
-def test_add_incidents_link(mocker, platform, link_type, expected_result):
+def test_add_incidents_link(mocker, platform, version, link_type, expected_result):
     mocker.patch.object(demisto, 'getLicenseCustomField', return_value='')
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': ''})
+    if version:
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': version})
     data = add_incidents_link(EXAMPLE_INCIDENTS_RAW_RESPONSE, platform)
     assert expected_result in data[0][link_type]
 
