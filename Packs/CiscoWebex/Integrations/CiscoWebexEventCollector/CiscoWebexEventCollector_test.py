@@ -154,7 +154,8 @@ def test_increase_datetime_for_next_fetch():
 
 @pytest.mark.parametrize('client, expected_url', [
     (mocked_admin_client(),
-     'https://webexapis.com/v1/authorize?response_type=code&scope=admin_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
+     'https://webexapis.com/v1/authorize?response_type=code&scope=admin_scope&client_id=1'
+     '&redirect_uri=https%3A%2F%2Fredirect.com'),
     (mocked_compliance_officer_client(),
      'https://webexapis.com/v1/authorize?response_type=code&scope=co_scope&client_id=1&redirect_uri=https%3A%2F%2Fredirect.com'),
 ])
@@ -186,7 +187,8 @@ def test_oauth_complete(client):
 
     with requests_mock.Mocker() as m:
         m.post(
-            'https://url.com/access_token?grant_type=authorization_code&code=123456&client_id=1&client_secret=1&redirect_uri=https%3A%2F%2Fredirect.com',
+            'https://url.com/access_token?grant_type=authorization_code&code=123456&client_id=1&client_secret=1'
+            '&redirect_uri=https%3A%2F%2Fredirect.com',
             json=mock_get_access_token()
         )
         results = oauth_complete(client, {'code': '123456'})
@@ -265,7 +267,8 @@ def test_fetch_events():
             headers={'Link': '<https://url.com/adminAudit/events?nexturl=true>; rel="next"'}
         )
         m.get(
-            'https://url.com/admin/securityAudit/events?orgId=1&startTime=2023-12-13T13%3A40%3A00.000Z&endTime=2023-12-20T13%3A40%3A00.000Z&max=1',
+            'https://url.com/admin/securityAudit/events?orgId=1&startTime=2023-12-13T13%3A40%3A00.000Z&'
+            'endTime=2023-12-20T13%3A40%3A00.000Z&max=1',
             text=util_load_text('test_data/security_audits.json'),
             headers={'Link': '<https://url.com/securityAudit/events?nexturl=true>; rel="next"'}
         )
