@@ -865,7 +865,7 @@ def run_analysis(args):
             files = {
                 'file': (name, open(file_path, 'rb'))
             }
-
+            
         # Format command arguments to API's parameter expectations
         env_bitness = int(args.get('env_bitness', 32))
         args['env_bitness'] = env_bitness
@@ -878,6 +878,8 @@ def run_analysis(args):
             args['env_version'] = '10'
         else:
             args['env_version'] = '7'
+        if obj_type == 'file' or obj_type == 'download' :
+            args['obj_ext_cmd'] = args.get('obj_ext_cmd')
         url_suffix = 'analysis'
         response = http_request('POST', url_suffix, data=args, files=files)
         return response
