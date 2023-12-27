@@ -1,15 +1,5 @@
 id: Cortex XDR incident handling v3
-version: 40
-contentitemexportablefields:
-  contentitemfields:
-    packID: CortexXDR
-    packName: Cortex XDR by Palo Alto Networks
-    itemVersion: 6.0.2
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex XDR incident handling v3
 description: |-
   This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident.
@@ -29,11 +19,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "54"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -46,6 +36,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -59,11 +50,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "78"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -76,6 +67,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -89,11 +81,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -106,6 +98,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -142,7 +135,6 @@ tasks:
                 root: XDR
                 accessor: HandledAlerts
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -155,6 +147,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -168,8 +161,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -182,6 +175,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -192,9 +186,7 @@ tasks:
       id: da71ad47-f1a2-4dc1-875d-a3788df06edb
       version: -1
       name: Cortex XDR - close incident
-      description: Updates one or more fields of a specified incident. Missing fields
-        are ignored. To remove the assignment for an incident, pass a null value in
-        the assignee email argument.
+      description: Updates one or more fields of a specified incident. Missing fields are ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
       script: Cortex XDR - IR|||xdr-update-incident
       type: regular
       iscommand: true
@@ -210,7 +202,6 @@ tasks:
       status:
         simple: RESOLVED_TRUE_POSITIVE
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -223,6 +214,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -245,7 +237,6 @@ tasks:
       closeNotes:
         simple: Closed after investigation and remediation.
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -258,6 +249,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -271,11 +263,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -288,6 +280,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -342,7 +335,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -360,6 +352,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "24":
@@ -378,7 +371,6 @@ tasks:
       '#none#':
       - "33"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -391,6 +383,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "25":
@@ -424,7 +417,6 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -437,6 +429,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
@@ -455,7 +448,6 @@ tasks:
       '#none#':
       - "52"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -468,6 +460,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "30":
@@ -488,7 +481,6 @@ tasks:
       "yes":
       - "31"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -501,6 +493,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "31":
@@ -519,7 +512,6 @@ tasks:
       '#none#':
       - "17"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -532,6 +524,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
@@ -566,7 +559,6 @@ tasks:
           right:
             value:
               simple: "yes"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -579,6 +571,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "35":
@@ -678,7 +671,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -696,6 +688,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "36":
@@ -722,7 +715,6 @@ tasks:
           root: incident
           accessor: xdralertcount
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -735,6 +727,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "37":
@@ -755,7 +748,6 @@ tasks:
       False Positive:
       - "48"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -768,6 +760,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "38":
@@ -778,9 +771,7 @@ tasks:
       id: ba17ac69-f567-488b-843c-297ec73362cb
       version: -1
       name: Close XDR incident as false positive
-      description: Updates one or more fields of a specified incident. Missing fields
-        will be ignored. To remove the assignment for an incident, pass a null value
-        in the assignee email argument.
+      description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
       script: '|||xdr-update-incident'
       type: regular
       iscommand: true
@@ -796,7 +787,6 @@ tasks:
       status:
         simple: RESOLVED_FALSE_POSITIVE
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -809,6 +799,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "40":
@@ -819,8 +810,7 @@ tasks:
       id: a156cd63-d9c1-4cf0-8c1a-d752c2d378e3
       version: -1
       name: Find similar incidents
-      description: Find past similar incidents based on incident fields similarity.
-        Includes an option to also display indicators similarity.
+      description: Find past similar incidents based on incident fields similarity. Includes an option to also display indicators similarity.
       scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
@@ -840,7 +830,6 @@ tasks:
       similarTextField:
         simple: incident.xdralerts.osactorprocesscommandline,incident.xdralerts.actorprocesscommandline,incident.xdralerts.actionprocessimagecommandline,incident.xdralerts.causalityactorprocesscommandline,incident.xdralerts.host_name,incident.xdralerts.user_name
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -853,6 +842,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "41":
@@ -887,7 +877,6 @@ tasks:
           right:
             value:
               simple: "yes"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -900,6 +889,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "43":
@@ -935,7 +925,6 @@ tasks:
           right:
             value:
               simple: "true"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -948,6 +937,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "44":
@@ -968,7 +958,6 @@ tasks:
       "yes":
       - "46"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -981,6 +970,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "45":
@@ -991,9 +981,7 @@ tasks:
       id: 439c00da-4585-47b3-8a4b-c8108a07c9ea
       version: -1
       name: Resolve XDR incident as duplicate
-      description: Updates one or more fields of a specified incident. Missing fields
-        will be ignored. To remove the assignment for an incident, pass a null value
-        in the assignee email argument.
+      description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
       script: '|||xdr-update-incident'
       type: regular
       iscommand: true
@@ -1009,7 +997,6 @@ tasks:
       status:
         simple: RESOLVED_DUPLICATE
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1022,6 +1009,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "46":
@@ -1035,11 +1023,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "45"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1052,6 +1040,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "48":
@@ -1065,11 +1054,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1082,6 +1071,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "49":
@@ -1106,7 +1096,6 @@ tasks:
       closeReason:
         simple: False Positive
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1119,6 +1108,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "50":
@@ -1143,7 +1133,6 @@ tasks:
       closeReason:
         simple: Duplicate
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1156,6 +1145,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "51":
@@ -1174,7 +1164,6 @@ tasks:
       '#none#':
       - "11"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1187,6 +1176,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "52":
@@ -1216,7 +1206,6 @@ tasks:
               complex:
                 root: PortScan
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1229,6 +1218,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "53":
@@ -1262,7 +1252,6 @@ tasks:
           right:
             value:
               simple: "True"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1275,6 +1264,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "54":
@@ -1285,8 +1275,7 @@ tasks:
       id: 89c274fe-c102-41ea-86b9-066ae7c72f6d
       version: -1
       name: Cortex XDR - get incident extra data
-      description: Returns additional data for the specified incident, for example,
-        related alerts, file artifacts, network artifacts, and so on.
+      description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
       script: Cortex XDR - IR|||xdr-get-incident-extra-data
       type: regular
       iscommand: true
@@ -1299,7 +1288,6 @@ tasks:
         complex:
           root: inputs.incident_id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1312,6 +1300,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "55":
@@ -1322,14 +1311,7 @@ tasks:
       id: 14f75080-70ea-4330-8d5f-01566f1d861b
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
-      description: "This is a multipurpose playbook used for hunting and threat detection.
-        The playbook receives inputs based on hashes, IP addresses, or domain names
-        provided manually or from outputs by other playbooks. \nWith the received
-        indicators, the playbook leverages data received by PANW products including,
-        Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host names
-        and users related to the provided indicators.\nThe output provided by the
-        playbook facilitates pivoting searches for possibly affected IP addresses
-        or users."
+      description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
@@ -1422,7 +1404,6 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1440,6 +1421,7 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "56":
@@ -1450,14 +1432,7 @@ tasks:
       id: eae7782e-48b0-4544-8e51-25135daa9780
       version: -1
       name: Cortex XDR device control violations
-      description: "Queries Cortex XDR for device control violations for the specified
-        hosts, IP address, or XDR endpoint ID. It then communicates via email with
-        the involved users to understand the nature of the incident and if the user
-        connected the device. \nAll the collected data will be displayed in the XDR
-        device control incident layout.\nThis playbook can also be associated with
-        Cortex XDR device control violation job to periodically query and investigate
-        XDR device control violations. In this configuration, the playbook will only
-        communicate with the involved users."
+      description: "Queries Cortex XDR for device control violations for the specified hosts, IP address, or XDR endpoint ID. It then communicates via email with the involved users to understand the nature of the incident and if the user connected the device. \nAll the collected data will be displayed in the XDR device control incident layout.\nThis playbook can also be associated with Cortex XDR device control violation job to periodically query and investigate XDR device control violations. In this configuration, the playbook will only communicate with the involved users."
       playbookName: Cortex XDR device control violations
       type: playbook
       iscommand: false
@@ -1482,7 +1457,6 @@ tasks:
         complex:
           root: inputs.TimeStamp
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1500,6 +1474,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "57":
@@ -1528,7 +1503,6 @@ tasks:
           root: DBotFindSimilarIncidents.similarIncident
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1541,6 +1515,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "76":
@@ -1554,12 +1529,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "55"
       - "23"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1572,6 +1547,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "77":
@@ -1592,8 +1568,7 @@ tasks:
       - "41"
     scriptarguments:
       columns:
-        simple: Incident Id,Created,Name,Incident Similarity,Username,Hostname,OS
-          actor command line
+        simple: Incident Id,Created,Name,Incident Similarity,Username,Hostname,OS actor command line
       context_path:
         simple: DBotFindSimilarIncidents.similarIncident(val.id='#/Details/'+val.id)
       grid_id:
@@ -1601,7 +1576,6 @@ tasks:
       keys:
         simple: id,created,name,similarity incident,xdralerts.user_name,xdralerts.host_name,xdralerts.osactorprocesscommandline
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1616,6 +1590,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "78":
     id: "78"
     taskid: bbbe7cb3-668d-4dc2-80a3-7ff7a1586e6a
@@ -1624,10 +1599,7 @@ tasks:
       id: bbbe7cb3-668d-4dc2-80a3-7ff7a1586e6a
       version: -1
       name: Cortex XDR Alerts Handling v2
-      description: "This playbook is used to loop over every alert in a Cortex XDR
-        incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n-
-        Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User
-        Access Investigation."
+      description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation."
       playbookName: Cortex XDR Alerts Handling v2
       type: playbook
       iscommand: false
@@ -1727,6 +1699,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "52"
@@ -1883,6 +1856,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -1914,6 +1888,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -2027,21 +2002,19 @@ inputs:
       accessor: xdrincidentid
   required: false
   description: Incident ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: LinkSimilarIncidents
   value:
     simple: "Yes"
   required: false
-  description: This input indicates whether the playbook will link similar incidents.
-    To link similar incidents, specify Yes/No.
-  playbookInputQuery: null
+  description: This input indicates whether the playbook will link similar incidents. To link similar incidents, specify Yes/No.
+  playbookInputQuery:
 - key: Hunting
   value:
     simple: "Yes"
   required: false
-  description: This input indicates whether the playbook will hunt for related IOCs.
-    Specify Yes/No.
-  playbookInputQuery: null
+  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
+  playbookInputQuery:
 - key: InternalRange
   value:
     complex:
@@ -2059,11 +2032,8 @@ inputs:
             value:
               simple: IANA_Private_Address
   required: false
-  description: "A comma-separated list of internal IP ranges to check IP addresses
-    against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\"
-    (without quotes). \nIf a list is not provided, will use the default list provided
-    in the IsIPInRanges."
-  playbookInputQuery: null
+  description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
+  playbookInputQuery:
 - key: CriticalUsernames
   value:
     simple: admin,administrator
@@ -2071,50 +2041,39 @@ inputs:
   description: |-
     A comma-separated list of names of critical users in the organization.
     This will affect the calculated severity of the incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CriticalHostnames
   value: {}
   required: false
-  description: A comma-separated list of names of critical endpoints in the organization.
-    This will affect the calculated severity of the incident.
-  playbookInputQuery: null
+  description: A comma-separated list of names of critical endpoints in the organization. This will affect the calculated severity of the incident.
+  playbookInputQuery:
 - key: CriticalADGroups
   value: {}
   required: false
-  description: A comma-separated list of DN names of critical Active Directory groups.
-    This will affect the severity calculated for this incident.
-  playbookInputQuery: null
+  description: A comma-separated list of DN names of critical Active Directory groups. This will affect the severity calculated for this incident.
+  playbookInputQuery:
 - key: InternalHostRegex
   value: {}
   required: false
-  description: This is provided for the IsInternalHostName script that checks if the
-    detected host names are internal or external if the hosts match the organization's
-    naming convention. For example, the host testpc1 will have the following regex
-    \w{6}\d{1}.
-  playbookInputQuery: null
+  description: This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \w{6}\d{1}.
+  playbookInputQuery:
 - key: InternalDomainName
   value: {}
   required: false
-  description: The organizations internal domain name. This is provided for the IsInternalHostName
-    script that checks if the detected host names are internal or external if the
-    hosts contain the internal domains suffix. For example, paloaltonetworks.com.
-    If there is more than one domain, use the | character to separate values such
-    as (paloaltonetworks.com|test.com).
-  playbookInputQuery: null
+  description: The organizations internal domain name. This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
+  playbookInputQuery:
 - key: TimeStamp
   value:
     simple: 10 days
   required: false
-  description: Timestamp in relative date format for query device control events from
-    Cortex XDR.
-  playbookInputQuery: null
+  description: Timestamp in relative date format for query device control events from Cortex XDR.
+  playbookInputQuery:
 - key: AutoRemediation
   value:
     simple: "False"
   required: false
-  description: Whether remediation will be run automatically or manually. If set to
-    "True" - remediation will be automatic.
-  playbookInputQuery: null
+  description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
+  playbookInputQuery:
 - key: XDRDomain
   value:
     complex:
@@ -2131,7 +2090,7 @@ inputs:
               simple: "3"
   required: false
   description: XDR instance domain
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoBlockIndicators
   value:
     simple: "True"
@@ -2142,19 +2101,18 @@ inputs:
 
     If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
     If set to True - the user will be prompted to select which indicators to block.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UserVerification
   value:
     simple: "False"
   required: false
-  description: "Possible values: True/False.\nWhether to provide user verification
-    for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue -
-    The server will ask the user for blocking verification and will display the blocking
-    list."
-  playbookInputQuery: null
+  description: "Possible values: True/False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
 outputs: []
 tests:
 - Test XDR Playbook
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
 marketplaces:
 - xsoar

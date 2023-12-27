@@ -1,20 +1,9 @@
 id: Cortex XDR Alerts Handling v2
-version: 20
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CortexXDR
-    packName: Cortex XDR by Palo Alto Networks
-    itemVersion: 6.0.2
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Cortex XDR Alerts Handling v2
-description: "This playbook is used to loop over every alert in a Cortex XDR incident.
-  \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n-
-  Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access
-  Investigation."
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation."
 starttaskid: "0"
 tasks:
   "0":
@@ -27,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -219,8 +209,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Remote PsExec-like LOLBIN command execution from an unsigned
-                non-standard PsExec service
+              simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -248,6 +237,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -275,6 +265,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -302,17 +293,7 @@ tasks:
       id: a43485fb-8b99-42d3-838d-df0065c30417
       version: -1
       name: Cortex XDR - Port Scan - Adjusted
-      description: "The playbook investigates Cortex XDR incidents involving port
-        scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex
-        XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n-
-        Enrichment and investigation of the scanner and scanned hostname and IP address.\n-
-        Enrichment and investigation of the initiator user, process, file, or command
-        if it exists.\n- Detection of related indicators and analysis of the relationship
-        between the detected indicators.\n- Utilize the detected indicators to conduct
-        threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis
-        playbook supports the following Cortex XDR alert names:\n- Suspicious port
-        scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n-
-        Port scan."
+      description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Enrichment and investigation of the scanner and scanned hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Suspicious port scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n- Port scan."
       playbookName: Cortex XDR - Port Scan - Adjusted
       type: playbook
       iscommand: false
@@ -572,13 +553,7 @@ tasks:
       id: cc605fa2-db11-46dd-83f6-9781e4196c61
       version: -1
       name: Cortex XDR - XCloud Cryptojacking
-      description: "Investigates a Cortex XDR incident containing a Cloud Cryptojacking
-        related alert. \nThe playbook supports AWS, Azure, and GCP and executes the
-        following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n
-        \  - Collects info about the involved identities\n   - Collects info about
-        the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle
-        False Positives\n   - Handle True Positives\n      - Cloud Response - Generic
-        sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
+      description: "Investigates a Cortex XDR incident containing a Cloud Cryptojacking related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n   - Collects info about the involved identities\n   - Collects info about the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle False Positives\n   - Handle True Positives\n      - Cloud Response - Generic sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
       playbookName: Cortex XDR - XCloud Cryptojacking
       type: playbook
       iscommand: false
@@ -695,8 +670,7 @@ tasks:
       Timeout:
         simple: "3"
       dt:
-        simple: PaloAltoNetworksXDR.Incident.alerts.name(val.name!=='Unusual allocation
-          of multiple cloud compute resources')
+        simple: PaloAltoNetworksXDR.Incident.alerts.name(val.name!=='Unusual allocation of multiple cloud compute resources')
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -954,8 +928,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: An identity performed a suspicious download of multiple cloud
-                storage object
+              simple: An identity performed a suspicious download of multiple cloud storage object
     continueonerrortype: ""
     view: |-
       {
@@ -979,31 +952,7 @@ tasks:
       id: f2999d13-c387-4ef3-8e20-c44109eec244
       version: -1
       name: Cortex XDR - Possible External RDP Brute-Force
-      description: "This playbook investigates a “Possible External RDP Brute Force”
-        XDR Alert by gathering user, IP, and hostname information, and investigating
-        if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score
-        is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related
-        to campaign - IP address related to campaign, based on TIM module\n-  Hunting
-        results - hunt for indicators related to the source IP and the related campaign
-        returned results\n-  XDR Alert search -XDR Alerts related to the same username
-        and endpoint\n\nSet verdict method:\n* Suspicious Element - The \"Suspicious
-        Element\" input allows you to select a specific element that, if identified
-        as suspicious,  the investigation's final verdict will be deemed a \"True
-        Positive\".\n\n* Final Verdict -  Each suspicious element is being added to
-        an array called \"Suspicious Elements\", which is used to count potential
-        security threats. The array size will be compared to a final threshold. If
-        the size is greater than or equal to the threshold, the investigation's final
-        verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\"
-        input allows you to set the number of suspicious elements that trigger user
-        engagement. When this threshold is met, an email will be sent to the user
-        and their manager asking for authorization of RDP activity. If the RDP activity
-        is not authorized by the user, the investigation's final verdict will be deemed
-        a \"True Positive\".\n\nUsed Sub-playbooks:\n* Account Enrichment - Generic
-        v2.1\n* Block Indicators - Generic v3\n* Cortex XDR - Get entity alerts by
-        MITRE tactics - Endpoint\n* Cortex XDR - Get entity alerts by MITRE tactics
-        - user\n* User Investigation - Generic\n* TIM - Indicator Relationships Analysis\n*
-        Threat Hunting - Generic\n* Cortex XDR - Possible External RDP Brute Force
-        - Set Verdict\n* Cortex XDR - Isolate Endpoint\n"
+      description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search -XDR Alerts related to the same username and endpoint\n\nSet verdict method:\n* Suspicious Element - The \"Suspicious Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n\nUsed Sub-playbooks:\n* Account Enrichment - Generic v2.1\n* Block Indicators - Generic v3\n* Cortex XDR - Get entity alerts by MITRE tactics - Endpoint\n* Cortex XDR - Get entity alerts by MITRE tactics - user\n* User Investigation - Generic\n* TIM - Indicator Relationships Analysis\n* Threat Hunting - Generic\n* Cortex XDR - Possible External RDP Brute Force - Set Verdict\n* Cortex XDR - Isolate Endpoint\n"
       playbookName: Cortex XDR - Possible External RDP Brute-Force
       type: playbook
       iscommand: false
@@ -1280,11 +1229,7 @@ tasks:
       id: f9856c2e-ccdd-4156-8173-1867d2bd48f9
       version: -1
       name: Cortex XDR - Cloud IAM User Access Investigation
-      description: "Investigate and respond to Cortex XDR Cloud alerts where a Cloud
-        IAM user`s access key is used suspiciously to access the cloud environment.
-        \nThe following alerts are supported for AWS, Azure, and GCP environments.\n-
-        Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious
-        API call from a Tor exit node\n\n"
+      description: "Investigate and respond to Cortex XDR Cloud alerts where a Cloud IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS, Azure, and GCP environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n\n"
       playbookName: Cortex XDR - Cloud IAM User Access Investigation
       type: playbook
       iscommand: false
@@ -1402,17 +1347,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service
-                    Account token, Suspicious usage of AWS Lambda’s token, Suspicious
-                    usage of AWS Lambda’s role, Remote usage of an AWS service token,
-                    Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS
-                    token, Suspicious usage of an AWS ECS token, Remote usage of an
-                    AWS ECS token, Suspicious usage of AWS service token, Remote usage
-                    of an App engine Service Account token, Suspicious usage of App
-                    engine Service Account token, Remote usage of VM Service Account
-                    token, Suspicious usage of VM Service Account token, Remote usage
-                    of an App engine Service Account token, Suspicious usage of App
-                    engine Service Account token
+                  simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
               ignorecase: true
           accessor: alert_id
       autoAccessKeyRemediation:
@@ -1458,6 +1393,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -1473,8 +1409,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: An identity performed a suspicious download of multiple
-                    cloud storage objects
+                  simple: An identity performed a suspicious download of multiple cloud storage objects
           accessor: alert_id
     separatecontext: false
     continueonerrortype: ""
@@ -1505,19 +1440,7 @@ tasks:
       id: b31ca834-7ac6-439d-8246-59fba730f75b
       version: -1
       name: Cortex XDR Remote PsExec with LOLBIN command execution alert
-      description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is
-        designed to address and respond to alerts indicating suspicious activities
-        related to remote PsExec-like LOLBIN command execution from an unsigned non-standard
-        source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check
-        if the execution is blocked. If not will terminate the process (manually by
-        default).\n- Enrich any entities and indicators from the alert and find any
-        related campaigns.\n- Perform command analysis to provide insights and a verdict
-        for the executed command.\n- Perform further endpoint investigation using
-        Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity
-        of the alert.\n- Perform automatic/manual remediation response by blocking
-        any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook
-        in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends
-        on the data from the parent playbooks and cannot be used as a standalone version."
+      description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
       playbookName: Cortex XDR Remote PsExec with LOLBIN command execution alert
       type: playbook
       iscommand: false
@@ -1617,7 +1540,7 @@ inputs:
       accessor: Incident.incident_id
   required: false
   description: Incident ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: alert_id
   value:
     complex:
@@ -1625,7 +1548,7 @@ inputs:
       accessor: alert_id
   required: false
   description: Alert ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: InternalIPRanges
   value:
     complex:
@@ -1643,12 +1566,8 @@ inputs:
             value:
               simple: IANA_Private_Address
   required: false
-  description: 'A list of IP ranges to check the IP against. The list should be provided
-    in CIDR notation, separated by commas. An example of a list of ranges would be:
-    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
-    will use default list provided in the IsIPInRanges script (the known IPv4 private
-    address ranges).'
-  playbookInputQuery: null
+  description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 outputs: []
 tests:
 - Test XDR Playbook
