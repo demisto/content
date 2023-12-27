@@ -135,18 +135,24 @@ def test_add_fields_to_events():
     assert compliance_officer_events[0]['source_log_type'] == COMMAND_FUNCTION_TO_EVENT_TYPE.get('get_compliance_officer_events')
 
 
-def test_increase_datetime_for_next_fetch():
+@pytest.mark.parametrize('latest_datetime_previous_fetch, expected_datetime', [
+    ('2023-12-04T07:40:06.680Z', '2023-12-04T07:40:06.691Z'),
+    ('2023-12-04T07:40:06.695Z', '2023-12-04T07:40:06.696Z'),
+])
+def test_increase_datetime_for_next_fetch(latest_datetime_previous_fetch, expected_datetime):
     """
         Given:
-            - A list of events
+            - A list of events and a string represents a datetime from the previous fetch.
+                1. the datetime from the previous fetch is earlier than the latest event in the list of events.
+                2. the datetime from the previous fetch is later than the latest event in the list of events.
         When:
             - increase_datetime_for_next_fetch function is running.
         Then:
-            - Validates that the function returns the latest event `create` time + a timedelta of 1 millisecond.
+            - Validates that the function returns the latest event time + a timedelta of 1 millisecond.
     """
     from CiscoWebexEventCollector import increase_datetime_for_next_fetch
     events = util_load_json('test_data/events.json').get('items')
-    assert increase_datetime_for_next_fetch(events) == '2023-12-04T07:40:06.691Z'
+    assert increase_datetime_for_next_fetch(events, latest_datetime_previous_fetch) == expected_datetime
 
 
 """ TEST COMMAND FUNCTION """
@@ -280,14 +286,12 @@ def test_fetch_events():
         events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), create_last_run(), max_fetch=1)
 
     assert len(events) > 0
-    assert next_run == {
-        'admin_audits': {'since_datetime': '2023-11-02T09:33:26.409Z',
-                         'next_url': 'https://url.com/adminAudit/events?nexturl=true'},
-        'security_audits': {'since_datetime': '2023-12-19T06:47:38.174Z',
-                            'next_url': 'https://url.com/securityAudit/events?nexturl=true'},
-        'compliance_officer_events': {'since_datetime': '2023-12-04T07:40:06.691Z',
-                                      'next_url': 'https://url.com/events?nexturl=true'}
-    }
+    assert next_run == {'admin_audits': {'next_url': 'https://url.com/adminAudit/events?nexturl=true',
+                                         'since_datetime': '2023-12-20T09:33:26.409Z'},
+                        'compliance_officer_events': {'next_url': 'https://url.com/events?nexturl=true',
+                                                      'since_datetime': '2023-12-13T13:40:00.001Z'},
+                        'security_audits': {'next_url': 'https://url.com/securityAudit/events?nexturl=true',
+                                            'since_datetime': '2023-12-19T07:01:26.487Z'}}
 
     with requests_mock.Mocker() as m:
         m.get('https://url.com/adminAudit/events?nexturl=true', text=util_load_text('test_data/no_events.json'))
@@ -298,7 +302,7 @@ def test_fetch_events():
 
     assert len(events) == 0
     assert next_run == {
-        'admin_audits': {'since_datetime': '2023-11-02T09:33:26.409Z', 'next_url': ''},
-        'security_audits': {'since_datetime': '2023-12-19T06:47:38.174Z', 'next_url': ''},
-        'compliance_officer_events': {'since_datetime': '2023-12-04T07:40:06.691Z', 'next_url': ''}
+        'admin_audits': {'next_url': '', 'since_datetime': '2023-12-20T09:33:26.409Z'},
+        'compliance_officer_events': {'next_url': '', 'since_datetime': '2023-12-13T13:40:00.001Z'},
+        'security_audits': {'next_url': '', 'since_datetime': '2023-12-19T07:01:26.487Z'}
     }

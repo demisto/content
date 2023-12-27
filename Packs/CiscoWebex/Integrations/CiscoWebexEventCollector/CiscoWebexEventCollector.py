@@ -61,16 +61,23 @@ def add_fields_to_events(events: list[dict], evnet_type: str | None):
         event['source_log_type'] = evnet_type
 
 
-def increase_datetime_for_next_fetch(events: list) -> str:
+def increase_datetime_for_next_fetch(events: list, latest_datetime_previous_fetch: str) -> str:
     """
-    Gets a list of events and returns the latest event create time + a timedelta of a millisecond using for the next fetch.
+    Gets a list of events and a string represents a datetime from the previous fetch
+    and returns the latest event create time + a timedelta of a millisecond using for the next fetch.
     Args:
         events: A list of events.
+        latest_datetime_previous_fetch: A string represents a datetime in ISO format saved from the previous fetch.
 
     Returns:
         A string represents a datetime is ISO format.
     """
-    return date_time_to_iso_format(parser.parse(events[-1].get('created'), ignoretz=True) + timedelta(milliseconds=1))
+    latest_event = max(events, key=lambda event: parser.parse(event['created']))
+    latest_date_time = max(
+        parser.parse(latest_event.get('created'), ignoretz=True),
+        parser.parse(latest_datetime_previous_fetch, ignoretz=True)
+    )
+    return date_time_to_iso_format(latest_date_time + timedelta(milliseconds=1))
 
 
 ''' CLIENT CLASS '''
@@ -316,7 +323,7 @@ def oauth_complete(client: Client, args: dict) -> CommandResults:
         readable_output='### Logged in successfully.\n'
                         'A refresh token was saved to the integration context. This token will be used to '
                         'generate a new access token once the current one expires.\n'
-                        'In order to complete the test process please run the `!cisco-oauth-test command`.'
+                        'In order to complete the test process please run the `!cisco-oauth-test` command.'
     )
 
 
@@ -418,7 +425,7 @@ def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient, 
         events, next_url = get_events_with_pagination(client_function, since_datetime, max_fetch, next_url)
         last_run[event_type]['next_url'] = next_url
         if events:
-            last_run[event_type]['since_datetime'] = increase_datetime_for_next_fetch(events)
+            last_run[event_type]['since_datetime'] = increase_datetime_for_next_fetch(events, since_datetime)
             all_events.extend(events)
 
     demisto.debug(f'finished fetching {len(all_events)} events, last_run will be set to: {last_run}')
@@ -446,7 +453,7 @@ def main() -> None:  # pragma: no cover
     compliance_officer_redirect_uri = params.get('compliance_officer_redirect_uri')
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_fetch = arg_to_number(args.get('max_fetch', DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
+    max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     if not 0 < max_fetch <= 2000:
         max_fetch = DEFAULT_MAX_FETCH
 
