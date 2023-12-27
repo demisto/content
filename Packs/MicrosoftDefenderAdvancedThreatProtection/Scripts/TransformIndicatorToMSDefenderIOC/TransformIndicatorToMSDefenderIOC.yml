@@ -33,7 +33,7 @@ outputs:
   description: The value of the Indicator.
   type: String
 - contextPath: TransformIndicatorToMSDefenderIOC.Indicators.indicatorType
-  description: 'Type of the indicator. Possible values are: FileSha1, FileSha256, FileMd5, CertificateThumbprint, IpAddress, DomainName, Url'
+  description: 'Type of the indicator. Possible values are: FileSha1, FileSha256, FileMd5, CertificateThumbprint, IpAddress, DomainName, Url.'
   type: String
 - contextPath: TransformIndicatorToMSDefenderIOC.Indicators.lastUpdateTime
   description: The last time the indicator was updated.

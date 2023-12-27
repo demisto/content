@@ -15,10 +15,10 @@ args:
 - name: system
   required: true
   default: true
-  description: The System to remote execute on, can be a list of systems
+  description: The System to remote execute on, can be a list of systems.
 - name: query
   required: true
-  description: The osquery query to execute on remote system
+  description: The osquery query to execute on remote system.
 scripttarget: 0
 dependson:
   must:

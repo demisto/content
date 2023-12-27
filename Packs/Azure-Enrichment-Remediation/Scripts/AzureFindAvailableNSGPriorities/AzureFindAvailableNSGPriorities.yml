@@ -2,10 +2,10 @@ args:
 - description: The NSG priority to start finding available priorities from. The target priority cannot be 100.
   name: target_rule_priority
   required: true
-- description: 'The number of priorities that are available to be returned. (limit: 5)'
+- description: 'The number of priorities that are available to be returned. (limit: 5).'
   name: number_of_available_priorities_to_retrieve
   required: true
-- description: 'The list of priorities from rules in an Azure Network Security Group. (limit: 995)'
+- description: 'The list of priorities from rules in an Azure Network Security Group. (limit: 995).'
   isArray: true
   name: list_of_priorities_from_rules
   required: true
@@ -18,7 +18,7 @@ enabled: true
 name: AzureFindAvailableNSGPriorities
 outputs:
 - contextPath: AvailableAzureNSGPriorities
-  description: List of numbers that represent available Azure NSG priorities
+  description: List of numbers that represent available Azure NSG priorities.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

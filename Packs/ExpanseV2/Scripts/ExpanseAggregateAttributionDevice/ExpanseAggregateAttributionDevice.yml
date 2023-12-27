@@ -1,5 +1,5 @@
 name: ExpanseAggregateAttributionDevice
-comment: Aggregate entries from multiple sources into AttributionDevice
+comment: Aggregate entries from multiple sources into AttributionDevice.
 commonfields:
   id: ExpanseAggregateAttributionDevice
   version: -1
@@ -32,22 +32,22 @@ args:
   isArray: true
 outputs:
 - contextPath: Expanse.AttributionDevice.serial
-  description: Serial Number of the device
+  description: Serial Number of the device.
   type: string
 - contextPath: Expanse.AttributionDevice.vsys
-  description: VSYS of the device
+  description: VSYS of the device.
   type: string
 - contextPath: Expanse.AttributionDevice.device-group
-  description: Device Group inside Panorama
+  description: Device Group inside Panorama.
   type: string
 - contextPath: Expanse.AttributionDevice.xsoar-instance
-  description: XSOAR Panorama instance for this device
+  description: XSOAR Panorama instance for this device.
   type: string
 - contextPath: Expanse.AttributionDevice.exposing_service
   description: Is the device exposing the asset?
   type: boolean
 - contextPath: Expanse.AttributionDevice.sightings
-  description: Number of sessions seen on this device
+  description: Number of sessions seen on this device.
   type: number
 script: '-'
 tags: []

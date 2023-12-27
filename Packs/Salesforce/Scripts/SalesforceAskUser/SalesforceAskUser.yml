@@ -14,12 +14,12 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Indicates whether to use one-time entitlement or a persistent one
+  description: Indicates whether to use one-time entitlement or a persistent one.
   defaultValue: "false"
 - name: replyEntriesTag
-  description: Tag to add on comment reply entries
+  description: Tag to add on comment reply entries.
 - name: retries
-  description: Indicates how many times to try and create an entitlement in case of failure
+  description: Indicates how many times to try and create an entitlement in case of failure.
   defaultValue: "10"
 - name: task
   description: Which task should we close with the reply. If none then no playbook tasks will be closed.
@@ -30,13 +30,13 @@ args:
   description: Second option for the user reply.
   defaultValue: "no"
 - name: oid
-  description: Object ID of Subject
+  description: Object ID of Subject.
 - name: additionalOptions
-  description: A comma delimited list of additional options (in case more than 2 options are needed)
+  description: A comma delimited list of additional options (in case more than 2 options are needed).
 - name: text
   description: Chatter comment text. If not given, a default post message will be generated based on option arguments.
 - name: link
-  description: Add a link to the message
+  description: Add a link to the message.
 scripttarget: 0
 dependson:
   must:

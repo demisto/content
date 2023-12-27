@@ -14,7 +14,7 @@ enabled: true
 name: MatchIPinCIDRIndicators
 outputs:
 - contextPath: MatchingCIDRIndicator
-  description: Matching CIDR Indicator
+  description: Matching CIDR Indicator.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
