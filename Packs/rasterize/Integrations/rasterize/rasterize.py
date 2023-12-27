@@ -11,6 +11,7 @@ import tempfile
 import threading
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from threading import Event
 
@@ -60,6 +61,7 @@ DEFAULT_WIDTH, DEFAULT_HEIGHT = 600, 800
 # Local Chrome
 LOCAL_CHROME_HOST = "127.0.0.1"
 
+PORT_FILE_PATH = '/var/port.txt'
 
 class RasterizeType(Enum):
     PNG = 'png'
@@ -243,36 +245,68 @@ def is_chrome_running_locally(port):
     return None
 
 
+def save_chrome_port(port):
+    # Save the port
+    demisto.debug(f"Saving File '{os.path.abspath(PORT_FILE_PATH)}' created/updated successfully.")
+    with open(PORT_FILE_PATH, 'w') as file:
+        # Optionally, you can write something to the file
+        file.write(f"{port}")
+        demisto.debug(f"File '{PORT_FILE_PATH}' created/updated successfully.")
+        demisto.debug(f"File '{os.path.abspath(PORT_FILE_PATH)}' created/updated successfully.")
+
+
 def ensure_chrome_running():  # pragma: no cover
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
     random.shuffle(ports_list)
     demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
-    for chrome_port in ports_list:
-        len_running_chromes = count_running_chromes(chrome_port)
-        browser = is_chrome_running_locally(chrome_port)
-        demisto.debug(f"Checking port {chrome_port}: {len_running_chromes=}, {browser}")
-        if browser and len_running_chromes == 1:
-            # There's a Chrome listening on that port, and we're connected to it. Use it
-            demisto.debug(f'Connected to Chrome running on port {chrome_port}')
-            return browser, chrome_port
 
-        if len_running_chromes == 0:
-            # There's no Chrome listening on that port, Start a new Chrome there
-            demisto.debug(f"No Chrome found on port {chrome_port}")
-            break
+    # Check if we have a file with the port.
+    # If we have a file - Try to use it.
+    # If there's no file, or we cannot use it - Find a free port
+    chrome_port = -1
+    file_path = '/var/port.txt'
+    browser = None
+    try:
+        # Try to open the file in read mode
+        with open(PORT_FILE_PATH, 'r') as file:
+            # Read the content of the file
+            chrome_port = file.read()
+            demisto.debug(f"File '{PORT_FILE_PATH}' exists. Content:\n{chrome_port}")
+            browser = is_chrome_running_locally(chrome_port)
+    except FileNotFoundError:
+        # The file does not exist
+        demisto.debug(f"File '{PORT_FILE_PATH}' does not exist.")
 
-        if len_running_chromes > 1:
-            # There's more than one Chrome listening on that port, so we won't connect to it
-            demisto.debug(f"More than one Chrome running on port {chrome_port}, continuing")
-            continue
-        demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
+    if not browser:
+        for chrome_port in ports_list:
+            len_running_chromes = count_running_chromes(chrome_port)
+            browser = is_chrome_running_locally(chrome_port)
+            demisto.debug(f"Checking port {chrome_port}: {len_running_chromes=}, {browser}")
+            if browser and len_running_chromes == 1:
+                # There's a Chrome listening on that port, and we're connected to it. Use it
+                demisto.debug(f'Connected to Chrome running on port {chrome_port}')
+                save_chrome_port(chrome_port)
 
-    if chrome_port == ports_list[-1]:
-        demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to chrome')
-        return None, None
+                return browser, chrome_port
+
+            if len_running_chromes == 0:
+                # There's no Chrome listening on that port, Start a new Chrome there
+                demisto.debug(f"No Chrome found on port {chrome_port}")
+                break
+
+            if len_running_chromes > 1:
+                # There's more than one Chrome listening on that port, so we won't connect to it
+                demisto.debug(f"More than one Chrome running on port {chrome_port}, continuing")
+                continue
+            demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
+
+        if chrome_port == ports_list[-1]:
+            demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to chrome')
+            return None, None
 
     demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
+
     try:
         process = subprocess.run(['bash', '/start_chrome_headless.sh',
                                  '--port', str(chrome_port),
@@ -287,6 +321,7 @@ def ensure_chrome_running():  # pragma: no cover
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = is_chrome_running_locally(chrome_port)
+            save_chrome_port(chrome_port)
             return browser, chrome_port
         else:
             demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
@@ -404,6 +439,39 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     return ret_value, None
 
 
+def rasterize_thread(browser, chrome_port, path: str,
+              rasterize_type: RasterizeType = RasterizeType.PNG,
+              wait_time: int = DEFAULT_WAIT_TIME,
+              offline_mode: bool = False,
+              navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
+              include_url: bool = False,
+              width=DEFAULT_WIDTH,
+              height=DEFAULT_HEIGHT
+              ):
+    with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
+        tab.call_method("Emulation.setVisibleSize", width=width, height=height)
+
+        if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
+            ret_value, _ = screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
+            return ret_value, None
+
+        elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
+            ret_value, _ = screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
+                                        include_url=include_url)
+            return ret_value, None
+
+        elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
+            ret_value, response_body = screenshot_image(browser, tab, path, wait_time=wait_time,
+                                                        navigation_timeout=navigation_timeout,
+                                                        include_source=True)
+            return ret_value, response_body
+        else:
+            message = f'Unsupported rasterization type: {rasterize_type}.'
+            demisto.error(message)
+            return_error(message)
+            return None
+
+
 def rasterize(path: str,
               rasterize_type: RasterizeType = RasterizeType.PNG,
               wait_time: int = DEFAULT_WAIT_TIME,
@@ -427,28 +495,27 @@ def rasterize(path: str,
     demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = ensure_chrome_running()
     if browser:
-        with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
-            tab.call_method("Emulation.setVisibleSize", width=width, height=height)
+        with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
+            paths = argToList(path)
+            demisto.debug(f"rasterize, {paths=}, {rasterize_type=}")
+            rasterization_threads = []
+            rasterization_results = []
+            for current_path in paths:
+                # start a new thread in group of max_tabs
+                rasterization_threads.append(executor.submit(rasterize_thread,
+                                            browser=browser, chrome_port=chrome_port,
+                                            path=current_path, rasterize_type=rasterize_type, wait_time=wait_time,
+                                            offline_mode=offline_mode, navigation_timeout=navigation_timeout,
+                                            include_url=include_url, width=width, height=height
+                                            ))
+            # Wait for all tasks to complete
+            executor.shutdown(wait=True)
 
-            if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
-                ret_value, _ = screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
-                return ret_value, None
-
-            elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
-                ret_value, _ = screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
-                                              include_url=include_url)
-                return ret_value, None
-
-            elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
-                ret_value, response_body = screenshot_image(browser, tab, path, wait_time=wait_time,
-                                                            navigation_timeout=navigation_timeout,
-                                                            include_source=True)
-                return ret_value, response_body
-            else:
-                message = f'Unsupported rasterization type: {rasterize_type}.'
-                demisto.error(message)
-                return_error(message)
-                return None
+            # Get the results
+            for current_thread in rasterization_threads:
+                rasterization_results.append(current_thread.result()[0])
+            demisto.debug(f"{rasterization_results=}")
+            return rasterization_results, None
 
     else:
         message = 'Could not use local Chrome for rasterize command'
@@ -475,7 +542,11 @@ def rasterize_image_command():
     with open(file_path, 'rb') as f:
         output, _ = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
                               rasterize_type=RasterizeType.PDF)
-        res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
+        res = []
+        demisto.debug(f"{output=}")
+        for current_output in output:
+            demisto.debug(f"{current_output=}")
+            res.append(fileResult(filename=file_name, data=current_output, file_type=entryTypes['entryInfoFile']))
         demisto.results(res)
 
 
@@ -618,9 +689,17 @@ def rasterize_command():  # pragma: no cover
                   'html': response_body, 'current_url': url}
         demisto.results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
     else:
-        res = fileResult(filename=file_name, data=rasterize_output)
-        if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
-            res['Type'] = entryTypes['image']
+        res = []
+        demisto.debug(f"{rasterize_output=}")
+        for current_output in rasterize_output:
+            demisto.debug(f"{current_output=}")
+            current_res = fileResult(filename=file_name, data=current_output, file_type=entryTypes['entryInfoFile'])
+
+            # res = fileResult(filename=file_name, data=rasterize_output)
+            if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
+                current_res['Type'] = entryTypes['image']
+
+            res.append(current_res)
 
         demisto.results(res)
 
