@@ -1483,8 +1483,8 @@ def device_search_command(client: Client, args: dict):
 
     if start_time and end_time:
         last_location = {
-            'start': args.get('start_time'),
-            'end': args.get('end_time')
+            'start': start_time,
+            'end': end_time
         }
     elif (not start_time and end_time) or (start_time and not end_time):
         raise ValueError("both start_time and end_time must be set")
