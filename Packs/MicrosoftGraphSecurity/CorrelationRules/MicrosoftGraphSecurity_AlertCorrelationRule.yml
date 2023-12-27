@@ -4,6 +4,7 @@
   alert_name: Microsoft Defender Alerts
   crontab: null
   dataset: alerts
+  is_enabled: false
   description: Alert from Graph Security for Defender Sources
   drilldown_query_timeframe: ALERT
   execution_mode: REAL_TIME
