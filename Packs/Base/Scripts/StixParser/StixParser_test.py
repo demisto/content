@@ -12,6 +12,7 @@ import pytest
     ('STIX_FileHash_Watchlist.xml', 'STIX_FileHash_Watchlist_result.json'),
     ('STIX_URL_Watchlist.xml', 'STIX_URL_Watchlist_result.json'),
     ('STIX_Phishing_Indicator.xml', 'STIX_Phishing_Indicator_result.json'),
+    ('STIX_FileHash_Watchlist_Without_Type.xml', 'STIX_FileHash_Watchlist_result_Without_Type.json')
 ])
 def test_parse_stix1(indicators_file, expected_result):
     """
