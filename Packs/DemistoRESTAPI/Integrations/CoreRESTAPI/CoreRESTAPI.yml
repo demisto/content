@@ -53,7 +53,7 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident).
+      description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident)..
     - name: body
       description: Body of HTTP POST.
     description: Deprecated. Use core-api-post instead.
