@@ -1,6 +1,6 @@
 [MODEL: dataset = "cyberark_epm_raw"]
 // Modeling for admin audit events
-filter eventTypeXsiam = "set admin audit data"
+filter source_log_type = "set admin audit data"
 | alter
         xdm.event.type = source_log_type,
         xdm.event.description = concat(Description, ". ", "PermissionDescription:", PermissionDescription, ". ", "Role:", Role),
