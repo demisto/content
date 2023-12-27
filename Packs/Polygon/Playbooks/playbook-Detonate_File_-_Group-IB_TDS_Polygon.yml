@@ -520,7 +520,7 @@ tasks:
       - - operator: match
           left:
             value:
-              simple: File.Type
+              simple: Inputs.File.Type
             iscontext: true
           right:
             value:
@@ -529,7 +529,7 @@ tasks:
         - operator: match
           left:
             value:
-              simple: File.Extension
+              simple: Inputs.File.Extension
             iscontext: true
           right:
             value:
