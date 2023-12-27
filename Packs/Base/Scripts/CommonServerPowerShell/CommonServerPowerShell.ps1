@@ -1,4 +1,5 @@
-. $PSScriptRoot\demistomock.ps1
+### pack version: 1.32.50
+
 
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Scope = "", Justification = "Use of globals set by the Demisto Server")]
 
@@ -33,6 +34,87 @@ enum EntryFormats {
     text
     dbotResponse
     markdown
+}
+
+function Get-SelfReferencingPaths($obj, $visited = @{}, $path = @(), $depth = 1, $maxDepth = 20) {
+    if ($depth -gt $maxDepth) {
+        # Stop recursion when max depth is reached
+        return @()
+    }
+
+    $selfReferencingPaths = @()
+    if ($obj | Get-Member -MemberType Properties -ErrorAction SilentlyContinue) {
+        if ($visited.ContainsKey($obj)) {
+            # Circular reference detected
+            if (-not ($path -like "*SyncRoot*")) {
+                # SyncRoot is allowed to be self-referencing
+                return $path
+            }
+            return @()
+        }
+
+        # Mark the object as visited
+        $visited[$obj] = $true
+
+        foreach ($property in $obj.PSObject.Properties) {
+            $propertyValue = $property.Value
+            $propertyPath = "$($path).$($property.Name)"
+            if (-not $path) {
+                $propertyPath = "$($property.Name)"
+            }
+
+            if (-not ($propertyValue -is [String] -or $propertyValue -is [Int32] -or $propertyValue -is [Double] -or $propertyValue -is [DateTime] -or $propertyValue -eq $null)) {
+                # Recursively process complex object
+                $nestedPaths = Get-SelfReferencingPaths -obj $propertyValue -visited $visited -path $propertyPath -depth ($depth + 1) -maxDepth $maxDepth
+                $selfReferencingPaths += $nestedPaths
+            }
+        }
+
+        # Remove the object from visited list after getting all its children
+        $visited.Remove($obj)
+    }
+
+    return $selfReferencingPaths
+}
+
+function Remove-SelfReferences($obj) {
+
+    try {
+        # Get self referencing paths
+        $selfReferencingPaths = Get-SelfReferencingPaths -obj $obj
+
+        foreach ($path in $selfReferencingPaths) {
+            $properties = $path -split '\.'
+            $propertyName = $properties[-1]
+            $parentPath = $properties[0..($properties.Count - 2)]
+
+            $parentObject = $obj
+            $parentObjects = @()
+            # Get object at the end of path
+            foreach ($prop in $parentPath) {
+                $parentObjects += $parentObject
+                $parentObject = $parentObject.($prop)
+            }
+
+            # Update the object
+            $currentObject = $parentObject | Select-Object -ExcludeProperty $propertyName
+
+            # Update back all its parents
+            for ($i = $parentObjects.Count - 1; $i -ge 0; $i--) {
+                $parentObject = $parentObjects[$i]
+                $propName = $properties[$i]
+                $parentObject.$propName = $currentObject
+                $currentObject = $parentObject
+            }
+
+        }
+
+        return $obj
+
+    } catch {
+        # Return to default behaviour if errors were encountered.
+        return $obj
+    }
 }
 
 # Demist Object Class for communicating with the Demisto Server
@@ -401,7 +483,7 @@ function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawRe
         Type           = [EntryTypes]::note;
         ContentsFormat = [EntryFormats]::json.ToString();
         HumanReadable  = $ReadableOutput;
-        Contents       = $RawResponse;
+        Contents       = Remove-SelfReferences $RawResponse;
         EntryContext   = $Outputs
     }
     # Return 'readable_output' only if needed
@@ -411,7 +493,7 @@ function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawRe
     }
     elseif ($Outputs -and -not $RawResponse) {
         # if RawResponse was not provided but outputs were provided then set Contents as outputs
-        $entry.Contents = $Outputs
+        $entry.Contents = Remove-SelfReferences $Outputs
     }
     $demisto.Results($entry) | Out-Null
     return $entry

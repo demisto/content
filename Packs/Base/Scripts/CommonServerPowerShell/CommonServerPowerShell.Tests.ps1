@@ -333,3 +333,123 @@ Describe "Test ParseDateRange"{
             { ParseDateRange("3 planets") } | Should -Throw
         }
     }
+
+Describe "Test Remove-SelfReferences" {
+
+    It "One self-reference" {
+        $inputDict = [PSCustomObject]@{
+            Property1 = "Value1"
+            NestedProperty = @{
+                NestedProperty1 = "NestedValue1"
+                NestedProperty2 = @{
+                    DeeplyNestedProperty = @{
+                        Deep3 = "DeepValue"
+                        Deep4 = "Deep4"
+                        }
+                    }
+                }
+            }
+
+        $expected = [PSCustomObject]@{
+            Property1 = "Value1"
+            NestedProperty = @{
+                NestedProperty2 = @{
+                    DeeplyNestedProperty = @{
+                        Deep3 = "DeepValue"
+                        Deep4 = "Deep4"
+                        }
+                    }
+                }
+            }
+
+        $inputDict.NestedProperty.NestedProperty1 = $inputDict.NestedProperty
+
+        Remove-SelfReferences($inputDict) | Should -Be $expected
+    }
+    It "No self-reference" {
+        $inputDict = [PSCustomObject]@{
+            Property1 = "Value1"
+            NestedProperty = @{
+                NestedProperty1 = "NestedValue1"
+                NestedProperty2 = @{
+                    DeeplyNestedProperty = @{
+                        Deep3 = "DeepValue"
+                        Deep4 = "Deep4"
+                        }
+                    }
+                }
+            }
+
+        $expected = $inputDict.copy()
+
+        Remove-SelfReferences($inputDict) | Should -Be $expected
+
+    }
+    It "Two self-reference" {
+        $inputDict = [PSCustomObject]@{
+            Property1 = @{
+                SelfRef = $null
+                OtherProp = 5
+            }
+            NestedProperty = @{
+                NestedProperty1 = "NestedValue1"
+                NestedProperty2 = @{
+                    DeeplyNestedProperty = @{
+                        Deep3 = "DeepValue"
+                        Deep4 = "Deep4"
+                    }
+                }
+            }
+        }
+
+        $expected = [PSCustomObject]@{
+            Property1 = @{
+                OtherProp = 5
+            }
+            NestedProperty = @{
+                NestedProperty2 = @{
+                    DeeplyNestedProperty = @{
+                        Deep3 = "DeepValue"
+                        Deep4 = "Deep4"
+                        }
+                    }
+                }
+            }
+
+        $inputDict.NestedProperty.NestedProperty1 = $inputDict.NestedProperty
+        $inputDict.Property1.SelfRef = $inputDict.Property1
+
+        Remove-SelfReferences($inputDict) | Should -Be $expected
+
+    }
+    It "Deep self-reference" {
+        $inputDict = [PSCustomObject]@{
+            Property1 = "Value1"
+            NestedProperty = @{
+                NestedProperty1 = "NestedValue1"
+                NestedProperty2 = @{
+                    DeeplyNestedProperty = @{
+                        Deep3 = "DeepValue"
+                        Deep4 = "Deep4"
+                        }
+                    }
+                }
+            }
+
+        $expected = [PSCustomObject]@{
+            Property1 = "Value1"
+            NestedProperty = @{
+                NestedProperty1 = "NestedValue1"
+                NestedProperty2 = @{
+                    DeeplyNestedProperty = @{
+                        Deep3 = "DeepValue"
+                        }
+                    }
+                }
+            }
+
+        $inputDict.NestedProperty.NestedProperty2.DeeplyNestedProperty.Deep4 = $inputDict.NestedProperty
+
+        Remove-SelfReferences($inputDict) | Should -Be $expected
+    }
+}
