@@ -10,7 +10,7 @@ import demistomock as demisto
 from MicrosoftGraphFiles import remove_identity_key, url_validation, parse_key_to_context, delete_file_command, \
     download_file_command, list_sharepoint_sites_command, list_drive_content_command, create_new_folder_command, \
     list_drives_in_site_command, MsGraphClient, upload_new_file_command, list_site_permissions_command, \
-    create_site_permissions_command, update_site_permissions_command, delete_site_permission_command
+    create_site_permissions_command, update_site_permissions_command, delete_site_permission_command, get_site_id_from_site_name
 
 
 def util_load_json(path: str) -> dict:
@@ -710,6 +710,35 @@ def test_get_site_id_raise_error_invalid_site_name(
         match="Site 'test' not found. Please provide a valid site name.",
     ):
         func_to_test(CLIENT_MOCKER, args)
+
+
+def test_get_site_id_from_site_name_404(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - Mocked 404 response from the API when searching for the site
+
+    When:
+        - The get_site_id_from_site_name function is called with the site name
+
+    Then:
+        - Ensure a DemistoException is raised
+        - With error message that includes:
+            - The site name that was passed in
+            - Mention that the site was not found
+            - Instructions to provide a valid site name/ID
+        - And the error details matching the 404 response
+    """
+    site_name = "test_site"
+    authorization_mock(requests_mock)
+    requests_mock.get(f"https://graph.microsoft.com/v1.0/sites?search={site_name}", status_code=404, text="Item not found")
+
+    with pytest.raises(DemistoException) as e:
+        get_site_id_from_site_name(CLIENT_MOCKER, site_name)
+
+    assert str(e.value) == (
+        'Error getting site ID for test_site. Ensure integration instance has permission for this site and site name is valid.'
+        ' Error details: Error in API call [404] - None\nItem not found'
+    )
 
 
 def test_list_site_permissions(requests_mock: MockerCore) -> None:

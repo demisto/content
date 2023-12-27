@@ -872,11 +872,20 @@ def get_site_id_from_site_name(client: MsGraphClient, site_name: str | None) -> 
         str: The SharePoint site ID.
 
     Raises:
-        DemistoException: If neither site_id nor site_name is provided,
-        or if the specified site_name does not correspond to a valid SharePoint site.
+        DemistoException: If neither site_id nor site_name is provided.
+        DemistoException: If the user has no permission to the site, the API returns a 404 error.
+        DemistoException: If the provided site name is invalid.
     """
     if site_name:
-        site_details = client.list_sharepoint_sites(site_name)["value"]
+        try:
+            site_details = client.list_sharepoint_sites(site_name)["value"]
+        except DemistoException as e:
+            if e.res.status_code == 404 and "Item not found" in e.res.text:
+                raise DemistoException(
+                    f"Error getting site ID for {site_name}."
+                    f" Ensure integration instance has permission for this site and site name is valid. Error details: {e}"
+                ) from e
+            raise
         if site_details:
             return site_details[0]["id"]
         else:
