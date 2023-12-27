@@ -55,7 +55,7 @@ tasks:
     scriptarguments:
       file_id:
         complex:
-          root: File
+          root: File.EntryID
           filters:
           - - operator: match
               left:
@@ -84,12 +84,10 @@ tasks:
                 value:
                   simple: inputs.file_id
                 iscontext: true
-          accessor: EntryID
           transformers:
           - operator: uniq
       language:
         simple: en
-      password: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -158,8 +156,6 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: Polygon
@@ -218,8 +214,6 @@ tasks:
         complex:
           root: Polygon
           accessor: Analysis.ID
-          transformers:
-          - operator: LastArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -520,7 +514,9 @@ tasks:
       - - operator: match
           left:
             value:
-              simple: Inputs.File.Type
+              complex:
+                root: inputs.file_id
+                accessor: Type
             iscontext: true
           right:
             value:
@@ -529,7 +525,9 @@ tasks:
         - operator: match
           left:
             value:
-              simple: Inputs.File.Extension
+              complex:
+                root: inputs.file_id
+                accessor: Extension
             iscontext: true
           right:
             value:
