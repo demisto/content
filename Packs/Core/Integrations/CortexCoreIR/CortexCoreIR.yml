@@ -35,7 +35,7 @@ name: Cortex Core - IR
 script:
   commands:
   - arguments:
-    - description: Links the response action to the triggered incident.
+    - description: Links the response action to the triggered incident..
       name: incident_id
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
