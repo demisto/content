@@ -1457,7 +1457,10 @@ def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:
             'params': {
                 'offset': _offset,
                 'limit': _limit,
-            }
+                # We need to use sort since the API doesn't guarantee a consistent order,
+                # which can cause issues when using th offset parameter (repetitive & missing values)
+                'sort': 'uid',
+            },
         }
 
         if query_filter:
