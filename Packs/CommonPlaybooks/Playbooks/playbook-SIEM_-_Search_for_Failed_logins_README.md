@@ -3,33 +3,26 @@ This playbook searches for failed logon on a specific user by querying logs from
 Supported Integrations:
 -Splunk
 -QRadar
--Azure Log Analytics.
+-Azure Log Analytics
 
 ## Dependencies
-
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-
-This playbook does not use any sub-playbooks.
+* Search for failed logon attempts using QRadar
 
 ### Integrations
-
 This playbook does not use any integrations.
 
 ### Scripts
-
-* CountArraySize
 * Set
+* CountArraySize
 
 ### Commands
-
-* qradar-search-retrieve-events
-* azure-log-analytics-execute-query
 * splunk-search
+* azure-log-analytics-execute-query
 
 ## Playbook Inputs
-
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -42,18 +35,15 @@ This playbook does not use any integrations.
 | Username | User name. |  | Optional |
 
 ## Playbook Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | NumOfSiemFailedLogon | Number of failed login from Siem. | unknown |
-| QRadar.SearchEvents | The result of the QRadar search. | unknown |
+| QRadar.Search.Result | The result of the QRadar search. | unknown |
 | Splunk.Result | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | unknown |
 | AzureFailedLogonLogs | The result of the Azure Log Analytics search. | unknown |
 
 ## Playbook Image
-
 ---
-
 ![SIEM - Search for Failed logins](../doc_files/SIEM_-_Search_for_Failed_logins.png)

@@ -7,7 +7,7 @@ description: |-
   Supported Integrations:
   -Splunk
   -QRadar
-  -Azure Log Analytics.
+  -Azure Log Analytics
 starttaskid: "0"
 tasks:
   "0":
@@ -85,7 +85,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "24"
+      - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -222,6 +222,50 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: eaf023ca-5658-4d9d-887c-d65d088917d6
+    type: playbook
+    task:
+      id: eaf023ca-5658-4d9d-887c-d65d088917d6
+      version: -1
+      name: Search for failed logon attempts using QRadar
+      description: This playbook runs a QRadar query and return its results to the context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: select * from events WHERE LogSourceTypeName(deviceType) = 'Microsoft Windows Security Event Log' and username='${inputs.Username}' and "EventID"='4771'  or "EventID"='4625' and "Logon Type"='2' OR "Logon Type"='7' OR "Logon Type"='10' ${inputs.QRadarSearchTime}
+      timeout:
+        simple: "600"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -405,8 +449,8 @@ tasks:
     scriptarguments:
       array:
         complex:
-          root: QRadar.SearchEvents
-          accessor: Events
+          root: QRadar.Search.Result
+          accessor: events
       contextKey:
         simple: NumOfSiemFailedLogon
       extend-context:
@@ -496,8 +540,8 @@ tasks:
           left:
             value:
               complex:
-                root: QRadar.SearchEvents
-                accessor: Events
+                root: QRadar.Search.Result
+                accessor: events
             iscontext: true
           right:
             value: {}
@@ -671,43 +715,6 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: f8fa6689-2d97-4d84-895d-5c923b1b6751
-    type: regular
-    task:
-      id: f8fa6689-2d97-4d84-895d-5c923b1b6751
-      version: -1
-      name: Run Qradar Search
-      description: Polling command to search for events of a specific offense.
-      script: '|||qradar-search-retrieve-events'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      interval_in_seconds:
-        simple: "1"
-      query_expression:
-        simple: select * from events WHERE LogSourceTypeName(deviceType) = 'Microsoft Windows Security Event Log' and username='${inputs.Username}' and "EventID"='4771'  or "EventID"='4625' and "Logon Type"='2' OR "Logon Type"='7' OR "Logon Type"='10' ${inputs.QRadarSearchTime}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -440,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -767,7 +774,7 @@ outputs:
 - contextPath: NumOfSiemFailedLogon
   description: Number of failed login from Siem.
   type: unknown
-- contextPath: QRadar.SearchEvents
+- contextPath: QRadar.Search.Result
   description: The result of the QRadar search.
 - contextPath: Splunk.Result
   description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
@@ -776,7 +783,5 @@ outputs:
   type: unknown
 quiet: true
 tests:
-  - No tests
+- No tests (auto formatted)
 fromversion: 6.5.0
-contentitemexportablefields:
-  contentitemfields: {}
