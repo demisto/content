@@ -12,7 +12,7 @@ API_TOKEN = "api_token"
 
 def util_load_json(file_name):
     with open(
-        os.path.join("test_data", f"{file_name}.json"), mode="r", encoding="utf-8"
+        os.path.join("test_data", f"{file_name}.json"), encoding="utf-8"
     ) as mock_file:
         return json.loads(mock_file.read())
 

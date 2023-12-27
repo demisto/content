@@ -11,8 +11,8 @@ GREEN = '\033[0;32m'
 RESET = '\033[0m'
 
 
-GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '2596')  # the default is the id of the content project in code.pan.run
-GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
+GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '1061')
+GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
 GITLAB_WRITE_TOKEN = get_env_var('GITLAB_WRITE_TOKEN')
 
 print = timestamped_print
