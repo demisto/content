@@ -4717,7 +4717,7 @@ script:
       name: id
       isArray: true
       required: false
-    - description: 'The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid.'
+    - description: 'The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid. Example: "first_name:''John''".'
       name: filter
       isArray: true
       required: false

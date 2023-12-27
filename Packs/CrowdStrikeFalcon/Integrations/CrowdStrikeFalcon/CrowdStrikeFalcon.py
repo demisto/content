@@ -4726,7 +4726,7 @@ def resolve_incident_command(ids: list[str], status: str | None = None, user_uui
 
     if add_comment:
         action_parameters['add_comment'] = add_comment
-        readable_output += f"Comment has been added: '{add_comment}'\n"
+        readable_output += f"Comment '{add_comment}' has been added.\n"
 
     update_incident_request(ids=ids,
                             action_parameters=action_parameters)
