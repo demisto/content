@@ -23,7 +23,7 @@ configuration:
 - display: Secret Key
   name: secret_key
   required: true
-  type: 4
+  type: 9
 - display: Role Session Duration
   name: sessionDuration
   type: 0
