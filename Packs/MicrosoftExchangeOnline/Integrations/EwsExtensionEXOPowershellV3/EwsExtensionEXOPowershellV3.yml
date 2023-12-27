@@ -2063,13 +2063,6 @@ script:
     - defaultValue: 50
       description: Maximum number of rules to get. A value of 0 means to get all rules.
       name: limit
-    - name: display_all
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Get a list of all mailbox rules.
-      defaultValue: 'false'
     outputs:
       - contextPath: EWS.Rule.RuleIdentity
         description: The rule identity.
@@ -2092,13 +2085,6 @@ script:
     - name: identity
       description: The Inbox rule that you want to view.
       required: true
-    - name: display_all
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      description: Display all properties of the rule as a list .
-      defaultValue: 'false'
     outputs:
     - contextPath: EWSl.Rule.Rule
       description: The rule identity.

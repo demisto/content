@@ -1440,7 +1440,6 @@ Get a list of all mailbox rules.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | mailbox | The mailbox that contains the Inbox rule. | Required | 
-| display_all | Get a list of all mailbox rules. | Optional | 
 | limit | Maximum number of rules to get. A value of 0 means to get all rules | Optional | 
 
 
@@ -1473,9 +1472,7 @@ Get a mailbox rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | mailbox | The mailbox that contains the Inbox rule. | Required | 
-| identity | the id of the rule. | Required | 
-| display_all | display all fields of a rule | Optional | 
-
+| identity | the id of the rule. | Required |
 
 #### Context Output
 | **Path** | **Type** | **Description** |

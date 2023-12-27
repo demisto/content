@@ -1096,8 +1096,7 @@ class ExchangeOnlinePowershellV3Client
 
     [PSObject]GetRules(
         [string]$mailbox,
-        [int]$limit,
-        [bool]$display_all
+        [int]$limit
     )
     {
         $response = ""
@@ -1113,12 +1112,7 @@ class ExchangeOnlinePowershellV3Client
             if ($limit -gt 0){
                 $cmd_params.ResultSize = $limit
             }
-            if ($display_all){
-                $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue | Format-List
-            }
-            else {
-                $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue
-            }
+            $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
@@ -1145,8 +1139,7 @@ class ExchangeOnlinePowershellV3Client
 
     [PSObject]GetRule(
         [string]$mailbox,
-        [string]$identity,
-        [bool]$display_all
+        [string]$identity
     )
     {
         $response = ""
@@ -1162,12 +1155,8 @@ class ExchangeOnlinePowershellV3Client
             if ($identity) {
                 $cmd_params.Identity = $identity
             }
-            if ($display_all){
-                $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue | Format-List
-            }
-            else {
-                $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue
-            }
+
+            $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue
 
         } finally {
             $this.DisconnectSession()
@@ -1584,8 +1573,7 @@ function ListRulesCommand {
     )
     $mailbox = $kwargs.mailbox
     $limit = ($kwargs.limit -as [int])
-    $display_all = ConvertTo-Boolean $kwargs.display_all
-    $raw_response = $client.GetRules($mailbox, $limit, $display_all)
+    $raw_response = $client.GetRules($mailbox, $limit)
     $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule" = $raw_response }
@@ -1599,8 +1587,7 @@ function GetRuleCommand {
     )
     $mailbox = $kwargs.mailbox
     $identity = $kwargs.identity
-    $display_all = ConvertTo-Boolean $kwargs.display_all
-    $raw_response = $client.GetRule($mailbox, $identity, $display_all)
+    $raw_response = $client.GetRule($mailbox, $identity)
     $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority, Description, StopProcessingRules, IsValid
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule" = $raw_response }
