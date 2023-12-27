@@ -21,4 +21,4 @@ if ! poetry run demisto-sdk >/dev/null 2>&1; then
     exit 1
 fi
 
-poetry run demisto-sdk pre-commit --staged-only --no-validate --no-docker
+poetry run demisto-sdk pre-commit --staged-only --mode=commit
