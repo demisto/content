@@ -74,6 +74,7 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> bo
     if without_jira:
         logging.info("Printing test playbook summary without Jira tickets")
         jira_tickets_for_playbooks = {}
+        server_url = JIRA_SERVER_URL
     else:
         logging.info("Searching for Jira tickets for playbooks with the following settings:")
         logging.info(f"\tJira server url: {JIRA_SERVER_URL}")
@@ -83,7 +84,8 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> bo
         logging.info(f"\tJira component: {JIRA_COMPONENT}")
         logging.info(f"\tJira labels: {', '.join(JIRA_LABELS)}")
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
-        jira_server_information(jira_server)
+        jira_server_info = jira_server_information(jira_server)
+        server_url = jira_server_info["baseUrl"]
 
         issues = jira_search_all_by_query(jira_server, generate_query_by_component_and_issue_type())
         jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(playbooks_ids, issues)
@@ -96,7 +98,7 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> bo
                                                                              without_jira=without_jira)
     logging.info(f"Writing test playbook report to {test_playbooks_report}")
     xml.write(test_playbooks_report.as_posix(), pretty=True)
-    write_test_playbook_to_jira_mapping(artifacts_path, jira_tickets_for_playbooks)
+    write_test_playbook_to_jira_mapping(server_url, artifacts_path, jira_tickets_for_playbooks)
 
     table = tabulate(tabulate_data, headers="firstrow", tablefmt="pretty", colalign=column_align)
     logging.info(f"Test Playbook Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
