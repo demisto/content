@@ -7,13 +7,24 @@ import base64
 import dill
 import copy
 import numpy as np
-import urllib3
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
 
-urllib3.disable_warnings()
-
 dill.settings['recurse'] = True
+
+# --------------
+import time
+
+def timeit(func):
+    def timeit_wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        return_results(f'Function {func.__name__}({args} {kwargs}) Took {total_time:.4f} seconds')
+        return result
+    return timeit_wrapper
+# ---------------
 
 no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)
 
@@ -280,13 +291,12 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
 
 
 def verdict_to_int(verdict):
-    if verdict == MALICIOUS_VERDICT:
-        return 3
-    if verdict in (BENIGN_VERDICT, BENIGN_VERDICT_WHITELIST):
-        return 1
-    if verdict == SUSPICIOUS_VERDICT:
-        return 2
-    return None
+    return {
+        MALICIOUS_VERDICT: 3,
+        BENIGN_VERDICT: 1,
+        BENIGN_VERDICT_WHITELIST: 1,
+        SUSPICIOUS_VERDICT: 2
+    }.get(verdict)
 
 
 def return_entry_summary(pred_json: dict, url: str, whitelist: bool, output_rasterize: dict, verdict: str,
@@ -745,7 +755,7 @@ def check_if_whois_installed():
         return_results(MSG_ENABLE_WHOIS)
         return False
 
-
+@timeit
 def main():
     who_is_enabled = check_if_whois_installed()
     try:
@@ -755,17 +765,17 @@ def main():
         exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
 
         # Load arguments
-        reset_model = demisto.args().get('resetModel', 'False') == 'True'
-        debug = demisto.args().get('debug', 'False') == 'True'
-        force_model = demisto.args().get('forceModel', 'False') == 'True'
-        email_body = demisto.args().get('emailBody', "")
-        email_html = demisto.args().get('emailHTML', "")
-        max_urls = int(demisto.args().get('maxNumberOfURL', 5))
-        urls_argument = demisto.args().get('urls', '')
-        reliability = demisto.args().get("reliability", DBotScoreReliability.A_PLUS)
-        rasterize_timeout = arg_to_number(demisto.args().get('rasterize_timeout', TIMEOUT_RASTERIZE))
+        args = demisto.args()
+        reset_model = args.get('resetModel', 'False') == 'True'
+        debug = args.get('debug', 'False') == 'True'
+        force_model = args.get('forceModel', 'False') == 'True'
+        email_body = args.get('emailBody', "")
+        email_html = args.get('emailHTML', "")
+        max_urls = int(args.get('maxNumberOfURL', 5))
+        urls_argument = args.get('urls', '')
+        rasterize_timeout = arg_to_number(args.get('rasterize_timeout', TIMEOUT_RASTERIZE))
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
-            reliability
+            args.get("reliability", DBotScoreReliability.A_PLUS)
         )
 
         # Update model if necessary and load the model
@@ -788,7 +798,7 @@ def main():
         return general_summary, detailed_summary, msg_list
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute URL Phishing script. Error: {str(ex)}')
+        return_error(f'Failed to execute URL Phishing script. Error: {ex}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
