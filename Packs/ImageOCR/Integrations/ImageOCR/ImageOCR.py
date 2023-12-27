@@ -35,7 +35,7 @@ def list_languages_command() -> CommandResults:
     )
 
 
-def extract_text_command(args: dict, instance_languages: list) -> tuple[list, list]:
+def extract_text_command(args: dict, instance_languages: list, skip_corrupted: bool) -> tuple[list, list]:
     langs = argToList(args.get('langs')) or instance_languages
     demisto.debug(f"Using langs settings: {langs}")
     results, errors = [], []
@@ -60,7 +60,7 @@ def extract_text_command(args: dict, instance_languages: list) -> tuple[list, li
                 )
             )
         except subprocess.CalledProcessError as cpe:
-            if CORRUPTED_ERR in cpe.stderr and argToBoolean(args.get("skip_corrupted")):
+            if CORRUPTED_ERR in cpe.stderr and skip_corrupted:
                 file_entry = {"EntryID": entry_id, "Text": CORRUPTED_MSG}
                 results.append(
                     CommandResults(
@@ -100,13 +100,14 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     instance_languages = argToList(demisto.params().get('langs'))
+    skip_corrupted = argToBoolean(demisto.params().get('skip_corrupted'))
     try:
         if command == 'test-module':
             return_results(run_test_module(instance_languages))
         elif command == 'image-ocr-list-languages':
             return_results(list_languages_command())
         elif command == 'image-ocr-extract-text':
-            results, errors = extract_text_command(args, instance_languages)
+            results, errors = extract_text_command(args, instance_languages, skip_corrupted)
             return_results(results)
             if errors:
                 raise DemistoException("\n".join(errors))
