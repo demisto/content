@@ -1215,7 +1215,7 @@ class ExchangeOnlinePowershellV3Client
         } finally {
             $this.DisconnectSession()
         }
-        return $response. $PSScriptRoot\CommonServerPowerShell.ps1
+        return $response
         <#
         .DESCRIPTION
         Remove an Inbox rule.
