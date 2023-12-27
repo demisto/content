@@ -1445,29 +1445,60 @@ Get a list of all mailbox rules.
 
 
 #### Context Output
+There are no context outputs for this command.
 
-| **Path** | **Type** | **Description** |
+#### Human Readable Output
+
+>### Results of ews-rules-list
+>| Enabled | Name | Priority | RuleIdentity |
+>| --- | --- | --- | --- |
+>| true | CheckActionRequired	 | 1 | 1268829516541722625 |
+>| true | ews phishing test	| 8 | 1845290268845146113 |
+
+### ews-get-rule
+***
+Get a mailbox rule.
+
+#### Base Command
+
+`ews-get-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| EWS.MailboxAuditBypassAssociation.AuditBypassEnabled | Boolean | Whether the mailbox audit bypass association is enabled. | 
-| EWS.MailboxAuditBypassAssociation.DistinguishedName | String | Distinguished name of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.ExchangeObjectId | String | Exchange object ID of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.ExchangeVersion | String | The version of the exchanged server. | 
-| EWS.MailboxAuditBypassAssociation.Guid | String | The GUID of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.Id | String | ID of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.Identity | String | The unique identity of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.IsValid | Boolean | Whether the mailbox audit bypass association property is enabled. | 
-| EWS.MailboxAuditBypassAssociation.Name | String | Name of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.ObjectCategory | String | Object category of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.ObjectClass | String | Object class of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.ObjectId | String | Object ID of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.ObjectState | String | Object state of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.OrganizationId | String | Organization ID of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.OriginatingServer | String | Originating server of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.PSComputerName | String | PowerShell computer name of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.PSShowComputerName | Boolean | Whether to show the computer name of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.RunspaceId | String | Runspace ID of the mailbox audit bypass association. | 
-| EWS.MailboxAuditBypassAssociation.WhenChanged | unknown | The date the mailbox audit bypass association was changed. | 
-| EWS.MailboxAuditBypassAssociation.WhenChangedUTC | Date | The date in UTC of when the mailbox audit bypass association was changed. | 
-| EWS.MailboxAuditBypassAssociation.WhenCreated | Date | The date the mailbox audit bypass association was created. | 
-| EWS.MailboxAuditBypassAssociation.WhenCreatedUTC | Date | The date in UTC format of when the mailbox audit bypass association was created. | 
+| mailbox | The mailbox that contains the Inbox rule. | Required | 
+| identity | the id of the rule. | Required | 
+| display_all | display all fields of a rule | Optional | 
 
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+
+>### Results of ews-rules-list
+>| Enabled | Name | Priority | RuleIdentity | Description | IsValid	| StopProcessingRules|
+>| --- | --- | --- | --- | --- | --- | ---|
+>| true | CheckActionRequired | 1 | 1268829516541722625 | If the message: the sender requested any action and my name is in the To box | true| false |
+
+### ews-remove-rule
+***
+Remove a mailbox rule.
+
+#### Base Command
+
+`ews-remove-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the Inbox rule. | Required | 
+| identity | the id of the rule. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+
+>Rule 1845290268845146113 has been deleted successfully
