@@ -39,7 +39,8 @@ ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE = ARTIFACTS_FOLDER_XSOAR / "server_type_
 ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE = ARTIFACTS_FOLDER_XPANSE / "server_type_XPANSE"
 ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE = ARTIFACTS_FOLDER_XSIAM / "server_type_XSIAM"
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
-GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
+GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 1061
+GITLAB_SSL_VERIFY = bool(strtobool(os.getenv('GITLAB_SSL_VERIFY', 'true')))
 CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
@@ -320,16 +321,9 @@ def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None,
-                        shame_message: tuple[str, str] | None) -> list[dict[str, Any]]:
+                        shame_message: tuple[str, str, str] | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
-    if shame_message:
-        shame_title, shame_value = shame_message
-        content_fields.append({
-            "title": shame_title,
-            "value": shame_value,
-            "short": False
-        })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
@@ -406,7 +400,6 @@ def construct_slack_msg(triggering_workflow: str,
 
     title += title_append
     title += f' - @{CI_SERVER_HOST}' if CI_SERVER_HOST else ''
-    #title += shame_message[0]
     slack_msg_start = []
     if shame_message:
         shame_title, shame_value, shame_color = shame_message
@@ -493,7 +486,7 @@ def main():
     server_url = options.url
     ci_token = options.ci_token
     computed_slack_channel = options.slack_channel
-    gitlab_client = Gitlab(server_url, private_token=ci_token)
+    gitlab_client = Gitlab(server_url, private_token=ci_token, ssl_verify=GITLAB_SSL_VERIFY)
     slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
 
@@ -530,8 +523,7 @@ def main():
     shame_message = None
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
-        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
-                                                               project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
+        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_client, project_id, look_back_hours=LOOK_BACK_HOURS)
         pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
                                                          list_of_pipelines=list_of_pipelines,
                                                          commits=commits)

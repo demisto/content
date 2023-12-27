@@ -1,15 +1,16 @@
 import json
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import requests
+from dateutil import parser
+from gitlab import Gitlab
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
-import requests
+
 from Tests.scripts.utils import logging_wrapper as logging
-import gitlab
-from datetime import datetime, timedelta
-from dateutil import parser
 
 CONTENT_NIGHTLY = 'Content Nightly'
 CONTENT_PR = 'Content PR'
@@ -223,20 +224,18 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
     return sentence
 
 
-def get_pipelines_and_commits(gitlab_url:str, gitlab_access_token:str, project_id:str, look_back_hours:int):
+def get_pipelines_and_commits(gitlab_client: Gitlab, project_id, look_back_hours: int):
     """
     Get all pipelines and commits on the master branch in the last X hours,
     pipelines are filtered to only include successful and failed pipelines.
     Args:
-        gitlab_url - the url of the gitlab instance
-        gitlab_access_token - the access token to use to authenticate with gitlab
+        gitlab_client - the gitlab instance
         project_id - the id of the project to query
         look_back_hours - the number of hours to look back for commits and pipeline
     Return:
         a list of gitlab pipelines and a list of gitlab commits in ascending order
     """
-    gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_access_token)
-    project = gl.projects.get(project_id)
+    project = gitlab_client.projects.get(project_id)
 
     # Calculate the timestamp for look_back_hours ago
     time_threshold = (
