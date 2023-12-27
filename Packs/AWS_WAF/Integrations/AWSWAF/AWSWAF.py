@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from AWSApiModule import *  # noqa: E402
-from typing import TYPE_CHECKING, Callable, Tuple, Any, List
+from typing import TYPE_CHECKING, Any
+from collections.abc import Callable
 
 # The following import are used only for type hints and autocomplete.
 # It is not used at runtime, and not exist in the docker image.
@@ -153,7 +154,7 @@ def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> list:
     return [{'Key': k, 'Value': v} for k, v in zip(tag_keys, tag_values)]
 
 
-def build_regex_pattern_object(regex_patterns: list) -> List["RegexTypeDef"]:
+def build_regex_pattern_object(regex_patterns: list) -> list["RegexTypeDef"]:
     """
     Creates a list of dictionaries which represent a regex set object
     Args:
@@ -431,7 +432,7 @@ def append_new_rule(rules: list, rule: dict) -> list:
 
 
 def get_required_response_fields_from_rule_group(client: "WAFV2Client", kwargs: dict
-                                                 ) -> Tuple[List["RuleTypeDef"], "VisibilityConfigTypeDef", str]:
+                                                 ) -> tuple[list["RuleTypeDef"], "VisibilityConfigTypeDef", str]:
     """
     Gets all the fields from the response that are required for the update request
     Args:
