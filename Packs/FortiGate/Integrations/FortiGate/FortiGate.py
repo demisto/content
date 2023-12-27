@@ -2638,11 +2638,11 @@ def handle_action_for_port_ranges(
         "sctp_port_ranges": sctp_port_ranges,
     }
 
-    for (key, value), api_key in zip(
+    for (key, value), obj_key in zip(
         port_ranges.items(),
         ("tcp-portrange", "udp-portrange", "sctp-portrange"),
     ):
-        api_port_range = obj.get(api_key, "").split()
+        api_port_range = obj.get(obj_key, "").split()
         port_ranges[key] = handle_group_items_by_action(value, action, api_port_range)
 
     return port_ranges
@@ -4225,6 +4225,8 @@ def update_firewall_service_command(client: Client, args: dict[str, Any]) -> Com
                 f" which is not compatible with the requested type '{input_protocol_type}'."
             )
 
+    port_ranges = {}
+
     if action:
         port_ranges = handle_action_for_port_ranges(
             obj=result,
@@ -4246,7 +4248,9 @@ def update_firewall_service_command(client: Client, args: dict[str, Any]) -> Com
         icmp_type=icmp_type,
         icmp_code=icmp_code,
         ip_protocol=ip_protocol,
-        **port_ranges,
+        tcp_port_ranges=port_ranges.get("tcp_port_ranges"),
+        udp_port_ranges=port_ranges.get("udp_port_ranges"),
+        sctp_port_ranges=port_ranges.get("sctp_port_ranges"),
     )
 
     outputs = build_service_outputs(args)
