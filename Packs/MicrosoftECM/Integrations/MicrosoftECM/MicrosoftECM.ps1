@@ -425,11 +425,7 @@ Function ExecuteServiceScript()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		# Checking if script exists in the configuration ConfigurationManager
@@ -550,11 +546,7 @@ Function GetCollectionList()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		switch ($parameters.usedParameterName)
@@ -596,11 +588,7 @@ Function GetDeviceList()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
@@ -654,11 +642,7 @@ Function GetScriptList()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
@@ -708,11 +692,7 @@ Function CreateScript()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
@@ -755,11 +735,7 @@ Function InvokeScript()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
@@ -798,11 +774,7 @@ Function ApproveScript()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
@@ -888,11 +860,7 @@ Function CreateDeviceCollection()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
@@ -926,11 +894,7 @@ Function AddMembersToDeviceCollection()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		$CMPSSuppressFastNotUsedCheck = $true
@@ -972,11 +936,7 @@ Function IncludeDeviceCollection()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		switch ($parameters.usedParameterName)
@@ -1024,11 +984,7 @@ Function ExcludeDeviceCollection()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		switch ($parameters.usedParameterName)
@@ -1072,11 +1028,7 @@ Function AddMembersToCollectionByQuery()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		if ($CollectionID)
@@ -1473,11 +1425,7 @@ Function TestModule()
 		Import-Module .\ConfigurationManager.psd1
 		# Connect to the site's drive if it is not already present
 		if (-not (Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue)) {
-<<<<<<< HEAD
             New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose:$true -ErrorAction "Stop"
-=======
-            New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $computerName -Verbose $true -ErrorAction "Stop"
->>>>>>> 4c9550e3460beb318e2a2277cd91ac37a81daf5d
         }
 		Set-Location "$( $SiteCode ):"
 		if ($null -eq (Get-Module -Name ConfigurationManager).Version)
