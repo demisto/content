@@ -9,8 +9,10 @@ from dateutil import parser
 from gitlab import Gitlab
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
-
 from Tests.scripts.utils import logging_wrapper as logging
+import gitlab
+from datetime import datetime, timedelta
+from dateutil import parser
 
 CONTENT_NIGHTLY = 'Content Nightly'
 CONTENT_PR = 'Content PR'

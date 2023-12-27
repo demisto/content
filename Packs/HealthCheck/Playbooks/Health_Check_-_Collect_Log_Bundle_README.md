@@ -47,30 +47,38 @@ Holding the default Thresholds:
 }
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * PrintErrorEntry
 * HealthCheckUnpack
 
 ### Commands
-* demisto-api-download
+
+* core-api-download
 
 ## Playbook Inputs
+
 ---
 There are no inputs for this playbook.
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
 ![Health Check - Collect Log Bundle](./../doc_files/HealthCheck-CollectLogBundle-pb.png)
 /Users/tzimmer/Documents/GitHub/content/Packs/HealthCheck/doc_files/HealthCheck-CollectLogBundle-pb.png

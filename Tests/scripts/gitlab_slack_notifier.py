@@ -191,6 +191,7 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
                                         test_playbook_tickets_converted: bool,
                                         title: str,
                                         pipeline_url: str) -> tuple[list[dict[str, Any]], bool]:
+
     if failed_tests:
         title = (f"{title} ({instance_role}) - Test Playbooks - Passed:{len(succeeded_tests)}, Failed:{len(failed_tests)}, "
                  f"Skipped - {len(skipped_tests)}, Skipped Integrations - {len(skipped_integrations)}")
@@ -255,17 +256,18 @@ def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str)
     test_playbook_slack_msg = []
     for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
         succeeded_tests, failed_tests, skipped_tests, skipped_integrations = get_playbook_tests_data(instance_directory)
-        instance_slack_msg, instance_has_failed_tests = test_playbooks_results_to_slack_msg(instance_role,
-                                                                                            succeeded_tests,
-                                                                                            failed_tests,
-                                                                                            skipped_integrations,
-                                                                                            skipped_tests,
-                                                                                            test_playbook_to_jira_mapping,
-                                                                                            test_playbook_tickets_converted,
-                                                                                            title,
-                                                                                            pipeline_url)
-        test_playbook_slack_msg += instance_slack_msg
-        has_failed_tests |= instance_has_failed_tests
+        if succeeded_tests or failed_tests:  # Handling case where no playbooks had run
+            instance_slack_msg, instance_has_failed_tests = test_playbooks_results_to_slack_msg(instance_role,
+                                                                                                succeeded_tests,
+                                                                                                failed_tests,
+                                                                                                skipped_integrations,
+                                                                                                skipped_tests,
+                                                                                                test_playbook_to_jira_mapping,
+                                                                                                test_playbook_tickets_converted,
+                                                                                                title,
+                                                                                                pipeline_url)
+            test_playbook_slack_msg += instance_slack_msg
+            has_failed_tests |= instance_has_failed_tests
 
     return test_playbook_slack_msg, has_failed_tests
 
@@ -324,6 +326,13 @@ def construct_slack_msg(triggering_workflow: str,
                         shame_message: tuple[str, str, str] | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
+    if shame_message:
+        shame_title, shame_value = shame_message
+        content_fields.append({
+            "title": shame_title,
+            "value": shame_value,
+            "short": False
+        })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:

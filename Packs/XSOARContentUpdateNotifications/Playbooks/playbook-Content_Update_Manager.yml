@@ -47,7 +47,7 @@ tasks:
       version: -1
       name: Check for updates
       description: Sends an HTTP GET request to check for updates.
-      script: '|||demisto-api-get'
+      script: '|||core-api-get'
       type: regular
       iscommand: true
       brand: ""
@@ -178,8 +178,7 @@ tasks:
       id: f322f372-6e92-4a8b-8c85-67c509ba37a1
       version: -1
       name: Are there e-mail addresses?
-      description: Checks if e-mail addresses are provided in the inputs and whether
-        any "send-mail" compatible integrations are enabled.
+      description: Checks if e-mail addresses are provided in the inputs and whether any "send-mail" compatible integrations are enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -243,8 +242,7 @@ tasks:
       id: c84f2fd3-e605-43d5-8b74-eda542bdcb33
       version: -1
       name: Are there Slack channels?
-      description: Checks if a Slack channel is provided in the inputs and whether
-        any Slack integrations are configured.
+      description: Checks if a Slack channel is provided in the inputs and whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -308,8 +306,7 @@ tasks:
       id: aebffc5d-e57e-4fff-80ef-d9863fe82e4b
       version: -1
       name: Are there Slack users?
-      description: Checks if a Slack username is provided in the inputs and whether
-        any Slack integrations are configured.
+      description: Checks if a Slack username is provided in the inputs and whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -592,8 +589,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Would you like XSOAR to perform automatic update for the found content
-            packs?
+          simple: Would you like XSOAR to perform automatic update for the found content packs?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -726,8 +722,7 @@ tasks:
       id: d2a57629-0340-41a4-82e7-a0e9988fb1c6
       version: -1
       name: Are there relevant updates?
-      description: Checks if relevant updates are available. It includes all updates
-        if the user selects monitoring "All" packs.
+      description: Checks if relevant updates are available. It includes all updates if the user selects monitoring "All" packs.
       type: condition
       iscommand: false
       brand: ""
@@ -791,8 +786,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: Updates available but they do not match the user filter
-                    (
+                  simple: Updates available but they do not match the user filter (
               suffix:
                 value:
                   simple: )
@@ -821,9 +815,7 @@ tasks:
       id: ab6eccd9-64b6-47b3-8879-76a0bc7aed15
       version: -1
       name: Were the packs updated?
-      description: Checks whether the packs were updated after either the sub-playbook
-        timed out or there are no more updates to apply. It results in the "yes" branch
-        if the installed updates match those selected in the content packs to be monitored.
+      description: Checks whether the packs were updated after either the sub-playbook timed out or there are no more updates to apply. It results in the "yes" branch if the installed updates match those selected in the content packs to be monitored.
       type: condition
       iscommand: false
       brand: ""
@@ -963,8 +955,7 @@ tasks:
       id: d44eb457-7e91-4bcd-819a-75fbb32609c0
       version: -1
       name: Is there a user filter?
-      description: Checks whether the user provided a specific content pack update
-        filter other than "All".
+      description: Checks whether the user provided a specific content pack update filter other than "All".
       type: condition
       iscommand: false
       brand: ""
@@ -1248,8 +1239,7 @@ tasks:
       id: cdbd4214-f433-457a-8cdf-c821beaf0f51
       version: -1
       name: Are there Slack channels?
-      description: Checks if a Slack channel is provided in the inputs and whether
-        any Slack integrations are configured.
+      description: Checks if a Slack channel is provided in the inputs and whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -1582,8 +1572,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Would you like XSOAR to perform automatic update for the found content
-            packs?
+          simple: Would you like XSOAR to perform automatic update for the found content packs?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1766,8 +1755,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Would you like XSOAR to perform automatic update for the found content
-            packs?
+          simple: Would you like XSOAR to perform automatic update for the found content packs?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1818,8 +1806,7 @@ tasks:
               is_auto_json_transform: {}
               json_transform_properties:
                 value:
-                  simple: '{"changelog": {"keys": ["releaseNotes","released"], "is_nested":
-                    true}}'
+                  simple: '{"changelog": {"keys": ["releaseNotes","released"], "is_nested": true}}'
               title: {}
     separatecontext: false
     view: |-
@@ -1876,8 +1863,7 @@ tasks:
       id: a4c8e1d3-ff41-4ff2-828c-8bfe4147e0e1
       version: -1
       name: Are there Slack users?
-      description: Checks if a Slack username is provided in the inputs and whether
-        any Slack integrations are configured.
+      description: Checks if a Slack username is provided in the inputs and whether any Slack integrations are configured.
       type: condition
       iscommand: false
       brand: ""
@@ -2137,8 +2123,7 @@ tasks:
       id: 37df4958-12a3-428e-84d2-bda313d530db
       version: -1
       name: Are there e-mail addresses?
-      description: Checks if e-mail addresses are provided in the inputs and whether
-        any "send-mail" compatible integrations are enabled.
+      description: Checks if e-mail addresses are provided in the inputs and whether any "send-mail" compatible integrations are enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -2461,9 +2446,7 @@ inputs:
       root: incident
       accessor: contentnotificationemail
   required: true
-  description: "Provides semi-colon delimited e-mail addresses for the new content\
-    \ notifications. Note: You must have an installed and configured integration that\
-    \ supports the send-mail command."
+  description: "Provides semi-colon delimited e-mail addresses for the new content notifications. Note: You must have an installed and configured integration that supports the send-mail command."
   playbookInputQuery:
 - key: slackuser
   value:
@@ -2471,8 +2454,7 @@ inputs:
       root: incident
       accessor: contentnotificationslackusername
   required: false
-  description: "Provides a Slack username for the new content notifications. Note:\
-    \ You must have an installed and configured Slack integration."
+  description: "Provides a Slack username for the new content notifications. Note: You must have an installed and configured Slack integration."
   playbookInputQuery:
 - key: slackchannel
   value:
@@ -2480,9 +2462,7 @@ inputs:
       root: incident
       accessor: contentnotificationslackchannel
   required: false
-  description: "Provides a Slack channel for the new content notifications. Note:\
-    \ You must have an installed and configured Slack integration. Also, make sure\
-    \ the Cortex XSOAR application has access to this channel."
+  description: "Provides a Slack channel for the new content notifications. Note: You must have an installed and configured Slack integration. Also, make sure the Cortex XSOAR application has access to this channel."
   playbookInputQuery:
 - key: slackchannelid
   value:
@@ -2490,8 +2470,7 @@ inputs:
       root: incident
       accessor: contentnotificationslackchannelid
   required: false
-  description: "Provides a Slack channel ID for the new content notifications. Note:\
-    \ You must have an installed and configured Slack integration."
+  description: "Provides a Slack channel ID for the new content notifications. Note: You must have an installed and configured Slack integration."
   playbookInputQuery:
 - key: packs
   value:
@@ -2529,9 +2508,8 @@ inputs:
       root: incident
       accessor: demistorestapiname
   required: true
-  description: Defines which instance of a configured Demisto API to use for checking
-    updates against.
-  playbookInputQuery: null
+  description: Defines which instance of a configured Demisto API to use for checking updates against.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

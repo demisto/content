@@ -5,6 +5,8 @@ import json
 from datetime import datetime
 from collections.abc import Callable
 import copy
+
+import requests
 from requests.exceptions import ReadTimeout
 
 import QRadar_v3  # import module separately for mocker
@@ -112,6 +114,30 @@ def test_get_optional_time_parameter_valid_time_argument(arg, iso_format, epoch_
      - Case e: Ensure that correct FraudWatch format is returned.
     """
     assert (get_time_parameter(arg, iso_format=iso_format, epoch_format=epoch_format)) == expected
+
+
+def test_connection_errors_recovers(mocker):
+    """
+    Given:
+     - Connection Error, ReadTimeout error and a success response
+
+    When:
+     - running the http_request method
+
+    Then:
+     - Ensure that success message is printed and recovery for http request happens.
+    """
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=[
+            DemistoException(message="error", exception=requests.ConnectionError("error")),
+            requests.ReadTimeout("error"),
+            "success"
+        ]
+    )
+    assert client.http_request(method="GET", url_suffix="url") == "success"
 
 
 @pytest.mark.parametrize('dict_key, inner_keys, expected',
@@ -358,7 +384,7 @@ def test_create_single_asset_for_offense_enrichment():
                            None,
                            ([], QueryStatus.ERROR.value))
                           ])
-def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
+def test_poll_offense_events_with_retry(mocker, requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
     """
     Given:
@@ -373,6 +399,7 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
      - Case a: Ensure that expected events are returned.
      - Case b: Ensure that None is returned.
     """
+    mocker.patch.object(demisto, "error")
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
     set_integration_context(context_data)

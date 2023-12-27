@@ -1,0 +1,137 @@
+{
+    "mock_response": {
+        "data": [
+            {
+                "id": "polchk-abcabcabcabcabc4",
+                "type": "policy-checks",
+                "attributes": {
+                    "result": {
+                        "result": false,
+                        "passed": 0,
+                        "total-failed": 1,
+                        "hard-failed": 0,
+                        "soft-failed": 1,
+                        "advisory-failed": 0,
+                        "duration-ms": 0
+                    },
+                    "scope": "organization",
+                    "status": "soft_failed",
+                    "status-timestamps": {
+                        "queued-at": "2017-11-29T20:02:17+00:00",
+                        "soft-failed-at": "2017-11-29T20:02:20+00:00"
+                    },
+                    "actions": {
+                        "is-overridable": true
+                    },
+                    "permissions": {
+                        "can-override": false
+                    }
+                },
+                "relationships": {
+                    "run": {
+                        "data": {
+                            "id": "run-abcabcabcabcabc4",
+                            "type": "runs"
+                        }
+                    }
+                },
+                "links": {
+                    "output": "/api/v2/policy-checks/polchk-abcabcabcabcabc4/output"
+                }
+            }
+        ]
+    },
+    "expected_results": {
+        "Type": 1,
+        "ContentsFormat": "json",
+        "Contents": {
+            "data": [
+                {
+                    "id": "polchk-abcabcabcabcabc4",
+                    "type": "policy-checks",
+                    "attributes": {
+                        "result": {
+                            "result": false,
+                            "passed": 0,
+                            "total-failed": 1,
+                            "hard-failed": 0,
+                            "soft-failed": 1,
+                            "advisory-failed": 0,
+                            "duration-ms": 0
+                        },
+                        "scope": "organization",
+                        "status": "soft_failed",
+                        "status-timestamps": {
+                            "queued-at": "2017-11-29T20:02:17+00:00",
+                            "soft-failed-at": "2017-11-29T20:02:20+00:00"
+                        },
+                        "actions": {
+                            "is-overridable": true
+                        },
+                        "permissions": {
+                            "can-override": false
+                        }
+                    },
+                    "relationships": {
+                        "run": {
+                            "data": {
+                                "id": "run-abcabcabcabcabc4",
+                                "type": "runs"
+                            }
+                        }
+                    },
+                    "links": {
+                        "output": "/api/v2/policy-checks/polchk-abcabcabcabcabc4/output"
+                    }
+                }
+            ]
+        },
+        "HumanReadable": "### Terraform Policy Checks\n|Policy check id|Result|Scope |Status|\n|---|---|---|---|\n| polchk-abcabcabcabcabc4 | result: false<br>passed: 0<br>total-failed: 1<br>hard-failed: 0<br>soft-failed: 1<br>advisory-failed: 0<br>duration-ms: 0 | organization | soft_failed |\n",
+        "EntryContext": {
+            "Terraform.PolicyCheck(val.id && val.id == obj.id)": [
+                {
+                    "id": "polchk-abcabcabcabcabc4",
+                    "type": "policy-checks",
+                    "attributes": {
+                        "result": {
+                            "result": false,
+                            "passed": 0,
+                            "total-failed": 1,
+                            "hard-failed": 0,
+                            "soft-failed": 1,
+                            "advisory-failed": 0,
+                            "duration-ms": 0
+                        },
+                        "scope": "organization",
+                        "status": "soft_failed",
+                        "status-timestamps": {
+                            "queued-at": "2017-11-29T20:02:17+00:00",
+                            "soft-failed-at": "2017-11-29T20:02:20+00:00"
+                        },
+                        "actions": {
+                            "is-overridable": true
+                        },
+                        "permissions": {
+                            "can-override": false
+                        }
+                    },
+                    "relationships": {
+                        "run": {
+                            "data": {
+                                "id": "run-abcabcabcabcabc4",
+                                "type": "runs"
+                            }
+                        }
+                    },
+                    "links": {
+                        "output": "/api/v2/policy-checks/polchk-abcabcabcabcabc4/output"
+                    }
+                }
+            ]
+        },
+        "IndicatorTimeline": [],
+        "IgnoreAutoExtract": false,
+        "Note": false,
+        "Relationships": []
+    }
+}
