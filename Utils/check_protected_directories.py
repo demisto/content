@@ -29,10 +29,12 @@ EXCEPTIONS: set[Path] = {
 
 
 def is_path_change_allowed(path: Path) -> bool:
-    try:
+    if CONTENT_ROOT.name in path.parts:
+        # Absolute path
         first_level_dir = path.relative_to(CONTENT_ROOT).parts[0]  # e.g. Packs, Utils
-    except ValueError as e:
-        raise ValueError(f"Expected {path} to be under {CONTENT_ROOT}") from e
+    else:
+        # Relative path (without `content/`)
+        first_level_dir = path.parts[0]
 
     if Path(CONTENT_ROOT, first_level_dir) in PROTECTED_DIRECTORY_PATHS:
         return path in EXCEPTIONS  # if in exception, it's allowed
