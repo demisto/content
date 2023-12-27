@@ -42,7 +42,7 @@ def is_valid_args(args: Dict):
         if _key in array_args:
             try:
                 if _key == 'id':
-                    if not isinstance(value, (int, str, list)):
+                    if not isinstance(value, int | str | list):
                         error_msg.append(
                             f'Error while parsing the incident id with the value: {value}. The given type: '
                             f'{type(value)} is not a valid type for an ID. The supported id types are: int, list and str')
@@ -125,7 +125,7 @@ def search_incidents(args: Dict):   # pragma: no cover
     is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     platform = get_demisto_version().get('platform', 'xsoar')
     if not is_valid_args(args):
-        return
+        return None
 
     if fromdate := arg_to_datetime(args.get('fromdate', '30 days ago' if is_summarized_version else None)):
         from_date = fromdate.isoformat()
