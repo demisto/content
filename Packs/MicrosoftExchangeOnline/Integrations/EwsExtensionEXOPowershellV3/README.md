@@ -1427,3 +1427,47 @@ Retrieves information about the AuditBypassEnabled property value for user accou
 | EWS.MailboxAuditBypassAssociation.WhenCreated | Date | The date the mailbox audit bypass association was created. | 
 | EWS.MailboxAuditBypassAssociation.WhenCreatedUTC | Date | The date in UTC format of when the mailbox audit bypass association was created. | 
 
+
+### ews-rules-list
+***
+Get a list of all mailbox rules.
+
+#### Base Command
+
+`ews-rules-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the Inbox rule. | Required | 
+| display_all | Get a list of all mailbox rules. | Optional | 
+| limit | Maximum number of rules to get. A value of 0 means to get all rules | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.MailboxAuditBypassAssociation.AuditBypassEnabled | Boolean | Whether the mailbox audit bypass association is enabled. | 
+| EWS.MailboxAuditBypassAssociation.DistinguishedName | String | Distinguished name of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ExchangeObjectId | String | Exchange object ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ExchangeVersion | String | The version of the exchanged server. | 
+| EWS.MailboxAuditBypassAssociation.Guid | String | The GUID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.Id | String | ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.Identity | String | The unique identity of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.IsValid | Boolean | Whether the mailbox audit bypass association property is enabled. | 
+| EWS.MailboxAuditBypassAssociation.Name | String | Name of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ObjectCategory | String | Object category of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ObjectClass | String | Object class of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ObjectId | String | Object ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.ObjectState | String | Object state of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.OrganizationId | String | Organization ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.OriginatingServer | String | Originating server of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.PSComputerName | String | PowerShell computer name of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.PSShowComputerName | Boolean | Whether to show the computer name of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.RunspaceId | String | Runspace ID of the mailbox audit bypass association. | 
+| EWS.MailboxAuditBypassAssociation.WhenChanged | unknown | The date the mailbox audit bypass association was changed. | 
+| EWS.MailboxAuditBypassAssociation.WhenChangedUTC | Date | The date in UTC of when the mailbox audit bypass association was changed. | 
+| EWS.MailboxAuditBypassAssociation.WhenCreated | Date | The date the mailbox audit bypass association was created. | 
+| EWS.MailboxAuditBypassAssociation.WhenCreatedUTC | Date | The date in UTC format of when the mailbox audit bypass association was created. | 
+

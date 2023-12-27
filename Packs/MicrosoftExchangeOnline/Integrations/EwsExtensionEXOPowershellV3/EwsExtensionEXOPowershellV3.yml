@@ -2061,28 +2061,15 @@ script:
       description: The mailbox that contains the Inbox rule.
       required: true
     - defaultValue: 50
-      description: Maximum number of users to get. A value of 0 means to get all users.
+      description: Maximum number of rules to get. A value of 0 means to get all rules.
       name: limit
     - name: display_all
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-      description: Display all properties of the rule as a list .
+      description: Get a list of all mailbox rules.
       defaultValue: 'false'
-    outputs:
-    - contextPath: MSGraphMail.Rule.RuleIdentity
-      description: The rule identity.
-      type: string
-    - contextPath: MSGraphMail.Rule.Name
-      description: The rule name.
-      type: string
-    - contextPath: MSGraphMail.Rule.Enabled
-      description: Wheather the rule is enabled or not.
-      type: string
-    - contextPath: MSGraphMail.Rule.Priority
-      description: The priorty of the rule.
-      type: string
     description: Retrieve a list of an Inbox rules.
   - name: ews-get-rule
     arguments:
