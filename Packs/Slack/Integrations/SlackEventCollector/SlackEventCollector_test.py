@@ -211,3 +211,8 @@ def test_fetch_events_(mocker):
                         'last_search_stop_point_event_id': '7',  # the id where to start (downwards) collect next run.
                         'newest_event_fetched': {'last_event_id': '11', 'last_event_time': 11}}  # The last event we collected
     # (in this search)
+    mocker.patch.object(Client, '_http_request', side_effect=[mock_response4.data])
+    events, last_run = fetch_events_command(Client(base_url=''), params={'limit': 4}, last_run=last_run)
+
+    assert len(events) == 1  # 1 event remains
+    assert last_run == {'last_fetched_event': {'last_event_id': '11', 'last_event_time': 11}}
