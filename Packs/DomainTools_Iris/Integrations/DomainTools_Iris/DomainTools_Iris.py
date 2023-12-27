@@ -1599,6 +1599,8 @@ def main():
             test_module()
         elif demisto.command() == 'domain':
             domain_command()
+        elif demisto.command() == 'domaintoolsiris-investigate':
+            domain_command()
         elif demisto.command() == 'domaintoolsiris-analytics':
             domain_analytics_command()
         elif demisto.command() == 'domaintoolsiris-threat-profile':

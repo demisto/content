@@ -84,11 +84,12 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
             reputation = ReputationEnum.UNKNOWN
 
         riskscore_component_mapping = {
-            "proximity": domaintools_analytics_data.get("ProximityRiskScore") or "",
-            "malware": domaintools_analytics_data.get("MalwareRiskScore") or "",
-            "phishing": domaintools_analytics_data.get("PhishingRiskScore") or "",
-            "spam": domaintools_analytics_data.get("SpamRiskScore") or "",
-            "evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get("Evidence") or ""
+            "ProximityRiskScore": domaintools_analytics_data.get("ProximityRiskScore") or "",
+            "MalwareRiskScore": domaintools_analytics_data.get("MalwareRiskScore") or "",
+            "PhishingRiskScore": domaintools_analytics_data.get("PhishingRiskScore") or "",
+            "SpamRiskScore": domaintools_analytics_data.get("SpamRiskScore") or "",
+            "ThreatProfileRiskScore": {"Evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get(
+                "Evidence")} or ""
         }
 
         domaintools_iris_indicator = {
@@ -113,7 +114,7 @@ def set_indicator_table_data(args: dict[str, Any]) -> CommandResults:
             "domaintoolsirisregistrantorg": domaintools_identity_data.get("RegistrantOrg"),
             "registrantname": domaintools_identity_data.get("RegistrantName"),
             "domaintoolsirissoaemail": format_attribute(domaintools_identity_data.get("SOAEmail"), key="value"),
-            "expirationdate": domaintools_identity_data.get("Registration", {}).get("ExpirationDate"),
+            "domaintoolsirisexpirationdate": domaintools_data.get("Registration", {}).get("ExpirationDate"),
             "domaintoolsirisriskscorecomponents": riskscore_component_mapping
         }
 

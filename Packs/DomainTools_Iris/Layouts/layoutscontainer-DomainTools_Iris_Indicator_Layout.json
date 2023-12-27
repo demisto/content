@@ -70,7 +70,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "expirationdate",
+                                "fieldId": "domaintoolsirisexpirationdate",
                                 "height": 22,
                                 "id": "1ce6c6c0-6d0e-11ee-b1a9-4fdded761d69",
                                 "index": 3,

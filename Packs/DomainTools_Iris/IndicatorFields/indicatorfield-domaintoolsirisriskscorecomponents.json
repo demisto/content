@@ -24,7 +24,7 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "proximity",
+            "key": "ProximityRiskScore",
             "displayName": "Proximity",
             "type": "shortText",
             "required": true,
@@ -36,7 +36,7 @@
             "selectValues": null
         },
         {
-            "key": "phishing",
+            "key": "PhishingRiskScore",
             "displayName": "Phishing",
             "type": "shortText",
             "required": true,
@@ -48,7 +48,7 @@
             "selectValues": null
         },
         {
-            "key": "malware",
+            "key": "MalwareRiskScore",
             "displayName": "Malware",
             "type": "shortText",
             "required": false,
@@ -60,7 +60,7 @@
             "selectValues": null
         },
         {
-            "key": "spam",
+            "key": "SpamRiskScore",
             "displayName": "Spam",
             "type": "shortText",
             "required": true,
@@ -72,7 +72,7 @@
             "selectValues": null
         },
         {
-            "key": "evidence",
+            "key": "ThreatProfileRiskScore",
             "displayName": "Evidence",
             "type": "shortText",
             "required": true,
