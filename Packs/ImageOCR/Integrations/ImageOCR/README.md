@@ -60,7 +60,7 @@ There are no input arguments for this command.
 > * rus
 > * spa
 > * swe
-> * tur"
+> * tur
 
 ### image-ocr-extract-text
 
