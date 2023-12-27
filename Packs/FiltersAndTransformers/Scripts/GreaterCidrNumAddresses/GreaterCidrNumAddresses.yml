@@ -1,5 +1,5 @@
 args:
-- description: IP/CIDR, e.g. 192.168.0.0/24
+- description: IP/CIDR, e.g. 192.168.0.0/24.
   name: left
   required: true
 - description: The number of addresses to be greater from.

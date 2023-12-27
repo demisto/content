@@ -13,21 +13,21 @@ comment: |-
 enabled: true
 args:
 - name: value
-  description: The array1
+  description: The array1.
   isArray: true
 - name: array1_key
-  description: The key or path to get values from the array1 (value)
+  description: The key or path to get values from the array1 (value).
 - name: array2
-  description: The array2
+  description: The array2.
   isArray: true
 - name: array2_key
-  description: The key or path to get values from the array2
+  description: The key or path to get values from the array2.
 - name: output_name1
   required: true
-  description: The key name in the output dictionary to which each of element of the array1 are given
+  description: The key name in the output dictionary to which each of element of the array1 are given.
 - name: output_name2
   required: true
-  description: The key name in the output dictionary to which each of element of the array2 are given
+  description: The key name in the output dictionary to which each of element of the array2 are given.
 - name: determine_output_length_by
   auto: PREDEFINED
   predefined:
@@ -35,7 +35,7 @@ args:
   - longer
   - array1
   - array2
-  description: How to deal with different size lists. (Choose from shorter, longer, array1, or array2)
+  description: How to deal with different size lists. (Choose from shorter, longer, array1, or array2).
   defaultValue: shorter
 - name: merge_dict
   auto: PREDEFINED

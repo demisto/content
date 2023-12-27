@@ -14,7 +14,7 @@ args:
   description: The array to sort.
   isArray: true
 - name: keys
-  description: Comma-separated list of ordering-keys specifying a sorting hierarchy
+  description: Comma-separated list of ordering-keys specifying a sorting hierarchy.
   isArray: true
 - name: descending_keys
   description: Comma-separated list of keys to sort in descending order. '*' is the special symbol to sort the array given without `keys` in descending order.
