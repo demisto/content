@@ -153,3 +153,27 @@ def test_parse_filter_field(filter, expected_results):
     """
     res = AWS_EC2.parse_filter_field(filter)
     assert res == expected_results
+
+
+def test_update_snap_permission(mocker):
+    """
+    Given
+    - Snapshot to update
+    When
+    - Running modify_snapshot_permission_command
+    Then
+    - Validate params like userId and groupId sent as expected.
+    """
+    mocker.patch.object(AWSClient, "aws_session")
+
+    AWS_EC2.modify_snapshot_permission_command(
+        {
+            'operationType': 'add',
+            'userIds': 'userIds',
+            'snapshotId': 'snapshotId'
+        }, create_client())
+    mocked_command = AWSClient.aws_session().modify_snapshot_attribute
+
+    assert mocked_command.call_args.kwargs['Attribute'] == 'createVolumePermission'
+    assert mocked_command.call_args.kwargs['UserIds'] == ['userIds']
+    assert 'GroupNames' not in mocked_command.call_args.kwargs
