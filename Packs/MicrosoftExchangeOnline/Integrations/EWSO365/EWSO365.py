@@ -2162,11 +2162,10 @@ def parse_incident_from_item(item):     # pragma: no cover
                             f"The attachment headers are: {[header.name for header in attachment.item.headers]} \
                             of email with id {item.id}")
                         for header in attachment.item.headers:
-                            # if header.name.lower() == "mime-version" and
-                            # header.name.lower() in (header.lower() for header in attached_email.keys()):
-                            #     continue
-                            # el
-                            if (
+                            if header.name.lower() == "mime-version" and \
+                                    header.name.lower() in (header.lower() for header in attached_email):
+                                continue
+                            elif (
                                     (header.name.lower(), header.value)
                                     not in attached_email_headers
                                     and header.name.lower() != "content-type"
