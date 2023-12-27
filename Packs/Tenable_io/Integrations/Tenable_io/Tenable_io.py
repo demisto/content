@@ -1901,6 +1901,7 @@ def main():  # pragma: no cover
             if skip_fetch_assets(assets_last_run):
                 return
             elif not assets_last_run.get("nextTrigger"):
+                # starting a whole new fetch process for assets
                 assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets (no nextTrigger -> new fetch, or assets_export_uuid -> continue prev fetch)
             if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
