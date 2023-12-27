@@ -49,7 +49,6 @@
                     <cybox:Properties xsi:type="FileObj:FileObjectType">
                         <FileObj:Hashes>
                             <cyboxCommon:Hash>
-                                <cyboxCommon:Type xsi:type="cyboxVocabs:HashNameVocab-1.0" condition="Equals">MD5</cyboxCommon:Type>
                                 <cyboxCommon:Simple_Hash_Value condition="Equals" apply_condition="ANY">e61fcc6a06420106fa6642ef833b9c38##comma##abcdef1234567890abcdef1234567890##comma##00112233445566778899aabbccddeeff</cyboxCommon:Simple_Hash_Value>
                             </cyboxCommon:Hash>
                         </FileObj:Hashes>
