@@ -12,6 +12,13 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: If true, will not raise an error if the image is corrupted and could not be processed.
+  display: Skip on corrupted images
+  name: skip_corrupted
+  section: Connect
+  advanced: true
+  required: false
+  type: 8
 description: Extracts text from images.
 display: Image OCR
 name: Image OCR
@@ -26,13 +33,6 @@ script:
       name: entryid
       required: true
       isArray: true
-    - description: If true, will not raise an error if the given image is corrupted and could not be processed.
-      name: skip_corrupted
-      auto: PREDEFINED
-      defaultValue: 'false'
-      predefined:
-      - 'true'
-      - 'false'
     - description: A CSV of language codes of the language to use for OCR. Overrides the default configured language list.
       isArray: true
       name: langs
