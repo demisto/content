@@ -26,7 +26,6 @@
 				},
 				"Email BCC": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "Bcc",
 						"transformers": [
@@ -74,22 +73,21 @@
 				},
 				"Email CC": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "Cc",
 						"transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            }
-                        ]
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
 					},
 					"simple": ""
 				},
@@ -135,7 +133,6 @@
 				},
 				"Email To": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "To",
 						"transformers": [
