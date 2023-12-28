@@ -7048,7 +7048,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``list``
+    :type results: ``CommandResults`` or ``PollResult`` or ``str`` or ``dict`` or ``BaseWidget`` or ``list`` or ``GetMappingFieldsResponse`` or ``GetModifiedRemoteDataResponse`` or ``GetRemoteDataResponse``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
