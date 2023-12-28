@@ -2164,7 +2164,8 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     and header.name.lower() != "content-type"
                             ):
                                 demisto.info(f"[test2]: current header is {header.name}, and value is {header.value}")
-                                attached_email.add_header(header.name, header.value)
+                                attached_email.add_header(header.name.lower(), header.value)
+                                attached_email_headers.append(header.name.lower())
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
                     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
