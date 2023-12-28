@@ -14,8 +14,8 @@ filter source_log_type = "Events"
         xdm.target.resource.id = data -> id,
         xdm.target.resource.sub_type = concat(data -> roomType, data -> callType),
         xdm.source.host.hostname = data -> host,
-        xdm.event.duration = divide(to_integer(data -> callDurationSeconds), 1000);
-// Admin Audit Events mapping
+        xdm.event.duration = to_integer(divide(to_integer(data -> callDurationSeconds), 1000));
+// Admin Audit and Security Audit Events mapping
 filter source_log_type = "Admin Audit Events" or source_log_type = "Security Audit Events"
 | alter
         actorIp = data -> actorIp,
@@ -26,8 +26,7 @@ filter source_log_type = "Admin Audit Events" or source_log_type = "Security Aud
         xdm.event.original_event_type = data -> eventCategory,
         xdm.event.description = concat(data -> eventDescription, " ", data -> actionText),
         xdm.event.id = id,
-        //xdm.event.outcome = if(eventStatus = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, eventStatus = FAILURE,
-        XDM_CONST.OUTCOME_FAILED, null),
+        xdm.event.outcome = if(eventStatus = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS, eventStatus = "FAILURE", XDM_CONST.OUTCOME_FAILED, null),
         xdm.event.outcome_reason = result,
         xdm.source.user.identifier = actorId,
         xdm.source.user.ou = data -> actorOrgName,
@@ -41,5 +40,6 @@ filter source_log_type = "Admin Audit Events" or source_log_type = "Security Aud
         xdm.target.resource.type = data -> targetType,
         xdm.target.resource.id = data -> targetId,
         xdm.auth.service = data -> actionClientName,
+        xdm.auth.auth_method = data -> authenticationMethod,
         xdm.source.process.command_line = data -> commandKey,
         xdm.network.rule = data -> ruleTitle;

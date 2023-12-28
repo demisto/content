@@ -1,5 +1,5 @@
 {
-    "clearswift_dlp_raw": {
+    "cisco_webex_raw": {
         "source_log_type": {
             "type": "string",
             "is_array": false
