@@ -1,0 +1,21 @@
+{
+    "name": "“CIAC4657”",
+    "description": "Test Contribution branch 'CIAC-4657-fix-readme-overwrite'. Invoked from script.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Kobbi Gal",
+    "url": "",
+    "email": "",
+    "created": "2023-12-28T14:30:52Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "kgal-pan"
+    ]
+}
