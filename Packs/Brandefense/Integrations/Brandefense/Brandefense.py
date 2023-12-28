@@ -135,7 +135,6 @@ def get_indicator(api_token,args):
 
 def get_ioc(api_token,args):
     ioc_type=args.get('ioc_type')
-    ioc_type=str(ioc_type)
     url = "https://api.brandefense.io/api/v1/threat-intelligence/iocs"
     querystring={'ioc_type':ioc_type}
     headers = {
