@@ -383,7 +383,6 @@
       echo "No Cleanup Machine"
     fi
   - done
-  - 
   - section_end "Trigger Cleanup Machine On $CLOUD_MACHINES_IDS"
 
 
