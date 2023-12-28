@@ -351,7 +351,14 @@ def test_generate_login_url(mocker):
                           ('client_credentials', False, 'ok', False),
                           ('client_credentials', True, '```✅ Success!```', False)])
 def test_test_function(mocker, grant_type, self_deployed, expected_result, should_raise):
-    
+    """
+        Given:
+            - Authentication method and self_deployed information.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
     import demistomock as demisto
     from MicrosoftGraphUser import test_function, MsGraphClient
     
