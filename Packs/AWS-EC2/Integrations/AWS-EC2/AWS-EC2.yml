@@ -3806,86 +3806,115 @@ script:
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
   - arguments:
-    - description: A comma-separated list of the IPAM resource discovery IDs.
-      name: IpamResourceDiscoveryIds
-    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
-      name: Filters
-    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-      name: MaxResults
-    - description: The token for the next set of results.
-      name: NextToken
-    - description: The Amazon Web Services region for the IP address.
-      name: AddressRegion
+    - description: The ID of the EBS snapshot.
+      name: snapshotId
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      description: The operation type, add or remove.
+      name: operationType
+      required: true
+    - description: CSV of security group names. This parameter can be used only when UserIds not provided.
+      name: groupNames
+    - description: CSV of AWS account IDs. This parameter can be used only when groupNames not provided.
+      name: userIds
+    - auto: PREDEFINED
+      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      name: dryRun
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Adds or removes permission settings for the specified snapshot.
+    name: aws-ec2-modify-snapshot-permission
+  - arguments:
+      - description: A comma-separated list of the IPAM resource discovery IDs.
+        name: IpamResourceDiscoveryIds
+      - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+        name: Filters
+      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+        name: MaxResults
+      - description: The token for the next set of results.
+        name: NextToken
+      - description: The Amazon Web Services region for the IP address.
+        name: AddressRegion
     outputs:
-    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
-      description: The resource discovery ID.
-      type: String
-    - contextPath: AWS.EC2.IpamResourceDiscoveries.OwnerId
-      description: The ID of the owner.
-      type: String
-    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion
-      description: The resource discovery region.
-      type: String
+      - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
+        description: The resource discovery ID.
+        type: String
+      - contextPath: AWS.EC2.IpamResourceDiscoveries.OwnerId
+        description: The ID of the owner.
+        type: String
+      - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion
+        description: The resource discovery region.
+        type: String
     description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
     name: aws-ec2-describe-ipam-resource-discoveries
   - arguments:
-    - description: A comma-separated list of the resource discovery association IDs.
-      name: IpamResourceDiscoveryAssociationIds
-    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
-      name: Filters
-    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-      name: MaxResults
-    - description: The token for the next set of results.
-      name: NextToken
-    - description: The Amazon Web Services region for the IP address.
-      name: AddressRegion
+      - description: A comma-separated list of the resource discovery association IDs.
+        name: IpamResourceDiscoveryAssociationIds
+      - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+        name: Filters
+      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+        name: MaxResults
+      - description: The token for the next set of results.
+        name: NextToken
+      - description: The Amazon Web Services region for the IP address.
+        name: AddressRegion
     outputs:
-    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
-      description: The resource discovery association ID.
-      type: String
-    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId
-      description: The resource discovery ID.
-      type: String
-    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion
-      description: The IPAM home region.
-      type: String
+      - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
+        description: The resource discovery association ID.
+        type: String
+      - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId
+        description: The resource discovery ID.
+        type: String
+      - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion
+        description: The IPAM home region.
+        type: String
     description: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
     name: aws-ec2-describe-ipam-resource-discovery-associations
   - arguments:
-    - description: An IPAM resource discovery ID.
-      name: IpamResourceDiscoveryId
-      required: true
-    - description: The Amazon Web Services region for the IP address.
-      name: AddressRegion
-      required: true
-    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
-      name: Filters
-    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-      name: MaxResults
-    - description: The token for the next set of results.
-      name: NextToken
+      - description: An IPAM resource discovery ID.
+        name: IpamResourceDiscoveryId
+        required: true
+      - description: The Amazon Web Services region for the IP address.
+        name: AddressRegion
+        required: true
+      - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+        name: Filters
+      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+        name: MaxResults
+      - description: The token for the next set of results.
+        name: NextToken
     outputs:
-    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Address
-      description: IPAM discovered public addresses.
-      type: String
-    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressOwnerId
-      description: The ID of the owner of the resource the IP address is assigned to.
-      type: String
-    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressType
-      description: The IP address type.
-      type: String
-    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus
-      description: The association status.
-      type: String
-    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId
-      description: The instance ID of the instance the assigned IP address is assigned to.
-      type: String
-    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Tags
-      description: Tags associated with the IP address.
-      type: Unknown
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Address
+        description: IPAM discovered public addresses.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressOwnerId
+        description: The ID of the owner of the resource the IP address is assigned to.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressType
+        description: The IP address type.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus
+        description: The association status.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId
+        description: The instance ID of the instance the assigned IP address is assigned to.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Tags
+        description: Tags associated with the IP address.
+        type: Unknown
     description: Gets the public IP addresses that have been discovered by IPAM.
     name: aws-ec2-get-ipam-discovered-public-addresses
-  dockerimage: demisto/boto3py3:1.0.0.83986
+  dockerimage: demisto/boto3py3:1.0.0.83962
   runonce: false
   script: '-'
   subtype: python3
