@@ -344,3 +344,32 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftGraphUser.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+@pytest.mark.parametrize('grant_type, self_deployed, expected_result, should_raise',
+                         [('authorization_code', False, 'ok', False),
+                          ('authorization_code', True, 'ok', True),
+                          ('client_credentials', False, 'ok', False),
+                          ('client_credentials', True, '```✅ Success!```', False)])
+def test_test_function(mocker, grant_type, self_deployed, expected_result, should_raise):
+    
+    import demistomock as demisto
+    from MicrosoftGraphUser import test_function, MsGraphClient
+    
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           verify='use_ssl', proxy='proxies', self_deployed=self_deployed, handle_error=True,
+                           auth_code='', redirect_uri='')
+    
+    client.ms_client.grant_type = grant_type
+    mocker.patch.object(demisto, 'params', return_value={'self_deployed': self_deployed})
+    mocker.patch.object(client.ms_client, 'http_request')
+    
+    if should_raise:
+        with pytest.raises(Exception) as exc:
+            test_function(client, {})
+            assert 'Please enable the integration' in str(exc)
+    else:
+        result = test_function(client, {})
+        assert result[0] == expected_result
+    
+

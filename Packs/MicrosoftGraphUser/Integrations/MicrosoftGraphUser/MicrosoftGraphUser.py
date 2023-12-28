@@ -260,12 +260,14 @@ def test_function(client, _):
        """
     response = 'ok'
     if demisto.params().get('self_deployed', False):
-        response = '```✅ Success!```'
         if demisto.command() == 'test-module':
+            if client.ms_client.grant_type != CLIENT_CREDENTIALS: 
             # cannot use test module due to the lack of ability to set refresh token to integration context
             # for self deployed app
-            raise Exception("When using a self-deployed configuration, "
-                            "Please enable the integration and run the !msgraph-user-test command in order to test it")
+                raise Exception("When using a self-deployed configuration, "
+                                "Please enable the integration and run the !msgraph-user-test command in order to test it")
+        else:
+            response = '```✅ Success!```'
 
     client.ms_client.http_request(method='GET', url_suffix='users/')
     return response, None, None
