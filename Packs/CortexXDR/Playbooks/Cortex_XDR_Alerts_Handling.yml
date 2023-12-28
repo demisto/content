@@ -1,7 +1,7 @@
 id: Cortex XDR Alerts Handling
 version: -1
 name: Cortex XDR Alerts Handling
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation.\n- Remote PsExec with LOLBIN command execution alert."
+description: "Deprecated. Use Cortex XDR - Alerts Handling v2 instead. When using the v2 version, enabling globally shared dontext for it is required because outputs are no longer declared."
 starttaskid: "0"
 tasks:
   "0":
@@ -1567,7 +1567,8 @@ outputs:
   description: Files hashes which are not present and were marked as "not retrieve" by the user.
   type: unknown
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
 fromversion: 5.0.0
 marketplaces:
 - xsoar
+deprecated: true
