@@ -31,6 +31,31 @@ def load_test_data(folder: str, file_name: str) -> dict:
         return json.load(f)
 
 
+def test_connection_errors_recovers(mocker, mock_client):
+    """
+    Given:
+     - Connection Error, ReadTimeout error and a success response
+
+    When:
+     - running the _http_request method
+
+    Then:
+     - Ensure that success message is printed and recovery for http request happens.
+    """
+    mocker.patch.object(demisto, "error")
+    mocker.patch("Rapid7_Nexpose.time.sleep")
+    mocker.patch.object(
+        BaseClient,
+        "_http_request",
+        side_effect=[
+            DemistoException(message="error", exception=requests.ConnectionError("error")),
+            requests.ReadTimeout("error"),
+            "success"
+        ]
+    )
+    assert mock_client._http_request(method="GET", url_suffix="url") == "success"
+
+
 # --- Utility Functions Tests ---
 @pytest.mark.parametrize("mock_files_prefix, pages, test_input_kwargs, expected_output_context_file",
                          [
