@@ -25,12 +25,6 @@ configuration:
   name: proxy
   type: 8
   required: false
-- defaultvalue: '60'
-  display: "Timeout for http-requests"
-  name: timeout
-  additionalinfo: The timeout of the HTTP requests sent to the Rapid7 API (in seconds). If no value is provided, the timeout will be set to 60 seconds.
-  type: 0
-  required: false
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
