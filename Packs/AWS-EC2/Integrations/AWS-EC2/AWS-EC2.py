@@ -2983,6 +2983,34 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
+def modify_snapshot_permission_command(args, aws_client):
+    client = aws_client.aws_session(
+        service='ec2',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    group_names = argToList(args.get('groupNames'))
+    user_ids = argToList(args.get('userIds'))
+    if group_names and user_ids or not (group_names or user_ids):
+        raise DemistoException('Please provide either "groupNames" or "userIds"')
+
+    accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
+
+    operation_type = args.get('operationType')
+    response = client.modify_snapshot_attribute(
+        Attribute='createVolumePermission',
+        SnapshotId=args.get('snapshotId'),
+        OperationType=operation_type,
+        DryRun=argToBoolean(args.get('dryRun', False)),
+        **accounts
+    )
+
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results(f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
+
+
 def describe_ipam_resource_discoveries_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
     """
     aws-ec2-describe-ipam-resource-discoveries command: Describes IPAM resource discoveries. A resource discovery is an IPAM
@@ -3366,6 +3394,9 @@ def main():
 
         elif command == 'aws-ec2-release-hosts':
             release_hosts_command(args, aws_client)
+
+        elif command == 'aws-ec2-modify-snapshot-permission':
+            modify_snapshot_permission_command(args, aws_client)
 
         elif command == 'aws-ec2-describe-ipam-resource-discoveries':
             return_results(describe_ipam_resource_discoveries_command(args, client))
