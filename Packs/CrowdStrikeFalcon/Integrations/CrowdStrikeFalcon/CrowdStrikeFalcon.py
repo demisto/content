@@ -4710,11 +4710,11 @@ def resolve_incident_command(ids: list[str], status: str | None = None, user_uui
 
     if status:
         action_parameters['update_status'] = STATUS_TEXT_TO_NUM[status]
-        readable_output += f'Status has been updated to {status}.\n'
+        readable_output += f"Status has been updated to '{status}'.\n"
 
     if user_uuid:
         action_parameters['update_assigned_to_v2'] = user_uuid
-        readable_output += f'Assigned user has been updated to {user_uuid}.\n'
+        readable_output += f"Assigned user has been updated to '{user_uuid}'.\n"
 
     if add_tag:
         action_parameters['add_tag'] = add_tag
