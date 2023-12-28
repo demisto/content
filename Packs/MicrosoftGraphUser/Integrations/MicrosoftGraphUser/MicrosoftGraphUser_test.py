@@ -345,6 +345,7 @@ def test_generate_login_url(mocker):
     res = MicrosoftGraphUser.return_results.call_args[0][0].readable_output
     assert expected_url in res
 
+
 @pytest.mark.parametrize('grant_type, self_deployed, expected_result, should_raise',
                          [('authorization_code', False, 'ok', False),
                           ('authorization_code', True, 'ok', True),
@@ -361,16 +362,16 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
     """
     import demistomock as demisto
     from MicrosoftGraphUser import test_function, MsGraphClient
-    
+
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
                            auth_id='auth_and_token_url', enc_key='enc_key', app_name='user',
                            verify='use_ssl', proxy='proxies', self_deployed=self_deployed, handle_error=True,
                            auth_code='', redirect_uri='')
-    
+
     client.ms_client.grant_type = grant_type
     mocker.patch.object(demisto, 'params', return_value={'self_deployed': self_deployed})
     mocker.patch.object(client.ms_client, 'http_request')
-    
+
     if should_raise:
         with pytest.raises(Exception) as exc:
             test_function(client, {})
@@ -378,5 +379,3 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
     else:
         result = test_function(client, {})
         assert result[0] == expected_result
-    
-
