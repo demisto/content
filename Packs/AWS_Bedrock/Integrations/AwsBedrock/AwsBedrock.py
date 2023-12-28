@@ -20,7 +20,7 @@ def ask_command(bedrock, args):
     response_body = json.loads(response.get('body').read())
 
     return CommandResults(
-        outputs_prefix='AWS.Bedrock',
+        outputs_prefix='AWS.Bedrock.Response',
         readable_output=f'AWS Bedrock API returns with HTTP Code '
                         f'{response.get("ResponseMetadata",{}).get("HTTPStatusCode",{})}\n{response_body.get("completion")}',
         outputs=response_body.get("completion"),
