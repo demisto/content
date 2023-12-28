@@ -1,0 +1,217 @@
+{
+    "description": "Incoming mapper for Event",
+    "feed": false,
+    "id": "Symantec EDR Event- Incoming Mapper",
+    "mapping": {
+        "Phishing": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Email From": {
+                    "simple": "receivers.email_address"
+                },
+                "Email Sender IP": {
+                    "simple": "sender.sender_ip"
+                },
+                "Email To": {
+                    "simple": "sender.email_address"
+                }
+            }
+        },
+        "Symantec EDR Event": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Categories": {
+                    "simple": "categories"
+                },
+                "Description": {
+                    "simple": "event_desc"
+                },
+                "Destination Port": {
+                    "simple": "external_port"
+                },
+                "Device External IP": {
+                    "simple": "external_ip"
+                },
+                "Device Id": {
+                    "simple": "device_uid"
+                },
+                "Device Local IP": {
+                    "simple": "device_ip"
+                },
+                "Device MAC Address": {
+                    "simple": "local_mac_address"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Device OS Name": {
+                    "simple": "device_os_name"
+                },
+                "Device Username": {
+                    "simple": "user_name"
+                },
+                "Domain Name": {
+                    "simple": "domain_name"
+                },
+                "Email Sent Successfully": {
+                    "simple": "receivers.delivered"
+                },
+                "Event Type": {
+                    "simple": "event_type"
+                },
+                "External ID": {
+                    "simple": "event_id"
+                },
+                "File MD5": {
+                    "simple": "file.md5"
+                },
+                "File Name": {
+                    "simple": "file.name"
+                },
+                "File Path": {
+                    "simple": "file.path"
+                },
+                "File SHA256": {
+                    "simple": "file.sha2"
+                },
+                "Hostnames": {
+                    "simple": "host_name"
+                },
+                "Process ID": {
+                    "simple": "process.pid"
+                },
+                "Process MD5": {
+                    "simple": "process.file.md5"
+                },
+                "Process Path": {
+                    "simple": "process.file.path"
+                },
+                "Process SHA256": {
+                    "simple": "process.file.sha2"
+                },
+                "Registry Key": {
+                    "simple": "reg_key.path"
+                },
+                "Registry Value": {
+                    "simple": "reg_value.path"
+                },
+                "Registry Value Type": {
+                    "simple": "reg_value.name"
+                },
+                "Rule Name": {
+                    "simple": "enriched_data.rule_name"
+                },
+                "Source Hostname": {
+                    "simple": "internal_hostname"
+                },
+                "Source IP": {
+                    "simple": "source_ip"
+                },
+                "Source Port": {
+                    "simple": "source_port"
+                },
+                "SymantecEDR Antivirus": {
+                    "complex": {
+                        "filters": [],
+                        "root": "av",
+                        "transformers": []
+                    }
+                },
+                "SymantecEDR Event Actor": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_actor",
+                        "transformers": []
+                    }
+                },
+                "SymantecEDR Event Actor File": {
+                    "complex": {
+                        "accessor": "file",
+                        "filters": [],
+                        "root": "event_actor",
+                        "transformers": []
+                    }
+                },
+                "SymantecEDR Event Actor User": {
+                    "complex": {
+                        "accessor": "user",
+                        "filters": [],
+                        "root": "event_actor",
+                        "transformers": []
+                    }
+                },
+                "SymantecEDR Event Type ID": {
+                    "simple": "type_id"
+                },
+                "SymantecEDR Scan": {
+                    "complex": {
+                        "accessor": "signatures_version",
+                        "filters": [],
+                        "root": "scan",
+                        "transformers": []
+                    }
+                },
+                "SymantecEDR Threat": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threat",
+                        "transformers": []
+                    }
+                },
+                "SymantecEDR Log Name": {
+                    "simple": "log_name"
+                },
+                "SymantecEDR Intrusion": {
+                    "complex": {
+                        "filters": [],
+                        "root": "intrusion",
+                        "transformers": []
+                    }
+                },
+                "Tactic": {
+                    "complex": {
+                        "accessor": "tactic_uids",
+                        "filters": [],
+                        "root": "attacks",
+                        "transformers": []
+                    }
+                },
+                "Tactic ID": {
+                    "complex": {
+                        "accessor": "tactic_ids",
+                        "filters": [],
+                        "root": "attacks",
+                        "transformers": []
+                    }
+                },
+                "Technique": {
+                    "simple": "attacks.technique_name"
+                },
+                "Technique ID": {
+                    "simple": "attacks.technique_uid"
+                },
+                "User SID": {
+                    "simple": "user_sid"
+                },
+                "details": {
+                    "simple": "enriched_data.rule_description"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "File MD5": {
+                    "simple": "file.md5"
+                },
+                "File SHA256": {
+                    "simple": "file.sha2"
+                }
+            }
+        }
+    },
+    "name": "Symantec EDR Event- Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

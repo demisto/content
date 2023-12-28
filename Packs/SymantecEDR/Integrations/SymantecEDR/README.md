@@ -13,10 +13,14 @@ This integration was integrated and tested with version 4.6 of SymantecEDR
     | Client ID | OAuth Client ID and Client Secret to authorize third-party applications to communicate with Symantec EDR. | True |
     | Client Secret |  | True |
     | Fetch incidents |  | False |
+    | Incident data source | Fetch incident type, e.g. 'incident', 'event'. If not selected, incident will be selected | False |
     | Fetch incidents alerts | Retrieve incident related events from EDR database. An additional API call will be made for each fetched incident. | False |
     | Fetch incident comments | Retrieve incident comments for each fetched incident when checked. An additional API call will be made for each fetched incident. | False |
-    | Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress | If not selected, will fetch Open Incidents. | False |
-    | Priority to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High. | If not selected, will fetch High and Medium incidents. | False |
+    | Incidents "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress | If not selected, will fetch Open Incidents. | False |
+    | Incidents "Priority" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High. | If not selected, will fetch High and Medium incidents. | False |
+    | Events "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Unknown, Success | If not selected, will fetch Success Events. | False |
+    | Events "Severity" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Info, Warning | If not selected, will fetch Info Events. | False |
+    | Query string to fetch incidents/events. For example - log_time:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z]" |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 10 minutes, 12 hours, 7 days) | First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days. | False |
     | Maximum number of incidents to fetch | Maximum Number of Incidents fetch limit. Maximum Default limit is 50. | False |
     | Trust any certificate (not secure) |  | False |
@@ -30,7 +34,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### symantec-edr-endpoint-isolate
 ***
-Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
+Isolates or Quarantines endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
 
 
 #### Base Command
@@ -462,7 +466,7 @@ Get File Instances
 
 ### symantec-edr-system-activity-list
 ***
-Get system activities.
+Get system activities or Logs.
 
 
 #### Base Command
@@ -654,7 +658,7 @@ Get Audit Events
 
 ### symantec-edr-event-list
 ***
-Get events from EDR on-premise.
+Get events or System Alerts from EDR on-premise.
 
 
 #### Base Command
