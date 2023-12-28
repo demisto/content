@@ -14,9 +14,9 @@ data_test_check_if_found_incident = [
 def create_sample_incidents(start, end, incident_type):
     return [
         {
-            u'id': u'{i}'.format(i=i),
-            u'type': u'{type}'.format(type=incident_type),
-            u'name': u'incident-{i}'.format(i=i),
+            'id': f'{i}',
+            'type': f'{incident_type}',
+            'name': f'incident-{i}',
         } for i in range(start, end + 1)
     ]
 
@@ -36,7 +36,7 @@ def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
                 {
                     'Contents': {
                         'data': create_sample_incidents(start, end, incident_type),
-                        'total': amount_of_mocked_incidents
+                        'total': 0
                     }
                 }
             ]
@@ -119,24 +119,24 @@ def test_is_incident_id_valid(id_value, expected_output):
 
 EXAMPLE_INCIDENTS_RAW_RESPONSE = [
     {
-        u'id': u'1',
-        u'type': u'TypeA',
-        u'name': u'Phishing',
+        'id': '1',
+        'type': 'TypeA',
+        'name': 'Phishing',
     },
     {
-        u'id': u'2',
-        u'type': u'Type-A',
-        u'name': u'Phishing Campaign',
+        'id': '2',
+        'type': 'Type-A',
+        'name': 'Phishing Campaign',
     },
     {
-        u'id': u'3',
-        u'type': u'SomeType-A',
-        u'name': u'Go Phish',
+        'id': '3',
+        'type': 'SomeType-A',
+        'name': 'Go Phish',
     },
     {
-        u'id': u'4',
-        u'type': u'Another Type-A',
-        u'name': u'Hello',
+        'id': '4',
+        'type': 'Another Type-A',
+        'name': 'Hello',
     },
 ]
 
@@ -168,7 +168,7 @@ def test_apply_filters(args, expected_incident_ids):
     assert [incident['id'] for incident in incidents] == expected_incident_ids
 
 
-def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True):
+def get_incidents_mock(_, args, extract_contents=True, fail_on_error=True):
     ids = args.get('id', '').split(',')
     incidents_list = [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]
     if not extract_contents:
@@ -177,9 +177,9 @@ def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True)
 
 
 @pytest.mark.parametrize('args,filtered_args,expected_result', [
-    ({}, {}, []),
-    (dict(trimevents='0'), {}, []),
-    (dict(trimevents='1'), dict(trimevents='1'), []),
+    # ({}, {}, []),
+    ({'trimevents': '0'}, {}, []),
+    ({'trimevents': '1'}, {'trimevents': '1'}, []),
     ({'id': 1}, {'id': '1'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
     ({'id': [1, 2]}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
     ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
@@ -202,20 +202,23 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
         # trimevents supported only in XSIAM
         mocker.patch.object(demisto, 'demistoVersion', return_value={'platform': 'xsiam'})
     else:
-        mocker.patch('SearchIncidentsV2.get_demisto_version', return_value={})
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'platform': 'xsoar'})
     _, res, _ = SearchIncidentsV2.search_incidents(args)
     assert res == expected_result
     assert execute_mock.call_count == 1
     assert execute_mock.call_args[0][1] == filtered_args
 
 
-@pytest.mark.parametrize('platform, link_type, expected_result', [
-    ('x2', 'alertLink', 'alerts?action:openAlertDetails='),
-    ('xsoar', 'incidentLink', '#/Details/'),
+@pytest.mark.parametrize('platform, version, link_type, expected_result', [
+    ('x2', '', 'alertLink', 'alerts?action:openAlertDetails='),
+    ('xsoar', '6.10.0', 'incidentLink', '#/Details/'),
+    ('xsoar', '8.4.0', 'incidentLink', '/Details/')
 ])
-def test_add_incidents_link(mocker, platform, link_type, expected_result):
+def test_add_incidents_link(mocker, platform, version, link_type, expected_result):
     mocker.patch.object(demisto, 'getLicenseCustomField', return_value='')
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': ''})
+    if version:
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': version})
     data = add_incidents_link(EXAMPLE_INCIDENTS_RAW_RESPONSE, platform)
     assert expected_result in data[0][link_type]
 

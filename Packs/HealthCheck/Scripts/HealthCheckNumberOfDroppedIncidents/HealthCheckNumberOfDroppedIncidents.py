@@ -19,7 +19,7 @@ daysAgo = datetime.today() - timedelta(days=30)
 
 
 stats = demisto.executeCommand(
-    "demisto-api-post",
+    "core-api-post",
     {
         "uri": f"{accountName}settings/audits",
         "body": {
