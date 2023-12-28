@@ -1,7 +1,7 @@
 Use the SplunkPy integration to:
-- Fetch events (logs) from within Cortex XSOAR
-- Push events from Cortex XSOAR to SplunkPy
-- Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
+Fetch events (logs) from within Cortex XSOAR
+Push events from Cortex XSOAR to SplunkPy
+Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
 This integration was integrated and tested with Splunk v9.0.4.
 
@@ -135,25 +135,25 @@ Define the lookup table in Splunk.
 
 #### Troubleshooting enrichment status
 Each enriched incident contains the following fields in the incident context:
-- **successful_drilldown_enrichment**: whether the drill down enrichment was successful.
-- **successful_asset_enrichment**: whether the asset enrichment was successful.
-- **successful_identity_enrichment**: whether the identity enrichment was successful.
+**successful_drilldown_enrichment**: whether the drill down enrichment was successful.
+**successful_asset_enrichment**: whether the asset enrichment was successful.
+**successful_identity_enrichment**: whether the identity enrichment was successful.
 
 #### Resetting the enriching fetch mechanism
 Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism will be reset to the initial configuration. (No need to use the **Last Run** button).
 
 #### Limitations
-- As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ notables simultaneously that were fetched and enriched after approximately ~4min.
-- If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
-- The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
+As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ notables simultaneously that were fetched and enriched after approximately ~4min.
+If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
+The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
 ### Incident Mirroring
 **Important Notes*** 
- - This feature is available from Cortex XSOAR version 6.0.0.
- - This feature is supported by Splunk Enterprise Security only.
- - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
- - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
- - For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
+ This feature is available from Cortex XSOAR version 6.0.0.
+ This feature is supported by Splunk Enterprise Security only.
+ In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
+ In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
+ For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
  
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk notables.
 To set up mirroring:
@@ -162,10 +162,10 @@ To set up mirroring:
 3. Enable **Fetches incidents**.
 4. You can go to the *Fetch notable events ES enrichment query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
 4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-    - Incoming - Any changes in Splunk notables (notable's status, status_label, urgency, comments, and owner) will be reflected in Cortex XSOAR incidents.
-    - Outgoing - Any changes in Cortex XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
-    - Incoming And Outgoing - Changes in Cortex XSOAR incidents and Splunk notables will be reflected in both directions.
-    - None - Turns off incident mirroring.
+    Incoming - Any changes in Splunk notables (notable's status, status_label, urgency, comments, and owner) will be reflected in Cortex XSOAR incidents.
+    Outgoing - Any changes in Cortex XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
+    Incoming And Outgoing - Changes in Cortex XSOAR incidents and Splunk notables will be reflected in both directions.
+    None - Turns off incident mirroring.
 5. Optional: Check the *Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)* integration parameter to close the Cortex XSOAR incident when the corresponding notable is closed on the Splunk side.
    By default, only Notables closed with a "Closed" label will be mirrored. You can specify specific statuses (comma-separated) in the *Additional Splunk status labels to close on mirror (Incoming Mirroring)*, and enable the *Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)* option to add statuses marked as "End Status" in Splunk, and to add additional statuses to the mirroring process.
 6. Optional: Check the *Close Mirrored Splunk Notable Event* integration parameter to close the Splunk notable when the corresponding Cortex XSOAR incident is closed.
@@ -192,9 +192,9 @@ This enables you to map fields for an incident without having to generate a new 
 The ***get-mapping-fields*** command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
 
 To use this feature, you must set several integration instance parameters:
- - *Fetch events query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
- - *Event Type Field* - The name of the field that contains the type of the event or alert. The default value is *source* which for *Notable Events* will contains the rule name. However, you may choose any custom field that suits this purpose.
- - *First fetch timestamp* - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
+ *Fetch events query* - The query used for fetching new incidents. *Select Schema* will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
+ *Event Type Field* - The name of the field that contains the type of the event or alert. The default value is *source* which for *Notable Events* will contains the rule name. However, you may choose any custom field that suits this purpose.
+ *First fetch timestamp* - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
 
 ### Mapping Splunk CIM fields using Select Schema
 This integration supports the *Select Schema* feature of XSOAR 6.0 by providing the ***get-mapping-fields*** command. 
@@ -245,9 +245,9 @@ Use the following naming convention: (demisto_fields_{type}).
 
 ### Constraints
 The following features are not supported in non-ES (Enterprise Security) Splunk.
-- Incident Mirroring
-- Enrichment.
-- Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.
+Incident Mirroring
+Enrichment.
+Content in the Splunk content pack (such as mappers, layout, playbooks, incident fields, and the incident type). Therefore, you will need to create your own content. See the [Cortex XSOAR Administrator’s Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) for information.
 
 ## Create KV Store
 KV Store stores your data as key-value pairs in collections.  It provides a way to save and retrieve data within your Splunk apps. The following is an example for how to create a KV Store.
@@ -298,21 +298,21 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### splunk-results
 ***
-Returns the results of a previous Splunk search. This command can be used in conjunction with the `splunk-job-create` command.
+Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
 
-##### Base Command
+#### Base Command
 
 `splunk-results`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sid | The ID of the search for which to return results. | Required | 
+| sid | ID of the search for which to return results. | Required | 
 | limit | The maximum number of returned results per search. To retrieve all results, enter "0" (not recommended). | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -324,19 +324,19 @@ There is no context output for this command.
 Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
 
 
-##### Base Command
+#### Base Command
 
 `splunk-search`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The Splunk search language string to execute. For example, "index=* \| head 3". | Required | 
-| earliest_time | Specifies the earliest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. The default is 1 week ago, in the format "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00. | Optional | 
+| query | The Splunk search language string to execute. For example: "index=* \| head 3". . | Required | 
+| earliest_time | Specifies the earliest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. Default is 1 week ago, in the format "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00. | Optional | 
 | latest_time | Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for 3 days ago). | Optional | 
-| event_limit | The maximum number of events to return. The default is 100. If "0" is selected, all results are returned. | Optional | 
-| app | The string that contains the application namespace in which to restrict searches. | Optional|
+| event_limit | Maximum number of events to return. Default is 100. If "0", all results are returned. | Optional | 
+| app | A string that contains the application namespace in which to restrict searches. | Optional | 
 | batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional |	
 | update_context | Determines whether the results will be entered into the context. | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
@@ -344,7 +344,7 @@ Searches Splunk for events. For human readable output, the table command is supp
 | sid | The job sid. | Optional |
 | fast_mode | Determines whether to retrieve the results in fast mode | Optional |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -369,21 +369,21 @@ Searches Splunk for events. For human readable output, the table command is supp
 Creates a new event in Splunk.
 
 
-##### Base Command
+#### Base Command
 
 `splunk-submit-event`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| index | The Splunk index to which to push the data. Run the `splunk-get-indexes` command to get all of the indexes. | Required | 
+| index | Splunk index in which to push data. Run the splunk-get-indexes command to get all indexes. | Required | 
 | data | The new event data to push. Can be any string. | Required | 
-| sourcetype | The event source type. | Required | 
-| host | The event host. Can be "Local" or "120.0.0.1". | Required | 
+| sourcetype | Event source type. | Required | 
+| host | Event host. Can be "Local" or "120.0.0.1". | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -398,15 +398,15 @@ There is no context output for this command.
 ### splunk-get-indexes
 ***
 Prints all Splunk index names.
-##### Base Command
+#### Base Command
 
 `splunk-get-indexes`
 
-##### Input
+#### Input
 
 There are no input arguments for this command.
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -420,25 +420,25 @@ There is no context output for this command.
 
 ### splunk-notable-event-edit
 ***
-Update an existing notable event in Splunk ES.
+Updates existing notable events in Splunk ES.
 
-##### Base Command
+#### Base Command
 
 `splunk-notable-event-edit`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| eventIDs | The comma-separated list of event IDs of notable events. | Required | 
-| owner | The Splunk user to assign to the notable events. | Optional | 
-| comment | The comment to add to the notable events. | Required | 
+| eventIDs | A comma-separated list of event IDs of notable events. | Required | 
+| owner | A Splunk user to assign to the notable events. | Optional | 
+| comment | Comment to add to the notable events. | Optional | 
 | urgency | The urgency of the notable events. | Optional | 
-| status | The status of the notable events. Can be 0 - 5, where 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed. | Optional | 
-| disposition | The disposition of the notable events. Can be one of the default options: True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. Or you can specify custom dispositions as `disposition:#` where `#` is the number of the custom configured disposition on Splunk. | Optional | 
+| status | Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed. | Optional | 
+| disposition | The disposition of the notable events. Can be one of the default options: True Positive Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. Or you can specify custom dispositions as `disposition:#` where `#` is the number of the custom configured disposition on Splunk. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -454,19 +454,19 @@ There is no context output for this command.
 Creates a new search job in Splunk.
 
 
-##### Base Command
+#### Base Command
 
 `splunk-job-create`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The Splunk search language string to execute. For example,  "index=* \| head 3". | Required | 
-| app | The string that contains the application namespace in which to restrict searches. | Optional|
+| query | The Splunk search language string to execute. For example :"index=* \| head 3". | Required | 
+| app | A string that contains the application namespace in which to restrict searches. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -491,18 +491,18 @@ Creates a new search job in Splunk.
 Parses the raw part of the event.
 
 
-##### Base Command
+#### Base Command
 
 `splunk-parse-raw`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | raw | The raw data of the Splunk event (string). | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -515,23 +515,23 @@ Parses the raw part of the event.
 
 ### splunk-submit-event-hec
 ***
-Sends events to an HTTP event collector using the Splunk platform JSON event protocol.
-##### Base Command
+Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
+#### Base Command
 
 `splunk-submit-event-hec`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event | The event payload key-value pair. An example string: "event": "Access log test message.". | Required |
+| event | Event payload key-value pair.<br/>String example: "event": "Access log test message". | Required | 
 | fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional |
 | index | The index name. | Optional |
 | host | The hostname. | Optional |
-| source_type | The user-defined event source type. | Optional |
-| source | The user-defined event source. | Optional | 
-| time | The epoch-formatted time. | Optional | 
+| source_type | User-defined event source type. | Optional | 
+| source | User-defined event source. | Optional | 
+| time | Epoch-formatted time. | Optional | 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
@@ -545,19 +545,19 @@ The event was sent successfully to Splunk.
 ***
 Returns the status of a job.
 
-##### Base Command
+#### Base Command
 `splunk-job-status`
 
-##### Input
+#### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sid | The ID of the job for which to get the status. | Required |
+| sid | ID of the job for which to get the status. | Required | 
 
-##### Context Output
+#### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Splunk.JobStatus.CID | Unknown | The ID of the job. |
-| Splunk.JobStatus.Status | Unknown | The status of the job. |
+| Splunk.JobStatus.SID | String | ID of the job. | 
+| Splunk.JobStatus.Status | String | Status of the job. | 
 
 ##### Command Example
 ```!splunk-job-status sid=1234.5667```
@@ -593,7 +593,7 @@ There is no context output for this command.
 ##### Human Readable Output
 ```
 {
-    "Access - Brute Force Access Behavior Detected - Rule": {
+    "Access Brute Force Access Behavior Detected - Rule": {
         "_bkt": "notable~712~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
         "_cd": "712:21939",
         "_indextime": "1598464820",
@@ -611,12 +611,12 @@ There is no context output for this command.
         "linecount": "1",
         "priority": "unknown",
         "risk_score": "460",
-        "rule_description": "Access - Brute Force Access Behavior Detected - Rule",
-        "rule_name": "Access - Brute Force Access Behavior Detected - Rule",
-        "rule_title": "Access - Brute Force Access Behavior Detected - Rule",
-        "security_domain": "Access - Brute Force Access Behavior Detected - Rule",
+        "rule_description": "Access Brute Force Access Behavior Detected - Rule",
+        "rule_name": "Access Brute Force Access Behavior Detected - Rule",
+        "rule_title": "Access Brute Force Access Behavior Detected - Rule",
+        "security_domain": "Access Brute Force Access Behavior Detected - Rule",
         "severity": "unknown",
-        "source": "Access - Brute Force Access Behavior Detected - Rule",
+        "source": "Access Brute Force Access Behavior Detected - Rule",
         "sourcetype": "stash",
         "splunk_server": "ip-1-1-1-1",
         "src": "1.1.1.1",
@@ -624,7 +624,7 @@ There is no context output for this command.
         "src_risk_score": "460",
         "urgency": "low"
     },
-    "Access - Excessive Failed Logins - Rule": {
+    "Access Excessive Failed Logins - Rule": {
         "_bkt": "notable~712~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
         "_cd": "712:21515",
         "_indextime": "1598460945",
@@ -642,12 +642,12 @@ There is no context output for this command.
         "linecount": "1",
         "priority": "unknown",
         "risk_score": "380",
-        "rule_description": "Access - Excessive Failed Logins - Rule",
-        "rule_name": "Access - Excessive Failed Logins - Rule",
-        "rule_title": "Access - Excessive Failed Logins - Rule",
-        "security_domain": "Access - Excessive Failed Logins - Rule",
+        "rule_description": "Access Excessive Failed Logins - Rule",
+        "rule_name": "Access Excessive Failed Logins - Rule",
+        "rule_title": "Access Excessive Failed Logins - Rule",
+        "security_domain": "Access Excessive Failed Logins - Rule",
         "severity": "unknown",
-        "source": "Access - Excessive Failed Logins - Rule",
+        "source": "Access Excessive Failed Logins - Rule",
         "sourcetype": "stash",
         "splunk_server": "ip-1-1-1-1",
         "src": "1.1.1.1",
@@ -697,7 +697,7 @@ Configures the KV store fields.
 | --- | --- | --- |
 | kv_store_collection_name | The name of the KV store collection. | Required | 
 | kv_store_fields | The list of names and value types to define the KV store collection scheme, e.g., id=number, name=string, address=string.<br/> | Required | 
-| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. Default is search. | Required | 
 
 
 #### Context Output
@@ -783,7 +783,7 @@ Lists all collections for the specified application.
 
 >list of collection names search
 >| name |
->| --- |
+>| --|
 >|autofocus_tags|
 >|files|
 
@@ -801,7 +801,7 @@ Lists all data within a specific KV store collection or collections.
 | --- | --- | --- |
 | app_name | The name of the Splunk application that contains the KV store collection. Default is search. | Required | 
 | kv_store_collection_name | A comma-separated list of KV store collections. | Required | 
-| limit | Maximum number of records to return. The default is 50. | Optional | 
+| limit | Maximum number of records to return. Default is 100. | Optional | 
 
 
 #### Context Output
@@ -851,7 +851,7 @@ Deletes all data within the specified KV store collection or collections.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store collection. For example, "search"." | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. For example, "search". Default is search. | Required | 
 | kv_store_collection_name | A comma-separated list of KV store collections. | Required | 
 
 
@@ -878,7 +878,7 @@ Deletes the specified KV stores.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store. The default is "search". | Required | 
+| app_name | The name of the Splunk application that contains the KV store. The default is "store". Default is search. | Required | 
 | kv_store_name | A comma-separated list of KV stores. | Required | 
 
 
@@ -896,7 +896,7 @@ There is no context output for this command.
 
 ### splunk-kv-store-collection-search-entry
 ***
-Searches for specific objects in a store. Search can be a basic key-value pair or a full query.
+Searches for specific objects in a store. The search can be a basic key-value pair or a full query.
 
 
 #### Base Command
@@ -950,7 +950,7 @@ Searches for specific objects in a store. Search can be a basic key-value pair o
 
 ### splunk-kv-store-collection-delete-entry
 ***
-Deletes the specified object in store. Search can be a basic key-value pair or a full query.
+Deletes the specified object in store. The search can be a basic key-value pair or a full query.
 
 
 #### Base Command
@@ -993,7 +993,7 @@ Gets data from a notable event. This method does not update the current incident
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The remote event ID. | Required | 
-| lastUpdate | ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.  | Required | 
+| lastUpdate | ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -1013,7 +1013,7 @@ Gets the list of notable events that were modified since the last update. This c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time. | Required | 
+| lastUpdate | ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time. | Optional | 
 
 
 #### Context Output
@@ -1105,7 +1105,7 @@ Creates the KV store collection transform.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+    | --- | --- |
 | kv_store_collection_name | The name of the KV store collection. | Required | 
 | supported_fields | A comma-delimited list of the fields supported by the collection, e.g., _key,id,name,address. If no value is specified, the KV Store collection configuration will be used. | Optional | 
 | app_name | The name of the Splunk application that contains the KV store collection. Default is search. | Required | 
@@ -1132,3 +1132,148 @@ The default port is 8088.
 ## Troubleshooting
 
 In case you encounter HTTP errors (e.g., IncompleteRead), we recommend using Python requests handler.
+Runs queries on Splunk servers.
+  | Debug logging enabled | Test configuration | False |
+
+
+| limit | The maximum number of returned results per search. To retrieve all results, enter "0" (not recommended). Default is 100. | Optional | 
+
+| batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a batch_limit of 10, the results will be processed 10 at a time over 10 iterations. This does not effect the search or the context and outputs returned. In some cases, specifying a batch_size enhances search performance. If you think that the search execution is suboptimal, we recommend trying several batch_size values to determine which works best for your search. Default is 25,000. Default is 25000. | Optional | 
+| update_context | Determines whether the results will be entered into the context. Possible values: "true" and "false". Possible values are: true, false. Default is true. | Optional | 
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. Possible values are: true, false. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. Default is 30. | Optional | 
+| sid | The job sid. | Optional | 
+| fast_mode | The Fast mode prioritizes the performance of the search and does not return nonessential field or event data. This means that the search returns what is essential and required if fast_mode equals 'true'. Possible values are: true, false. Default is false. | Optional | 
+
+
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+| urgency | Notable event urgency. Possible values: "critical", "high", "medium", "low", and "informational". Possible values are: critical, high, medium, low, informational. | Optional | 
+| disposition | Disposition of the notable. If the more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list. Possible values are: True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. | Optional | 
+
+
+| raw | The raw data of the Splunk event (string). Default is ${Splunk.Result._raw}. | Optional | 
+| Splunk.Raw.Parsed | unknown | The raw event data \(parsed\). | 
+
+
+
+| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional | 
+| index | The index name. | Optional | 
+| host | The hostname. | Optional | 
+
+
+
+
+
+
+| app_name | The name of the Splunk application in which to create the KV store. The default is "search". Default is search. | Required | 
+
+
+| kv_store_fields | The list of names and value types used to define the KV store collection scheme, e.g., id=number, name=string, address=string.<br/>. | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". Default is search. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### splunk-kv-store-collection-create-transform
+
+***
+Creates the KV store collection transform.
+
+#### Base Command
+
+`splunk-kv-store-collection-create-transform`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| kv_store_collection_name | The name of the KV store collection. | Required | 
+| supported_fields | A comma-delimited list of the fields supported by the collection, e.g., _key,id,name,address. If no value is specified, the KV Store collection configuration will be used.<br/>. | Optional | 
+
+#### Input
+
+| kv_store_data | The data to add to the KV store collection, according to the collection JSON format, e.g., [{"name": "Splunk HQ", "id": 456, "address": { "street": "340 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "121212"}}, {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}]. | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". Default is search. | Required | 
+
+#### Input
+
+| app_name | The name of the Splunk application in which to create the KV store. The default is "search". Default is search. | Required | 
+
+#### Input
+
+| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". Default is search. | Required | 
+| new_arg | New argument for testing. | Optional | 
+| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection\). | 
+| Splunk.Test | string | Test output | 
+
+#### Input
+
+
+#### Input
+
+
+#### Input
+
+| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". Default is search. | Required | 
+| kv_store_collection_name | The name of the KV store collection. | Required | 
+| query | Complex query to search in the store with operators such as "and", "or", "not", etc. For more information, see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore. | Optional | 
+| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection\). | 
+
+#### Input
+
+| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". Default is search. | Required | 
+| query | Complex query to search in the store with operators such as "and", "or", "not", etc.<br/>For more information, see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore. | Optional | 
+### get-mapping-fields
+***
+Query Splunk to retrieve a list of sample alerts by alert type. Used for mapping fetched incidents through the Get Schema option.
+#### Base Command
+`get-mapping-fields`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
+
+
+#### Input
+
+***
+Resets the enrichment mechanism of fetched notables.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+### splunkt-test-cmd
+A new test command
+`splunkt-test-cmd`
+| --- | --- | --- |
+| some_arg | None Default is DEFAULT. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Test.Output | string | Some sample test output | 
+| Splunk.Test.Date | date | Some sample test output date | 
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and SplunkPy corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+  | **Option** | **Description** |
+  | None | Turns off incident mirroring. |
+  | Incoming | Any changes in SplunkPy events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+  | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in SplunkPy events (outgoing mirrored fields). |
+  | Incoming And Outgoing | Changes in Cortex XSOAR incidents and SplunkPy events will be reflected in both directions. |
+3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in SplunkPy.
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SplunkPy.
