@@ -1458,7 +1458,7 @@ def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:
                 'offset': _offset,
                 'limit': _limit,
                 # We need to use sort since the API doesn't guarantee a consistent order,
-                # which can cause issues when using th offset parameter (repetitive & missing values)
+                # which can cause issues when using the offset parameter (repetitive & missing values)
                 'sort': 'uid',
             },
         }
@@ -1477,7 +1477,7 @@ def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:
 
     while fetched_results_count < limit and fetched_results_count + offset < total_results:
         current_offset = offset + fetched_results_count
-        remaining_results_count = min(limit - fetched_results_count, total_results - fetched_results_count)
+        remaining_results_count = min(limit, total_results) - fetched_results_count
 
         if remaining_results_count > 500:
             current_limit = 500
@@ -6453,7 +6453,7 @@ def cs_falcon_resolve_identity_detection(args: dict[str, Any]) -> CommandResults
 
 
 def cs_falcon_list_users_command(args: dict[str, Any]) -> CommandResults:
-    users_ids = argToList(args['id']) if 'id' in args else None
+    users_ids = argToList(args.get('id'))
     offset = arg_to_number(args.get('offset')) or 0
     limit = arg_to_number(args.get('limit')) or 50
     query_filter = args.get('filter')

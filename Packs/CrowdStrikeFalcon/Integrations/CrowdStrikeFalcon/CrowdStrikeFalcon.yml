@@ -2385,7 +2385,6 @@ script:
       - In Progress
       - Reopened
       - Closed
-      required: false
     - description: UUID of a user to assign the incident to. Mutually exclusive with the 'username' argument.
       name: assigned_to_uuid
     - description: Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user.
@@ -4716,19 +4715,14 @@ script:
     - description: IDs (UUID) of specific users to list.
       name: id
       isArray: true
-      required: false
     - description: 'The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid. Example: "first_name:''John''".'
       name: filter
-      isArray: true
-      required: false
     - description: The integer offset to start retrieving records from.
       name: offset
       defaultValue: 0
-      required: false
     - description: The maximum number of records to return.
       name: limit
-      defaultValue: 100
-      required: false
+      defaultValue: 50
     description: List users.
     name: cs-falcon-list-users
     outputs:
