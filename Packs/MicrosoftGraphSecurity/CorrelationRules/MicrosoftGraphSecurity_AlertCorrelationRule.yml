@@ -1,4 +1,4 @@
-- alert_category: User Defined
+  alert_category: User Defined
   alert_description: $xdm.alert.description
   alert_fields:
     action_file_name: xdm.target.file.filename
