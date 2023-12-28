@@ -1,7 +1,7 @@
 id: Cortex XDR Alerts Handling
 version: -1
 name: Cortex XDR Alerts Handling
-description: "Deprecated. Use Cortex XDR - Alerts Handling v2 instead. When using the v2 version, enabling globally shared dontext for it is required because outputs are no longer declared."
+description: "Deprecated. Use Cortex XDR - Alerts Handling v2 instead. When using the v2 version, enabling globally shared context for that playbook is required because outputs are no longer declared."
 starttaskid: "0"
 tasks:
   "0":

@@ -1,4 +1,4 @@
-Deprecated. Use Cortex XDR - Alerts Handling v2 instead. When using the v2 version, enabling globally shared dontext for it is required because outputs are no longer declared.
+Deprecated. Use Cortex XDR - Alerts Handling v2 instead. When using the v2 version, enabling globally shared context for that playbook is required because outputs are no longer declared.
 
 ## Dependencies
 
