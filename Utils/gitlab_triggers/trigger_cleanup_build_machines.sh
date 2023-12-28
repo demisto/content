@@ -28,7 +28,8 @@ fi
 _branch="$(git branch  --show-current)"
 _slack_channel="dmst-build-test"
 _machine_type="nightly"
-_machine="all"
+_machine=None
+_machine_count="all"
 _lock_path="content-locks/locks-xsiam-ga-nightly"
 
 # Parsing the user inputs.
@@ -54,6 +55,9 @@ while [[ "$#" -gt 0 ]]; do
   -mt|--machine-type) _machine_type="$2"
     shift
     shift;;
+  -mc|--machine-count) _machine_count="$2"
+    shift
+    shift;;
   -p|--lock-path) _lock_path="$2"
     shift
     shift;;
@@ -75,5 +79,6 @@ curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
     --form "variables[LOCK_MACHINE_NAME]=${_machine}" \
     --form "variables[CLOUD_MACHINES_TYPE]=${_machine_type}" \
+    --form "variables[CLOUD_MACHINES_COUNT]=${_machine_count}" \
     --form "variables[GCS_LOCKS_PATH]=${_lock_path}"\
      | jq
