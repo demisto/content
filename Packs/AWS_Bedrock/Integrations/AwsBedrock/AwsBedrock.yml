@@ -1,0 +1,100 @@
+commonfields:
+  id: AWS Bedrock
+  version: -1
+name: AWS Bedrock
+display: AWS Bedrock
+category: IT Services
+description: Amazon Web Services Bedrock service.
+configuration:
+- display: AWS Default Region
+  name: defaultRegion
+  type: 15
+  required: false
+  options:
+  - us-east-1
+  - us-west-2
+  - ap-northeast-1
+  - ap-southeast-1
+  - eu-central-1
+- display: Role Arn
+  name: roleArn
+  type: 0
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  type: 0
+  required: false
+- display: Access Key
+  displaypassword: Access Key
+  name: access_key
+  type: 9
+  required: false
+  hiddenusername: true
+- display: Secret Key
+  displaypassword: Secret Key
+  name: secret_key
+  type: 9
+  hiddenusername: true
+  required: false
+- display: Timeout
+  name: timeout
+  defaultvalue: 60,10
+  type: 0
+  required: false
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
+- display: Retries
+  name: retries
+  defaultvalue: "5"
+  type: 0
+  required: false
+- display: PrivateLink service URL
+  name: endpoint_url
+  type: 0
+  required: false
+- display: STS PrivateLink URL
+  name: sts_endpoint_url
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: aws-bedrock-ask-question
+    arguments:
+    - name: question
+      description: The question to be sent to AWS Bedrock.
+      type: textArea
+    - name: model
+      required: true
+      description: Model to use in AWS Bedrock.
+      defaultValue: anthropic.claude-v2
+      type: textArea
+    - name: max_tokens_to_sample
+      defaultValue: 300
+      required: true
+      description: Configures the minimum and maximum number of tokens to use in the generated response..
+      type: textArea
+    outputs:
+    - contextPath: AWS.Bedrock.Response
+      description: The response replied by AWS Bedrock API.
+      type: String
+    description: Ask a question to AWS Amazon Bedrock.
+  dockerimage: demisto/boto3py3:1.0.0.82871
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

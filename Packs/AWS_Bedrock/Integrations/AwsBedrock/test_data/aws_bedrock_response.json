@@ -1,0 +1,16 @@
+{
+        "ResponseMetadata": {
+            "RequestId": "3fd51457-f34a-4d9c-8ef8-a207a3acdac3",
+            "HTTPStatusCode": 200,
+            "HTTPHeaders": {
+                "date": "Wed, 08 Nov 2023 17:33:49 GMT",
+                "content-type": "application/json",
+                "content-length": "1057",
+                "connection": "keep-alive",
+                "x-amzn-requestid": "3fd51457-f34a-4d9c-8ef8-a207a3acdac3"
+            },
+            "RetryAttempts": 0
+        },
+        "contentType": "application/json",
+        "body": {"completion": " {\n  \"result\": 6 \n}", "stop": "\n\nHuman:", "stop_reason": "stop_sequence"}
+}
