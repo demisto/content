@@ -90,20 +90,24 @@ REPLACE_ACTION = "10"
 
 
 def validate_authentication(func: Callable) -> Callable:
-    """Decorator to manage authentication for API requests.
+    """
+    Decorator to manage authentication for API requests.
     This decorator first tries to execute the provided function using an existing authentication cookie
     stored in the 'integration_context'.
     If no valid cookie is available, or if the existing cookie is no longer valid (indicated by an
     HTTP FORBIDDEN status), it attempts to re-authenticate with the API and then re-execute the function.
     The 'integration_context' is used to store and retrieve the authentication cookie,
     allowing the decorator to use the latest valid authentication details across different executions.
+
     Args:
         func (Callable): The API request function to be executed.
+
     Raises:
         DemistoException:
             - If the API returns an HTTP FORBIDDEN status during the initial request
                 attempt and re-authentication also fails.
             - If the API returns any other error during the request.
+
     Returns:
         Callable: The result from executing 'func' with the provided arguments and keyword arguments.
     """
@@ -111,7 +115,8 @@ def validate_authentication(func: Callable) -> Callable:
     @wraps(wrapped=func)
     def wrapper(client: "Client", *args, **kwargs):
         def try_request():
-            """Attempts to execute the API request function.
+            """
+            Attempts to execute the API request function.
             If a 'FORBIDDEN' HTTP status code is encountered, indicating an authentication issue,
             it triggers a re-authentication and retries the request.
             """
@@ -125,7 +130,8 @@ def validate_authentication(func: Callable) -> Callable:
                 raise
 
         def try_authentication():
-            """Attempts to authenticate with the API and extract the cookie from the session.
+            """
+            Attempts to authenticate with the API and extract the cookie from the session.
             In case of a 'FORBIDDEN' status code or other exceptions, it handles them appropriately,
             updating the integration context or raising a tailored exception.
             """
