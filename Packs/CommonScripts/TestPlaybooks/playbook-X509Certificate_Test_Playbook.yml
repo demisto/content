@@ -1,6 +1,6 @@
-id: X509Certificate Test Playbook
+id: X509Certificate_Test_Playbook
 version: -1
-name: X509Certificate Test Playbook
+name: X509Certificate_Test_Playbook
 description: Test Playbook for X509Certificate Scripts.
 starttaskid: "0"
 tasks:
@@ -254,10 +254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 18f3e54c-46be-444e-8c5e-bc6b9b919f00
+    taskid: 9136192b-ef87-4407-846a-facb6a125151
     type: regular
     task:
-      id: 18f3e54c-46be-444e-8c5e-bc6b9b919f00
+      id: 9136192b-ef87-4407-846a-facb6a125151
       version: -1
       name: Find Indicator
       description: Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
@@ -271,23 +271,10 @@ tasks:
     scriptarguments:
       extend-context:
         simple: FoundIndicator=.
-      limit:
-        simple: "1"
       populateFields:
         simple: id
       query:
-        complex:
-          root: Certificate
-          accessor: SHA256
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'value:'
-              suffix:
-                value:
-                  simple: 'and type:"X509 Certificate"'
+        simple: ' type:"X509 Certificate"'
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
@@ -307,10 +294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: cb40f273-1461-48bd-8567-b65044c227e2
+    taskid: a85150f5-78dc-4aca-8c42-89d9b9e843fc
     type: condition
     task:
-      id: cb40f273-1461-48bd-8567-b65044c227e2
+      id: a85150f5-78dc-4aca-8c42-89d9b9e843fc
       version: -1
       name: Indicator found?
       description: Check if find indicator found the updated indicator
