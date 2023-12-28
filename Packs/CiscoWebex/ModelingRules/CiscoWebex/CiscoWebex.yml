@@ -1,6 +1,6 @@
 fromversion: 8.4.0
-id: Cisco Webex_Modeling_Rules
-name: Cisco Webex Modeling Rules
+id: Cisco Webex_Modeling_Rule
+name: Cisco Webex Modeling Rule
 rules: ''
 schema: ''
 tags: ''
