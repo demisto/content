@@ -25,4 +25,4 @@ outputs:
   description: if there is no instance for the given brand.
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- IsIntegrationAvailable - Test
