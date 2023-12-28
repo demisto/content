@@ -2071,7 +2071,7 @@ script:
         description: The rule name.
         type: string
       - contextPath: EWS.Rule.Enabled
-        description: Wheather the rule is enabled or not.
+        description: Whether the rule is enabled or not.
         type: string
       - contextPath: EWS.Rule.Priority
         description: The priorty of the rule.
