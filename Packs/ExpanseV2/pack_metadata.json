@@ -31,7 +31,7 @@
             "display_name": "Common Scripts"
         },
         "X509Certificate": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "X509Certificate"
         },
         "PAN-OS": {
