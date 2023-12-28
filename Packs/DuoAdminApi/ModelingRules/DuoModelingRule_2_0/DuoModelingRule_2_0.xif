@@ -3,6 +3,7 @@ filter
     eventtype = "authentication"
 | alter
     os_version = json_extract_scalar(access_device, "$.os_version"),
+    os_version = json_extract_scalar(access_device, "$.os_version"),
     os = lowercase(json_extract_scalar(access_device, "$.os")),
     browser = json_extract_scalar(access_device, "$.browser"),
     browser_version = json_extract_scalar(access_device, "$.browser_version"),
