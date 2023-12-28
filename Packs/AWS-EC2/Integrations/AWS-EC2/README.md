@@ -3237,34 +3237,247 @@ There is no context output for this command.
 
 #### Human Readable Output
 >The host was successfully released.
-### aws-ec2-modify-snapshot-permission
+
+### aws-ec2-describe-ipam-resource-discoveries
 
 ***
-Adds or removes permission settings for the specified snapshot.
+Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
 
 #### Base Command
 
-`aws-ec2-modify-snapshot-permission`
+`aws-ec2-describe-ipam-resource-discoveries`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| snapshotId | The ID of the EBS snapshot. | Required | 
-| operationType | The operation type, add or remove. Possible values are: add, remove. | Required | 
-| groupNames | CSV of security group names. This parameter can be used only when UserIds not provided. | Optional | 
-| userIds | CSV of AWS account IDs. This parameter can be used only when groupNames not provided. | Optional | 
-| dryRun | Checks whether you have the required permissions for the action, without actually making the request, and provides an error response. Possible values are: True, False. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
-| roleSessionName | An identifier for the assumed role session. | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| IpamResourceDiscoveryIds | A comma-separated list of the IPAM resource discovery IDs. | Optional | 
+| Filters | One or more filters separated by ';'. See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional | 
+| MaxResults | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
+| NextToken | The token for the next set of results. | Optional | 
+| AddressRegion | The Amazon Web Services region for the IP address. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId | String | The resource discovery ID. | 
+| AWS.EC2.IpamResourceDiscoveries.OwnerId | String | The ID of the owner. | 
+| AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery region. | 
+
 #### Command example
-```!aws-ec2-modify-snapshot-permission operationType=remove snapshotId=snap-04b2d21f20d2388f2 userIds=123456789012```
+```!aws-ec2-describe-ipam-resource-discoveries```
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "IpamResourceDiscoveries": {
+                "IpamResourceDiscoveryArn": "arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111",
+                "IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
+                "IpamResourceDiscoveryRegion": "us-east-1",
+                "IsDefault": true,
+                "OperatingRegions": [
+                    {
+                        "RegionName": "ap-south-1"
+                    },
+                    {
+                        "RegionName": "eu-north-1"
+                    },
+                    {
+                        "RegionName": "eu-west-3"
+                    },
+                    {
+                        "RegionName": "eu-west-2"
+                    },
+                    {
+                        "RegionName": "eu-west-1"
+                    },
+                    {
+                        "RegionName": "ap-northeast-3"
+                    },
+                    {
+                        "RegionName": "ap-northeast-2"
+                    },
+                    {
+                        "RegionName": "ap-northeast-1"
+                    },
+                    {
+                        "RegionName": "ca-central-1"
+                    },
+                    {
+                        "RegionName": "sa-east-1"
+                    },
+                    {
+                        "RegionName": "ap-southeast-1"
+                    },
+                    {
+                        "RegionName": "ap-southeast-2"
+                    },
+                    {
+                        "RegionName": "eu-central-1"
+                    },
+                    {
+                        "RegionName": "us-east-1"
+                    },
+                    {
+                        "RegionName": "us-east-2"
+                    },
+                    {
+                        "RegionName": "us-west-1"
+                    },
+                    {
+                        "RegionName": "us-west-2"
+                    }
+                ],
+                "OwnerId": "222222222222",
+                "State": "create-complete",
+                "Tags": []
+            }
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->Snapshot snap-04b2d21f20d2388f2 permissions was successfully updated.
+>### Ipam Resource Discoveries
+>|IpamResourceDiscoveryArn|IpamResourceDiscoveryId|IpamResourceDiscoveryRegion|IsDefault|OperatingRegions|OwnerId|State|Tags|
+>|---|---|---|---|---|---|---|---|
+>| arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111 | ipam-res-disco-11111111111111111 | us-east-1 | true | {'RegionName': 'ap-south-1'},<br/>{'RegionName': 'eu-north-1'},<br/>{'RegionName': 'eu-west-3'},<br/>{'RegionName': 'eu-west-2'},<br/>{'RegionName': 'eu-west-1'},<br/>{'RegionName': 'ap-northeast-3'},<br/>{'RegionName': 'ap-northeast-2'},<br/>{'RegionName': 'ap-northeast-1'},<br/>{'RegionName': 'ca-central-1'},<br/>{'RegionName': 'sa-east-1'},<br/>{'RegionName': 'ap-southeast-1'},<br/>{'RegionName': 'ap-southeast-2'},<br/>{'RegionName': 'eu-central-1'},<br/>{'RegionName': 'us-east-1'},<br/>{'RegionName': 'us-east-2'},<br/>{'RegionName': 'us-west-1'},<br/>{'RegionName': 'us-west-2'} | 222222222222 | create-complete |  |
+
+
+### aws-ec2-describe-ipam-resource-discovery-associations
+
+***
+Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+
+#### Base Command
+
+`aws-ec2-describe-ipam-resource-discovery-associations`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| IpamResourceDiscoveryAssociationIds | A comma-separated list of the resource discovery association IDs. | Optional | 
+| Filters | One or more filters separated by ';'. See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional | 
+| MaxResults | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
+| NextToken | The token for the next set of results. | Optional | 
+| AddressRegion | The Amazon Web Services region for the IP address. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId | String | The resource discovery association ID. | 
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. | 
+| AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. | 
+
+#### Command example
+```!aws-ec2-describe-ipam-resource-discovery-associations```
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "IpamResourceDiscoveryAssociations": {
+                "IpamArn": "arn:aws:ec2::222222222222:ipam/ipam-11111111111111111",
+                "IpamId": "ipam-11111111111111111",
+                "IpamRegion": "us-east-1",
+                "IpamResourceDiscoveryAssociationArn": "arn:aws:ec2::222222222222:ipam-resource-discovery-association/ipam-res-disco-assoc-11111111111111111",
+                "IpamResourceDiscoveryAssociationId": "ipam-res-disco-assoc-11111111111111111",
+                "IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
+                "IsDefault": true,
+                "OwnerId": "222222222222",
+                "ResourceDiscoveryStatus": "active",
+                "State": "associate-complete",
+                "Tags": []
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Ipam Resource Discovery Associations
+>|IpamArn|IpamId|IpamRegion|IpamResourceDiscoveryAssociationArn|IpamResourceDiscoveryAssociationId|IpamResourceDiscoveryId|IsDefault|OwnerId|ResourceDiscoveryStatus|State|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| arn:aws:ec2::222222222222:ipam/ipam-11111111111111111 | ipam-11111111111111111 | us-east-1 | arn:aws:ec2::222222222222:ipam-resource-discovery-association/ipam-res-disco-assoc-11111111111111111 | ipam-res-disco-assoc-11111111111111111 | ipam-res-disco-11111111111111111 | true | 222222222222 | active | associate-complete |  |
+
+
+### aws-ec2-get-ipam-discovered-public-addresses
+
+***
+Gets the public IP addresses that have been discovered by IPAM.
+
+#### Base Command
+
+`aws-ec2-get-ipam-discovered-public-addresses`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| IpamResourceDiscoveryId | An IPAM resource discovery ID. | Required | 
+| AddressRegion | The Amazon Web Services Region for the IP address. | Required | 
+| Filters | One or more filters separated by ';'. See AWS documentation for details &amp; filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html). | Optional | 
+| MaxResults | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
+| NextToken | The token for the next set of results. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.IpamDiscoveredPublicAddresses.Address | String | IPAM discovered public addresses. | 
+| AWS.EC2.IpamDiscoveredPublicAddresses.AddressOwnerId | String | The ID of the owner of the resource the IP address is assigned to. | 
+| AWS.EC2.IpamDiscoveredPublicAddresses.AddressType | String | The IP address type. | 
+| AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus | String | The association status. | 
+| AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId | String | The instance ID of the instance the assigned IP address is assigned to. | 
+| AWS.EC2.IpamDiscoveredPublicAddresses.Tags | Unknown | Tags associated with the IP address. | 
+
+#### Command example
+```!aws-ec2-get-ipam-discovered-public-addresses IpamResourceDiscoveryId=ipam-res-disco-11111111111111111 AddressRegion=us-east-1 Filters=Name=address,Values=1.1.1.1```
+#### Context Example
+```json
+{
+    "AWS": {
+        "EC2": {
+            "IpamDiscoveredPublicAddresses": {
+                "Address": "1.1.1.1",
+                "AddressAllocationId": "eipalloc-11111111111111111",
+                "AddressOwnerId": "222222222222",
+                "AddressRegion": "us-east-1",
+                "AddressType": "amazon-owned-eip",
+                "AssociationStatus": "associated",
+                "InstanceId": "i-11111111111111111",
+                "IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
+                "NetworkBorderGroup": "us-east-1",
+                "NetworkInterfaceDescription": "",
+                "NetworkInterfaceId": "eni-11111111111111111",
+                "PublicIpv4PoolId": "amazon",
+                "SampleTime": "2023-11-26T02:00:45",
+                "SecurityGroups": [
+                    {
+                        "GroupId": "sg-11111111111111111",
+                        "GroupName": "example_sg"
+                    }
+                ],
+                "SubnetId": "subnet-11111111111111111",
+                "Tags": {
+                    "EipTags": []
+                },
+                "VpcId": "vpc-11111111111111111"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Ipam Discovered Public Addresses
+>|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscoveryId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|SubnetId|Tags|VpcId|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111 | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupName': 'example_sg', 'GroupId': 'sg-11111111111111111'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |

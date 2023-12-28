@@ -1,6 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from mypy_boto3_ec2 import EC2Client
 
 import json
 import urllib3.util
@@ -2980,32 +2983,132 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
-def modify_snapshot_permission_command(args, aws_client):
+def describe_ipam_resource_discoveries_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
+    """
+    aws-ec2-describe-ipam-resource-discoveries command: Describes IPAM resource discoveries. A resource discovery is an IPAM
+    component that enables IPAM to manage and monitor resources that belong to the owning account.
+
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM resource
+        discoveries.
+    """
+    kwargs = {}
+    if (filters := args.get('Filters')) is not None:
+        kwargs.update({'Filters': parse_filter_field(filters)})
+    if (max_results := args.get('MaxResults')) is not None:
+        kwargs.update({'MaxResults': int(max_results)})
+    if (next_token := args.get('NextToken')) is not None:
+        kwargs.update({'NextToken': next_token})
+    if (ipam_ids := args.get('IpamResourceDiscoveryIds')) is not None:
+        kwargs.update({'IpamResourceDiscoveryIds': argToList(ipam_ids)})
+
+    response = client.describe_ipam_resource_discoveries(**kwargs)
+
+    if len(response['IpamResourceDiscoveries']) == 0:
+        return CommandResults(readable_output='No Ipam Resource Discoveries were found.')
+
+    human_readable = tableToMarkdown('Ipam Resource Discoveries', response['IpamResourceDiscoveries'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamResourceDiscoveries",
+        outputs_key_field="IpamResourceDiscoveryId",
+        outputs=response['IpamResourceDiscoveries'],
+        raw_response=response,
+        readable_output=human_readable,
+    )
+    return command_results
+
+
+def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
+    """
+    aws-ec2-describe-ipam-resource-discovery-associations command: Describes resource discovery association with an Amazon VPC
+    IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM discovery
+        associations.
+    """
+    kwargs = {}
+    if (filters := args.get('Filters')) is not None:
+        kwargs.update({'Filters': parse_filter_field(filters)})
+    if (max_results := args.get('MaxResults')) is not None:
+        kwargs.update({'MaxResults': int(max_results)})
+    if (next_token := args.get('NextToken')) is not None:
+        kwargs.update({'NextToken': next_token})
+    if (ipam_ids := args.get('IpamResourceDiscoveryAssociationIds')) is not None:
+        kwargs.update({'IpamResourceDiscoveryAssociationIds': argToList(ipam_ids)})
+
+    response = client.describe_ipam_resource_discovery_associations(**kwargs)
+
+    if len(response['IpamResourceDiscoveryAssociations']) == 0:
+        return CommandResults(readable_output='No Ipam Resource Discovery Associations were found.')
+
+    human_readable = tableToMarkdown('Ipam Resource Discovery Associations', response['IpamResourceDiscoveryAssociations'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamResourceDiscoveryAssociations",
+        outputs_key_field="IpamResourceDiscoveryId",
+        outputs=response['IpamResourceDiscoveryAssociations'],
+        raw_response=response,
+        readable_output=human_readable,
+    )
+    return command_results
+
+
+def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_client) -> CommandResults:
+    """
+    aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
+
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains public IP addresses
+        that have been discovered by IPAM.
+    """
     client = aws_client.aws_session(
         service='ec2',
-        region=args.get('region'),
+        region=args.get('AddressRegion'),
         role_arn=args.get('roleArn'),
-        role_session_duration=args.get('roleSessionDuration'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
-    group_names = argToList(args.get('groupNames'))
-    user_ids = argToList(args.get('userIds'))
-    if group_names and user_ids or not (group_names or user_ids):
-        raise DemistoException('Please provide either "groupNames" or "userIds"')
+    if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
+        return_error('IpamResourceDiscoveryId and AddressRegion need to be defined')
 
-    accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
+    kwargs = {}
+    kwargs.update({'IpamResourceDiscoveryId': args.get('IpamResourceDiscoveryId'), 'AddressRegion': args.get('AddressRegion')})
+    if (filters := args.get('Filters')) is not None:
+        kwargs.update({'Filters': parse_filter_field(filters)})
+    if (max_results := args.get('MaxResults')) is not None:
+        kwargs.update({'MaxResults': int(max_results)})
+    if (next_token := args.get('NextToken')) is not None:
+        kwargs.update({'NextToken': next_token})
 
-    operation_type = args.get('operationType')
-    response = client.modify_snapshot_attribute(
-        Attribute='createVolumePermission',
-        SnapshotId=args.get('snapshotId'),
-        OperationType=operation_type,
-        DryRun=argToBoolean(args.get('dryRun', False)),
-        **accounts
+    response = client.get_ipam_discovered_public_addresses(**kwargs)
+
+    if len(response['IpamDiscoveredPublicAddresses']) == 0:
+        return CommandResults(readable_output='No Ipam Discovered Public Addresses were found.')
+
+    output = json.dumps(response, cls=DatetimeEncoder)
+
+    human_readable = tableToMarkdown('Ipam Discovered Public Addresses', json.loads(output)['IpamDiscoveredPublicAddresses'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
+        outputs_key_field="Address",
+        outputs=json.loads(output)['IpamDiscoveredPublicAddresses'],
+        raw_response=json.loads(output),
+        readable_output=human_readable,
     )
-
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return_results(f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
+    return command_results
 
 
 def main():
@@ -3027,11 +3130,20 @@ def main():
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                               retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
+                               timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
 
         command = demisto.command()
         args = demisto.args()
+
+        # required for typing of IPAM commands
+        client: 'EC2Client' = aws_client.aws_session(
+            service='ec2',
+            region=args.get('AddressRegion'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
+        )
 
         LOG(f'Command being called is {command}')
 
@@ -3255,8 +3367,14 @@ def main():
         elif command == 'aws-ec2-release-hosts':
             release_hosts_command(args, aws_client)
 
-        elif command == 'aws-ec2-modify-snapshot-permission':
-            modify_snapshot_permission_command(args, aws_client)
+        elif command == 'aws-ec2-describe-ipam-resource-discoveries':
+            return_results(describe_ipam_resource_discoveries_command(args, client))
+
+        elif command == 'aws-ec2-describe-ipam-resource-discovery-associations':
+            return_results(describe_ipam_resource_discovery_associations_command(args, client))
+
+        elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
+            return_results(get_ipam_discovered_public_addresses_command(args, aws_client))
 
     except Exception as e:
         LOG(e)
