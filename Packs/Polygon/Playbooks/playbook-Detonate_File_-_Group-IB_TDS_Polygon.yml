@@ -55,7 +55,7 @@ tasks:
     scriptarguments:
       file_id:
         complex:
-          root: File.EntryID
+          root: File
           filters:
           - - operator: match
               left:
@@ -84,6 +84,7 @@ tasks:
                 value:
                   simple: inputs.file_id
                 iscontext: true
+          accessor: EntryID
           transformers:
           - operator: uniq
       language:
