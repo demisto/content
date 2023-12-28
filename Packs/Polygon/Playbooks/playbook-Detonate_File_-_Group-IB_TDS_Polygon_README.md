@@ -31,9 +31,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| file_id | File to detonate | File.EntryID | Optional |
-| Interval | Report requests frequency \(minutes\) | 1 | Required |
-| Timeout | Report waiting timeout \(minutes\) | 60 | Required |
+| file_id | File EntryID to detonate | File.EntryID | Optional |
+| Interval | Report requests frequency \(minutes\). | 1 | Required |
+| Timeout | Report waiting timeout \(minutes\). | 60 | Required |
 | Password | Password for the uploaded file. |  | Optional |
 
 ## Playbook Outputs
@@ -54,20 +54,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | DBotScore.Vendor | The vendor used to calculate the score. | string |
 | DBotScore.Score | The actual score. | number |
 | IP.Address | IP address. | string |
-| Domain.Name | The Domain name. | string |
+| Domain.Name | The domain name. | string |
 | Domain.DNS | A list of IP objects resolved by DNS. | string |
 | URL.Data | The URL. | string |
 | RegistryKey.Path | The path to the registry key. | string |
 | RegistryKey.Value | The value at the given RegistryKey. | string |
 | Process.Name | Process name. | string |
 | Process.PID | Process PID. | number |
-| Process.CommandLine | Process Command Line. | string |
+| Process.CommandLine | Process command line. | string |
 | Process.Path | Process path. | string |
 | Process.StartTime | Process start time. | date |
 | Process.EndTime | Process end time. | date |
 | Polygon.Analysis.ID | Analysis ID in THF. | number |
-| Polygon.Analysis.Name | File Name. | string |
-| Polygon.Analysis.Size | File Size. | number |
+| Polygon.Analysis.Name | File name. | string |
+| Polygon.Analysis.Size | File size. | number |
 | Polygon.Analysis.Started | Analysis start timestamp. | date |
 | Polygon.Analysis.Analyzed | Analysis finish timestamp. | date |
 | Polygon.Analysis.MD5 | Analyzed file MD5 hash. | string |
