@@ -329,7 +329,7 @@ script:
       - Microsoft Edge
       description: Browser name, used only for "url" type.
     - name: obj_ext_cmd
-      description: Command line. Used only with "file" and "download" task types
+      description: Command line. Used only with "file" and "download" task types. Permitted size is 2-256 characters long.
     - auto: PREDEFINED
       defaultValue: Windows 7
       description: Version of Windows OS.
