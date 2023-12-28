@@ -384,7 +384,7 @@ def perform_remove_from_campaign(ids: list[str], action: str) -> str:
     campaign_incidents_context = demisto.dt(campaign_context, "Contents.context.EmailCampaign.incidents") or []
 
     campaign_incidents_ids = [incident["id"] for incident in campaign_incidents_context]
-    ids_to_remove_from_campaign = list(set(ids) & set(campaign_incidents_ids))
+    ids_to_remove_from_campaign = sorted(set(ids) & set(campaign_incidents_ids))
     if not ids_to_remove_from_campaign:
         return "No incidents to remove from the campaign."
     involved_incidents_count = int(demisto.dt(campaign_context, "Contents.context.EmailCampaign.involvedIncidentsCount")[0])
