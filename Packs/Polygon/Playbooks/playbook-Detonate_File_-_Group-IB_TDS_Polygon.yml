@@ -89,6 +89,11 @@ tasks:
           - operator: uniq
       language:
         simple: en
+      password:
+        complex:
+          root: inputs.Password
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -552,6 +557,11 @@ inputs:
     simple: "60"
   required: true
   description: Report waiting timeout (minutes)
+  playbookInputQuery:
+- key: Password
+  value: {}
+  required: false
+  description: Password for the uploaded file.
   playbookInputQuery:
 outputs:
 - contextPath: File.Name

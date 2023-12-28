@@ -14,16 +14,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* IsTrue
 * Exists
+* IsTrue
 
 ### Commands
 
-* polygon-export-report
-* polygon-export-pcap
 * polygon-export-video
 * polygon-analysis-info
 * polygon-upload-file
+* polygon-export-report
+* polygon-export-pcap
 
 ## Playbook Inputs
 
@@ -34,6 +34,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | file_id | File to detonate | File.EntryID | Optional |
 | Interval | Report requests frequency \(minutes\) | 1 | Required |
 | Timeout | Report waiting timeout \(minutes\) | 60 | Required |
+| Password | Password for the uploaded file. |  | Optional |
 
 ## Playbook Outputs
 
