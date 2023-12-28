@@ -92,7 +92,7 @@ script:
       description: The response replied by AWS Bedrock API.
       type: String
     description: Ask a question to AWS Amazon Bedrock.
-  dockerimage: demisto/boto3py3:1.0.0.82871
+  dockerimage: demisto/boto3py3:1.0.0.84008
   runonce: false
   subtype: python3
 fromversion: 6.0.0
