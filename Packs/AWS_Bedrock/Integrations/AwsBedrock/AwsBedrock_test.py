@@ -43,7 +43,7 @@ def test_ask_command(mocker):
     - Ensure that the result is correct and JSON.
     """
     from AwsBedrock import ask_command
-    args = {'question': '3 + 3', 'model': 'anthropic.claude-v2', 'max_tokens_to_sample': "30"}
+    args = {'question': '3 + 3', 'model': 'anthropic.claude-v2'}
     response = util_load_json('test_data/aws_bedrock_response.json')
     mocker.patch.object(AWSBedrockClient, "invoke_model", return_value=response)
     aws_bedrock_session = AWSBedrockClient()
@@ -51,6 +51,7 @@ def test_ask_command(mocker):
     response['body'] = StreamingBody(io.BytesIO(body_encoded), len(body_encoded))
     service_resp = ask_command(aws_bedrock_session, args)
     assert "result" in service_resp.raw_response['completion'] and "6" in service_resp.raw_response['completion']
+    assert service_resp.outputs['result'] == 6
     assert "HTTP Code 200" in service_resp.readable_output
 
 

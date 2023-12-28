@@ -77,7 +77,6 @@ script:
     - name: question
       description: The question to be sent to AWS Bedrock.
       type: textArea
-      required: true
     - name: model
       required: true
       description: Model to use in AWS Bedrock.
@@ -93,7 +92,7 @@ script:
       description: The response replied by AWS Bedrock API.
       type: String
     description: Ask a question to AWS Amazon Bedrock.
-  dockerimage: demisto/boto3py3:1.0.0.84082
+  dockerimage: demisto/boto3py3:1.0.0.82871
   runonce: false
   subtype: python3
 fromversion: 6.0.0
