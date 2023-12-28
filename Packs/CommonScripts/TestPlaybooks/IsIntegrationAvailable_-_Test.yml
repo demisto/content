@@ -41,7 +41,7 @@ tasks:
     task:
       id: d7c651dc-314c-407c-8325-96f56a1cc586
       version: -1
-      name: IsIntegrationAvailable - Rasterize - Yes
+      name: IsIntegrationAvailable - FCM or Rasterize - Yes
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
@@ -52,7 +52,7 @@ tasks:
       - "3"
     scriptarguments:
       brandname:
-        simple: rasterize
+        simple: fcm,rasterize
     separatecontext: false
     continueonerrortype: ""
     view: |-
