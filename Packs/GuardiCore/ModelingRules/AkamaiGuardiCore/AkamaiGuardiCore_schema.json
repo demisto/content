@@ -1,0 +1,56 @@
+{
+    "akamai_guardicore_raw": {        
+        "ended": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "protocol": {
+            "type": "int",
+            "is_array": false
+        },
+        "severity": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_port":{
+            "type": "int",
+            "is_array":false
+        },
+        "destination_port":{
+            "type":"int",
+            "is_array":false
+        },
+        "id":{
+            "type": "string",
+            "is_array": false
+        },
+        "_cls": {
+            "type": "string",
+            "is_array": false
+        },
+        "sensor_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "sensor_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_asset": {
+            "type": "string",
+            "is_array": false
+        },
+        "incident_type":{
+            "type": "string",
+            "is_array": false
+        },
+        "destination_asset":{
+            "type": "string",
+            "is_array": false
+        },
+        "concatenated_tags":{
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
