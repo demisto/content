@@ -1922,8 +1922,10 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
+    # Get the client request function by attribute entity name.
     command_request = getattr(client, command_request_name)
-
+    # Get the relevant item key to fetch in case user use the command as GET.
+    # Those arguments cover 22 list commands.
     command_args = remove_empty_elements(
         {
             "group_name": args.get("group_name"),
@@ -1938,6 +1940,7 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
     response = command_request(**command_args)
+    # Map the response fields values from integer to string to be informative.
     output = get_mapped_response(response)
 
     if not argToBoolean(args.get("all_results")):
@@ -1945,19 +1948,21 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     output_table, output = get_updated_response_and_readable_output(output=output, command_args=command_args)
 
+    # Check if command called as list or get command.
     if not command_args:
         command_entity_title = f"{command_entity_title} list"
 
     readable_output = tableToMarkdown(
         name=command_entity_title,
         t=remove_empty_elements(output_table),
-        headers=list(output_table[0]) if output_table else [],
+        headers=list(output_table[0]) if output_table else [],  # Add ordered headers keys by the updated outputs.
         removeNull=True,
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"FortiMail.{command_outputs_prefix}",
+        # Set the outputs_key_field to 'item' in case 'list_item' exist, else 'mkey'
         outputs_key_field="item" if command_args.get("list_type") else "mkey",
         outputs=output,
         raw_response=response,
@@ -1986,7 +1991,7 @@ def group_create_update_command(client: Client, args: Dict[str, Any]) -> Command
     )
     command_request = getattr(client, command_request_name)
     response = command_request(**command_args)
-
+    # Get updated output for created/updated group
     output = {key: response[key] for key in ["mkey", "comment"] if key in response}
 
     readable_output = tableToMarkdown(
@@ -2020,6 +2025,7 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
+    # Get the relevant item key to remove
     command_args = remove_empty_elements(
         {
             "name": args.get("name"),
@@ -2034,17 +2040,21 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         }
     )
     get_request = getattr(client, command_request_name.replace("delete", "list"))
+    # Remove the 'values' argument in case exist before calling GET
     values = command_args.pop("values", None)
 
+    # Make a GET request to insure the item is exist before delete
     try:
         get_request(**command_args)
     except DemistoException as exc:
         raise ValueError(f"Item doesn't exist. {exc}")
 
+    # Reset the 'values' argument in case exist
     if values:
         command_args["values"] = values
 
     response = command_request(**command_args)
+    # Get output for removed item cause the API response is empty
     outputs = get_removed_item_key(command_args)
 
     return CommandResults(
@@ -2081,6 +2091,7 @@ def group_member_add_replace_command(client: Client, args: Dict[str, Any]) -> Co
         }
     )
     is_valid_email(command_args.get("email", command_args.get("emails")))
+
     output = get_output_for_replaced_and_added_items(command_args=command_args)
     updated_args = update_group_member_args(command_args=command_args)
     response = command_request(**updated_args)
@@ -2147,6 +2158,8 @@ def is_valid_email(emails: List[str] | str | None):
 def get_mapped_response(response: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Update the response integer values to readable strings by existing mappers.
+    The mapper used to map input arguments from string to integer for the API call
+    and the reversed map used to map the response data to human readable.
 
     Args:
         response (dict[str, Any]): The API response.
@@ -2155,12 +2168,15 @@ def get_mapped_response(response: dict[str, Any]) -> list[dict[str, Any]]:
         dict[str, Any]: The updated response.
     """
     updated_response = response.get("collection", [response])
+    # Remove irrelevant keys from response
     object_id = response.pop("objectID", None)
     response.pop("reqAction", None)
     response.pop("nodePermission", None)
 
     if object_id:
         boolean_mapper = reverse_dict(BOOLEAN_MAPPER)
+
+        # Map access control commands
         if "MailSetAccessRule" in object_id:
             pattern_type_mapper = reverse_dict(AC_PATTERN_TYPE_MAPPER)
             auth_mapper = reverse_dict(AC_AUTH_MAPPER)
@@ -2175,6 +2191,7 @@ def get_mapped_response(response: dict[str, Any]) -> list[dict[str, Any]]:
                 item["action"] = action_mapper.get(item.get("action"))
                 item["status"] = boolean_mapper.get(item.get("status"))
 
+        # Map recipient policy commands
         elif "PolicyRcpt" in object_id:
             direction_mapper = reverse_dict(RP_DIRECTION_MAPPER)
             auth_mapper = reverse_dict(RP_AUTH_MAPPER)
@@ -2190,6 +2207,7 @@ def get_mapped_response(response: dict[str, Any]) -> list[dict[str, Any]]:
                 item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap"))
                 item["pkiauth"] = boolean_mapper.get(item.get("pkiauth"))
 
+        # Map policy IP commands
         elif "PolicyIp" in object_id:
             destination_mapper = reverse_dict(DESTINATION_MAPPER)
             auth_mapper = reverse_dict(RP_AUTH_MAPPER)
@@ -2286,7 +2304,7 @@ def get_updated_response_and_readable_output(
     command_args: Dict[str, Any],
 ) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """
-    Update the API response keys names for the readable output.
+    Update the API response keys names according to Fortimail UI, for the readable output.
 
     Args:
         output (list[dict[str, Any]]): The API response.
@@ -2301,7 +2319,8 @@ def get_updated_response_and_readable_output(
             values = argToList(list_items)
             output_table = [{"item": value, "list_type": command_args.get("list_type")} for value in values]
             return output_table, output_table
-
+        # Build an ordered output table, response field value by header.
+        # Map API response common fields (common for all commands).
         output_table.append(
             {
                 "Name": item.get("mkey"),
@@ -2356,7 +2375,7 @@ def get_updated_response_and_readable_output(
                 "Group Name": item.get("group_name"),
             }
         )
-
+    # Add the group name argument to the output for group commands
     if group_name := command_args.get("group_name"):
         new_output = {"mkey": group_name, "Member": output}
         return output_table, [new_output]
@@ -2377,6 +2396,7 @@ def modify_group_member_args_before_replace(group_members: list[str]) -> dict[st
     updated_group_members_payload: dict[str, Any] = {
         f"mkey_{i}": group_member for i, group_member in enumerate(group_members)
     }
+    # Get the total amount of items to replaces for the API call.
     updated_group_members_payload["reqObjCount"] = len(updated_group_members_payload)
     return updated_group_members_payload
 
@@ -2384,6 +2404,7 @@ def modify_group_member_args_before_replace(group_members: list[str]) -> dict[st
 def update_group_member_args(command_args: dict[str, Any]) -> dict[str, Any]:
     """
     Update the IP/email group members arguments.
+    Convert CIDR to IP in case IP is provided.
 
     Args:
         command_args (dict[str, Any]): The command arguments.
@@ -2404,11 +2425,13 @@ def update_group_member_args(command_args: dict[str, Any]) -> dict[str, Any]:
 
 
 def get_command_entity(command_name: str) -> tuple[str, str, str]:
-    """Get command name and return the command entity name.
+    """
+    Return the command request name, title, and output prefix name by command name.
+
     Args:
         command_name (str): The command name.
     Returns:
-        str: The command entity name.
+        tuple[str, str, str]: The command request name, title, and output prefix.
     """
     command_name_parts = command_name.split("-")
     command_operator = command_name_parts[-1]
