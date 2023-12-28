@@ -617,12 +617,7 @@ slack-notify-on-merge:
     - exit $EXIT_CODE
   after_script:
     - source .gitlab/helper_functions.sh
-    - section_start "After script- Clean Machine"
-    - |
-      if [[ ${CLEAN_MACHINE_NEEDED} = "true" ]]; then
-        !reference [.clean-machine]
-      fi
-    - section_end "After script- Clean Machine"
+    - !reference [.clean-machine]
     - !reference [.unlock-machine]
 
 
