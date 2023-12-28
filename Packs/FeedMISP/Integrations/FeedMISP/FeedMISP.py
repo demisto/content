@@ -337,9 +337,9 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
     return []
 
 
-def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]: 
+def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]:
     params_dict['page'] = 0
-    response = {'response': {'Attribute': []}}
+    response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
     while True:
         params_dict['page'] += 1
         search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
@@ -348,7 +348,6 @@ def search_query_indicators_pagination(client: Client, params_dict: Dict[str, An
             break
         response['response']['Attribute'].extend(search_query_per_page)
     return response
-    
 
 
 def fetch_indicators(client: Client,
@@ -578,9 +577,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    # XSUP-31078: adding limit to fetch since large amount of indicators may cause the docker to fail.
-
-    demisto.debug("fetch_indicators starts")
     indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color,
                                   params.get('url'), reputation, feed_tags)
     demisto.debug(f"fetch indicator results: {indicators} /n/n fetch_indicators finished")
@@ -610,9 +606,7 @@ def main():
             return_results(test_module(client))
         elif command == 'misp-feed-get-indicators':
             return_results(get_attributes_command(client, args, params))
-        elif command == 'fetch-indicators':
-            
-            demisto.debug(f'MAIN fetch-indicators {params}')
+        elif command == 'fetch-indicators':         
             indicators = fetch_attributes_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
