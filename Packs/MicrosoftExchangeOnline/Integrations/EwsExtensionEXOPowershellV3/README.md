@@ -1483,7 +1483,7 @@ Get a mailbox rule.
 | EWS.Rule.Priority | String | The rule priority. |
 | EWS.Rule.Description | String | The description of the rule. | 
 | EWS.Rule.StopProcessingRules | Boolean| Whether to stop processing the rule or not. | 
-| EWS.Rule.IsValid | Boolean | If the rule is valid or not. | 
+| EWS.Rule.IsValid | Boolean | Whether the rule is valid or not. | 
 
 
 #### Human Readable Output
