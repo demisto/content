@@ -128,11 +128,11 @@ script:
       defaultValue: '10'
       description: The maximum number of results to return.
     - name: tags
-      description: Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags'
+      description: Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags'.
     - name: attribute_type
-      description: Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance under 'Event Actions'>'Search Attributes'>'Type dropdown list'
+      description: Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1>,<type2>,<type3>. The list of MISP types can be found in your MISP instance under 'Event Actions'>'Search Attributes'>'Type dropdown list'.
     - name: query
-      description: JSON query to filter MISP attributes. When the query argument is used, attribute_type and tags arguments are not used. You can check for the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes
+      description: JSON query to filter MISP attributes. When the query argument is used, attribute_type and tags arguments are not used. You can check for the correct syntax at https://<Your MISP url>/servers/openapi#operation/restSearchAttributes.
     description: Gets indicators from the feed.
     name: misp-feed-get-indicators
   feed: true
