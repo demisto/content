@@ -47,7 +47,7 @@ script:
   - name: threat-grid-sample-list
     arguments:
     - name: sample_id
-      description: The sample ID
+      description: The sample ID.
     - name: user_only
       description: It 'True' - Only display samples created by the current user, as determined by the value of api_key.
       auto: PREDEFINED
@@ -81,7 +81,7 @@ script:
       - processes.json
       - network.pcap
     - name: page
-      description: 'Page number of paginated results. Minimum value: 1'
+      description: 'Page number of paginated results. Minimum value: 1.'
     - name: page_size
       description: The number of items per page.
     - name: limit
@@ -89,37 +89,37 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: ThreatGrid.Sample.id
-      description: The sample id
+      description: The sample id.
       type: String
     - contextPath: ThreatGrid.Sample.filename
-      description: The sample filename
+      description: The sample filename.
       type: String
     - contextPath: ThreatGrid.Sample.state
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail".
       type: String
     - contextPath: ThreatGrid.Sample.status
-      description: The sample status, one of a stable set of strings "succ, fail"
+      description: The sample status, one of a stable set of strings "succ, fail".
       type: String
     - contextPath: ThreatGrid.Sample.md5
-      description: The sample md5
+      description: The sample md5.
       type: String
     - contextPath: ThreatGrid.Sample.sha1
-      description: The sample sha1
+      description: The sample sha1.
       type: String
     - contextPath: ThreatGrid.Sample.sha256
-      description: The sample sha256
+      description: The sample sha256.
       type: String
     - contextPath: ThreatGrid.Sample.os
-      description: The sample os
+      description: The sample os.
       type: String
     - contextPath: ThreatGrid.Sample.submitted_at
-      description: The sample submission time
+      description: The sample submission time.
       type: String
     - contextPath: ThreatGrid.Sample.started_at
-      description: The sample analysis starting time
+      description: The sample analysis starting time.
       type: String
     - contextPath: ThreatGrid.Sample.completed_at
-      description: The sample completion time
+      description: The sample completion time.
       type: String
     - contextPath: InfoFile.Name
       description: The file name.
@@ -190,40 +190,40 @@ script:
       deprecated: true
     outputs:
     - contextPath: ThreatGrid.Sample.id
-      description: The sample id
+      description: The sample id.
       type: String
     - contextPath: ThreatGrid.Sample.filename
-      description: The sample filename
+      description: The sample filename.
       type: String
     - contextPath: ThreatGrid.Sample.state
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail".
       type: String
     - contextPath: ThreatGrid.Sample.status
-      description: The sample status
+      description: The sample status.
       type: String
     - contextPath: ThreatGrid.Sample.md5
-      description: The sample md5
+      description: The sample md5.
       type: String
     - contextPath: ThreatGrid.Sample.sha1
-      description: The sample sha1
+      description: The sample sha1.
       type: String
     - contextPath: ThreatGrid.Sample.sha256
-      description: The sample sha256
+      description: The sample sha256.
       type: String
     - contextPath: ThreatGrid.Sample.os
-      description: The sample os
+      description: The sample os.
       type: String
     - contextPath: ThreatGrid.Sample.submitted_at
-      description: The sample submission time
+      description: The sample submission time.
       type: String
     description: Submits a sample to threat grid for analysis. URL or file, not both.
     polling: true
   - name: threat-grid-submissions-search
     arguments:
     - name: query
-      description: Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to true
+      description: Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to true.
     - name: user_only
-      description: Only display submissions created by the current user, as determined by the value of api_key
+      description: Only display submissions created by the current user, as determined by the value of api_key.
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -235,7 +235,7 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: Restrict matches to a subset of submission fields. The value of 'term' is a comma-delimited list of strings which select groups of fields
+      description: Restrict matches to a subset of submission fields. The value of 'term' is a comma-delimited list of strings which select groups of fields.
       name: term
       predefined:
       - antivirus
@@ -274,9 +274,9 @@ script:
       - url
       - analysis.urls.url
       - analysis.urls.url.whole.
-    - description: "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"
+    - description: "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500."
       name: before
-    - description: "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"
+    - description: "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500."
       name: after
     - auto: PREDEFINED
       description: Restrict match to submissions in specific state or states.
@@ -301,18 +301,18 @@ script:
       - threat or threat_score
       - login
     - auto: PREDEFINED
-      description: desc or asc
+      description: desc or asc.
       name: sort_order
       predefined:
       - desc
       - asc
     - auto: PREDEFINED
-      description: Provide a 'matches' field in results, indicating which fields were matched
+      description: Provide a 'matches' field in results, indicating which fields were matched.
       name: highlight
       predefined:
       - 'True'
       - 'False'
-    - description: 'Page number of paginated results. Minimum value: 1'
+    - description: 'Page number of paginated results. Minimum value: 1.'
       name: page
     - description: The number of items per page.
       name: page_size
@@ -321,38 +321,38 @@ script:
       name: limit
     outputs:
     - contextPath: ThreatGrid.Sample.sample
-      description: The sample ID
+      description: The sample ID.
       type: String
     - contextPath: ThreatGrid.Sample.filename
-      description: The name of the sample file
+      description: The name of the sample file.
       type: String
     - contextPath: ThreatGrid.Sample.state
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
+      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail".
       type: String
     - contextPath: ThreatGrid.Sample.status
-      description: The status of the sample
+      description: The status of the sample.
       type: String
     - contextPath: ThreatGrid.Sample.md5
-      description: The MD5 id of the sample
+      description: The MD5 id of the sample.
       type: String
     - contextPath: ThreatGrid.Sample.sha1
-      description: The SHA1 id of the sample
+      description: The SHA1 id of the sample.
       type: String
     - contextPath: ThreatGrid.Sample.sha256
-      description: The SHA256 id of the sample
+      description: The SHA256 id of the sample.
       type: String
     - contextPath: ThreatGrid.Sample.submitted_at
-      description: Time of submission for the sample
+      description: Time of submission for the sample.
       type: Date
     - contextPath: ThreatGrid.Sample.threat_score
-      description: The threat score of the sample
+      description: The threat score of the sample.
       type: Number
-    description: Search threat grid submissions
+    description: Search threat grid submissions.
   - name: threat-grid-sample-summary-get
     arguments:
     - name: sample_id
       required: true
-      description: The sample id
+      description: The sample id.
     outputs:
     - contextPath: ThreatGrid.SampleAnalysisSummary.sample
       description: The sample ID.
@@ -375,7 +375,7 @@ script:
     - contextPath: ThreatGrid.SampleAnalysisSummary.last_seen
       description: The timestamp when the sample was last seen.
       type: Date
-    description: Returns summary analysis information
+    description: Returns summary analysis information.
   - name: threat-grid-who-am-i
     outputs:
     - contextPath: ThreatGrid.User.email
@@ -384,16 +384,16 @@ script:
     - contextPath: ThreatGrid.User.login
       description: Current user login name.
       type: string
-    description: Get logged in user
+    description: Get logged in user.
     arguments: []
   - name: threat-grid-rate-limit-get
     arguments:
     - name: login
       required: true
       default: true
-      description: User login name
+      description: User login name.
     - auto: PREDEFINED
-      description: User or Organization
+      description: User or Organization.
       name: entity_type
       predefined:
       - user
@@ -407,7 +407,7 @@ script:
       description: The number of seconds to wait for a submission to get uploaded on the platform.
       type: number
     - contextPath: ThreatGrid.RateLimit.submissions-available
-      description: The number of submissions available for the specified username
+      description: The number of submissions available for the specified username.
       type: number
     description: Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
   - name: threat-grid-feed-specific-get
@@ -434,7 +434,7 @@ script:
       - sinkholed-ip-dns
       - stolen-cert-dns
     - name: output_type
-      description: The output type
+      description: The output type.
       defaultValue: "json"
       auto: PREDEFINED
       predefined:
@@ -443,9 +443,9 @@ script:
       - stix
       - snort
       - txt
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: before
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: after
     outputs:
     - contextPath: ThreatGrid.Feed.sample
@@ -454,7 +454,7 @@ script:
     - contextPath: ThreatGrid.Feed.description
       description: Feed description.
       type: String
-    description: Gets a specific threat feed
+    description: Gets a specific threat feed.
   - name: threat-grid-ip-search
     arguments:
     - name: ip
@@ -480,7 +480,7 @@ script:
     - contextPath: ThreatGrid.SampleAnnotations.network
       description: IP address & timestamp in the annotation.
       type: String
-    description: Returns data regarding the annotations of the analysis
+    description: Returns data regarding the annotations of the analysis.
   - name: threat-grid-url-search
     arguments:
     - name: url
@@ -488,39 +488,39 @@ script:
       description: The URL to search for (please provide the URL in the format http://example.com:80/. note that ThreatGrid only support '.com' domains).
     outputs:
     - contextPath: ThreatGrid.search.url
-      description: URL item
+      description: URL item.
       type: String
     description: Search urls. Please provide the URL in the format http://example.com:80/ (note that ThreatGrid only support '.com' domains).
   - name: threat-grid-feeds-artifact
     arguments:
     - name: sha256
-      description: Restrict returned records with this sha256
-    - description: Restrict returned records with this sha1
+      description: Restrict returned records with this sha256.
+    - description: Restrict returned records with this sha1.
       name: sha1
-    - description: Restrict returned records with this md5
+    - description: Restrict returned records with this md5.
       name: md5
     - description: Restrict returned records to this path or path fragment.
       name: path
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: before
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: after
     - defaultValue: '80'
-      description: Restrict to IOCs with this confidence score or higher, defaults to 80
+      description: Restrict to IOCs with this confidence score or higher, defaults to 80.
       name: confidence
     - defaultValue: '80'
-      description: Restrict to IOCs with this severity score or higher, defaults to 80
+      description: Restrict to IOCs with this severity score or higher, defaults to 80.
       name: severity
-    - description: Restrict returned records to events of this type
+    - description: Restrict returned records to events of this type.
       name: ioc
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples submitted by your organization"
+      description: "If “true”, will only match against samples submitted by your organization."
       name: org_only
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples you submitted"
+      description: "If “true”, will only match against samples you submitted."
       name: user_only
       predefined:
       - 'True'
@@ -537,48 +537,48 @@ script:
       name: page
     outputs:
     - contextPath: ThreatGrid.Artifact.confidence
-      description: Artifact confidence
+      description: Artifact confidence.
       type: Number
     - contextPath: ThreatGrid.Artifact.severity
-      description: "Artifact severity"
+      description: "Artifact severity."
       type: Number
     - contextPath: ThreatGrid.Artifact.ioc
-      description: Artifact IOC
+      description: Artifact IOC.
       type: String
     - contextPath: ThreatGrid.Artifact.artifact_sha256
-      description: "Artifact sha256"
+      description: "Artifact sha256."
       type: String
     - contextPath: ThreatGrid.Artifact.artifact_md5
-      description: Artifact md5
+      description: Artifact md5.
       type: String
     - contextPath: ThreatGrid.Artifact.sample_id
-      description: Artifact sample ID
+      description: Artifact sample ID.
       type: String
-    description: Get artifacts threat feed
+    description: Get artifacts threat feed.
   - name: threat-grid-feeds-domain
     arguments:
     - name: domain
-      description: Restrict returned records to this domain or hostname
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: Restrict returned records to this domain or hostname.
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: before
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: after
     - defaultValue: '80'
-      description: Restrict to IOCs with this confidence score or higher, defaults to 80
+      description: Restrict to IOCs with this confidence score or higher, defaults to 80.
       name: confidence
     - defaultValue: '80'
-      description: Restrict to IOCs with this severity score or higher, defaults to 80
+      description: Restrict to IOCs with this severity score or higher, defaults to 80.
       name: severity
-    - description: Restrict returned records to events of this type
+    - description: Restrict returned records to events of this type.
       name: ioc
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples submitted by your organization"
+      description: "If “true”, will only match against samples submitted by your organization."
       name: org_only
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples you submitted"
+      description: "If “true”, will only match against samples you submitted."
       name: user_only
       predefined:
       - 'True'
@@ -595,48 +595,48 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: ThreatGrid.Domain.confidence
-      description: "Domain confidence"
+      description: "Domain confidence."
       type: Number
     - contextPath: ThreatGrid.Domain.severity
-      description: "Domain severity"
+      description: "Domain severity."
       type: Number
     - contextPath: ThreatGrid.Domain.ioc
-      description: "Domain IOC"
+      description: "Domain IOC."
       type: String
     - contextPath: ThreatGrid.Domain.sample_sha256
-      description: Domain sha256
+      description: Domain sha256.
       type: String
     - contextPath: ThreatGrid.Domain.sample_id
-      description: "Domain sample ID"
+      description: "Domain sample ID."
       type: String
     - contextPath: ThreatGrid.Domain.domain
-      description: "The Domain "
+      description: "The Domain."
       type: String
-    description: Get domain threat feed
+    description: Get domain threat feed.
   - name: threat-grid-feeds-ip
     arguments:
     - name: ip
-      description: Restrict returned records to this IP or CIDR block
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: Restrict returned records to this IP or CIDR block.
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: before
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: after
     - defaultValue: '80'
-      description: Restrict to IOCs with this confidence score or higher, defaults to 80
+      description: Restrict to IOCs with this confidence score or higher, defaults to 80.
       name: confidence
     - defaultValue: '80'
-      description: Restrict to IOCs with this severity score or higher, defaults to 80
+      description: Restrict to IOCs with this severity score or higher, defaults to 80.
       name: severity
-    - description: Restrict returned records to events of this type
+    - description: Restrict returned records to events of this type.
       name: ioc
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples submitted by your organization"
+      description: "If “true”, will only match against samples submitted by your organization."
       name: org_only
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples you submitted"
+      description: "If “true”, will only match against samples you submitted."
       name: user_only
       predefined:
       - 'True'
@@ -653,53 +653,53 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: ThreatGrid.Ip.confidence
-      description: IP confidence
+      description: IP confidence.
       type: Number
     - contextPath: ThreatGrid.Ip.severity
-      description: "IP severity"
+      description: "IP severity."
       type: Number
     - contextPath: ThreatGrid.Ip.ioc
-      description: IP IOC
+      description: IP IOC.
       type: String
     - contextPath: ThreatGrid.Ip.sample_sha256
-      description: IP sha256
+      description: IP sha256.
       type: String
     - contextPath: ThreatGrid.Ip.sample_id
-      description: IP sample ID
+      description: IP sample ID.
       type: String
     - contextPath: ThreatGrid.Ip.ip
-      description: "The IP"
+      description: "The IP."
       type: String
     - contextPath: ThreatGrid.Ip.port
-      description: The IP port
+      description: The IP port.
       type: Number
-    description: Get ips threat feed
+    description: Get ips threat feed.
   - name: threat-grid-feeds-network-stream
     arguments:
     - name: ip
-      description: Restrict returned records to this IP address
-    - description: Restrict returned records to this port number
+      description: Restrict returned records to this IP address.
+    - description: Restrict returned records to this port number.
       name: port
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: before
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: after
     - defaultValue: '80'
-      description: Restrict to IOCs with this confidence score or higher, defaults to 80
+      description: Restrict to IOCs with this confidence score or higher, defaults to 80.
       name: confidence
     - defaultValue: '80'
-      description: Restrict to IOCs with this severity score or higher, defaults to 80
+      description: Restrict to IOCs with this severity score or higher, defaults to 80.
       name: severity
-    - description: Restrict returned records to events of this type
+    - description: Restrict returned records to events of this type.
       name: ioc
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples submitted by your organization"
+      description: "If “true”, will only match against samples submitted by your organization."
       name: org_only
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples you submitted"
+      description: "If “true”, will only match against samples you submitted."
       name: user_only
       predefined:
       - 'True'
@@ -716,57 +716,57 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: ThreatGrid.NetworkStreams.confidence
-      description: "Network Streams confidence"
+      description: "Network Streams confidence."
       type: Number
     - contextPath: ThreatGrid.NetworkStreams.severity
-      description: "Network Streams severity"
+      description: "Network Streams severity."
       type: Number
     - contextPath: ThreatGrid.NetworkStreams.ioc
-      description: "Network Streams IOC"
+      description: "Network Streams IOC."
       type: String
     - contextPath: ThreatGrid.NetworkStreams.sample_sha256
-      description: "Network Streams sha256"
+      description: "Network Streams sha256."
       type: String
     - contextPath: ThreatGrid.NetworkStreams.sample_id
-      description: "Network Streams sample ID"
+      description: "Network Streams sample ID."
       type: String
     - contextPath: ThreatGrid.NetworkStreams.src
-      description: "The Network Streams source "
+      description: "The Network Streams source."
       type: String
     - contextPath: ThreatGrid.NetworkStreams.src_port
-      description: "The Network Streams source port"
+      description: "The Network Streams source port."
       type: Number
     - contextPath: ThreatGrid.NetworkStreams.dst
-      description: "The Network Streams destination "
+      description: "The Network Streams destination."
       type: String
     - contextPath: ThreatGrid.NetworkStreams.dst_port
-      description: "The Network Streams destination port"
+      description: "The Network Streams destination port."
       type: Number
-    description: Get network stream threat feed
+    description: Get network stream threat feed.
   - name: threat-grid-feeds-path
     arguments:
     - name: path
-      description: Restrict returned records to this path or path fragment
+      description: Restrict returned records to this path or path fragment.
     - name: before
-      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: after
-      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - defaultValue: '80'
-      description: Restrict to IOCs with this confidence score or higher, defaults to 80
+      description: Restrict to IOCs with this confidence score or higher, defaults to 80.
       name: confidence
     - defaultValue: '80'
-      description: Restrict to IOCs with this severity score or higher, defaults to 80
+      description: Restrict to IOCs with this severity score or higher, defaults to 80.
       name: severity
-    - description: Restrict returned records to events of this type
+    - description: Restrict returned records to events of this type.
       name: ioc
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples submitted by your organization"
+      description: "If “true”, will only match against samples submitted by your organization."
       name: org_only
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples you submitted"
+      description: "If “true”, will only match against samples you submitted."
       name: user_only
       predefined:
       - 'True'
@@ -783,45 +783,45 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: ThreatGrid.Path.confidence
-      description: "Path confidence"
+      description: "Path confidence."
       type: Number
     - contextPath: ThreatGrid.Path.severity
-      description: "Path severity"
+      description: "Path severity."
       type: Number
     - contextPath: ThreatGrid.Path.ioc
-      description: "Path IOC"
+      description: "Path IOC."
       type: String
     - contextPath: ThreatGrid.Path.sample_sha256
-      description: "Path sha256"
+      description: "Path sha256."
       type: String
     - contextPath: ThreatGrid.Path.sample_id
-      description: "Path sample ID"
+      description: "Path sample ID."
       type: String
-    description: Get path threat feed
+    description: Get path threat feed.
   - name: threat-grid-feeds-url
     arguments:
     - name: url
-      description: Restrict returned records to this URL or URL fragment
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: Restrict returned records to this URL or URL fragment.
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: before
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: after
     - defaultValue: '80'
-      description: Restrict to IOCs with this confidence score or higher, defaults to 80
+      description: Restrict to IOCs with this confidence score or higher, defaults to 80.
       name: confidence
     - defaultValue: '80'
-      description: Restrict to IOCs with this severity score or higher, defaults to 80
+      description: Restrict to IOCs with this severity score or higher, defaults to 80.
       name: severity
-    - description: Restrict returned records to events of this type
+    - description: Restrict returned records to events of this type.
       name: ioc
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples submitted by your organization"
+      description: "If “true”, will only match against samples submitted by your organization."
       name: org_only
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: "If “true”, will only match against samples you submitted"
+      description: "If “true”, will only match against samples you submitted."
       name: user_only
       predefined:
       - 'True'
@@ -837,121 +837,121 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: ThreatGrid.Url.confidence
-      description: URL confidence
+      description: URL confidence.
       type: Number
     - contextPath: ThreatGrid.Url.severity
-      description: URL severity
+      description: URL severity.
       type: Number
     - contextPath: ThreatGrid.Url.ioc
-      description: "URL IOC"
+      description: "URL IOC."
       type: String
     - contextPath: ThreatGrid.Url.sample_sha256
-      description: URL sha256
+      description: URL sha256.
       type: String
     - contextPath: ThreatGrid.Url.sample_id
-      description: URL sample ID
+      description: URL sample ID.
       type: String
     - contextPath: ThreatGrid.Url.url
-      description: The URL
+      description: The URL.
       type: String
-    description: Get url threat feed
+    description: Get url threat feed.
   - name: threat-grid-analysis-artifacts-get
     arguments:
-    - description: the sample id
+    - description: the sample id.
       name: sample_id
       required: true
-    - description: The artifact id requested
+    - description: The artifact id requested.
       name: artifact_id
     outputs:
     - contextPath: ThreatGrid.ArtifactAnalysis.items
       description: List of artifact analysis of the sample.
       type: Unknown
-    description: Returns the sample id artifact with artifact id
+    description: Returns the sample id artifact with artifact id.
   - name: threat-grid-analysis-iocs-get
     arguments:
     - name: sample_id
       required: true
-      description: the sample id
-    - description: the IOC requested
+      description: the sample id.
+    - description: the IOC requested.
       name: ioc
     outputs:
     - contextPath: ThreatGrid.IOCAnalysis.title
-      description: 'The title of the IOC'
+      description: 'The title of the IOC.'
       type: String
     - contextPath: ThreatGrid.IOCAnalysis.confidence
-      description: 'The confidence of the IOC'
+      description: 'The confidence of the IOC.'
       type: Number
     - contextPath: ThreatGrid.IOCAnalysis.severity
-      description: The severity of the IOC
+      description: The severity of the IOC.
       type: String
     - contextPath: ThreatGrid.IOCAnalysis.ioc
-      description: Threat grid's IOC
+      description: Threat grid's IOC.
       type: String
     - contextPath: ThreatGrid.IOCAnalysis.category
-      description: The IOC category of the IOC
+      description: The IOC category of the IOC.
       type: String
     - contextPath: ThreatGrid.IOCAnalysis.sha256
-      description: The SHA256 value of the IOC
+      description: The SHA256 value of the IOC.
       type: String
     - contextPath: ThreatGrid.IOCAnalysis.tags
-      description: The tags of the IOC
+      description: The tags of the IOC.
       type: String
-    description: Returns data regarding the specified Indicator of Compromise
+    description: Returns data regarding the specified Indicator of Compromise.
   - name: threat-grid-analysis-metadata-get
     arguments:
     - name: sample_id
       required: true
       default: true
-      description: the sample id
+      description: the sample id.
     outputs:
     - contextPath: ThreatGrid.AnalysisMetadata.general_details
-      description: The Metadata Analysis General Details
+      description: The Metadata Analysis General Details.
       type: Unknown
     - contextPath: ThreatGrid.AnalysisMetadata.malware_desc
-      description: The Metadata Analysis Malware Desc
+      description: The Metadata Analysis Malware Desc.
       type: Unknown
     - contextPath: ThreatGrid.AnalysisMetadata.sandcastle_env
-      description: "The Metadata Analysis Malware Sandcastle ENV"
+      description: "The Metadata Analysis Malware Sandcastle ENV."
       type: Unknown
-    description: Returns metadata about the analysis
+    description: Returns metadata about the analysis.
   - name: threat-grid-analysis-network-streams-get
     arguments:
     - name: sample_id
       required: true
-      description: the sample id
+      description: the sample id.
     - name: network_stream_id
-      description: The network stream id
+      description: The network stream id.
     outputs:
     - contextPath: ThreatGrid.NetworkAnalysis.protocol
-      description: The network protocol
+      description: The network protocol.
       type: Number
     - contextPath: ThreatGrid.NetworkAnalysis.transport
-      description: "The network transport "
+      description: "The network transport."
       type: String
     - contextPath: ThreatGrid.NetworkAnalysis.service
-      description: The network service
+      description: The network service.
       type: String
     - contextPath: ThreatGrid.NetworkAnalysis.client_ip
-      description: The client IP
+      description: The client IP.
       type: String
     - contextPath: ThreatGrid.NetworkAnalysis.server_ip
-      description: The server IP
+      description: The server IP.
       type: String
-    description: Returns data regarding a specific network stream
+    description: Returns data regarding a specific network stream.
   - name: threat-grid-analysis-processes-get
     arguments:
     - name: sample_id
       required: true
-      description: the sample id
-    - description: the process id requested
+      description: the sample id.
+    - description: the process id requested.
       name: process_id
-    description: Returns data regarding the specific process id in the analysis
+    description: Returns data regarding the specific process id in the analysis.
     outputs:
     - contextPath: ThreatGrid.ProcessAnalysis.process_name
-      description: The process name
+      description: The process name.
       type: String
     - contextPath: ThreatGrid.ProcessAnalysis.process_id
-      description: The process ID
+      description: The process ID.
       type: String
   - name: file
     arguments:
@@ -1146,10 +1146,10 @@ script:
       description: The URL.
       type: String
     - contextPath: ThreatGrid.URL.detection_engines
-      description: Number of engines
+      description: Number of engines.
       type: Number
     - contextPath: ThreatGrid.URL.positive_engines
-      description: Number of positive engines
+      description: Number of positive engines.
       type: Number
     description: Checks the reputation of a URL.
   - name: domain
@@ -1243,9 +1243,9 @@ script:
       description: The domain to search for.
       required: true
     - name: after
-      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: before
-      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
@@ -1266,9 +1266,9 @@ script:
     - name: ip
       description: The IP to search for.
       required: true
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: after
-    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+    - description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
       name: before
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
@@ -1291,9 +1291,9 @@ script:
       description: "The path to search for. A path is a slash-separated list of directory names followed by either a directory name or a file name. Path example: ‘/user/name/file’."
       required: true
     - name: after
-      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: before
-      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
@@ -1315,9 +1315,9 @@ script:
       description: The target URL. Please provide the URL in the format http://example.com:80/ .
       required: true
     - name: after
-      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: before
-      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
@@ -1339,9 +1339,9 @@ script:
       description: The registry key to search for.
       required: true
     - name: after
-      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: before
-      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      description: 'A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500.'
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
