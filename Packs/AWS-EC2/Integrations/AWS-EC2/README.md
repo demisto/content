@@ -3238,6 +3238,38 @@ There is no context output for this command.
 #### Human Readable Output
 >The host was successfully released.
 
+### aws-ec2-modify-snapshot-permission
+
+***
+Adds or removes permission settings for the specified snapshot.
+
+#### Base Command
+
+`aws-ec2-modify-snapshot-permission`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| snapshotId | The ID of the EBS snapshot. | Required | 
+| operationType | The operation type, add or remove. Possible values are: add, remove. | Required | 
+| groupNames | CSV of security group names. This parameter can be used only when UserIds not provided. | Optional | 
+| userIds | CSV of AWS account IDs. This parameter can be used only when groupNames not provided. | Optional | 
+| dryRun | Checks whether you have the required permissions for the action, without actually making the request, and provides an error response. Possible values are: True, False. | Optional | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!aws-ec2-modify-snapshot-permission operationType=remove snapshotId=snap-04b2d21f20d2388f2 userIds=123456789012```
+#### Human Readable Output
+
+>Snapshot snap-04b2d21f20d2388f2 permissions was successfully updated.
+
 ### aws-ec2-describe-ipam-resource-discoveries
 
 ***
