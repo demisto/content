@@ -1832,7 +1832,7 @@ def flattenCell(data, is_pretty=True):
 
         return ',\n'.join(string_list)
     else:
-        return json.dumps(data, indent=indent, ensure_ascii=False)
+        return json.dumps(data, indent=indent, ensure_ascii=False, default=str)
 
 
 def FormatIso8601(t):
