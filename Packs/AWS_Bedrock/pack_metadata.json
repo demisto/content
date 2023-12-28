@@ -1,0 +1,23 @@
+{
+    "name": "AWS Bedrock",
+    "description": "Send command to AWS Bedrock",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Philippe Laporte",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Cloud Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "philippe.laporte@upstart.com"
+    ],
+    "githubUser": []
+}
