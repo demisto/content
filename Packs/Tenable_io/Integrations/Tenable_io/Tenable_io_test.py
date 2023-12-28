@@ -735,7 +735,7 @@ def test_vulnerabilities_process(mocker, requests_mock):
         - Verify export uuid being updated in the integration context
         - Verify vulnerabilities returned and finished flag is up.
     """
-    from Tenable_io import generate_export_uuid, try_get_chunks, run_vulnerabilities_fetch, Client
+    from Tenable_io import generate_export_uuid, get_vulnerabilities_chunks, run_vulnerabilities_fetch, Client
     mock_demisto(mocker)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
@@ -747,7 +747,7 @@ def test_vulnerabilities_process(mocker, requests_mock):
     generate_export_uuid(client, last_run=last_run, severity=[])
     assert last_run.get('vuln_export_uuid') == '123'
 
-    vulnerabilities, finished = try_get_chunks(client, '123')
+    vulnerabilities, finished = get_vulnerabilities_chunks(client, '123')
 
     assert len(vulnerabilities) == 1
     assert finished
@@ -819,7 +819,7 @@ def test_fetch_assets(requests_mock):
         - Verify export uuid being updated in the integration context
         - Verify vulnerabilities returned and finished flag is up.
     """
-    from Tenable_io import generate_assets_export_uuid, handle_assets_chunks, try_get_assets_chunks, Client
+    from Tenable_io import generate_assets_export_uuid, handle_assets_chunks, get_asset_export_job_status, Client
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.post(f'{BASE_URL}/assets/export', json={"export_uuid": "123"})
     requests_mock.get(f'{BASE_URL}/assets/export/123/status', json={"status": "FINISHED", "chunks_available": [1]})
@@ -828,7 +828,7 @@ def test_fetch_assets(requests_mock):
 
     generate_assets_export_uuid(client, last_run)
     assert last_run.get('assets_export_uuid') == '123'
-    status = try_get_assets_chunks(client, last_run)
+    status = get_asset_export_job_status(client, last_run)
     assert status == "FINISHED"
     assert last_run.get("assets_available_chunks")
     assets, last_run = handle_assets_chunks(client, last_run)
