@@ -1448,7 +1448,7 @@ Get a list of all mailbox rules.
 | --- | --- | --- |
 | EWS.Rule.RuleIdentity | String | The rule identity. | 
 | EWS.Rule.Name | String | The rule name. | 
-| EWS.Rule.Enabled | Boolean| If the rules is enabled or not. | 
+| EWS.Rule.Enabled | Boolean| Whether the rule is enabled or not. | 
 | EWS.Rule.Priority | String | the rule priority. | 
 
 
@@ -1472,18 +1472,18 @@ Get a mailbox rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | mailbox | The mailbox that contains the Inbox rule. | Required | 
-| identity | the id of the rule. | Required |
+| identity | The ID of the rule. | Required |
 
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | EWS.Rule.Rule | String | The rule identity. | 
 | EWS.Rule.RuleName | String | The rule name. | 
-| EWS.Rule.IsEnabled | Boolean| If the rules is enabled or not. | 
-| EWS.Rule.Priority | String | the rule priority. |
+| EWS.Rule.IsEnabled | Boolean| Whether the rule is enabled or not. | 
+| EWS.Rule.Priority | String | The rule priority. |
 | EWS.Rule.Description | String | The description of the rule. | 
-| EWS.Rule.StopProcessingRules | Boolean| If to stop processing the rule or not. | 
-| EWS.Rule.IsValid | Boolean | If the rule is valid or not. | 
+| EWS.Rule.StopProcessingRules | Boolean| Whether to stop processing the rule or not. | 
+| EWS.Rule.IsValid | Boolean | Whether the rule is valid or not. | 
 
 
 #### Human Readable Output
@@ -1505,7 +1505,7 @@ Remove a mailbox rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | mailbox | The mailbox that contains the Inbox rule. | Required | 
-| identity | the id of the rule. | Required | 
+| identity | The ID of the rule. | Required | 
 
 
 #### Context Output
