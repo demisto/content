@@ -151,7 +151,6 @@ def get_ioc(api_token,args):
 
 def get_cti_rules(api_token,args):
     search=args.get('search')
-    search=str(search)
     created_at__range=args.get('created_at__range')
     created_at__range=str(created_at__range)
     tag=args.get('tag')
