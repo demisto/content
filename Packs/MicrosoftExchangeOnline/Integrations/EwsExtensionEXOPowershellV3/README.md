@@ -1472,7 +1472,7 @@ Get a mailbox rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | mailbox | The mailbox that contains the Inbox rule. | Required | 
-| identity | the id of the rule. | Required |
+| identity | The ID of the rule. | Required |
 
 #### Context Output
 | **Path** | **Type** | **Description** |
