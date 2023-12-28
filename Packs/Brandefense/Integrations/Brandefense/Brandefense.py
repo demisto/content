@@ -207,10 +207,10 @@ def get_incidents(api_token,args):
 
 def main():
 
-        args=demisto.args()
-        command=demisto.command()
-        params=demisto.params()
-        api_token=params.get('credentials',{}).get('password')
+    args=demisto.args()
+    command=demisto.command()
+    params=demisto.params()
+    api_token=params.get('credentials',{}).get('password')
     try:
         if command == 'branddefense-get-assets':
             get_assets(api_token)

@@ -49,42 +49,32 @@ configuration:
   required: false
   section: Connect
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: b3e5bf83-c22f-4595-8485-fd1e32877025
-    packName: Brandefense Contribution Pack
-    prevname: ""
-    propagationLabels: []
-    toServerVersion: ""
-description: Branddefense is looking for data for each brand and collecting information and alarming the related brand about dark web finding (credentials, similar domain names etc.) related to the firm.With Brandefense integration it is possible to automate Brand related alarms and breach notifications, actions and much more
+description: Branddefense is looking for data for each brand and collecting information and alarming the related brand about dark web finding (credentials, similar domain names etc.) related to the firm.With Brandefense integration it is possible to automate Brand related alarms and breach notifications, actions and much more.
 display: Brandefense
 name: Brandefense
 script:
   commands:
   - arguments: []
-    description: Gets assets from Brandefense
+    description: Gets assets from Brandefense.
     name: branddefense-get-assets
     outputs:
     - contextPath: branddefense_assets
   - arguments:
     - name: assetid
       required: true
-    description: Call a specific asset from Brandefense
+    description: Call a specific asset from Brandefense.
     name: branddefense-get-specific-asset
     outputs:
     - contextPath: branddefense_requested_asset
   - arguments: []
-    description: Get audit logs from Brandefense platform
+    description: Get audit logs from Brandefense platform.
     name: branddefense-get-audit-logs
     outputs:
     - contextPath: branddefense_audit_logs
   - arguments:
     - name: audit_log_id
       required: true
-    description: Get a specific audit log from Brandefense platform
+    description: Get a specific audit log from Brandefense platform.
     name: branddefense-get-specific-audit-log
     outputs:
     - contextPath: branddefense_requested_audit_log
@@ -95,7 +85,7 @@ script:
   - arguments:
     - name: incident_code
       required: true
-    description: Search for a specific incident on Brandefense
+    description: Search for a specific incident on Brandefense.
     name: branddefense-get-specific-incident
     outputs:
     - contextPath: branddefense_requested_incident
@@ -103,11 +93,11 @@ script:
     - description: The required code parameter should be given to perform incident searches on Brandefense.
       name: incident_code
       required: true
-    - description: 'The required status parameter should be given to perform change incident status Possible Values: ''OPEN'' ''IN_PROGRESS'' ''CLOSED'' ''RISK_ACCEPTED'' ''REJECTED'''
+    - description: 'The required status parameter should be given to perform change incident status Possible Values: ''OPEN'' ''IN_PROGRESS'' ''CLOSED'' ''RISK_ACCEPTED'' ''REJECTED''.'
       isArray: true
       name: incident_status
       required: true
-    description: Change the status of an existing incident on Brandefense
+    description: Change the status of an existing incident on Brandefense.
     name: branddefense-change-incident-status
   - arguments:
     - description: The required code parameter should be given to perform incident searches on Brandefense.
@@ -128,19 +118,19 @@ script:
     - description: The required ioc_type parameter allows you to select Indicators of Compromise (IoCs) types from the threat lists.
       name: ioc_type
       required: true
-    description: Get IOCs from Brandefense
+    description: Get IOCs from Brandefense.
     name: branddefense-get-ioc
     outputs:
     - contextPath: branddefense_ioc
-      description: hash,domain,url veya ip address girilmeli
+      description: hash,domain,url veya ip address girilmeli.
   - arguments:
-    - description: Cti Rule Created at range
+    - description: Cti Rule Created at range.
       name: created_at__range
-    - description: Cti rule search
+    - description: Cti rule search.
       name: search
     - name: tag
     - name: source__ilike
-    description: Get CTI rules from Brandefense
+    description: Get CTI rules from Brandefense.
     name: branddefense-get-cti-rules
   - arguments:
     - name: value
@@ -151,7 +141,7 @@ script:
     - contextPath: search_result
   - arguments:
     - name: created_at
-    description: Get incidents from the Brandefense platform
+    description: Get incidents from the Brandefense platform.
     name: branddefense-get-incidents
     outputs:
     - contextPath: branddefense_all_incidents
@@ -160,4 +150,6 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Branddefense Complete Integration
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
