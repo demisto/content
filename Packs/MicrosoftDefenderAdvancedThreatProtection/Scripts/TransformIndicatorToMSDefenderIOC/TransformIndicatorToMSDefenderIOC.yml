@@ -33,7 +33,7 @@ outputs:
   description: The value of the Indicator.
   type: String
 - contextPath: TransformIndicatorToMSDefenderIOC.Indicators.indicatorType
-  description: 'Type of the indicator. Possible values are: FileSha1, FileSha256, FileMd5, CertificateThumbprint, IpAddress, DomainName, Url'
+  description: 'Type of the indicator. Possible values are: FileSha1, FileSha256, FileMd5, CertificateThumbprint, IpAddress, DomainName, Url.'
   type: String
 - contextPath: TransformIndicatorToMSDefenderIOC.Indicators.lastUpdateTime
   description: The last time the indicator was updated.
@@ -89,7 +89,7 @@ outputs:
 script: '-'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
