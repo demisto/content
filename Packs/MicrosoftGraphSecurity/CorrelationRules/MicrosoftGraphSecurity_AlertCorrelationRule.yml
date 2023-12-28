@@ -91,3 +91,4 @@
     \ xdm.target.registry.value_type, xdm.target.url\n//  | filter xdm.observer.vendor\
     \ = \"msft\" and xdm.observer.product = \"graph_security_alerts\" \n| filter xdm.observer.type\
     \ ~= \"Defender\" and xdm.alert.severity = \"high\"\n"
+  fromversion: 8.4.0
