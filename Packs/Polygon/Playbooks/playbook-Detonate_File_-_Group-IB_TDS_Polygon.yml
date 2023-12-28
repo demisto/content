@@ -367,7 +367,7 @@ tasks:
       id: 6bf891c0-3f7e-4265-8eb9-17931764bff6
       version: -1
       name: Is THF Polygon integration enabled?
-      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -601,7 +601,7 @@ outputs:
   description: IP address.
   type: string
 - contextPath: Domain.Name
-  description: The Domain name.
+  description: The domain name.
   type: string
 - contextPath: Domain.DNS
   description: A list of IP objects resolved by DNS.
@@ -622,7 +622,7 @@ outputs:
   description: Process PID.
   type: number
 - contextPath: Process.CommandLine
-  description: Process Command Line.
+  description: Process command line.
   type: string
 - contextPath: Process.Path
   description: Process path.
@@ -637,10 +637,10 @@ outputs:
   description: Analysis ID in THF.
   type: number
 - contextPath: Polygon.Analysis.Name
-  description: File Name.
+  description: File name.
   type: string
 - contextPath: Polygon.Analysis.Size
-  description: File Size.
+  description: File size.
   type: number
 - contextPath: Polygon.Analysis.Started
   description: Analysis start timestamp.
@@ -692,7 +692,7 @@ outputs:
 - contextPath: Polygon.Analysis.IP
   description: The information about IP indicators.
 - contextPath: Polygon.Analysis.Domain
-  description: The information about Domain indicators.
+  description: The information about domain indicators.
 - contextPath: Polygon.Analysis.RegistryKey
   description: The information about registry keys which were modified during the analysis.
 - contextPath: Polygon.Analysis.Process
