@@ -1,24 +1,93 @@
-  alert_category: OTHER
-  alert_description: null
-  alert_fields: {}
-  alert_name: Microsoft Defender Alerts
+- alert_category: User Defined
+  alert_description: $xdm.alert.description
+  alert_fields:
+    action_file_name: xdm.target.file.filename
+    action_file_sha256: xdm.target.file.sha256
+    action_local_ip: xdm.source.host.ipv4_addresses
+    action_local_ip_v6: xdm.source.host.ipv6_addresses
+    action_process_signature_vendor: xdm.source.process.executable.signer
+    action_registry_data: xdm.target.registry.data
+    actor_effective_username: xdm.source.user.username
+    actor_process_image_path: xdm.target.file.path
+    agent_device_domain: xdm.source.user.domain
+    agent_fqdn: xdm.source.host.fqdn
+    detectionid: xdm.event.id
+    emailmessageid: xdm.email.message_id
+    externalseverity: xdm.alert.severity
+    filesize: xdm.target.file.size
+    firstname: xdm.source.user.first_name
+    fw_email_recipient: xdm.email.recipients
+    lastname: xdm.source.user.last_name
+    mitretechniqueid: xdm.alert.mitre_techniques
+    originalalertid: xdm.alert.original_alert_id
+    originalalertname: xdm.alert.description
+    originalalertsource: xdm.observer.type
+    ostype: xdm.source.host.os_family
+    parentprocessids: xdm.source.process.parent_id
+    processcmd: xdm.source.process.command_line
+    processid: xdm.source.process.pid
+    processnames: xdm.source.process.executable.filename
+    processpaths: xdm.source.process.executable.path
+    processsha256: xdm.source.process.executable.sha256
+    project: xdm.source.cloud.project
+    registrykey: xdm.target.registry.key
+    registryvalue: xdm.target.registry.value
+    registryvaluetype: xdm.target.registry.value_type
+    reportedemailsubject: xdm.email.subject
+    srcos: xdm.source.host.os
+    urls: xdm.target.url
+  alert_name: Microsoft Defender Alerts - DRAFT
   crontab: null
   dataset: alerts
-  is_enabled: false
   description: Alert from Graph Security for Defender Sources
   drilldown_query_timeframe: ALERT
   execution_mode: REAL_TIME
-  global_rule_id: f60c8c3c-48db-4f40-afd0-1e755910521e
-  investigation_query_link: null
-  mapping_strategy: AUTO
+  global_rule_id: b1fd59ed-65cd-4bfd-8bcd-fece7aff388b
+  investigation_query_link: " datamodel dataset = msft_graph_security_alerts_raw \n\
+    \ | filter xdm.alert.original_alert_id = $xdm.alert.original_alert_id \n | fields\
+    \ xdm.alert.description, xdm.alert.mitre_techniques, xdm.alert.name, xdm.alert.original_alert_id,\
+    \ xdm.alert.original_threat_name, xdm.alert.severity, xdm.alert.subcategory, xdm.email.delivery_timestamp,\
+    \ xdm.email.message_id, xdm.email.recipients, xdm.email.sender, xdm.email.subject,\
+    \ xdm.event.description, xdm.event.id, xdm.event.is_completed, xdm.event.outcome,\
+    \ xdm.event.tags, xdm.network.rule, xdm.observer.type, xdm.observer.unique_identifier,\
+    \ xdm.session_context_id, xdm.source.agent.identifier, xdm.source.agent.identifier,\
+    \ xdm.source.application.name, xdm.source.cloud.project, xdm.source.host.device_id,\
+    \ xdm.source.host.fqdn, xdm.source.host.ipv4_addresses, xdm.source.host.ipv6_addresses,\
+    \ xdm.source.host.os, xdm.source.host.os_family, xdm.source.process.command_line,\
+    \ xdm.source.process.executable.filename, xdm.source.process.executable.path,\
+    \ xdm.source.process.executable.sha256, xdm.source.process.executable.signer,\
+    \ xdm.source.process.executable.size, xdm.source.process.parent_id, xdm.source.process.pid,\
+    \ xdm.source.user.domain, xdm.source.user.first_name, xdm.source.user.identifier,\
+    \ xdm.source.user.last_name, xdm.source.user.upn, xdm.source.user.username, xdm.target.file.filename,\
+    \ xdm.target.file.path, xdm.target.file.sha256, xdm.target.file.signer, xdm.target.file.size,\
+    \ xdm.target.registry.data, xdm.target.registry.key, xdm.target.registry.value,\
+    \ xdm.target.registry.value_type, xdm.target.url\n | view column order = populated "
+  mapping_strategy: CUSTOM
   mitre_defs: {}
-  name: Microsoft Defender Alerts
+  name: Microsoft Defender Alerts - DRAFT
   search_window: null
-  severity: SEV_020_LOW
+  severity: User Defined
   suppression_duration: null
   suppression_enabled: false
   suppression_fields: null
-  user_defined_category: null
-  user_defined_severity: null
-  xql_query: " datamodel \n | filter xdm.observer.vendor  = \"msft\" and xdm.observer.product\
-    \ = \"graph\""
+  user_defined_category: xdm.alert.subcategory
+  user_defined_severity: xdm.alert.severity
+  xql_query: " datamodel dataset = msft_graph_security_alerts_raw \n | fields xdm.alert.description,\
+    \ xdm.alert.mitre_techniques, xdm.alert.name, xdm.alert.original_alert_id, xdm.alert.original_threat_name,\
+    \ xdm.alert.severity, xdm.alert.subcategory, xdm.email.delivery_timestamp, xdm.email.message_id,\
+    \ xdm.email.recipients, xdm.email.sender, xdm.email.subject, xdm.event.description,\
+    \ xdm.event.id, xdm.event.is_completed, xdm.event.outcome, xdm.event.tags, xdm.network.rule,\
+    \ xdm.observer.type, xdm.observer.unique_identifier, xdm.session_context_id, xdm.source.agent.identifier,\
+    \ xdm.source.agent.identifier, xdm.source.application.name, xdm.source.cloud.project,\
+    \ xdm.source.host.device_id, xdm.source.host.fqdn, xdm.source.host.ipv4_addresses,\
+    \ xdm.source.host.ipv6_addresses, xdm.source.host.os, xdm.source.host.os_family,\
+    \ xdm.source.process.command_line, xdm.source.process.executable.filename, xdm.source.process.executable.path,\
+    \ xdm.source.process.executable.sha256, xdm.source.process.executable.signer,\
+    \ xdm.source.process.executable.size, xdm.source.process.parent_id, xdm.source.process.pid,\
+    \ xdm.source.user.domain, xdm.source.user.first_name, xdm.source.user.identifier,\
+    \ xdm.source.user.last_name, xdm.source.user.upn, xdm.source.user.username, xdm.target.file.filename,\
+    \ xdm.target.file.path, xdm.target.file.sha256, xdm.target.file.signer, xdm.target.file.size,\
+    \ xdm.target.registry.data, xdm.target.registry.key, xdm.target.registry.value,\
+    \ xdm.target.registry.value_type, xdm.target.url\n//  | filter xdm.observer.vendor\
+    \ = \"msft\" and xdm.observer.product = \"graph_security_alerts\" \n| filter xdm.observer.type\
+    \ ~= \"Defender\" and xdm.alert.severity = \"high\"\n"
