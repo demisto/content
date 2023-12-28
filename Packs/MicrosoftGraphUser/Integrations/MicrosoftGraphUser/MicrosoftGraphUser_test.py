@@ -363,7 +363,7 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
     from MicrosoftGraphUser import test_function, MsGraphClient
     
     client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
-                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='user',
                            verify='use_ssl', proxy='proxies', self_deployed=self_deployed, handle_error=True,
                            auth_code='', redirect_uri='')
     
