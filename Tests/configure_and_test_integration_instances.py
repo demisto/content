@@ -943,7 +943,7 @@ class CloudBuild(Build):
             logging.info('Finished copying successfully.')
         else:
             logging.error('Failed to copy or sync marketplace bucket.')
-        sleep_time = 120
+        sleep_time = 300
         logging.info(f'sleeping for {sleep_time} seconds')
         sleep(sleep_time)
         return success
