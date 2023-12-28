@@ -1301,10 +1301,10 @@ script:
       description: ''
       hidden: true
     polling: true
-    description: |
+    description: |-
       Export and download a scan report.
       Scan results older than 35 days are supported in Nessus and CSV formats only, and filters cannot be applied.
-      Scans that are actively running cannot be exported (run "tenable-io-list-scans" to view scan statuses)
+      Scans that are actively running cannot be exported (run "tenable-io-list-scans" to view scan statuses).
     name: tenable-io-export-scan
     outputs:
     - contextPath: InfoFile.Size
