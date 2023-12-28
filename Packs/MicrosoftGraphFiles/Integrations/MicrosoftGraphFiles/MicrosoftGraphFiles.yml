@@ -543,7 +543,7 @@ script:
   - arguments:
     - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites.
       name: keyword
-    description: Returns a list of the tenant sites.
+    description: "Returns a list of the tenant sites. This command requires the 'Sites.Read.All' permission."
     name: msgraph-list-sharepoint-sites
     outputs:
     - contextPath: MsGraph.Sites

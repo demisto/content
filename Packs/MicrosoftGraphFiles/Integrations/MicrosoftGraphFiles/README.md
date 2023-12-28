@@ -597,7 +597,7 @@ Returns a list of files and folders in the specified drive.
 ### msgraph-list-sharepoint-sites
 
 ***
-Returns a list of the tenant sites.
+Returns a list of the tenant sites. This command requires the 'Sites.Read.All' permission.
 
 
 #### Base Command

@@ -880,7 +880,7 @@ def get_site_id_from_site_name(client: MsGraphClient, site_name: str | None) -> 
         try:
             site_details = client.list_sharepoint_sites(site_name)["value"]
         except DemistoException as e:
-            if e.res.status_code == 404 and "Item not found" in e.res.text:
+            if e.res and e.res.status_code == 404 and "Item not found" in e.res.text:
                 raise DemistoException(
                     f"Error getting site ID for {site_name}."
                     f" Ensure integration instance has permission for this site and site name is valid. Error details: {e}"
