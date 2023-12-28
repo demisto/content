@@ -1,5 +1,4 @@
 import json
-import io
 import time
 import os
 import pytest
@@ -28,7 +27,7 @@ MOCKER_HTTP_METHOD = 'CofenseTriagev3.Client.http_request'
 
 def util_load_json(path: str) -> dict:
     """Load a json to python dict."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -1103,3 +1102,106 @@ def test_validate_report_attachment_payload_list_args_when_invalid_args_are_prov
     with pytest.raises(ValueError) as err:
         cofense_report_attachment_payload_list_command(mocked_client, args)
     assert str(err.value) == MESSAGES['REQUIRED_ARGUMENT'].format('id')
+
+
+def test_cofense_report_attachment_list_command_when_invalid_args_are_provided(mocked_client):
+    """Test case scenario when the arguments provided are not valid."""
+
+    from CofenseTriagev3 import MESSAGES, cofense_report_attachment_list_command
+
+    args = {
+        "id": None,
+    }
+
+    with pytest.raises(ValueError) as err:
+        cofense_report_attachment_list_command(mocked_client, args)
+    assert str(err.value) == MESSAGES['REQUIRED_ARGUMENT'].format('id')
+
+
+def test_cofense_report_attachment_list_command_when_empty_response_is_returned(mocked_client):
+    """Test case scenario for successful execution of cofense-report-attachment-list command with an empty
+    response. """
+
+    from CofenseTriagev3 import cofense_report_attachment_list_command
+    mocked_client.http_request.return_value = {"data": {}}
+    readable_output = "No attachments were found for the given argument(s)."
+
+    # Execute
+    command_response = cofense_report_attachment_list_command(mocked_client, {'id': 'test'})
+    # Assert
+    assert command_response.readable_output == readable_output
+
+
+def test_cofense_report_attachment_list_command_when_valid_response_is_returned(mocked_client):
+    """Test case scenario for successful execution of cofense-report-attachment-list command."""
+
+    from CofenseTriagev3 import cofense_report_attachment_list_command
+
+    response = util_load_json(
+        os.path.join("test_data", os.path.join("report_attachment", "report_attachment_list_response.json")))
+
+    mocked_client.http_request.return_value = response
+
+    context_output = util_load_json(
+        os.path.join("test_data", os.path.join("report_attachment", "report_attachment_list_context.json")))
+
+    with open(os.path.join("test_data", os.path.join("report_attachment", "report_attachment_list.md")), 'r') as f:
+        readable_output = f.read()
+
+    # Execute
+    args = {"id": "30339", "updated_at": "2020-10-21T20:30:24.185Z"}
+
+    command_response = cofense_report_attachment_list_command(mocked_client, args)
+    # Assert
+    assert command_response.outputs_prefix == 'Cofense.Attachment'
+    assert command_response.outputs_key_field == "id"
+    assert command_response.outputs == context_output
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == response
+
+
+def test_cofense_report_attachment_download_command_when_invalid_args_are_provided(mocked_client):
+    """Test case scenario when the arguments provided are not valid."""
+
+    from CofenseTriagev3 import MESSAGES, cofense_report_attachment_download_command
+
+    args = {
+        "id": None,
+    }
+
+    with pytest.raises(ValueError) as err:
+        cofense_report_attachment_download_command(mocked_client, args)
+    assert str(err.value) == MESSAGES['REQUIRED_ARGUMENT'].format('id')
+
+
+def test_cofense_report_attachment_download_command_when_valid_args_are_provided(mocked_client):
+    """Test case scenario when the arguments provided are valid."""
+
+    from CofenseTriagev3 import cofense_report_attachment_download_command
+
+    with open(os.path.join("test_data", os.path.join("report_attachment", "report_attachment_download_response.xml")), 'r') as f:
+        response = f.read()
+
+    # Mock response with the valid headers.
+    class MockResponse:
+        content = response
+        headers = {"Content-Disposition": """attachment; filename="xl%2FordStrings.xml"; filename*=UTF-8''xl%2FordStrings.xml"""}
+
+    mocked_client.http_request.return_value = MockResponse
+
+    args = {"id": "30339"}
+    command_response = cofense_report_attachment_download_command(mocked_client, args)
+
+    # Assert for file name based on the header.
+    assert command_response["File"] == 'xl/ordStrings.xml'
+
+    # Mock response with empty headers
+    MockResponse.headers = {}
+
+    mocked_client.http_request.return_value = MockResponse
+
+    args = {"id": "30339"}
+    command_response = cofense_report_attachment_download_command(mocked_client, args)
+
+    # Assert for file name based on the attachment ID.
+    assert command_response["File"] == 'Attachment ID - 30339'

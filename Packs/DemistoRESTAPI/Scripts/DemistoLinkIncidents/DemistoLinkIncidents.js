@@ -4,7 +4,7 @@ var body = {
     removeLink: (args.unlink === 'yes')
 };
 
-var res = executeCommand('demisto-api-post', {uri: '/incident/links', body: body});
+var res = executeCommand('core-api-post', {uri: '/incident/links', body: body});
 
 if (isError(res[0])) {
     throw res[0].Contents;
