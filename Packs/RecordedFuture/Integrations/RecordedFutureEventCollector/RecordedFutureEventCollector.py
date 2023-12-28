@@ -97,8 +97,7 @@ def get_events(client, params: dict) -> list:
 
 
 def get_triggered(event: dict) -> str:
-    """Get the 'triggered' value from an event
-    actually, 'triggered' is in different place from described in the API doc, so try to get result from both places.
+    """Get the 'triggered' value from an event without milliseconds since the API ignores them.
 
     Args:
         event (dict): The event from API.
@@ -107,7 +106,7 @@ def get_triggered(event: dict) -> str:
         str: the "triggered" value.
     """
     if event:
-        return event.get('triggered') or event.get('log', {}).get('triggered', '')
+        return event.get('log', {}).get('triggered', '').split('.')[0]
     return ''
 
 
@@ -130,12 +129,12 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
 
     next_run = {}
     if events := response.get('data', []):
-        # Obtain the latest triggered time (for the next fetch round), without milliseconds since the API ignores them.
-        next_run_time = get_triggered(events[0]).split('.')[0]
+        # Obtain the latest triggered time (for the next fetch round)
+        next_run_time = get_triggered(events[0])
 
         # We need the IDs of the events with the same trigger time as the latest,
         # So that we can remove them in the next fetch, Since we are fetching from (including) this time.
-        next_run_ids = {event.get('id') for event in events if get_triggered(event).split('.')[0] == next_run_time}
+        next_run_ids = {event.get('id') for event in events if get_triggered(event) == next_run_time}
 
         # In case all events were triggered at the same time and the limit equals their amount,
         # We should increase the next run time, Otherwise the fetch will get stuck at this time forever.
@@ -162,7 +161,7 @@ def add_time_key_to_events(events: list = None):
         events: list, the events to add the time key to.
     """
     for event in events or []:
-        event["_time"] = get_triggered(event)
+        event["_time"] = demisto.get(event, 'log.triggered')
 
 
 ''' MAIN FUNCTION '''

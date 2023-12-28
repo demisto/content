@@ -87,7 +87,7 @@ def test_fetch_events(mocker):
 
 
 def test_main(mocker):
-    from RecordedFutureEventCollector import main, get_triggered, VENDOR, PRODUCT
+    from RecordedFutureEventCollector import main, VENDOR, PRODUCT
     mocker.patch.object(demisto, 'command', return_value='recorded-future-get-events')
     mocker.patch.object(demisto, 'args', return_value={'should_push_events': True, 'limit': 2})
     events = mocker.patch('RecordedFutureEventCollector.send_events_to_xsiam', side_effect=mock_send_events_to_xsiam)
@@ -98,7 +98,8 @@ def test_main(mocker):
         main()
 
     assert len(events.call_args[0][0]) == 2
-    assert events.call_args[0][0][0].get('_time') == get_triggered(events.call_args[0][0][0])
+    event = events.call_args[0][0][0]
+    assert event.get('_time') == event.get('log', {}).get('triggered')
     assert events.call_args[1].get('vendor') == VENDOR
     assert events.call_args[1].get('product') == PRODUCT
     assert mock_request.last_request.query == 'limit=2'
