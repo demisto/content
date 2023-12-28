@@ -337,17 +337,16 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
     return []
 
 
-def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]:
+def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]: 
     params_dict['page'] = 0
-    response = {}
-    has_next_page = True
-    demisto.debug(' IN search_query_indicators_pagination')
-    while has_next_page:
+    response = {'response': {'Attribute': []}}
+    while True:
         params_dict['page'] += 1
-        search_query_per_page = client.search_query(params_dict)
+        search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
         demisto.debug(f'search_query_per_page:{params_dict["page"]} {search_query_per_page}')
-        response.update(search_query_per_page)
-        has_next_page = search_query_per_page.get('response', {}).get('Attribute')
+        if not len(search_query_per_page):
+            break
+        response['response']['Attribute'].extend(search_query_per_page)
     return response
     
 
@@ -365,9 +364,8 @@ def fetch_indicators(client: Client,
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
     if limit and limit not in params_dict:
         params_dict['limit'] = limit
-    demisto.debug('before search_query_indicators_pagination')
     response = search_query_indicators_pagination(client, params_dict) if is_fetch else client.search_query(params_dict)
-    demisto.debug(f'response of search_query from fetch indicators command:/n{response}')
+    demisto.debug(f'fetch_indicators response: {response}')
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
     indicators_iterator = build_indicators_iterator(response, url)
@@ -613,6 +611,8 @@ def main():
         elif command == 'misp-feed-get-indicators':
             return_results(get_attributes_command(client, args, params))
         elif command == 'fetch-indicators':
+            
+            demisto.debug(f'MAIN fetch-indicators {params}')
             indicators = fetch_attributes_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
