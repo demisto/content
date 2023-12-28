@@ -129,7 +129,7 @@ def test_delete_topic_invalid_arn(sns_client):
 
 def test_list_subscriptions_by_topic_with_topic_arn(sns_client):
     """
-    Given a mock SNS client 
+    Given a mock SNS client
     When list_subscriptions_by_topic is called with a topic ARN
     Then the client's list_subscriptions_by_topic method is called with the topic ARN
     """
@@ -143,7 +143,7 @@ def test_list_subscriptions_by_topic_with_topic_arn(sns_client):
 def test_list_subscriptions_by_topic_with_next_token(sns_client):
     """
     Given a mock SNS client
-    When list_subscriptions_by_topic is called with a next token 
+    When list_subscriptions_by_topic is called with a next token
     Then the client's list_subscriptions_by_topic method is called with the next token
     """
     next_token = 'some-token'
