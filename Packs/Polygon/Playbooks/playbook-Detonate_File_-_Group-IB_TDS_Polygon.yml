@@ -544,7 +544,7 @@ inputs:
       root: File
       accessor: EntryID
   required: false
-  description: File to detonate
+  description: The File EntryID which will be detonated.
   playbookInputQuery:
 - key: Interval
   value:
