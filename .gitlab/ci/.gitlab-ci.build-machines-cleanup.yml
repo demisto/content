@@ -28,10 +28,10 @@ build-machines-cleanup:
     - !reference [ .unlock-machine ]
   timeout: 4 hours
   variables:
-    CLOUD_MACHINES_TYPE: "nightly"
-    CLOUD_MACHINES_COUNT: "1"
+    CLOUD_MACHINES_TYPE: $CLOUD_MACHINES_TYPE
+    CLOUD_MACHINES_COUNT: $CLOUD_MACHINES_COUNT
     LOCK_MACHINE_NAME: $LOCK_MACHINE_NAME
-    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
+    GCS_LOCKS_PATH: $GCS_LOCKS_PATH
     INSTANCE_ROLE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
     SERVER_TYPE: "XSIAM"

@@ -566,6 +566,7 @@ slack-notify-on-merge:
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
+    CLEAN_MACHINE_NEEDED: $CLEAN_MACHINE_NEEDED
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -616,7 +617,12 @@ slack-notify-on-merge:
     - exit $EXIT_CODE
   after_script:
     - source .gitlab/helper_functions.sh
-    - !reference [.clean-machine]
+    - section_start "After script- Clean Machine"
+    - |
+      if [[ ${CLEAN_MACHINE_NEEDED} = "true" ]]; then
+        !reference [.clean-machine]
+      fi
+    - section_end "After script- Clean Machine"
     - !reference [.unlock-machine]
 
 
@@ -629,17 +635,20 @@ xsiam_server_ga:
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
+        CLEAN_MACHINE_NEEDED: "true"
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "nightly"
+        CLEAN_MACHINE_NEEDED: "true"
         CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
   timeout: 12 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
+    CLEAN_MACHINE_NEEDED: "true"
     CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSIAM"
     SERVER_TYPE: "XSIAM"
@@ -683,12 +692,14 @@ xsoar_ng_server_ga:
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
+        CLEAN_MACHINE_NEEDED: "false"
         GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
+    CLEAN_MACHINE_NEEDED: "false"
     CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSOAR SAAS"
     PRODUCT_TYPE: "XSOAR"
