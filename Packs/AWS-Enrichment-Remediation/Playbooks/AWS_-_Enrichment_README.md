@@ -14,11 +14,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* Set
 
 ### Commands
 
+* aws-ec2-get-ipam-discovered-public-addresses
+* aws-ec2-describe-ipam-resource-discoveries
 * aws-ec2-describe-security-groups
+* aws-ec2-describe-regions
 * aws-ec2-describe-instances
 
 ## Playbook Inputs
@@ -29,6 +32,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 | AwsIP | AWS IP in alert | alert.remoteip | Required |
+| AWSAssumeRoleName | If assuming roles for AWS, this is the name of the role to assume \(should be the same for all organizations\). |  | Optional |
 
 ## Playbook Outputs
 
