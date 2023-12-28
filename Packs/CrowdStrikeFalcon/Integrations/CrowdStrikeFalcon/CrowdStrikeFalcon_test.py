@@ -3632,7 +3632,8 @@ def test_resolve_incidents(mocker):
      """
     import CrowdStrikeFalcon
     http_request_mock = mocker.patch.object(CrowdStrikeFalcon, 'http_request')
-    CrowdStrikeFalcon.resolve_incident_command(ids=['test_id'], user_uuid='test', status='New', add_tag='test', remove_tag='test', add_comment='test')
+    CrowdStrikeFalcon.resolve_incident_command(ids=['test_id'], user_uuid='test',
+                                               status='New', add_tag='test', remove_tag='test', add_comment='test')
     assert http_request_mock.call_count == 1
     assert http_request_mock.call_args.kwargs == {
         "method": "POST",
@@ -3640,8 +3641,8 @@ def test_resolve_incidents(mocker):
         "json": {
             "action_parameters": [
                 {
-                "name": "update_status",
-                "value": "20"
+                    "name": "update_status",
+                    "value": "20"
                 },
                 {
                     "name": "update_assigned_to_v2",
