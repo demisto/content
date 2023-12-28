@@ -2105,7 +2105,7 @@ script:
       description: Stop Processing Rules.
       type: string
     - contextPath: EWS.Rule.IsValid
-      description: wheather the rule is valid or not.
+      description: Whether the rule is valid or not.
       type: boolean
     description: Retrieve information about the Inbox rule properties.
   - name: ews-remove-rule
