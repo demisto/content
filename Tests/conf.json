@@ -2937,7 +2937,15 @@
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
-            "fromversion": "4.1.0"
+            "external_playbook_config": {
+                "playbookID": "IP Enrichment - Generic v2",
+                "input_parameters": {
+                    "UseReputationCommand": {
+                        "simple": "True"
+                    }
+                }
+            },
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Cherwell",
