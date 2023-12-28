@@ -381,10 +381,10 @@
         fi
         echo "Sleeping for 10 seconds before retrying"
         sleep 10
-      echo "Successful triggered cleanup machine pipeline - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     else
       echo "No Cleanup Machine"
     fi
+  - echo "Successful triggered cleanup machine pipeline - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
   - done
   - section_end "Trigger Cleanup Machine On $CLOUD_MACHINES_IDS"
 
