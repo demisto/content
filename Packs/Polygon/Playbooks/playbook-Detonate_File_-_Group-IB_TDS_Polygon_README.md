@@ -21,9 +21,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * polygon-export-report
 * polygon-export-pcap
+* polygon-export-video
 * polygon-analysis-info
 * polygon-upload-file
-* polygon-export-video
 
 ## Playbook Inputs
 
