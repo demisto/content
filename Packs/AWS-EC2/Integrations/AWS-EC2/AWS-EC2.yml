@@ -3805,7 +3805,36 @@ script:
       name: roleSessionDuration
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.76862
+  - arguments:
+    - description: The ID of the EBS snapshot.
+      name: snapshotId
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      description: The operation type, add or remove.
+      name: operationType
+      required: true
+    - description: CSV of security group names. This parameter can be used only when UserIds not provided.
+      name: groupNames
+    - description: CSV of AWS account IDs. This parameter can be used only when groupNames not provided.
+      name: userIds
+    - auto: PREDEFINED
+      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      name: dryRun
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Adds or removes permission settings for the specified snapshot.
+    name: aws-ec2-modify-snapshot-permission
+  dockerimage: demisto/boto3py3:1.0.0.83962
   runonce: false
   script: '-'
   subtype: python3
