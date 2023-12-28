@@ -1479,7 +1479,7 @@ Get a mailbox rule.
 | --- | --- | --- |
 | EWS.Rule.Rule | String | The rule identity. | 
 | EWS.Rule.RuleName | String | The rule name. | 
-| EWS.Rule.IsEnabled | Boolean| If the rules is enabled or not. | 
+| EWS.Rule.IsEnabled | Boolean| Whether the rule is enabled or not. | 
 | EWS.Rule.Priority | String | the rule priority. |
 | EWS.Rule.Description | String | The description of the rule. | 
 | EWS.Rule.StopProcessingRules | Boolean| If to stop processing the rule or not. | 
