@@ -77,6 +77,7 @@ script:
     - name: question
       description: The question to be sent to AWS Bedrock.
       type: textArea
+      required: true
     - name: model
       required: true
       description: Model to use in AWS Bedrock.
