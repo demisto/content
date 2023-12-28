@@ -1,0 +1,1 @@
+[INGEST:vendor="trendmicro", product="iwss", target_dataset="trendmicro_iwss_raw", no_hit=keep]
