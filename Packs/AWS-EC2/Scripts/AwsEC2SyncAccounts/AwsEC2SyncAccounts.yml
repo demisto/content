@@ -4,10 +4,10 @@ args:
   required: true
 comment: Update an AWS - EC2 instance with a list of accounts in an AWS organization, which will allow EC2 commands to run in all of them.
 commonfields:
-  id: AwsEC2GetAccounts
+  id: AwsEC2SyncAccounts
   version: -1
 enabled: true
-name: AwsEC2GetAccounts
+name: AwsEC2SyncAccounts
 outputs: []
 script: '-'
 tags:

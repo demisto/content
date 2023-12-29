@@ -65,7 +65,7 @@ def main():
         result = update_ec2_instance(account_ids, instance_name)
         return_results(result)
     except Exception as e:
-        return_error(f'Error in AwsEC2GetAccounts: {e}')
+        return_error(f'Error in AwsEC2SyncAccounts: {e}')
 
 
 if __name__ in ('__main__', 'builtins', '__builtin__'):

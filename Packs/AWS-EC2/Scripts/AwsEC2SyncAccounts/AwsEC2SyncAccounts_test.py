@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 
 def test_get_account_ids(mocker):
-    from AwsEC2GetAccounts import get_account_ids
+    from AwsEC2SyncAccounts import get_account_ids
 
     mock_execute_command = mocker.patch.object(demisto, "executeCommand")
     mock_execute_command.return_value = [
@@ -25,10 +25,10 @@ def test_get_account_ids(mocker):
 
 
 def test_update_ec2_instance(mocker):
-    import AwsEC2GetAccounts
+    import AwsEC2SyncAccounts
 
     internal_request: MagicMock = mocker.patch.object(
-        AwsEC2GetAccounts,
+        AwsEC2SyncAccounts,
         "internal_request",
         side_effect=lambda *args: {
             ("POST", "/settings/integration/search"): {
@@ -63,7 +63,7 @@ def test_update_ec2_instance(mocker):
         }.get(args[:2]),
     )
 
-    result = AwsEC2GetAccounts.update_ec2_instance(["1234", "5678"], "AWS - EC2")
+    result = AwsEC2SyncAccounts.update_ec2_instance(["1234", "5678"], "AWS - EC2")
 
     assert internal_request.mock_calls[0].args == ('POST', '/settings/integration/search')
     assert internal_request.mock_calls[1].args == ('PUT', '/settings/integration', {
