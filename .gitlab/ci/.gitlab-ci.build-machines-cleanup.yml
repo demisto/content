@@ -18,7 +18,23 @@ build-machines-cleanup:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    - !reference [.lock-machine]
+    - echo "pipeline id- ${CI_PIPELINE_ID}"
+    - if [[ -n "$LOCK_MACHINE_NAME" ]]; then
+    -   echo "pipeline id- ${CI_PIPELINE_ID}"
+    -   gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - |
+        for _ in {1..3}; do
+          if gsutil -q stat "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${LOCK_MACHINE_NAME}-lock-${CI_PIPELINE_ID}" 2>/dev/null; then
+            echo "File found in GCS bucket."
+            break
+          else
+            echo "File not found. Retrying in 120 seconds..."
+            sleep 120
+          fi
+        done
+    - else
+    -   !reference [.lock-machine]
+    - fi
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.cloud-machine-information]
     - job-done

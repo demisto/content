@@ -353,14 +353,10 @@
 .clean-machine:
   #retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
   #gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-  #gsutil mv "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID" "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-${pipeline_id}"
+  #gsutil mv "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${CLOUD_CHOSEN_MACHINE_IDS}-lock-$CI_JOB_ID" "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${CLOUD_CHOSEN_MACHINE_IDS}-lock-${pipeline_id}"
 
   - section_start "Trigger Clean machine pipeline" --collapsed
-  - |
-    if [[ -f "CloudEnvVariables" ]]; then
-      echo "get cloud env variables"
-      source CloudEnvVariables  
-    fi
+  - source CloudEnvVariables  
   - |
     echo "${CLEAN_MACHINE_NEEDED}"
     if [[ ${CLEAN_MACHINE_NEEDED} = "true" ]]; then
