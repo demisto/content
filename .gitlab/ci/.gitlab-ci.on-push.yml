@@ -662,9 +662,9 @@ xsiam_server_ga:
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     MARKETPLACE_NAME: "marketplacev2"
     NON_REMOVABLE_PACKS: "Base"
-  # needs:
-  #   - job: mpv2-prepare-testing-bucket
-  #     optional: true
+  needs:
+    - job: mpv2-prepare-testing-bucket
+      optional: true
   artifacts:
     when: always
     expire_in: 30 days

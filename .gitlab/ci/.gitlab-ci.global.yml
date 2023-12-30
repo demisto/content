@@ -355,8 +355,7 @@
   #gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
   #gsutil mv "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${CLOUD_CHOSEN_MACHINE_IDS}-lock-$CI_JOB_ID" "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${CLOUD_CHOSEN_MACHINE_IDS}-lock-${pipeline_id}"
 
-  - section_start "Trigger Clean machine pipeline" --collapsed
-  - source CloudEnvVariables  
+  - section_start "Trigger Clean machine pipeline" 
   - |
     echo "${CLEAN_MACHINE_NEEDED}"
     if [[ ${CLEAN_MACHINE_NEEDED} = "true" ]]; then
