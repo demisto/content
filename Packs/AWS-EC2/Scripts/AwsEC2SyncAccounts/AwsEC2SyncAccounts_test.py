@@ -24,6 +24,43 @@ def test_get_account_ids(mocker):
     mock_execute_command.assert_called_with("aws-org-account-list", {})
 
 
+def test_set_instance(mocker):
+    import AwsEC2SyncAccounts
+
+    internal_request: MagicMock = mocker.patch.object(
+        AwsEC2SyncAccounts, "internal_request"
+    )
+    AwsEC2SyncAccounts.set_instance(
+        {
+            "data": [
+                {
+                    "name": "accounts_to_access",
+                    "hasvalue": False,
+                    "value": "",
+                },
+                {
+                    "name": "sessionDuration"
+                },
+            ],
+        },
+        'accounts'
+    )
+    internal_request.assert_called_with(
+        'PUT', '/settings/integration', {
+            "data": [
+                {
+                    "name": "accounts_to_access",
+                    "hasvalue": True,
+                    "value": "accounts",
+                },
+                {
+                    "name": "sessionDuration"
+                },
+            ],
+        }
+    )
+
+
 def test_update_ec2_instance(mocker):
     import AwsEC2SyncAccounts
 

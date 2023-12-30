@@ -26,3 +26,13 @@ Update an AWS - EC2 instance with a list of accounts in an AWS organization, whi
 
 ---
 There are no outputs for this script.
+
+## Script Examples
+
+### Example command
+
+```!AwsEC2SyncAccounts instanceName="AWS_EC2_Instance"```
+
+### Human Readable Output
+
+>Successfully updated 'AWS_EC2_Instance' with accounts: 123456789123,987654321987,121212121212
