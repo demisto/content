@@ -3,7 +3,15 @@ if [[ $DEMISTO_SDK_NIGHTLY == "true" ]]; then
     echo "DEMISTO_SDK_NIGHTLY is set to true, Will run test-upload-flow"
     exit 0
 fi
-DIFF_FILES_LIST=$(git diff origin/master...$CI_COMMIT_BRANCH --name-only)
+
+DIFF_FILES_LIST=$(git diff origin/master..."XSUP-29866" --name-only)
+GIT_DIFF_STATUS=$?
+
+if [ $GIT_DIFF_STATUS -ne 0 ]; then
+    echo "Error: git diff command failed with exit status $GIT_DIFF_STATUS, $DIFF_FILES_LIST"
+    exit 1
+fi
+
 IGNORED_FILES=(
     "Tests/conf.json"
     "Tests/known_words.txt"
