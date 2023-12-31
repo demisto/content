@@ -956,3 +956,37 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Site permission was deleted.
+### msgraph-files-auth-test
+
+***
+Tests connectivity to Microsoft.
+
+#### Base Command
+
+`msgraph-files-auth-test`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### msgraph-files-generate-login-url
+
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`msgraph-files-generate-login-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

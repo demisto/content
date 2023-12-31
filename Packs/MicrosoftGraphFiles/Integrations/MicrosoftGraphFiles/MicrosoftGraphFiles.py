@@ -515,16 +515,16 @@ def test_module(client: MsGraphClient) -> str:
     """
     Performs basic get request to get item samples
     """
-    try:
-        client.ms_client.http_request(
-            url_suffix="sites",
-            timeout=7,
-            method="GET")
+    response = 'ok'
+    if demisto.params().get('self_deployed', False):
+        if demisto.command() == 'test-module':
+            if client.ms_client.grant_type == AUTHORIZATION_CODE:
+                raise DemistoException("The *Test* button is not available for `self-deployed - Authorization Code Flow`. Use the !msgraph-files-auth-test command instead.")
+        else:
+            response = '```✅ Success!```'
 
-    except Exception as e:
-        raise DemistoException(f"Test failed.\n {e}") from e
-    return 'ok'
-
+    client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")
+    return response
 
 def download_file_command(client: MsGraphClient, args: dict[str, str]) -> dict:
     """
@@ -1098,6 +1098,12 @@ def main():
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
+        elif command == "msgraph-files-auth-test":
+            return_results(test_module(client))
+        elif command == "msgraph-files-generate-login-url":
+            return_results(generate_login_url(client.ms_client))
+        elif command == "msgraph-files-auth-reset":
+            return_results(reset_auth())
         elif command == "msgraph-delete-file":
             readable_output, raw_response = delete_file_command(client, args)
             return_outputs(readable_output=readable_output, raw_response=raw_response)
@@ -1117,8 +1123,6 @@ def main():
             return_outputs(*list_drives_in_site_command(client, args))
         elif command == "msgraph-upload-new-file":
             return_outputs(*upload_new_file_command(client, args))
-        elif command == "msgraph-files-auth-reset":
-            return_results(reset_auth())
         elif command == "msgraph-list-site-permissions":
             return_results(list_site_permissions_command(client, args))
         elif command == "msgraph-create-site-permissions":
