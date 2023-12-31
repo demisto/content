@@ -101,3 +101,35 @@ Describe "Validating ArgToInteger" {
 		ArgToInteger "5" | Should -Be 5
 	}
 }
+
+Describe 'TestModule' {
+    It 'Returns ok on success' {
+        Mock New-PSSession { } 
+        Mock Invoke-Command { return @() }
+
+        TestModule | Should -Be 'ok'
+    }
+
+    It 'Throws error if SCCM module not found' {
+        Mock New-PSSession { }
+        Mock Invoke-Command { throw 'Could not find SCCM modules' }
+
+        { TestModule } | Should -Throw 'Could not find SCCM modules'
+    }
+
+	It 'Calling New-PSDrive' {
+		Mock New-PSSession { }
+		Mock Get-PSDrive {}
+
+		TestModule -ErrorAction SilentlyContinue
+		Assert-MockCalled New-PSSession -Times 1 -Scope It
+	}
+
+	It 'Skip calling New-PSDrive' {
+		Mock New-PSSession { }
+		Mock Get-PSDrive {'A PSDrive object'}
+
+		TestModule -ErrorAction SilentlyContinue
+		Assert-MockCalled New-PSSession -Times 0 -Scope It
+	}
+}
