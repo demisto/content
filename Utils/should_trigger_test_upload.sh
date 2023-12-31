@@ -7,9 +7,7 @@ if [[ $DEMISTO_SDK_NIGHTLY == "true" ]]; then
     echo "DEMISTO_SDK_NIGHTLY is set to true, Will run test-upload-flow"
     exit 0
 fi
-
-DIFF_FILES_LIST=$(git diff origin/master..."XSUP-29866" --name-only)
-
+DIFF_FILES_LIST=$(git diff origin/master...$CI_COMMIT_BRANCH --name-only)
 IGNORED_FILES=(
     "Tests/conf.json"
     "Tests/known_words.txt"
