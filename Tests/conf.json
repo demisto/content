@@ -203,6 +203,9 @@
             "fromversion": "6.11.0"
         },
         {
+            "playbookID": "IsIntegrationAvailable - Test"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
