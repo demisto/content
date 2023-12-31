@@ -104,7 +104,7 @@ Describe "Validating ArgToInteger" {
 
 Describe 'TestModule' {
     It 'Returns ok on success' {
-        Mock New-PSSession { } 
+        $global:Session = New-PSSession
         Mock Invoke-Command { return @() }
 
         TestModule | Should -Be 'ok'
@@ -118,18 +118,18 @@ Describe 'TestModule' {
     }
 
 	It 'Calling New-PSDrive' {
-		Mock New-PSSession { }
+		Mock New-PSDrive { }
 		Mock Get-PSDrive {}
 
 		TestModule -ErrorAction SilentlyContinue
-		Assert-MockCalled New-PSSession -Times 1 -Scope It
+		Assert-MockCalled New-PSDrive -Times 1 -Scope It
 	}
 
 	It 'Skip calling New-PSDrive' {
-		Mock New-PSSession { }
+		Mock New-PSDrive { }
 		Mock Get-PSDrive {'A PSDrive object'}
 
 		TestModule -ErrorAction SilentlyContinue
-		Assert-MockCalled New-PSSession -Times 0 -Scope It
+		Assert-MockCalled New-PSDrive -Times 0 -Scope It
 	}
 }
