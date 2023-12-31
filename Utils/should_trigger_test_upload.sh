@@ -8,8 +8,8 @@ fi
 DIFF_FILES_LIST=$(git diff origin/master...$CI_COMMIT_BRANCH --name-only)
 GIT_DIFF_STATUS=$?
 
-if [ $GIT_DIFF_STATUS -ne 0 ]; then
-    print_error "git diff command failed with exit status $GIT_DIFF_STATUS"
+if [ $GIT_DIFF_STATUS -eq 0 ]; then
+    echo "git diff command failed with exit status: $GIT_DIFF_STATUS"
     exit 1
 fi
 
