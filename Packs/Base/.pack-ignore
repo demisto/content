@@ -80,6 +80,7 @@ FileResult
 JavaScript
 CPE
 CPEs
+clickable
 
 [tests_require_network]
 CommonServerPython
