@@ -974,7 +974,7 @@ def createIncidents(incidents, lastRun=None, userID=None):
       incidents (list): List of incident objects to create, with the following optional keys:
             - name (str)
             - type (str) - If not provided, an Unclassified incident will be created
-            - labels (list) - List of {"type": _, "value": _} objects
+            - labels (list) - List of `ֿֿ{"type": _, "value": _}` objects
             - rawJSON (str) - Will be omitted after the classification & mapping step
             - occurred (str)
             - details (str)

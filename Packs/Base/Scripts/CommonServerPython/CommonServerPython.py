@@ -1892,7 +1892,7 @@ def argToList(arg, separator=',', transform=None):
 def remove_duplicates_from_list_arg(args, field):
     """
         Removes duplicates from a list after calling argToList.
-        For example: args: {'ids': "1,2,1"}, field='ids'
+        For example: args: `{'ids': "1,2,1"}`, field='ids'
         The return output will be ["1", "2"]
 
         :type args: ``dict``
