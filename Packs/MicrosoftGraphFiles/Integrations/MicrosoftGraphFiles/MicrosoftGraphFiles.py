@@ -106,15 +106,30 @@ class MsGraphClient:
     MAX_ATTACHMENT_SIZE = 3145728   # 3mb = 3145728 bytes
     MAX_ATTACHMENT_UPLOAD = 327680  # 320 KiB = 327680 bytes
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes, redirect_uri,
+                 auth_code, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
                  managed_identities_client_id: Optional[str] = None):
+
+        if not managed_identities_client_id:
+            if not self_deployed and not enc_key:
+                raise DemistoException('Key must be provided. For further information see '
+                                       'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+            if self_deployed and (not enc_key and not (certificate_thumbprint and private_key)):
+                raise DemistoException('Either Key or (Certificate Thumbprint and Private Key) must be provided. For further '
+                                       'information see '
+                                       'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+            elif self_deployed and auth_code and not redirect_uri:
+                raise DemistoException('Please provide both Application redirect URI and Authorization code '
+                                       'for Authorization Code flow, or None for the Client Credentials flow')
+
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
             certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.graph,
+            redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
             command_prefix="msgraph-files",
         )
 
@@ -518,11 +533,10 @@ def test_module(client: MsGraphClient) -> str:
     response = 'ok'
     if demisto.params().get('self_deployed', False):
         if demisto.command() == 'test-module':
-            if client.ms_client.grant_type == AUTHORIZATION_CODE:
+            if client.ms_client.grant_type != CLIENT_CREDENTIALS:
                 raise DemistoException("The *Test* button is not available for `self-deployed - Authorization Code Flow`. Use the !msgraph-files-auth-test command instead.")
         else:
             response = '```✅ Success!```'
-
     client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")
     return response
 
@@ -1079,19 +1093,15 @@ def main():
     private_key = params.get('private_key')
     managed_identities_client_id: Optional[str] = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
-
-    if not managed_identities_client_id:
-        if not self_deployed and not enc_key:
-            raise DemistoException('Key must be provided. For further information see '
-                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-        elif not enc_key and not (certificate_thumbprint and private_key):
-            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    auth_code = params.get('auth_code_creds', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri', '')
 
     try:
         client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME,
                                verify=use_ssl, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
                                certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-                               managed_identities_client_id=managed_identities_client_id)
+                               managed_identities_client_id=managed_identities_client_id,
+                               redirect_uri=redirect_uri, auth_code=auth_code)
 
         demisto.debug(f"Command being called is {command}")
 
