@@ -22,8 +22,7 @@ configuration:
   type: 0
   required: false
   hiddenpassword: true
-  additionalinfo: The BotJID in the Chat subscription section on the Features page
-    of your App Dashboard.
+  additionalinfo: The BotJID in the Chat subscription section on the Features page of your App Dashboard.
 - display: Bot Client ID ((Team Chat App))
   name: bot_credentials
   type: 9
@@ -358,7 +357,7 @@ script:
       description: >-
         Filter the response by a specific role.
         For example: role_id=0 (Owner), role_id=2 (Member).
-    description: List the existing users
+    description: List the existing users.
     name: zoom-list-users
     outputs:
     - contextPath: Zoom.Metadata.Count
@@ -1182,10 +1181,10 @@ script:
       description: The message content.
     - contextPath: Zoom.ChatMessage.messages.reply_main_message_id
       type: string
-      description: The unique identifier of a reply message. (Returned only for reply messages.) 
+      description: The unique identifier of a reply message. (Returned only for reply messages.)
     - contextPath: Zoom.ChatMessage.messages.reply_main_message_timestamp
       type: integer
-      description: The timestamp of when the reply message was sent. (Returned only for reply messages.) 
+      description: The timestamp of when the reply message was sent. (Returned only for reply messages.)
     - contextPath: Zoom.ChatMessage.messages.sender
       type: string
       description: The email address of the message sender. Empty if the sender does not belong to the same account as the current user or is not a contact.
@@ -1197,7 +1196,7 @@ script:
       description: The display name of the message sender.
     - contextPath: Zoom.ChatMessage.messages.status
       type: enum
-      description: Indicates the status of the message. Allowed values Deleted, Edited, Normal. (Returned only when include_deleted_and_edited_message query parameter is set to true.) 
+      description: Indicates the status of the message. Allowed values Deleted, Edited, Normal. (Returned only when include_deleted_and_edited_message query parameter is set to true.)
     - contextPath: Zoom.ChatMessage.messages.timestamp
       type: integer
       description: The timestamp of the message in microseconds.
@@ -1261,7 +1260,7 @@ script:
       - none
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether the channel is auto-closed when an investigation is closed. 
+      description: Whether the channel is auto-closed when an investigation is closed.
       name: autoclose
       predefined:
       - 'true'
@@ -1281,7 +1280,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:1.0.0.79757
+  dockerimage: demisto/fastapi:1.0.0.83979
   script: "-"
   subtype: python3
   type: python
