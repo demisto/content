@@ -326,13 +326,6 @@ def construct_slack_msg(triggering_workflow: str,
                         shame_message: tuple[str, str, str] | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
-    # if shame_message:
-    #     shame_title, shame_value, color = shame_message
-    #     content_fields.append({
-    #         "title": shame_title,
-    #         "value": shame_value,
-    #         "short": False
-    #     })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
@@ -530,7 +523,7 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if True:
+    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
