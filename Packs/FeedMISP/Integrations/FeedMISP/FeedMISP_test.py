@@ -451,16 +451,12 @@ def test_get_ip_type(indicator, indicator_type):
 
 
 def test_search_query_indicators_pagination(mocker):
-    client = Client(base_url="exmaple",
+    client = Client(base_url="example",
                     authorization="auth",
                     verify=False,
                     proxy=False,
                     timeout=60)
-    mocker.patch.object(Client, '_http_request', return_value=[
-        {'response': {'Attribute': ['data1', 'data2']}},
-        {'response': {'Attribute': ['data3', 'data4']}},
-        {}
-    ])
+    mocker.patch.object(Client, '_http_request', return_value={'response': {'Attribute': ['data1', 'data2']}})
     params_dict = {'param1': 'value1'}
     result = search_query_indicators_pagination(client, params_dict)
     expected_result = {'response': {'Attribute': ['data1', 'data2', 'data3', 'data4']}}
