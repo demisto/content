@@ -1,7 +1,9 @@
 [MODEL: dataset=akamai_guardicore_raw]
 alter 
     src_ip = json_extract(source_asset,"$.ip"),
-    dst_ip = json_extract(destination_asset,"$.ip")
+    dst_ip = json_extract(destination_asset,"$.ip"),
+    src_os = trim(json_extract(source_asset,"$.labels.os_type"),"\""),
+    dst_os = trim(json_extract(destination_asset,"$.labels.os_type"),"\"")
 | alter 
     src_ipv4 = regextract(src_ip, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),
     dst_ipv4 = regextract(dst_ip, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),
@@ -14,9 +16,9 @@ alter
     xdm.source.port = source_port,
     xdm.target.port = destination_port,
     xdm.event.id = id,
-    xdm.alert.name = _cls,
-    xdm.intermediate.host.device_id = sensor_name,
-    xdm.intermediate.host.device_model = sensor_type,
+    xdm.event.original_event_type = _cls,
+    xdm.observer.name = sensor_name,
+    xdm.observer.type = sensor_type,
     xdm.source.ipv4 = to_string(src_ipv4),
     xdm.source.ipv6 = to_string(src_ipv6),
     xdm.source.host.device_id = trim(json_extract(source_asset,"$.vm_id"),"\""),
@@ -24,11 +26,11 @@ alter
     xdm.source.host.fqdn = trim(json_extract(source_asset,"$.vm.full_name"),"\""),
     xdm.source.is_internal_ip = to_boolean(json_extract(source_asset,"$.is_inner")),
     xdm.source.location.country = trim(json_extract(source_asset,"$.country"),"\""),
-    xdm.source.host.os = trim(json_extract(source_asset,"$.labels.os_type"),"\""),
-    xdm.source.host.device_model = trim(json_extract(source_asset,"$.labels.os_name"),"\""),
+    xdm.source.host.os_family = if(src_os = "Windows", XDM_CONST.OS_FAMILY_WINDOWS, src_os = "Linux", XDM_CONST.OS_FAMILY_LINUX, src_os ="Android", XDM_CONST.OS_FAMILY_ANDROID, src_os ="Centos", XDM_CONST.OS_FAMILY_CENTOS, src_os ="Chromeos", XDM_CONST.OS_FAMILY_CHROMEOS, src_os ="Debian", XDM_CONST.OS_FAMILY_DEBIAN, src_os ="Fedora", XDM_CONST.OS_FAMILY_FEDORA, src_os ~= "ios", XDM_CONST.OS_FAMILY_IOS, src_os ~="macos", XDM_CONST.OS_FAMILY_MACOS, src_os = "Scada", XDM_CONST.OS_FAMILY_SCADA, src_os = "Solaris", XDM_CONST.OS_FAMILY_SOLARIS, src_os ="Ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,src_os),
+    xdm.source.host.os = trim(json_extract(source_asset,"$.labels.os_name"),"\""),
     xdm.source.host.device_category = trim(json_extract(source_asset,"$.labels.Role"),"\""),
-    xdm.source.interface = json_extract(source_asset,"$.labels"),
-    xdm.event.original_event_type = incident_type,
+    xdm.source.host.device_model = json_extract(source_asset,"$.labels"),
+    xdm.alert.subcategory = incident_type,
     xdm.target.ipv4 = to_string(dst_ipv4),
     xdm.target.ipv6 = to_string(dst_ipv6),
     xdm.target.host.device_id = trim(json_extract(destination_asset,"$.vm_id"),"\""),
@@ -36,8 +38,8 @@ alter
     xdm.target.host.fqdn = trim(json_extract(destination_asset,"$.vm.full_name"),"\""),
     xdm.target.is_internal_ip = to_boolean(json_extract(destination_asset,"$.is_inner")),
     xdm.target.location.country = trim(json_extract(destination_asset,"$.country"),"\""),
-    xdm.target.host.os = trim(json_extract(destination_asset,"$.labels.os_type"),"\""),
-    xdm.target.host.device_model = trim(json_extract(destination_asset,"$.labels.os_name"),"\""),
+    xdm.target.host.os_family = if(dst_os = "Windows", XDM_CONST.OS_FAMILY_WINDOWS, dst_os = "Linux", XDM_CONST.OS_FAMILY_LINUX, dst_os ="Android", XDM_CONST.OS_FAMILY_ANDROID, dst_os ="Centos", XDM_CONST.OS_FAMILY_CENTOS, dst_os ~="chromeos", XDM_CONST.OS_FAMILY_CHROMEOS, dst_os ="Debian", XDM_CONST.OS_FAMILY_DEBIAN, dst_os ="Fedora", XDM_CONST.OS_FAMILY_FEDORA, dst_os ~= "ios", XDM_CONST.OS_FAMILY_IOS, dst_os ~="macos", XDM_CONST.OS_FAMILY_MACOS, dst_os = "Scada", XDM_CONST.OS_FAMILY_SCADA, dst_os = "Solaris", XDM_CONST.OS_FAMILY_SOLARIS, dst_os ="Ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,dst_os),
+    xdm.target.host.os = trim(json_extract(destination_asset,"$.labels.os_name"),"\""),
     xdm.target.host.device_category = trim(json_extract(destination_asset,"$.labels.Role"),"\""),
-    xdm.target.interface = json_extract(destination_asset,"$.labels"),
+    xdm.target.host.device_model = json_extract(destination_asset,"$.labels"),
     xdm.event.description = concatenated_tags;
