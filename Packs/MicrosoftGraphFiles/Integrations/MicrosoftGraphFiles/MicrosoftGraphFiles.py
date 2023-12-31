@@ -919,7 +919,7 @@ def _md_parse_permission(permission: dict) -> dict:
         {
             "ID": "123",
             "Roles": ["role1", "role2"],
-            "Application Name": ["app1"], 
+            "Application Name": ["app1"],
             "Application ID": ["456"]
         }
     ```
