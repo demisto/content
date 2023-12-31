@@ -26,7 +26,7 @@ alter
     xdm.source.location.country = trim(json_extract(source_asset,"$.country"),"\""),
     xdm.source.host.os = trim(json_extract(source_asset,"$.labels.os_type"),"\""),
     xdm.source.host.device_model = trim(json_extract(source_asset,"$.labels.os_name"),"\""),
-    xdm.source.host.device_category = json_extract(source_asset,"$.labels.Role"),
+    xdm.source.host.device_category = trim(json_extract(source_asset,"$.labels.Role"),"\""),
     xdm.source.interface = json_extract(source_asset,"$.labels"),
     xdm.event.original_event_type = incident_type,
     xdm.target.ipv4 = to_string(dst_ipv4),
