@@ -795,7 +795,11 @@ def parse_list_ioc_response(ioc_matches):
     for ioc_match in ioc_matches:
         sources = []
         # get details from response
-        domain = ioc_match.get('artifact', {}).get('domainName', '')
+        artifact = ioc_match.get('artifact', {})
+        artifact_value = ""
+        # Confirm that artifact is not empty and it is dictionary.
+        if artifact and isinstance(artifact, dict):
+            artifact_value = list(artifact.values())[0]
         ingest_time = ioc_match.get('iocIngestTime', '')
         first_seen_time = ioc_match.get('firstSeenTime', '')
         last_seen_time = ioc_match.get('lastSeenTime', '')
@@ -807,7 +811,7 @@ def parse_list_ioc_response(ioc_matches):
 
             # prepare normalized dict for human readable
             hr_ioc_matches.append({
-                'Domain': '[{}]({})'.format(domain, ioc_match.get('uri', [''])[0]),
+                'Artifact': '[{}]({})'.format(artifact_value, ioc_match.get('uri', [''])[0]),
                 'Category': category,
                 'Source': source,
                 'Confidence': confidence,
@@ -826,11 +830,12 @@ def parse_list_ioc_response(ioc_matches):
             })
 
         # prepare context standard data for Domain
-        domain_std_context.append({'Name': domain})
+        if artifact.get('domainName'):
+            domain_std_context.append({'Name': artifact_value})
 
         # prepare context data for IoCs
         context.append({
-            'Artifact': domain,
+            'Artifact': artifact_value,
             'IocIngestTime': ingest_time,
             'FirstAccessedTime': first_seen_time,
             'LastAccessedTime': last_seen_time,
@@ -4001,7 +4006,7 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
 
         # prepare human readable response
         hr = tableToMarkdown('IOC Domain Matches', ioc_matches_resp['hr_ioc_matches'],
-                             ['Domain', 'Category', 'Source', 'Confidence', 'Severity', 'IOC ingest time',
+                             ['Artifact', 'Category', 'Source', 'Confidence', 'Severity', 'IOC ingest time',
                               'First seen', 'Last seen'], removeNull=True)
         # prepare entry context response
         ec = {
