@@ -36,7 +36,7 @@
     reportedemailsubject: xdm.email.subject
     srcos: xdm.source.host.os
     urls: xdm.target.url
-  alert_name: Microsoft Defender Alerts - DRAFT
+  alert_name: Microsoft Defender Alerts
   crontab: null
   dataset: alerts
   description: Alert from Graph Security for Defender Sources
@@ -64,7 +64,7 @@
     \ xdm.target.registry.value_type, xdm.target.url\n | view column order = populated "
   mapping_strategy: CUSTOM
   mitre_defs: {}
-  name: Microsoft Defender Alerts - DRAFT
+  name: Microsoft Defender Alerts
   search_window: null
   severity: User Defined
   suppression_duration: null
