@@ -110,7 +110,7 @@ def test_cyren_feed_relationship_wrong_columns(indicator, columns):
     "Indicator Type",
     " Indicator Type      ",
 ])
-def test_cyren_feed_relationship_allowed_columns(indicator, columns):
+def test_cyren_feed_relationship_allowed_columns(mocker, indicator, columns):
     """
     Given: an indicator and supported columns
     When: Running cyren_feed_relationship command.
@@ -118,6 +118,7 @@ def test_cyren_feed_relationship_allowed_columns(indicator, columns):
     """
     from CyrenThreatInDepthRenderRelated import cyren_feed_relationship
 
+    mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
     args = dict(indicator=indicator, columns=columns)
     cyren_feed_relationship(args)
 

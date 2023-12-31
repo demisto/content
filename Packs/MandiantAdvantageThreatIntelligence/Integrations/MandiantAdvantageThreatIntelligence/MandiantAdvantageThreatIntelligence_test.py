@@ -878,6 +878,7 @@ def test_get_malware(client: MandiantAdvantageThreatIntelligence.MandiantClient,
     )
 
     mocker.patch.object(demisto, "command", return_value="get-malware")
+    mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
 
     results = MandiantAdvantageThreatIntelligence.fetch_malware_family(
         client, args={"malware_name": "MALWARE_NAME"}

@@ -1747,7 +1747,7 @@ def test_certificate_command(requests_mock, mocker):
         f"https://example.com/api/v2/assets/certificates/{MOCK_CERT_HASH}", json=mock_certificate_data
     )
 
-    mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data})
+    mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data, "total": len(mock_ioc_data)})
 
     result = certificate_command(client, {'certificate': mock_ioc_data[0]['CustomFields']['sha256']})
     first = result[0].to_context()
