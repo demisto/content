@@ -1,7 +1,0 @@
-fromversion: 6.10.0
-id: Tenable_io_vuln_ParsingRule
-name: Tenable.io vuln Parsing Rule
-rules: ''
-tags:
- - tenable
-samples: ''

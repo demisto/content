@@ -1,4 +1,20 @@
+[MODEL: model=Endpoint, dataset=tenable_io_raw]
+filter xsiam_type = "vulnerability"
+| alter XDM.Endpoint.Target.host.hostname=replace(json_extract(asset,"$.hostname"),"\"",""),
+        XDM.Endpoint.Target.host.ipv4_addresses=arraycreate(replace(json_extract(asset,"$.ipv4"),"\"","")),
+        XDM.Endpoint.Target.host.device_id=replace(json_extract(asset,"$.uuid"),"\"",""),
+        XDM.Endpoint.Target.host.os=replace(arrayindex(json_extract_array(asset,"$.operating_system"),0),"\"",""),
+        XDM.Endpoint.threat.description=replace(json_extract(plugin,"$.description"),"\"",""),
+        XDM.Endpoint.threat.name=replace(json_extract(plugin,"$.name"),"\"",""),
+        XDM.Endpoint.threat.severity=severity,
+        XDM.Endpoint.outcome=output,
+        XDM.Endpoint.Actor.host.fqdn=replace(json_extract(asset,"$.fqdn"),"\"",""),
+        XDM.Endpoint.threat.category=replace(json_extract(plugin,"$.family"),"\"",""),
+        XDM.Endpoint.threat.original_threat_id=json_extract_scalar(plugin,"$.id"),
+        XDM.Endpoint.observation_timestamp=indexed;
+
 [MODEL: dataset=tenable_io_raw, model=Audit]
+filter xsiam_type = "audit_log"
 | alter XDM.Audit.TriggeredBy.identity.uuid=json_extract_scalar(actor, "$.id"),
       XDM.Audit.TriggeredBy.identity.name=json_extract_scalar(actor, "$.name"),
       XDM.Audit.original_event_description=description,
