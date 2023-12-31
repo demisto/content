@@ -43,6 +43,9 @@ ignore=BA124
 [file:CreatePrismaCloudComputeComplianceReportButton.yml]
 ignore=BA124
 
+[file:1_5_0.md]
+ignore=RN115
+
 [known_words]
 resourceType
 resourceID
