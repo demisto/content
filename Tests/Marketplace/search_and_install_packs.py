@@ -545,6 +545,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     pack_and_its_dependencies.append({p['id']: p})
                 else:
                     logging.info(f"#########################  {p=}")
+            
+            logging.info(f"#########################{pack_and_its_dependencies=}")            
             logging.info(f"#########################{collected_dependencies=}")            
             if pack_and_its_dependencies:
                 collected_dependencies += pack_and_its_dependencies
