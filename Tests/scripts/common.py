@@ -348,17 +348,11 @@ def get_reviewer(pr_url: str) -> str|None:
     return approved_reviewer if approved_reviewer else None
 
 
-def load_json(file):
-    with open(file, 'r') as f:
-        return json.load(f)
-
-
-def get_slack_user_name(name:str, name_mapping: str) -> str:
-    mapping = load_json(
-        name_mapping
-    )
+def get_slack_user_name(name:str, name_mapping_path: str) -> str:
+    with open(name_mapping_path) as map:
+        mapping = json.load(map)
     # If the name is 'github-actions[bot]', then return the owner of the docker image update bot.
-    if name == 'github-actions[bot]':
-        return mapping["docker_images"]["owner"]
-    else:
-        return mapping.get(name, name)
+        if name == 'github-actions[bot]':
+            return mapping["docker_images"]["owner"]
+        else:
+            return mapping["names"].get(name, name)

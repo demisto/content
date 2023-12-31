@@ -55,7 +55,7 @@ LOOK_BACK_HOURS = 48
 
 def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
-    parser.add_argument('-n', '--name-mapping', help='Path to name mapping file.', required=True)
+    parser.add_argument('-n', '--name-mapping_path', help='Path to name mapping file.', required=True)
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
     parser.add_argument('-p', '--pipeline_id', help='The pipeline id to check the status of', required=True)
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
@@ -326,13 +326,13 @@ def construct_slack_msg(triggering_workflow: str,
                         shame_message: tuple[str, str, str] | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
-    if shame_message:
-        shame_title, shame_value = shame_message
-        content_fields.append({
-            "title": shame_title,
-            "value": shame_value,
-            "short": False
-        })
+    # if shame_message:
+    #     shame_title, shame_value, color = shame_message
+    #     content_fields.append({
+    #         "title": shame_title,
+    #         "value": shame_value,
+    #         "short": False
+    #     })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
@@ -530,7 +530,7 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+    if True:
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
@@ -543,7 +543,7 @@ def main():
             name, email, pr = shame(pivot_commit)
             if name == 'content-bot':
                 name = get_reviewer(pr)
-            name = get_slack_user_name(name, options.name_mapping)
+            name = get_slack_user_name(name, options.name_mapping_path)
             msg = "broke" if pipeline_changed_status else "fixed" 
             color = "danger" if pipeline_changed_status else "good"  
             emoji = ":cry:" if pipeline_changed_status else ":muscle:"
