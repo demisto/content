@@ -32,7 +32,7 @@ alter
     xdm.target.ipv4 = to_string(dst_ipv4),
     xdm.target.ipv6 = to_string(dst_ipv6),
     xdm.target.host.device_id = trim(json_extract(destination_asset,"$.vm_id"),"\""),
-    xdm.target.host.hostname = json_extract(destination_asset,"$.vm.name"),
+    xdm.target.host.hostname = trim(json_extract(destination_asset,"$.vm.name"),"\""),
     xdm.target.zone = trim(json_extract(destination_asset,"$.vm.full_name"),"\""),
     xdm.target.is_internal_ip = to_boolean(json_extract(destination_asset,"$.is_inner")),
     xdm.target.location.country = trim(json_extract(destination_asset,"$.country"),"\""),
