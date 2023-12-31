@@ -698,7 +698,7 @@ def test_get_site_id_raise_error_invalid_site_name(
         - The function is called with the invalid site name
 
     Then:
-        - Ensure a DemistoException is raised 
+        - Ensure a DemistoException is raised
         - With error message that the site was not found and to provide valid site name/ID
     """
     authorization_mock(requests_mock)

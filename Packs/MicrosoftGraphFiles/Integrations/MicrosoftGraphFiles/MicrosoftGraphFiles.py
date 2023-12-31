@@ -158,7 +158,7 @@ class MsGraphClient:
 
         Args:
             site_id: The ID of the site to list permissions for.
-            permission_id: The unique identifier for the permission to retrieve. 
+            permission_id: The unique identifier for the permission to retrieve.
                 When not provided, a list of all permissions is returned.
 
         Returns:
@@ -197,7 +197,7 @@ class MsGraphClient:
 
     def delete_site_permission(self, site_id: str, permission_id: str) -> requests.Response:
         """
-        We will always receive a 204 status code when attempting to remove a permission, 
+        We will always receive a 204 status code when attempting to remove a permission,
         even if the specified permission ID does not exist in the permission list.
         """
         url_suffix = f"/sites/{site_id}/permissions/{permission_id}"
