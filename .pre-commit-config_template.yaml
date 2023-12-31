@@ -7,10 +7,13 @@ repos:
   - id: check-json
   - id: check-yaml
   - id: check-ast
+    min_py_version: "3.7"
   - id: check-merge-conflict
   - id: debug-statements
     language_version: python3
+    min_py_version: "3.7"
   - id: name-tests-test
+    min_py_version: "3.7"
     files: .+_test.py$
 - repo: https://github.com/python-poetry/poetry
   rev: 1.6.1
@@ -31,22 +34,28 @@ repos:
   rev: v2.1.2
   hooks:
   - id: pycln
+    min_py_version: "3.7"
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: v0.0.272
   hooks:
   - id: ruff
+    min_py_version: "3.7"
     args:
     - --fix
     args:nightly:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
+
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: v2.0.4
   hooks:
   - id: autopep8
+    exclude_support_level:ci: ["community"]
+    exclude_support_level:nightly: ["community"]
+
 - repo: local
   hooks:
   - id: pylint-in-docker
@@ -83,16 +92,21 @@ repos:
     language: docker
     files: Packs\/.*_test\.py$
     exclude: test_data
+    env:
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
     - /src/Tests/scripts/script_runner.py
+    - coverage
+    - run
+    - -p
+    - --source=.
+    - -m
     - pytest
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
-    - --cov=.
-    - --cov-report=
     - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
@@ -131,6 +145,7 @@ repos:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
     split_by_object: true
+
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
@@ -138,6 +153,7 @@ repos:
     language: script
     pass_filenames: false
     skip:commit: true
+
   - id: is-gitlab-changed
     name: is-gitlab-changed
     description: Checks if gitlab files are changed, and checkout to current if it is.
@@ -168,6 +184,7 @@ repos:
     language: system
     pass_filenames: false
     require_serial: true
+
   - id: secrets
     name: secrets
     description: Check for secrets in files.
@@ -176,6 +193,7 @@ repos:
     - --ignore-entropy
     pass_filenames: false
     language: system
+
   - id: update-additional-dependencies
     name: update-additional-dependencies
     entry: update-additional-dependencies
@@ -186,6 +204,7 @@ repos:
     args:
     - --pre_commit_config
     - .pre-commit-config_template.yaml
+
   - id: merge-pytest-reports
     name: merge-pytest-reports
     entry: merge-pytest-reports
@@ -194,6 +213,7 @@ repos:
     pass_filenames: false
     needs:
     - pytest-in-docker
+
   - id: coverage-analyze
     name: coverage-analyze
     entry: demisto-sdk coverage-analyze
@@ -220,10 +240,12 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
   - id: sourcery
+    config_file: .sourcery.yaml
     args:
     - --no-summary
     - --diff
@@ -238,10 +260,12 @@ repos:
     - --diff
     - git diff HEAD
     skip: true
+
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
   - id: mypy
+    min_py_version: "3.7"
     args:
     - --ignore-missing-imports
     - --check-untyped-defs
