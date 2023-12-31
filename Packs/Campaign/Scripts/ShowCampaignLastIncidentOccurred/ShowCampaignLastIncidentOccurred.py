@@ -49,18 +49,17 @@ def main():
             and (last_incident_occurred := get_last_incident_occurred(incident_ids))
         ):
             last_incident_occurred = get_last_incident_occurred(incident_ids)
-            html_readable_output = f"<div style='text-align:center; font-size:17px; padding: 15px;'>" \
-                                   f"Last Incident Occurred</br> <div style='font-size:24px;'> " \
-                                   f"{last_incident_occurred} </div></div>"
+            html_readable_output = last_incident_occurred
 
         else:
-            html_readable_output = "<div style='text-align:center; font-size:17px; padding: 15px;'>" \
-                                   "Last Incident Occurred</br> <div style='font-size:20px;'> " \
-                                   "No last incident occurred found. </div></div>"
+            html_readable_output = "No last incident occurred found."
 
         return_results(CommandResults(
             content_format='html',
-            raw_response=html_readable_output
+            raw_response=(
+                "<div style='text-align:center; font-size:17px; padding: 15px;'>"
+                "Last Incident Occurred</br> <div style='font-size:24px;'> "
+                f"{html_readable_output} </div></div>")
         ))
 
     except Exception as err:
