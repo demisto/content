@@ -2,9 +2,6 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - display: Host - IP (x.x.x.x)
   name: host
@@ -111,8 +108,6 @@ configuration:
   - Incoming And Outgoing
   type: 15
   section: Collect
-  hidden:
-  - marketplacev2
   required: false
 - additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
@@ -121,8 +116,6 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-  hidden:
-  - marketplacev2
   required: false
 - display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
   name: close_extra_labels
@@ -143,8 +136,6 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-  hidden:
-  - marketplacev2
   additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
   defaultvalue: 'false'
   required: false
@@ -173,6 +164,7 @@ configuration:
   displaypassword: HEC Token (HTTP Event Collector)
   hiddenusername: true
   required: false
+  display: ''
 - display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   type: 4
@@ -298,6 +290,12 @@ configuration:
   type: 0
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a comment to Splunk.
+- additionalinfo: Test configuration
+  defaultvalue: 'false'
+  display: Debug logging enabled
+  name: debug_log
+  required: false
+  type: 8
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -547,8 +545,7 @@ script:
       description: List of collections.
       type: String
   - arguments:
-    - default: true
-      defaultValue: search
+    - defaultValue: search
       description: The name of the Splunk application that contains the KV store collection. The default is "search".
       name: app_name
       required: true
@@ -556,15 +553,20 @@ script:
       isArray: true
       name: kv_store_collection_name
       required: true
-    - defaultValue: '50'
-      description: Maximum number of records to return. The default is 50.
+    - defaultValue: '100'
+      description: Maximum number of records to return.
       name: limit
+    - description: New argument for testing
+      name: new_arg
     description: Lists all data within a specific KV store collection or collections.
     name: splunk-kv-store-collection-data-list
     outputs:
     - contextPath: Splunk.KVstoreData
       description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection).
       type: Unknown
+    - contextPath: Splunk.Test
+      description: Test output
+      type: string
   - arguments:
     - default: true
       defaultValue: search
@@ -608,7 +610,7 @@ script:
     name: splunk-kv-store-collection-search-entry
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection.
+      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection).
       type: Unknown
   - arguments:
     - default: true
@@ -666,6 +668,20 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
+  - arguments:
+    - default: true
+      defaultValue: DEFAULT
+      name: some_arg
+      required: true
+    description: A new test command
+    name: splunkt-test-cmd
+    outputs:
+    - contextPath: Splunk.Test.Output
+      description: Some sample test output
+      type: string
+    - contextPath: Splunk.Test.Date
+      description: Some sample test output date
+      type: date
   dockerimage: demisto/splunksdk-py3:1.0.0.83421
   isfetch: true
   ismappable: true
@@ -674,6 +690,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  runonce: false
 tests:
 - SplunkPySearch_Test_default_handler
 - SplunkPy-Test-V2_default_handler
