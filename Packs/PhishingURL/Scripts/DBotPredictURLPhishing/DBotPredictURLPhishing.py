@@ -9,6 +9,7 @@ import copy
 import numpy as np
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
+import yaml
 
 dill.settings['recurse'] = True
 
@@ -43,14 +44,14 @@ KEY_CURRENT_URL_RASTERIZE = 'current_url'
 MSG_MISSING_INFORMATION_RASTERIZE = f"Missing required Rastarize data ({KEY_IMAGE_HTML} / {KEY_IMAGE_RASTERIZE})."
 MSG_SOMETHING_WRONG_IN_RASTERIZE = "Something went wrong with rasterize"
 MSG_ENABLE_WHOIS = "Please enable whois integration for more accurate prediction"
-MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: %s.%s"
+MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: {}.{}"
 MSG_NO_MODEL_IN_DEMISTO = "There is no existing model version in demisto"
 MSG_NO_URL_GIVEN = "Please input at least one URL"
 MSG_FAILED_RASTERIZE = "Rasterize error: ERR_NAME_NOT_RESOLVED"
 MSG_FAILED_RASTERIZE_TIMEOUT = "Timeout rasterize"
 MSG_IMPOSSIBLE_CONNECTION = "Failed to establish a new connection - Name or service not known"
-MSG_UPDATE_MODEL = "Update demisto model from docker model version %s.%s"
-MSG_UPDATE_LOGO = "Update demisto model from docker model version %s.%s and transfering logos from demisto version %s.%s"
+MSG_UPDATE_MODEL = "Update demisto model from docker model version {}.{}"
+MSG_UPDATE_LOGO = "Update demisto model from docker model version {}.{} and transfering logos from demisto version {}.{}"
 MSG_WRONG_CONFIG_MODEL = 'Wrong configuration of the model'
 MSG_NO_ACTION_ON_MODEL = "Use current model"
 MSG_WHITE_LIST = "White List"
@@ -61,7 +62,7 @@ URL_PHISHING_MODEL_NAME = "url_phishing_model"
 OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 THRESHOLD_NEW_DOMAIN_MONTHS = 6
-DOMAIN_AGE_KEY = 'New domain (less than %s months)' % str(THRESHOLD_NEW_DOMAIN_MONTHS)
+DOMAIN_AGE_KEY = f'New domain (less than {THRESHOLD_NEW_DOMAIN_MONTHS} months)'
 
 MALICIOUS_VERDICT = "Malicious"
 BENIGN_VERDICT = "Benign"
@@ -75,13 +76,13 @@ SUSPICIOUS_THRESHOLD = 0.7
 SCORE_INVALID_URL = -1.0
 SCORE_BENIGN = 0.0  # type: float
 
-GREEN_COLOR = "{{color:#1DB846}}(%s)" if NEW_DEMISTO_VERSION else "**%s**"
-RED_COLOR = "{{color:#D13C3C}}(%s)" if NEW_DEMISTO_VERSION else "**%s**"
+GREEN_COLOR = "{{color:#1DB846}}({})" if NEW_DEMISTO_VERSION else "**{}**"
+RED_COLOR = "{{color:#D13C3C}}({})" if NEW_DEMISTO_VERSION else "**{}**"
 
-VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**%s**)" if NEW_DEMISTO_VERSION else "**%s**"
-VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**%s**)" if NEW_DEMISTO_VERSION else "**%s**"
-VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**%s**)" if NEW_DEMISTO_VERSION else "**%s**"
-VERDICT_ERROR_COLOR = "{{color:#D13C3C}}(**%s**)" if NEW_DEMISTO_VERSION else "**%s**"
+VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**{}**)" if NEW_DEMISTO_VERSION else "**{}**"
+VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**{}**)" if NEW_DEMISTO_VERSION else "**{}**"
+VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**{}**)" if NEW_DEMISTO_VERSION else "**{}**"
+VERDICT_ERROR_COLOR = "{{color:#D13C3C}}(**{}**)" if NEW_DEMISTO_VERSION else "**{}**"
 MAPPING_VERDICT_COLOR = {MALICIOUS_VERDICT: VERDICT_MALICIOUS_COLOR, BENIGN_VERDICT: VERDICT_BENIGN_COLOR,
                          SUSPICIOUS_VERDICT: VERDICT_SUSPICIOUS_COLOR, BENIGN_VERDICT_WHITELIST: VERDICT_BENIGN_COLOR}
 
@@ -108,8 +109,8 @@ KEY_CONTENT_DBOT_SCORE = 'DBotScore'
 
 KEY_HR_DOMAIN = "Domain"
 KEY_HR_URL = 'Url'
-KEY_HR_SEO = "Search engine optimisation"
-KEY_HR_LOGIN = "Is there a Login form ?"
+KEY_HR_SEO = "Search engine optimization"
+KEY_HR_LOGIN = "Is there a Login form?"
 KEY_HR_LOGO = "Suspicious use of company logo"
 KEY_HR_URL_SCORE = "URL severity score (from 0 to 1)"
 
@@ -118,14 +119,16 @@ KEY_CONTENT_SUMMARY_FINAL_VERDICT = 'FinalVerdict'
 
 KEY_FINAL_VERDICT = "Final Verdict"
 
-WEIGHT_HEURISTIC = {DOMAIN_AGE_KEY: 3, MODEL_KEY_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
-                    MODEL_KEY_URL_SCORE: 2, MODEL_KEY_LOGO_FOUND: 1}
+WEIGHT_HEURISTIC = {
+    DOMAIN_AGE_KEY: 3, MODEL_KEY_LOGIN_FORM: 1, MODEL_KEY_SEO: 1,
+    MODEL_KEY_URL_SCORE: 2, MODEL_KEY_LOGO_FOUND: 1
+}
 
 MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
-    MODEL_KEY_SEO: {True: RED_COLOR % 'Bad', False: GREEN_COLOR % 'Good'},
-    MODEL_KEY_LOGO_FOUND: {True: RED_COLOR % 'Suspicious', False: GREEN_COLOR % 'Not Suspicious'},
-    MODEL_KEY_LOGIN_FORM: {True: RED_COLOR % 'Yes', False: GREEN_COLOR % 'No'},
-    DOMAIN_AGE_KEY: {True: RED_COLOR % 'Less than 6 months ago', False: GREEN_COLOR % 'More than 6 months ago',
+    MODEL_KEY_SEO: {True: RED_COLOR.format('Bad'), False: GREEN_COLOR.format('Good')},
+    MODEL_KEY_LOGO_FOUND: {True: RED_COLOR.format('Suspicious'), False: GREEN_COLOR.format('Not Suspicious')},
+    MODEL_KEY_LOGIN_FORM: {True: RED_COLOR.format('Yes'), False: GREEN_COLOR.format('No')},
+    DOMAIN_AGE_KEY: {True: RED_COLOR.format('Less than 6 months ago'), False: GREEN_COLOR.format('More than 6 months ago'),
                      None: None}
 }  # type: Dict
 
@@ -144,11 +147,11 @@ def get_model_data(model_name: str):
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
     if is_error(res_model):
-        raise DemistoException("Error reading model %s from Demisto" % model_name)
+        raise DemistoException(f"Error reading model {model_name} from Demisto")
     else:
         model_data = res_model['Contents']['modelData']
         try:
-            model_type = res_model['Contents']['model']["type"]["type"]
+            model_type = res_model['Contents']['model']['type']['type']
             return model_data, model_type
         except Exception:
             return model_data, UNKNOWN_MODEL_TYPE
@@ -201,7 +204,7 @@ def load_oob_model(path: str):
                                                        OOB_MINOR_VERSION_INFO_KEY: MINOR_DEFAULT_VERSION}})
     if is_error(res):
         raise DemistoException(get_error(res))
-    return MSG_UPDATE_MODEL % (MAJOR_VERSION, MINOR_DEFAULT_VERSION)
+    return MSG_UPDATE_MODEL.format(MAJOR_VERSION, MINOR_DEFAULT_VERSION)
 
 
 def oob_model_exists_and_updated() -> tuple[bool, int, int, str]:
@@ -315,12 +318,11 @@ def return_entry_summary(pred_json: dict, url: str, whitelist: bool, output_rast
         verdict = BENIGN_VERDICT
     if whitelist or not pred_json:
         url_score = SCORE_BENIGN
-        url_score_colored = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(
+        url_score_colored = GREEN_COLOR.format(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR.format(
             url_score)
     else:
         url_score = round(pred_json[MODEL_KEY_URL_SCORE], 2)
-        url_score_colored = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(
-            url_score)  # type: ignore
+        url_score_colored = GREEN_COLOR.format(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR.format(url_score)
     pred_json_colored = get_colored_pred_json(pred_json) if pred_json else {}
     domain = extract_domainv2(url)
     explain = {
@@ -355,7 +357,7 @@ def return_entry_summary(pred_json: dict, url: str, whitelist: bool, output_rast
         return_entry = {
             "Type": entryTypes["note"],
             "ContentsFormat": formats['json'],
-            "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
+            "HumanReadable": tableToMarkdown(f"Phishing prediction evidence | {domain}", explain_hr),
             "Contents": explain,
             "EntryContext": {'DBotPredictURLPhishing': explain}
         }
@@ -363,7 +365,7 @@ def return_entry_summary(pred_json: dict, url: str, whitelist: bool, output_rast
         return_entry = {
             "Type": entryTypes["note"],
             "ContentsFormat": formats['json'],
-            "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
+            "HumanReadable": tableToMarkdown(f"Phishing prediction evidence | {domain}", explain_hr),
             "Contents": explain,
             "EntryContext": {'DBotPredictURLPhishing': explain, KEY_CONTENT_DBOT_SCORE: context_DBot_score},
             "Tags": ['DBOT_URL_PHISHING_MALICIOUS']
@@ -484,97 +486,116 @@ def extract_created_date(entry_list: list):
     return None
 
 
-def get_prediction_single_url(model, url, force_model, who_is_enabled, debug, rasterize_timeout):
-    is_white_listed = False
-    # Rasterize html and image
-    res_rasterize = demisto.executeCommand('rasterize', {'type': 'json',
-                                                         'url': url,
-                                                         'wait_time': WAIT_TIME_RASTERIZE,
-                                                         'execution-timeout': rasterize_timeout
-                                                         })
-
-    demisto.debug('Rasterize Data: ' + json.dumps(res_rasterize))
-
+def validate_rasterize(res_rasterize: list[dict]):
     if is_error(res_rasterize):
-        demisto.debug(f'Rasterize Error: {res_rasterize}')
-        error = get_error(res_rasterize)
-
-        if 'disabled' in error or 'enabled' in error:
-            raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
-
-        elif 'timeout' in error:
-            return create_dict_context(url, url, MSG_FAILED_RASTERIZE_TIMEOUT, {}, SCORE_INVALID_URL, is_white_listed, {})
-
-        elif 'ERR_NAME_NOT_RESOLVED' in error:
-            return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
-
-        else:
-            return create_dict_context(url, url, error, {}, SCORE_INVALID_URL, is_white_listed, {})
-
-    if len(res_rasterize) > 0 and isinstance(res_rasterize[0]['Contents'], str):
-        return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
-
-    if not all((res_rasterize[0]['Contents'].get(KEY_IMAGE_RASTERIZE), res_rasterize[0]['Contents'].get(KEY_IMAGE_HTML))):
-        return create_dict_context(url, url, MSG_MISSING_INFORMATION_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
-
-    if len(res_rasterize) > 0:
-        output_rasterize = res_rasterize[0]['Contents']
-
-    else:
-        create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
-
-    if KEY_CURRENT_URL_RASTERIZE not in output_rasterize.keys():
+        error = yaml.safe_dump(get_error(res_rasterize))
+        raise DemistoException(f'Rasterize on URLs returned an error:\n{error}')
+    if any(
+        isinstance(res['Contents'], str)
+        or not (
+            res['Contents'].get(KEY_IMAGE_RASTERIZE)
+            and res['Contents'].get(KEY_IMAGE_HTML)
+        )
+        for res in res_rasterize
+    ):
+        raise DemistoException('Rasterize failed. Response is missing fields')
+    if any(KEY_CURRENT_URL_RASTERIZE not in res['Contents'] for res in res_rasterize):
         raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
 
-    # Get final url and redirection
-    final_url = output_rasterize.get(KEY_CURRENT_URL_RASTERIZE, url)
 
-    url_redirect = f'{url} -> {final_url}   ({MSG_REDIRECT})' if final_url != url else final_url
+def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
+    # res_rasterize: list[dict] = demisto.executeCommand(  # type: ignore
+    #     'rasterize',
+    #     {
+    #         'type': 'json',
+    #         'url': urls,
+    #         'wait_time': WAIT_TIME_RASTERIZE,
+    #         'execution-timeout': rasterize_timeout
+    #     }
+    # )
+    # demisto.debug(f'Rasterize Data: {res_rasterize}')
+    # validate_rasterize(res_rasterize)
+    # return [res['Contents'] for res in res_rasterize]
+
+    # --- TEMP --- #
+    results = []
+    for url in urls:
+        res = [
+            demisto.executeCommand(
+                'rasterize',
+                {
+                    'type': 'json',
+                    'url': url,
+                    'wait_time': WAIT_TIME_RASTERIZE,
+                    'execution-timeout': rasterize_timeout
+                }
+            )
+        ]
+        demisto.debug(f'Rasterize Data: {res}')
+        validate_rasterize(res)
+        results.append(res[0]['Contents'])
+    return results
+
+
+def get_whois_verdict(domains: list[dict]) -> list:
+
+    if isCommandAvailable('whois'):
+        try:
+            return demisto.executeCommand('whois', {'query': domains, 'execution-timeout': 5})  # type: ignore
+        except Exception as e:
+            demisto.debug(str(e))
+    else:
+        return_results(MSG_ENABLE_WHOIS)
+    return []
+
+
+def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout):
+
+    rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
+
+    # Get final url and redirection
+    final_urls = [res[KEY_CURRENT_URL_RASTERIZE] for res in rasterize_outputs]
 
     # Check domain age from WHOIS command
-    domain = extract_domainv2(final_url)
+    domains = list(map(extract_domainv2, final_urls))
 
-    # Check is domain in white list -  If yes we don't run the model
-    if in_white_list(model, final_url):
-        if not force_model:
+    whois_results = get_whois_verdict(domains)  # plural
+
+    results = []
+    for url, final_url, res_whois, output_rasterize in zip(urls, final_urls, whois_results, rasterize_outputs):
+        url_redirect = f'{url} -> {final_url}   ({MSG_REDIRECT})' if final_url != url else final_url
+
+        # Check is domain in white list -  If yes we don't run the model
+        if in_white_list(model, final_url):
             is_white_listed = True
-            return create_dict_context(url_redirect, final_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
+            if not force_model:
+                return create_dict_context(url_redirect, final_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
         else:
-            is_white_listed = True
+            is_white_listed = False
 
-    res_whois = []
+        x_pred = create_x_pred(output_rasterize, final_url)
 
-    if who_is_enabled:
-        try:
-            res_whois = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5})
+        pred_json = model.predict(x_pred)
 
-        except Exception:
-            res_whois = []
+        if debug:
+            return_results(pred_json['debug_top_words'])
+            return_results(pred_json['debug_found_domains_list'])
+            return_results(pred_json['seo'])
+            return_results(pred_json['debug_image'])
 
-    is_new_domain = extract_created_date(res_whois)
+        pred_json[DOMAIN_AGE_KEY] = extract_created_date(res_whois)
 
-    x_pred = create_x_pred(output_rasterize, final_url)
-
-    pred_json = model.predict(x_pred)
-
-    if debug:
-        return_results(pred_json['debug_top_words'])
-        return_results(pred_json['debug_found_domains_list'])
-        return_results(pred_json['seo'])
-        return_results(pred_json['debug_image'])
-
-    pred_json[DOMAIN_AGE_KEY] = is_new_domain
-
-    score, verdict = get_verdict(pred_json, is_white_listed)
-    return create_dict_context(url_redirect, final_url, verdict, pred_json, score, is_white_listed, output_rasterize)
+        score, verdict = get_verdict(pred_json, is_white_listed)
+        results.append(create_dict_context(url_redirect, final_url, verdict, pred_json, score, is_white_listed, output_rasterize))
+    return results
 
 
 def return_general_summary(results, tag="Summary"):
     df_summary = pd.DataFrame()
     df_summary['URL'] = [x.get('url_redirect') for x in results]
-    df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')] % x.get('verdict')
+    df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')].format(x.get('verdict'))
                                      if x.get('verdict') in MAPPING_VERDICT_COLOR
-                                     else VERDICT_ERROR_COLOR % x.get('verdict') for x in results]
+                                     else VERDICT_ERROR_COLOR.format(x.get('verdict')) for x in results]
     summary_context = [
         {KEY_CONTENT_SUMMARY_URL: x.get('url_redirect'), KEY_CONTENT_SUMMARY_FINAL_VERDICT: BENIGN_VERDICT,
          KEY_CONTENT_IS_WHITELISTED: 'True'} for x in results if x.get('is_white_listed')]
@@ -597,6 +618,7 @@ def return_detailed_summary(results, reliability: str):
     outputs = []
     severity_list = [x.get('score') for x in results]
     indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
+    sorted_results = sorted(results, reverse=True, key=lambda x: x['score'])
     for i in range(len(results)):
         index = indice_descending_severity[i]
         if results[index].get('score') == SCORE_INVALID_URL:
@@ -608,8 +630,7 @@ def return_detailed_summary(results, reliability: str):
         output_rasterize = results[index].get('output_rasterize')
         summary_json = return_entry_summary(pred_json, url, is_white_listed, output_rasterize, verdict, reliability)
         outputs.append(summary_json)
-        outputs = [x for x in outputs if x]
-    return outputs
+    return list(filter(None, outputs))
 
 
 def save_model_in_demisto(model):
@@ -671,7 +692,7 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     if email_body:
         urls_email_body = extract_urls(email_body)
     else:
-        if not email_body and email_html:
+        if email_html:
             urls_email_body = extract_urls(BeautifulSoup(email_html).get_text())
         else:
             urls_email_body = []
@@ -690,7 +711,7 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
         return_results(MSG_NO_URL_GIVEN)
         return [], msg_list
     urls = get_final_urls(urls, max_urls, model)
-    urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
+    urls = [res['Contents'] for res in demisto.executeCommand("UnEscapeURLs", {"input": urls})]  # type: ignore
     if debug:
         return_results(urls)
     return urls, msg_list
@@ -716,7 +737,7 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
                           model_data):
     if debug:
         if exist:
-            msg_list.append(MSG_MODEL_VERSION_IN_DEMISTO % (demisto_major_version, demisto_minor_version))
+            msg_list.append(MSG_MODEL_VERSION_IN_DEMISTO.format(demisto_major_version, demisto_minor_version))
         else:
             msg_list.append(MSG_NO_MODEL_IN_DEMISTO)
 
@@ -737,7 +758,7 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
         model_docker = update_model_docker_from_model(model_docker, model)
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
-        msg_list.append(MSG_UPDATE_LOGO % (MAJOR_VERSION, model_docker_minor, model.major, model.minor))
+        msg_list.append(MSG_UPDATE_LOGO.format(MAJOR_VERSION, model_docker_minor, model.major, model.minor))
         model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
         model = decode_model_data(model_64_str)
     else:
@@ -746,25 +767,9 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
     return model, msg_list
 
 
-def check_if_whois_installed():
-    try:
-        demisto.executeCommand('whois', {'query': DOMAIN_CHECK_RASTERIZE, 'execution-timeout': 5
-                                         })
-        return True
-    except ValueError:
-        return_results(MSG_ENABLE_WHOIS)
-        return False
-
 @timeit
 def main():
-    who_is_enabled = check_if_whois_installed()
     try:
-        msg_list = []  # type: List
-
-        # Check existing version of the model in demisto
-        exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
-
-        # Load arguments
         args = demisto.args()
         reset_model = args.get('resetModel', 'False') == 'True'
         debug = args.get('debug', 'False') == 'True'
@@ -777,6 +782,11 @@ def main():
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
             args.get("reliability", DBotScoreReliability.A_PLUS)
         )
+    
+        msg_list = []
+
+        # Check existing version of the model in demisto
+        exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
 
         # Update model if necessary and load the model
         model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version,
@@ -786,9 +796,9 @@ def main():
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
         if not urls:
             return None
-
+        
         # Run the model and get predictions
-        results = [get_prediction_single_url(model, x, force_model, who_is_enabled, debug, rasterize_timeout) for x in urls]
+        results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
 
         # Return outputs
         general_summary = return_general_summary(results)
