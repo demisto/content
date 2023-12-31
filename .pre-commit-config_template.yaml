@@ -48,7 +48,6 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-    fixable: true
 
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: v2.0.4
@@ -56,7 +55,6 @@ repos:
   - id: autopep8
     exclude_support_level:ci: ["community"]
     exclude_support_level:nightly: ["community"]
-    fixable: true
 
 - repo: local
   hooks:
@@ -203,7 +201,6 @@ repos:
     files: poetry.lock
     require_serial: true
     pass_filenames: false
-    fixable: true
     args:
     - --pre_commit_config
     - .pre-commit-config_template.yaml
@@ -248,6 +245,7 @@ repos:
   rev: v1.6.0
   hooks:
   - id: sourcery
+    config_file: .sourcery.yaml
     args:
     - --no-summary
     - --diff
