@@ -203,6 +203,9 @@
             "fromversion": "6.11.0"
         },
         {
+            "playbookID": "IsIntegrationAvailable - Test"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
@@ -1920,7 +1923,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
-            "memory_threshold": 100,
+            "memory_threshold": 250,
             "instance_names": "use_default_handler",
             "is_mockable": false
         },
