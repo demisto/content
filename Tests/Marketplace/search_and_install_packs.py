@@ -539,10 +539,10 @@ def search_pack_and_its_dependencies(client: demisto_client,
         if not multithreading:
             if list_packs_and_its_dependency_install_request_body is None:
                 list_packs_and_its_dependency_install_request_body = []
-            pack_and_its_dependencies = []
+            pack_and_its_dependencies = {}
             for p in current_packs_to_install:
                 if p['id'] not in collected_dependencies:
-                    pack_and_its_dependencies.append({p['id']: p})
+                    pack_and_its_dependencies.update({p['id']: p})
                 else:
                     logging.info(f"#########################  {p=}")
             
