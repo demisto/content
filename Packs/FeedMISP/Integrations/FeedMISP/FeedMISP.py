@@ -338,15 +338,16 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
 
 
 def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]:
-    params_dict['page'] = 0
+    params_dict['page'] = 1
     response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
-    while True:
-        params_dict['page'] += 1
+    next_page_exist = True
+    while next_page_exist:
         search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
         demisto.debug(f'search_query_per_page:{params_dict["page"]} {search_query_per_page}')
         if not len(search_query_per_page):
-            break
+            next_page_exist = False
         response['response']['Attribute'].extend(search_query_per_page)
+        params_dict['page'] += 1
     return response
 
 
@@ -364,7 +365,6 @@ def fetch_indicators(client: Client,
     if limit and limit not in params_dict:
         params_dict['limit'] = limit
     response = search_query_indicators_pagination(client, params_dict) if is_fetch else client.search_query(params_dict)
-    demisto.debug(f'fetch_indicators response: {response}')
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
     indicators_iterator = build_indicators_iterator(response, url)
@@ -396,7 +396,6 @@ def fetch_indicators(client: Client,
         create_and_add_relationships(indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)
-    demisto.debug(f'{indicators}')
     return indicators
 
 
@@ -540,10 +539,9 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     feed_tags = argToList(params.get("feedTags", []))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
-    demisto.debug("fetch_indicators starts")
+    demisto.debug(f"fetch_indicators starts using the params: {params}")
     indicators = fetch_indicators(client, tags, attribute_type,
                                   query, tlp_color, params.get('url'), reputation, feed_tags, limit, False)
-    demisto.debug("fetch_indicators finished")
     hr_indicators = []
     for indicator in indicators:
         hr_indicators.append({
@@ -606,7 +604,7 @@ def main():
             return_results(test_module(client))
         elif command == 'misp-feed-get-indicators':
             return_results(get_attributes_command(client, args, params))
-        elif command == 'fetch-indicators':         
+        elif command == 'fetch-indicators':
             indicators = fetch_attributes_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
