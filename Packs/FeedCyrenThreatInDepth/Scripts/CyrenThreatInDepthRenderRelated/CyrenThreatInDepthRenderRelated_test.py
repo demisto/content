@@ -94,7 +94,7 @@ def test_cyren_feed_relationship_wrong_columns(indicator, columns):
     """
     from CyrenThreatInDepthRenderRelated import cyren_feed_relationship
 
-    args = dict(indicator=indicator, columns=columns)
+    args = {"indicator": indicator, "columns": columns}
     with pytest.raises(ValueError):
         cyren_feed_relationship(args)
 
@@ -119,7 +119,7 @@ def test_cyren_feed_relationship_allowed_columns(mocker, indicator, columns):
     from CyrenThreatInDepthRenderRelated import cyren_feed_relationship
 
     mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
-    args = dict(indicator=indicator, columns=columns)
+    args = {"indicator": indicator, "columns": columns}
     cyren_feed_relationship(args)
 
 
@@ -135,7 +135,7 @@ def test_cyren_feed_relationship_with_search_response(mocker, indicator):
     """
     from CyrenThreatInDepthRenderRelated import cyren_feed_relationship
 
-    args = dict(indicator=indicator)
+    args = {"indicator": indicator}
     mocker.patch.object(demisto, "searchIndicators", return_value=SEARCH_INDICATORS_RESPONSE)
     result = cyren_feed_relationship(args)
 
@@ -160,7 +160,7 @@ def test_cyren_feed_relationship_with_search_response_other_columns(mocker, indi
     """
     from CyrenThreatInDepthRenderRelated import cyren_feed_relationship
 
-    args = dict(indicator=indicator, columns="Relationship Type,Indicator Type")
+    args = {"indicator": indicator, "columns": "Relationship Type,Indicator Type"}
     mocker.patch.object(demisto, "searchIndicators", return_value=SEARCH_INDICATORS_RESPONSE)
     result = cyren_feed_relationship(args)
 
@@ -181,7 +181,7 @@ def test_cyren_feed_relationship_without_search_response(mocker, indicator):
     """
     from CyrenThreatInDepthRenderRelated import cyren_feed_relationship
 
-    args = dict(indicator=indicator)
+    args = {"indicator": indicator}
     mocker.patch.object(demisto, "searchIndicators", return_value=SEARCH_INDICATORS_EMPTY_RESPONSE)
     result = cyren_feed_relationship(args)
 
