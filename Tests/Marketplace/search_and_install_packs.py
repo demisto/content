@@ -533,17 +533,20 @@ def search_pack_and_its_dependencies(client: demisto_client,
                 logging.critical(f"Pack '{pack_id}' depends on pack '{dependency_id}' which is a deprecated pack.")
                 return False
             current_packs_to_install.append(dependency)
-            logging.info(f"#########################  {current_packs_to_install=}")
+    logging.info(f"#########################  {current_packs_to_install=}")
 
     with lock:
         if not multithreading:
             if list_packs_and_its_dependency_install_request_body is None:
                 list_packs_and_its_dependency_install_request_body = []
-            if pack_and_its_dependencies := {
-                p['id']: p
-                for p in current_packs_to_install
-                if p['id'] not in collected_dependencies
-            }:
+            pack_and_its_dependencies = []
+            for p in current_packs_to_install:
+                if p['id'] not in collected_dependencies:
+                    pack_and_its_dependencies.append({p['id']: p})
+                else:
+                    logging.info(f"#########################  {p=}")
+            logging.info(f"#########################{collected_dependencies=}")            
+            if pack_and_its_dependencies:
                 collected_dependencies += pack_and_its_dependencies
                 pack_and_its_dependencies_as_list = [
                     get_pack_installation_request_data(pack_id=pack['id'],
