@@ -103,10 +103,11 @@ Describe "Validating ArgToInteger" {
 }
 
 Describe 'TestModule' {
-    It 'Returns ok on success' {
-        $global:Session = New-PSSession
-        Mock Invoke-Command { return @() }
+    BeforeAll {
+            Mock Invoke-Command { return @() }
+        }
 
+    It 'Returns ok on success' {
         TestModule | Should -Be 'ok'
     }
 
