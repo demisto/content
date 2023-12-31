@@ -28,7 +28,7 @@ class Client(AkamaiGuardicoreClient):
     """
 
     def get_assets(self, url_params: dict):
-        data = self._http_request(
+        data = self.http_request(
             method='GET',
             url_suffix='/assets',
             params=url_params,
@@ -37,7 +37,7 @@ class Client(AkamaiGuardicoreClient):
         return data
 
     def get_incident(self, url_params: str):
-        data = self._http_request(
+        data = self.http_request(
             method='GET',
             url_suffix=f'/incidents/{url_params}',
             timeout=GLOBAL_TIMEOUT
@@ -45,7 +45,7 @@ class Client(AkamaiGuardicoreClient):
         return data
 
     def get_incidents(self, url_params: dict):
-        data = self._http_request(
+        data = self.http_request(
             method='GET',
             url_suffix='/incidents',
             params=url_params,
@@ -107,32 +107,22 @@ def map_guardicore_os(os: int) -> str:
 
 
 def test_module(client: Client, is_fetch: bool = False) -> str:
-    message: str = ''
-    try:
-        one_day = parse("1 days")
-        assert one_day is not None
-        from_time = int(
-            one_day.replace(tzinfo=utc).timestamp()) * 1000
-        now = parse("now")
-        assert now is not None
-        to_time = int(
-            now.replace(tzinfo=utc).timestamp()) * 1000
-        client.get_incidents({"from_time": from_time, "to_time": to_time})
+    one_day = parse("1 days")
+    assert one_day is not None
+    from_time = int(
+        one_day.replace(tzinfo=utc).timestamp()) * 1000
+    now = parse("now")
+    assert now is not None
+    to_time = int(
+        now.replace(tzinfo=utc).timestamp()) * 1000
+    client.get_incidents({"from_time": from_time, "to_time": to_time})
 
-        if is_fetch:
-            fetch_incidents(client, {
-                'limit': 10,
-            })
+    if is_fetch:
+        fetch_incidents(client, {
+            "limit": 10,
+        })
 
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(
-                e):
-            message = 'Authorization Error: make sure your username and password are correctly set.'
-        else:
-            raise e
-
-    return message
+    return "ok"
 
 
 def get_incidents(client: Client, args: dict[str, Any]):
@@ -399,20 +389,17 @@ def main() -> None:
     password = params.get('credentials', {}).get('password')
     proxy = params.get('proxy', False)
     insecure = params.get('insecure', False)
-    client = Client(username=username, password=password,
-                    base_url=base_url, proxy=proxy, verify=(not insecure))
-    client.login()
     demisto.debug(f'Command being called is {demisto.command()}')
 
     # fetch incidents params
-    severity = params.get('severity', None)
+    severity = params.get('severity', [])
     if "All" in severity:
         severity = None
     elif severity:
         severity = ",".join(severity)
     source = params.get('source', None)
     destination = params.get('destination', None)
-    incident_type = params.get('incident_type', None)
+    incident_type = params.get('incident_type', [])
     if "All" in incident_type:
         incident_type = None
     elif incident_type:
@@ -424,7 +411,16 @@ def main() -> None:
 
     args = demisto.args()
     command = demisto.command()
+
     try:
+        client = Client(
+            username=username,
+            password=password,
+            base_url=base_url,
+            proxy=proxy,
+            verify=(not insecure)
+        )
+
         if command == 'test-module':
             return_results(test_module(client, params.get('isFetch', False)))
         elif command == 'fetch-incidents':

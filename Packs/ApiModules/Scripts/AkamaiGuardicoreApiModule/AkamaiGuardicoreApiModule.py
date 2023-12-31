@@ -1,3 +1,4 @@
+from requests import Response
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -27,6 +28,40 @@ class AkamaiGuardicoreClient(BaseClient):
         self.base_url = base_url
         self.access_token = ""
         self._headers = {}
+
+        self.login()
+
+    def http_request(
+        self,
+        method: str,
+        url_suffix: str,
+        params: Optional[dict] = None,
+        json_data: Optional[dict] = None,
+        timeout: Optional[int] = None,
+    ):
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            params=params,
+            json_data=json_data,
+            timeout=timeout,
+            error_handler=self._error_handler,
+        )
+
+    def _error_handler(self, res: Response):
+        err_msg = f"Error in API call [{res.status_code}] - {res.reason}\n"
+        try:
+            # Try to parse json error response
+            error_entry = res.json()
+            if "Invalid Credentials" in res.text:
+                err_msg = "Authorization Error: make sure your username and password are correctly set."
+            else:
+                err_msg += json.dumps(error_entry)
+            raise DemistoException(err_msg, res=res)
+
+        except ValueError:
+            err_msg += res.text
+            raise DemistoException(err_msg, res=res)
 
     def login(self):
         integration_context = get_integration_context()
@@ -86,7 +121,7 @@ class AkamaiGuardicoreClient(BaseClient):
 
     def authenticate(self):
         body = {"username": self.username, "password": self.password}
-        new_token = self._http_request(
+        new_token = self.http_request(
             method="POST", url_suffix="/authenticate", json_data=body
         )
 

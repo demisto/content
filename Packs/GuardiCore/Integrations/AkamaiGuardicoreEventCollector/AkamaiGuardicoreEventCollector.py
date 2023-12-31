@@ -29,7 +29,7 @@ class Client(AkamaiGuardicoreClient):
             "offset": offset,
             "sort": "start_time",
         }
-        return self._http_request(method="GET", url_suffix="/incidents", params=params)
+        return self.http_request(method="GET", url_suffix="/incidents", params=params)
 
 
 """ HELPER FUNCTIONS """
@@ -125,19 +125,11 @@ def test_module(client: Client) -> str:
     Raises exceptions if something goes wrong.
     Args:
         client (Client): Gurdicore client to use.
-        params (Dict): Integration parameters.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-
-    try:
-        client.login()
-
-    except Exception as e:
-        if "UNAUTHORIZED" in str(e):
-            return "Authorization Error: make sure the username and password are correctly set"
-        else:
-            raise e
+    args = {"from_date": "1 day", "limit": 1}
+    get_events(client, args)
 
     return "ok"
 
@@ -220,12 +212,12 @@ def main() -> None:  # pragma: no cover
             proxy=proxy,
             verify=verify_certificate,
         )
+
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        client.login()
         if command == f"{PRODUCT}-get-events":
             should_push_events = argToBoolean(args.get("should_push_events", False))
             events, results = get_events(client, args)
