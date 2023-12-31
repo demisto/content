@@ -530,9 +530,10 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+    if True:
         # We check if the previous build failed and this one passed, or wise versa.
-        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_client, project_id, look_back_hours=LOOK_BACK_HOURS)
+        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
+                                                               project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
         pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
                                                          list_of_pipelines=list_of_pipelines,
                                                          commits=commits)
