@@ -4037,6 +4037,7 @@ def main():  # pragma: no cover
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == 'fetch-incidents':
+
             demisto.incidents(fetch_incidents(
                 client=client,
                 issue_field_to_fetch_from=issue_field_to_fetch_from,
