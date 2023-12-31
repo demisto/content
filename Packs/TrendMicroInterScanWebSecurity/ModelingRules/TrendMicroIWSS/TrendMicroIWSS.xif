@@ -1,1 +1,70 @@
 [MODEL: dataset=trendmicro_iwss_raw]
+alter event_type = arrayindex(regextract(_raw_log, "\[(\w+)"), 0)
+| alter 
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)), 
+    syslog_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\s*(\w+)\:"), 0),
+    msg_payload = arrayindex(regextract(_raw_log, "\[\w+\|\w+\]\s*(.+)"), 0)
+| alter 
+    syslog_facility = floor(divide(syslog_priority, 8))
+| alter
+    severity = arrayindex(regextract(_raw_log, "\[\w+\|(\w+)\]"), 0),
+    syslog_severity = subtract(syslog_priority, multiply(syslog_facility, 8))
+| alter 
+    event_description = arrayindex(regextract(msg_payload, "(.+?)\w+\="), 0),
+    action = arrayindex(regextract(msg_payload, "tk_action=([^\,]+)"), 0),
+    blocked_by = arrayindex(regextract(msg_payload, "tk_blocked_by=([^\,]+)"), 0),
+    category = arrayindex(regextract(msg_payload, "tk_category=([^\,]+)"), 0),
+    category_type = arrayindex(regextract(msg_payload, "tk_category_type=([^\,]+)"), 0),
+    client_ip = arrayindex(regextract(msg_payload, "tk_client_ip=([^\,]+)"), 0),
+    description = arrayindex(regextract(msg_payload, "tk_description=([^\,]+)"), 0),
+    domain = arrayindex(regextract(msg_payload, "tk_domain=([^\,]+)"), 0),
+    entity_name = arrayindex(regextract(msg_payload, "tk_entity_name=([^\,]+)"), 0),
+    file_name = arrayindex(regextract(msg_payload, "tk_file_name=([^\,]+)"), 0),
+    filter_action = arrayindex(regextract(msg_payload, "tk_filter_action=([^\,]+)"), 0),
+    group_name = arrayindex(regextract(msg_payload, "tk_group_name=([^\,]+)"), 0),
+    malicious_entity = arrayindex(regextract(msg_payload, "tk_malicious_entity=([^\,]+)"), 0),
+    metric_id = arrayindex(regextract(msg_payload, "tk_metric_id=([^\,]+)"), 0),
+    metric_value = arrayindex(regextract(msg_payload, "tk_metric_value=([^\,]+)"), 0),
+    mime_content = arrayindex(regextract(msg_payload, "tk_mime_content=([^\,]+)"), 0),
+    operation = arrayindex(regextract(msg_payload, "tk_operation=([^\,]+)"), 0),
+    opp_id = arrayindex(regextract(msg_payload, "tk_opp_id=([^\,]+)"), 0),
+    path = arrayindex(regextract(msg_payload, "tk_path=([^\,]+)"), 0),
+    protocol = arrayindex(regextract(msg_payload, "tk_protocol=([^\,]+)"), 0),
+    rule_name = arrayindex(regextract(msg_payload, "tk_rule_name=([^\,]+)"), 0),
+    scan_type = arrayindex(regextract(msg_payload, "tk_scan_type=([^\,]+)"), 0),
+    server = arrayindex(regextract(msg_payload, "tk_server=([^\,]+)"), 0),
+    server_ip = arrayindex(regextract(msg_payload, "tk_server_ip=([^\,]+)"), 0),
+    size = arrayindex(regextract(msg_payload, "tk_size=([^\,]+)"), 0),
+    source = arrayindex(regextract(msg_payload, "tk_source=([^\,]+)"), 0),
+    uid = arrayindex(regextract(msg_payload, "tk_uid=([^\,]+)"), 0),
+    url = arrayindex(regextract(msg_payload, "tk_url=([^\,]+)"), 0),
+    username = arrayindex(regextract(msg_payload, "tk_username=([^\,]+)"), 0)
+| alter 
+	client_ipv4 = arrayindex(regextract(client_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+	client_ipv6 = arrayindex(regextract(client_ip, "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"), 0)
+	target_ipv4 = arrayindex(regextract(server_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+	target_ipv6 = arrayindex(regextract(server_ip, "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"), 0)
+| alter 
+    xdm.alert.severity = coalesce(severity, syslog_severity),
+    xdm.event.description = description,
+    xdm.event.operation_sub_type = coalesce(scan_type),
+    xdm.event.type = event_type,
+    xdm.network.application_protocol = protocol,
+    xdm.network.http.content_type = content_type,
+    xdm.network.http.domain = domain,
+    xdm.network.http.method = operation,
+    xdm.network.http.url = url,
+    xdm.network.http.url_category = category,
+    xdm.network.rule = rule_name,
+    xdm.observer.action = coalesce(action, filter_action),
+    xdm.observer.name = coalesce(server, syslog_hostname),
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.ipv6 = client_ipv6,
+    xdm.source.user.identifier = uid,
+    xdm.source.user.username = username,
+    xdm.target.domain = domain,
+    xdm.target.file.filename = file_name,
+    xdm.target.ipv4 = target_ipv4,
+    xdm.target.ipv6 = target_ipv6,
+    xdm.target.resource.name = path,
+    xdm.target.url = url;
