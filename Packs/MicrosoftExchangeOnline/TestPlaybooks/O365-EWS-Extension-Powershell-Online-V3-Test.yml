@@ -401,7 +401,7 @@ tasks:
       version: -1
       name: Get Mailbox Rules
       description: Retrieve a list of an Inbox rules.
-      script: '|||ews-rules-list'
+      script: '|||ews-rule-list'
       type: regular
       iscommand: true
       brand: ""

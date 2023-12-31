@@ -1428,13 +1428,13 @@ Retrieves information about the AuditBypassEnabled property value for user accou
 | EWS.MailboxAuditBypassAssociation.WhenCreatedUTC | Date | The date in UTC format of when the mailbox audit bypass association was created. | 
 
 
-### ews-rules-list
+### ews-rule-list
 ***
 Get a list of all mailbox rules.
 
 #### Base Command
 
-`ews-rules-list`
+`ews-rule-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1454,7 +1454,7 @@ Get a list of all mailbox rules.
 
 #### Human Readable Output
 
->### Results of ews-rules-list
+>### Results of ews-rule-list
 >| Enabled | Name | Priority | RuleIdentity |
 >| --- | --- | --- | --- |
 >| true | CheckActionRequired	 | 1 | 1268829516541722625 |
@@ -1488,7 +1488,7 @@ Get a mailbox rule.
 
 #### Human Readable Output
 
->### Results of ews-rules-list
+>### Results of ews-rule-list
 >| Enabled | Name | Priority | RuleIdentity | Description | IsValid	| StopProcessingRules|
 >| --- | --- | --- | --- | --- | --- | ---|
 >| true | CheckActionRequired | 1 | 1268829516541722625 | If the message: the sender requested any action and my name is in the To box | true| false |

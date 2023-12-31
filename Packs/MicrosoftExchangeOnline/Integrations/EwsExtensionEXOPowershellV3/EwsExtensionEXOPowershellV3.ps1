@@ -1706,7 +1706,7 @@ function Main
             "$script:COMMAND_PREFIX-mailbox-audit-bypass-association-list" {
                 ($human_readable, $entry_context, $raw_response) = GetMailboxAuditBypassAssociationCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-rules-list" {
+            "$script:COMMAND_PREFIX-rule-list" {
                 ($human_readable, $entry_context, $raw_response) = ListRulesCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-get-rule" {
