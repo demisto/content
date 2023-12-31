@@ -7,10 +7,10 @@ fi
 DIFF_FILES_LIST=$(git diff origin/master..."XSUP-29866" --name-only)
 GIT_DIFF_STATUS=$?
 
-#if [ $GIT_DIFF_STATUS -ne 0 ]; then
-#    echo "Error: git diff command failed with exit status $GIT_DIFF_STATUS, $DIFF_FILES_LIST"
-#    exit 1
-#fi
+if [ $GIT_DIFF_STATUS -ne 0 ]; then
+    echo "Error: git diff command failed with exit status: $GIT_DIFF_STATUS, $DIFF_FILES_LIST"
+    exit 1
+fi
 
 IGNORED_FILES=(
     "Tests/conf.json"
