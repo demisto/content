@@ -118,7 +118,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: 'Indicators feed from MISP'
+description: 'Indicators feed from MISP.'
 display: MISP Feed
 name: MISP Feed
 script:
