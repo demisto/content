@@ -1,4 +1,4 @@
-{
+ {
     "available_tests_fields": {
         "context_print_dt": "Prints the incident's context dt directly to the build.",
         "external_playbook_config": "Allows to configure a test playbook inputs.",
@@ -2271,14 +2271,16 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft Graph Calendar",
