@@ -450,14 +450,31 @@ def test_get_ip_type(indicator, indicator_type):
     assert get_ip_type(indicator) == indicator_type
 
 
-def test_search_query_indicators_pagination(mocker):
+indicators_examples = [
+    ({'response': {'Attribute': ['data1', 'data2']}},({'response': {'Attribute': []}}),
+     {'response': {'Attribute': ['data1', 'data2']}}),
+    ({'response': {'Attribute': []}},({'response': {'Attribute': []}}),
+     {'response': {'Attribute': []}})
+    
+]
+
+
+@pytest.mark.parametrize('returned_result_1, returned_result_2, expected_result', indicators_examples)
+def test_search_query_indicators_pagination(mocker, returned_result_1, returned_result_2, expected_result):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - the search_query_indicators_pagination function runs
+    Then:
+        - Ensure the pagination mechanism return the expected result
+    """
     client = Client(base_url="example",
                     authorization="auth",
                     verify=False,
                     proxy=False,
                     timeout=60)
-    mocker.patch.object(Client, '_http_request', return_value={'response': {'Attribute': ['data1', 'data2']}})
+    mocker.patch.object(Client, '_http_request', side_effect=[returned_result_1, returned_result_2])
     params_dict = {'param1': 'value1'}
     result = search_query_indicators_pagination(client, params_dict)
-    expected_result = {'response': {'Attribute': ['data1', 'data2', 'data3', 'data4']}}
     assert result == expected_result
