@@ -58,7 +58,7 @@ class MsGraphClient:
         return raw_response.get('value', []), raw_response
 
     def get_managed_device(self, device_id: str) -> tuple[Any, str]:
-        url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
+        url_suffix: str = f'https://graph.microsoft.com/v1.0/deviceManagement/managedDevices/{device_id}?$select=id,physicalMemoryInBytes,deviceName'
         return self.ms_client.http_request('GET', url_suffix), device_id
 
     def make_action(self, device_id: str, action: str, body: str = None) -> None:
