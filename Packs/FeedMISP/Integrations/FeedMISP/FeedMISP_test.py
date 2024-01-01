@@ -451,11 +451,11 @@ def test_get_ip_type(indicator, indicator_type):
 
 
 indicators_examples = [
-    ({'response': {'Attribute': ['data1', 'data2']}},({'response': {'Attribute': []}}),
+    ({'response': {'Attribute': ['data1', 'data2']}}, ({'response': {'Attribute': []}}),
      {'response': {'Attribute': ['data1', 'data2']}}),
-    ({'response': {'Attribute': []}},({'response': {'Attribute': []}}),
+    ({'response': {'Attribute': []}}, ({'response': {'Attribute': []}}),
      {'response': {'Attribute': []}})
-    
+
 ]
 
 
