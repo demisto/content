@@ -3696,7 +3696,7 @@ inputs:
     For example: name of the organization finance app that the attacker might impersonate.
     This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
-inputsSections:
+inputSections:
 - name: Role and Assignment
   description:  Parameters defining user responsibilities and task allocations.
   inputs: 
