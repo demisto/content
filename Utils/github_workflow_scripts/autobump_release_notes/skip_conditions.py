@@ -410,9 +410,8 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
                 file_name in files_check_to_conflict_with
                 for file_name in conflicting_files
             )
-        finally:
-            self.git_repo.git.merge("--abort")
-            self.git_repo.git.clean("-f")
+        self.git_repo.git.merge("--abort")
+        self.git_repo.git.clean("-f")
         return bool(conflict_only_with_given_files and conflicting_files), conflicting_files
 
 
