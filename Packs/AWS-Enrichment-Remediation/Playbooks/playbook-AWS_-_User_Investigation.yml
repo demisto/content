@@ -1663,31 +1663,31 @@ inputs:
 outputs:
 - contextPath: AwsMFAConfigCount
   description: The number of MFA configurations performed by the user in the AWS environment.
-  type: unknown
+  type: number
 - contextPath: AwsUserRoleChangesCount
   description: The number of user roles that were changed by the user in the AWS environment.
-  type: unknown
+  type: number
 - contextPath: AwsSuspiciousActivitiesCount
   description: The number of suspicious activities performed by the user in the AWS environment.
-  type: unknown
+  type: number
 - contextPath: AwsScriptBasedUserAgentCount
   description: The number of script-based user agent usages by the user in the AWS environment.
-  type: unknown
+  type: number
 - contextPath: AwsAccessKeyActivitiesCount
   description: The number of access key activities performed by the user in the AWS environment.
-  type: unknown
+  type: number
 - contextPath: AwsSecurityChangesCount
   description: The number of security rules that were changed by the user in the AWS environment.
-  type: unknown
+  type: number
 - contextPath: AwsAdminActivitiesCount
   description: The number of administrative activities performed by the user in the AWS environment.
-  type: unknown
+  type: number
 - contextPath: AwsApiAccessDeniedCount
   description: The number of API accesses denied by the user in the AWS environment.
-  type: unknown
+  type: number
 - contextPath: AwsFailedLogonCount
   description: The number of failed logins by the user in the AWS environment.
-  type: unknown
+  type: number
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0

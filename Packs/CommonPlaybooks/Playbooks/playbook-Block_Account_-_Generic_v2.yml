@@ -23,7 +23,7 @@ description: |-
   * Prisma Cloud IAM
   * Zoom IAM
   * Atlassian IAM
-  * GitHub IAM
+  * GitHub IAM.
 starttaskid: "0"
 tasks:
   "0":
@@ -234,7 +234,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Tag
@@ -553,7 +553,7 @@ tasks:
       - "33"
     scriptarguments:
       brandname:
-        simple: '*Okta*'
+        simple: Okta IAM
     results:
     - brandInstances
     separatecontext: false
@@ -579,7 +579,7 @@ tasks:
     task:
       id: 692fc977-5dff-49fa-8ef9-4c0c53979786
       version: -1
-      name: Is SailPointIntegration Enabled?
+      name: Is SailPoint Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -589,7 +589,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "35"
+      - "75"
     scriptarguments:
       brandname:
         simple: SailPointIdentityIQ
@@ -859,7 +859,9 @@ tasks:
       - "2"
     scriptarguments:
       username:
-        simple: ${Blocklist.Final}
+        complex:
+          root: Blocklist
+          accessor: Final
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -894,14 +896,16 @@ tasks:
       - "2"
     scriptarguments:
       id:
-        simple: ${Blocklist.Final}
+        complex:
+          root: IdentityIQ.Account
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 640,
-          "y": 920
+          "y": 1090
         }
       }
     note: false
@@ -1510,7 +1514,8 @@ tasks:
       key:
         simple: Blocklist.Final
       value:
-        simple: ${inputs.Username}
+        complex:
+          root: inputs.Username
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1545,7 +1550,9 @@ tasks:
       - "2"
     scriptarguments:
       username:
-        simple: ${Blocklist.Final}
+        complex:
+          root: Blocklist
+          accessor: Final
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2121,7 +2128,9 @@ tasks:
       - "2"
     scriptarguments:
       user:
-        simple: ${Blocklist.Final}
+        complex:
+          root: Blocklist
+          accessor: Final
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2298,13 +2307,52 @@ tasks:
       suspended:
         simple: "true"
       user_key:
-        simple: ${Blocklist.Final}
+        complex:
+          root: Blocklist
+          accessor: Final
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1900,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 4ebe9bf0-210f-4752-83d0-bb2e2a03262a
+    type: regular
+    task:
+      id: 4ebe9bf0-210f-4752-83d0-bb2e2a03262a
+      version: -1
+      name: Get Account IDs From SailPoint
+      description: Fetch accounts by search/filter parameters (id, display_name, last_refresh, native_identity, last_target_agg, identity_name & application_name) using IdentityIQ SCIM APIs.
+      script: '|||identityiq-get-accounts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      display_name:
+        complex:
+          root: Blocklist
+          accessor: Final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
           "y": 920
         }
       }
@@ -2324,7 +2372,6 @@ view: |-
       "26_2_#default#": 0.11,
       "26_33_yes": 0.14,
       "27_2_#default#": 0.1,
-      "27_35_yes": 0.31,
       "28_2_#default#": 0.15,
       "28_33_yes": 0.1,
       "29_2_#default#": 0.11,

@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - additionalinfo: The FQDN/IP the integration should connect to.
   defaultvalue: https://tap.group-ib.com/api/v2/
-  display: GIB TI&A URL
+  display: GIB TI URL
   name: url
   required: true
   type: 0
@@ -87,14 +87,17 @@ configuration:
   - suspicious_ip/open_proxy
   - suspicious_ip/socks_proxy
   - malware/cnc
+  - ioc/common
   type: 16
   required: false
+  hidden: false
 - additionalinfo: Date to start fetching indicators from.
   defaultvalue: 3 days
   display: Indicator first fetch
   name: indicators_first_fetch
   type: 0
   required: false
+  hidden: false
 - additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 objects with different amount of indicators). If you face some runtime errors, lower the value.
   defaultvalue: '2'
   display: Number of requests per collection
@@ -107,6 +110,7 @@ configuration:
   - '5'
   type: 15
   required: false
+  hidden: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
@@ -130,13 +134,12 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
-description: Use Group-IB Threat Intelligence & Attribution Feed integration to fetch IOCs from various Group-IB collections.
-display: Group-IB Threat Intelligence & Attribution Feed
+description: Use Group-IB Threat Intelligence Feed integration to fetch IOCs from various Group-IB collections.
+display: Group-IB Threat Intelligence Feed
 name: Group-IB Threat Intelligence & Attribution Feed
 script:
   commands:
@@ -158,13 +161,21 @@ script:
       - suspicious_ip/open_proxy
       - suspicious_ip/socks_proxy
       - malware/cnc
+      - ioc/common
       required: true
-    - description: Incident Id to get indicators(if set, all the indicators will be provided from particular incident)
+      default: false
+      isArray: false
+      secret: false
+    - description: Incident Id to get indicators(if set, all the indicators will be provided from particular incident).
       name: id
+      default: false
+      isArray: false
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: '50'
-      description: Limit of indicators to display in War Room
+      description: Limit of indicators to display in War Room.
       name: limit
       predefined:
       - '10'
@@ -172,14 +183,22 @@ script:
       - '30'
       - '40'
       - '50'
+      isArray: false
+      required: false
+      secret: false
     description: Get limited count of indicators for specified collection and get all indicators from particular events by id.
     name: gibtia-get-indicators
-  dockerimage: demisto/python3:3.10.12.63474
+    deprecated: false
+    execution: false
+  dockerimage: demisto/python3:3.10.13.80593
   feed: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

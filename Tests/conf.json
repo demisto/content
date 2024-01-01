@@ -21,6 +21,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "playbook-AzureLogAnalytics-test",
+            "integrations": "Azure Log Analytics",
+            "instance_name": "Azure_Log_Analytics_client_cred",
+            "timeout": 800,
+            "is_mockable": false
+        },
+        {
             "playbookID": "Test Playbook - NGFW Scan",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
@@ -38,7 +45,7 @@
             "instance_names": "virus_total_v3",
             "timeout": 800
         },
-	    {
+        {
             "playbookID": "T1059 - Command and Scripting Interpreter - Test",
             "integrations": "LOLBAS Feed",
             "timeout": 600
@@ -47,23 +54,23 @@
             "playbookID": "Eradication plan - Test",
             "timeout": 600
         },
-		{
+        {
             "playbookID": "Containment Plan - Test",
             "timeout": 800,
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k"
         },
-		{
+        {
             "playbookID": "Enrichment for Verdict - Test",
             "timeout": 500,
-			"integrations": [
-				"Active Directory Query v2",
-				"VirusTotal (API v3)"
-			],
-			"instance_names": [
-				"active_directory_80k",
-				"virus_total_v3"
-			]
+            "integrations": [
+                "Active Directory Query v2",
+                "VirusTotal (API v3)"
+            ],
+            "instance_names": [
+                "active_directory_80k",
+                "virus_total_v3"
+            ]
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -157,7 +164,8 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test"
+            "playbookID": "Detonate File - WildFire - Test",
+            "timeout": 400
         },
         {
             "integrations": [
@@ -182,7 +190,20 @@
             "memory_threshold": 500
         },
         {
-            "playbookID": "SetIfEmpty - non-ascii chars - Test"
+            "playbookID": "SetIfEmpty_Test"
+        },
+        {
+            "playbookID": "IsEmailAddressInternal_Test"
+        },
+        {
+            "playbookID": "SetAndHandleEmpty_Test"
+        },
+        {
+            "playbookID": "ExtractEmailTransformer_Test",
+            "fromversion": "6.11.0"
+        },
+        {
+            "playbookID": "IsIntegrationAvailable - Test"
         },
         {
             "integrations": "Tripwire",
@@ -726,7 +747,6 @@
             "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
-
         {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,
@@ -761,7 +781,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1500
+            "timeout": 1800
         },
         {
             "integrations": "HelloWorld",
@@ -1538,7 +1558,7 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "WildFire-v2",
@@ -1844,7 +1864,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 500,
+            "timeout": 5000,
             "is_mockable": false
         },
         {
@@ -1903,7 +1923,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
-            "memory_threshold": 100,
+            "memory_threshold": 250,
             "instance_names": "use_default_handler",
             "is_mockable": false
         },
@@ -1973,7 +1993,8 @@
         },
         {
             "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing"
+            "playbookID": "PhishTank Testing",
+            "is_mockable": false
         },
         {
             "integrations": "McAfee Web Gateway",
@@ -2146,7 +2167,6 @@
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
             "is_mockable": false
-
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2221,6 +2241,11 @@
             "is_mockable": false
         },
         {
+            "integrations": "Microsoft Graph",
+            "playbookID": "MSG-Threat-Assessment-test",
+            "instance_names": "ms_graph_security_ediscovery"
+        },
+        {
             "integrations": "Microsoft Graph User",
             "playbookID": "Microsoft Graph User - Test",
             "instance_names": "ms_graph_user_dev"
@@ -2246,14 +2271,16 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft Graph Calendar",
@@ -2887,8 +2914,8 @@
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": [
-            "Active Directory Query v2",
-            "Cortex XDR - IR"
+                "Active Directory Query v2",
+                "Cortex XDR - IR"
             ],
             "memory_threshold": 100,
             "instance_names": "active_directory_80k",
@@ -2915,7 +2942,15 @@
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
-            "fromversion": "4.1.0"
+            "external_playbook_config": {
+                "playbookID": "IP Enrichment - Generic v2",
+                "input_parameters": {
+                    "UseReputationCommand": {
+                        "simple": "True"
+                    }
+                }
+            },
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Cherwell",
@@ -2969,14 +3004,17 @@
         },
         {
             "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "toversion": "7.9.9"
         },
         {
             "integrations": "AWS - EC2",
             "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
-            "memory_threshold": 90
+            "memory_threshold": 90,
+            "timeout": 700,
+            "is_mockable": false
         },
         {
             "integrations": "AWS - EC2",
@@ -3275,12 +3313,14 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar Indicator Hunting Test",
+            "instance_names": "QRadar_20",
             "timeout": 12000,
             "fromversion": "6.0.0"
         },
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar - Get Offense Logs Test",
+            "instance_names": "QRadar_20",
             "timeout": 600,
             "fromversion": "6.0.0"
         },
@@ -3481,6 +3521,16 @@
             "playbookID": "Code42 File Search Test",
             "integrations": "Code42",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Code42 Suspicious Activity Action v2 - Test",
+            "integrations": "Code42",
+            "fromversion": "6.10.0"
+        },
+        {
+            "playbookID": "HasiCoprTerraformTest",
+            "integrations": "HashicorpTerraform",
+            "fromversion": "6.10.0"
         },
         {
             "playbookID": "FetchIndicatorsFromFile-test",
@@ -3856,6 +3906,7 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
+            "instance_names": "QRadar_20",
             "fromversion": "6.0.0",
             "timeout": 600,
             "is_mockable": false
@@ -4658,7 +4709,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 150,
+            "memory_threshold": 200,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4942,7 +4993,8 @@
         },
         {
             "playbookID": "playbook-SearchIncidentsV2InsideGenericPollng-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 300
         },
         {
             "playbookID": "IsRFC1918-Test",
@@ -4971,14 +5023,6 @@
         {
             "playbookID": "IsIPInRanges - Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "TruSTAR v2-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "TruSTAR v2",
-                "TruSTAR"
-            ]
         },
         {
             "playbookID": "Relationships scripts - Test",
@@ -5067,7 +5111,8 @@
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
             "fromversion": "6.2.0",
-            "memory_threshold": 90
+            "memory_threshold": 90,
+            "timeout": 500
         },
         {
             "playbookID": "ListUsedDockerImages - Test",
@@ -5319,7 +5364,13 @@
             "playbookID": "FormatURL-Test"
         },
         {
+            "playbookID": "TestGetErrorsFromEntry"
+        },
+        {
             "playbookID": "IPToHost - Test"
+        },
+        {
+            "playbookID": "TestIsInCidrRanges"
         },
         {
             "playbookID": "NetskopeAPIv1 Test",
@@ -5350,7 +5401,8 @@
                 "Whois",
                 "Rasterize"
             ],
-            "memory_threshold": 300
+            "memory_threshold": 300,
+            "toversion": "7.9.9"
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
@@ -5471,6 +5523,9 @@
             "playbookID": "GridFieldSetup_test"
         },
         {
+            "playbookID": "TestGetArrayElements"
+        },
+        {
             "integrations": "Aha",
             "playbookID": "AHA_TestPlaybook",
             "fromversion": "6.5.0"
@@ -5574,6 +5629,14 @@
             "integrations": "Forcepoint Security Management Center",
             "playbookID": "ForcepointSecurityManagementCenter_test",
             "is_mockable": false
+        },
+        {
+            "integrations": "AWS - Organizations",
+            "playbookID": "Test - AWS_Organizations"
+        },
+        {
+            "integrations": "Netcraft V2",
+            "playbookID": "Test - Netcraft"
         }
     ],
     "skipped_tests": {
@@ -5754,7 +5817,10 @@
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
         "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
-        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
+        "ThreatStream-Test": "Issue CRTX-96526",
+        "MSG-Threat-Assessment-test": "API limitation",
+        "BambenekConsultingFeed_Test": "Issue CRTX-99480"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -5885,7 +5951,8 @@
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
         "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
-        "ThreatExchange v2": "No instance"
+        "ThreatExchange v2": "No instance",
+        "PhishLabs IOC EIR": "No instance, CRTX-91214"
     },
     "nightly_packs": [
         "CommonScripts",

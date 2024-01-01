@@ -37,8 +37,8 @@ class TestPrivatePacks:
 
         assert index_call_count == 1
         assert index_call_args[0] == 'test'
-        assert index_call_args[1] == 'mock_dir'
-        assert index_call_args[2] == 'mock_path'
+        assert index_call_args[1].name == 'mock_dir'
+        assert index_call_args[1].path == 'mock_path'
 
     def test_get_private_packs(self, mocker):
         import os

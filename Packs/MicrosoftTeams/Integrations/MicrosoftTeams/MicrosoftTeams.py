@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
+from enum import Enum
 import re
 import time
 from distutils.util import strtobool
@@ -22,13 +23,18 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
+
+class FormType(Enum):  # Used for 'send-message', and by the MicrosoftTeamsAsk script
+    PREDEFINED_OPTIONS = 'predefined-options'
+    OPEN_ANSWER = 'open-answer'
+
+
 ''' GLOBAL VARIABLES'''
 EXTERNAL_FORM_URL_DEFAULT_HEADER = 'Microsoft Teams Form'
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get('credentials', {}).get('identifier', '') or PARAMS.get('bot_id', '')
 BOT_PASSWORD: str = PARAMS.get('credentials', {}).get('password', '') or PARAMS.get('bot_password', '')
 TENANT_ID: str = PARAMS.get('tenant_id', '')
-USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
@@ -112,6 +118,25 @@ class ErrorHandler:
 
 DEMISTO_LOGGER: Handler = Handler()
 ERROR_LOGGER: ErrorHandler = ErrorHandler()
+
+
+def handle_teams_proxy_and_ssl():
+    proxies = None
+    use_ssl = not PARAMS.get('insecure', False)
+    if not is_demisto_version_ge('8.0.0'):
+        return proxies, use_ssl
+    CRTX_HTTP_PROXY = os.environ.get('CRTX_HTTP_PROXY', None)
+    if CRTX_HTTP_PROXY:
+        proxies = {
+            "http": CRTX_HTTP_PROXY,
+            "https": CRTX_HTTP_PROXY
+        }
+        use_ssl = True
+    return proxies, use_ssl
+
+
+PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -284,8 +309,9 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         created_incident = cast(dict[Any, Any], created_incident)
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
+        server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
         data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
-               f"View it on: {server_link}/#/WarRoom/{created_incident.get('id', '')}"
+               f"View it on: {server_link}/WarRoom/{created_incident.get('id', '')}"
 
     return data
 
@@ -360,7 +386,7 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     raise ValueError(f'Team member {requested_team_member} was not found')
 
 
-def create_adaptive_card(body: list, actions: list = None) -> dict:
+def create_adaptive_card(body: list, actions: list | None = None) -> dict:
     """
     Creates Microsoft Teams adaptive card object given body and actions
     :param body: Adaptive card data
@@ -485,27 +511,73 @@ def process_ask_user(message: str) -> dict:
     message_object: dict = json.loads(message)
     text: str = message_object.get('message_text', '')
     entitlement: str = message_object.get('entitlement', '')
+    form_type: FormType = FormType(message_object.get('form_type', FormType.PREDEFINED_OPTIONS.value))
     options: list = message_object.get('options', [])
     investigation_id: str = message_object.get('investigation_id', '')
     task_id: str = message_object.get('task_id', '')
-    body = [
-        {
+
+    body: list[dict] = []
+    actions: list[dict] = []
+
+    if form_type == FormType.PREDEFINED_OPTIONS:
+        body.append({
             'type': 'TextBlock',
-            'text': text
-        }
-    ]
-    actions = []
-    for option in options:
+            'text': text,
+        })
+
+        for option in options:
+            actions.append({
+                'type': 'Action.Submit',
+                'title': option,
+                'data': {
+                    'response': option,
+                    'entitlement': entitlement,
+                    'investigation_id': investigation_id,
+                    'task_id': task_id
+                }
+            })
+
+    elif form_type == FormType.OPEN_ANSWER:
+        body.extend([
+            {
+                'type': 'TextBlock',
+                'text': 'Form',
+                'id': 'Title',
+                'spacing': 'Medium',
+                'horizontalAlignment': 'Center',
+                'size': 'Medium',
+                'weight': 'Bolder',
+                'color': 'Accent'
+            },
+            {
+                'type': 'Container',
+                'items': [
+                    {
+                        'type': 'TextBlock',
+                        'text': text,
+                        'wrap': True,
+                        'spacing': 'Medium',
+                    },
+                    {
+                        'type': 'Input.Text',
+                        'placeholder': 'Enter an answer',
+                        'id': 'response',
+                        'isMultiline': True,
+                    }
+                ]
+            },
+        ])
+
         actions.append({
             'type': 'Action.Submit',
-            'title': option,
+            'title': 'Submit',
             'data': {
-                'response': option,
                 'entitlement': entitlement,
                 'investigation_id': investigation_id,
                 'task_id': task_id
             }
         })
+
     return create_adaptive_card(body, actions)
 
 
@@ -529,7 +601,8 @@ def get_bot_access_token() -> str:
     response: requests.Response = requests.post(
         url,
         data=data,
-        verify=USE_SSL
+        verify=USE_SSL,
+        proxies=PROXIES
     )
     if not response.ok:
         error = error_parser(response, 'bot')
@@ -574,7 +647,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('tenant_id') or demisto.params().get("tenant_id")
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -606,6 +679,7 @@ def get_graph_access_token() -> str:
         url,
         data=data,
         verify=USE_SSL,
+        proxies=PROXIES,
         headers=headers
     )
     if not response.ok:
@@ -660,6 +734,7 @@ def http_request(
             headers=headers,
             json=json_,
             verify=USE_SSL,
+            proxies=PROXIES,
             params=params,
         )
 
@@ -783,13 +858,13 @@ def validate_auth_header(headers: dict) -> bool:
         # Didn't find requested key in cache, getting new keys
         try:
             open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
-            response: requests.Response = requests.get(open_id_url, verify=USE_SSL)
+            response: requests.Response = requests.get(open_id_url, verify=USE_SSL, proxies=PROXIES)
             if not response.ok:
                 demisto.info(f'Authorization header validation failed to fetch open ID config - {response.reason}')
                 return False
             response_json: dict = response.json()
             jwks_uri: str = response_json.get('jwks_uri', '')
-            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL)
+            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL, proxies=PROXIES)
             if not keys_response.ok:
                 demisto.info(f'Authorization header validation failed to fetch keys - {response.reason}')
                 return False
@@ -1994,6 +2069,7 @@ def send_message():
                 'type': 'message',
                 'attachments': [adaptive_card]
             }
+            demisto.debug(f"The following Adaptive Card will be used:\n{json.dumps(adaptive_card)}")
         else:
             # Sending regular message
             formatted_message: str = urlify_hyperlinks(message, external_form_url_header)
@@ -2087,7 +2163,8 @@ def mirror_investigation():
         service_url: str = integration_context.get('service_url', '')
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
-        warroom_link = f'{server_link}/#/WarRoom/{investigation_id}'
+        server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
+        warroom_link = f"{server_link}/WarRoom/{investigation_id}"
         conversation: dict = {
             'type': 'message',
             'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
@@ -2714,10 +2791,11 @@ def main():   # pragma: no cover
     }
 
     ''' EXECUTION '''
+    command: str = demisto.command()
+
     try:
         support_multithreading()
         handle_proxy()
-        command: str = demisto.command()
         LOG(f'Command being called is {command}')
         if command in commands:
             commands[command]()
@@ -2731,5 +2809,5 @@ def main():   # pragma: no cover
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
-if __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

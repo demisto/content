@@ -48,16 +48,50 @@ configuration:
   name: fetch_time
   type: 0
   required: false
-- defaultvalue: 1
+- additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
+  defaultvalue: '1'
   display: Days to look back when fetching
-  additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
   name: look_back
-  type: 0
   required: false
+  type: 0
 - additionalinfo: If true, use sessions compatibility for OTRS versions lower than V8.
   display: Use legacy sessions
   name: use_legacy_sessions
+  required: false
   type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Choose the tag to add to an entry to mirror it as an article in OTRS.
+  defaultvalue: OTRS
+  display: Entry Tag To OTRS
+  name: tag
+  type: 0
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: Choose the tag to add to an entry to mirror it as an article from OTRS.
+  defaultvalue: FromOTRS
+  display: Entry Tag From OTRS
+  name: tag_from_otrs
+  type: 0
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from OTRS to Cortex XSOAR), Outgoing (from Cortex XSOAR to OTRS), or Incoming and Outgoing (from/to Cortex XSOAR and OTRS).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  hidden:
+  - marketplacev2
   required: false
 description: Service management suite that comprises ticketing, workflow automation, and notification.
 display: OTRS
@@ -74,101 +108,101 @@ script:
     name: otrs-get-ticket
     outputs:
     - contextPath: OTRS.Ticket.ID
-      description: Ticket ID
+      description: Ticket ID.
       type: string
     - contextPath: OTRS.Ticket.Number
-      description: Ticket number
+      description: Ticket number.
       type: string
     - contextPath: OTRS.Ticket.Created
-      description: Ticket creation date
+      description: Ticket creation date.
       type: date
     - contextPath: OTRS.Ticket.CustomerUser
-      description: Customer user related to ticket
+      description: Customer user related to ticket.
       type: string
     - contextPath: OTRS.Ticket.Owner
-      description: Ticket owner
+      description: Ticket owner.
       type: string
     - contextPath: OTRS.Ticket.Priority
-      description: Ticket priority
+      description: Ticket priority.
       type: string
     - contextPath: OTRS.Ticket.Queue
-      description: Queue the ticket is in
+      description: Queue the ticket is in.
       type: string
     - contextPath: OTRS.Ticket.State
-      description: Ticket state
+      description: Ticket state.
       type: string
     - contextPath: OTRS.Ticket.Title
-      description: Ticket title
+      description: Ticket title.
       type: string
     - contextPath: OTRS.Ticket.Type
-      description: Ticket type
+      description: Ticket type.
       type: string
     - contextPath: OTRS.Ticket.DynamicField
-      description: Ticket dynamic fields
+      description: Ticket dynamic fields.
       type: string
     - contextPath: OTRS.Ticket.Article.Subject
-      description: Ticket article subject
+      description: Ticket article subject.
       type: string
     - contextPath: OTRS.Ticket.Article.Body
-      description: Ticket article body
+      description: Ticket article body.
       type: string
     - contextPath: OTRS.Ticket.Article.CreatedTime
-      description: Ticket article creation time
+      description: Ticket article creation time.
       type: date
     - contextPath: OTRS.Ticket.Article.ContentType
-      description: Ticket article content type
+      description: Ticket article content type.
       type: string
     - contextPath: OTRS.Ticket.Article.From
-      description: Ticket article sender
+      description: Ticket article sender.
       type: string
     - contextPath: OTRS.Ticket.Article.ID
-      description: Ticket article ID
+      description: Ticket article ID.
       type: string
     - contextPath: OTRS.Ticket.Article.Attachment.Name
-      description: Ticket article attachment file name
+      description: Ticket article attachment file name.
       type: string
     - contextPath: OTRS.Ticket.Article.Attachment.Size
-      description: Ticket article attachment file size
+      description: Ticket article attachment file size.
       type: number
     - contextPath: OTRS.Ticket.Article.Attachment.ContentType
-      description: Ticket article attachment file content type
+      description: Ticket article attachment file content type.
       type: string
     - contextPath: OTRS.Ticket.Lock
-      description: Is the ticket locked or unlocked
+      description: Is the ticket locked or unlocked.
       type: string
     - contextPath: File.Size
-      description: Size of the file attachment
+      description: Size of the file attachment.
       type: number
     - contextPath: File.SHA1
-      description: SHA-1 of the file attachment
+      description: SHA-1 of the file attachment.
       type: string
     - contextPath: File.SHA256
-      description: SHA-256 of the file attachment
+      description: SHA-256 of the file attachment.
       type: string
     - contextPath: File.Name
-      description: Attachment file name
+      description: Attachment file name.
       type: string
     - contextPath: File.SSDeep
-      description: Attachment file SSDeep
+      description: Attachment file SSDeep.
       type: string
     - contextPath: File.EntryID
-      description: Attachment file entry ID
+      description: Attachment file entry ID.
       type: string
     - contextPath: File.Info
-      description: Attachment file information
+      description: Attachment file information.
       type: string
     - contextPath: File.Type
-      description: Attachment file type
+      description: Attachment file type.
       type: string
     - contextPath: File.MD5
-      description: Attachment file MD5
+      description: Attachment file MD5.
       type: string
     - contextPath: File.Extension
-      description: Attachment file extension
+      description: Attachment file extension.
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: Ticket States to filter by in CSV format (e.g., New,Open)
+      description: Ticket States to filter by in CSV format (e.g., New,Open).
       name: state
       predefined:
       - New
@@ -176,16 +210,16 @@ script:
       - ClosedUnsuccessful
       - Open
       - PendingReminder
-    - description: Filter for a ticket created before this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
+    - description: Filter for a ticket created before this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year.
       name: created_before
-    - description: Filter for a ticket created after this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year
+    - description: Filter for a ticket created after this date. Given in format "<number> <time unit>", e.g. 1 day, 30 minutes, 2 weeks, 6 months, 1 year.
       name: created_after
-    - description: Ticket Title to filter by
+    - description: Ticket Title to filter by.
       name: title
-    - description: Ticket Queues to filter by in CSV format (e.g., Raw,Misc)
+    - description: Ticket Queues to filter by in CSV format (e.g., Raw,Misc).
       name: queue
     - auto: PREDEFINED
-      description: Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh)
+      description: Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh). For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
@@ -193,50 +227,52 @@ script:
       - 3Normal
       - 4High
       - 5VeryHigh
-    - description: Ticket type to filter by
+    - description: Ticket type to filter by.
       name: type
-    description: Search for an OTRS ticket using search filters
+    - description: Pattern to use with fulltext search in Article subject and body.
+      name: pattern
+    description: Search for an OTRS ticket using search filters.
     name: otrs-search-ticket
     outputs:
     - contextPath: OTRS.Ticket.ID
-      description: Ticket ID
+      description: Ticket ID.
       type: string
     - contextPath: OTRS.Ticket.Number
-      description: Ticket number
+      description: Ticket number.
       type: string
     - contextPath: OTRS.Ticket.Created
-      description: Ticket creation date
+      description: Ticket creation date.
       type: date
     - contextPath: OTRS.Ticket.CustomerUser
-      description: Customer user related to ticket
+      description: Customer user related to ticket.
       type: string
     - contextPath: OTRS.Ticket.Owner
-      description: Ticket owner
+      description: Ticket owner.
       type: string
     - contextPath: OTRS.Ticket.Priority
-      description: Ticket priority
+      description: Ticket priority.
       type: string
     - contextPath: OTRS.Ticket.Queue
-      description: Queue the ticket is in
+      description: Queue the ticket is in.
       type: string
     - contextPath: OTRS.Ticket.State
-      description: Ticket state
+      description: Ticket state.
       type: string
     - contextPath: OTRS.Ticket.Title
-      description: Ticket title
+      description: Ticket title.
       type: string
     - contextPath: OTRS.Ticket.Type
-      description: Ticket type
+      description: Ticket type.
       type: string
   - arguments:
-    - description: Title to assign to the new ticket
+    - description: Title to assign to the new ticket.
       name: title
       required: true
-    - description: Queue to place the new ticket in
+    - description: Queue to place the new ticket in.
       name: queue
       required: true
     - auto: PREDEFINED
-      description: State to assign to the new ticket
+      description: State to assign to the new ticket. For the use of a custom state, you can specify a custom value outside the predefined set.
       name: state
       predefined:
       - New
@@ -246,7 +282,7 @@ script:
       - PendingReminder
       required: true
     - auto: PREDEFINED
-      description: Priority to assign to the new ticket
+      description: Priority to assign to the new ticket. For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
@@ -255,68 +291,70 @@ script:
       - 4High
       - 5VeryHigh
       required: true
-    - description: Customer user related to the new ticket
+    - description: Customer user related to the new ticket.
       name: customer_user
       required: true
-    - description: Article Subject to apply to the new ticket
+    - description: Article Subject to apply to the new ticket.
       name: article_subject
       required: true
-    - description: Text to add to the Article Body of the new ticket
+    - description: Text to add to the Article Body of the new ticket.
       name: article_body
       required: true
-    - description: Ticket Type to assign to the new ticket
+    - description: Ticket Type to assign to the new ticket.
       name: type
-    - description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
+    - description: 'Dynamic fields to apply to the new ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2.'
       name: dynamic_fields
-    - description: 'File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21 '
+    - description: 'File entry ID of the file to add as an attachment to the new ticket in CSV format, e.g., 123@20,124@21 .'
       name: attachment
-    description: Create a new ticket in OTRS
+    - description: Ticket owner to assign to the new ticket.
+      name: owner
+    description: Create a new ticket in OTRS.
     name: otrs-create-ticket
     outputs:
     - contextPath: OTRS.Ticket.Article.Subject
-      description: Ticket article subject
+      description: Ticket article subject.
       type: string
     - contextPath: OTRS.Ticket.Article.Body
-      description: Ticket article body
+      description: Ticket article body.
       type: string
     - contextPath: OTRS.Ticket.ID
-      description: Ticket ID
+      description: Ticket ID.
       type: string
     - contextPath: OTRS.Ticket.Number
-      description: Ticket number
+      description: Ticket number.
       type: string
     - contextPath: OTRS.Ticket.Created
-      description: Ticket creation date
+      description: Ticket creation date.
       type: date
     - contextPath: OTRS.Ticket.Priority
-      description: Ticket priority
+      description: Ticket priority.
       type: string
     - contextPath: OTRS.Ticket.Queue
-      description: Queue that the ticket is in
+      description: Queue that the ticket is in.
       type: string
     - contextPath: OTRS.Ticket.State
-      description: Ticket state
+      description: Ticket state.
       type: string
     - contextPath: OTRS.Ticket.Title
-      description: Ticket title
+      description: Ticket title.
       type: string
     - contextPath: OTRS.Ticket.Type
-      description: Ticket type
+      description: Ticket type.
       type: string
     - contextPath: OTRS.Ticket.CustomerUser
-      description: Customer user related to ticket
+      description: Customer user related to ticket.
       type: string
     - contextPath: OTRS.Ticket.DynamicField
-      description: Ticket dynamic fields
+      description: Ticket dynamic fields.
       type: string
   - arguments:
-    - description: Ticket ID of the ticket to update
+    - description: Ticket ID of the ticket to update.
       name: ticket_id
       required: true
-    - description: Ticket Title of the ticket to update
+    - description: Ticket Title of the ticket to update.
       name: title
     - auto: PREDEFINED
-      description: Ticket State of the ticket to update
+      description: Ticket State of the ticket to update. For the use of a custom state, you can specify a custom value outside the predefined set.
       name: state
       predefined:
       - New
@@ -325,7 +363,7 @@ script:
       - Open
       - PendingReminder
     - auto: PREDEFINED
-      description: Priority of the ticket to update
+      description: Priority of the ticket to update. For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
@@ -333,79 +371,94 @@ script:
       - 3Normal
       - 4High
       - 5VeryHigh
-    - description: Article Subject of the ticket to update
+    - description: Wether to change the lock state of the ticket.
+      name: lock
+      auto: PREDEFINED
+      predefined:
+      - lock
+      - unlock
+    - description: Article Subject of the ticket to update.
       name: article_subject
-    - description: Article Body of the ticket to update
+    - description: Article Body of the ticket to update.
       name: article_body
-    - description: Queue that the ticket to update is in
+    - description: Queue that the ticket to update is in.
       name: queue
-    - description: Ticket Type of the ticket to update
+    - description: 'Ticket Type of the ticket to update.'
       name: type
-    - description: 'Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2'
+    - description: 'Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2.'
       name: dynamic_fields
-    - description: 'File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21 '
+    - description: 'File entry ID of the file to add as an attachment to the updated ticket in CSV format, e.g., 123@20,124@21 .'
       name: attachment
-    description: Update an OTRS ticket
+    - description: Ticket owner to update to.
+      name: owner
+    - description: Customer user related to the ticket.
+      name: customer_user
+    description: Update an OTRS ticket.
     name: otrs-update-ticket
     outputs:
     - contextPath: OTRS.Ticket.Article.Subject
-      description: Ticket article subject
+      description: Ticket article subject.
       type: string
     - contextPath: OTRS.Ticket.Article.Body
-      description: Ticket article body
+      description: Ticket article body.
       type: string
     - contextPath: OTRS.Ticket.ID
-      description: Ticket ID
+      description: Ticket ID.
       type: string
     - contextPath: OTRS.Ticket.Created
-      description: Ticket creation date
+      description: Ticket creation date.
       type: date
     - contextPath: OTRS.Ticket.Priority
-      description: Ticket priority
+      description: Ticket priority.
       type: string
     - contextPath: OTRS.Ticket.Queue
-      description: Queue that the ticket is in
+      description: Queue that the ticket is in.
       type: string
     - contextPath: OTRS.Ticket.State
-      description: Ticket state
+      description: Ticket state.
       type: string
     - contextPath: OTRS.Ticket.Title
-      description: Ticket title
+      description: Ticket title.
       type: string
     - contextPath: OTRS.Ticket.Type
-      description: Ticket type
+      description: Ticket type.
       type: string
   - arguments:
-    - description: Ticket ID of the ticket to close
+    - description: Ticket ID of the ticket to close.
       name: ticket_id
       required: true
-    - description: Article Subject of the ticket to close
+    - description: Article Subject of the ticket to close.
       name: article_subject
       required: true
-    - description: Article Body of the ticket to close
+    - description: Article Body of the ticket to close.
       name: article_body
       required: true
-    description: Close an OTRS ticket
+    - description: Ticket state to set when closing. Defaults to "closed successful".
+      name: state
+    description: Close an OTRS ticket.
     name: otrs-close-ticket
     outputs:
     - contextPath: OTRS.Ticket.ID
-      description: Ticket ID
+      description: Ticket ID.
       type: string
     - contextPath: OTRS.Ticket.State
-      description: Ticket state
+      description: Ticket state.
       type: string
     - contextPath: OTRS.Ticket.Article.Subject
-      description: Ticket article subject
+      description: Ticket article subject.
       type: string
     - contextPath: OTRS.Ticket.Article.Body
-      description: Ticket article body
+      description: Ticket article body.
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.44880
+  dockerimage: demisto/pyotrs:1.0.0.80761
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  isremotesyncin: true
+  isremotesyncout: true
+  ismappable: false
 tests:
 - OTRS Test
 fromversion: 5.0.0

@@ -33,16 +33,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ExtractIndicatorsFromWordFile
-* ConvertFile
 * ExtractIndicatorsFromTextFile
 * ReadPDFFileV2
-* Set
+* ConvertFile
+* ExtractIndicatorsFromWordFile
 * SetAndHandleEmpty
+* Set
 
 ### Commands
 
-* rasterize-pdf
 * image-ocr-extract-text
 
 ## Playbook Inputs

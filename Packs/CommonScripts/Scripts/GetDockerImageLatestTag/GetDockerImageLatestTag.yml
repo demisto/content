@@ -28,4 +28,4 @@ args:
 tests:
 - No test - no testplaybook, but unit tests exist
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.74666
+dockerimage: demisto/python3:3.10.13.83255

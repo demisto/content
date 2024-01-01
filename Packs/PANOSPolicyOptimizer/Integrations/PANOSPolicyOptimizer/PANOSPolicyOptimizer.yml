@@ -131,6 +131,14 @@ script:
       - authentication
       - dos
       - sdwan
+    - defaultValue: '200'
+      description: The maximum number of rules to return.
+      name: limit
+    - defaultValue: '200'
+      description: The amount of items to return in each paginated call. Can only be a value of up to 200.
+      name: page_size
+    - description: A specific pagination page to get items from.
+      name: page
     description: Gets unused, used, or any rules.
     name: pan-os-po-get-rules
     outputs:
@@ -159,7 +167,7 @@ script:
       required: true
     description: Gets a specific dynamic address group.
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.83255
   runonce: false
   script: '-'
   subtype: python3

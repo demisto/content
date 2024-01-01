@@ -87,26 +87,32 @@ references:
 
   install_neo4j: &install_neo4j
     run:
-      name: Install Neo4j
-      command: |
-        wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
-        echo 'deb https://debian.neo4j.com stable 5' | sudo tee /etc/apt/sources.list.d/neo4j.list
-        sudo apt-get update
-        apt list -a neo4j
-        sudo apt-get install neo4j
-        sudo chown -R circleci /var/log/neo4j
-        sudo chown -R circleci /var/lib/neo4j
-        sudo chown -R circleci /etc/neo4j
-        mkdir -p /var/lib/neo4j/plugins
-        wget -O /var/lib/neo4j/plugins/apoc-5.5.0-core.jar https://github.com/neo4j/apoc/releases/download/5.5.0/apoc-5.5.0-core.jar
-        neo4j_conf_file="/etc/neo4j/neo4j.conf"
-        sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
-        sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
-        apoc_conf_file="/etc/neo4j/apoc.conf"
-        sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
-        sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
-        sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
-        neo4j-admin dbms set-initial-password contentgraph
+        name: Install Neo4j
+        command: |
+          sudo add-apt-repository -y ppa:openjdk-r/ppa
+          sudo apt-get update
+
+          wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
+          echo 'deb https://debian.neo4j.com stable 5' | sudo tee /etc/apt/sources.list.d/neo4j.list
+          sudo apt-get update
+          apt list -a neo4j
+          # The neo4j version should be consistent with APOC version below!
+          sudo apt-get install neo4j=1:5.13.0
+          sudo chown -R circleci /var/log/neo4j
+          sudo chown -R circleci /var/lib/neo4j
+          sudo chown -R circleci /etc/neo4j
+          mkdir -p /var/lib/neo4j/plugins
+          wget -O /var/lib/neo4j/plugins/apoc-5.13.0-core.jar https://github.com/neo4j/apoc/releases/download/5.13.0/apoc-5.13.0-core.jar
+          neo4j_conf_file="/etc/neo4j/neo4j.conf"
+          sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
+          sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
+          sudo echo "dbms.memory.transaction.total.max=600m" >> $neo4j_conf_file
+
+          apoc_conf_file="/etc/neo4j/apoc.conf"
+          sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
+          sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
+          sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
+          neo4j-admin dbms set-initial-password contentgraph
 
   container_config: &container_config
     docker:
@@ -133,6 +139,11 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        # add github to known hosts
+        [ ! -d ~/.ssh ] && mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+
         poetry --version
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
@@ -148,7 +159,7 @@ references:
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
         echo 'export ENV_RESULTS_PATH=/home/circleci/project/artifacts/env_results.json' >> $BASH_ENV
-        echo 'export GCS_PRODUCTION_BUCKET="marketplace-dist"' >> $BASH_ENV
+        echo 'export GCS_PRODUCTION_BUCKET="${TEST_XDR_PREFIX}marketplace-dist"' >> $BASH_ENV
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
         chmod +x .circleci/gitlab-ci-env-variables.sh
         ./.circleci/gitlab-ci-env-variables.sh
@@ -207,7 +218,7 @@ references:
       when: always
       no_output_timeout: 1h
       command: |
-        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "${TEST_XDR_PREFIX}marketplace-dist" ]]; then
           echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
           exit 0
         fi
@@ -228,7 +239,7 @@ references:
       when: always
       no_output_timeout: 5h
       command: |
-        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "${TEST_XDR_PREFIX}marketplace-dist" ]]; then
           echo "Skipping validations when uploading to a test bucket."
           exit 0
         fi
@@ -254,7 +265,7 @@ references:
       command: |
         EXIT_CODE=0
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
-          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json || EXIT_CODE=1
+          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --previous-coverage-report-url https://storage.googleapis.com/${TEST_XDR_PREFIX}marketplace-dist-dev/code-coverage-reports/coverage-min.json || EXIT_CODE=1
           # Checks if the $XSOAR_BOT_TEST_CONTENT exist. for security reasons only non forked pr's have access to it.
           if [[ -n $XSOAR_BOT_TEST_CONTENT && -e $ARTIFACTS_FOLDER/coverage_report/html/index.html ]]; then
             echo "Adding unit tests coverage comment to the pr"
@@ -381,7 +392,7 @@ jobs:
           command: |
             # Download index.zip
             INDEX_PATH=$(mktemp)
-            gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
+            gsutil cp gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip $INDEX_PATH
             echo "successfully downloaded index.zip into $INDEX_PATH"
 
             UNZIP_PATH=$(mktemp -d)

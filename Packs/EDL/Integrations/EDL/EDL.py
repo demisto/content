@@ -276,6 +276,7 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
             and the number of original indicators received from the server before formatting (int).
     """
     limit = request_args.offset + request_args.limit
+    offset = request_args.offset
     indicator_searcher = IndicatorsSearcher(
         filter_fields=request_args.fields_to_present,
         query=request_args.query,
@@ -297,6 +298,8 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
             # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
             if count + 1 > limit:
                 break
+            elif count < offset:
+                continue
             elif line not in iocs_set:
                 iocs_set.add(line)
                 formatted_indicators += line
@@ -698,6 +701,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
         1) if drop_invalids, drop invalids (has invalid chars)
         2) if port_stripping, strip ports
     """
+    enforce_ascii = argToBoolean(demisto.params().get('enforce_ascii', False))
     ipv4_formatted_indicators = set()
     ipv6_formatted_indicators = set()
     iocs.seek(0)
@@ -708,6 +712,11 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
         indicator = ioc.get('value')
         if not indicator:
             continue
+        if enforce_ascii:
+            try:
+                indicator.encode('ascii')
+            except UnicodeEncodeError:
+                continue
         ioc_type = ioc.get('indicator_type')
 
         if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,

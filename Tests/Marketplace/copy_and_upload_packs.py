@@ -318,7 +318,8 @@ def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
     error_str = "Mismatch in Prepare Content successful packs and Upload successful packs\n"
     error_str += f"Packs not copied: {', '.join(not_uploaded)}\n" if not_uploaded else ""
     error_str += f"Packs mistakenly copied: {', '.join(mistakenly_uploaded)}\n" if mistakenly_uploaded else ""
-    assert not not_uploaded and not mistakenly_uploaded, error_str
+    assert not not_uploaded, error_str
+    assert not mistakenly_uploaded, error_str
 
 
 def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict,
@@ -433,9 +434,9 @@ def main():
     packs_for_current_marketplace = []
 
     for pack in packs_list:
-        task_status = pack.load_user_metadata()
+        task_status = pack.load_pack_metadata()
         if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
+            pack.status = PackStatus.FAILED_LOADING_PACK_METADATA.value  # type: ignore[misc]
             pack.cleanup()
             continue
 
@@ -480,7 +481,7 @@ def main():
 
         if marketplace == XSIAM_MP:
             task_status = pack.copy_dynamic_dashboard_images(
-                production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+                production_bucket, build_bucket, pc_uploaded_images, production_base_path)
             if not task_status:
                 pack.status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
                 pack.cleanup()

@@ -28,12 +28,14 @@ ALWAYS_INSTALLED_PACKS_XPANSE = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2
 
 ALWAYS_INSTALLED_PACKS_MAPPING = {
     MarketplaceVersions.XSOAR: ALWAYS_INSTALLED_PACKS_XSOAR,
+    MarketplaceVersions.XSOAR_SAAS: ALWAYS_INSTALLED_PACKS_XSOAR,
     MarketplaceVersions.MarketplaceV2: ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2,
     MarketplaceVersions.XPANSE: ALWAYS_INSTALLED_PACKS_XPANSE,
 }
 
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = [
     MarketplaceVersions.XSOAR,
+    MarketplaceVersions.XSOAR_SAAS,
     MarketplaceVersions.MarketplaceV2,
     MarketplaceVersions.XPANSE
 ]
@@ -87,6 +89,9 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.XDRC_TEMPLATE,
     FileType.PARSING_RULE_XIF,
     FileType.LAYOUT_RULE,
+    FileType.ASSETS_MODELING_RULE,
+    FileType.ASSETS_MODELING_RULE_SCHEMA,
+    FileType.ASSETS_MODELING_RULE_XIF,
 }
 
 ONLY_UPLOAD_PACK_FILE_TYPES: set[FileType] = {
@@ -124,6 +129,9 @@ MODELING_RULE_COMPONENT_FILES: set[FileType] = {
     FileType.MODELING_RULE_XIF,
     FileType.MODELING_RULE_SCHEMA,
     FileType.MODELING_RULE_TEST_DATA,
+    FileType.ASSETS_MODELING_RULE,  # the modeling rule yml file
+    FileType.ASSETS_MODELING_RULE_XIF,
+    FileType.ASSETS_MODELING_RULE_SCHEMA,
 }
 
 XSIAM_COMPONENT_FILES: set[FileType] = {
@@ -141,4 +149,7 @@ XSIAM_COMPONENT_FILES: set[FileType] = {
     FileType.XSIAM_REPORT,
     FileType.TRIGGER,
     FileType.CORRELATION_RULE,
+    FileType.ASSETS_MODELING_RULE_SCHEMA,
 }
+
+TEST_DATA_PATTERN = '*_testdata.json'

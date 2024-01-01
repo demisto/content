@@ -39,14 +39,20 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Required Permissions
+
 The following permissions are required for all commands:
+
 - Mail.ReadWrite - Application
 - Mail.Send - Application
+- MailboxSettings.ReadWrite - Application
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### msgraph-mail-list-emails
+
 ***
 Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
 
@@ -54,6 +60,7 @@ Gets the properties of returned emails. Typically shows partial results, use the
 #### Base Command
 
 `msgraph-mail-list-emails`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -61,7 +68,7 @@ Gets the properties of returned emails. Typically shows partial results, use the
 | user_id | User ID from which to pull mails (can be principal ID (email address)). | Required | 
 | folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). . | Optional | 
 | odata | An OData query. See REDAME for OData usage examples. | Optional | 
-| search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2. | Optional | 
+| search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see <https://tools.ietf.org/html/rfc3986#section-2.2>. | Optional | 
 | page_size | Limit emails to fetch in one request. Default is 20. | Optional | 
 | pages_to_pull | The number of pages of emails to return (maximum is 10 emails per page). Default is 1. | Optional | 
 | ran_once_flag | flag for rate limit retry. | Optional | 
@@ -99,6 +106,7 @@ Gets the properties of returned emails. Typically shows partial results, use the
 | MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. | 
 
 ### msgraph-mail-get-email
+
 ***
 Returns the properties of an email.
 
@@ -106,6 +114,7 @@ Returns the properties of an email.
 #### Base Command
 
 `msgraph-mail-get-email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -149,6 +158,7 @@ Returns the properties of an email.
 | MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. | 
 
 ### msgraph-mail-delete-email
+
 ***
 Deletes an email.
 
@@ -156,6 +166,7 @@ Deletes an email.
 #### Base Command
 
 `msgraph-mail-delete-email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -169,7 +180,9 @@ Deletes an email.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-list-attachments
+
 ***
 Lists all of the attachments of given email
 
@@ -177,6 +190,7 @@ Lists all of the attachments of given email
 #### Base Command
 
 `msgraph-mail-list-attachments`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -198,6 +212,7 @@ Lists all of the attachments of given email
 | MSGraphMailAttachment.UserID | String | The ID of the user. | 
 
 ### msgraph-mail-get-attachment
+
 ***
 Gets an attachment from the email.
 
@@ -205,6 +220,7 @@ Gets an attachment from the email.
 #### Base Command
 
 `msgraph-mail-get-attachment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -232,6 +248,7 @@ Gets an attachment from the email.
 | File.Extension | String | The file extension. | 
 
 ### msgraph-mail-list-folders
+
 ***
 Returns the mail folder list directly under the root folder.
 
@@ -239,6 +256,7 @@ Returns the mail folder list directly under the root folder.
 #### Base Command
 
 `msgraph-mail-list-folders`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -260,6 +278,7 @@ Returns the mail folder list directly under the root folder.
 | MSGraphMail.Folders.UnreadItemCount | Number | The number of unread emails in the folder. | 
 
 ### msgraph-mail-list-child-folders
+
 ***
 Returns the folder list under the specified folder.
 
@@ -267,6 +286,7 @@ Returns the folder list under the specified folder.
 #### Base Command
 
 `msgraph-mail-list-child-folders`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -289,6 +309,7 @@ Returns the folder list under the specified folder.
 | MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
 
 ### msgraph-mail-create-folder
+
 ***
 Creates a new folder under the specified folder (parent).
 
@@ -296,6 +317,7 @@ Creates a new folder under the specified folder (parent).
 #### Base Command
 
 `msgraph-mail-create-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -318,6 +340,7 @@ Creates a new folder under the specified folder (parent).
 | MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
 
 ### msgraph-mail-update-folder
+
 ***
 Updates the properties of the specified folder.
 
@@ -325,6 +348,7 @@ Updates the properties of the specified folder.
 #### Base Command
 
 `msgraph-mail-update-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -347,6 +371,7 @@ Updates the properties of the specified folder.
 | MSGraphMail.Folders.UnreadItemCount | Number | The unread emails count inside the folder. | 
 
 ### msgraph-mail-delete-folder
+
 ***
 Deletes the specified mail folder.
 
@@ -354,6 +379,7 @@ Deletes the specified mail folder.
 #### Base Command
 
 `msgraph-mail-delete-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -366,7 +392,9 @@ Deletes the specified mail folder.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-move-email
+
 ***
 Moves a message to a different folder.
 
@@ -374,6 +402,7 @@ Moves a message to a different folder.
 #### Base Command
 
 `msgraph-mail-move-email`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -393,6 +422,7 @@ Moves a message to a different folder.
 | MSGraphMail.MovedEmails.UserID | String | The user ID. | 
 
 ### msgraph-mail-get-email-as-eml
+
 ***
 Retrieves an email message by message ID and uploads the content as an EML file.
 
@@ -400,6 +430,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 #### Base Command
 
 `msgraph-mail-get-email-as-eml`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -426,6 +457,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 | File.Extension | String | The extension of the file. | 
 
 ### msgraph-mail-create-draft
+
 ***
 Creates a draft message in the specified user's mailbox.
 
@@ -433,6 +465,7 @@ Creates a draft message in the specified user's mailbox.
 #### Base Command
 
 `msgraph-mail-create-draft`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -478,6 +511,7 @@ Creates a draft message in the specified user's mailbox.
 | MicrosoftGraph.Draft.ConversationID | String | The conversation ID of the draft email. | 
 
 ### send-mail
+
 ***
 Sends an email using Microsoft Graph.
 
@@ -485,6 +519,7 @@ Sends an email using Microsoft Graph.
 #### Base Command
 
 `send-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -523,6 +558,7 @@ Sends an email using Microsoft Graph.
 | MicrosoftGraph.Email.replyTo | String | The replyTo recipients of the email. | 
 
 ### msgraph-mail-reply-to
+
 ***
 The replies to the recipients of a message.
 
@@ -530,6 +566,7 @@ The replies to the recipients of a message.
 #### Base Command
 
 `msgraph-mail-reply-to`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -547,7 +584,9 @@ The replies to the recipients of a message.
 #### Context Output
 
 There is no context output for this command.
+
 ### msgraph-mail-send-draft
+
 ***
 Sends a draft email using Microsoft Graph.
 
@@ -555,6 +594,7 @@ Sends a draft email using Microsoft Graph.
 #### Base Command
 
 `msgraph-mail-send-draft`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -567,7 +607,9 @@ Sends a draft email using Microsoft Graph.
 #### Context Output
 
 There is no context output for this command.
+
 ### reply-mail
+
 ***
 Replies to an email using Graph Mail.
 
@@ -575,6 +617,7 @@ Replies to an email using Graph Mail.
 #### Base Command
 
 `reply-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -608,6 +651,7 @@ Replies to an email using Graph Mail.
 | MicrosoftGraph.SentMail.replyTo | String | The replyTo recipients of the email. | 
 
 ### msgraph-mail-update-email-status
+
 ***
 Update the status of an email to read / unread.
 
@@ -615,6 +659,7 @@ Update the status of an email to read / unread.
 #### Base Command
 
 `msgraph-mail-update-email-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -631,14 +676,94 @@ There is no context output for this command.
 
 
 ### msgraph-mail-auth-reset
+
 ***
 Run this command if for some reason you need to rerun the authentication process.
 
 #### Base Command
 
 `msgraph-mail-auth-reset`
+
 #### Input
+
 There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### msgraph-mail-list-rules
+
+***
+List email rules for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-list-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| limit | Maximum number of results to return. Default is 50. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Rule.conditions | Unknown | Conditions that when fulfilled, will trigger the corresponding actions for that rule. | 
+| MSGraphMail.Rule.actions | Unknown | Actions to be taken on a message when the corresponding conditions are fulfilled. | 
+| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
+| MSGraphMail.Rule.exceptions | Unknown | Exception conditions for the rule. | 
+| MSGraphMail.Rule.hasError | Boolean | Indicates whether the rule is in an error condition. | 
+| MSGraphMail.Rule.id | String | The ID of the rule. | 
+| MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
+| MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
+| MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+### msgraph-mail-get-rule
+
+***
+Get details of a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-get-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| rule_id | The ID of the rule to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Rule.conditions | Unknown | Conditions that when fulfilled, will trigger the corresponding actions for that rule. | 
+| MSGraphMail.Rule.actions | Unknown | Actions to be taken on a message when the corresponding conditions are fulfilled. | 
+| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
+| MSGraphMail.Rule.exceptions | Unknown | Exception conditions for the rule. | 
+| MSGraphMail.Rule.hasError | Boolean | Indicates whether the rule is in an error condition. | 
+| MSGraphMail.Rule.id | String | The ID of the rule. | 
+| MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
+| MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
+| MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+### msgraph-mail-delete-rule
+
+***
+Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-delete-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
+| rule_id | The ID of the rule to delete. | Required | 
 
 #### Context Output
 

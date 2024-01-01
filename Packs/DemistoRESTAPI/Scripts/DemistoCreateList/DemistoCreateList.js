@@ -3,7 +3,7 @@ var body = {
     data: args.listData,
 };
 
-var res = executeCommand('demisto-api-post', {uri: '/lists/save', body: body});
+var res = executeCommand('core-api-post', {uri: '/lists/save', body: body});
 
 if (isError(res[0])) {
     throw res[0].Contents;

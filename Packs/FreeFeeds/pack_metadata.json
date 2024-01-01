@@ -35,7 +35,7 @@
             "mandatory": false,
             "display_name": "Brute force feed"
         },
-        "FeedDshield": {
+        "FeedDShield": {
             "mandatory": false,
             "display_name": "DShield Feed"
         },
@@ -51,7 +51,7 @@
             "mandatory": false,
             "display_name": "Malware Bazaar Feed"
         },
-        "FeedMitreAttack": {
+        "FeedMitreAttackv2": {
             "mandatory": false,
             "display_name": "Mitre Att&ck Feed"
         },
@@ -87,7 +87,7 @@
             "mandatory": false,
             "display_name": "Snort IP Blocklist Feed"
         },
-        "URLHaus": {
+        "FeedURLHaus": {
             "mandatory": false,
             "display_name": "URL Haus Feed"
         },
@@ -95,7 +95,7 @@
             "mandatory": false,
             "display_name": "CSV Feed"
         },
-        "FeedElasticSearch": {
+        "FeedElasticsearch": {
             "mandatory": false,
             "display_name": "ElasticSearch Feed"
         },
@@ -158,6 +158,10 @@
         "FeedLOLBAS": {
                 "mandatory": false,
                 "display_name": "LOLBAS Tools Feed"
+        },
+        "FeedFeedly": {
+            "mandatory": false,
+            "display_name": "Feedly Feed"
         }
     },
     "marketplaces": [

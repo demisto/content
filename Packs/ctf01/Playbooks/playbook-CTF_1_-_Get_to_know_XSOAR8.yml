@@ -1,0 +1,827 @@
+id: CTF 1 - Get to know XSOAR8
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: CTF 1 - Get to know XSOAR8
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 12dee131-d88d-4c1c-8494-38a31d809a56
+    type: start
+    task:
+      id: 12dee131-d88d-4c1c-8494-38a31d809a56
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f51a478c-fc25-408d-808b-c2c06b4147b3
+    type: collection
+    task:
+      id: f51a478c-fc25-408d-808b-c2c06b4147b3
+      version: -1
+      name: Check out the Reports
+      description: Check out the Reports
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the report's flag?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Search for the Dashboards & Reports section in the navigation panel on the left. Remember - This is highly important for our CISO.
+        readonly: false
+      title: Practicing with Reports
+      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nOur CISO demanded to get a status report on our activities. There is a flag hidden in one of the reports. Generate the right report and try to find it :sunglasses:\n\nReports are located in the same section as the Dashboards.\n\nMake sure to allow pop-ups for downloading the report. \n\n **Did you know?**\n\nIt is easy to create and schedule any report on XSOAR. You can save hours otherwise spent collecting and collating these from scratch.\nReports are built using widgets. They can be used for a variety of tasks. Besides reports distributed to stakeholders, you can also track SLAs for tasks and identify areas in your IR processes that are time sinks.\n[Click here to read more.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Reports-Customization)\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/D.gif)\n___\n"
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: cddcecb1-6ca5-4373-86db-f513d704a96b
+    type: collection
+    task:
+      id: cddcecb1-6ca5-4373-86db-f513d704a96b
+      version: -1
+      name: Check the pack's playbook
+      description: |2+
+
+
+
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the flag that is hidden in the playbook task?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Check the Playbooks
+      description: |-
+        Navigate to the newly installed playbook (“CTF-X”) and check the existing tasks.
+
+        **Did you know?**
+        You can easily build playbooks through a visual drag-and-drop interface that features thousands of automatable actions across security products, conditional paths, manual tasks and human approval for sensitive automations.
+        [Click here to read more.](https://xsoar.pan.dev/docs/playbooks/playbooks-overview)
+
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f21cb82e-2b13-4d2b-8d2c-3238e4a07f56
+    type: collection
+    task:
+      id: f21cb82e-2b13-4d2b-8d2c-3238e4a07f56
+      version: -1
+      name: Check Integrations Settings
+      description: Check Integrations Settings
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the flag?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Try to check the integration's python, search for enabled integration from the CTF packs -> which starts with 'oh...' . Oh and remember that the answer isn't always on the wall....
+        readonly: false
+      title: Integration Settings
+      description: "XSOAR 8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you. \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n\n**Did you know?**\n\nXSOAR 8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go!\n[Click here to read more.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Migration-Guide-From-V6-to-V8/Integration-Instance-Configuration)\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/E.gif)\n___\n"
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 68669bef-c69c-452b-806b-63f718239b89
+    type: collection
+    task:
+      id: 68669bef-c69c-452b-806b-63f718239b89
+      version: -1
+      name: Incident fields
+      description: Incident fields
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+        simple: Incident fields
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the name of the incident field that is hidden in the system?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Try to use the system filters to identify the incident field.
+        readonly: false
+      title: Incident fields
+      description: |-
+        Now navigate to the Incident's fields section. This is located ON the Settings & Info. We promise the way to get to the Field settings IS there!
+
+        **Did you know?**
+        Incident Fields are used for accepting or populating incident data coming from incidents. You create fields for information you know will be coming from 3rd party integrations and in which you want to insert the information.
+        [Click here to read more.](https://xsoar.pan.dev/docs/incidents/incident-fields)
+
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: bb16e5a0-583a-4878-8b4e-099c1a42a4df
+    type: collection
+    task:
+      id: bb16e5a0-583a-4878-8b4e-099c1a42a4df
+      version: -1
+      name: Check out the Marketplace
+      description: Check out the Marketplace
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: How many content items can you find in the pack?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can see that information easily from pack's overview
+        readonly: false
+      title: Get to know the Marketplace
+      description: "Go to the Marketplace, search, and install the content pack \"CTF 02\".\n(Since there are multiple users on the same tenant - it might be installed already. Don't forget to check the \"Show Installed\" checkbox). \n\n **Did you know?** There are over 900+ content packs on Marketplace. It continues to grow!\n[Click here to read more.](https://cortex.marketplace.pan.dev/marketplace/)\n \n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/B.gif)\n___\n"
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ed0c52f9-a74a-4c27-8424-ddad1521f6ef
+    type: title
+    task:
+      id: ed0c52f9-a74a-4c27-8424-ddad1521f6ef
+      version: -1
+      name: Done with CTF01
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6fddb177-a562-424d-84a5-b5618e624a35
+    type: regular
+    task:
+      id: 6fddb177-a562-424d-84a5-b5618e624a35
+      version: -1
+      name: Create a new incident using the CTF incident type
+      description: "Congrats! You finished with the first CTF! Well Done!!\n\n\nLet's continue with the next challenge :) \n\nIn order to proceed to the following challenge, please create a new incident with the following parameter:\n1. Incident name should be your\n`<name  / student_id> - CTF02  `\n2. incident type \"CTF02\""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e9c293b2-e4d5-4b8a-8dfb-70d6143cef01
+    type: regular
+    task:
+      id: e9c293b2-e4d5-4b8a-8dfb-70d6143cef01
+      version: -1
+      name: 'Check your answer #Q1'
+      description: |-
+        Question #1:
+        How many content items can you find in the pack?
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      question_ID:
+        simple: "01"
+      secret:
+        complex:
+          root: Get to know the Marketplace.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+          - operator: toLowerCase
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: a9551360-22c2-442c-8130-a948860b557f
+    type: regular
+    task:
+      id: a9551360-22c2-442c-8130-a948860b557f
+      version: -1
+      name: 'Check your answer #Q2'
+      description: |-
+        Question #2:
+        What is the flag that is hidden in the playbook task?
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      question_ID:
+        simple: "02"
+      secret:
+        complex:
+          root: Check the Playbooks.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+          - operator: toLowerCase
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 501a198e-8b93-4c93-8051-115640feca33
+    type: regular
+    task:
+      id: 501a198e-8b93-4c93-8051-115640feca33
+      version: -1
+      name: 'Check your answer #Q3'
+      description: |-
+        Question #4:
+        What is the non-system incident field that exists on your tenant?
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      question_ID:
+        simple: "03"
+      secret:
+        complex:
+          root: Incident fields.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 17136edc-3b01-4ca4-8c16-c63892f4d2d7
+    type: regular
+    task:
+      id: 17136edc-3b01-4ca4-8c16-c63892f4d2d7
+      version: -1
+      name: Welcome message
+      description: |-
+        Welcome to XSOAR's Capture the Flag (CTF) - a hands-on XSOAR exercise!
+
+         This treasure hunt will prepare you with familiarity with the new interface and demonstrate that XSOAR 8 is still just XSOAR. We are excited to have you here and look forward to you starting the first challenge (CTF1). Once you proceed from this step, the clock starts. Good luck!
+
+        In case you answered wrong, please look at the gif below, on how to re-run a task with the right answer.
+        (If you feel that you are stuck with a question - look for the (:question:) before you submit the answer)
+        ![myfile](https://raw.githubusercontent.com/demisto/content/8ff17a54ce49fe7bc5f4587f880cbb16e69fdccc/Packs/ctf01/doc_files/demo.gif)
+        Ready?? Let's go!
+
+        ___
+        ![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/A.gif)
+        ___
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4133e907-d4ba-42ce-8100-ae811e151e8a
+    type: title
+    task:
+      id: 4133e907-d4ba-42ce-8100-ae811e151e8a
+      version: -1
+      name: SLA starts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: ctf01
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: ac2340c7-9362-4dc7-8aa7-8b61cc9bfec4
+    type: regular
+    task:
+      id: ac2340c7-9362-4dc7-8aa7-8b61cc9bfec4
+      version: -1
+      name: 'Check your answer #Q4'
+      description: |-
+        Question #5:
+        What is the report's flag?
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      question_ID:
+        simple: "04"
+      secret:
+        complex:
+          root: Practicing with Reports.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: f33fca77-f5e6-4df2-83bb-60e0380301be
+    type: regular
+    task:
+      id: f33fca77-f5e6-4df2-83bb-60e0380301be
+      version: -1
+      name: 'Check your answer #Q5'
+      description: |-
+        Question #6:
+        What is the flag in the integration?
+      scriptName: CTF_1
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      question_ID:
+        simple: "05"
+      secret:
+        complex:
+          root: Integration Settings.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 921c4193-dbec-4c1b-8905-97710dba66ff
+    type: title
+    task:
+      id: 921c4193-dbec-4c1b-8905-97710dba66ff
+      version: -1
+      name: SLA  Stop
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: ctf01
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 386db68a-bcb8-41f8-8a25-034d5634530d
+    type: regular
+    task:
+      id: 386db68a-bcb8-41f8-8a25-034d5634530d
+      version: -1
+      name: Delete Context
+      description: precaution task for re-running the playbook without deleting context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2765,
+        "width": 380,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+system: true
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.2.0
+description: 'Get to know XSOAR 8 - Run this playbook and follow the questions.'

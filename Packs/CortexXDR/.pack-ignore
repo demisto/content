@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:CortexXDRIR.yml]
-ignore=IN126,IN136,IN124
+ignore=IN126,IN136,IN124,IN139
 
 [file:XDR_iocs.yml]
 ignore=BA108,BA109
@@ -54,6 +54,10 @@ xql
 indicatorsvalues
 setindicators
 printerrorentry
+SSO
+RDP
+XCLOUD
+Cryptomining
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
@@ -95,7 +99,7 @@ ignore=BA124
 ignore=BA124
 
 [file:DBotGroupXDRIncidents.yml]
-ignore=BA124
+ignore=BA124,SC105
 
 [file:EntryWidgetNumberRegionsXCLOUD.yml]
 ignore=BA124
@@ -109,3 +113,41 @@ ignore=BA124
 [file:XCloudRegionsPieWidget.yml]
 ignore=BA124
 
+[file:incidentfield-XDR_Risky_Hosts.json]
+ignore=IF115
+
+[file:incidentfield-XDR_Risky_Users.json]
+ignore=IF115
+
+[file:incidentfield-XDR_Risky_User_Count.json]
+ignore=IF115
+
+[file:incidentfield-XDR_Risky_Host_Count.json]
+ignore=IF115
+
+[file:CortexXDRInvestigationVerdict.yml]
+ignore=BA124
+
+[file:XDR_Last_Mirrored_In_Time.json]
+ignore=IF113
+
+[file:XDR_High_Severity_Alert_Count.json]
+ignore=IF100
+
+[file:XDR_Alerts.json]
+ignore=IF100
+
+[file:XDR_Incident_ID.json]
+ignore=IF100
+
+[file:XDR_Medium_Severity_Alert_Count.json]
+ignore=IF100
+
+[file:incidentfield-XDR_Alert_Search_Results.json]
+ignore=IF100
+
+[file:XDR_Low_Severity_Alert_Count.json]
+ignore=IF100
+
+[file:XDR_Alert_Count.json]
+ignore=IF100

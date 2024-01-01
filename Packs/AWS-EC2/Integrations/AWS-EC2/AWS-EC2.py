@@ -1,6 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from mypy_boto3_ec2 import EC2Client
 
 import json
 import urllib3.util
@@ -13,7 +16,7 @@ urllib3.disable_warnings()
 
 def parse_filter_field(filter_str):
     filters = []
-    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-]+)', flags=re.I)
+    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)', flags=re.I)
     for f in filter_str.split(';'):
         match = regex.match(f)
         if match is None:
@@ -605,7 +608,7 @@ def describe_subnets_command(args, aws_client):
         data.append({
             'AvailabilityZone': subnet['AvailabilityZone'],
             'AvailableIpAddressCount': subnet['AvailableIpAddressCount'],
-            'CidrBlock': subnet['CidrBlock'],
+            'CidrBlock': subnet.get('CidrBlock', ""),
             'DefaultForAz': subnet['DefaultForAz'],
             'State': subnet['State'],
             'SubnetId': subnet['SubnetId'],
@@ -721,7 +724,7 @@ def associate_address_command(args, aws_client):
     if args.get('instanceId') is not None:
         kwargs.update({'InstanceId': args.get('instanceId')})
     if args.get('allowReassociation') is not None:
-        kwargs.update({'AllowReassociation': args.get('allowReassociation') == 'True'})
+        kwargs.update({'AllowReassociation': argToBoolean(args.get('allowReassociation'))})
     if args.get('networkInterfaceId') is not None:
         kwargs.update({'NetworkInterfaceId': args.get('networkInterfaceId')})
     if args.get('privateIpAddress') is not None:
@@ -826,7 +829,7 @@ def create_image_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('noReboot') is not None:
-        kwargs.update({'NoReboot': args.get('noReboot') == 'True'})
+        kwargs.update({'NoReboot': argToBoolean(args.get('noReboot'))})
 
     response = client.create_image(**kwargs)
 
@@ -1005,7 +1008,7 @@ def create_volume_command(args, aws_client):
     kwargs = {'AvailabilityZone': args.get('availabilityZone')}
 
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': args.get('encrypted') == 'True'})
+        kwargs.update({'Encrypted': argToBoolean(args.get('encrypted'))})
     if args.get('iops') is not None:
         kwargs.update({'Iops': int(args.get('iops'))})
     if args.get('kmsKeyId') is not None:
@@ -1104,7 +1107,7 @@ def detach_volume_command(args, aws_client):
     kwargs = {'VolumeId': args.get('volumeId')}
 
     if args.get('force') is not None:
-        kwargs.update({'Force': args.get('force') == 'True'})
+        kwargs.update({'Force': argToBoolean(args.get('force'))})
     if args.get('device') is not None:
         kwargs.update({'Device': int(args.get('device'))})
     if args.get('instanceId') is not None:
@@ -1172,9 +1175,9 @@ def run_instances_command(args, aws_client):
     if args.get('keyName') is not None:
         kwargs.update({'KeyName': args.get('keyName')})
     if args.get('ebsOptimized') is not None:
-        kwargs.update({'EbsOptimized': args.get('ebsOptimized')})
+        kwargs.update({'EbsOptimized': argToBoolean(args.get('ebsOptimized'))})
     if args.get('disableApiTermination') is not None:
-        kwargs.update({'DisableApiTermination': args.get('disableApiTermination') == 'True'})
+        kwargs.update({'DisableApiTermination': argToBoolean(args.get('disableApiTermination'))})
     if args.get('deviceName') is not None:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
         BlockDeviceMappings.update({'Ebs': {}})
@@ -1186,13 +1189,13 @@ def run_instances_command(args, aws_client):
         BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
-            {'DeleteOnTermination': args.get('ebsDeleteOnTermination') == 'True'})
+            {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
     if args.get('ebsKmsKeyId') is not None:
         BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
     if args.get('ebsSnapshotId') is not None:
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': args.get('ebsEncrypted') == 'True'})
+        BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if BlockDeviceMappings:
         kwargs.update({'BlockDeviceMappings': [BlockDeviceMappings]})  # type: ignore
 
@@ -1703,7 +1706,7 @@ def copy_image_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': args.get('ebsEncrypted') == 'True'})
+        kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('kmsKeyId') is not None:
         kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
 
@@ -1734,7 +1737,7 @@ def copy_snapshot_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': args.get('ebsEncrypted') == 'True'})
+        kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('kmsKeyId') is not None:
         kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
 
@@ -1902,12 +1905,12 @@ def modify_network_interface_attribute_command(args, aws_client):
     kwargs = {'NetworkInterfaceId': args.get('networkInterfaceId')}
 
     if args.get('sourceDestCheck') is not None:
-        kwargs.update({'SourceDestCheck': {'Value': args.get('sourceDestCheck') == 'True'}})
+        kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
     if args.get('attachmentId') is not None and args.get('deleteOnTermination') is not None:
         kwargs.update({
             'Attachment': {
                 'AttachmentId': args.get('attachmentId'),
-                'DeleteOnTermination': args.get('deleteOnTermination') == 'True'
+                'DeleteOnTermination': argToBoolean(args.get('deleteOnTermination'))
             }})
     if args.get('description') is not None:
         kwargs.update({'Description': {'Value': args.get('description')}})
@@ -1930,14 +1933,14 @@ def modify_instance_attribute_command(args, aws_client):
     kwargs = {'InstanceId': args.get('instanceId')}
 
     if args.get('sourceDestCheck') is not None:
-        kwargs.update({'SourceDestCheck': {'Value': args.get('sourceDestCheck') == 'True'}})
+        kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
     if args.get('disableApiTermination') is not None:
         kwargs.update(
-            {'DisableApiTermination': {'Value': args.get('disableApiTermination') == 'True'}})
+            {'DisableApiTermination': {'Value': argToBoolean(args.get('disableApiTermination'))}})
     if args.get('ebsOptimized') is not None:
-        kwargs.update({'EbsOptimized': {'Value': args.get('ebsOptimized') == 'True'}})
+        kwargs.update({'EbsOptimized': {'Value': argToBoolean(args.get('ebsOptimized'))}})
     if args.get('enaSupport') is not None:
-        kwargs.update({'EnaSupport': {'Value': args.get('enaSupport') == 'True'}})
+        kwargs.update({'EnaSupport': {'Value': argToBoolean(args.get('enaSupport'))}})
     if args.get('instanceType') is not None:
         kwargs.update({'InstanceType': {'Value': args.get('instanceType')}})
     if args.get('instanceInitiatedShutdownBehavior') is not None:
@@ -1962,7 +1965,7 @@ def create_network_acl_command(args, aws_client):
     kwargs = {'VpcId': args.get('VpcId')}
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl(**kwargs)
     network_acl = response['NetworkAcl']
@@ -1993,7 +1996,7 @@ def create_network_acl_entry_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        'Egress': args.get('Egress') == 'True',
+        'Egress': argToBoolean(args.get('Egress')),
         'NetworkAclId': args.get('NetworkAclId'),
         'Protocol': args.get('Protocol'),
         'RuleAction': args.get('RuleAction'),
@@ -2013,7 +2016,7 @@ def create_network_acl_entry_command(args, aws_client):
     if args.get('To') is not None:
         kwargs.update({'PortRange': {'To': int(args.get('To'))}})
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl_entry(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -2031,7 +2034,7 @@ def create_fleet_command(args, aws_client):
     kwargs = {}  # type: dict
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     if args.get('ClientToken') is not None:
         kwargs.update({'ClientToken': (args.get('ClientToken'))})
@@ -2049,11 +2052,11 @@ def create_fleet_command(args, aws_client):
         SpotOptions.update({
             'InstancePoolsToUseCount': args.get('InstancePoolsToUseCount')
         })
-    if args.get('SingleInstanceType') is not None:
-        SpotOptions.update({'SingleInstanceType': args.get('SingleInstanceType') == 'True'})
+    if args.get('SpotSingleInstanceType') is not None:
+        SpotOptions.update({'SpotSingleInstanceType': argToBoolean(args.get('SpotSingleInstanceType'))})
     if args.get('SingleAvailabilityZone') is not None:
         SpotOptions.update({
-            'SingleAvailabilityZone': args.get('SingleAvailabilityZone') == 'True'
+            'SingleAvailabilityZone': argToBoolean(args.get('SingleAvailabilityZone'))
         })
     if args.get('MinTargetCapacity') is not None:
         SpotOptions.update({
@@ -2070,11 +2073,11 @@ def create_fleet_command(args, aws_client):
         })
     if args.get('OnDemandSingleInstanceType') is not None:
         SpotOptions.update({
-            'SingleInstanceType': args.get('OnDemandSingleInstanceType') == 'True'
+            'SingleInstanceType': argToBoolean(args.get('OnDemandSingleInstanceType'))
         })
     if args.get('OnDemandSingleAvailabilityZone') is not None:
         SpotOptions.update({
-            'SingleAvailabilityZone': args.get('OnDemandSingleAvailabilityZone') == 'True'
+            'SingleAvailabilityZone': argToBoolean(args.get('OnDemandSingleAvailabilityZone'))
         })
     if args.get('OnDemandMinTargetCapacity') is not None:
         SpotOptions.update({
@@ -2187,7 +2190,7 @@ def create_fleet_command(args, aws_client):
         kwargs.update({'TargetCapacitySpecification': TargetCapacitySpecification})
 
     if args.get('TerminateInstancesWithExpiration') is not None:
-        kwargs.update({'TerminateInstancesWithExpiration': args.get('TerminateInstancesWithExpiration') == 'True'})
+        kwargs.update({'TerminateInstancesWithExpiration': argToBoolean(args.get('TerminateInstancesWithExpiration'))})
 
     if args.get('Type') is not None:
         kwargs.update({'Type': (args.get('Type'))})
@@ -2239,7 +2242,7 @@ def delete_fleet_command(args, aws_client):
     kwargs = {}
     output = []
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
     if args.get('FleetIds') is not None:
         kwargs.update({'FleetIds': parse_resource_ids(args.get('FleetIds'))})
     if args.get('TerminateInstances') is not None:
@@ -2453,7 +2456,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('KernelId') is not None:
         LaunchTemplateData.update({'KernelId': args.get('KernelId')})
     if args.get('EbsOptimized') is not None:
-        LaunchTemplateData.update({'EbsOptimized': args.get('EbsOptimized')})
+        LaunchTemplateData.update({'EbsOptimized': argToBoolean(args.get('EbsOptimized'))})
 
     if args.get('iamInstanceProfileArn') is not None and args.get('iamInstanceProfileName') is not None:
         LaunchTemplateData.update({
@@ -2475,13 +2478,13 @@ def create_launch_template_command(args, aws_client):
         BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
-            {'DeleteOnTermination': args.get('ebsDeleteOnTermination') == 'True'})
+            {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
     if args.get('ebsKmsKeyId') is not None:
         BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
     if args.get('ebsSnapshotId') is not None:
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': args.get('ebsEncrypted') == 'True'})
+        BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('NoDevice') is not None:
         BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
     if BlockDeviceMappings:
@@ -2489,9 +2492,9 @@ def create_launch_template_command(args, aws_client):
 
     NetworkInterfaces = {}  # type: dict
     if args.get('AssociatePublicIpAddress') is not None:
-        NetworkInterfaces.update({'AssociatePublicIpAddress': args.get('AssociatePublicIpAddress')})
+        NetworkInterfaces.update({'AssociatePublicIpAddress': argToBoolean(args.get('AssociatePublicIpAddress'))})
     if args.get('NetworkInterfacesDeleteOnTermination') is not None:
-        NetworkInterfaces.update({'DeleteOnTermination': args.get('NetworkInterfacesDeleteOnTermination')})
+        NetworkInterfaces.update({'DeleteOnTermination': argToBoolean(args.get('NetworkInterfacesDeleteOnTermination'))})
     if args.get('NetworkInterfacesDescription') is not None:
         NetworkInterfaces.update({'Description': args.get('NetworkInterfacesDescription')})
     if args.get('NetworkInterfacesDeviceIndex') is not None:
@@ -2520,7 +2523,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('KeyName') is not None:
         LaunchTemplateData.update({'KeyName': args.get('KeyName')})
     if args.get('Monitoring') is not None:
-        LaunchTemplateData.update({'Monitoring': {'Enabled': args.get('Monitoring')}})
+        LaunchTemplateData.update({'Monitoring': {'Enabled': argToBoolean(args.get('Monitoring'))}})
     if args.get('AvailabilityZone') is not None:
         LaunchTemplateData.update({
             'Placement': {
@@ -2554,7 +2557,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('RamDiskId') is not None:
         LaunchTemplateData.update({'RamDiskId': args.get('RamDiskId')})
     if args.get('DisableApiTermination') is not None:
-        LaunchTemplateData.update({'DisableApiTermination': args.get('DisableApiTermination')})
+        LaunchTemplateData.update({'DisableApiTermination': argToBoolean(args.get('DisableApiTermination'))})
     if args.get('InstanceInitiatedShutdownBehavior') is not None:
         LaunchTemplateData.update(
             {'InstanceInitiatedShutdownBehavior': args.get('InstanceInitiatedShutdownBehavior')})
@@ -2896,7 +2899,7 @@ def create_traffic_mirror_session_command(args, aws_client):
     if args.get('ClientToken') is not None:
         kwargs.update({'ClientToken': args.get('ClientToken')})
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     tag_specifications = []  # type: list
     if args.get('Tags') is not None:
@@ -2980,6 +2983,162 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
+def modify_snapshot_permission_command(args, aws_client):
+    client = aws_client.aws_session(
+        service='ec2',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    group_names = argToList(args.get('groupNames'))
+    user_ids = argToList(args.get('userIds'))
+    if group_names and user_ids or not (group_names or user_ids):
+        raise DemistoException('Please provide either "groupNames" or "userIds"')
+
+    accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
+
+    operation_type = args.get('operationType')
+    response = client.modify_snapshot_attribute(
+        Attribute='createVolumePermission',
+        SnapshotId=args.get('snapshotId'),
+        OperationType=operation_type,
+        DryRun=argToBoolean(args.get('dryRun', False)),
+        **accounts
+    )
+
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return_results(f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
+
+
+def describe_ipam_resource_discoveries_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
+    """
+    aws-ec2-describe-ipam-resource-discoveries command: Describes IPAM resource discoveries. A resource discovery is an IPAM
+    component that enables IPAM to manage and monitor resources that belong to the owning account.
+
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM resource
+        discoveries.
+    """
+    kwargs = {}
+    if (filters := args.get('Filters')) is not None:
+        kwargs.update({'Filters': parse_filter_field(filters)})
+    if (max_results := args.get('MaxResults')) is not None:
+        kwargs.update({'MaxResults': int(max_results)})
+    if (next_token := args.get('NextToken')) is not None:
+        kwargs.update({'NextToken': next_token})
+    if (ipam_ids := args.get('IpamResourceDiscoveryIds')) is not None:
+        kwargs.update({'IpamResourceDiscoveryIds': argToList(ipam_ids)})
+
+    response = client.describe_ipam_resource_discoveries(**kwargs)
+
+    if len(response['IpamResourceDiscoveries']) == 0:
+        return CommandResults(readable_output='No Ipam Resource Discoveries were found.')
+
+    human_readable = tableToMarkdown('Ipam Resource Discoveries', response['IpamResourceDiscoveries'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamResourceDiscoveries",
+        outputs_key_field="IpamResourceDiscoveryId",
+        outputs=response['IpamResourceDiscoveries'],
+        raw_response=response,
+        readable_output=human_readable,
+    )
+    return command_results
+
+
+def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
+    """
+    aws-ec2-describe-ipam-resource-discovery-associations command: Describes resource discovery association with an Amazon VPC
+    IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM discovery
+        associations.
+    """
+    kwargs = {}
+    if (filters := args.get('Filters')) is not None:
+        kwargs.update({'Filters': parse_filter_field(filters)})
+    if (max_results := args.get('MaxResults')) is not None:
+        kwargs.update({'MaxResults': int(max_results)})
+    if (next_token := args.get('NextToken')) is not None:
+        kwargs.update({'NextToken': next_token})
+    if (ipam_ids := args.get('IpamResourceDiscoveryAssociationIds')) is not None:
+        kwargs.update({'IpamResourceDiscoveryAssociationIds': argToList(ipam_ids)})
+
+    response = client.describe_ipam_resource_discovery_associations(**kwargs)
+
+    if len(response['IpamResourceDiscoveryAssociations']) == 0:
+        return CommandResults(readable_output='No Ipam Resource Discovery Associations were found.')
+
+    human_readable = tableToMarkdown('Ipam Resource Discovery Associations', response['IpamResourceDiscoveryAssociations'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamResourceDiscoveryAssociations",
+        outputs_key_field="IpamResourceDiscoveryId",
+        outputs=response['IpamResourceDiscoveryAssociations'],
+        raw_response=response,
+        readable_output=human_readable,
+    )
+    return command_results
+
+
+def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_client) -> CommandResults:
+    """
+    aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
+
+    Args:
+        client (AWSClient): AWS client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains public IP addresses
+        that have been discovered by IPAM.
+    """
+    client = aws_client.aws_session(
+        service='ec2',
+        region=args.get('AddressRegion'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
+    )
+
+    if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
+        return_error('IpamResourceDiscoveryId and AddressRegion need to be defined')
+
+    kwargs = {}
+    kwargs.update({'IpamResourceDiscoveryId': args.get('IpamResourceDiscoveryId'), 'AddressRegion': args.get('AddressRegion')})
+    if (filters := args.get('Filters')) is not None:
+        kwargs.update({'Filters': parse_filter_field(filters)})
+    if (max_results := args.get('MaxResults')) is not None:
+        kwargs.update({'MaxResults': int(max_results)})
+    if (next_token := args.get('NextToken')) is not None:
+        kwargs.update({'NextToken': next_token})
+
+    response = client.get_ipam_discovered_public_addresses(**kwargs)
+
+    if len(response['IpamDiscoveredPublicAddresses']) == 0:
+        return CommandResults(readable_output='No Ipam Discovered Public Addresses were found.')
+
+    output = json.dumps(response, cls=DatetimeEncoder)
+
+    human_readable = tableToMarkdown('Ipam Discovered Public Addresses', json.loads(output)['IpamDiscoveredPublicAddresses'])
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
+        outputs_key_field="Address",
+        outputs=json.loads(output)['IpamDiscoveredPublicAddresses'],
+        raw_response=json.loads(output),
+        readable_output=human_readable,
+    )
+    return command_results
+
+
 def main():
     try:
         params = demisto.params()
@@ -2999,11 +3158,20 @@ def main():
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                               retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
+                               timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
 
         command = demisto.command()
         args = demisto.args()
+
+        # required for typing of IPAM commands
+        client: 'EC2Client' = aws_client.aws_session(
+            service='ec2',
+            region=args.get('AddressRegion'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
+        )
 
         LOG(f'Command being called is {command}')
 
@@ -3200,9 +3368,6 @@ def main():
         elif command == 'aws-ec2-modify-image-attribute':
             modify_image_attribute_command(args, aws_client)
 
-        elif command == 'aws-ec2-modify-network-interface-attribute':
-            modify_network_interface_attribute_command(args, aws_client)
-
         elif command == 'aws-ec2-modify-instance-attribute':
             modify_instance_attribute_command(args, aws_client)
 
@@ -3229,6 +3394,18 @@ def main():
 
         elif command == 'aws-ec2-release-hosts':
             release_hosts_command(args, aws_client)
+
+        elif command == 'aws-ec2-modify-snapshot-permission':
+            modify_snapshot_permission_command(args, aws_client)
+
+        elif command == 'aws-ec2-describe-ipam-resource-discoveries':
+            return_results(describe_ipam_resource_discoveries_command(args, client))
+
+        elif command == 'aws-ec2-describe-ipam-resource-discovery-associations':
+            return_results(describe_ipam_resource_discovery_associations_command(args, client))
+
+        elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
+            return_results(get_ipam_discovered_public_addresses_command(args, aws_client))
 
     except Exception as e:
         LOG(e)

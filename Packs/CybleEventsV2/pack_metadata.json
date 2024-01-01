@@ -2,7 +2,7 @@
     "name": "CybleEventsV2",
     "description": "Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "Cyble Info Sec",
     "url": "https://cyble.com/",
     "email": "",
@@ -14,8 +14,7 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ],
     "githubUser": []
 }

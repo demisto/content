@@ -18,12 +18,14 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | IP threshold |  | False |
     | Domain threshold |  | False |
     | File threshold |  | False |
-    | Email threshold |  | False |
+    | Email threshold | Email indicators with confidence value above this threshold are considered malicious. | False |
     | Include inactive results | Whether to include inactive indicators in reputation commands. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Create relationships | Create relationships between indicators as part of enrichment. | False |
+    | Remote API | Gather additional information about the threat model from remote APIs. | False |
+    | Default DBOT score for indicators with low confidence |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -1518,24 +1520,25 @@ Imports indicators (observables) into ThreatStream. The imported data must be ap
 Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
 
  Note: This command indicates that the JSON you submitted was valid. However, in cases where data is incorrect or required fields are left unspecified, observables can be ignored or imported as false positive.
+Valid itypes values for the JSON can be found in the Anomaly ThreatStream API documentation under the Indicator Types in Threat Stream API section.
 
 #### Base Command
 
 `threatstream-import-indicator-without-approval`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| confidence | The observable certainty level of a reported indicator type. Default is 50. | Optional | 
-| source_confidence_weight | Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100. | Optional | 
-| expiration_ts | The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date. | Optional | 
-| severity | The severity to assign to the observable when it is imported. Possible values are: low, medium, high, very-high. | Optional | 
-| tags | A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags. | Optional | 
-| trustedcircles | A comma-separated list of trusted circle IDs with which threat data should be shared. | Optional | 
-| classification | Denotes whether the indicator data is public or private to the organization. Possible values are: private, public. | Required | 
-| allow_unresolved | Whether unresolved domain observables included in the file will be accepted as valid in ThreatStream and imported. Possible values are: yes, no. | Optional | 
-| file_id | The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. | Optional | 
-| indicators_json | The “meta” section will be added to this json, and we will send this json to the api endpoint. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                        | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| confidence | The observable certainty level of a reported indicator type. Default is 50.                                                                                                                                                                                            | Optional | 
+| source_confidence_weight | Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100.                                                        | Optional | 
+| expiration_ts | The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.                                                                                   | Optional | 
+| severity | The severity to assign to the observable when it is imported. Possible values are: low, medium, high, very-high.                                                                                                                                                       | Optional | 
+| tags | A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags.                                  | Optional | 
+| trustedcircles | A comma-separated list of trusted circle IDs with which threat data should be shared.                                                                                                                                                                                  | Optional | 
+| classification | Denotes whether the indicator data is public or private to the organization. Possible values are: private, public.                                                                                                                                                     | Required | 
+| allow_unresolved | Whether unresolved domain observables included in the file will be accepted as valid in ThreatStream and imported. Possible values are: yes, no.                                                                                                                       | Optional | 
+| file_id | The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.                                      | Optional | 
+| indicators_json | The “meta” section will be added to this json, and we will send this json to the api endpoint. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.                                                            | Optional | 
 | tags_tlp | You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable. Possible values are: Red, Amber, Green, White. | Optional | 
 
 
@@ -4805,3 +4808,42 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The Attack Pattern entities with ids 2222, 1111 were associated successfully to entity id: 26769.
+
+### threatstream-add-indicator-tag
+
+***
+Add tags to the indicators
+
+#### Base Command
+
+`threatstream-add-indicator-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_ids | A comma-separated list of unique IDs of the indicator to which you are adding tags. | Required | 
+| tags | A comma-separated list of values of the tags you want to add. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### threatstream-remove-indicator-tag
+
+***
+Remove tags from the indicators
+
+#### Base Command
+
+`threatstream-remove-indicator-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_ids | A comma-separated list of unique IDs of the indicator to which you are removing tags. | Required | 
+| tags | A comma-separated list of values of the tags you want to remove. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

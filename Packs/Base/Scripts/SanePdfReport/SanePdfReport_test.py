@@ -39,7 +39,7 @@ def test_sane_pdf_report(mocker):
         'ZmlsdGVyIjp7InF1ZXJ5IjoiIiwicGVyaW9kIjp7ImJ5RnJvbSI6ImRheXMiLCJmcm9tVmFsdWUiOjd9fX0sImF1dG9tYXRpb24iOnsibmFt'
         'ZSI6IiIsImlkIjoiIiwiYXJncyI6bnVsbCwibm9FdmVudCI6ZmFsc2V9LCJmcm9tRGF0ZSI6IjIwMjAtMTAtMThUMTE6MTY6MzcrMDM6MDAi'
         'LCJ0aXRsZSI6IlRleHQgV2lkZ2V0IiwiZW1wdHlOb3RpZmljYXRpb24iOiJObyByZXN1bHRzIGZvdW5kIiwidGl0bGVTdHlsZSI6bnVsbH1d',
-        'resourceTimeout': "10000"
+        'resourceTimeout': "60000"
     })
     mocker.patch.object(demisto, 'results')
 
@@ -72,7 +72,11 @@ def test_markdown_image_server(mocker, capfd):
         assert res1.status == 400
 
         # correct markdown image pat
-        conn.request("GET", "/markdown/image/1234-5678-9012-3456.png")
+        conn.request("GET", "/xsoar/markdown/image/1234-5678-9012-3456.png")     # Test for XSOAR 8
+        res2 = conn.getresponse()
+        assert res2.status == 200
+        mocker.patch.object(SanePdfReport, 'is_demisto_version_ge', return_value=False)
+        conn.request("GET", "/markdown/image/1234-5678-9012-3456.png")      # Test for XSOAR 6
         res2 = conn.getresponse()
         assert res2.status == 200
 

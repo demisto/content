@@ -1056,7 +1056,7 @@ def set_autoreply_command():
     file_content = ''
     if response_body_entry_id and not args.get('response-body'):
         file_entry = demisto.getFilePath(response_body_entry_id)
-        with open(file_entry['path'], 'r') as f:
+        with open(file_entry['path']) as f:
             file_content = str(f.read())
     response_body_plain_text = file_content if file_content else args.get('response-body')
     response_body_type = args.get('response-body-type')
@@ -1151,7 +1151,7 @@ def create_user(primary_email, first_name, family_name, password):
         'name': {
             'givenName': first_name,
             'familyName': family_name,
-            'fullName': '%s %s' % (first_name, family_name,),
+            'fullName': f'{first_name} {family_name}',
         },
         'password': password
     }
@@ -1190,7 +1190,8 @@ def list_labels(user_key):
     service = get_service(
         'gmail',
         'v1',
-        ['https://www.googleapis.com/auth/gmail.readonly'])
+        ['https://www.googleapis.com/auth/gmail.readonly'],
+        delegated_user=user_key)
     results = service.users().labels().list(userId=user_key).execute()
     labels = results.get('labels', [])
     return labels
@@ -1205,7 +1206,7 @@ def get_user_role_command():
         raise ValueError('Must provide Immutable GoogleApps Id')
 
     roles = get_user_role(user_key, GAPPS_ID)
-    return user_roles_to_entry('User Roles of %s:' % (user_key,), roles)
+    return user_roles_to_entry(f'User Roles of {user_key}:', roles)
 
 
 def get_user_role(user_key, customer):
@@ -1398,7 +1399,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
 
     if max_results > 500:
         raise ValueError(
-            'maxResults must be lower than 500, got %s' % (max_results,))
+            f'maxResults must be lower than 500, got {max_results}')
     try:
         mails, q = search(user_id, subject, _from, to,
                           before, after, filename, _in, query,
@@ -1434,9 +1435,9 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'in': _in,
         'has': 'attachment' if has_attachments else ''
     }
-    q = ' '.join('%s:%s ' % (name, value,)
+    q = ' '.join(f'{name}:{value} '
                  for name, value in list(query_values.items()) if value != '')
-    q = ('%s %s' % (q, query,)).strip()
+    q = (f'{q} {query}').strip()
 
     command_args = {
         'userId': user_id,
@@ -1477,9 +1478,15 @@ def get_mail_command():
     user_id = args.get('user-id', ADMIN_EMAIL)
     _id = args.get('message-id')
     _format = args.get('format')
+    should_run_get_attachments = argToBoolean(args.get('include-attachments', 'false'))
 
     mail = get_mail(user_id, _id, _format)
-    return emails_to_entry('Email:', [mail], _format, user_id)
+    email_entry = emails_to_entry('Email:', [mail], _format, user_id)
+    results = [email_entry]
+    if should_run_get_attachments:
+        get_attachments_command_results = get_attachments_command()
+        results.append(get_attachments_command_results)  # type: ignore
+    return results
 
 
 def get_mail(user_id, _id, _format, service=None):
@@ -1952,6 +1959,7 @@ def collect_inline_attachments(attach_cids):
             })
 
         return inline_attachment
+    return None
 
 
 def collect_manual_attachments():
@@ -2627,7 +2635,7 @@ def fetch_incidents():
             demisto.info(
                 f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
-    demisto.info('extract {} incidents'.format(len(incidents)))
+    demisto.info(f'extract {len(incidents)} incidents')
     next_page_token = result.get('nextPageToken', '')
     if next_page_token:
         # we still have more results

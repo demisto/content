@@ -1,0 +1,44 @@
+{
+  "name": "Vectra XDR",
+  "description": "Vectra XDR pack empowers the SOC to create incidents using Vectra AI's Attack Signal Intelligence.",
+  "support": "partner",
+  "currentVersion": "1.0.1",
+  "author": "Vectra AI",
+  "url": "https://support.vectra.ai",
+  "email": "support@vectra.ai",
+  "categories": [
+    "Network Security"
+  ],
+  "tags": [
+    "Network",
+    "Security",
+    "Incident Handling",
+    "Incident Response",
+    "Breach",
+    "Security Analytics"
+  ],
+  "useCases": [
+    "Network Security",
+    "Asset Management",
+    "Vulnerability Management",
+    "Breach Notification",
+    "Incident Response"
+  ],
+  "keywords": [
+    "Vectra XDR",
+    "Vectra",
+    "Entity",
+    "Detections",
+    "Vectra AI",
+    "Security",
+    "Respond",
+    "Respond UX",
+    "Vectra Platform"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2"
+  ],
+  "devEmail": [],
+  "githubUser": []
+}

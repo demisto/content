@@ -2,6 +2,7 @@
 
 Use Group-IB Threat Intelligence & Attribution Feed integration to fetch IOCs from various Group-IB collections.
 This integration was integrated and tested with version 1.0 of Group-IB Threat Intelligence & Attribution Feed
+
 ## Configure Group-IB Threat Intelligence & Attribution Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -29,10 +30,14 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
     |  |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### gibtia-get-indicators
+
 ***
 Get limited count of indicators for specified collection and get all indicators from particular events by id.
 
@@ -40,6 +45,7 @@ Get limited count of indicators for specified collection and get all indicators 
 #### Base Command
 
 `gibtia-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,11 +60,13 @@ Get limited count of indicators for specified collection and get all indicators 
 There is no context output for this command.
 
 #### Command Example
+
 ```!gibtia-get-indicators collection=compromised/mule```
 
 #### Human Readable Output
 
 >### IP indicators
+
 >|value|type|asn|geocountry|gibmalwarename|
 >|---|---|---|---|---|
 >| 11.11.11.11 | IP |  |  | Anubis |

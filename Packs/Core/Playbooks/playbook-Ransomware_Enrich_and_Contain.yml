@@ -28,6 +28,7 @@ tasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -38,7 +39,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -58,6 +59,7 @@ tasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -100,6 +102,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -145,6 +148,7 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -167,8 +171,7 @@ tasks:
       id: 25f7c2e8-f0e2-4ac5-81e8-78eb6cacc629
       version: -1
       name: Robust search of IoCs
-      description: |-
-        Searches Cortex XSIAM indicators. 
+      description: Searches Cortex XSIAM indicators.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -182,6 +185,7 @@ tasks:
       query:
         simple: initiatorsha256:${inputs.FileSHA256} OR remoteip:${alert.remoteip}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -225,6 +229,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -293,6 +298,7 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -338,6 +344,7 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -399,6 +406,7 @@ tasks:
       UserContainment:
         simple: "False"
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       scriptArguments:
@@ -444,6 +452,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -474,6 +483,7 @@ tasks:
       '#none#':
       - "30"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -514,6 +524,7 @@ tasks:
           root: alert
           accessor: initiatorpath
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -544,7 +555,7 @@ tasks:
       '#default#':
       - "21"
       "yes":
-      - "29"
+      - "44"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -559,59 +570,12 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -520,
           "y": 1200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: b9596e34-c1d6-4838-8c25-bfd9657f6e6f
-    type: playbook
-    task:
-      id: b9596e34-c1d6-4838-8c25-bfd9657f6e6f
-      version: -1
-      name: WildFire - Detonate file
-      description: |-
-        Detonate one or more files using the Wildfire integration. This playbook
-        returns relevant reports to the Alerts War Room and file reputations to the context data.
-        The detonation supports the following file types -
-        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
-      playbookName: WildFire - Detonate file
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      File:
-        complex:
-          root: File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -740,
-          "y": 1390
         }
       }
     note: false
@@ -650,6 +614,7 @@ tasks:
         simple: "true"
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -694,6 +659,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -730,6 +696,7 @@ tasks:
           root: Core.RetrievedFiles
           accessor: action_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -801,8 +768,9 @@ tasks:
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -868,8 +836,9 @@ tasks:
         complex:
           root: Core.Endpoint
           accessor: endpoint_id
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -900,6 +869,7 @@ tasks:
       '#none#':
       - "18"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -933,6 +903,7 @@ tasks:
       - "42"
       - "43"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -969,8 +940,9 @@ tasks:
           root: ExtractedIndicators
           accessor: IP
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1007,8 +979,9 @@ tasks:
           root: ExtractedIndicators
           accessor: Domain
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1045,8 +1018,9 @@ tasks:
           root: ExtractedIndicators
           accessor: URL
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1083,8 +1057,9 @@ tasks:
           root: ExtractedIndicators
           accessor: File
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1096,6 +1071,59 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 2ba16adb-1683-409a-81be-59ed83cb7bbc
+    type: playbook
+    task:
+      id: 2ba16adb-1683-409a-81be-59ed83cb7bbc
+      version: -1
+      name: WildFire - Detonate file v2
+      description: |-
+        Detonate one or more files using the Wildfire v2 integration. This playbook
+        returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
+
+        Note: Base64 encoded files are currently not supported.
+      playbookName: WildFire - Detonate file v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.detonateRansomFile
+          transformers:
+          - operator: uniq
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "8"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -770,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false

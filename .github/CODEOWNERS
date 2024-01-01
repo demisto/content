@@ -31,11 +31,11 @@
 # Test Collection
 /Tests/scripts/collect_tests @dorschw
 /Tests/scripts/collect_tests/id_set.py @ilaner
-/Tests/conf.json @ostolero
+/Tests/conf.json @sapirshuker
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
-/Packs/PAN-OS/Integrations/ @GuyAfik
+/Packs/PAN-OS/Integrations/ @GuyAfik @jlevypaloalto
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
 /Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
@@ -80,7 +80,6 @@
 .gitlab/ci/* @yucohen
 .gitlab/* @yucohen
 .gitlab-ci.yml @yucohen
-.gitlab/ci/.gitlab-ci.on-push.yml @daryakoval
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
 .gitlab/ci/.gitlab-ci.staging.yml @ilaner
 /Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
@@ -92,6 +91,7 @@
 /Tests/scripts/download_demisto_conf.sh @daryakoval
 Tests/scripts/test_modeling_rules.sh @daryakoval
 Tests/scripts/lock_cloud_machines.py @daryakoval
+Tests/Marketplace/server_content_items.json @dantavori
 
 # SDK Related
 .gitlab/ci/.gitlab-ci.sdk-nightly.yml @dorschw
@@ -112,3 +112,29 @@ poetry.lock @ilaner @dorschw
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval
+
+# TIM Related
+/Packs/TAXIIServer/Integrations/* @MLainer1
+/Packs/FeedTAXII/Integrations/* @MLainer1
+/Packs/EDL/Integrations/* @MLainer1
+/Packs/FeedJSON/Integrations/* @MLainer1
+/Packs/FeedMitreAttackv2/* @MLainer1
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @MLainer1
+/Packs/ApiModules/Scripts/NGINXApiModule/* @MLainer1
+
+# ML scripts
+/Packs/ML/ @jlevypaloalto
+/Packs/PhishingURL/Scripts/DBotPredictURLPhishing/ @jlevypaloalto
+/Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
+/Packs/CommonScripts/Scripts/DBotUpdateLogoURLPhishing/ @jlevypaloalto
+/Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
+/Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
+/Packs/Base/Scripts/DBotPredictPhishingWords/ @jlevypaloalto
+/Packs/Base/Scripts/DBotFindSimilarIncidents/ @jlevypaloalto
+/Packs/Base/Scripts/DBotTrainClustering/ @jlevypaloalto
+/Packs/Base/Scripts/DBotBuildPhishingClassifier/ @jlevypaloalto
+/Packs/Base/Scripts/DBotPreprocessTextData/ @jlevypaloalto
+/Packs/Base/Scripts/DBotFindSimilarIncidentsByIndicators/ @jlevypaloalto
+/Packs/Base/Scripts/DBotSuggestClassifierMapping/ @jlevypaloalto
+/Packs/Base/Scripts/GetMLModelEvaluation/ @jlevypaloalto
+/Packs/Base/Scripts/DBotMLFetchData/ @jlevypaloalto

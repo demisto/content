@@ -10,7 +10,7 @@ configuration:
   additionalinfo: The base url of the source you wish to upload/ downlowd files from.
   display: Source URL
   name: url
-  required: true
+  required: false
   type: 0
   section: Connect
 - display: Trust any certificate (not secure)
@@ -51,7 +51,21 @@ script:
       name: attachment_paths
     description: Creates incidents from json files provided, and stores it in the instance context.
     name: create-test-incident-from-file
-  dockerimage: demisto/python3:3.10.13.73190
+  - arguments:
+    - description: 'The enry ID of the json file that represents the incidents.'
+      name: incident_entry_id
+      required: false
+    - description: 'The enry IDs of the incident attachments.'
+      name: attachment_entry_ids
+      required: false
+    - description: 'The json object that represents the incident.'
+      name: incident_raw_json
+      required: false
+    - description: 'The paths of the files to be added to incidents as attachment. Would be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml'
+      name: attachment_paths
+    description: Creates incidents from json file, and stores it in the instance context.
+    name: create-test-incident-from-raw-json
+  dockerimage: demisto/python3:3.10.13.83255
   isfetch: true
   runonce: false
   script: '-'

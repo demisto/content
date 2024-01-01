@@ -178,6 +178,7 @@ function ParseSearchToEntryContext([psobject]$search, [int]$limit = -1, [bool]$a
         "PublicFolderLocationExclusion" = $search.PublicFolderLocationExclusion
         "RunBy" = $search.RunBy
         "RunspaceId" = $search_action.RunspaceId
+        "SearchStatus" = "Success"
         "SharePointLocation" = $search.SharePointLocation
         "SharePointLocationExclusion" = $search.SharePointLocationExclusion
         "Size" = $search.Size
@@ -236,6 +237,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
         "PublicFolderLocationExclusion" = $search_action.PublicFolderLocationExclusion
         "Retry" = $search_action.Retry
         "RunspaceId" = $search_action.RunspaceId
+        "SearchStatus" = "Success"
         "SharePointLocation" = $search_action.SharePointLocation
         "SharePointLocationExclusion" = $search_action.SharePointLocationExclusion
         "Name" = $search_action.Name
@@ -923,12 +925,6 @@ class SecurityAndComplianceClient {
             throw "New action must include valid action - Preview/Purge"
         }
         $response = New-ComplianceSearchAction @cmd_params
-        if (-not $response){
-            # Close session to remote
-            $this.DisconnectSession()
-
-            throw "The search action didn't return any results. Please check the search_name and consider running the o365-sc-start-search command before."
-        }
 
         # Close session to remote
         $this.DisconnectSession()
@@ -1561,6 +1557,19 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
     $raw_response = $client.GetSearch($kwargs.search_name)
+    # Check if raw_response is null
+    if ($null -eq $raw_response) {
+        # Handle the scenerio if a search is not found:
+        $human_readable = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        $entry_context = @{
+            $script:SEARCH_ENTRY_CONTEXT = @{
+                "SearchStatus" = "NotFound"
+                "Name" = $kwargs.search_name
+            }
+        }
+        $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        return $human_readable, $entry_context, $raw_response
+    }
     # Entry context
     $entry_context = @{
         $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext -search $raw_response -limit $kwargs.limit -all_results $all_results
@@ -1613,6 +1622,20 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
 function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type)
+
+    if ($null -eq $raw_response) {
+        # Handle the scenario if a search is not found:
+        $human_readable = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        $entry_context = @{
+            $script:SEARCH_ACTION_ENTRY_CONTEXT = @{
+                "SearchStatus" = "NotFound"
+                "Name" = $kwargs.search_name
+            }
+        }
+        $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        return $human_readable, $entry_context, $raw_response
+    }
+
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
@@ -1792,6 +1815,11 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
+
+    if ($integration_params.insecure -eq $true) {
+        # Bypass SSL verification if insecure is true
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    }
 
     try {
         $Demisto.Debug("Command being called is $Command")

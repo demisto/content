@@ -3,7 +3,7 @@
 - ***List Items on Individual Lines*** - For XSOAR Lists that are comma separated text, this will take all the list items and return them on a separate line, one list item per line.
 
 We recommend that you use Cortex XSOAR server rerouting when using this integration:
-
+For Cortex XSOAR 6.x only:
 1. Navigate to  **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 

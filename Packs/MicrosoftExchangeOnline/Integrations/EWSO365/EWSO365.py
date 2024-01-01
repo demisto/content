@@ -19,6 +19,7 @@ from io import StringIO
 import logging
 import warnings
 import email
+from email.policy import SMTP, SMTPUTF8
 from requests.exceptions import ConnectionError
 from multiprocessing import Process
 import exchangelib
@@ -588,14 +589,17 @@ def start_logging():
 """ Helper Functions """
 
 
-def get_attachment_name(attachment_name):
+def get_attachment_name(attachment_name, eml_extension=False):
     """
     Retrieve attachment name or error string if none is provided
     :param attachment_name: attachment name to retrieve
+    :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
     if attachment_name is None or attachment_name == "":
-        return "demisto_untitled_attachment"
+        return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
+    elif eml_extension and not attachment_name.endswith(".eml"):
+        return f'{attachment_name}.eml'
     return attachment_name
 
 
@@ -1076,7 +1080,7 @@ def fetch_attachments_for_message(
             if attachment.item.mime_content:
                 entries.append(
                     fileResult(
-                        get_attachment_name(attachment.name) + ".eml",
+                        get_attachment_name(attachment.name, eml_extension=True),
                         attachment.item.mime_content,
                     )
                 )
@@ -2003,21 +2007,27 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
 
     if item.mime_content:
         mime_content = item.mime_content
+        email_policy = SMTP if mime_content.isascii() else SMTPUTF8
         if isinstance(mime_content, bytes):
-            email_content = email.message_from_bytes(mime_content)
+            email_content = email.message_from_bytes(mime_content, policy=email_policy)
         else:
-            email_content = email.message_from_string(mime_content)
+            email_content = email.message_from_string(mime_content, policy=email_policy)
         if item.headers:
+            # compare header keys case-insensitive
             attached_email_headers = [
-                (h, " ".join(map(str.strip, v.split("\r\n"))))
+                (h.lower(), " ".join(map(str.strip, v.split("\r\n"))))
                 for (h, v) in list(email_content.items())
             ]
             for header in item.headers:
                 if (
-                        header.name,
+                        header.name.lower(),
                         header.value,
-                ) not in attached_email_headers and header.name != "Content-Type":
-                    email_content.add_header(header.name, header.value)
+                ) not in attached_email_headers and header.name.lower() != "content-type":
+                    try:
+                        email_content.add_header(header.name, header.value)
+                    except ValueError as err:
+                        if "There may be at most" not in str(err):
+                            raise err
 
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
         file_result = fileResult(eml_name + ".eml", email_content.as_string())
@@ -2045,7 +2055,7 @@ def parse_incident_from_item(item):     # pragma: no cover
         incident["details"] = item.body
     incident["name"] = item.subject
     labels.append({"type": "Email/subject", "value": item.subject})
-    incident["occurred"] = item.datetime_created.ewsformat()
+    incident["occurred"] = item.datetime_received.ewsformat()
 
     # handle recipients
     if item.to_recipients:
@@ -2129,11 +2139,14 @@ def parse_incident_from_item(item):     # pragma: no cover
                 # save the attachment
                 if attachment.item.mime_content:
                     mime_content = attachment.item.mime_content
+                    email_policy = SMTP if mime_content.isascii() else SMTPUTF8
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
-                    attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
-                        else email.message_from_string(mime_content)
+                    attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
+                        if isinstance(mime_content, bytes) \
+                        else email.message_from_string(mime_content, policy=email_policy)
                     if attachment.item.headers:
+                        # compare header keys case-insensitive
                         attached_email_headers = []
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
@@ -2144,14 +2157,19 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     continue
 
                             v = ' '.join(map(str.strip, v.split('\r\n')))
-                            attached_email_headers.append((h, v))
+                            attached_email_headers.append((h.lower(), v))
                         for header in attachment.item.headers:
                             if (
-                                    (header.name, header.value)
+                                    (header.name.lower(), header.value)
                                     not in attached_email_headers
-                                    and header.name != "Content-Type"
+                                    and header.name.lower() != "content-type"
                             ):
-                                attached_email.add_header(header.name, header.value)
+                                try:
+                                    attached_email.add_header(header.name, header.value)
+                                except ValueError as err:
+                                    if "There may be at most" not in str(err):
+                                        raise err
+
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
                     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
@@ -2162,12 +2180,13 @@ def parse_incident_from_item(item):     # pragma: no cover
                         # In case the detected encoding fails apply the default encoding
                         demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
                                      f'using utf-8.\nAttached email:\n{attached_email}')
-                        data = attached_email_bytes.decode('utf-8')
+                        try:
+                            data = attached_email_bytes.decode('utf-8')
+                        except UnicodeDecodeError:
+                            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
+                            data = attached_email_bytes  # type: ignore
 
-                    file_result = fileResult(
-                        get_attachment_name(attachment.name) + ".eml",
-                        data,
-                    )
+                    file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
 
                 if file_result:
                     # check for error
@@ -2179,7 +2198,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                     incident["attachment"].append(
                         {
                             "path": file_result["FileID"],
-                            "name": get_attachment_name(attachment.name) + ".eml",
+                            "name": get_attachment_name(attachment.name, eml_extension=True),
                         }
                     )
 

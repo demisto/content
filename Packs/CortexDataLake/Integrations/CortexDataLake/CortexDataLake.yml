@@ -225,7 +225,7 @@ script:
     - defaultValue: '''1970-01-01 00:00:00'''
       description: The query start time. For example, start_time="2018-04-26 00:00:00". Default is 1970-01-01 00:00:00.
       name: start_time
-    - description: The query end time. For example, end_time="2018-04-26 00:00:00"
+    - description: The query end time. For example, end_time="2018-04-26 00:00:00".
       name: end_time
     - defaultValue: '10'
       description: The maximum number of logs to return. Default is 10.
@@ -513,7 +513,7 @@ script:
     - description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
       name: SHA256
       required: true
-    description: Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat` WHERE file_sha_256 = <file_hash>'
+    description: Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat` WHERE file_sha_256 = <file_hash>'.
     name: cdl-search-by-file-hash
     outputs:
     - contextPath: CDL.Logging.Threat.SessionID
@@ -648,7 +648,7 @@ script:
       name: from_zone
     - description: A destination zone name or an array of zone names to search.
       name: to_zone
-    - description: Source port utilized by the session. Can be a port number or an array of destination port numbers to search. For example '443' or '443,445'
+    - description: Source port utilized by the session. Can be a port number or an array of destination port numbers to search. For example '443' or '443,445'.
       name: source_port
     - description: An action name or an array of action names to search.
       name: action
@@ -1544,7 +1544,7 @@ script:
     - contextPath: CDL.Logging.URL.HTTPMethod
       description: |-
         The HTTP Method used
-        in the web request
+        in the web request.
       type: String
     - contextPath: CDL.Logging.URL.Severity
       description: The severity associated with the event.
@@ -1992,7 +1992,7 @@ script:
       type: String
   - description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     name: cdl-reset-authentication-timeout
-  dockerimage: demisto/python_pancloud_v2:1.0.0.64955
+  dockerimage: demisto/python_pancloud_v2:1.0.0.81488
   isfetch: true
   runonce: false
   script: '-'

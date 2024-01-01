@@ -258,8 +258,6 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      folder-path:
-        simple: Inbox
       limit:
         simple: "1"
       query:

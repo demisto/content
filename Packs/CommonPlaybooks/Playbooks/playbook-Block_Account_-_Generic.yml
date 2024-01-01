@@ -3,7 +3,7 @@ version: -1
 name: Block Account - Generic
 fromversion: 5.0.0
 description: |-
-  This playbook blocks malicious usernames using all integrations that you have enabled.
+  Deprecated. Use 'Block Account - Generic v2' instead. This playbook blocks malicious usernames using all integrations that you have enabled.
 
   Supported integrations for this playbook:
   * Active Directory
@@ -373,3 +373,4 @@ tests:
 marketplaces:
   - xsoar
   - marketplacev2
+deprecated: true

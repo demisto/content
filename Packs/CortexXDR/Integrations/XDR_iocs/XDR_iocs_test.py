@@ -94,7 +94,7 @@ class TestHttpRequest:
             client.http_request('suffix', requests_kwargs={})
         assert e.value.message == f'Could not parse json out of {text}'
         assert e.value.res.status_code == 200
-        assert isinstance(e.value.exception, (requests.exceptions.JSONDecodeError, json.decoder.JSONDecodeError))
+        assert isinstance(e.value.exception, requests.exceptions.JSONDecodeError | json.decoder.JSONDecodeError)
 
 
 class TestGetRequestsKwargs:
@@ -179,18 +179,20 @@ class TestCreateFile:
         ('File_iocs', 'File_iocs_to_keep_file')
     ]
 
-    def setup(self):
+    @classmethod
+    def setup_method(cls):
         # creates the file
         with open(TestCreateFile.path, 'w') as _file:
             _file.write('')
 
-    def teardown(self):
+    @classmethod
+    def teardown_method(cls):
         # removes the file when done
         os.remove(TestCreateFile.path)
 
     @staticmethod
     def get_file(path):
-        with open(path, 'r') as _file:
+        with open(path) as _file:
             return _file.read()
 
     @staticmethod
@@ -637,20 +639,6 @@ class TestCommands:
         get_sync_file()
         assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
 
-    def test_set_sync_time(self, mocker):
-        mocker_reurn_results = mocker.patch('XDR_iocs.return_results')
-        mocker_set_context = mocker.patch.object(demisto, 'setIntegrationContext')
-        set_sync_time('2021-11-25T00:00:00')
-        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 succeeded.')
-        call_args = mocker_set_context.call_args[0][0]
-        assert call_args['ts'] == 1637798400000
-        assert call_args['time'] == '2021-11-25T00:00:00Z'
-        assert call_args['iocs_to_keep_time']
-
-    def test_set_sync_time_with_invalid_time(self):
-        with pytest.raises(ValueError, match='invalid time format.'):
-            set_sync_time('test')
-
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
@@ -673,10 +661,10 @@ class TestCommands:
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
         mocker.patch.object(demisto, 'createIndicators')
         mocker.patch.object(demisto, 'searchIndicators', return_value={})
-        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
-        xdr_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto)))    # noqa: E501
+        xdr_ioc_to_timeline([str(x[0].get('RULE_INDICATOR')) for x in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto])    # noqa: E501
 
 
 class TestParams:
@@ -724,7 +712,7 @@ class TestParams:
         Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
         Client.tlp_color = demisto.params().get('tlp_color')
         client = Client({'url': 'yana'})
-        xdr_res = {'reply': list(map(lambda xdr_ioc: xdr_ioc[0], TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto))}
+        xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
         output = outputs.call_args.args[0]
@@ -986,3 +974,63 @@ def test_parse_xdr_comments(raw_comment: str | list[str], comments_as_tags: bool
     """
     from XDR_iocs import _parse_xdr_comments
     assert _parse_xdr_comments(raw_comment, comments_as_tags) == expected_comment
+
+
+@pytest.mark.parametrize(
+    'validation_errors, expected_str', (
+        ([{'indicator': '1.1.1.1',
+           'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'},
+          {'indicator': '3.3.3.3',
+           'error': 'Expiration time 1696150302000 is invalid; expiration date cannot be in the past'}],
+         'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
+        ([{'indicator': '1.1.1.1',
+           'error': 'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'}],
+         'Expiration time 1696323079000 is invalid; expiration date cannot be in the past'),
+        ([],
+         ''),
+    ))
+def test_create_validation_errors_response(validation_errors, expected_str):
+    """
+    Given   validation errors that returned from the server.
+    When    pushing XSOAR IOC to XDR
+    Then    check the parsed error
+    """
+    from XDR_iocs import create_validation_errors_response
+    assert expected_str in create_validation_errors_response(validation_errors)
+
+
+@pytest.mark.parametrize('current_time,next_iocs_to_keep_time,should_run_iocs_to_keep', [
+    ('2020-01-01T02:00:00Z', '2020-01-01T01:00:00Z', True),
+    ('2020-01-01T01:05:00Z', '2020-01-01T02:00:00Z', False),
+    ('2020-01-01T04:00:00Z', '2020-01-01T01:00:00Z', False),
+    ('2020-01-02T02:00:00Z', '2020-01-01T01:00:00Z', True),
+    ('2020-01-02T04:00:00Z', '2020-01-01T01:00:00Z', False),
+])
+def test_is_iocs_to_keep_time(current_time, next_iocs_to_keep_time, should_run_iocs_to_keep, mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"next_iocs_to_keep_time": next_iocs_to_keep_time})
+    with freeze_time(current_time):
+        assert is_iocs_to_keep_time() == should_run_iocs_to_keep
+
+
+def test_is_iocs_to_keep_time_without_integration_context(mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=[{"next_iocs_to_keep_time": None},
+                                                                       {"next_iocs_to_keep_time": None},
+                                                                       {"next_iocs_to_keep_time": '2020-01-02T01:05:00Z'}])
+    with freeze_time('2020-01-02T04:00:00Z'):
+        assert not is_iocs_to_keep_time()
+
+
+@pytest.mark.parametrize('random_int,expected_next_time', [
+    (0, '2023-11-16T01:00:00Z'),
+    (40, '2023-11-16T01:40:00Z'),
+    (60, '2023-11-16T02:00:00Z'),
+    (100, '2023-11-16T02:40:00Z'),
+    (115, '2023-11-16T02:55:00Z'),
+])
+@freeze_time('2023-11-15T18:00:00')
+def test_set_new_iocs_to_keep_time(random_int, expected_next_time, mocker):
+    mocker.patch('XDR_iocs.secrets.randbelow', return_value=random_int)
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+    set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
+    set_new_iocs_to_keep_time()
+    set_integration_context_mock.assert_called_once_with({'next_iocs_to_keep_time': expected_next_time})

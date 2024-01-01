@@ -98,7 +98,7 @@ display: Cybersixgill Actionable Alerts
 name: Cybersixgill_Actionable_Alerts
 script:
   commands:
-  - description: updates the existing actionable alert status
+  - description: updates the existing actionable alert status.
     name: cybersixgill-update-alert-status
     arguments:
     - required: true
@@ -109,7 +109,7 @@ script:
       name: alert_status
     - description: The aggregate alert id.
       name: aggregate_alert_id
-  dockerimage: demisto/sixgill:1.0.0.73690
+  dockerimage: demisto/sixgill:1.0.0.83420
   isfetch: true
   runonce: false
   script: '-'
@@ -118,3 +118,4 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+defaultmapperin: Cybersixgill Actionable Alerts - Incoming Mapper

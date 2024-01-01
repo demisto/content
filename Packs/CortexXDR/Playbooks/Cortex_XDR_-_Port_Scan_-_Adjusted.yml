@@ -1,7 +1,7 @@
 id: Cortex XDR - Port Scan - Adjusted
 version: -1
 name: Cortex XDR - Port Scan - Adjusted
-description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Enrichment and investigation of the scanner and scanned hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Suspicious port scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n- Port scan"
+description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Enrichment and investigation of the scanner and scanned hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Suspicious port scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n- Port scan."
 starttaskid: "0"
 tasks:
   "0":
@@ -48,9 +48,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "121"
       - "103"
       - "149"
+      - "121"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -185,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 570
+          "x": 1790,
+          "y": 730
         }
       }
     note: false
@@ -219,8 +219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 1350
+          "x": 1790,
+          "y": 1510
         }
       }
     note: false
@@ -368,8 +368,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 1050
+          "x": 1340,
+          "y": 1210
         }
       }
     note: false
@@ -605,8 +605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 880
+          "x": 1550,
+          "y": 1040
         }
       }
     note: false
@@ -636,8 +636,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 1210
+          "x": 1340,
+          "y": 1370
         }
       }
     note: false
@@ -686,8 +686,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1980,
-          "y": 1500
+          "x": 1990,
+          "y": 1660
         }
       }
     note: false
@@ -764,8 +764,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1570,
-          "y": 1660
+          "x": 1580,
+          "y": 1820
         }
       }
     note: false
@@ -795,8 +795,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 2355
+          "x": 1790,
+          "y": 2515
         }
       }
     note: false
@@ -857,8 +857,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 2490
+          "x": 1790,
+          "y": 2650
         }
       }
     note: false
@@ -1073,8 +1073,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 2660
+          "x": 1550,
+          "y": 2820
         }
       }
     note: false
@@ -1135,8 +1135,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 2820
+          "x": 1550,
+          "y": 2980
         }
       }
     note: false
@@ -1172,8 +1172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 2980
+          "x": 1550,
+          "y": 3140
         }
       }
     note: false
@@ -1260,8 +1260,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2387.5,
-          "y": 1500
+          "x": 2390,
+          "y": 1660
         }
       }
     note: false
@@ -1306,8 +1306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 700
+          "x": 1790,
+          "y": 860
         }
       }
     note: false
@@ -1460,8 +1460,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 3155
+          "x": 1790,
+          "y": 3315
         }
       }
     note: false
@@ -1502,7 +1502,7 @@ tasks:
       {
         "position": {
           "x": 2460,
-          "y": -260
+          "y": -90
         }
       }
     note: false
@@ -1622,7 +1622,7 @@ tasks:
       {
         "position": {
           "x": 2460,
-          "y": -100
+          "y": 70
         }
       }
     note: false
@@ -1653,7 +1653,7 @@ tasks:
       {
         "position": {
           "x": 2670,
-          "y": 70
+          "y": 240
         }
       }
     note: false
@@ -1693,7 +1693,7 @@ tasks:
       {
         "position": {
           "x": 2670,
-          "y": 205
+          "y": 375
         }
       }
     note: false
@@ -1741,7 +1741,7 @@ tasks:
       {
         "position": {
           "x": 2670,
-          "y": 370
+          "y": 540
         }
       }
     note: false
@@ -1772,7 +1772,7 @@ tasks:
       {
         "position": {
           "x": 2670,
-          "y": 550
+          "y": 720
         }
       }
     note: false
@@ -1816,8 +1816,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 1500
+          "x": 1180,
+          "y": 1660
         }
       }
     note: false
@@ -2098,8 +2098,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1997.5,
-          "y": 3300
+          "x": 2007.5,
+          "y": 3460
         }
       }
     note: false
@@ -2146,8 +2146,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1590,
-          "y": 3470
+          "x": 1600,
+          "y": 3630
         }
       }
     note: false
@@ -2192,8 +2192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1590,
-          "y": 3300
+          "x": 1600,
+          "y": 3460
         }
       }
     note: false
@@ -2221,7 +2221,7 @@ tasks:
       {
         "position": {
           "x": 2670,
-          "y": 3640
+          "y": 3800
         }
       }
     note: false
@@ -2264,8 +2264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1570,
-          "y": 1500
+          "x": 1580,
+          "y": 1660
         }
       }
     note: false
@@ -2296,7 +2296,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "157"
+      - "197"
     scriptarguments:
       IP:
         complex:
@@ -2472,8 +2472,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 1830
+          "x": 1790,
+          "y": 1990
         }
       }
     note: false
@@ -2522,8 +2522,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 2010
+          "x": 1790,
+          "y": 2170
         }
       }
     note: false
@@ -2557,8 +2557,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
-          "y": 2180
+          "x": 1410,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "197":
+    id: "197"
+    taskid: 19efd50e-a23c-466c-8e90-7facf5ffe2ab
+    type: condition
+    task:
+      id: 19efd50e-a23c-466c-8e90-7facf5ffe2ab
+      version: -1
+      name: Is InternalIPRanges exist
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "109"
+      "yes":
+      - "157"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.InternalIPRanges
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2460,
+          "y": -250
         }
       }
     note: false
@@ -2588,7 +2630,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4665,
+        "height": 4825,
         "width": 2260,
         "x": 790,
         "y": -960
@@ -2597,8 +2639,22 @@ view: |-
   }
 inputs:
 - key: InternalIPRanges
-  value: {}
-  required: true
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexReplace
+        args:
+          action_dt: {}
+          ignore_case: {}
+          multi_line: {}
+          output_format: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: ' IANA_Private_Address'
+  required: false
   description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: Username
@@ -2755,12 +2811,14 @@ outputs:
   description: Lateral Movement First Date time from the port scan alert.
   type: unknown
 - contextPath: PortScan.PortScanFirstDatetime
-  description: Port Scan First Date time
+  description: Port Scan First Date time.
   type: unknown
 tests:
-- Test XDR Playbook general commands
 - Test Playbook - Cortex XDR - Endpoint Investigation
+- Test XDR Playbook general commands
 - Test XDR Playbook
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields: {}
+marketplaces:
+- xsoar

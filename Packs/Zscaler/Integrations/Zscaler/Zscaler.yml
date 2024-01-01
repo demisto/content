@@ -244,7 +244,11 @@ script:
     - description: A comma-separated list of URLs to add to the specified category. For example, pandora.com,spotify.com.
       isArray: true
       name: url
-      required: true
+      required: false
+    - description: A comma-separated list of URLs to add to the retaining parent category section inside the specified category. For example, pandora.com,spotify.com.
+      isArray: true
+      name: retaining-parent-category-url
+      required: false
     description: Adds URLs to the specified category.
     name: zscaler-category-add-url
     outputs:
@@ -267,7 +271,11 @@ script:
     - description: A comma-separated list of IP address to add to the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: ip
-      required: true
+      required: false
+    - description: A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
+      isArray: true
+      name: retaining-parent-category-ip
+      required: false
     description: Adds IP address to the specified category.
     name: zscaler-category-add-ip
     outputs:
@@ -281,7 +289,7 @@ script:
       description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: The URL of the category
+      description: The URL of the category.
       type: string
   - arguments:
     - description: The ID of the category to remove the specified URLs from. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command.
@@ -290,7 +298,11 @@ script:
     - description: A comma-separated list of URLs to remove from the specified category. For example, pandora.com,spotify.com.
       isArray: true
       name: url
-      required: true
+      required: false
+    - description: A comma-separated list of URLs to remove from the retaining parent category section inside the specified category. For example, pandora.com,spotify.com.
+      isArray: true
+      name: retaining-parent-category-url
+      required: false
     description: Removes URLs from the specified category.
     name: zscaler-category-remove-url
     outputs:
@@ -313,7 +325,11 @@ script:
     - description: A comma-separated list of IP addresses to remove from the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: ip
-      required: true
+      required: false
+    - description: A comma-separated list of IP address to remove from the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
+      isArray: true
+      name: retaining-parent-category-ip
+      required: false
     description: Removes IP address from the specified category.
     name: zscaler-category-remove-ip
     outputs:
@@ -376,7 +392,7 @@ script:
       predefined:
       - url
       - ip
-    - description: Query (Python regular expression) to match against. For example, 8.*.*.8
+    - description: Query (Python regular expression) to match against. For example, 8.*.*.8.
       name: query
     description: Retrieves the Zscaler default block list.
     name: zscaler-get-blacklist
@@ -452,7 +468,7 @@ script:
       description: The number of unique URLs that are currently provisioned for your organization.
       type: Number
   - arguments:
-    - description: Filer by user name
+    - description: Filer by user name.
       name: name
     - description: Specifies the page offset.
       name: page
@@ -460,19 +476,19 @@ script:
       defaultValue: '100'
       description: Specifies the page size.
       name: pageSize
-    description: Get Zscaler users
+    description: Get Zscaler users.
     name: zscaler-get-users
   - arguments:
     - description: The unique identifier for the user.
       name: id
       required: true
-    - description: 'New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser'
+    - description: 'New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser.'
       name: user
       required: true
     description: Updates the user information for the specified ID.
     name: zscaler-update-user
   - arguments:
-    - description: Filter by department name
+    - description: Filter by department name.
       name: name
     - description: Specifies the page offset.
       name: page
@@ -483,7 +499,7 @@ script:
     description: Get a list of departments. It can be searched by name.
     name: zscaler-get-departments
   - arguments:
-    - description: Filter by group name or comment
+    - description: Filter by group name or comment.
       name: name
     - description: Specifies the page offset.
       name: page
@@ -491,7 +507,7 @@ script:
       defaultValue: '100'
       description: Specifies the page size.
       name: pageSize
-    description: Gets a list of groups
+    description: Gets a list of groups.
     name: zscaler-get-usergroups
   - name: zscaler-create-ip-destination-group
     arguments:
@@ -514,7 +530,7 @@ script:
       isArray: true
       type: textArea
     - name: description
-      description: Additional information about the destination IP group
+      description: Additional information about the destination IP group.
       type: textArea
     - name: ip_categories
       auto: PREDEFINED
@@ -1801,7 +1817,7 @@ script:
       - COUNTRY_JE
       - COUNTRY_BL
       - COUNTRY_MF
-      description: Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put
+      description: Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put.
       isArray: true
       type: textArea
     - name: is_non_editable
@@ -1901,7 +1917,7 @@ script:
       description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.Description
-      description: Additional information about the destination IP group
+      description: Additional information about the destination IP group.
       type: string
     - contextPath: Zscaler.IPDestinationGroup.IpCategories
       description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
@@ -1919,7 +1935,7 @@ script:
     description: Deletes the IP destination groups for the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.82980
   type: python
 fromversion: 5.0.0
 tests:

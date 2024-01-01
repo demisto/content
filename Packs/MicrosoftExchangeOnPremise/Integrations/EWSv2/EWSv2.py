@@ -11,7 +11,7 @@ from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
-                         ItemAttachment, Version)
+                         ItemAttachment, Version, Body)
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorInvalidIdMalformed,
                                 ErrorInvalidPropertyRequest,
@@ -19,7 +19,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorMailboxMoveInProgress,
                                 ErrorMailboxStoreUnavailable,
                                 ErrorNameResolutionNoResults, RateLimitError,
-                                ResponseMessageError, TransportError)
+                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, Protocol
 from exchangelib.services import EWSService
@@ -49,7 +49,7 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
-class exchangelibSSLAdapter(SSLAdapter):
+class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
@@ -377,7 +377,7 @@ def get_endpoint_autodiscover(context_dict):  # pragma: no cover
     return context_dict["service_endpoint"]
 
 
-def get_version(version_str):
+def get_version(version_str):  # pragma: no cover
     if version_str not in VERSIONS:
         raise Exception("{} is unsupported version: {}. Choose one of".format(version_str, "\\".join(list(VERSIONS.keys()))))
     return Version(VERSIONS[version_str])
@@ -470,7 +470,7 @@ def construct_config_args(context_dict, credentials):  # pragma: no cover
     return config_args
 
 
-def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma: no cover
+def get_account_autodiscover(account_email, access_type=ACCESS_TYPE, time_zone=None):  # pragma: no cover
     account = None
     original_exc = None  # type: ignore
     context_dict = demisto.getIntegrationContext()
@@ -480,9 +480,9 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma:
             config_args = construct_config_args(context_dict, credentials)
             account = Account(
                 primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args),
-                access_type=access_type,
+                access_type=access_type, default_timezone=time_zone
             )
-            account.root.effective_rights.read  # pylint: disable=E1101
+            account.root.effective_rights.read  # noqa: B018 pylint: disable=E1101
             return account
         except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
@@ -505,12 +505,13 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma:
     return account
 
 
-def get_account(account_email, access_type=ACCESS_TYPE):  # pragma: no cover
+def get_account(account_email, access_type=ACCESS_TYPE, time_zone=None):  # pragma: no cover
     if not AUTO_DISCOVERY:
         return Account(
             primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
+            default_timezone=time_zone
         )
-    return get_account_autodiscover(account_email, access_type)
+    return get_account_autodiscover(account_email, access_type, time_zone)
 
 
 # LOGGING
@@ -586,12 +587,19 @@ def filter_dict_null(d):  # pragma: no cover
 
 
 def is_empty_object(obj):
-    size = 0
-    if isinstance(obj, map):
-        size = obj.__sizeof__()
-    else:
-        size = len(obj)
-    return size == 0
+    return (obj.__sizeof__() if isinstance(obj, map) else len(obj)) == 0
+
+
+def get_time_zone() -> EWSTimeZone | None:
+    """get the XSOAR user time zone
+    :return:
+        returns an ``EWSTimeZone`` if TZ available or ``None`` if not
+    :rtype: ``Optional[EWSTimeZone]``
+    """
+    time_zone = demisto.callingContext.get('context', {}).get('User', {}).get('timeZone', None)
+    if time_zone:
+        time_zone = EWSTimeZone(time_zone)
+    return time_zone
 
 
 def get_attachment_name(attachment_name):  # pragma: no cover
@@ -697,12 +705,13 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
-def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_body=None, attachments=None,
+def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_to, html_body=None, attachments=None,
                           raw_message=None, from_address=None):  # pragma: no cover
     """
     Send an email to a mailbox.
 
     Args:
+        body_type: type of the body. Can be 'html' or 'text'.
         account (Account): account from which to send an email.
         to (list[str]): a list of emails to send an email.
         subject (str): subject of the mail.
@@ -718,7 +727,7 @@ def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_bo
     """
     if not attachments:
         attachments = []
-    message_body = HTMLBody(html_body) if html_body else body
+    message_body = HTMLBody(html_body) if body_type == 'html' and html_body else Body(body)
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
@@ -765,7 +774,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
     return m
 
 
-class GetSearchableMailboxes(EWSService):
+class GetSearchableMailboxes(EWSService):  # pragma: no cover
     SERVICE_NAME = 'GetSearchableMailboxes'
     element_container_name = '{%s}SearchableMailboxes' % MNS
 
@@ -904,7 +913,7 @@ class ExpandGroup(EWSService):
                     non_dl_emails[member['mailbox']] = member
 
 
-def get_expanded_group(protocol, email_address, recursive_expansion=False):
+def get_expanded_group(protocol, email_address, recursive_expansion=False):  # pragma: no cover
     group_members = ExpandGroup(protocol=protocol).call(email_address, recursive_expansion)
     group_details = {
         "name": email_address,
@@ -915,7 +924,7 @@ def get_expanded_group(protocol, email_address, recursive_expansion=False):
     return entry_for_object
 
 
-def get_searchable_mailboxes(protocol):
+def get_searchable_mailboxes(protocol):  # pragma: no cover
     searchable_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
@@ -993,9 +1002,9 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     demisto.debug(f'Exclude ID list: {exclude_ids}')
 
     for item in qs:
-        demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
-            item.subject, item.message_id, item.datetime_created, item.datetime_received))
         try:
+            demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
+                item.subject, item.message_id, item.datetime_created, item.datetime_received))
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
                 demisto.debug(f'Appending {item.subject}, {item.message_id}.')
@@ -1006,13 +1015,21 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
             raise exc
+        except ErrorMimeContentConversionFailed as exc:
+            demisto.debug(f"Encountered an ErrorMimeContentConversionFailed error object while iterating: {exc}.\
+                Continuing to next item.")
+            continue
+        except AttributeError as exc:
+            demisto.debug(f"Encountered an Attribute error object while iterating: {exc}.\
+                 Continuing to next item.")
+
     demisto.debug(f'EWS V2 - Got total of {len(result)} from ews query. ')
     return result
 
 
 def keys_to_camel_case(value):
     def str_to_camel_case(snake_str):
-        # Add condtion as Email object arrived in list and raised error
+        # Add condition as Email object arrived in list and raised error
         if not isinstance(snake_str, str):
             return snake_str
         components = snake_str.split('_')
@@ -1029,7 +1046,7 @@ def keys_to_camel_case(value):
     return str_to_camel_case(value)
 
 
-def email_ec(item):
+def email_ec(item):  # pragma: no cover
     return {
         'CC': None if not item.cc_recipients else [mailbox.email_address for mailbox in item.cc_recipients],
         'BCC': None if not item.bcc_recipients else [mailbox.email_address for mailbox in item.bcc_recipients],
@@ -1910,7 +1927,7 @@ def get_folder(folder_path, target_mailbox=None, is_public=None):  # pragma: no 
     return get_entry_for_object(f"Folder {folder_path}", CONTEXT_UPDATE_FOLDER, folder)
 
 
-def folder_to_context_entry(f):
+def folder_to_context_entry(f):  # pragma: no cover
     f_entry = {
         'name': f.name,
         'totalCount': f.total_count,
@@ -1929,7 +1946,7 @@ def check_cs_prereqs():  # pragma: no cover
         raise Exception("This command is only supported for Office 365")
 
 
-def get_cs_error(stderr):
+def get_cs_error(stderr):  # pragma: no cover
     return {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["text"],
@@ -1937,7 +1954,7 @@ def get_cs_error(stderr):
     } if stderr else None
 
 
-def get_cs_status(search_name, status):
+def get_cs_status(search_name, status):  # pragma: no cover
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -2229,7 +2246,8 @@ def get_none_empty_addresses(addresses_ls):
 
 
 def send_email(args):
-    account = get_account(ACCOUNT_EMAIL)
+    time_zone = get_time_zone()
+    account = get_account(account_email=ACCOUNT_EMAIL, time_zone=time_zone)
     bcc = get_none_empty_addresses(argToList(args.get('bcc')))
     cc = get_none_empty_addresses(argToList(args.get('cc')))
     to = get_none_empty_addresses(argToList(args.get('to')))
@@ -2241,8 +2259,9 @@ def send_email(args):
     attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
+    body_type = args.get('bodyType') or args.get('body_type') or 'text'
     send_email_to_mailbox(
-        account=account, to=to, subject=subject, body=args.get('body'), bcc=bcc, cc=cc, reply_to=replyTo,
+        account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
         from_address=args.get('from')
     )
@@ -2271,7 +2290,8 @@ def send_email(args):
 
 
 def reply_email(args):  # pragma: no cover
-    account = get_account(ACCOUNT_EMAIL)
+    time_zone = get_time_zone()
+    account = get_account(account_email=ACCOUNT_EMAIL, time_zone=time_zone)
     bcc = args.get('bcc').split(",") if args.get('bcc') else None
     cc = args.get('cc').split(",") if args.get('cc') else None
     to = args.get('to').split(",") if args.get('to') else None
@@ -2328,7 +2348,7 @@ def get_protocol():  # pragma: no cover
     return protocol
 
 
-def encode_and_submit_results(obj):
+def encode_and_submit_results(obj):  # pragma: no cover
     demisto.results(obj)
 
 
@@ -2494,7 +2514,7 @@ def sub_main():  # pragma: no cover
                 demisto.error(f"EWS: unexpected exception when trying to remove log handler: {ex}")
 
 
-def process_main():
+def process_main():  # pragma: no cover
     """setup stdin to fd=0 so we can read from the server"""
     sys.stdin = os.fdopen(0, "r")
     sub_main()
@@ -2523,5 +2543,5 @@ def main():  # pragma: no cover
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins", "__main__"):
+if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()

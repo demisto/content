@@ -4,16 +4,20 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
 ## Configure CybleEventsV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CybleEventsV2.
-3. Click **Add instance** to create and configure a new integration instance.
+ Search for CybleEventsV2.
+ Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | URL | Server URL \(e.g. <https://example.net\>) | True |
-    | Access Token | Access Token | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident Fetch Limit | Maximum incidents to be fetched every time. Upper limit is 50 incidents. | False |
+    | **Parameter**                      | **Description**                                                         | **Required** |
+    |------------------------------------|-------------------------------------------------------------------------|--------------|
+    | URL                                | Server URL \(e.g., <https://example.net\>)                              | True         |
+    | Access Token                       | Access Token                                                            | True         |
+    | Collections to Fetch               | Select collections of incidents to be fetched from the dropdown menu    | False        |
+    | Severities to Fetch                | Select severities of incident to be fetched from the dropdown menu      | False        |
+    | Trust any certificate (not secure) |                                                                         | False        |
+    | Use system proxy settings          |                                                                         | False        |
+    | Incident Fetch Limit               | Maximum incidents to be fetched every time. Upper limit is 50 incidents | False        |
+    | Hide Card Details                  | Select to hide CVV and Expiry date of card                              | False        |
+    | Update Incident to Remote System   | Select to update changes in any incident to Vision                      | False        |
 
 4. To ensure that fetch incidents works:
     * Select the Fetches incidents radio button.
@@ -41,9 +45,9 @@ There are no input arguments for this command.
 
 #### Context Output
 
-| **Path** | **Type** | **Description**                                 |
-| --- | --- |-------------------------------------------------|
-| CybleEvents.SubscribedServices | String | A list of subscribed services from Cyble vision |
+| **Path**                       | **Type** | **Description**                                 |
+|--------------------------------|----------|-------------------------------------------------|
+| CybleEvents.SubscribedServices | String   | A list of subscribed services from Cyble vision |
 
 ### cyble-vision-fetch-iocs
 
@@ -57,16 +61,16 @@ Fetch the indicators in the given timeline.
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                            | **Required** |
-|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| ioc_type          | Returns records according to their type (Domain, FileHash-MD5, FileHash-SHA1, FileHash-SHA256, IPv4, IPv6, URL, Email). Default is Domain. | Optional |
-| ioc               | Returns records for the specified indicator value.                                                                                         | Optional |
-| from              | Returns records that starts from the given page number (the value of the form parameter) in the results list. Default is 0.                                                                                    | Optional |
-| limit             | Number of records to return (max 1000). Using a smaller limit will get faster responses. Default is 1.                                     | Optional |
-| sort_by           | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen.    | Optional |
-| order             | Sorting order for ioc either Ascending or Descending based on sort by. Default is desc.                                                    | Optional |
-| tags              | Returns records for the specified tags.                                                                                                    | Optional |
-| start_date        | Timeline start date in the format "YYYY-MM-DD". Should be used with start_date as timeline range.                                            | Optional |
-| end_date          | Timeline end date in the format "YYYY-MM-DD". Should be used with end_date as timeline range.                                                | Optional |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| ioc_type          | Returns records according to their type (Domain, FileHash-MD5, FileHash-SHA1, FileHash-SHA256, IPv4, IPv6, URL, Email). Default is Domain. | Optional     |
+| ioc               | Returns records for the specified indicator value.                                                                                         | Optional     |
+| from              | Returns records that starts from the given page number (the value of the form parameter) in the results list. Default is 0.                | Optional     |
+| limit             | Number of records to return (max 1000). Using a smaller limit will get faster responses. Default is 1.                                     | Optional     |
+| sort_by           | Sorting based on the column(last_seen,first_seen,ioc_type). Possible values are: last_seen, first_seen, ioc_type. Default is last_seen.    | Optional     |
+| order             | Sorting order for ioc either Ascending or Descending based on sort by. Default is desc.                                                    | Optional     |
+| tags              | Returns records for the specified tags.                                                                                                    | Optional     |
+| start_date        | Timeline start date in the format "YYYY-MM-DD". Should be used with start_date as timeline range.                                          | Optional     |
+| end_date          | Timeline end date in the format "YYYY-MM-DD". Should be used with end_date as timeline range.                                              | Optional     |
 
 #### Context Output
 

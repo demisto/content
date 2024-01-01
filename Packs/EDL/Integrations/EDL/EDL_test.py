@@ -251,6 +251,42 @@ class TestHelperFunctions:
         edl_v, _ = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}
 
+    def test_create_new_edl_with_offset(self, mocker, requests_mock):
+        """
+        Test create_new_edl with and without offset
+        Given:
+            - A list of indicators
+        When:
+            - calling create_new_edl
+        Then:
+            - Ensure that the list is the same as is should with no offset and with offset=2
+        """
+
+        import EDL as edl
+        tlds = 'com\nco.uk'
+        requests_mock.get('https://publicsuffix.org/list/public_suffix_list.dat', text=tlds)
+        requests_mock.get('https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat', text=tlds)
+        indicators = [{'value': '1.1.1.1/7', 'indicator_type': 'CIDR'},  # prefix=7
+                      {"value": "1.1.1.1/12", "indicator_type": "CIDR"},  # prefix=12
+                      {"value": "*.com", "indicator_type": "Domain"},  # tld
+                      {"value": "*.co.uk", "indicator_type": "Domain"},  # tld
+                      {"value": "*.google.com", "indicator_type": "Domain"},  # no tld
+                      {"value": "aא.com", "indicator_type": "URL"}]  # no ascii
+        f = '\n'.join((json.dumps(indicator) for indicator in indicators))
+
+        # create_new_edl with no offset
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
+        edl_v, _ = edl.create_new_edl(request_args)
+        assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
+                                          "co.uk", "*.google.com", "google.com", "aא.com"}
+
+        # create_new_edl with offset=2
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8, offset=2)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
+        edl_v, _ = edl.create_new_edl(request_args)
+        assert set(edl_v.split('\n')) == {"google.com", "co.uk", "*.co.uk", "*.google.com", "*.com", "aא.com"}
+
     def test_create_json_out_format(self):
         """
         Given:
@@ -646,7 +682,8 @@ class IndicatorsSearcher:
         self.ioc = [{'iocs': [{"value": "https://google.com", "indicator_type": "URL"}]},
                     {'iocs': [{"value": "demisto.com:7000", "indicator_type": "URL"}]},
                     {'iocs': [{"value": "demisto.com/qwertqwer", "indicator_type": "URL"}]},
-                    {'iocs': [{"value": "demisto.com", "indicator_type": "URL"}]}]
+                    {'iocs': [{"value": "demisto.com", "indicator_type": "URL"}]},
+                    {'iocs': [{"value": "non ascii valuè", "indicator_type": "URL"}]}, ]
 
     def __iter__(self):
         return self
@@ -791,6 +828,30 @@ def test_get_indicators_to_format_text():
     """
     import EDL as edl
     indicator_searcher = IndicatorsSearcher(4)
+    request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
+                                        url_protocol_stripping=True, url_truncate=True)
+    indicators_data, _ = get_indicators_to_format(indicator_searcher, request_args)
+    indicators_data = edl.create_text_out_format(indicators_data, request_args)
+
+    indicators_data.seek(0)
+    indicators = indicators_data.read()
+    assert indicators == 'google.com\ndemisto.com\ndemisto.com/qwertqwer\ndemisto.com'
+
+
+def test_get_indicators_to_format_text_enforce_ascii(mocker):
+    """
+    Given:
+      - IndicatorsSearcher with indicators
+      - request_args of the coll
+      - enforce_ascii = True
+    When:
+      - request indicators on text format
+    Then:
+      - assert the indicators are returned properly for the requested format
+    """
+    import EDL as edl
+    mocker.patch.object(demisto, 'params', return_value={'enforce_ascii': True})
+    indicator_searcher = IndicatorsSearcher(5)
     request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True)
     indicators_data, _ = get_indicators_to_format(indicator_searcher, request_args)
