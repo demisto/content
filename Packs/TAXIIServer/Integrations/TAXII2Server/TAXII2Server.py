@@ -40,6 +40,8 @@ TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'desc
                                 'accounttype', 'userid', 'mitreid', 'stixid'}
 PAGE_SIZE = 2000
 
+
+
 XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.CIDR: 'ipv4-addr',
     FeedIndicatorType.DomainGlob: 'domain-name',
