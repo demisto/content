@@ -10,6 +10,9 @@ import urllib.parse
 
 TC_INDICATOR_PATH = 'TC.Indicator(val.ID && val.ID === obj.ID)'
 MAX_CONTEXT = 100
+VICTIM_API_PREFIX = '/api/v3/victims'
+VICTIM_ASSET_API_PREFIX = '/api/v3/victimAssets'
+VICTIM_ATTRIBUTE_API_PREFIX = '/api/v3/victimAttributes'
 
 
 class Method(str, Enum):
@@ -25,6 +28,9 @@ class Method(str, Enum):
 
 
 class AssetType(str, Enum):
+    """
+    An ENUM that represents the supported asset types
+    """
     EMAIL_ADDRESS = 'EmailAddress'
     NETWORK_ACCOUNT = 'NetworkAccount'
     PHONE = 'Phone'
@@ -32,7 +38,7 @@ class AssetType(str, Enum):
     WEBSITE = 'WebSite'
 
 
-
+# Maps the asset type to the corresponding value that should be sent in the request
 MAP_ASSET_TYPE_TO_REQUEST_KEY = {AssetType.PHONE: 'phone',
                                  AssetType.EMAIL_ADDRESS: 'address',
                                  AssetType.NETWORK_ACCOUNT: 'accountName',
@@ -1740,7 +1746,7 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
     if associated_groups_ids := argToList(args.get('associated_groups_ids')):
         body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_groups_ids]}
 
-    response = client.make_request(method=Method.POST, url_suffix='/api/v3/victims', payload=json.dumps(body))
+    response = client.make_request(method=Method.POST, url_suffix=VICTIM_API_PREFIX, payload=json.dumps(body))
     outputs = response.get('data', {})
     readable_output = f'Victim {name} Created successfully with id: {outputs.get("id")} '
     return_results(CommandResults(
@@ -1805,7 +1811,7 @@ def tc_update_victim_command(client: Client, args: dict) -> None:
         body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_groups_ids],
                                     'mode': mode}
 
-    url = f'/api/v3/victims/{victim_id}'
+    url = f'{VICTIM_API_PREFIX}/{victim_id}'
     response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
     outputs = response.get('data', {})
     readable_output = f'Victim {outputs.get("id")} was successfully updated.'
@@ -1826,7 +1832,7 @@ def tc_delete_victim_command(client: Client, args: dict) -> None:
         args: command arguments
     """
     victim_id = args.get('victim_id')
-    url = f'/api/v3/victims/{victim_id}'
+    url = f'{VICTIM_API_PREFIX}/{victim_id}'
     response = client.make_request(method=Method.DELETE, url_suffix=url)
     readable_output = f'Victim {victim_id} was successfully deleted.'
     return_results(CommandResults(
@@ -1860,10 +1866,10 @@ def tc_list_victims_command(client: Client, args: dict) -> None:
     filter = args.get('filter')
     victim_id = args.get('victim_id')
 
-    page = arg_to_number(args.get('page')) or 0
-    limit = arg_to_number(args.get('limit')) or 50
+    page = args.get('page') or '0'
+    limit = args.get('limit') or '50'
 
-    url = f'/api/v3/victims'
+    url = VICTIM_API_PREFIX
     if victim_id:
         url += f'/{victim_id}'
     url += f'?&resultStart={page}&resultLimit={limit}'
@@ -1904,9 +1910,8 @@ def tc_create_victim_asset_command(client: Client, args: dict) -> None:
                             network_type=network_type,
                             social_network=social_network)
     body |=  {'victimId': victim_id, 'type': asset_type}
-    url = '/api/v3/victimAssets'
 
-    response = client.make_request(method=Method.POST, url_suffix=url, payload=json.dumps(body))
+    response = client.make_request(method=Method.POST, url_suffix=VICTIM_ASSET_API_PREFIX, payload=json.dumps(body))
     outputs = response.get('data', {})
     readable_output = f'Victim Asset {outputs.get("id")} created successfully for victim id: {victim_id}'
     return_results(CommandResults(
@@ -1926,7 +1931,7 @@ def tc_update_victim_asset_command(client: Client, args: dict):
     """
     victim_asset_id = args.get('victim_asset_id')
     # type is needed to determine which value should be sent in the request body
-    victim_asset = client.make_request(method=Method.GET, url_suffix=f'/api/v3/victimAssets/{victim_asset_id}').get('data', {})
+    victim_asset = client.make_request(method=Method.GET, url_suffix=f'{VICTIM_ASSET_API_PREFIX}/{victim_asset_id}').get('data', {})
     asset_type = AssetType(victim_asset.get('type'))
 
     asset_value = args.get('asset_value')
@@ -1940,7 +1945,7 @@ def tc_update_victim_asset_command(client: Client, args: dict):
                             network_type=network_type,
                             social_network=social_network)
 
-    url = f'/api/v3/victimAssets/{victim_asset_id}'
+    url = f'{VICTIM_ASSET_API_PREFIX}/{victim_asset_id}'
     response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
     outputs = response.get('data', {})
     readable_output = f'Victim Asset {outputs.get("id")} updated successfully for victim id: {outputs.get("victimId")}'
@@ -1961,7 +1966,7 @@ def tc_delete_victim_asset_command(client: Client, args: dict) -> None:
         args: command arguments
     """
     victim_asset_id = args.get('victim_asset_id')
-    url = f'/api/v3/victimAssets/{victim_asset_id}'
+    url = f'{VICTIM_ASSET_API_PREFIX}/{victim_asset_id}'
     response = client.make_request(method=Method.DELETE, url_suffix=url)
     readable_output = f'Victim asset {victim_asset_id} was successfully deleted.'
     return_results(CommandResults(
@@ -1982,7 +1987,7 @@ def tc_list_victim_assets_command(client: Client, args: dict) -> None:
     page = args.get('page') or '0'
     limit = args.get('limit') or '50'
 
-    url = f'/api/v3/victimAssets'
+    url = VICTIM_ASSET_API_PREFIX
     if victim_asset_id:
         url += f'/{victim_asset_id}'
     url += f'?&resultStart={page}&resultLimit={limit}'
@@ -1991,8 +1996,26 @@ def tc_list_victim_assets_command(client: Client, args: dict) -> None:
         url += f'&tql={filter}'
     response = client.make_request(method=Method.GET, url_suffix=url)
     outputs = response.get('data', {})
-    #TODO build table
-    readable_output = tableToMarkdown('Victim assets', outputs, headers=['id', 'type', 'victimId'])
+
+    def to_readable(outputs: list) -> list:
+        """
+        Converts the response into a readable table where ass assets are under the same column
+        """
+        if isinstance(outputs, dict):
+            outputs = [outputs]
+        readable = []
+        for asset in outputs:
+            new_asset = {}
+            for key, value in asset.items():
+                if key not in ('phone', 'address', 'accountName', 'website'):
+                    new_asset[key] = value
+                else:
+                    new_asset['asset'] = asset[key]
+            readable.append(new_asset)
+        return readable
+    readable_output = tableToMarkdown('Victim assets', to_readable(outputs),
+                                      headers=['id', 'type', 'victimId', 'asset'])
+
     return_results(CommandResults(
         outputs_prefix='TC.VictimAssets',
         outputs_key_field='id',
@@ -2018,8 +2041,7 @@ def tc_create_victim_attributes_command(client: Client, args: dict) -> None:
     if security_labels := argToList(args.get('security_labels')):
         body['securityLabels'] = set_additional_data(labels=security_labels)
 
-    url = '/api/v3/victimAttributes'
-    response = client.make_request(method=Method.POST, url_suffix=url, payload=json.dumps(body))
+    response = client.make_request(method=Method.POST, url_suffix=VICTIM_ATTRIBUTE_API_PREFIX, payload=json.dumps(body))
     outputs = response.get('data', {})
     readable_output = f'Victim attribute {outputs.get("id")} created successfully for victim id: {victim_id}'
     return_results(CommandResults(
@@ -2046,7 +2068,7 @@ def tc_update_victim_attributes_command(client: Client, args: dict) -> None:
     if security_labels := argToList(args.get('security_labels')):
         body['securityLabels'] = set_additional_data(labels=security_labels)
 
-    url = f'/api/v3/victimAttributes/{args.get("victim_attribute_id")}'
+    url = f'{VICTIM_ATTRIBUTE_API_PREFIX}/{args.get("victim_attribute_id")}'
     response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
     outputs = response.get('data', {})
     readable_output = f'Victim attribute {outputs.get("id")} was successfully updated.'
@@ -2067,7 +2089,7 @@ def tc_delete_victim_attributes_command(client: Client, args: dict) -> None:
         args: command arguments
     """
     victim_attribute_id = args.get('victim_attribute_id')
-    url = f'/api/v3/victimAttributes/{victim_attribute_id}'
+    url = f'{VICTIM_ATTRIBUTE_API_PREFIX}/{victim_attribute_id}'
     response = client.make_request(method=Method.DELETE, url_suffix=url)
     readable_output = f'Victim attribute {victim_attribute_id} was successfully deleted.'
     return_results(CommandResults(
@@ -2089,12 +2111,11 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
     page = args.get('page') or '0'
     limit = args.get('limit') or '50'
     if victim_id:
-        url = f'/api/v3/victims/{victim_id}?fields=attributes'
+        url = f'{VICTIM_API_PREFIX}/{victim_id}?fields=attributes&resultStart={page}&resultLimit={limit}'
     else:
-        url = f'/api/v3/victimAttributes'
+        url = VICTIM_ATTRIBUTE_API_PREFIX
         if victim_attribute_id:
             url += f'/{victim_attribute_id}'
-        #TODO check
         url += f'?&resultStart={page}&resultLimit={limit}'
     if filter:
         filter = urllib.parse.quote(filter.encode('utf8'))
