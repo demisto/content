@@ -9,15 +9,17 @@ description: |-
   - Provide threat information
   - IP address reputation using !ip command
   - Separate internal and external IP addresses
-  - For internal IP addresses, get host information
+  - For internal IP addresses, get host information.
+  
+  When executing this playbook through IP Enrichment - Generic v2, IP classification and resolution will be handled by the main playbook, improving performance.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+    taskid: af133db3-bee0-4542-8d41-042900b926fc
     type: start
     task:
-      id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+      id: af133db3-bee0-4542-8d41-042900b926fc
       version: -1
       name: ""
       iscommand: false
@@ -25,8 +27,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "26"
-      - "25"
+      - "28"
     separatecontext: false
     view: |-
       {
@@ -45,10 +46,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+    taskid: 7ae24ea0-00d1-4459-8c71-f2cfbaea117f
     type: title
     task:
-      id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+      id: 7ae24ea0-00d1-4459-8c71-f2cfbaea117f
       version: -1
       name: Done
       type: title
@@ -60,7 +61,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 1520
         }
       }
     note: false
@@ -73,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 13cc01c5-7a1a-47d9-8228-917cc2a73914
+    taskid: d6e505bb-5266-4b41-8f70-e47d9b7024fc
     type: playbook
     task:
-      id: 13cc01c5-7a1a-47d9-8228-917cc2a73914
+      id: d6e505bb-5266-4b41-8f70-e47d9b7024fc
       version: -1
       name: IP Enrichment - External - Generic v2
       description: |-
@@ -96,8 +97,35 @@ tasks:
     scriptarguments:
       IP:
         complex:
-          root: inputs.IP
+          root: .
           transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.ExecutedFromParent
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: ${IP(val.InRange=="no").Address}
+                iscontext: true
           - operator: uniq
       InternalRange:
         complex:
@@ -116,6 +144,9 @@ tasks:
       threat_model_association:
         complex:
           root: inputs.threat_model_association
+      ExecutedFromParent:
+        complex:
+          root: inputs.ExecutedFromParent
     separatecontext: true
     loop:
       iscommand: false
@@ -125,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 195
+          "x": 1070,
+          "y": 1350
         }
       }
     note: false
@@ -139,21 +170,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 6d0d48a2-7a07-400b-8f98-9c832a56ff8f
+    taskid: 2d760e89-be66-4b36-8254-47a1825c7486
     type: playbook
     task:
-      id: 6d0d48a2-7a07-400b-8f98-9c832a56ff8f
+      id: 2d760e89-be66-4b36-8254-47a1825c7486
       version: -1
       name: IP Enrichment - Internal - Generic v2
       description: |-
-        Enrich IP using one or more integrations.
+        Enrich Internal IP addresses using one or more integrations.
 
-        IP enrichment includes:
-        * Resolve IP to Hostname (DNS)
-        * Threat information
-        * Separate internal and external addresses
-        * IP reputation
-        * For internal addresses, get host information
+        - Resolve IP address to hostname (DNS)
+        - Separate internal and external IP addresses
+        - Get host information for IP addresses
       playbookName: IP Enrichment - Internal - Generic v2
       type: playbook
       iscommand: false
@@ -164,8 +192,36 @@ tasks:
     scriptarguments:
       IP:
         complex:
-          root: inputs.IP
+          root: .
           transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              equals:
+                iscontext: true
+              lhs:
+                value:
+                  simple: inputs.ExecutedFromParent
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: ${IP(val.InRange=="yes").Address}
+                iscontext: true
           - operator: uniq
       InternalRange:
         complex:
@@ -175,6 +231,29 @@ tasks:
       ResolveIP:
         complex:
           root: inputs.ResolveIP
+      ExecutedFromParent:
+        complex:
+          root: inputs.ExecutedFromParent
+      Hostnames:
+        simple: |-
+          ${.=getHostname(val.Endpoint, getIpInRange(val.IP));
+          function getHostname(x, y){
+              res = [];
+              for (i=0; i<x.length; i++) {
+                  for (j=0; j<y.length; j++) {
+                      if (x[i].IP == y[j].Address){res.push(x[i].Hostname)}
+                  }
+               }
+               return res
+          };
+          function getIpInRange(a){
+              res = [];
+              for (i=0; i<a.length; i++) {
+                  if (a[i].InRange == "yes") res.push(a[i]);
+              }
+              return res;
+          }
+          }
     separatecontext: true
     loop:
       iscommand: false
@@ -184,8 +263,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 630,
+          "y": 1350
         }
       }
     note: false
@@ -196,14 +275,301 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 4b707093-e557-49e6-8825-f7b23c1f12a6
+    type: regular
+    task:
+      id: 4b707093-e557-49e6-8825-f7b23c1f12a6
+      version: -1
+      name: Determine whether the IP address is internal or external
+      description: "Checks if the IP address is in the internal IP address ranges.\nIf internal, sets the \"InRange\" attribute to \"yes\".\nIf external, sets the \"InRange\" attribute to \"no\". "
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      ipRanges:
+        complex:
+          root: inputs.InternalRange
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6c306aba-243f-4d13-888c-a142fcf86737
+    type: condition
+    task:
+      id: 6c306aba-243f-4d13-888c-a142fcf86737
+      version: -1
+      name: Can common logic be executed from the parent playbook?
+      description: Checks whether the playbook inputs specify that common logic like the classification of IP addresses to ranges and resolving them should be executed in the main (parent) enrichment playbook, instead of in the sub-playbooks.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      No, execute in sub-playbooks:
+      - "34"
+      "Yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ExecutedFromParent
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IP
+            iscontext: true
+    - label: No, execute in sub-playbooks
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: be9d391d-3019-40bc-85da-e72e9e6813a8
+    type: title
+    task:
+      id: be9d391d-3019-40bc-85da-e72e9e6813a8
+      version: -1
+      name: Resolve IPs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: e63254e7-c97e-4b24-8850-4221197dfc53
+    type: condition
+    task:
+      id: e63254e7-c97e-4b24-8850-4221197dfc53
+      version: -1
+      name: Resolve the IP addresses?
+      description: Checks whether the ResolveIP parameter is set to "True".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ResolveIP
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: d3b5a8f2-eb21-415c-8a11-321370c1d054
+    type: regular
+    task:
+      id: d3b5a8f2-eb21-415c-8a11-321370c1d054
+      version: -1
+      name: IP to Hostname (DNS)
+      description: Convert the IP address to a hostname using DNS query.
+      scriptName: IPToHost
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 1acf343e-137c-4d5e-89e8-dcb88b2ba060
+    type: title
+    task:
+      id: 1acf343e-137c-4d5e-89e8-dcb88b2ba060
+      version: -1
+      name: Classify & Resolve IPs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 3d2c6283-7577-44b8-845f-9c3612c37711
+    type: title
+    task:
+      id: 3d2c6283-7577-44b8-845f-9c3612c37711
+      version: -1
+      name: Execute Sub-playbooks
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "28_24_#default#": 0.17,
+      "28_34_No, execute in sub-playbooks": 0.16,
+      "30_34_#default#": 0.31
+    },
     "paper": {
       "dimensions": {
-        "height": 385,
-        "width": 810,
-        "x": 50,
+        "height": 1535,
+        "width": 1385,
+        "x": 265,
         "y": 50
       }
     }
@@ -261,30 +627,42 @@ inputs:
     Possible values: True / False.
     The default value is false.
   playbookInputQuery:
+- key: ExecutedFromParent
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Whether to execute common logic, like the classification of IP addresses to ranges and resolving, in the the main (IP Enrichment - Generic v2) enrichment playbook, instead of in the sub-playbooks.
+    Possible values are: True, False.
+    
+    Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.
+
+    Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident.
+  playbookInputQuery:
 outputs:
 - contextPath: IP
-  description: The IP objects
+  description: The IP objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator, Score, Type, Vendor.
   type: unknown
 - contextPath: Endpoint
-  description: The Endpoint's object
+  description: The endpoint's object.
   type: unknown
 - contextPath: Endpoint.Hostname
-  description: The hostname to enrich
+  description: The hostname to enrich.
   type: string
 - contextPath: Endpoint.OS
-  description: Endpoint OS
+  description: Endpoint OS.
   type: string
 - contextPath: Endpoint.IP
-  description: List of endpoint IP addresses
+  description: List of endpoint IP addresses.
   type: string
 - contextPath: Endpoint.MAC
-  description: List of endpoint MAC addresses
+  description: List of endpoint MAC addresses.
   type: string
 - contextPath: Endpoint.Domain
-  description: Endpoint domain name
+  description: Endpoint domain name.
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -317,40 +695,40 @@ outputs:
   description: The vendor that reported the indicator as malicious.
   type: string
 - contextPath: IP.Malicious.Description
-  description: For malicious IPs, the reason that the vendor made the decision
+  description: For malicious IPs, the reason that the vendor made the decision.
   type: string
 - contextPath: IP.VirusTotal.DownloadedHashes
-  description: Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address
+  description: Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
-  description: Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided
+  description: Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided.
   type: string
 - contextPath: IP.VirusTotal.DetectedURLs
-  description: Latest URLs hosted in this IP address detected by at least one URL scanner
+  description: Latest URLs hosted in this IP address detected by at least one URL scanner.
   type: string
 - contextPath: IP.VirusTotal.CommunicatingHashes
-  description: Latest detected files that communicate with this IP address
+  description: Latest detected files that communicate with this IP address.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
-  description: Latest undetected files that communicate with this IP address
+  description: Latest undetected files that communicate with this IP address.
   type: string
 - contextPath: IP.VirusTotal.Resolutions.hostname
-  description: The following domains resolved to the given IP
+  description: The following domains resolved to the given IP.
   type: string
 - contextPath: IP.VirusTotal.ReferrerHashes
-  description: Latest detected files that embed this IP address in their strings
+  description: Latest detected files that embed this IP address in their strings.
   type: string
 - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
-  description: Latest undetected files that embed this IP address in their strings
+  description: Latest undetected files that embed this IP address in their strings.
   type: string
 - contextPath: IP.VirusTotal.Resolutions.last_resolved
-  description: The last time the following domains resolved to the given IP
+  description: The last time the following domains resolved to the given IP.
   type: string
 - contextPath: IP.Address
-  description: The IP Address
+  description: The IP address.
   type: string
 - contextPath: IP.InRange
-  description: Is the IP is in the input ranges? (could be 'yes' or 'no)
+  description: Is the IP in the input ranges? (could be 'yes' or 'no).
   type: string
 - contextPath: Endpoint.ID
   description: The endpoint ID.
