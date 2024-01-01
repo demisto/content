@@ -41,8 +41,8 @@ configuration:
   section: Connect
   advanced: true
 description: Use this integration to fetch security incidents from Forcepoint DLP as XSIAM events.
-display: Forcepoint DLP Event Collector (Beta)
-name: Forcepoint DLP Event Collector (Beta)
+display: Forcepoint DLP Event Collector
+name: Forcepoint DLP Event Collector
 beta: true
 script:
   commands:
