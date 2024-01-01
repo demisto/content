@@ -3,3 +3,7 @@ ignore=MR108
 
 [file:ForcepointEventCollector.yml]
 ignore=IN124
+
+[known_words]
+DLP
+Forcepoint

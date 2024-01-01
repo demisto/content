@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Forcepoint DLP (v2) Event Collector
+  id: Forcepoint DLP Event Collector
   version: -1
 configuration:
 - display: Server URL (e.g., https://<DLP Manager IP>:<DLP Manager port>/)
@@ -41,8 +41,9 @@ configuration:
   section: Connect
   advanced: true
 description: Use this integration to fetch security incidents from Forcepoint DLP as XSIAM events.
-display: Forcepoint DLP (v2) Event Collector
-name: Forcepoint DLP (v2) Event Collector
+display: Forcepoint DLP Event Collector (Beta)
+name: Forcepoint DLP Event Collector (Beta)
+beta: true
 script:
   commands:
   - arguments:
