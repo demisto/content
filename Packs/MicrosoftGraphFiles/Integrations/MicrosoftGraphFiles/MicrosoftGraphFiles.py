@@ -533,8 +533,8 @@ def test_module(client: MsGraphClient) -> str:
     response = 'ok'
     if demisto.params().get('self_deployed', False):
         if demisto.command() == 'test-module':
-            if client.ms_client.grant_type != CLIENT_CREDENTIALS:
-                raise DemistoException("The *Test* button is not available for `self-deployed - Authorization Code Flow`. Use the !msgraph-files-auth-test command instead.")
+            if client.ms_client.grant_type == AUTHORIZATION_CODE:
+                raise DemistoException("The *Test* button is not available for `self-deployed - Authorization Code Flow`.\n Use the !msgraph-files-auth-test command instead.")
         else:
             response = '```✅ Success!```'
     client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")

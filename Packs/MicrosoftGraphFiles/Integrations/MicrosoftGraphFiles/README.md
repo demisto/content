@@ -6,10 +6,12 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
-- `Sites.ReadWrite.All - Application`: Provides read and write access to all sites.
+- `Sites.ReadWrite.All`: Provides read and write access to all sites.
+`Client Credentials Flow` - Application permission.
+`Authorization Code Flow` - Delegated permission.
 
-OR
-- `Site.Selected - Application`: Provides read and write access to specific sites.
+- `Sites.Selected - Application`: Provides read and write access to specific sites.
+This option is not supported with the `Authorization Code Flow` according to [Microsoft documentation](https://learn.microsoft.com/en-us/graph/permissions-reference#sitesselected).
 
 Note: Using `Site.Selected` requires additional configuration steps outlined below.
 
@@ -21,7 +23,7 @@ Configuration:
 
 1. In the Microsoft website:
    1. Create "Admin" application with the `Sites.FullControl.All - Application` permission.
-   2. Create "User" application with the `Site.Selected - Application` permission.
+   2. Create "User" application with the `Sites.Selected - Application` permission.
 2. In Cortex XSOAR, navigate to **Settings** > **Integrations**.
 3. Search for O365 File Management (Onedrive/Sharepoint/Teams).
 4. Create an admin instance:
