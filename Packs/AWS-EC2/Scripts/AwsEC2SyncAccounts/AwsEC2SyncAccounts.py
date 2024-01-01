@@ -18,7 +18,7 @@ def internal_request(method: str, uri: str, body: dict = {}) -> dict:
         dict: The body of request response.
     """
     return demisto.executeCommand(
-        f'core-api-{method}',
+        f'core-api-{method.lower()}',
         {'uri': uri, 'body': json.dumps(body)}
     )[0]['Contents']['response']  # type: ignore
 
