@@ -6,11 +6,12 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
-- `Sites.ReadWrite.All`: Provides read and write access to all sites.
+- `Sites.ReadWrite.All`: Provides read and write access to all sites.\
 `Client Credentials Flow` - Application permission.
 `Authorization Code Flow` - Delegated permission.
 
-- `Sites.Selected - Application`: Provides read and write access to specific sites.
+OR
+- `Sites.Selected - Application`: Provides read and write access to specific sites.\
 This option is not supported with the `Authorization Code Flow` according to [Microsoft documentation](https://learn.microsoft.com/en-us/graph/permissions-reference#sitesselected).
 
 Note: Using `Site.Selected` requires additional configuration steps outlined below.
@@ -969,8 +970,7 @@ Tests connectivity to Microsoft.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -986,8 +986,7 @@ Generate the login url used for Authorization code flow.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
