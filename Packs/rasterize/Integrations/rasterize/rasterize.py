@@ -3,7 +3,7 @@
 # TODO V Restart the chrome after 500 rasterizations
 # TODO V/2 Write the pid in a local file. Use the pid os the subprocess when starting the chrome from Python. Use DevTools, or kill the process
 # TODO Backwards Compatibility: Add support for full_Screen
-# TODO Backwards Compatibility: Add support for include_url
+# TODO V Backwards Compatibility: Add support for include_url
 # TODO Backwards Compatibility: chrome_options, support removal of options
 
 
@@ -24,8 +24,9 @@ from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from threading import Event
 
+from io import BytesIO
+from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
-from PIL import Image
 from PyPDF2 import PdfReader
 
 # region constants and configurations
@@ -418,8 +419,8 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
 
     page_layout_metrics = tab.Page.getLayoutMetrics()
     demisto.debug(f"{page_layout_metrics=}")
+    css_content_size = page_layout_metrics['cssContentSize']
     if full_screen:
-        css_content_size = page_layout_metrics['cssContentSize']
         viewport = css_content_size
         viewport['scale'] = 1
         screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)['data']
@@ -432,15 +433,25 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     else:
         demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available available after {operation_time} seconds.")
 
-    ret_value = base64.b64decode(screenshot_data)
-    if not ret_value:
+    captured_image = base64.b64decode(screenshot_data)
+    if not captured_image:
         demisto.info(f"Empty snapshot, {screenshot_data=}")
     else:
-        demisto.info(f"Captured snapshot, {len(ret_value)=}")
+        demisto.info(f"Captured snapshot, {len(captured_image)=}")
 
     # Page URL, if needed
     if include_url:
-        pass
+        # captured_image_object = Image(captured_image)
+        captured_image_object = Image.open(BytesIO(captured_image))
+        image_with_url = Image.new(captured_image_object.mode, (css_content_size['width'], css_content_size['height'] + 20))
+        image_with_url.paste(captured_image_object, (0, 20))
+        ImageDraw.Draw(image_with_url).text((0, 0), path, fill=(255, 255, 255))
+        img_byte_arr = BytesIO()
+        image_with_url.save(img_byte_arr, format='PNG')
+        img_byte_arr = img_byte_arr.getvalue()
+        ret_value = img_byte_arr
+    else:
+        ret_value = captured_image
 
     # Page source, if needed
     response_body = None
