@@ -10,15 +10,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud IAM Enrichment - Generic
-* Handle False Positive Alerts
+* Ticket Management - Generic
 * Enrichment for Verdict
 * Cloud Response - Generic
-* Ticket Management - Generic
+* Handle False Positive Alerts
+* Cloud IAM Enrichment - Generic
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 

@@ -1647,6 +1647,26 @@ inputs:
     Whether to clear the user's active Okta sessions using the 'Containment Plan' su-playbook.
     Possible values are: "True" and "False".
   playbookInputQuery:
+inputSections:
+- inputs:
+  - RelatedAlertsThreshold
+  - FailedLogonThreshold
+  - OktaSuspiciousEventsThreshold
+  - AzureMfaFailedLogonThreshold
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - AutoRemediation
+  - AutoContainment
+  - UserContainment
+  - ClearUserSessions
+  - IAMRemediationType
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

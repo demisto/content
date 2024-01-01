@@ -1265,6 +1265,74 @@ inputs:
   required: false
   description: Comment for the ticket.
   playbookInputQuery: null
+inputSections:
+- inputs:
+  - SOCEmailAddress
+  - requireAnalystReview
+  - ShouldCloseAutomatically
+  - ShouldHandleFPautomatically
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, user engagements, and ticketing methods
+- inputs:
+  - ResolveIP
+  - InternalRange
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-side enrichers.
+- inputs:
+  - autoAccessKeyRemediation
+  - autoBlockIndicators
+  - autoResourceRemediation
+  - autoUserRemediation
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - AWS-accessKeyRemediationType
+  - AWS-resourceRemediationType
+  - AWS-userRemediationType
+  name: AWS Remediation
+  description: AWS Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - Azure-resourceRemediationType
+  - Azure-userRemediationType
+  name: Azure Remediation
+  description: Azure Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - GCP-accessKeyRemediationType
+  - GCP-resourceRemediationType
+  - GCP-userRemediationType
+  name: GCP Remediation
+  description: GCP Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - alert_id
+  - cloudProvider
+  name: Alert Data
+  description: Alert details and metadata.
+- inputs:
+  - ShouldOpenTicket
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  - description
+  - addCommentPerEndpoint
+  - CommentToAdd
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)
