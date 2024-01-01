@@ -114,9 +114,14 @@ configuration:
   name: proxy
   type: 8
   required: false
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- additionalinfo: "When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system."
   display: Bypass exclusion list
   name: feedBypassExclusionList
+  type: 8
+  required: false
+- additionalinfo: When selected, will remove ports from IPs returning only the IP address.
+  display: Remove ports from IPs
+  name: remove_ports
   type: 8
   required: false
 - additionalinfo: Supports CSV values.

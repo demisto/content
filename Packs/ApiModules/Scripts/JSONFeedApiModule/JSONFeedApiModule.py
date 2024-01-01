@@ -322,6 +322,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
                      create_relationships: bool = False, relationships_func: Callable = None) -> List[dict]:
     indicator_list = []
     mapping = feed_config.get('mapping')
+    remove_ports = feed_config.get('remove_ports', False)
     take_value_from_flatten = False
     indicator_value = item.get(indicator_field)
     if not indicator_value:
