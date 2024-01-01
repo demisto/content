@@ -46,7 +46,7 @@ def test_set_instance(mocker):
         'accounts'
     )
     internal_request.assert_called_with(
-        'PUT', '/settings/integration', {
+        'put', '/settings/integration', {
             "data": [
                 {
                     "name": "accounts_to_access",
@@ -68,7 +68,7 @@ def test_update_ec2_instance(mocker):
         AwsEC2SyncAccounts,
         "internal_request",
         side_effect=lambda *args: {
-            ("POST", "/settings/integration/search"): {
+            ("post", "/settings/integration/search"): {
                 "instances": [
                     {
                         "id": "2fa1071e-af66-4668-8f79-8c57a3e4851d",
@@ -94,7 +94,7 @@ def test_update_ec2_instance(mocker):
                     },
                 ]
             },
-            ("PUT", "/settings/integration"): {
+            ("put", "/settings/integration"): {
                 "configvalues": {"accounts_to_access": "1234,5678"}
             },
         }.get(args[:2]),

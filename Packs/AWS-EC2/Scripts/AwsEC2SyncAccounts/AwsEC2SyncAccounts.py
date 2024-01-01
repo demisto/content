@@ -17,10 +17,13 @@ def internal_request(method: str, uri: str, body: dict = {}) -> dict:
     Returns:
         dict: The body of request response.
     """
-    return json.loads(demisto.internalHttpRequest(method, uri, body)['body'])
+    return demisto.executeCommand(
+        f'core-api-{method}',
+        {'uri': uri, 'body': json.dumps(body)}
+    )[0]['Contents']['response']  # type: ignore
 
 
-def get_account_ids() -> list[str]:
+def get_account_ids(ec2_instance_name: str | None) -> tuple[list[str], str]:
     '''Get the AWS organization accounts using the `aws-org-account-list` command.
 
     Returns:
@@ -28,11 +31,13 @@ def get_account_ids() -> list[str]:
     '''
     try:
         account_list_result: list[dict[str, dict]] = demisto.executeCommand(ACCOUNT_LIST_COMMAND, {})  # type: ignore
-        return [
-            account['Id']
-            for account
-            in account_list_result[0]['EntryContext']['AWS.Organizations.Account(val.Id && val.Id == obj.Id)']
-        ]
+        ec2_instance = next(
+            result for result in account_list_result if result['ModuleName'] == ec2_instance_name
+        ) if ec2_instance_name else account_list_result[0]
+        return (
+            [account['Id'] for account in ec2_instance['EntryContext']['AWS.Organizations.Account(val.Id && val.Id == obj.Id)']],
+            str(ec2_instance['HumanReadable'])
+        )
     except ValueError as e:
         raise DemistoException(f'The command {ACCOUNT_LIST_COMMAND!r} must be operational to run this script.\nServer error: {e}')
     except KeyError:
@@ -51,7 +56,7 @@ def get_instance(instance_name: str) -> dict:
     Returns:
         dict: The instance object.
     '''
-    integrations = internal_request('POST', '/settings/integration/search')
+    integrations = internal_request('post', '/settings/integration/search')
     return next(inst for inst in integrations['instances'] if inst['name'] == instance_name)
 
 
@@ -70,7 +75,7 @@ def set_instance(instance: dict, accounts: str) -> dict:
         'hasvalue': True,
         'value': accounts
     })
-    return internal_request('PUT', '/settings/integration', instance)
+    return internal_request('put', '/settings/integration', instance)
 
 
 def update_ec2_instance(account_ids: list[str], instance_name: str) -> str:
@@ -87,12 +92,12 @@ def update_ec2_instance(account_ids: list[str], instance_name: str) -> str:
     try:
         instance = get_instance(instance_name)
         if instance['configvalues'][EC2_ACCOUNTS_PARAM] == accounts_as_str:
-            return f'Account list in {instance_name!r} is up to date.'
+            return f'Account list in ***{instance_name}*** is up to date.'
         response = set_instance(instance, accounts_as_str)
         if response['configvalues'][EC2_ACCOUNTS_PARAM] != accounts_as_str:
             demisto.debug(f'{response=}')
             raise DemistoException(f'Attempt to update {instance_name!r} with accounts {accounts_as_str} has failed.')
-        return f'Successfully updated {instance_name!r} with accounts: {accounts_as_str}'
+        return f'Successfully updated ***{instance_name}*** with accounts:'
     except StopIteration:
         raise DemistoException(f'Instance {instance_name!r} was not found or is not an AWS - EC2 instance.')
     except Exception as e:
@@ -101,10 +106,10 @@ def update_ec2_instance(account_ids: list[str], instance_name: str) -> str:
 
 def main():
     try:
-        instance_name = str(demisto.getArg('instanceName'))
-        account_ids = get_account_ids()
-        result = update_ec2_instance(account_ids, instance_name)
-        return_results(result)
+        args: dict = demisto.args()
+        account_ids, readable_output = get_account_ids(args.get('org_instance_name'))
+        result = update_ec2_instance(account_ids, args['ec2_instance_name'])
+        return_results(CommandResults(readable_output=f'## {result}  \n---  \n{readable_output}'))
     except Exception as e:
         return_error(f'Error in AwsEC2SyncAccounts: {e}')
 
