@@ -4884,7 +4884,7 @@ script:
     - contextPath: CrowdStrike.IncidentBehavior.compound_tto
       description: The compound TTO.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.83976
+  dockerimage: demisto/py3-tools:1.0.0.84025
   isfetch: true
   ismappable: true
   isremotesyncin: true
