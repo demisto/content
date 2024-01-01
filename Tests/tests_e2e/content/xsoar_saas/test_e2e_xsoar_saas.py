@@ -183,7 +183,9 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
 
             war_room_entries, context = xsoar_saas_client.get_investigation_context(incident_response.investigation_id)
             # make sure the context is populated with thread id(s) from slack ask
-            assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}, war-room-entires errors: {xsoar_saas_client.get_formatted_error_entries(war_room_entries)}'
+            assert context.get("Slack", {}).get(
+                "Thread"), f'thread IDs do not exist in context {context}, ' \
+                           f'war-room-entires errors: {xsoar_saas_client.get_formatted_error_entries(war_room_entries)}'
 
 
 def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
@@ -231,7 +233,8 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
                 investigation_id=investigation_id
             )
             assert context.get("QRadar", {}).get("Offense", {}).get(
-                "Status") == "CLOSED", f"Error validating context when closing qradar command, context: {context}, war-rooom error entries: {xsoar_saas_client.get_formatted_error_entries(war_room_entries)}"
+                "Status") == "CLOSED", f"Error validating context when closing qradar command, context: {context}, " \
+                                       f"war-rooom error entries: {xsoar_saas_client.get_formatted_error_entries(war_room_entries)}"
 
             # make sure the incident gets closed after closing it in Qradar
             assert xsoar_saas_client.poll_incident_state(incident_id, expected_states=(IncidentState.CLOSED,), timeout=300)
