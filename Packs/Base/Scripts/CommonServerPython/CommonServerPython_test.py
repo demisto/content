@@ -1011,6 +1011,12 @@ def test_flatten_cell():
     dict_to_flatten = {'first': u'会'}
     expected_flatten_dict = u'{\n    "first": "\u4f1a"\n}'
     assert flattenCell(dict_to_flatten) == expected_flatten_dict
+    
+    # datetime test
+    datetime_value = datetime(2019, 9, 17, 6, 16, 39)
+    dict_to_flatten = {'date': datetime_value}
+    expected_flatten_dict = '{\n    "date": "2019-09-17 06:16:39"\n}'
+    assert flattenCell(dict_to_flatten) == expected_flatten_dict
 
 
 def test_hash_djb2():
