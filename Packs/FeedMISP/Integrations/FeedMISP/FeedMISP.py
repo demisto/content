@@ -342,8 +342,7 @@ def search_query_indicators_pagination(client: Client, params_dict: Dict[str, An
     response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
     search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
     while len(search_query_per_page):
-        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators: \
-                      {len(search_query_per_page)}')
+        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators: {len(search_query_per_page)}')
         response['response']['Attribute'].extend(search_query_per_page)
         params_dict['page'] += 1
         search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
