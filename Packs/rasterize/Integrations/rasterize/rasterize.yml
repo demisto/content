@@ -35,16 +35,9 @@ configuration:
   required: false
 - display: Rasterize Mode
   name: rasterize_mode
-  type: 15
-  defaultvalue: WebDriver - Preferred
-  options:
-  - WebDriver - Preferred
-  - WebDriver - Only
-  - Headless CLI - Preferred
-  - Headless CLI - Only
-  additionalinfo: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. A "Preferred" rasterizing mode will fall back to the other rasterizing mode if it fails.
+  type: 0
+  additionalinfo: Deprecated.
   required: false
-  deprecated: true
 - display: Use system proxy settings
   name: proxy
   type: 8
