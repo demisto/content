@@ -32,11 +32,6 @@ For example, if we wish to use the [List applications](https://docs.microsoft.co
 
 For more information, refer to the following [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application). 
 
-The *Application Secret* and the *Tenant ID* integration parameters are required for this method.
-Alternatively, *Private Key* and *Certificate Thumbprint* can replace *Application Secret* for the Certificate Authorization flow.
-
-The integration supports only Application permission type, and does not support Delegated permission type. 
-
 ## Configure the Azure app
 1. [Register the app](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 2. [Add the requested API permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#request-the-permissions-in-the-app-registration-portal) according to the APIs you wish to use.

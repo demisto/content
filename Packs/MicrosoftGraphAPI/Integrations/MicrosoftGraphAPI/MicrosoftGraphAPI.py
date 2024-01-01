@@ -181,6 +181,8 @@ def main() -> None:  # pragma: no cover
             return_results(test_command(client))
         elif command == 'msgraph-api-auth-reset':
             return_results(reset_auth())
+        elif command == 'msgraph-api-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
