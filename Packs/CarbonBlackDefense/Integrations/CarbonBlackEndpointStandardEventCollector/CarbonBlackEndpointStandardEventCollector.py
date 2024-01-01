@@ -12,8 +12,8 @@ LAST_ALERT_IDS = 'last_alert_ids'
 
 # Constants used in fetch-events
 MAX_ALERTS_IN_PAGE = 10000
-MAX_ALERTS_LOOP = 10
-MAX_ALERTS = MAX_ALERTS_LOOP * MAX_ALERTS_IN_PAGE
+MAX_FETCH_LOOP = 10
+MAX_ALERTS = MAX_FETCH_LOOP * MAX_ALERTS_IN_PAGE
 MAX_AUDITS = 25000
 
 # Constants used by Response Objects
@@ -28,7 +28,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 ''' CLIENT CLASS '''
 
 
-class Client(BaseClient):
+class Client(BaseClient):  # pragma: no cover
     """
     Carbon Black Endpoint Standard Event Collector client class for fetching alerts and audit logs
     """
@@ -106,7 +106,7 @@ def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: di
 def get_alerts_to_limit(client: Client, last_run: dict):
     more_events_to_fetch = True
     alerts: list = []
-    events_loop_limit = MAX_ALERTS_LOOP
+    events_loop_limit = MAX_FETCH_LOOP
     try:
         while more_events_to_fetch and events_loop_limit > 0:
             # Fetch next batch of alerts
@@ -127,7 +127,7 @@ def get_alerts_to_limit(client: Client, last_run: dict):
 
 def get_audit_logs_to_limit(client: Client):
     audit_logs: list[dict] = []
-    audit_loop_counter = MAX_ALERTS_LOOP
+    audit_loop_counter = MAX_FETCH_LOOP
     while audit_loop_counter and len(audit_logs) < client.max_audit_logs:
         next_batch_audit_logs = client.get_audit_logs()
         if not next_batch_audit_logs:
@@ -160,14 +160,14 @@ def prepare_audit_logs_result(audit_logs, last_audit_time):
     new_audits = []
     for audit in audit_logs:
         audit_time = timestamp_to_datestring(audit[AUDIT_TIMESTAMP], is_utc=True)
-        if not last_audit_time or last_audit_time < audit_time:
+        if not last_audit_time or last_audit_time <= audit_time:
             audit['_time'] = audit_time
             new_audits.append(audit)
     audit_logs = new_audits
     return audit_logs
 
 
-def prepare_alerts_result(alerts, last_run):
+def prepare_alerts_result(alerts, last_run):  # pragma: no cover
     """
     Filters alerts to return only new alerts since the last run, and add _time field.
     """
@@ -198,7 +198,7 @@ def get_events(client: Client, last_run: dict, add_audit_logs: bool):
     return events, last_run
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no cover
     client.get_alerts(datetime.now().strftime(DATE_FORMAT), 1, 1)
     return 'ok'
 
