@@ -116,7 +116,11 @@ script:
       name: limit
     description: Fetch events from AWS Security Hub.
     name: aws-securityhub-get-events
+<<<<<<< HEAD
   dockerimage: demisto/boto3py3:1.0.0.83986
+=======
+  dockerimage: demisto/boto3py3:1.0.0.84060
+>>>>>>> origin/master
   isfetchevents: true
   script: '-'
   subtype: python3

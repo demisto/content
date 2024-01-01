@@ -1,5 +1,8 @@
 import base64
 import json
+import unittest
+from unittest.mock import MagicMock, patch
+
 import demistomock as demisto
 
 import pytest
@@ -12,7 +15,12 @@ from freezegun import freeze_time
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
+<<<<<<< HEAD
                      handle_transient_files, parse_incident_from_item, parse_item_as_dict, get_item_as_eml)
+=======
+                     handle_transient_files, parse_incident_from_item, parse_item_as_dict, get_item_as_eml,
+                     create_message)
+>>>>>>> origin/master
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -607,6 +615,10 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
               b'Content-Type: text/plain; charset="us-ascii"\r\n' \
               b'X-FAKE-Header: HVALue\r\n' \
               b'X-Who-header: whovALUE\r\n' \
+<<<<<<< HEAD
+=======
+              b'DATE: 2023-12-16T12:04:45\r\n' \
+>>>>>>> origin/master
               b'\r\nHello'
     # headers set in the Item
     item_headers = [
@@ -615,17 +627,30 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
         MessageHeader(name="Content-Type", value="text/plain; charset=\"us-ascii\""),
         MessageHeader(name="X-Fake-Header", value="HVALue"),
         MessageHeader(name="X-WHO-header", value="whovALUE"),
+<<<<<<< HEAD
+=======
+        # this is a header whose value is different. The field is limited to 1 by RFC
+        MessageHeader(name="Date", value="2023-12-16 12:04:45"),
+>>>>>>> origin/master
         # This is an extra header logged by exchange in the item -> add to the output
         MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
     ]
 
     # sent to "fileResult", original headers from content with matched casing, with additional header
     expected_data = 'MIME-Version: 1.0\r\n' \
+<<<<<<< HEAD
                     'Message-ID:  <message-test-idRANDOMVALUES@testing.com>' \
                     '\r\nX-FAKE-Header: HVALue\r\n' \
                     'X-Who-header: whovALUE\r\n' \
                     'X-EXTRA-Missed-Header: EXTRA' \
                     '\r\n' \
+=======
+                    'Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n' \
+                    'X-FAKE-Header: HVALue\r\n' \
+                    'X-Who-header: whovALUE\r\n' \
+                    'DATE: 2023-12-16T12:04:45\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
+>>>>>>> origin/master
                     '\r\nHello'
 
     message = Message(
@@ -744,15 +769,28 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
               b'Content-Type: text/plain; charset="us-ascii"\r\n' \
               b'X-FAKE-Header: HVALue\r\n' \
               b'X-Who-header: whovALUE\r\n' \
+<<<<<<< HEAD
+=======
+              b'DATE: 2023-12-16T12:04:45\r\n' \
+>>>>>>> origin/master
               b'\r\nHello'
 
     # headers set in the Item
     item_headers = [
+<<<<<<< HEAD
         # these headers may have different casing than what exists in the raw content
+=======
+        # these header keys may have different casing than what exists in the raw content
+>>>>>>> origin/master
         MessageHeader(name="Mime-Version", value="1.0"),
         MessageHeader(name="Content-Type", value="text/plain; charset=\"us-ascii\""),
         MessageHeader(name="X-Fake-Header", value="HVALue"),
         MessageHeader(name="X-WHO-header", value="whovALUE"),
+<<<<<<< HEAD
+=======
+        # this is a header whose value is different. The field is limited to 1 by RFC
+        MessageHeader(name="Date", value="2023-12-16 12:04:45"),
+>>>>>>> origin/master
         # This is an extra header logged by exchange in the item -> add to the output
         MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
     ]
@@ -760,8 +798,13 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
                     'Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n' \
                     'X-FAKE-Header: HVALue\r\n' \
                     'X-Who-header: whovALUE\r\n' \
+<<<<<<< HEAD
                     'X-EXTRA-Missed-Header: EXTRA' \
                     '\r\n' \
+=======
+                    'DATE: 2023-12-16T12:04:45\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
+>>>>>>> origin/master
                     '\r\nHello'
 
     class MockEWSClient:
@@ -780,3 +823,40 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     get_item_as_eml(MockEWSClient(), "item", "account@test.com")
 
     mock_file_result.assert_called_once_with(expected_file_name, expected_data)
+<<<<<<< HEAD
+=======
+
+
+class TestEmailModule(unittest.TestCase):
+
+    @patch('EWSO365.FileAttachment')
+    @patch('EWSO365.HTMLBody')
+    @patch('EWSO365.Body')
+    @patch('EWSO365.Message')
+    def test_create_message_with_html_body(self, mock_message, mock_body, mock_html_body, mock_file_attachment):
+        """
+        Test create_message function with an HTML body.
+        """
+        # Setup
+        to = ["recipient@example.com"]
+        subject = "Test Subject"
+        html_body = "<p>Test HTML Body</p>"
+        attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
+
+        mock_message.return_value = MagicMock()
+        mock_html_body.return_value = MagicMock()
+        mock_file_attachment.return_value = MagicMock()
+
+        # Call the function
+        result = create_message(
+            to, subject, html_body=html_body, attachments=attachments
+        )
+
+        # Assertions
+        mock_html_body.assert_called_once_with(html_body)
+        mock_file_attachment.assert_called_once_with(
+            name="file.txt", content="data", is_inline=True, content_id="12345"
+        )
+        mock_message.assert_called_once()
+        self.assertIsInstance(result, MagicMock)
+>>>>>>> origin/master

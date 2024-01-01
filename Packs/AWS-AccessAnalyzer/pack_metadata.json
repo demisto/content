@@ -2,7 +2,11 @@
     "name": "AWS - AccessAnalyzer",
     "description": "Amazon Web Services IAM Access Analyzer",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "1.1.22",
+=======
+    "currentVersion": "1.1.23",
+>>>>>>> origin/master
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

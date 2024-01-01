@@ -128,7 +128,11 @@ script:
       name: search
     description: Gets indicators from Security Intelligence Services feed. Note- Indicators will fetch from the latest found object.
     name: sis-get-indicators
+<<<<<<< HEAD
   dockerimage: demisto/boto3py3:1.0.0.83986
+=======
+  dockerimage: demisto/boto3py3:1.0.0.84060
+>>>>>>> origin/master
   feed: true
   runonce: false
   script: '-'

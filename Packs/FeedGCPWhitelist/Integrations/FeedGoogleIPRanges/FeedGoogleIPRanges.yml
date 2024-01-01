@@ -100,7 +100,11 @@ script:
       defaultValue: "10"
     description: Gets indicators from the feed.
     name: google-ip-ranges-get-indicators
+<<<<<<< HEAD
   dockerimage: demisto/py3-tools:1.0.0.83976
+=======
+  dockerimage: demisto/py3-tools:1.0.0.84025
+>>>>>>> origin/master
   feed: true
   runonce: false
   script: '-'

@@ -18,7 +18,11 @@ args:
   description: Original input value.
 scripttarget: 0
 subtype: python3
+<<<<<<< HEAD
 dockerimage: demisto/py3-tools:1.0.0.83976
+=======
+dockerimage: demisto/py3-tools:1.0.0.84025
+>>>>>>> origin/master
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

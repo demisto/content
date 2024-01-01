@@ -2023,7 +2023,15 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
                         header.name.lower(),
                         header.value,
                 ) not in attached_email_headers and header.name.lower() != "content-type":
+<<<<<<< HEAD
                     email_content.add_header(header.name, header.value)
+=======
+                    try:
+                        email_content.add_header(header.name, header.value)
+                    except ValueError as err:
+                        if "There may be at most" not in str(err):
+                            raise err
+>>>>>>> origin/master
 
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
         file_result = fileResult(eml_name + ".eml", email_content.as_string())
@@ -2160,7 +2168,12 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     not in attached_email_headers
                                     and header.name.lower() != "content-type"
                             ):
-                                attached_email.add_header(header.name, header.value)
+                                try:
+                                    attached_email.add_header(header.name, header.value)
+                                except ValueError as err:
+                                    if "There may be at most" not in str(err):
+                                        raise err
+
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
                     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'

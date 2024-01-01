@@ -455,7 +455,11 @@ script:
       description: Whether the event is suppressed.
       type: number
     description: Get events.
+<<<<<<< HEAD
   dockerimage: demisto/py3-tools:1.0.0.83976
+=======
+  dockerimage: demisto/py3-tools:1.0.0.84025
+>>>>>>> origin/master
   runonce: false
   script: '-'
   type: python

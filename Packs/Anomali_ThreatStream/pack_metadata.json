@@ -2,7 +2,11 @@
     "name": "Anomali ThreatStream",
     "description": "Use Anomali ThreatStream to query and submit threats.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "2.2.11",
+=======
+    "currentVersion": "2.2.12",
+>>>>>>> origin/master
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

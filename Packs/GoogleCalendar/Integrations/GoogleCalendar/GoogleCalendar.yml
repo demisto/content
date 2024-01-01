@@ -173,7 +173,11 @@ script:
     - contextPath: GoogleCalendar.PageToken.Acl.nextSyncToken
       description: Token used at a later point in time to retrieve only the entries that have changed since this result was returned.
       type: String
+<<<<<<< HEAD
   dockerimage: demisto/googleapi-python3:1.0.0.83610
+=======
+  dockerimage: demisto/googleapi-python3:1.0.0.83805
+>>>>>>> origin/master
   runonce: false
   script: '-'
   subtype: python3

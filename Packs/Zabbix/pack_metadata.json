@@ -2,7 +2,11 @@
     "name": "Zabbix",
     "description": "Allow integration with Zabbix api.",
     "support": "developer",
+<<<<<<< HEAD
     "currentVersion": "1.0.29",
+=======
+    "currentVersion": "1.0.30",
+>>>>>>> origin/master
     "author": "Henrique Caires",
     "url": "https://support.zabbix.com/secure/Dashboard.jspa",
     "email": "henrique@caires.net.br",
