@@ -1917,7 +1917,6 @@ def main():  # pragma: no cover
             send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
 
             demisto.info("Done Sending data to XSIAM.")
-
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
 
