@@ -1,0 +1,4 @@
+!msgraph-list-site-permissions site_name=Test
+!msgraph-create-site-permissions site_name=Test role=write app_id=test_id display_name=test
+!msgraph-update-site-permissions permission_id=test_id role=read site_name=Test
+!msgraph-delete-site-permissions site_name=Test permission_id=test_id
