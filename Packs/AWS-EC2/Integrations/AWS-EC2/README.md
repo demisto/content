@@ -31,9 +31,6 @@ Amazon Web Services Elastic Compute Cloud (EC2).
 The EC2 integration supports running commands across multiple AWS accounts in an organization.
 To use this feature, configure the parameter `AWS organization accounts` with a comma-separated list of AWS Organization accounts and the `Role name for cross-organization account access` parameter with a role name that grants full access to the EC2 API in each account.
 
-#### AwsEC2SyncAccounts Script
-The script ***AwsEC2SyncAccounts*** can be used to configure an AWS - EC2 instance with all accounts in an organization.
-
 #### Example:
 
 ---
@@ -49,6 +46,9 @@ The script ***AwsEC2SyncAccounts*** can be used to configure an AWS - EC2 instan
 In this case the user configured with `Access Key` and `Secret Key` must be able to perform ***AssumeRole*** with the ***RoleArn***s:
 `arn:aws:iam::12345678:role/CrossAccountAccessRole`
 `arn:aws:iam::98765432:role/CrossAccountAccessRole`
+
+#### AwsEC2SyncAccounts Script
+The script ***AwsEC2SyncAccounts*** can be used to configure an AWS - EC2 instance with all accounts in an organization.
 
 ## Commands
 

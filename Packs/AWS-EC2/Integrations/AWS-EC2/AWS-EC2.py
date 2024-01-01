@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 PARAMS = demisto.params()
 MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
+IS_ARG_WITH_ARN = bool(demisto.getArg('roleArn'))
 
 
 """HELPER FUNCTIONS"""
@@ -159,11 +160,12 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                     readable_output=f'#### Error in command call for account `{account_id}`\n{e}',
                     entry_type=EntryType.ERROR,
                     content_format=EntryFormat.MARKDOWN,
+                    raw_response=
                 )
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             results = executor.map(run_command, accounts)
         return list(results)
-    return account_runner if (ROLE_NAME and not demisto.getArg('roleArn')) else func
+    return account_runner if (ROLE_NAME and not IS_ARG_WITH_ARN) else func
 
 
 """MAIN FUNCTIONS"""
