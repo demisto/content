@@ -80,7 +80,6 @@ def test_http_request_no_connection_errors(mocker, mock_client):
     assert not sleep_mocker.called
 
 
-
 # --- Utility Functions Tests ---
 @pytest.mark.parametrize("mock_files_prefix, pages, test_input_kwargs, expected_output_context_file",
                          [
