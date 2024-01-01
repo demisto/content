@@ -172,7 +172,7 @@ class EWSClient:
         :param is_public_folder: Public Folder flag
         :param request_timeout: Timeout (in seconds) for HTTP requests to Exchange Server
         :param max_fetch: Max incidents per fetch
-        :param insecure: Trust any certificate (not secure).
+        :param insecure: Trust any certificate (not secure)
         """
 
         client_id = kwargs.get('_client_id') or kwargs.get('client_id')
