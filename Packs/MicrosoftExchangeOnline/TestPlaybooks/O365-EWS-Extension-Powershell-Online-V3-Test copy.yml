@@ -303,7 +303,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -377,11 +377,84 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 5908d0d2-55ed-40d0-83c0-d2f665d6cdbf
+    type: regular
+    task:
+      id: 5908d0d2-55ed-40d0-83c0-d2f665d6cdbf
+      version: -1
+      name: Get Mailbox Rules
+      description: Retrieve a list of an Inbox rules.
+      script: '|||ews-rule-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      mailbox:
+        simple: avishai@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 1268a080-3fb6-469a-8eb2-d28b9870ce2e
+    type: regular
+    task:
+      id: 1268a080-3fb6-469a-8eb2-d28b9870ce2e
+      version: -1
+      name: Get Mailbox Rule
+      description: Retrieve information about the Inbox rule properties.
+      script: '|||ews-get-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      identity:
+        simple: "1268829516541722625"
+      mailbox:
+        simple: avishai@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1900
         }
       }
     note: false
@@ -395,7 +468,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 2105,
         "width": 380,
         "x": 50,
         "y": 50
