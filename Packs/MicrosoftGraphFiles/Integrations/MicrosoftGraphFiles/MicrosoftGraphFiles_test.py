@@ -933,7 +933,7 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
     Given:
         - Authentication method, self_deployed information, and demisto command.
     When:
-        - Calling test_module.
+        - Calling test_function.
     Then:
         - Ensure the output is as expected.
     """
@@ -952,9 +952,9 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
 
     if should_raise:
         with pytest.raises(DemistoException) as exc:
-            test_function(client, demisto_params)
+            test_function(client)
             assert 'self-deployed - Authorization Code Flow' in str(exc)
     else:
-        result = test_function(client, demisto_params)
+        result = test_function(client)
         assert result == expected_result
         client.ms_client.http_request.assert_called_once_with(url_suffix="sites", timeout=7, method="GET")
