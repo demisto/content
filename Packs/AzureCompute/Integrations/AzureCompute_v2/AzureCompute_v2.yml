@@ -32,19 +32,19 @@ configuration:
   required: false
 - name: cred_auth_id
   type: 9
-  displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
+  displaypassword: ID
   hiddenusername: true
   required: false
   section: Connect
 - name: cred_token
   type: 9
-  displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
+  displaypassword: Token
   hiddenusername: true
   required: false
   section: Connect
 - name: cred_enc_key
   type: 9
-  displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
+  displaypassword: Key
   hiddenusername: true
   required: false
   section: Connect

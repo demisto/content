@@ -3,10 +3,10 @@ Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Direct
 There are 2 application authentication methods available:
 
  * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
- * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
+ * [Self-Deployed Application - Client Credentials Flow](https://xsoar-pan-dev--pull-request-1441-nl0wj7at.web.app/docs/reference/articles/microsoft-integrations---authentication#client-credentials-flow)
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To allow us access to Azure Compute, an administrator has to approve the Demisto app using an admin consent flow, by clicking [here](https://oproxy.demisto.ninja/ms-azure-compute).
-After authorizing the Demisto app, you will receive an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields. After giving consent, the application must have a role assigned, so it can access the relevant resources per subscription. 
-For more information, see the integration documentation.
+To use the **Cortex XSOAR application** and allow us access to Azure Compute, an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-azure-compute)**.
+After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
+After giving consent, the application must have a role assigned, so it can access the relevant resources per subscription. 
