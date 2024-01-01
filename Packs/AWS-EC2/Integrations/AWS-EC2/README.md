@@ -30,7 +30,8 @@ Amazon Web Services Elastic Compute Cloud (EC2).
 
 The EC2 integration supports running commands across multiple AWS accounts in an organization.
 To use this feature, configure the parameter `AWS organization accounts` with a comma-separated list of AWS Organization accounts and the `Role name for cross-organization account access` parameter with a role name that grants full access to the EC2 API in each account.
-
+Using the `roleArn`, `roleSessionName` and `roleSessionDuration` arguments in EC2 commands will override this feature.
+ 
 #### Example:
 
 ---
