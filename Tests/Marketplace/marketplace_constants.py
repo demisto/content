@@ -289,7 +289,7 @@ class PackFolders(enum.Enum):
     def yml_supported_folders(cls):
         return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
                 PackFolders.TEST_PLAYBOOKS.value, PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value,
-                PackFolders.CORRELATION_RULES.value}
+                PackFolders.CORRELATION_RULES.value, PackFolders.ASSETS_MODELING_RULES.value}
 
     @classmethod
     def json_supported_folders(cls):
