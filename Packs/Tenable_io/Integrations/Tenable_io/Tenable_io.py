@@ -704,7 +704,7 @@ def get_vulnerabilities_chunks(client: Client, export_uuid: str):
 
 def test_module(client: Client, params):
     if int(params.get('assetsFetchInterval')) < 60:
-        return_error("Assets Fetch Interval is supposed to be 1 hour minimum")
+        return_error("Assets and vulnerabilities fetch Interval is supposed to be 1 hour minimum.")
     client.list_scan_filters()
     return 'ok'
 
