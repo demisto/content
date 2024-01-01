@@ -395,7 +395,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         try:
             self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit")
         except GitCommandError as e:
-            print(f'{e}')
+            print(f'got here: {e=}, {e.stderr=}, {e.stdout=}')
             if 'not something we can merge' in e.stderr:
                 return False, [FAILED_TO_MERGE]
             error = e.stdout
