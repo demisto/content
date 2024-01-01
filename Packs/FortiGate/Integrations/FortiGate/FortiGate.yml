@@ -1275,7 +1275,7 @@ script:
       description: The address group members.
       type: String
   - name: fortigate-update-firewall-address-ipv4-group
-    description: Update firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device.
+    description: Update firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device. New members will override the existing members within the group incase of a conflict.
     arguments:
     - name: vdom
       description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
@@ -1389,7 +1389,7 @@ script:
       description: The address group members.
       type: String
   - name: fortigate-update-firewall-address-ipv6-group
-    description: Update firewall IPv6 address groups. Address groups are designed for ease of use in the administration of the device.
+    description: Update firewall IPv6 address groups. Address groups are designed for ease of use in the administration of the device. New members will override the existing members within the group incase of a conflict.
     arguments:
     - name: vdom
       description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
@@ -1749,7 +1749,7 @@ script:
       description: Service objects contained within the group.
       type: String
   - name: fortigate-update-firewall-service-group
-    description: Update firewall service groups. Service groups are collections of predefined services. Service groups can be used as the source and destination of the policy.
+    description: Update firewall service groups. Service groups are collections of predefined services. Service groups can be used as the source and destination of the policy. New members will override the existing members within the group incase of a conflict.
     arguments:
     - name: vdom
       description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
