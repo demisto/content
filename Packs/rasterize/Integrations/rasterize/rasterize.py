@@ -2,9 +2,9 @@
 # TODO V start_chrome_headless.sh in Python
 # TODO V Restart the chrome after 500 rasterizations
 # TODO V/2 Write the pid in a local file. Use the pid os the subprocess when starting the chrome from Python. Use DevTools, or kill the process
-# TODO Backwards Compatibility: Add support for full_Screen
+# TODO V Backwards Compatibility: Add support for full_Screen
 # TODO V Backwards Compatibility: Add support for include_url
-# TODO Backwards Compatibility: chrome_options, support removal of options
+# TODO V/2 Backwards Compatibility: chrome_options, support removal of options
 
 
 import demistomock as demisto  # noqa: F401
@@ -40,7 +40,18 @@ os.environ['HOME'] = tempfile.gettempdir()
 
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
 USER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
-USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
+CHROME_OPTIONS = ["--headless",
+                  "--disable-gpu",
+                  "--no-sandbox",
+                  "--hide-scrollbars",
+                  "--disable-infobars",
+                  "--start-maximized",
+                  "--start-fullscreen",
+                  "--ignore-certificate-errors",
+                  "--disable-dev-shm-usage",
+                  f'--user-agent="{USER_AGENT}"',
+                  ]
+
 CHROME_PID = 0
 
 WITH_ERRORS = demisto.params().get('with_error', True)
@@ -255,33 +266,61 @@ def write_info_file(filename, contents):
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
+def get_chrome_options(default_options, user_options):
+    """Return the command line options for Chrome
+
+    Returns:
+        list -- merged options
+    """
+    demisto.debug(f"get_chrome_options, {default_options=}, {user_options=}")
+    if not user_chrome_options:
+        # nothing to do
+        return default_options.copy()
+
+    user_options = re.split(r'(?<!\\),', user_chrome_options)
+    demisto.debug(f'user chrome options: {user_options}')
+
+    options = []
+    remove_opts = []
+    for opt in user_options:
+        opt = opt.strip()
+        if opt.startswith('[') and opt.endswith(']'):
+            remove_opts.append(opt[1:-1])
+        else:
+            options.append(opt.replace(r'\,', ','))
+    # remove values (such as in user-agent)
+    option_names = [opt_name(x) for x in options]
+    # add filtered defaults only if not in removed and we don't have it already
+    options.extend([x for x in default_options if (opt_name(x) not in remove_opts and opt_name(x) not in option_names)])
+    return options
+
+
 def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""):
     try:
-        # process = subprocess.run(['bash', '/start_chrome_headless.sh',
-        #                          '--port', str(chrome_port),
-        #                           '--chrome-binary', CHROME_EXE,
-        #                           '--user-options', USER_CHROME_OPTIONS],
-        #                          text=True,
-        #                          stdout=subprocess.DEVNULL,
-        #                          stderr=subprocess.DEVNULL)
-        # nohup "$chrome_binary" --headless --disable-gpu --no-sandbox --hide-scrollbars --disable-infobars --start-maximized --start-fullscreen $cert_errors_option --disable-dev-shm-usage --user-agent="\"$user_agent\"" "$user_options --remote-debugging-port=$remote_debugging_port" & disown
-
         logfile = open("/var/chrome_headless.log", 'ab')
-        process = subprocess.Popen([chrome_binary,
-                                  "--headless",
-                                  "--disable-gpu",
-                                  "--no-sandbox",
-                                  "--hide-scrollbars",
-                                  "--disable-infobars",
-                                  "--start-maximized",
-                                  "--start-fullscreen",
-                                  "--ignore-certificate-errors",
-                                  "--disable-dev-shm-usage",
-                                  f'--user-agent="{USER_AGENT}"',
-                                  user_options,
-                                  f"--remote-debugging-port={chrome_port}",
-                                 ],
-                                 stdout=logfile, stderr=subprocess.STDOUT)
+        # process = subprocess.Popen([chrome_binary,
+        #                           "--headless",
+        #                           "--disable-gpu",
+        #                           "--no-sandbox",
+        #                           "--hide-scrollbars",
+        #                           "--disable-infobars",
+        #                           "--start-maximized",
+        #                           "--start-fullscreen",
+        #                           "--ignore-certificate-errors",
+        #                           "--disable-dev-shm-usage",
+        #                           f'--user-agent="{USER_AGENT}"',
+        #                           user_options,
+        #                           f"--remote-debugging-port={chrome_port}",
+        #                          ],
+        #                          stdout=logfile, stderr=subprocess.STDOUT)
+
+        default_chrome_options = CHROME_OPTIONS.append(f"--remote-debugging-port={chrome_port}")
+        subprocess_options = [chrome_binary]
+        user_chrome_options = demisto.params().get('chrome_options', "")
+        subprocess_options.extend(get_chrome_options(default_chrome_options, user_chrome_options))
+        demisto.debug(f"Starting Chrome with {subprocess_options=}")
+
+        process = subprocess.Popen(subprocess_options, stdout=logfile, stderr=subprocess.STDOUT)
         demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
 
         if process:
@@ -496,6 +535,7 @@ def rasterize_thread(browser, chrome_port, path: str,
               offline_mode: bool = False,
               navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
               include_url: bool = False,
+              full_screen: bool = False,
               width=DEFAULT_WIDTH,
               height=DEFAULT_HEIGHT
               ):
@@ -505,7 +545,7 @@ def rasterize_thread(browser, chrome_port, path: str,
 
         if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
-                                    include_url=include_url)
+                                    full_screen=full_screen, include_url=include_url)
 
         elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
             return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
@@ -513,7 +553,7 @@ def rasterize_thread(browser, chrome_port, path: str,
 
         elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
-                                    include_url=include_url, include_source=True)
+                                    full_screen=full_screen, include_url=include_url, include_source=True)
         else:
             message = f'Unsupported rasterization type: {rasterize_type}.'
             demisto.error(message)
@@ -527,6 +567,7 @@ def rasterize(path: str,
               offline_mode: bool = False,
               navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
               include_url: bool = False,
+              full_screen: bool = False,
               width=DEFAULT_WIDTH,
               height=DEFAULT_HEIGHT
               ):
@@ -538,6 +579,7 @@ def rasterize(path: str,
     :param wait_time: time in seconds to wait before taking a screenshot
     :param navigation_timeout: amount of time to wait for a page load to complete before throwing an error
     :param include_url: should the URL be included in the output image/PDF
+    :param full_screen: when set to True, the snapshot will take the whole page
     :param width: window width
     :param height: window height
     """
@@ -559,7 +601,7 @@ def rasterize(path: str,
                                             browser=browser, chrome_port=chrome_port,
                                             path=current_path, rasterize_type=rasterize_type, wait_time=wait_time,
                                             offline_mode=offline_mode, navigation_timeout=navigation_timeout,
-                                            include_url=include_url, width=width, height=height
+                                            include_url=include_url, full_screen=full_screen, width=width, height=height
                                             ))
             # Wait for all tasks to complete
             executor.shutdown(wait=True)
@@ -602,6 +644,7 @@ def rasterize_image_command():
     # TODO EntryID should be isArray in the YML. Then iterate over all the files after argToList
     entry_id = args.get('EntryID')
     width, height = get_width_height(demisto.args())
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
     file_name = args.get('file_name', entry_id)
 
@@ -610,7 +653,7 @@ def rasterize_image_command():
 
     with open(file_path, 'rb') as f:
         output, _ = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
-                              rasterize_type=RasterizeType.PDF)
+                              rasterize_type=RasterizeType.PDF, full_screen=full_screen)
         res = []
         for current_output in output:
             res.append(fileResult(filename=file_name, data=current_output, file_type=entryTypes['entryInfoFile']))
@@ -620,6 +663,8 @@ def rasterize_image_command():
 def rasterize_email_command():  # pragma: no cover
     html_body = demisto.args().get('htmlBody')
     width, height = get_width_height(demisto.args())
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+
     offline = demisto.args().get('offline', 'false') == 'true'
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
     file_name = demisto.args().get('file_name', 'email')
@@ -632,7 +677,7 @@ def rasterize_email_command():  # pragma: no cover
     path = f'file://{os.path.realpath(f.name)}'
 
     rasterize_output, _ = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
-                                    offline_mode=offline, navigation_timeout=navigation_timeout)
+                                    offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=rasterize_output[0])
 
@@ -701,8 +746,9 @@ def rasterize_html_command():
     # Should we support arrays?
     entry_id = args.get('EntryID')
     width, height = get_width_height(demisto.args())
-    rasterize_type = args.get('type', 'png').lower()
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
+    rasterize_type = args.get('type', 'png').lower()
     file_name = args.get('file_name', 'email')
     wait_time = int(args.get('wait_time', 0))
 
@@ -711,7 +757,7 @@ def rasterize_html_command():
     os.rename(f'./{file_path}', 'file.html')
 
     output, _ = rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
-                          rasterize_type=rasterize_type, wait_time=wait_time)
+                          rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
 
     # TODO Should we suport arrays?
     res = fileResult(filename=file_name, data=output[0])
@@ -737,6 +783,8 @@ def module_test():  # pragma: no cover
 def rasterize_command():  # pragma: no cover
     url = demisto.getArg('url')
     width, height = get_width_height(demisto.args())
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
     wait_time = int(demisto.args().get('wait_time', 0))
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
@@ -749,7 +797,8 @@ def rasterize_command():  # pragma: no cover
     file_name = f'{file_name}.{file_extension}'  # type: ignore
 
     rasterize_output, response_body = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
-                                                navigation_timeout=navigation_timeout, include_url=include_url)
+                                                navigation_timeout=navigation_timeout, include_url=include_url,
+                                                full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
 
     if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
