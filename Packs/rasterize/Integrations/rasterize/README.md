@@ -16,6 +16,7 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 | max_page_load_time | Maximum amount of time to wait for a page to load \(in seconds\). | False |
 | chrome_options | Chrome options (Advanced. See `Configuration Notes`.) | False |
 | proxy | Use system proxy settings. | False |
+| rasterize_mode | Rasterize Mode. (See `Configuration Notes`.) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -25,6 +26,7 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 ```
 --disable-auto-reload,[--disable-dev-shm-usage]
 ```
+* Rasterize Mode: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. WebDriver supports more options than Headless CLI. Such as support for the `offline` option in the `rasterize-emails` command. There are some urls that do not rasterize well with WebDriver and may succeed with Headless CLI. Thus, it is recommended to use the `WebDriver - Preferred` mode, which will use WebDriver as a start and fallback to Headless CLI if it fails.
 * Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: this integration does not support proxies which require authentication.
 
 
@@ -50,6 +52,8 @@ Converts the contents of a URL to an image file or a PDF file.
 | height | The page height, for example, 800px. Specify with or without the px suffix. | Optional | 
 | type | The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png". | Optional | 
 | file_name | The name the file will be saved as. Default is "url". | Optional |
+| full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| mode | Rasterize mode to use (WebDriver or Headless CLI). If not specified, will use according to the integration instance settings. | Optional |
 
 
 #### Context Output
@@ -102,6 +106,8 @@ Converts the body of an email to an image file or a PDF file.
 | type | The file type to which to convert the email body. Can be "pdf" or "png". Default is "png". | Optional | 
 | offline | If "true", will block all outgoing communication. | Optional | 
 | file_name | The name the file will be saved as. Default is "email". | Optional |
+| full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| mode | Rasterize mode to use (WebDriver or Headless CLI). If not specified, will use according to the integration instance settings. | Optional |
 
 
 #### Context Output
@@ -153,6 +159,8 @@ Converts an image file to a PDF file.
 | width | The image width, for example, 600px. Specify with or without the px suffix. | Optional | 
 | height | The image height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
 | file_name | The name the file will be saved as. Default is the EntryID. | Optional |
+| full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| mode | Rasterize mode to use (WebDriver or Headless CLI). If not specified, will use according to the integration instance settings. | Optional |
 
 
 #### Context Output
@@ -202,6 +210,8 @@ Converts a PDF file to an image file.
 | EntryID | The entry ID of PDF file. | Required | 
 | maxPages | The maximum number of pages to render. Default is "3". | Optional | 
 | pdfPassword | The password to access the PDF. | Optional | 
+| horizontal | Whether to stack the pages horizontally. If "true", will stack the pages horizontally. If "false", will stack the pages vertically. Default is "false". | Optional | 
+| file_name | The name the file will be saved as. Default is "image". | Optional | 
 
 
 #### Context Output
@@ -253,6 +263,7 @@ Converts an html file to a PDF or PNG file.
 | height | The html file height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
 | file_name | The name the file will be saved as. Default is the EntryID. | Optional | 
 | type | The file type to which to convert the html file. Can be "pdf" or "png". Default is "png". | Optional | 
+| full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional |
 | wait_time | Time to wait before taking a screenshot (in seconds ). | Optional |
 
 #### Context Output
