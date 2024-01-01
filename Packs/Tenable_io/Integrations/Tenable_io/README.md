@@ -7,13 +7,17 @@ This integration was integrated and tested with January 2023 release of Tenable.
 2. Search for Tenable.io.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | URL | True |
-    | Access key | True |
-    | Secret key | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | URL | Tenable URL. | True |
+    | Access Key | Tenable API access key. | True |
+    | Secret Key | Tenable API secret key. | True |
+    | Assets Fetch Interval | Fetch interval in minutes for assets and vulnerabilities. | True |
+    | Severity | The severity of the vulnerabilities to include in the export. | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -1595,3 +1599,39 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 >Preparing scan report:
 
 >Returned file: scan_16_SSE-144f3dc6-cb2d-42fc-b6cc-dd20b807735f-html.html [Download](https://www.paloaltonetworks.com/cortex)
+
+
+### tenable-io-get-audit-logs
+***
+Returns audit logs extracted from Tenable io.
+
+
+#### Base Command
+
+`tenable-io-get-audit-logs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
+| limit | The maximum number of alerts to return (maximum value - 5000). | Optional | 
+| from_date | Return events that occurred after the specified date.  | Optional | 
+| to_date | Return events that occurred before the specified date. | Optional | 
+| actor_id | Return events that contain the specified actor UUID. | Optional | 
+| target_id | Return events matching the specified target UUID. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!tenable-io-get-audit-logs limit=1```
+
+
+#### Human Readable Output
+
+>### Audit Logs List:
+>|Action| Actor    | Crud | Description | Fields                                                                                                                                                  | Id  |Is Anonymous|Is Failure|Received| Target                                              |
+>|----------|------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----|---|---|---|-----------------------------------------------------|---|
+>| user.create | id: test | c    |             | {'key': 'X-Access-Type', 'value': 'apikey'},<br>{'key': 'X-Forwarded-For', 'value': '1.2.3.4'},<br>{'key': 'X-Request-Uuid', 'value': '12:12:12:12:12'} | 12  | true | false | 2022-05-18T16:33:02Z | id: 12-1-1-1-1<br>name: test@test.com<br>type: User |

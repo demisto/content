@@ -311,7 +311,7 @@ tasks:
       brand: Tenable.io
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     scriptarguments:
       numAssets:
         simple: "50"
@@ -324,44 +324,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: b1353dec-47ad-4833-8ae8-fd2942d5d376
-    type: condition
-    task:
-      id: b1353dec-47ad-4833-8ae8-fd2942d5d376
-      version: -1
-      name: Verify vulnerabilities
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: TenableIO.Vulnerability.asset
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
         }
       }
     note: false

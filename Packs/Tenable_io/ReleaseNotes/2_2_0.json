@@ -1,0 +1,6 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Changed the display name of the integration to Tenable Vulnerability Management instead of Tenable.io.\nDeleted the Tenable.io Event Collector integration, and moved its commands to Tenable Vulnerability Management (Tenable.io previously) integration."
+
+
+}
