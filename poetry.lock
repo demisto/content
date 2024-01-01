@@ -167,17 +167,6 @@ files = [
 ]
 
 [[package]]
-name = "astor"
-version = "0.8.1"
-description = "Read/rewrite/write Python ASTs"
-optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
-files = [
-    {file = "astor-0.8.1-py2.py3-none-any.whl", hash = "sha256:070a54e890cefb5b3739d19f30f5a5ec840ffc9c50ffa7d23cc9fc1a38ebbfc5"},
-    {file = "astor-0.8.1.tar.gz", hash = "sha256:6a6effda93f4e1ce9f618779b2dd1d9d84f1e32812c23a29b3fff6fd7f63fa5e"},
-]
-
-[[package]]
 name = "astroid"
 version = "2.9.3"
 description = "An abstract syntax tree for Python with inference support."
@@ -1134,21 +1123,6 @@ files = [
 ]
 
 [[package]]
-name = "configargparse"
-version = "1.7"
-description = "A drop-in replacement for argparse that allows options to also be set via config files and/or environment variables."
-optional = false
-python-versions = ">=3.5"
-files = [
-    {file = "ConfigArgParse-1.7-py3-none-any.whl", hash = "sha256:d249da6591465c6c26df64a9f73d2536e743be2f244eb3ebe61114af2f94f86b"},
-    {file = "ConfigArgParse-1.7.tar.gz", hash = "sha256:e7067471884de5478c58a511e529f0f9bd1c66bfef1dea90935438d6c23306d1"},
-]
-
-[package.extras]
-test = ["PyYAML", "mock", "pytest"]
-yaml = ["PyYAML"]
-
-[[package]]
 name = "configparser"
 version = "5.3.0"
 description = "Updated configparser from stdlib for earlier Pythons."
@@ -1380,13 +1354,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.24.0"
+version = "1.25.1"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.24.0-py3-none-any.whl", hash = "sha256:4b78711d820af684d2949eb4cab474559f3abadd5956596d8d52686084b05b44"},
-    {file = "demisto_sdk-1.24.0.tar.gz", hash = "sha256:68b870ce88442aac730129840cc112293ad31557c8d3828cc46b799b049126bf"},
+    {file = "demisto_sdk-1.25.1-py3-none-any.whl", hash = "sha256:d1d7bafacda81195d7334966c1400dc8c91959477a975c9119ddbf768c59f6b0"},
+    {file = "demisto_sdk-1.25.1.tar.gz", hash = "sha256:d0851981da77c9608131c07dab252c8f44de20541cbe7895e68cb56896352da1"},
 ]
 
 [package.dependencies]
@@ -1417,7 +1391,6 @@ inflection = ">=0.5.1,<0.6.0"
 json5 = ">=0.9.14,<0.10.0"
 jsonschema = ">=4.4.0,<5.0.0"
 junitparser = ">=3.1.0,<4.0.0"
-klara = ">=0.6.3,<0.7.0"
 mergedeep = ">=1.3.4,<2.0.0"
 more-itertools = ">=9.0.0,<10.0.0"
 mypy = ">=0.982,<0.983"
@@ -1429,6 +1402,7 @@ orjson = ">=3.8.3,<4.0.0"
 packaging = ">=23.1,<24.0"
 paramiko = ">=2.11.0,<3.0.0"
 Pebble = ">=4.6.3,<6.0.0"
+pre-commit = ">=3.5.0,<4.0.0"
 prettytable = ">=3.2.0,<4.0.0"
 pydantic = ">=1.10,<2.0"
 pykwalify = ">=1.8.0,<2.0.0"
@@ -1476,6 +1450,7 @@ yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
+generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 
 [[package]]
 name = "deprecated"
@@ -2742,23 +2717,6 @@ files = [
 
 [package.dependencies]
 future = "*"
-
-[[package]]
-name = "klara"
-version = "0.6.3"
-description = "Automatic test case generation and static analysis library"
-optional = false
-python-versions = ">=3.6.2,<4.0"
-files = [
-    {file = "klara-0.6.3-py3-none-any.whl", hash = "sha256:9687fb2503e0d0ae1ecc789d88af46d4008522a89db5d542c9c993ee6d0875d2"},
-    {file = "klara-0.6.3.tar.gz", hash = "sha256:8a739b58b94f01b5464ca8d90282cb320e8aff8e221441a43bc423c3595525c1"},
-]
-
-[package.dependencies]
-astor = ">=0.8.1,<0.9.0"
-ConfigArgParse = ">=1.5.2,<2.0.0"
-typed-ast = ">=1.4.3,<2.0.0"
-z3-solver = ">=4.8.12,<5.0.0"
 
 [[package]]
 name = "lark"
@@ -4219,13 +4177,13 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pre-commit"
-version = "2.21.0"
+version = "3.5.0"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "pre_commit-2.21.0-py2.py3-none-any.whl", hash = "sha256:e2f91727039fc39a92f58a588a25b87f936de6567eed4f0e673e0507edc75bad"},
-    {file = "pre_commit-2.21.0.tar.gz", hash = "sha256:31ef31af7e474a8d8995027fefdfcf509b5c913ff31f2015b4ec4beb26a6f658"},
+    {file = "pre_commit-3.5.0-py2.py3-none-any.whl", hash = "sha256:841dc9aef25daba9a0238cd27984041fa0467b4199fc4852e27950664919f660"},
+    {file = "pre_commit-3.5.0.tar.gz", hash = "sha256:5804465c675b659b0862f07907f96295d490822a450c4c40e747d0b1c6ebcb32"},
 ]
 
 [package.dependencies]
@@ -7111,22 +7069,6 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [[package]]
-name = "z3-solver"
-version = "4.12.2.0"
-description = "an efficient SMT solver library"
-optional = false
-python-versions = "*"
-files = [
-    {file = "z3-solver-4.12.2.0.tar.gz", hash = "sha256:65ab47a0a8ef0bfb80db0670775beb11b32c3c0ae4b35943e44121f4af7ef411"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-macosx_10_16_x86_64.whl", hash = "sha256:127b7c3fcadd61415320ef1b469c22464d3270d25a63c9eb5ee31a0859910826"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:f605de84f87cff04de8339a6d007c80167606a4e6904d6ace8208b066f22f4be"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-manylinux2014_aarch64.whl", hash = "sha256:4d252abdeab222f241d273df012f96fb8e5754a60734508c85c791ac5096bdf5"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-manylinux2014_x86_64.whl", hash = "sha256:03921d3021cb6e5dbeaeb94634132a5fbf5403748aa21774efac4047e633af1e"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-win32.whl", hash = "sha256:ea1688e64aada67ec720e2f148c5c41fece2870c55a2901dda36f6b4bb9aec7e"},
-    {file = "z3_solver-4.12.2.0-py2.py3-none-win_amd64.whl", hash = "sha256:553af6a989d8943d9a556c4f83ea54b2afc8b4fd58230e97fcc526dc3f97249a"},
-]
-
-[[package]]
 name = "zipp"
 version = "3.17.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -7197,4 +7139,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "f91d8a7fd1b79e2b8d8e5a0157ed222b06df9ed6f920ff80d4500c80cdbf3113"
+content-hash = "5d9d9fe80c2641938ffa3fc051b2d18b04caac0b9b44b5dbec058a3fa61ab0f1"

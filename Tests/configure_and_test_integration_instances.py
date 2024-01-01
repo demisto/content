@@ -221,6 +221,7 @@ class Build(ABC):
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
         self.is_nightly = options.is_nightly
+        self.is_sdk_nightly = options.sdk_nightly
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
@@ -963,6 +964,7 @@ def options_handler(args=None):
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('-sn', '--sdk-nightly', type=str2bool, help='Is SDK nightly build')
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
@@ -1714,8 +1716,13 @@ def test_pack_zip(content_path, target, packs: list = None):
             test = test.name
             with open(test_path) as test_file:
                 if not (test.startswith(('playbook-', 'script-'))):
-                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
+                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml', path=test_path).value
                     test_file.seek(0)
+                    # we need to convert to the regular filetype if we get a test type, because that what the server expects
+                    if test_type == FileType.TEST_PLAYBOOK.value:
+                        test_type = FileType.PLAYBOOK.value
+                    if test_type == FileType.TEST_SCRIPT.value:
+                        test_type = FileType.SCRIPT.value
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
                 else:
                     test_target = f'test_pack/TestPlaybooks/{test}'
@@ -1957,7 +1964,7 @@ def main():
     build.configure_servers_and_restart()
     build.disable_instances()
 
-    if build.is_nightly:
+    if build.is_nightly or build.is_sdk_nightly:
         success = build.install_nightly_pack()
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)

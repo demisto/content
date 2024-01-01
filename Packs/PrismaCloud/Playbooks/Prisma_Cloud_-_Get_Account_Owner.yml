@@ -1,0 +1,228 @@
+id: Prisma Cloud - Get Account Owner
+version: -1
+name: Prisma Cloud - Get Account Owner
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 717f9709-b256-48eb-8bfd-c6ff9306a090
+    type: start
+    task:
+      id: 717f9709-b256-48eb-8bfd-c6ff9306a090
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b1a484c3-4cd3-4087-8d09-22bc9ecea5ba
+    type: playbook
+    task:
+      id: b1a484c3-4cd3-4087-8d09-22bc9ecea5ba
+      version: -1
+      name: Prisma Cloud - Get Owner By Namespace
+      description: |-
+        Retrieves the details of the owner of a given cloud account from the following playbooks:
+          - Get Cloud Account Owner - Generic
+          - Prisma Cloud - Get Owner By Namespace
+      playbookName: Prisma Cloud - Get Owner By Namespace
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      EnrichUsers:
+        complex:
+          root: inputs.EnrichUsers
+      Namespace:
+        complex:
+          root: inputs.Namespace
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f9872363-79c1-4e2f-8196-9756341bfdf0
+    type: playbook
+    task:
+      id: f9872363-79c1-4e2f-8196-9756341bfdf0
+      version: -1
+      name: Get Cloud Account Owner - Generic
+      description: |-
+        Retrieves the owners of a cloud account based on account ID.
+        Current supported platforms:
+        - GCP
+        - Prisma Cloud.
+      playbookName: Get Cloud Account Owner - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AccountID:
+        complex:
+          root: inputs.AccountID
+      Provider:
+        complex:
+          root: inputs.Provider
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 58237625-4320-46e4-86dd-d0b248ee521b
+    type: title
+    task:
+      id: 58237625-4320-46e4-86dd-d0b248ee521b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 820,
+        "x": 210,
+        "y": 100
+      }
+    }
+  }
+inputs:
+- key: AccountID
+  value: {}
+  required: false
+  description: The account ID to search the owner for.
+  playbookInputQuery:
+- key: Namespace
+  value: {}
+  required: false
+  description: The namespace that the playbook would search associated users with.
+  playbookInputQuery:
+- key: Provider
+  value: {}
+  required: false
+  description: |-
+    The account CSP.
+    Available options:
+    - PrismaCloud
+    - GCP
+  playbookInputQuery:
+- key: EnrichUsers
+  value:
+    simple: "False"
+  required: false
+  description: Whether to enrich found users or not.
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaCloud.Users
+  description: Prisma Cloud users.
+  type: unknown
+- contextPath: PrismaCloud.Users.email
+  description: Prisma Cloud user email.
+- contextPath: PrismaCloud.Users.firstName
+  description: User first name.
+- contextPath: PrismaCloud.Users.lastName
+  description: User last name.
+- contextPath: PrismaCloud.Users.enabled
+  description: User enabled.
+- contextPath: PrismaCloud.Users.username
+  description: User username.
+- contextPath: PrismaCloud.Users.type
+  description: User type.
+- contextPath: PrismaCloud.Users.displayName
+  description: User display name.
+- contextPath: CloudAccountOwner
+  description: The owner's email, if found.
+  type: unknown
+- contextPath: PrismaCloud.UserRoles.associatedUsers
+  description: User roles associated users.
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: |-
+  Retrieves the details of the owner of a given cloud account from the following playbooks:
+    - Get Cloud Account Owner - Generic
+    - Prisma Cloud - Get Owner By Namespace
