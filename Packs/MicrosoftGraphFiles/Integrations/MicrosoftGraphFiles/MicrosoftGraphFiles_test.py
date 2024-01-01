@@ -948,12 +948,10 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
     mocker.patch.object(client.ms_client, 'http_request')
 
     if should_raise:
-        with pytest.raises(Exception) as exc:
+        with pytest.raises(DemistoException) as exc:
             test_function(client, demisto_params)
             assert 'self-deployed - Authorization Code Flow' in str(exc)
     else:
         result = test_function(client, demisto_params)
         assert result == expected_result
-
-    if demisto_command != 'test-module':
         client.ms_client.http_request.assert_called_once_with(url_suffix="sites", timeout=7, method="GET")
