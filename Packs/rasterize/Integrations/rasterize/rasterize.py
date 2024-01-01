@@ -1,7 +1,7 @@
-# TODO rasterize-Pre-Release
-# TODO start_chrome_headless.sh in Python
-# TODO Restart the chrome after 500 rasterizations
-# TODO Write the counter in a local file. Use the pid os the subprocess when starting the chrome from Python. Use DevTools, or kill the process
+# TODO rasterizeV2-Pre-Release
+# TODO V start_chrome_headless.sh in Python
+# TODO V Restart the chrome after 500 rasterizations
+# TODO V/2 Write the pid in a local file. Use the pid os the subprocess when starting the chrome from Python. Use DevTools, or kill the process
 # TODO Backwards Compatibility: Add support for full_Screen
 # TODO Backwards Compatibility: Add support for include_url
 # TODO Backwards Compatibility: chrome_options, support removal of options
@@ -28,7 +28,6 @@ from pdf2image import convert_from_path
 from PIL import Image
 from PyPDF2 import PdfReader
 
-
 # region constants and configurations
 
 # Chrome respects proxy env params
@@ -39,6 +38,9 @@ os.environ['no_proxy'] = 'localhost,127.0.0.1'
 os.environ['HOME'] = tempfile.gettempdir()
 
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
+USER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
+USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
+CHROME_PID = 0
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 
@@ -46,8 +48,6 @@ WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 TAB_CLOSE_WAIT_TIME = 1
-
-USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
 
 # Used it in several places
 DEFAULT_RETRIES_COUNT = 3
@@ -112,31 +112,18 @@ class TabLifecycleManager:
         self.offline_mode = offline_mode
         self.tab = None
 
-        # demisto.debug(f'TabLifecycleManager, __init__, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
-
     def __enter__(self):
-        # demisto.debug(f'TabLifecycleManager, __enter__, calling browser.new_tab, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
         self.tab = self.browser.new_tab()
-        # demisto.debug(f'TabLifecycleManager, __enter__, called browser.new_tab, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
-
         self.tab.start()
-        # demisto.debug(f'TabLifecycleManager, __enter__, called tab.start, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
         if self.offline_mode:
             self.tab.Network.emulateNetworkConditions(offline=True, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
         else:
             self.tab.Network.emulateNetworkConditions(offline=False, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
-        # demisto.debug(f'TabLifecycleManager, __enter__, called tab.Network.emulateNetworkConditions, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
 
         self.tab.Page.enable()
-        # demisto.debug(f'TabLifecycleManager, __enter__, called tab.Page.enable, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
-        # demisto.debug(f'TabLifecycleManager, {self.chrome_port=}, entering tab {self.tab.id},'
-        #               f' tabs len: {len(self.browser.list_tab())}')
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
-        # if exc_type or exc_val or exc_tb:
-        #     demisto.info(f'TabLifecycleManager, __exit__ with exception, {self.chrome_port=}, {exc_type=}, {exc_val=}, {exc_tb=}')
-
         if self.tab:
             tab_id = self.tab.id
             # Suppressing exceptions that might happen after the tab was closed.
@@ -144,43 +131,21 @@ class TabLifecycleManager:
 
             try:
                 time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
-                # demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, disabling page')
                 self.tab.Page.disable()
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to disable page due to {ex}')
 
-            # try:
-            #     # demisto.debug(
-            #     #     f'TabLifecycleManager, __exit__, {self.chrome_port=}, waiting for tab {tab_id}, '
-            #     #     f' active tabs len: {len(self.browser.list_tab())}')
-            #     tab_wait_response = self.tab.wait(timeout=1)
-            #     # demisto.debug(f"TabLifecycleManager, __exit__, {self.chrome_port=}, {tab_wait_response=}")
-            # except Exception as ex:
-            #     demisto.info(f'TabLifecycleManager, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}')
-
             try:
-                # demisto.debug(
-                #     f'TabLifecycleManager, __exit__, {self.chrome_port=}, {threading.current_thread().name=}, '
-                #     f' stopping tab {tab_id}, active tabs len: {len(self.browser.list_tab())}')
-                # tab_stop_response = self.tab.stop()
                 self.tab.stop()
-                # demisto.debug(f"TabLifecycleManager, __exit__, {self.chrome_port=}, {tab_stop_response=}, "
-                #               f" active tabs len: {len(self.browser.list_tab())}")
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}')
 
             try:
-                # demisto.debug(
-                #     f'TabLifecycleManager, __exit__, {self.chrome_port=}, closing tab {tab_id}, '
-                #     f' active tabs len: {len(self.browser.list_tab())}')
                 self.browser.close_tab(tab_id)
             except Exception as ex:
                 demisto.info(f'TabLifecycleManager, __exit__, {self.chrome_port=}, failed to close tab {tab_id} due to {ex}')
 
-            # demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, sleeping, allowing the tab to close,'
-            #               f' active tabs len: {len(self.browser.list_tab())}')
             time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
-            # demisto.debug(f'TabLifecycleManager, __exit__, {self.chrome_port=}, active tabs len: {len(self.browser.list_tab())}')
 
 
 class PychromeEventHandler:
@@ -289,6 +254,64 @@ def write_info_file(filename, contents):
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
+def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""):
+    try:
+        # process = subprocess.run(['bash', '/start_chrome_headless.sh',
+        #                          '--port', str(chrome_port),
+        #                           '--chrome-binary', CHROME_EXE,
+        #                           '--user-options', USER_CHROME_OPTIONS],
+        #                          text=True,
+        #                          stdout=subprocess.DEVNULL,
+        #                          stderr=subprocess.DEVNULL)
+        # nohup "$chrome_binary" --headless --disable-gpu --no-sandbox --hide-scrollbars --disable-infobars --start-maximized --start-fullscreen $cert_errors_option --disable-dev-shm-usage --user-agent="\"$user_agent\"" "$user_options --remote-debugging-port=$remote_debugging_port" & disown
+
+        logfile = open("/var/chrome_headless.log", 'ab')
+        process = subprocess.Popen([chrome_binary,
+                                  "--headless",
+                                  "--disable-gpu",
+                                  "--no-sandbox",
+                                  "--hide-scrollbars",
+                                  "--disable-infobars",
+                                  "--start-maximized",
+                                  "--start-fullscreen",
+                                  "--ignore-certificate-errors",
+                                  "--disable-dev-shm-usage",
+                                  f'--user-agent="{USER_AGENT}"',
+                                  user_options,
+                                  f"--remote-debugging-port={chrome_port}",
+                                 ],
+                                 stdout=logfile, stderr=subprocess.STDOUT)
+        demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
+
+        if process:
+            demisto.debug(f'New Chrome session active on Port {chrome_port}')
+            CHROME_PID = process.pid
+            # Allow Chrome to initialize
+            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
+            browser = is_chrome_running_locally(chrome_port)
+            write_info_file(PORT_FILE_PATH, chrome_port)
+            return browser, chrome_port
+        else:
+            demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
+    except subprocess.SubprocessError as ex:
+        demisto.info(f'Error starting Chrome on port {chrome_port}. Error: {ex}')
+    demisto.info('Could not connect to Chrome.')
+
+    return None, None
+
+
+def terminate_chrome(browser):
+    tab = browser.new_tab()
+    tab.start()
+    # try:
+    tab.Browser.close()
+    # TODO Kill
+    # CHROME_PID
+    os.remove(PORT_FILE_PATH)
+    # except Exception as e:
+    #     demisto.info(f"Exception when closing browser, {type(e)}, {e}")
+
+
 def ensure_chrome_running():  # pragma: no cover
 
     # Check if we have a file with the port.
@@ -333,29 +356,7 @@ def ensure_chrome_running():  # pragma: no cover
 
     demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
 
-    try:
-        process = subprocess.run(['bash', '/start_chrome_headless.sh',
-                                 '--port', str(chrome_port),
-                                  '--chrome-binary', CHROME_EXE,
-                                  '--user-options', USER_CHROME_OPTIONS],
-                                 text=True,
-                                 stdout=subprocess.DEVNULL,
-                                 stderr=subprocess.DEVNULL)
-
-        if process.returncode == 0:
-            demisto.debug(f'New Chrome session active on Port {chrome_port}')
-            # Allow Chrome to initialize
-            time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
-            browser = is_chrome_running_locally(chrome_port)
-            write_info_file(PORT_FILE_PATH, chrome_port)
-            return browser, chrome_port
-        else:
-            demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
-    except subprocess.SubprocessError as ex:
-        demisto.info(f'Error starting Chrome on port {chrome_port}. Error: {ex}')
-    demisto.info('Could not connect to Chrome.')
-
-    return None, None
+    return start_chrome_headless(str(chrome_port))
 
 
 def setup_tab_event(browser, tab):
@@ -408,13 +409,22 @@ def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_P
     return polled_item, operation_time
 
 
-def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_source=False):  # pragma: no cover
+def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_screen=False,
+                     include_url=False, include_source=False):  # pragma: no cover
     """
     :param include_source: Whether to include the page source in the response
     """
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
-    screenshot_data = tab.Page.captureScreenshot()['data']
+    page_layout_metrics = tab.Page.getLayoutMetrics()
+    demisto.debug(f"{page_layout_metrics=}")
+    if full_screen:
+        css_content_size = page_layout_metrics['cssContentSize']
+        viewport = css_content_size
+        viewport['scale'] = 1
+        screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)['data']
+    else:
+        screenshot_data = tab.Page.captureScreenshot()['data']
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     screenshot_data, operation_time = backoff(screenshot_data)
     if screenshot_data:
@@ -426,13 +436,11 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, include_
     if not ret_value:
         demisto.info(f"Empty snapshot, {screenshot_data=}")
     else:
-        demisto.info("Captured snapshot")
+        demisto.info(f"Captured snapshot, {len(ret_value)=}")
 
-    # # TODO Remove this when thread safety is achieved
-    # current_res = fileResult(filename="file.png", data=ret_value, file_type=entryTypes['entryInfoFile'])
-    # current_res['Type'] = entryTypes['image']
-    # demisto.results(current_res)
-
+    # Page URL, if needed
+    if include_url:
+        pass
 
     # Page source, if needed
     response_body = None
@@ -485,16 +493,16 @@ def rasterize_thread(browser, chrome_port, path: str,
         tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
         if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
-            return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
+            return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
+                                    include_url=include_url)
 
         elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
             return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
-                                        include_url=include_url)
+                                  include_url=include_url)
 
         elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
-            return screenshot_image(browser, tab, path, wait_time=wait_time,
-                                                        navigation_timeout=navigation_timeout,
-                                                        include_source=True)
+            return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
+                                    include_url=include_url, include_source=True)
         else:
             message = f'Unsupported rasterization type: {rasterize_type}.'
             demisto.error(message)
@@ -542,33 +550,21 @@ def rasterize(path: str,
                                             offline_mode=offline_mode, navigation_timeout=navigation_timeout,
                                             include_url=include_url, width=width, height=height
                                             ))
-                # demisto.debug('Waiting for some space between threads')
-                # time.sleep(random.random())
             # Wait for all tasks to complete
-            # demisto.debug('Starting Wait for all tasks to complete')
-            # demisto.debug('Starting wait for rasterization_thread. Calling executor.shutdown')
             executor.shutdown(wait=True)
-            # demisto.debug('Starting wait for rasterization_thread. Called executor.shutdown')
-            # for _ in concurrent.futures.as_completed(rasterization_threads):
-            #     pass
-            # demisto.debug('All futures completed')
-
-            # for i, current_rasterization_thread in enumerate(rasterization_threads):
-            #     # demisto.debug(f'Starting wait for rasterization_thread {i}. running: {current_rasterization_thread.running()}')
-            #     while current_rasterization_thread.running():
-            #         # demisto.debug(f'Waiting for rasterization_thread {i}. running: {current_rasterization_thread.running()}')
-            #         time.sleep(1)
-            #     # demisto.debug(f'rasterization_thread {i} finished. running: {current_rasterization_thread.running()}, active tabs len: {len(browser.list_tab())}')
             demisto.info(f"Finished {len(rasterization_threads)} rasterizations, active tabs len: {len(browser.list_tab())}")
+
             previous_rasterizations_counter_from_file = read_info_file(RASTERIZATIONS_COUNTER_FILE_PATH)
-            total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
-            if previous_rasterizations_counter_from_file \
-                and total_rasterizations_count > MAX_RASTERIZATIONS_COUNT \
-                and len(browser.list_tab()) == 0:
-                # Restart Chrome
-                demisto.info(f"Restarting Chrome after {int(previous_rasterizations_counter_from_file)}")
-                # TODO Restart Chrome
-                write_info_file(RASTERIZATIONS_COUNTER_FILE_PATH, 0)
+            if previous_rasterizations_counter_from_file:
+                total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
+            else:
+                total_rasterizations_count = len(rasterization_threads)
+            demisto.debug(f"Should kill Chrome? {total_rasterizations_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
+            if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
+                demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
+                terminate_chrome(browser)
+                demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
+                write_info_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0")
             else:
                 write_info_file(RASTERIZATIONS_COUNTER_FILE_PATH, total_rasterizations_count)
 
@@ -749,13 +745,11 @@ def rasterize_command():  # pragma: no cover
         output = {'image_b64': base64.b64encode(rasterize_output).decode('utf8'),
                   'html': response_body, 'current_url': url}
         demisto.results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
-    # TODO uncomment this when thread safety is achieved
     else:
         res = []
         for current_output in rasterize_output:
             current_res = fileResult(filename=file_name, data=current_output, file_type=entryTypes['entryInfoFile'])
 
-            # res = fileResult(filename=file_name, data=rasterize_output)
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
                 current_res['Type'] = entryTypes['image']
 
