@@ -7,9 +7,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* AWS - User Investigation
 * Azure - User Investigation
 * GCP - User Investigation
+* AWS - User Investigation
 
 ### Integrations
 

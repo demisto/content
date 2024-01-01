@@ -529,6 +529,67 @@ inputs:
   required: false
   description: The cloud service provider involved.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - AzureSearchTime
+  - failedLogonThreshold
+  - MfaAttemptThreshold
+  name: Azure Investigation
+  description: Azure Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - AwsTimeSearchFrom
+  name: AWS Investigation
+  description: AWS Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - GcpTimeSearchFrom
+  - GcpProjectName
+  name: GCP Investigation
+  description: GCP Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - Username
+  - cloudProvider
+  name: Incident Data
+  description: Incident details and metadata.
+outputSections:
+- outputs:
+  - AwsMFAConfigCount
+  - AwsUserRoleChangesCount
+  - AwsSuspiciousActivitiesCount
+  - AwsScriptBasedUserAgentCount
+  - AwsAccessKeyActivitiesCount
+  - AwsSecurityChangesCount
+  - AwsAdminActivitiesCount
+  - AwsApiAccessDeniedCount
+  - AwsFailedLogonCount
+  - GcpAnomalousNetworkTraffic
+  - GcpSuspiciousApiUsage
+  - GcpFailLogonCount
+  - GsuiteFailLogonCount
+  - GsuiteUnusualLoginAllowedCount
+  - GsuiteUnusualLoginBlockedCount
+  - GsuiteSuspiciousLoginCount
+  - GsuiteUserPasswordLeaked
+  - AzureScriptBasedUserAgentEvents
+  - AzureAdminActivitiesEvents
+  - AzureSecurityRulesChangeEvents
+  - AzureUnsuccessSecurityRulesChangeEvents
+  - AzureFailLoginCount
+  - AzureFailLoginMFACount
+  - AzureAnomaliesEvents
+  - AzureRiskyUserCount
+  - AzureUncommonCountryLogonEvents
+  - AzureUncommonVolumeEvents
+  - AzureUncommonActivitiesEvents
+  - CountAzureEvents.AzureScriptBasedUserAgentCount
+  - CountAzureEvents.AzureAdminActivitiesCount
+  - CountAzureEvents.AzureSecurityRulesChangeCount
+  - CountAzureEvents.AzureUnsuccessSecurityRulesChangeCount
+  - CountAzureEvents.AzureAnomaliesCount
+  - CountAzureEvents.AzureUncommonCountryLogonCount
+  - CountAzureEvents.AzureUncommonVolumeCount
+  - CountAzureEvents.AzureUncommonActivitiesCount
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs:
 - contextPath: AwsMFAConfigCount
   description: The number of MFA configurations performed by the user in the AWS environment.

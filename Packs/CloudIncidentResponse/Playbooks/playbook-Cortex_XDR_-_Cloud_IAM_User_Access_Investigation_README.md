@@ -12,13 +12,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Account Enrichment - Generic v2.1
-* Cloud IAM Enrichment - Generic
 * Cloud Response - Generic
+* Cloud IAM Enrichment - Generic
+* Account Enrichment - Generic v2.1
 
 ### Integrations
 
-* CortexXDRIR
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -26,9 +26,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* ip
 * xdr-get-cloud-original-alerts
 * setIncident
+* ip
 
 ## Playbook Inputs
 

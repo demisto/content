@@ -10,31 +10,31 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR device control violations
 * Calculate Severity - Generic v2
-* Cortex XDR - Display Risky Assets
-* Block Indicators - Generic v3
-* Cortex XDR Alerts Handling v2
 * Entity Enrichment - Generic v3
 * Palo Alto Networks - Hunting And Threat Detection
+* Cortex XDR - Display Risky Assets
+* Cortex XDR Alerts Handling v2
+* Cortex XDR device control violations
+* Block Indicators - Generic v3
 
 ### Integrations
 
-* Cortex XDR - IR
 * CortexXDRIR
+* Cortex XDR - IR
 
 ### Scripts
 
-* DBotFindSimilarIncidents
-* SetGridField
 * Set
+* SetGridField
+* DBotFindSimilarIncidents
 
 ### Commands
 
-* xdr-get-incident-extra-data
 * linkIncidents
-* xdr-update-incident
 * closeInvestigation
+* xdr-get-incident-extra-data
+* xdr-update-incident
 
 ## Playbook Inputs
 
@@ -45,7 +45,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | incident_id | Incident ID. | incident.xdrincidentid | Optional |
 | LinkSimilarIncidents | This input indicates whether the playbook will link similar incidents. To link similar incidents, specify Yes/No. | Yes | Optional |
 | Hunting | This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No. | Yes | Optional |
-| InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list <br/>"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). <br/>If a list is not provided, will use the default list provided in the IsIPInRanges. |  | Optional |
+| InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list <br/>"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). <br/>If a list is not provided, will use the default list provided in the IsIPInRanges. | lists.PrivateIPs | Optional |
 | CriticalUsernames | A comma-separated list of names of critical users in the organization.<br/>This will affect the calculated severity of the incident. | admin,administrator | Optional |
 | CriticalHostnames | A comma-separated list of names of critical endpoints in the organization. This will affect the calculated severity of the incident. |  | Optional |
 | CriticalADGroups | A comma-separated list of DN names of critical Active Directory groups. This will affect the severity calculated for this incident. |  | Optional |

@@ -24,7 +24,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* CortexXDRIR
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -33,12 +33,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* xdr-get-cloud-original-alerts
+* send-mail
+* xdr-update-incident
+* closeInvestigation
 * xdr-get-incident-extra-data
 * setIncident
-* closeInvestigation
-* xdr-get-cloud-original-alerts
-* xdr-update-incident
-* send-mail
 
 ## Playbook Inputs
 
@@ -75,4 +75,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)
+![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_XCloud_Cryptojacking.png)

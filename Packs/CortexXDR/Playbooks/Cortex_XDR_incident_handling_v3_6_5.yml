@@ -2108,6 +2108,40 @@ inputs:
   required: false
   description: "Possible values: True/False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
+inputSections:
+- inputs:
+  - LinkSimilarIncidents
+  - CriticalUsernames
+  - CriticalHostnames
+  - CriticalADGroups
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements and ticketing methods
+- inputs:
+  - InternalRange
+  - InternalDomainName
+  - InternalHostRegex
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-side enrichers.
+- inputs:
+  - Hunting
+  - TimeStamp
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - AutoRemediation
+  - AutoBlockIndicators
+  - UserVerification
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - incident_id
+  - XDRDomain
+  name: Incident Data
+  description: Incident details and metadata.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - Test XDR Playbook

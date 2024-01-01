@@ -20,16 +20,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Isolate Endpoint
-* Entity Enrichment - Generic v3
 * Command-Line Analysis
 * Block Indicators - Generic v3
+* Cortex XDR - Isolate Endpoint
 * Cortex XDR - Get entity alerts by MITRE tactics
+* Entity Enrichment - Generic v3
 
 ### Integrations
 
-* Cortex XDR - IR
 * CortexXDRIR
+* Cortex XDR - IR
 
 ### Scripts
 
