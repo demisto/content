@@ -27,27 +27,27 @@ def get_account_ids(ec2_instance_name: str | None) -> tuple[list[str], str]:
     '''Get the AWS organization accounts using the `aws-org-account-list` command.
 
     Returns:
-            list[str]: A list of AWS account IDs.
+        list[str]: A list of AWS account IDs.
     '''
     try:
         account_list_result: list[dict[str, dict]] = demisto.executeCommand(ACCOUNT_LIST_COMMAND, {})  # type: ignore
         ec2_instance = next(
             result for result in account_list_result if result['ModuleName'] == ec2_instance_name
         ) if ec2_instance_name else account_list_result[0]
-        return (
-            [account['Id'] for account in ec2_instance['EntryContext']['AWS.Organizations.Account(val.Id && val.Id == obj.Id)']],
-            str(ec2_instance['HumanReadable'])
-        )
+        accounts = dict_safe_get(ec2_instance, ['EntryContext', 'AWS.Organizations.Account(val.Id && val.Id == obj.Id)'], [])
+        return [account['Id'] for account in accounts], str(ec2_instance['HumanReadable'])
     except ValueError as e:
         raise DemistoException(f'The command {ACCOUNT_LIST_COMMAND!r} must be operational to run this script.\nServer error: {e}')
-    except KeyError:
+    except StopIteration:
+        raise DemistoException(f'AWS - Organizations instance {ec2_instance_name!r} was not found.')
+    except (KeyError, TypeError):
         account_list_result = locals().get('account_list_result')  # type: ignore # catch unbound variable error
         raise DemistoException(f'Unexpected output from {ACCOUNT_LIST_COMMAND!r}:\n{account_list_result}')
     except Exception as e:
         raise DemistoException(f'Unexpected error while fetching accounts:\n{e}')
 
 
-def get_instance(instance_name: str) -> dict:
+def get_instance(ec2_instance_name: str) -> dict:
     '''Get the object of the instance with the name provided.
 
     Args:
@@ -57,7 +57,7 @@ def get_instance(instance_name: str) -> dict:
         dict: The instance object.
     '''
     integrations = internal_request('post', '/settings/integration/search')
-    return next(inst for inst in integrations['instances'] if inst['name'] == instance_name)
+    return next(inst for inst in integrations['instances'] if inst['name'] == ec2_instance_name)
 
 
 def set_instance(instance: dict, accounts: str) -> dict:
@@ -78,7 +78,7 @@ def set_instance(instance: dict, accounts: str) -> dict:
     return internal_request('put', '/settings/integration', instance)
 
 
-def update_ec2_instance(account_ids: list[str], instance_name: str) -> str:
+def update_ec2_instance(account_ids: list[str], ec2_instance_name: str) -> str:
     '''Update an AWS - EC2 instance with AWS Organization accounts.
 
     Args:
@@ -90,16 +90,16 @@ def update_ec2_instance(account_ids: list[str], instance_name: str) -> str:
     '''
     accounts_as_str = ','.join(account_ids)
     try:
-        instance = get_instance(instance_name)
+        instance = get_instance(ec2_instance_name)
         if instance['configvalues'][EC2_ACCOUNTS_PARAM] == accounts_as_str:
-            return f'Account list in ***{instance_name}*** is up to date.'
+            return f'Account list in ***{ec2_instance_name}*** is up to date.'
         response = set_instance(instance, accounts_as_str)
         if response['configvalues'][EC2_ACCOUNTS_PARAM] != accounts_as_str:
             demisto.debug(f'{response=}')
-            raise DemistoException(f'Attempt to update {instance_name!r} with accounts {accounts_as_str} has failed.')
-        return f'Successfully updated ***{instance_name}*** with accounts:'
+            raise DemistoException(f'Attempt to update {ec2_instance_name!r} with accounts {accounts_as_str} has failed.')
+        return f'Successfully updated ***{ec2_instance_name}*** with accounts:'
     except StopIteration:
-        raise DemistoException(f'Instance {instance_name!r} was not found or is not an AWS - EC2 instance.')
+        raise DemistoException(f'AWS - EC2 instance {ec2_instance_name!r} was not found or is not an AWS - EC2 instance.')
     except Exception as e:
         raise DemistoException(f'Unexpected error while configuring AWS - EC2 instance with accounts {accounts_as_str!r}:\n{e}')
 
