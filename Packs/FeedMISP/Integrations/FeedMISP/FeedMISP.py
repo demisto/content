@@ -539,7 +539,6 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     feed_tags = argToList(params.get("feedTags", []))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
-    demisto.debug(f"fetch_indicators starts using the params: {params}")
     indicators = fetch_indicators(client, tags, attribute_type,
                                   query, tlp_color, params.get('url'), reputation, feed_tags, limit, False)
     hr_indicators = []
