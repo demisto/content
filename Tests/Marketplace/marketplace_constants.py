@@ -19,7 +19,7 @@ BASE_PACK_DEPENDENCY_DICT = {
         }
 }
 
-SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'XDRCTemplate']
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'XDRCTemplate', 'AssetsModelingRule']
 XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
 XPANSE_MP = "xpanse"
@@ -268,6 +268,7 @@ class PackFolders(enum.Enum):
     WIZARDS = 'Wizards'
     XDRC_TEMPLATES = 'XDRCTemplates'
     LAYOUT_RULES = 'LayoutRules'
+    ASSETS_MODELING_RULES = 'AssetsModelingRules'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -280,14 +281,15 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value,
-            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
+            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value,
+            PackFolders.ASSETS_MODELING_RULES.value
         }
 
     @classmethod
     def yml_supported_folders(cls):
         return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
                 PackFolders.TEST_PLAYBOOKS.value, PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value,
-                PackFolders.CORRELATION_RULES.value}
+                PackFolders.CORRELATION_RULES.value, PackFolders.ASSETS_MODELING_RULES.value}
 
     @classmethod
     def json_supported_folders(cls):
@@ -471,7 +473,8 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
     PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
-    PackFolders.LAYOUT_RULES.value: "layoutrule"
+    PackFolders.LAYOUT_RULES.value: "layoutrule",
+    PackFolders.ASSETS_MODELING_RULES.value: "assetsmodelingrule"
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -501,5 +504,6 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XDRC_TEMPLATES.value]: "XDRC Template",
-    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUT_RULES.value]: "Layout Rule"
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUT_RULES.value]: "Layout Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.ASSETS_MODELING_RULES.value]: "Assets Modeling Rule"
 }
