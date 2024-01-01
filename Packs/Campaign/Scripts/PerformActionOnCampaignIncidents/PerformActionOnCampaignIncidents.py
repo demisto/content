@@ -44,7 +44,7 @@ def _set_involved_incidents_count(campaign_id: str, count: int) -> None:
         )
 
 
-def _set_part_of_campaign_filed(incident_id: str, campaign_id: str | None) -> None:
+def _set_part_of_campaign_field(incident_id: str, campaign_id: str | None) -> None:
     """Sets the partofcampaign field on the incident.
 
     Args:
@@ -248,7 +248,7 @@ def _extract_incident_fields(incident_context, recipients: list) -> dict:
         "emailfromdomain": extract_single_or_list(email_from_domain),
         "name": _get_data_from_incident(incident_context, "name")[0],
         "status": _get_data_from_incident(incident_context, "status")[0],
-        "recipients": extract_single_or_list(recipients),
+        "recipients": recipients,
         "id": _get_data_from_incident(incident_context, "id")[0],
         "severity": _get_data_from_incident(incident_context, "severity")[0],
         "recipientsdomain": extract_single_or_list(recipients_domain),
@@ -284,7 +284,9 @@ def _parse_incident_context_to_valid_incident_campaign_context(incident_id: str,
         if key in fields_to_display and (with_domain := f'{key}domain') not in fields_to_display:
             fields_to_display.append(with_domain)
 
-    return {field: data[field] for field in fields_to_display}
+    data = {field: data[field] for field in fields_to_display}
+    data["added_manually_to_campaign"] = True
+    return data
 
 
 def get_custom_field(filed_name: str) -> Any:
@@ -352,8 +354,8 @@ def perform_add_to_campaign(ids: list[str], action: str) -> str:
     involved_incidents_count = int(demisto.dt(campaign_context, "Contents.context.EmailCampaign.involvedIncidentsCount")[0])
     involved_incidents_count += len(ids_to_add_to_campaign)
 
-    for id in ids_to_add_to_campaign:
-        _set_part_of_campaign_filed(id, campaign_id)
+    for id_ in ids_to_add_to_campaign:
+        _set_part_of_campaign_field(id_, campaign_id)
 
     campaign_incidents_context = [_parse_incident_context_to_valid_incident_campaign_context(
         id, fields_to_display) for id in ids_to_add_to_campaign]
@@ -396,7 +398,7 @@ def perform_remove_from_campaign(ids: list[str], action: str) -> str:
         incident for incident in campaign_incidents_context if incident['id'] not in ids_to_remove_from_campaign]
 
     for id_ in ids_to_remove_from_campaign:
-        _set_part_of_campaign_filed(id_, "None")
+        _set_part_of_campaign_field(id_, "None")
     _set_incidents_to_campaign(campaign_id, campaign_incidents_context)
     _link_or_unlink_between_incidents(campaign_id, ids_to_remove_from_campaign, "unlink")
     _set_involved_incidents_count(campaign_id, involved_incidents_count)
