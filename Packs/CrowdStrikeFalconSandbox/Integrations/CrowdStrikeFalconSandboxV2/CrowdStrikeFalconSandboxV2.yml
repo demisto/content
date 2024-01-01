@@ -97,7 +97,7 @@ script:
       description: 'The error origin.'
       type: String
     - contextPath: CrowdStrike.Report.submit_name
-      description: 'The name of the file when submitted'
+      description: 'The name of the file when submitted.'
       type: String
     - contextPath: CrowdStrike.Report.md5
       description: 'The MD5 hash of the file.'
@@ -212,7 +212,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: polling
-      description: "Whether to poll until there is at least one result"
+      description: "Whether to poll until there is at least one result."
       auto: PREDEFINED
       predefined:
       - "true"
@@ -275,7 +275,7 @@ script:
       description: 'The imphash hash of the file.'
       type: String
     - contextPath: CrowdStrike.Report.av_detect
-      description: 'The AV Multiscan range, for example 50-70 (min 0, max 100)'
+      description: 'The AV Multiscan range, for example 50-70 (min 0, max 100).'
       type: Number
     - contextPath: CrowdStrike.Report.vx_family
       description: 'The file malware family.'
@@ -419,7 +419,7 @@ script:
       required: true
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       required: true
       auto: PREDEFINED
       defaultValue: "100"
@@ -454,7 +454,7 @@ script:
       - "true"
       - "false"
     - name: action_script
-      description: "Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie"
+      description: "Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie."
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -492,7 +492,7 @@ script:
       - "true"
       - "false"
     - name: network_settings
-      description: "Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'"
+      description: "Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -512,7 +512,7 @@ script:
       description: Optional runtime duration (in seconds).
       defaultValue: ""
     - name: submit_name
-      description: "Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file"
+      description: "Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file."
       defaultValue: ""
     - name: priority
       description: Optional priority value between 1 (lowest) and 10 (highest). By default all samples run with highest priority.
@@ -636,7 +636,7 @@ script:
       description: 'The file metadata.'
       type: Object
     - contextPath: CrowdStrike.Report.submissions.submission_id
-      description: 'The submission ID'
+      description: 'The submission ID.'
       type: String
     - contextPath: CrowdStrike.Report.submissions.filename
       description: 'The name of the file.'
@@ -654,7 +654,7 @@ script:
       description: The SHA256 hash of the file.
       type: string
     - contextPath: File.SHA1
-      description: The SHA1 hash of the file
+      description: The SHA1 hash of the file.
       type: string
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -693,7 +693,7 @@ script:
       required: true
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       required: true
       auto: PREDEFINED
       defaultValue: "100"
@@ -705,7 +705,7 @@ script:
       - "300"
     - name: environmentId
       deprecated: true
-      description: 'The environment ID'
+      description: 'The environment ID.'
     - name: polling
       description: Whether the command should poll until the result is ready.
       auto: PREDEFINED
@@ -731,7 +731,7 @@ script:
       - "true"
       - "false"
     - name: action_script
-      description: "Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie"
+      description: "Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie."
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -769,7 +769,7 @@ script:
       - "true"
       - "false"
     - name: network_settings
-      description: "Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'"
+      description: "Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -789,7 +789,7 @@ script:
       description: Optional runtime duration (in seconds).
       defaultValue: ""
     - name: submit_name
-      description: "Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file"
+      description: "Optional 'submission name' field that will be used for file type detection and analysis. Ignored unless url contains a file."
       defaultValue: ""
     - name: priority
       description: Optional priority value between 1 (lowest) and 10 (highest). By default all samples run with highest priority.
@@ -835,7 +835,7 @@ script:
       description: The file name, for example invoice.exe.
       defaultValue: ""
     - name: filetype
-      description: "The file type. Available options: 64bits, android, assembly, bat, cmd, com, csv, data, doc, docx, elf, empty, executable, flash, html, hwp, hwpx, img, iqy, java, javascript, library, lnk, macho, mshelp, msi, native, neexe, office, outlook, pdf, pedll, peexe, perl, ppt, pptx, ps, pub, python, rtf, script, sct, sh, svg, text, url, vbe, vbs, wsf, xls, xlsx"
+      description: "The file type. Available options: 64bits, android, assembly, bat, cmd, com, csv, data, doc, docx, elf, empty, executable, flash, html, hwp, hwpx, img, iqy, java, javascript, library, lnk, macho, mshelp, msi, native, neexe, office, outlook, pdf, pedll, peexe, perl, ppt, pptx, ps, pub, python, rtf, script, sct, sh, svg, text, url, vbe, vbs, wsf, xls, xlsx."
       defaultValue: ""
     - name: filetype_desc
       description: The file type description, for example PE32 executable.
@@ -847,7 +847,7 @@ script:
       description: The country (3 digit ISO), for example swe.
       defaultValue: ""
     - name: verdict
-      description: "The search result verdict. Available options: Whitelisted, NoVerdict, NoSpecificThreat, Suspicious, Malicious"
+      description: "The search result verdict. Available options: Whitelisted, NoVerdict, NoSpecificThreat, Suspicious, Malicious."
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -878,7 +878,7 @@ script:
       description: The port, for example 8080.
       defaultValue: ""
     - name: host
-      description: The host, for example 192.168.0.1
+      description: The host, for example 192.168.0.1.
       defaultValue: ""
     - name: domain
       description: The domain, for example checkip.dyndns.org
@@ -976,7 +976,7 @@ script:
       description: The file name, for example invoice.exe.
       defaultValue: ""
     - name: filetype
-      description: "The file type. Available options: 64bits, android, assembly, bat, cmd, com, csv, data, doc, docx, elf, empty, executable, flash, html, hwp, hwpx, img, iqy, java, javascript, library, lnk, macho, mshelp, msi, native, neexe, office, outlook, pdf, pedll, peexe, perl, ppt, pptx, ps, pub, python, rtf, script, sct, sh, svg, text, url, vbe, vbs, wsf, xls, xlsx"
+      description: "The file type. Available options: 64bits, android, assembly, bat, cmd, com, csv, data, doc, docx, elf, empty, executable, flash, html, hwp, hwpx, img, iqy, java, javascript, library, lnk, macho, mshelp, msi, native, neexe, office, outlook, pdf, pedll, peexe, perl, ppt, pptx, ps, pub, python, rtf, script, sct, sh, svg, text, url, vbe, vbs, wsf, xls, xlsx."
       defaultValue: ""
     - name: filetype_desc
       description: The file type description, for example PE32 executable.
@@ -988,7 +988,7 @@ script:
       description: The country (3 digit ISO), for example swe.
       defaultValue: ""
     - name: verdict
-      description: "The search result verdict. Available options: Whitelisted, NoVerdict, NoSpecificThreat, Suspicious, Malicious"
+      description: "The search result verdict. Available options: Whitelisted, NoVerdict, NoSpecificThreat, Suspicious, Malicious."
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1019,13 +1019,13 @@ script:
       description: The port, for example 8080.
       defaultValue: ""
     - name: host
-      description: The host, for example 192.168.0.1
+      description: The host, for example 192.168.0.1.
       defaultValue: ""
     - name: domain
       description: The domain, for example checkip.dyndns.org
       defaultValue: ""
     - name: url
-      description: HTTP Request Substring e.g. google
+      description: HTTP Request Substring e.g. google.
       defaultValue: ""
     - name: similar_to
       description: Similar samples, for example <sha256>.
@@ -1124,7 +1124,7 @@ script:
       deprecated: true
       description: ''
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1323,7 +1323,7 @@ script:
       deprecated: true
       description: ''
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1516,7 +1516,7 @@ script:
       required: true
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       required: true
       auto: PREDEFINED
       defaultValue: "100"
@@ -1551,7 +1551,7 @@ script:
       - "true"
       - "false"
     - name: action_script
-      description: "Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie"
+      description: "Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie."
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1589,7 +1589,7 @@ script:
       - "true"
       - "false"
     - name: network_settings
-      description: "Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'"
+      description: "Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1700,7 +1700,7 @@ script:
       description: 'The imphash hash of the file.'
       type: String
     - contextPath: CrowdStrike.Report.av_detect
-      description: 'The AV Multiscan range, for example 50-70 (min 0, max 100)'
+      description: 'The AV Multiscan range, for example 50-70 (min 0, max 100).'
       type: Number
     - contextPath: CrowdStrike.Report.vx_family
       description: 'The file malware famil.'
@@ -1793,7 +1793,7 @@ script:
       required: true
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       required: true
       auto: PREDEFINED
       defaultValue: "100"
@@ -1828,7 +1828,7 @@ script:
       - "true"
       - "false"
     - name: action_script
-      description: "Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie"
+      description: "Optional custom runtime action script. Available runtime scripts: default, default_maxantievasion, default_randomfiles, default_randomtheme, default_openie."
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1866,7 +1866,7 @@ script:
       - "true"
       - "false"
     - name: network_settings
-      description: "Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'"
+      description: "Network settings. Available options: default: 'Fully operating network', tor: 'Route network traffic via TOR', simulated: 'Simulate network traffic'."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1911,28 +1911,28 @@ script:
       defaultValue: ""
     outputs:
     - contextPath: CrowdStrike.Submit.job_id
-      description: 'The JobID of the file'
+      description: 'The JobID of the file.'
       type: String
     - contextPath: CrowdStrike.Submit.submission_type
       description: 'The type of the submission.'
       type: String
     - contextPath: CrowdStrike.Submit.submission_id
-      description: 'The submission id'
+      description: 'The submission id.'
       type: String
     - contextPath: CrowdStrike.Submit.environment_id
-      description: The environment id for the submission
+      description: The environment id for the submission.
       type: Number
     - contextPath: CrowdStrike.Submit.sha256
-      description: 'The sha256 hash of the file'
+      description: 'The sha256 hash of the file.'
       type: String
   - name: cs-falcon-sandbox-get-screenshots
-    description: "Retrieves screenshots from a report"
+    description: "Retrieves screenshots from a report."
     arguments:
     - name: file
       description: The sha256 hash of a file.
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1971,7 +1971,7 @@ script:
       description: The SHA256 hash of a file.
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -2302,7 +2302,7 @@ script:
       description: The file job ID.
       defaultValue: ""
     - name: environmentID
-      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit"'
+      description: 'The environment ID. Available environment IDs: 300: "Linux (Ubuntu 16.04, 64 bit)"", 200: "Android Static Analysis", 120: "Windows 7 64 bit", 110: "Windows 7 32 bit (HWP Support)", 100: "Windows 7 32 bit".'
       auto: PREDEFINED
       defaultValue: ""
       predefined:

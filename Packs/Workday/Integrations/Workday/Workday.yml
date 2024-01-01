@@ -196,7 +196,7 @@ script:
       description: Date the employee submitted their resignation.
       type: String
     - contextPath: Workday.Worker.Has_International_Assignment
-      description: Indicates whether the worker has internaitonal assignment
+      description: Indicates whether the worker has internaitonal assignment.
       type: String
     - contextPath: Workday.Worker.Home_Country_Reference
       description: Contains the home country for worker's primary job (ISO_3166-1_Alpha-2_Code).

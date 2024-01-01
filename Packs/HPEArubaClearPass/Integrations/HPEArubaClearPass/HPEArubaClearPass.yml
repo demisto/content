@@ -342,7 +342,7 @@ script:
       description: The visitor’s phone number.
       type: String
   - arguments:
-    - description: ID of the session to disconnect
+    - description: ID of the session to disconnect.
       name: session_id
       required: true
     description: Disconnect active session.

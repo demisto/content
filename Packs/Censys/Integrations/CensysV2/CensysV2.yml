@@ -258,7 +258,7 @@ script:
       description: Whether the certificate has any zlint errors.
       type: Unknown
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'

@@ -231,9 +231,9 @@ script:
       - 12_hours
       - 24_hours
       - 48_hours
-    - description: "The start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
+    - description: "The start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours."
       name: start_time
-    - description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
+    - description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours."
       name: end_time
     - description: The name of the malware file to retrieve.
       name: file_name
@@ -788,7 +788,7 @@ script:
       description: The system time process info of the md5sum that is queried.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.Processinfo.Pid
-      description: The system time process info of the PID (process ID) that is queried
+      description: The system time process info of the PID (process ID) that is queried.
       type: Number
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.QuerySystemTime.Ntstatus
       description: The NTSTATUS of the system time that is queried.
@@ -1015,12 +1015,12 @@ script:
       - 12_hours
       - 24_hours
       - 48_hours
-    - description: "The start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
+    - description: "The start time of the search. This filter is used with the duration filter. If the start_time is specified but not the duration, the system defaults to duration=12_hours, starting at the specified start_time.\nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours."
       name: start_time
-    - description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. \nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours"
+    - description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. \nFormats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n 5 hours."
       name: end_time
     - auto: PREDEFINED
-      description: 'Whether to include all IPS events or MVX-correlated events only. Default: false'
+      description: 'Whether to include all IPS events or MVX-correlated events only. Default: false.'
       name: mvx_correlated_only
       predefined:
       - 'true'
