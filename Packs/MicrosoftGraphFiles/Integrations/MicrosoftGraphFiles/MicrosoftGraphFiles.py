@@ -526,17 +526,17 @@ class MsGraphClient:
         return self.ms_client.http_request(method="POST", json_data=payload, url_suffix=uri)
 
 
-def test_module(client: MsGraphClient) -> str:
+def test_function(client: MsGraphClient, params: dict[str, str]) -> str:
     """
     Performs basic get request to get item samples
     """
-    response = 'ok'
-    if demisto.params().get('self_deployed', False):
-        if demisto.command() == 'test-module':
-            if client.ms_client.grant_type == AUTHORIZATION_CODE:
-                raise DemistoException("The *Test* button is not available for `self-deployed - Authorization Code Flow`.\n Use the !msgraph-files-auth-test command instead.")
-        else:
-            response = '```✅ Success!```'
+    response = 'ok' if demisto.command() == 'test-module' else '```✅ Success!```'
+    if params.get('self_deployed', False) and demisto.command() == 'test-module':
+        if (client.ms_client.grant_type == AUTHORIZATION_CODE
+            or params.get('redirect_uri') or params.get('auth_code_creds', {}).get('password', '')):
+            raise DemistoException("The *Test* button is not available for the `self-deployed - Authorization Code Flow`.\n "
+                                   "Use the !msgraph-files-auth-test command instead once all relevant parameters have been entered.")
+
     client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")
     return response
 
@@ -1107,9 +1107,9 @@ def main():
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+            return_results(test_function(client, params))
         elif command == "msgraph-files-auth-test":
-            return_results(test_module(client))
+            return_results(test_function(client, params))
         elif command == "msgraph-files-generate-login-url":
             return_results(generate_login_url(client.ms_client))
         elif command == "msgraph-files-auth-reset":
