@@ -612,19 +612,51 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
     })
 
 
-def set_security_labels(security_labels: list, mode: str = '') -> dict:
+def set_additional_data(labels: list, mode: str = '') -> dict:
     """
     Sets the security labels in the api structure
     Args:
-        security_labels: list of security labels
+        labels: list of security labels
         mode: mode for update commands
     Returns:
         Security labels dictionary
     """
-    security_labels = {'data': [{'name': security_label} for security_label in security_labels]}
+    labels = {'data': [{'name': label} for label in labels]}
     if mode:
-        security_labels['mode'] = mode
-    return security_labels
+        labels['mode'] = mode
+    return labels
+
+
+def set_victim_asset(is_update,
+                     asset_type,
+                     asset_value,
+                     address_type,
+                     network_type,
+                     social_network) -> dict:
+    """
+    Builds a victim asset object
+    Args:
+        is_update: Whether the command id an update command (in this case, no need for the asset_type in the request body)
+        asset_type: The asset type
+        asset_value: The asset value
+        address_type: The asset address type
+        network_type: The asset network type
+        social_network: The asset social network
+
+    Returns:
+        A dict represents the asset object
+    """
+
+    body = {MAP_ASSET_TYPE_TO_REQUEST_KEY[asset_type]: asset_value}
+    if  not is_update:
+        body['type'] = asset_type
+    if address_type:
+        body['addressType'] = address_type
+    if network_type:
+        body['networkType'] = network_type
+    if social_network:
+        body['socialNetwork'] = social_network
+    return body
 
 
 def set_fields(fields: Optional[list], is_victim_command: bool = False) -> str:  # pragma: no cover
@@ -954,13 +986,17 @@ def create_document_group(client: Client, args: dict) -> None:  # pragma: no cov
                                 name=name, group_type='Document', description=description)  # type: ignore
         group_id = response.get("id")
 
+    else:
+        response = list_groups(client, args, return_raw=True, group_id=group_id)
+        description = response.get('description')
+        security_label = response.get('securityLabels')
+
     res = demisto.getFilePath(args.get('entry_id'))
     f = open(res['path'], 'rb')
     contents = f.read()
     url = f'/api/v3/groups/{group_id}/upload'
     payload = f"{contents}"  # type: ignore
     client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')  # type: ignore
-    # TODO check if context is relevant for group id
     content = {
         'ID': group_id,
         'Name': response.get('name'),
@@ -1656,7 +1692,13 @@ def add_group_tag(client: Client, args: dict):  # pragma: no cover
     return_results(f'The tag {tags} was added successfully to group {group_id}')
 
 
-def tc_create_victim_command(client: Client, args: dict):
+def tc_create_victim_command(client: Client, args: dict) -> None:
+    """
+    Creates a victim
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     name = args.get('name')
     body = {'name': name}
     if nationality := args.get('nationality'):
@@ -1666,14 +1708,29 @@ def tc_create_victim_command(client: Client, args: dict):
     if sub_org := args.get('sub_org'):
         body['suborg'] = sub_org
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = set_security_labels(security_labels=security_labels)
+        body['securityLabels'] = set_additional_data(labels=security_labels)
     if tags := argToList(args.get('tags')):
-        body['tags'] = {'data': [{'name': tag} for tag in tags]}
+        body['tags'] = set_additional_data(labels=tags)
     if work_location := args.get('work_location'):
         body['workLocation'] = work_location
-    if asset_ids := argToList(args.get('asset_ids')):
-        #TODO build it in the right structure
-        body['assets'] = {'data': [{'id': asset_id} for asset_id in asset_ids]}
+
+    # Create asset for the victim
+    asset_type = args.get('asset_type')
+    asset_value = args.get('asset_value')
+    if asset_type and asset_value:
+        asset_type = AssetType(asset_type)
+        address_type = args.get('asset_address_type')
+        network_type = args.get('asset_network_type')
+        social_network = args.get('asset_social_network')
+        asset = set_victim_asset(is_update=False,
+                                 asset_type=asset_type,
+                                asset_value=asset_value,
+                                address_type=address_type,
+                                network_type=network_type,
+                                social_network=social_network)
+        body['assets'] = {'data': [asset]}
+
+    # Create attribute for the victim
     attribute_type = args.get('attribute_type')
     attribute_value = args.get('attribute_value')
     if attribute_value and attribute_type:
@@ -1696,10 +1753,16 @@ def tc_create_victim_command(client: Client, args: dict):
 
 
 
-def tc_update_victim_command(client: Client, args: dict):
+def tc_update_victim_command(client: Client, args: dict) -> None:
+    """
+    Updates a victim
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     mode = args.get('mode') or 'append'
     victim_id = args.get('victim_id')
-    body = {'id': victim_id}
+    body = {}
     if name := args.get('name'):
         body['name'] = name
     if nationality := args.get('nationality'):
@@ -1709,15 +1772,30 @@ def tc_update_victim_command(client: Client, args: dict):
     if sub_org := args.get('sub_org'):
         body['suborg'] = sub_org
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = set_security_labels(security_labels=security_labels, mode=mode)
+        body['securityLabels'] = set_additional_data(labels=security_labels, mode=mode)
     if tags := argToList(args.get('tags')):
-        body['tags'] = {'data': [{'name': tag} for tag in tags],
-                        'mode': mode}
+        body['tags'] = set_additional_data(labels=tags, mode=mode)
     if work_location := args.get('work_location'):
         body['workLocation'] = work_location
-    if asset_ids := argToList(args.get('asset_ids')):
-        #TODO build it in the right structure
-        body['assets'] = asset_ids
+
+    # Create asset for the victim
+    asset_type =args.get('asset_type')
+    asset_value = args.get('asset_value')
+    if asset_type and asset_value:
+        asset_type = AssetType(asset_type)
+        address_type = args.get('asset_address_type')
+        # required for network account TODO
+        network_type = args.get('asset_network_type')
+        social_network = args.get('asset_social_network')
+        asset = set_victim_asset(is_update=False,
+                                 asset_type=asset_type,
+                                 asset_value=asset_value,
+                                 address_type=address_type,
+                                 network_type=network_type,
+                                 social_network=social_network)
+        body['assets'] = {'data': [asset], 'mode': mode}
+
+    # Create attribute for the victim
     attribute_type = args.get('attribute_type')
     attribute_value = args.get('attribute_value')
     if attribute_value and attribute_type:
@@ -1740,7 +1818,13 @@ def tc_update_victim_command(client: Client, args: dict):
     ))
 
 
-def tc_delete_victim_command(client: Client, args: dict):
+def tc_delete_victim_command(client: Client, args: dict) -> None:
+    """
+    Deletes a victim
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     victim_id = args.get('victim_id')
     url = f'/api/v3/victims/{victim_id}'
     response = client.make_request(method=Method.DELETE, url_suffix=url)
@@ -1751,12 +1835,18 @@ def tc_delete_victim_command(client: Client, args: dict):
     ))
 
 
-def tc_list_victims_command(client: Client, args: dict):
-    include_assets = argToBoolean(args.get('include_assets'))
-    include_associated_groups = argToBoolean(args.get('include_associated_groups'))
-    include_attributes = argToBoolean(args.get('include_attributes'))
-    include_security_labels = argToBoolean(args.get('include_security_labels'))
-    include_all_metadata = argToBoolean(args.get('include_all_metaData'))
+def tc_list_victims_command(client: Client, args: dict) -> None:
+    """
+    Retrieves all victims
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
+    include_assets = argToBoolean(args.get('include_assets', False))
+    include_associated_groups = argToBoolean(args.get('include_associated_groups', False))
+    include_attributes = argToBoolean(args.get('include_attributes', False))
+    include_security_labels = argToBoolean(args.get('include_security_labels', False))
+    include_all_metadata = argToBoolean(args.get('include_all_metaData', False))
 
 
     list_of_fields = [field for field, should_include in
@@ -1794,29 +1884,28 @@ def tc_list_victims_command(client: Client, args: dict):
     ))
 
 
-def tc_create_victim_asset_command(client: Client, args: dict):
-    # Required body parameters
+def tc_create_victim_asset_command(client: Client, args: dict) -> None:
+    """
+    Creates a victim asset
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     victim_id = args.get('victim_id')
     asset_type = AssetType(args.get('asset_type'))
-
-    body = {'victimId': victim_id, 'type': asset_type}
-
     asset_value = args.get('asset_value')
-
-    body[MAP_ASSET_TYPE_TO_REQUEST_KEY[asset_type]] = asset_value
-
-    if address_type := args.get('address_type'):
-        body['addressType'] = address_type
-    if network_type := args.get('network_type'):
-        body['networkType'] = network_type
-    if social_network := args.get('social_network'):
-        body['socialNetwork'] = social_network
-    if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = set_security_labels(security_labels=security_labels)
-    if associated_group_ids := argToList(args.get('associated_groups_ids')):
-        body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_group_ids]}
-
+    address_type = args.get('asset_address_type')
+    network_type = args.get('asset_network_type')
+    social_network = args.get('asset_social_network')
+    body = set_victim_asset(is_update=False,
+                            asset_type=asset_type,
+                            asset_value=asset_value,
+                            address_type=address_type,
+                            network_type=network_type,
+                            social_network=social_network)
+    body |=  {'victimId': victim_id, 'type': asset_type}
     url = '/api/v3/victimAssets'
+
     response = client.make_request(method=Method.POST, url_suffix=url, payload=json.dumps(body))
     outputs = response.get('data', {})
     readable_output = f'Victim Asset {outputs.get("id")} created successfully for victim id: {victim_id}'
@@ -1829,32 +1918,32 @@ def tc_create_victim_asset_command(client: Client, args: dict):
     ))
 
 def tc_update_victim_asset_command(client: Client, args: dict):
-    # Required body parameters
+    """
+    Updates a victim asset
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     victim_asset_id = args.get('victim_asset_id')
+    # type is needed to determine which value should be sent in the request body
     victim_asset = client.make_request(method=Method.GET, url_suffix=f'/api/v3/victimAssets/{victim_asset_id}').get('data', {})
     asset_type = AssetType(victim_asset.get('type'))
 
-    body = {}
-
     asset_value = args.get('asset_value')
-
-    body[MAP_ASSET_TYPE_TO_REQUEST_KEY[asset_type]] = asset_value
-
-    if address_type := args.get('address_type'):
-        body['addressType'] = address_type
-    if network_type := args.get('network_type'):
-        body['networkType'] = network_type
-    if social_network := args.get('social_network'):
-        body['socialNetwork'] = social_network
-    if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = set_security_labels(security_labels=security_labels)
-    if associated_group_ids := argToList(args.get('associated_groups_ids')):
-        body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_group_ids]}
+    address_type = args.get('asset_address_type')
+    network_type = args.get('asset_network_type')
+    social_network = args.get('asset_social_network')
+    body = set_victim_asset(is_update=True,
+                            asset_type=asset_type,
+                            asset_value=asset_value,
+                            address_type=address_type,
+                            network_type=network_type,
+                            social_network=social_network)
 
     url = f'/api/v3/victimAssets/{victim_asset_id}'
     response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
     outputs = response.get('data', {})
-    readable_output = f'Victim Asset {outputs.get("id")} updated successfully for victim id: {victim_id}'
+    readable_output = f'Victim Asset {outputs.get("id")} updated successfully for victim id: {outputs.get("victimId")}'
     return_results(CommandResults(
         outputs_prefix='TC.VictimAsset',
         outputs_key_field='id',
@@ -1864,7 +1953,13 @@ def tc_update_victim_asset_command(client: Client, args: dict):
     ))
 
 
-def tc_delete_victim_asset_command(client: Client, args: dict):
+def tc_delete_victim_asset_command(client: Client, args: dict) -> None:
+    """
+    Deletes a victim asset
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     victim_asset_id = args.get('victim_asset_id')
     url = f'/api/v3/victimAssets/{victim_asset_id}'
     response = client.make_request(method=Method.DELETE, url_suffix=url)
@@ -1875,7 +1970,13 @@ def tc_delete_victim_asset_command(client: Client, args: dict):
     ))
 
 
-def tc_list_victim_assets_command(client: Client, args: dict):
+def tc_list_victim_assets_command(client: Client, args: dict) -> None:
+    """
+    Retrieves all victim assets
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     filter = args.get('filter')
     victim_asset_id = args.get('victim_asset_id')
     page = args.get('page') or '0'
@@ -1901,15 +2002,21 @@ def tc_list_victim_assets_command(client: Client, args: dict):
     ))
 
 
-def tc_create_victim_attributes_command(client: Client, args: dict):
+def tc_create_victim_attributes_command(client: Client, args: dict) -> None:
+    """
+    Creates a victim attribute
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     victim_id = args.get('victim_id')
-    attribute_type = args.get('type')
-    value = args.get('value')
+    attribute_type = args.get('attribute_type')
+    value = args.get('attribute_value')
     body = {'victimId': victim_id, 'type': attribute_type, 'value': value}
     if source := args.get('source'):
         body['source'] = source
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = set_security_labels(security_labels=security_labels)
+        body['securityLabels'] = set_additional_data(labels=security_labels)
 
     url = '/api/v3/victimAttributes'
     response = client.make_request(method=Method.POST, url_suffix=url, payload=json.dumps(body))
@@ -1924,14 +2031,20 @@ def tc_create_victim_attributes_command(client: Client, args: dict):
     ))
 
 
-def tc_update_victim_attributes_command(client: Client, args: dict):
+def tc_update_victim_attributes_command(client: Client, args: dict) -> None:
+    """
+    Updates a victim attribute
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     body = {}
-    if value := args.get('value'):
+    if value := args.get('attribute_value'):
         body['value'] = value
     if source := args.get('source'):
         body['source'] = source
     if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = set_security_labels(security_labels=security_labels)
+        body['securityLabels'] = set_additional_data(labels=security_labels)
 
     url = f'/api/v3/victimAttributes/{args.get("victim_attribute_id")}'
     response = client.make_request(method=Method.PUT, url_suffix=url, payload=json.dumps(body))
@@ -1946,7 +2059,13 @@ def tc_update_victim_attributes_command(client: Client, args: dict):
     ))
 
 
-def tc_delete_victim_attributes_command(client: Client, args: dict):
+def tc_delete_victim_attributes_command(client: Client, args: dict) -> None:
+    """
+    Deletes a victim attribute
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     victim_attribute_id = args.get('victim_attribute_id')
     url = f'/api/v3/victimAttributes/{victim_attribute_id}'
     response = client.make_request(method=Method.DELETE, url_suffix=url)
@@ -1957,7 +2076,13 @@ def tc_delete_victim_attributes_command(client: Client, args: dict):
     ))
 
 
-def tc_list_victim_attributes_command(client: Client, args: dict):
+def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
+    """
+    Retrieves all victim attributes
+    Args:
+        client: ThreatConnect client
+        args: command arguments
+    """
     filter = args.get('filter')
     victim_attribute_id = args.get('victim_attribute_id')
     victim_id = args.get('victim_id')
