@@ -543,18 +543,14 @@ def search_pack_and_its_dependencies(client: demisto_client,
             for p in current_packs_to_install:
                 if p['id'] not in collected_dependencies:
                     pack_and_its_dependencies.update({p['id']: p})
-                # else:
-                #     current_version = p["currentVersion"]
-                #     logging.info(f"#########################  {p=}")
-            
-            logging.info(f"#########################{pack_and_its_dependencies=}")            
-            logging.info(f"#########################{collected_dependencies=}")            
+                     
             if pack_and_its_dependencies:
                 collected_dependencies += pack_and_its_dependencies
                 pack_and_its_dependencies_as_list = [
                     get_pack_installation_request_data(
                         pack_id=pack['id'],
-                    #    pack_version=pack['extras']['pack']['currentVersion'])
+                        # Taking the maximum version as the dependency may be on lower version. 
+                        # currentVersion is not always available and sometimes returns as "".
                         pack_version=max(pack['currentVersion'], pack['extras']['pack']['currentVersion']))
                     for pack in list(pack_and_its_dependencies.values())
                 ]
