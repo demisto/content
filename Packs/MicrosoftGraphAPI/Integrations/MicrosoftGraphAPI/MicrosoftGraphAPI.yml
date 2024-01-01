@@ -28,17 +28,29 @@ configuration:
   type: 0
   section: Connect
   required: false
-- displaypassword: Application Secret (Required for using self deployed Azure app)
+- displaypassword: Application Secret (Required for using Self Deployed Azure app)
   name: credentials
   type: 9
   hiddenusername: true
   section: Connect
   required: false
-- display: Tenant ID (Required for using self deployed Azure app)
+- display: Tenant ID (Required for using Self Deployed Azure app)
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
+  required: false
+- display: Application redirect URI (for Self Deployed - Authorization Code Flow)
+  name: redirect_uri
+  type: 0
+  section: Connect
+  required: false
+- display: ''
+  name: auth_code
+  type: 9
+  displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
+  hiddenusername: true
+  section: Connect
   required: false
 - display: Certificate Thumbprint
   name: creds_certificate
@@ -62,6 +74,11 @@ configuration:
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   section: Connect
   advanced: true
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
+  name: self_deployed
+  type: 8
   required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities

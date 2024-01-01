@@ -18,6 +18,8 @@ class MsGraphClient:
                  verify: bool,
                  proxy: bool,
                  azure_cloud: AzureCloud,
+                 auth_code: str,
+                 redirect_uri: str,
                  certificate_thumbprint: str | None = None,
                  private_key: str | None = None,
                  managed_identities_client_id: str | None = None,
@@ -31,7 +33,7 @@ class MsGraphClient:
             'verify': verify,
             'proxy': proxy,
             'self_deployed': True,
-            'grant_type': CLIENT_CREDENTIALS,
+            'grant_type': AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS,
             'ok_codes': (200, 201, 204),
             'azure_ad_endpoint': azure_cloud.endpoints.active_directory,
             'private_key': private_key,
@@ -39,6 +41,8 @@ class MsGraphClient:
             'managed_identities_client_id': managed_identities_client_id,
             'managed_identities_resource_uri': Resources.graph,
             'azure_cloud': azure_cloud,
+            'auth_code': auth_code,
+            'redirect_uri': redirect_uri,
             'command_prefix': "msgraph-api",
         }
         if not (app_secret and tenant_id):
@@ -82,12 +86,13 @@ def test_module(client: MsGraphClient,
                 app_secret: str,
                 tenant_id: str,
                 managed_identities_client_id: str | None) -> str:  # pragma: no cover
-    if (app_secret and tenant_id) or managed_identities_client_id:
+    if client.ms_client.grant_type == CLIENT_CREDENTIALS or managed_identities_client_id:
         client.ms_client.get_access_token()
         return 'ok'
     else:
-        raise ValueError('The test module is not functional when using Cortex XSOAR Azure app, '
-                         'run the msgraph-test command instead.')
+        raise DemistoException('The *Test* button is not functional when using `Cortex XSOAR Azure app` or '
+                         '`self-deployed - Authorization Code Flow`, '
+                         'run the !msgraph-api-test command instead once all relevant parameters have been entered.')
 
 
 def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
@@ -153,6 +158,8 @@ def main() -> None:  # pragma: no cover
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    auth_code = params.get('auth_code', {}).get('password', '')
+    redirect_uri = params.get('redirect_uri', '')
 
     try:
         client = MsGraphClient(
@@ -166,6 +173,8 @@ def main() -> None:  # pragma: no cover
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri,
         )
 
         if command == 'test-module':
