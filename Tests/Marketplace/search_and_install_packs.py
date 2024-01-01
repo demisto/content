@@ -555,7 +555,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     get_pack_installation_request_data(
                         pack_id=pack['id'],
                     #    pack_version=pack['extras']['pack']['currentVersion'])
-                        pack_version=pack['currentVersion'] or pack['extras']['pack']['currentVersion'])
+                        pack_version=max(pack['currentVersion'], pack['extras']['pack']['currentVersion']))
                     for pack in list(pack_and_its_dependencies.values())
                 ]
                 packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
