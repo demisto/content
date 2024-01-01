@@ -208,7 +208,6 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
         integration_id="QRadar v3",
         is_long_running=True,
         instance_name=instance_name,
-        should_run_test_module=False
     ):
         incidents_type = integration_params["incident_type"]
         with get_fetched_incident(
