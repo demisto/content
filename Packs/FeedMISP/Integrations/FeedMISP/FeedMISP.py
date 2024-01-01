@@ -319,7 +319,7 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
     Returns: Sorted list of new indicators
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f"{last_run}")
+    demisto.debug(f"last_run: {last_run}")
     indicators_iterator.sort(key=lambda indicator: indicator['value']['timestamp'])
 
     if last_run is None:
@@ -342,7 +342,8 @@ def search_query_indicators_pagination(client: Client, params_dict: Dict[str, An
     response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
     search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
     while len(search_query_per_page):
-        demisto.debug(f'search_query_per_page:{params_dict["page"]} {search_query_per_page}')
+        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators: \
+                      {len(search_query_per_page)}')
         response['response']['Attribute'].extend(search_query_per_page)
         params_dict['page'] += 1
         search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
@@ -574,7 +575,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     query = params.get('query', None)
     indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color,
                                   params.get('url'), reputation, feed_tags)
-    demisto.debug(f"fetch indicator results: {indicators} /n/n fetch_indicators finished")
     return indicators
 
 
