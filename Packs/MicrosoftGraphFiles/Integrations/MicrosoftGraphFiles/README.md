@@ -6,13 +6,10 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
-- `Sites.ReadWrite.All`: Provides read and write access to all sites.\
-`Client Credentials Flow` - Application permission.
-`Authorization Code Flow` - Delegated permission.
+- `Sites.ReadWrite.All - Application`: Provides read and write access to all sites.
 
 OR
-- `Sites.Selected - Application`: Provides read and write access to specific sites.\
-This option is not supported with the `Authorization Code Flow` according to [Microsoft documentation](https://learn.microsoft.com/en-us/graph/permissions-reference#sitesselected).
+- `Site.Selected - Application`: Provides read and write access to specific sites.
 
 Note: Using `Site.Selected` requires additional configuration steps outlined below.
 
@@ -24,7 +21,7 @@ Configuration:
 
 1. In the Microsoft website:
    1. Create "Admin" application with the `Sites.FullControl.All - Application` permission.
-   2. Create "User" application with the `Sites.Selected - Application` permission.
+   2. Create "User" application with the `Site.Selected - Application` permission.
 2. In Cortex XSOAR, navigate to **Settings** > **Integrations**.
 3. Search for O365 File Management (Onedrive/Sharepoint/Teams).
 4. Create an admin instance:
@@ -54,19 +51,21 @@ Note: The `msgraph-list-sharepoint-sites` command cannot be run, as it requires 
 2. Search for O365 File Management (Onedrive/Sharepoint/Teams).
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| host | Server URL | True |
-| auth_id | Application ID / Client ID | False |
-| tenant_id | Token / Tenant ID | False |
-| enc_key | Key / Client Secret | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
-| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-| Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
-| insecure | Trust any certificate (not secure) | False |
-| proxy | Use system proxy settings | False |
-| self_deployed | Use a self-deployed Azure Application | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL |  | True |
+    | Application ID / Client ID |  | False |
+    | Token / Tenant ID |  | False |
+    | Key / Client Secret |  | False |
+    | Application redirect URI (for Self Deployed - Authorization Code Flow) |  | False |
+    | Authorization code (for Self Deployed - Authorization Code Flow) |  | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -79,7 +78,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 Deletes an item from OneDrive.
-
 
 #### Base Command
 
@@ -112,7 +110,6 @@ There is no context output for this command.
 
 ***
 Uploads a file from Cortex XSOAR to the specified MS Graph resource.
-
 
 #### Base Command
 
@@ -318,7 +315,6 @@ Replaces the content of the file in the specified MS Graph resource.
 ***
 Creates a new folder in a drive with the specified parent item or path.
 
-
 #### Base Command
 
 `msgraph-create-new-folder`
@@ -415,7 +411,6 @@ Creates a new folder in a drive with the specified parent item or path.
 ***
 Returns the list of document libraries (drives) available for a target site.
 
-
 #### Base Command
 
 `msgraph-list-drives-in-site`
@@ -496,7 +491,6 @@ Returns the list of document libraries (drives) available for a target site.
 
 ***
 Returns a list of files and folders in the specified drive.
-
 
 #### Base Command
 
@@ -602,7 +596,6 @@ Returns a list of files and folders in the specified drive.
 ***
 Returns a list of the tenant sites. This command requires the 'Sites.Read.All' permission.
 
-
 #### Base Command
 
 `msgraph-list-sharepoint-sites`
@@ -670,7 +663,6 @@ Returns a list of the tenant sites. This command requires the 'Sites.Read.All' p
 
 ***
 Downloads the file contents of the drive item.
-
 
 #### Base Command
 
@@ -741,8 +733,8 @@ The command only runs from admin instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of results to return. Default is 50. | Optional | 
-| site_id | The ID of the site. Must provide either site_id or site_name. | Optional | 
-| site_name | The name of the site. Must provide either site_id or site_name. | Optional | 
+| site_id | The ID of the site. Required if site_name is not provided.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
+| site_name | The name of the site. Required if site_id is not provided. | Optional | 
 | permission_id | The ID of the permission. | Optional | 
 | all_results | Whether to retrieve all the apps with permission for the site. If true, the "limit" argument will be ignored. Possible values are: true, false. Default is false. | Optional | 
 
@@ -836,8 +828,8 @@ The command only runs from admin instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_id | The ID of the site. Must provide either site_id or site_name. | Optional | 
-| site_name | The name of the site. Must provide either site_id or site_name. | Optional | 
+| site_id | The ID of the site. Required if site_name is not provided.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
+| site_name | The name of the site. Required if site_id is not provided. | Optional | 
 | role | read: Provides the ability to read the metadata and contents of the item.<br/>write: Provides the ability to read and modify the metadata and contents of the item.<br/>owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions. Possible values are: read, write, owner. | Required | 
 | app_id | The ID of the application. | Required | 
 | display_name | The display name of the application. | Required | 
@@ -909,8 +901,8 @@ The command only runs from admin instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_name | The name of the site. Must provide either site_name or site_id. | Optional | 
-| site_id | The ID of the site. Must provide either site_id or site_name. | Optional | 
+| site_name | The name of the site. Required if site_id is not provided. | Optional | 
+| site_id | The ID of the site. Required if site_name is not provided.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
 | permission_id | The unique identifier of the permission to update. | Required | 
 | role | read: Provides the ability to read the metadata and contents of the item.<br/>write: Provides the ability to read and modify the metadata and contents of the item.<br/>owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions. Possible values are: read, write, owner. | Required | 
 
@@ -944,8 +936,8 @@ The command only runs from admin instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_id | Unique identifier for SharePoint site. Must provide either site_id or site_name. | Optional | 
-| site_name | The name of the site. Must provide either site_id or site_name. | Optional | 
+| site_id | Unique identifier for SharePoint site. Required if site_name is not provided.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
+| site_name | The name of the site. Required if site_id is not provided. | Optional | 
 | permission_id | The unique identifier of the permission to delete. | Required | 
 
 #### Context Output
@@ -959,6 +951,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Site permission was deleted.
+
 ### msgraph-files-auth-test
 
 ***
