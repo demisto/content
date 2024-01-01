@@ -42,6 +42,7 @@ CLIENT_MOCKER_AUTH_CODE = MsGraphClient(
     base_url='https://graph.microsoft.com/v1.0/', verify='use_ssl', proxy='proxy', self_deployed='self_deployed',
     redirect_uri='redirect_uri', auth_code='auth_code')
 
+
 def authorization_mock(requests_mock: MockerCore) -> None:
     """
     Authorization API request mock.
@@ -882,6 +883,7 @@ def test_delete_site_permission_command(requests_mock: MockerCore) -> None:
 
     assert result.readable_output == "Site permission was deleted."
 
+
 def test_generate_login_url(mocker):
     """
     Given:
@@ -923,7 +925,8 @@ def test_generate_login_url(mocker):
                              ('authorization_code', True, 'test-module', 'ok', True, CLIENT_MOCKER_AUTH_CODE),
                              ('client_credentials', True, 'test-module', 'ok', False, CLIENT_MOCKER),
                              ('client_credentials', True, 'msgraph-files-auth-test', '```✅ Success!```', False, CLIENT_MOCKER),
-                             ('authorization_code', True, 'msgraph-files-auth-test', '```✅ Success!```', False, CLIENT_MOCKER_AUTH_CODE)
+                             ('authorization_code', True, 'msgraph-files-auth-test',
+                              '```✅ Success!```', False, CLIENT_MOCKER_AUTH_CODE)
                          ])
 def test_test_function(mocker, grant_type, self_deployed, demisto_command, expected_result, should_raise, client):
     """

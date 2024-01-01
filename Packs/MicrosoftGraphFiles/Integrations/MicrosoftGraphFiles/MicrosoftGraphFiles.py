@@ -533,12 +533,13 @@ def test_function(client: MsGraphClient, params: dict[str, str]) -> str:
     response = 'ok' if demisto.command() == 'test-module' else '```✅ Success!```'
     if params.get('self_deployed', False) and demisto.command() == 'test-module':
         if (client.ms_client.grant_type == AUTHORIZATION_CODE
-            or params.get('redirect_uri') or params.get('auth_code_creds', {}).get('password', '')):
+                or params.get('redirect_uri') or params.get('auth_code_creds', {}).get('password', '')):
             raise DemistoException("The *Test* button is not available for the `self-deployed - Authorization Code Flow`.\n "
                                    "Use the !msgraph-files-auth-test command instead once all relevant parameters have been entered.")
 
     client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")
     return response
+
 
 def download_file_command(client: MsGraphClient, args: dict[str, str]) -> dict:
     """
