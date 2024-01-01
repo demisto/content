@@ -4,8 +4,7 @@
 # TODO V/2 Write the pid in a local file. Use the pid os the subprocess when starting the chrome from Python. Use DevTools, or kill the process
 # TODO V Backwards Compatibility: Add support for full_Screen
 # TODO V Backwards Compatibility: Add support for include_url
-# TODO V/2 Backwards Compatibility: chrome_options, support removal of options
-
+# TODO V Backwards Compatibility: chrome_options, support removal of options
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -266,6 +265,10 @@ def write_info_file(filename, contents):
         demisto.info(f"File '{filename}' saved successfully with {contents}.")
 
 
+def opt_name(opt):
+    return opt.split('=', 1)[0]
+
+
 def get_chrome_options(default_options, user_options):
     """Return the command line options for Chrome
 
@@ -273,11 +276,11 @@ def get_chrome_options(default_options, user_options):
         list -- merged options
     """
     demisto.debug(f"get_chrome_options, {default_options=}, {user_options=}")
-    if not user_chrome_options:
+    if not user_options:
         # nothing to do
         return default_options.copy()
 
-    user_options = re.split(r'(?<!\\),', user_chrome_options)
+    user_options = re.split(r'(?<!\\),', user_options)
     demisto.debug(f'user chrome options: {user_options}')
 
     options = []
