@@ -224,6 +224,7 @@ script:
       name: query
     - description: Number of records to retrieve in each API call when pagination is used.
       name: page_size
+      defaultValue: '100'
     - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
     - description: A number of records to limit the response to.
