@@ -197,8 +197,8 @@ def fetch_events_command_sub(
         # Anti-starvation protection, we've exhausted all events for this second, but they're all duplicated.
         # This means that we've more events in the minimal epoch, that we're able to get in a single fetch.
         next_fetch_time: str = to_str_time(from_time + timedelta(seconds=1))
-        demisto.log(f"Moving the fetch to the next second:{next_fetch_time}, this means that any additional events in this "
-                    f"second will be lost!")
+        demisto.info(f"Moving the fetch to the next second:{next_fetch_time}, this means that any additional events in this "
+                     f"second will be lost!")
         return [], [], next_fetch_time
 
     # We've got events for this time span, so start from that to time in the next fetch,
