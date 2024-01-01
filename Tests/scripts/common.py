@@ -245,7 +245,7 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id, look_back_hours
 
     commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
     pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
-                                       source='push', order_by='updated_at', sort='asc')
+                                       source='push', order_by='id', sort='asc')
 
     # Filter out pipelines that are not done
     filtered_pipelines = [
