@@ -132,7 +132,8 @@ def main():
         logging.info(f"\tBuild number: {options.build_number}")
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
-        jira_server_information(jira_server)
+        jira_server_info = jira_server_information(jira_server)
+        server_url = jira_server_info["baseUrl"]
 
         if not (test_playbooks_result_files_list := get_test_results_files(Path(options.artifacts_path),
                                                                            TEST_PLAYBOOKS_REPORT_FILE_NAME)):
@@ -196,7 +197,7 @@ def main():
             else:
                 logging.debug(f"Skipped creating Jira issue for successful test playbook:{playbook_id}")
 
-        write_test_playbook_to_jira_mapping(artifacts_path, jira_tickets_for_playbooks)
+        write_test_playbook_to_jira_mapping(server_url, artifacts_path, jira_tickets_for_playbooks)
         open(artifacts_path / TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED, "w")
         logging.info("Finished creating/updating Jira issues")
 
