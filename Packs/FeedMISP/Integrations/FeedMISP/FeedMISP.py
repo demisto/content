@@ -340,14 +340,12 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
 def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]:
     params_dict['page'] = 1
     response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
-    next_page_exist = True
-    while next_page_exist:
-        search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
+    search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
+    while len(search_query_per_page):
         demisto.debug(f'search_query_per_page:{params_dict["page"]} {search_query_per_page}')
-        if not len(search_query_per_page):
-            next_page_exist = False
         response['response']['Attribute'].extend(search_query_per_page)
         params_dict['page'] += 1
+        search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
     return response
 
 
