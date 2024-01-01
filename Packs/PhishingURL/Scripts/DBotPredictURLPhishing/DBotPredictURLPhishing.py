@@ -520,17 +520,15 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
     # --- TEMP --- #
     results = []
     for url in urls:
-        res = [
-            demisto.executeCommand(
-                'rasterize',
-                {
-                    'type': 'json',
-                    'url': url,
-                    'wait_time': WAIT_TIME_RASTERIZE,
-                    'execution-timeout': rasterize_timeout
-                }
-            )
-        ]
+        res = demisto.executeCommand(
+            'rasterize',
+            {
+                'type': 'json',
+                'url': url,
+                'wait_time': WAIT_TIME_RASTERIZE,
+                'execution-timeout': rasterize_timeout
+            }
+        )
         demisto.debug(f'Rasterize Data: {res}')
         validate_rasterize(res)
         results.append(res[0]['Contents'])
@@ -618,7 +616,6 @@ def return_detailed_summary(results, reliability: str):
     outputs = []
     severity_list = [x.get('score') for x in results]
     indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
-    sorted_results = sorted(results, reverse=True, key=lambda x: x['score'])
     for i in range(len(results)):
         index = indice_descending_severity[i]
         if results[index].get('score') == SCORE_INVALID_URL:
@@ -782,7 +779,7 @@ def main():
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
             args.get("reliability", DBotScoreReliability.A_PLUS)
         )
-    
+
         msg_list = []
 
         # Check existing version of the model in demisto
@@ -796,7 +793,7 @@ def main():
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
         if not urls:
             return None
-        
+
         # Run the model and get predictions
         results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
 
