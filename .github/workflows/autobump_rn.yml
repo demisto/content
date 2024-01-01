@@ -1,10 +1,8 @@
 name: Autobump Version
 on:
-#  push:
-#    branches:
-#      - master
-  pull_request:
-    types: [opened, synchronize, labeled, unlabeled]
+  push:
+    branches:
+      - master
 
 permissions:
   pull-requests: write
