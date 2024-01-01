@@ -10,7 +10,7 @@ from PerformActionOnCampaignIncidents import (
     NO_CAMPAIGN_INCIDENTS_MSG,
     main,
     _set_involved_incidents_count,
-    _set_part_of_campaign_filed,
+    _set_part_of_campaign_field,
     _link_or_unlink_between_incidents,
     _set_incidents_to_campaign,
     _get_context,
@@ -119,7 +119,7 @@ def test_no_incidents_in_context(mocker: MockerFixture) -> None:
             id="set involved incidents count",
         ),
         pytest.param(
-            _set_part_of_campaign_filed,
+            _set_part_of_campaign_field,
             {"incident_id": "test_id", "campaign_id": "test_id"},
             "Error occurred while trying to set the partofcampaign field on the incident: Error message",
             id="set part of campaign filed",
