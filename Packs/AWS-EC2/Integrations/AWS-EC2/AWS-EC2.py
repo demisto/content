@@ -5,9 +5,6 @@ from AWSApiModule import *  # noqa: E402
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from mypy_boto3_ec2 import EC2Client
 
 """CONSTANTS"""
 
@@ -2845,13 +2842,9 @@ def release_hosts_command(args: dict) -> CommandResults:
     return CommandResults(readable_output="The host was successfully released.")
 
 
-def modify_snapshot_permission_command(args, aws_client):
-    client = aws_client.aws_session(
-        service='ec2',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+@run_on_all_accounts
+def modify_snapshot_permission_command(args: dict) -> CommandResults:
+    client = build_client(args)
 
     group_names = argToList(args.get('groupNames'))
     user_ids = argToList(args.get('userIds'))
@@ -2868,12 +2861,13 @@ def modify_snapshot_permission_command(args, aws_client):
         DryRun=argToBoolean(args.get('dryRun', False)),
         **accounts
     )
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
+    return CommandResults(readable_output=f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
 
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        return_results(f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
 
-
-def describe_ipam_resource_discoveries_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
+@run_on_all_accounts
+def describe_ipam_resource_discoveries_command(args: dict) -> CommandResults:
     """
     aws-ec2-describe-ipam-resource-discoveries command: Describes IPAM resource discoveries. A resource discovery is an IPAM
     component that enables IPAM to manage and monitor resources that belong to the owning account.
@@ -2886,6 +2880,8 @@ def describe_ipam_resource_discoveries_command(args: Dict[str, Any], client: 'EC
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM resource
         discoveries.
     """
+    client = build_client(args)
+
     kwargs = {}
     if (filters := args.get('Filters')) is not None:
         kwargs.update({'Filters': parse_filter_field(filters)})
@@ -2912,7 +2908,8 @@ def describe_ipam_resource_discoveries_command(args: Dict[str, Any], client: 'EC
     return command_results
 
 
-def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], client: 'EC2Client') -> CommandResults:
+@run_on_all_accounts
+def describe_ipam_resource_discovery_associations_command(args: dict) -> CommandResults:
     """
     aws-ec2-describe-ipam-resource-discovery-associations command: Describes resource discovery association with an Amazon VPC
     IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
@@ -2925,6 +2922,8 @@ def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], 
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains IPAM discovery
         associations.
     """
+    client = build_client(args)
+
     kwargs = {}
     if (filters := args.get('Filters')) is not None:
         kwargs.update({'Filters': parse_filter_field(filters)})
@@ -2951,7 +2950,8 @@ def describe_ipam_resource_discovery_associations_command(args: Dict[str, Any], 
     return command_results
 
 
-def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_client) -> CommandResults:
+@run_on_all_accounts
+def get_ipam_discovered_public_addresses_command(args: dict) -> CommandResults:
     """
     aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
 
@@ -2963,13 +2963,7 @@ def get_ipam_discovered_public_addresses_command(args: Dict[str, Any], aws_clien
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains public IP addresses
         that have been discovered by IPAM.
     """
-    client = aws_client.aws_session(
-        service='ec2',
-        region=args.get('AddressRegion'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
+    client = build_client(args)
 
     if (args.get('IpamResourceDiscoveryId') is None) or (args.get('AddressRegion') is None):
         return_error('IpamResourceDiscoveryId and AddressRegion need to be defined')
@@ -3006,15 +3000,6 @@ def main():
 
         command = demisto.command()
         args = demisto.args()
-
-        # required for typing of IPAM commands
-        client: 'EC2Client' = aws_client.aws_session(
-            service='ec2',
-            region=args.get('AddressRegion'),
-            role_arn=args.get('roleArn'),
-            role_session_name=args.get('roleSessionName'),
-            role_session_duration=args.get('roleSessionDuration'),
-        )
 
         LOG(f'Command being called is {command}')
 
@@ -3232,16 +3217,16 @@ def main():
             return_results(release_hosts_command(args))
 
         elif command == 'aws-ec2-modify-snapshot-permission':
-            modify_snapshot_permission_command(args, aws_client)
+            return_results(modify_snapshot_permission_command(args))
 
         elif command == 'aws-ec2-describe-ipam-resource-discoveries':
-            return_results(describe_ipam_resource_discoveries_command(args, client))
+            return_results(describe_ipam_resource_discoveries_command(args))
 
         elif command == 'aws-ec2-describe-ipam-resource-discovery-associations':
-            return_results(describe_ipam_resource_discovery_associations_command(args, client))
+            return_results(describe_ipam_resource_discovery_associations_command(args))
 
         elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
-            return_results(get_ipam_discovered_public_addresses_command(args, aws_client))
+            return_results(get_ipam_discovered_public_addresses_command(args))
 
     except Exception as e:
         LOG(e)

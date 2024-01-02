@@ -3318,6 +3318,7 @@ Describes IPAM resource discoveries. A resource discovery is an IPAM component t
 | AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId | String | The resource discovery ID. | 
 | AWS.EC2.IpamResourceDiscoveries.OwnerId | String | The ID of the owner. | 
 | AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion | String | The resource discovery region. | 
+| AWS.EC2.IpamResourceDiscoveries.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command example
 ```!aws-ec2-describe-ipam-resource-discoveries```
@@ -3427,6 +3428,7 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId | String | The resource discovery association ID. | 
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId | String | The resource discovery ID. | 
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. | 
+| AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command example
 ```!aws-ec2-describe-ipam-resource-discovery-associations```
@@ -3490,6 +3492,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 | AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus | String | The association status. | 
 | AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId | String | The instance ID of the instance the assigned IP address is assigned to. | 
 | AWS.EC2.IpamDiscoveredPublicAddresses.Tags | Unknown | Tags associated with the IP address. | 
+| AWS.EC2.IpamDiscoveredPublicAddresses.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 #### Command example
 ```!aws-ec2-get-ipam-discovered-public-addresses IpamResourceDiscoveryId=ipam-res-disco-11111111111111111 AddressRegion=us-east-1 Filters=Name=address,Values=1.1.1.1```
