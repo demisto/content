@@ -27,7 +27,7 @@ DATEPARSER_SETTINGS = {
 
 
 def to_str_time(t: datetime) -> str:
-    return t.strftime("%m/%d/%Y %H:%M:%S")
+    return t.strftime("%m/%d/%Y %H:%M:%S") # FIXME move to constant
 
 
 def from_str_time(s: str) -> datetime:
@@ -89,19 +89,19 @@ class Client(BaseClient):
         ):
             return access_token
 
-        # there's no token or it is expired
+        # There's no token or it is expired
         access_token, token_expiration_seconds = self.get_token_request()
         integration_context = {
             'access_token': access_token,
             'token_expiration_seconds': token_expiration_seconds,
             'token_initiate_time': time.time()
         }
-        demisto.debug(f'updating access token - {integration_context}')
+        demisto.debug(updating access token')
         set_integration_context(context=integration_context)
 
         return access_token
 
-    def get_token_request(self) -> tuple[str, str]:
+    def get_token(self) -> tuple[str, str]:
         """
         Sends request to retrieve token.
 
@@ -127,9 +127,9 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:
+    def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:  # FIXME is_token_valid
         """
-        Check whether a token has expired. a token considered expired if it has been reached to its expiration date in
+        Check whether a token has expired. A token is considered expired if it reached its expiration date in
         seconds minus a minute.
 
         for example ---> time.time() = 300, token_initiate_time = 240, token_expiration_seconds = 120
@@ -195,13 +195,14 @@ def fetch_events_command_sub(
 
     if not events and incidents:
         # Anti-starvation protection, we've exhausted all events for this second, but they're all duplicated.
-        # This means that we've more events in the minimal epoch, that we're able to get in a single fetch.
+        # This means that we've more events in the minimal epoch, that we're able to get in a single fetch,
+        # and we'll ignore any additional events in this particular second.
         next_fetch_time: str = to_str_time(from_time + timedelta(seconds=1))
-        demisto.info(f"Moving the fetch to the next second:{next_fetch_time}, this means that any additional events in this "
+        demisto.info(f"Moving the fetch to the next second:{next_fetch_time}. Any additional events in this "
                      f"second will be lost!")
         return [], [], next_fetch_time
 
-    # We've got events for this time span, so start from that to time in the next fetch,
+    # We've got events for this time span, so start from that to_time in the next fetch,
     # otherwise use the to_time - 1 second (as we might have more events for this second)
     next_fetch_time = events[-1]["event_time"] if events else to_str_time(to_time - timedelta(seconds=1))
 
@@ -222,7 +223,7 @@ def fetch_events(client, first_fetch, max_fetch):
 
     from_time = from_str_time(forward["last_fetch"])
     to_time = client.utc_now
-    logging.debug(f"looking for backward events from:{from_time} to:{to_time}")
+    demisto.info(f"looking for backward events from:{from_time} to:{to_time}")
     forward_events, last_events_ids, next_fetch_time = fetch_events_command_sub(client, max_fetch, to_time,
                                                                                 from_time,
                                                                                 forward["last_events_ids"])
