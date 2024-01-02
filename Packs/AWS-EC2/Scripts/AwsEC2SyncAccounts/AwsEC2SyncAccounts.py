@@ -30,12 +30,12 @@ def get_account_ids(ec2_instance_name: str | None) -> tuple[list[str], str]:
         list[str]: A list of AWS account IDs.
     '''
     try:
-        account_list_result: list[dict[str, dict]] = demisto.executeCommand(ACCOUNT_LIST_COMMAND, {})  # type: ignore
-        ec2_instance = next(
-            result for result in account_list_result if result['ModuleName'] == ec2_instance_name
-        ) if ec2_instance_name else account_list_result[0]
-        accounts = dict_safe_get(ec2_instance, ['EntryContext', 'AWS.Organizations.Account(val.Id && val.Id == obj.Id)'], [])
-        return [account['Id'] for account in accounts], str(ec2_instance['HumanReadable'])
+        command_args = {'using': ec2_instance_name} if ec2_instance_name else {}
+        account_list_result: list[dict] = demisto.executeCommand(ACCOUNT_LIST_COMMAND, command_args)  # type: ignore
+        accounts = dict_safe_get(
+            account_list_result, (0, 'EntryContext', 'AWS.Organizations.Account(val.Id && val.Id == obj.Id)'), []
+        )
+        return [account['Id'] for account in accounts], str(dict_safe_get(account_list_result, (0, 'HumanReadable'), ''))
     except ValueError as e:
         raise DemistoException(f'The command {ACCOUNT_LIST_COMMAND!r} must be operational to run this script.\nServer error: {e}')
     except StopIteration:
