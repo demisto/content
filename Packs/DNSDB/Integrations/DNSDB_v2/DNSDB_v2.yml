@@ -43,30 +43,30 @@ script:
       predefined:
       - regex
       - glob
-      description: query value type
+      description: query value type.
     - name: key
       required: true
       auto: PREDEFINED
       predefined:
       - rrnames
       - rdata
-      description: search over rrnames or rdata
+      description: search over rrnames or rdata.
     - name: value
       required: true
-      description: query regex or glob
+      description: query regex or glob.
     - name: rrtype
-      description: query rrtype
+      description: query rrtype.
     - name: limit
-      description: Limit the number of returned records
+      description: Limit the number of returned records.
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative).
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative).
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative).
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative).
     outputs:
     - contextPath: DNSDB.Record.RRName
       type: string
@@ -104,7 +104,7 @@ script:
     - contextPath: DNSDB.Record.FromZoneFile
       type: bool
       description: False if the resource record was observed via passive DNS replication, True if by zone file import.
-    description: DNSDB flex search
+    description: DNSDB flex search.
   - name: dnsdb-rdata
     arguments:
     - name: type
@@ -114,25 +114,25 @@ script:
       - name
       - ip
       - raw
-      description: Query type
+      description: Query type.
     - name: value
       required: true
-      description: Query value
+      description: Query value.
     - name: rrtype
-      description: query rrtype
+      description: query rrtype.
     - name: limit
-      description: Limit the number of returned records
+      description: Limit the number of returned records.
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative).
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative).
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative).
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative).
     - name: aggr
-      description: Aggregate identical RRsets
+      description: Aggregate identical RRsets.
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -170,7 +170,7 @@ script:
     - contextPath: DNSDB.Record.FromZoneFile
       type: bool
       description: False if the resource record was observed via passive DNS replication, True if by zone file import.
-    description: Lookup RData records
+    description: Lookup RData records.
   - name: dnsdb-summarize-rdata
     arguments:
     - name: type
@@ -180,31 +180,31 @@ script:
       - name
       - ip
       - raw
-      description: Query type
+      description: Query type.
     - name: value
       required: true
-      description: Query value
+      description: Query value.
     - name: rrtype
-      description: query rrtype
+      description: query rrtype.
     - name: limit
-      description: Limit the number of returned records
+      description: Limit the number of returned records.
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative).
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative).
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative).
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative).
     - name: aggr
-      description: Aggregate identical RRsets
+      description: Aggregate identical RRsets.
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
     - name: max_count
-      description: Stop when the summary count is reached
+      description: Stop when the summary count is reached.
     outputs:
     - contextPath: DNSDB.Summary.Count
       type: number
@@ -224,29 +224,29 @@ script:
     - contextPath: DNSDB.Summary.ZoneTimeLast
       type: date
       description: The most recent time that the resource record was observed in a zone file.
-    description: Summarize RData records
+    description: Summarize RData records.
   - name: dnsdb-rrset
     arguments:
     - name: owner_name
       required: true
-      description: Owner name to query
+      description: Owner name to query.
     - name: rrtype
-      description: rrtype value to query
+      description: rrtype value to query.
     - name: bailiwick
-      description: Bailiwick value to query
+      description: Bailiwick value to query.
     - name: limit
-      description: Limit the number of returned records
+      description: Limit the number of returned records.
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative).
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative).
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative).
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative).
     - name: aggr
-      description: Aggregate identical RRsets
+      description: Aggregate identical RRsets.
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -289,35 +289,35 @@ script:
     - contextPath: DNSDB.Record.FromZoneFile
       type: bool
       description: False if the RRset was observed via passive DNS replication, True if by zone file import.
-    description: Lookup RRset records
+    description: Lookup RRset records.
   - name: dnsdb-summarize-rrset
     arguments:
     - name: owner_name
       required: true
-      description: Owner name to query
+      description: Owner name to query.
     - name: rrtype
-      description: rrtype value to query
+      description: rrtype value to query.
     - name: bailiwick
-      description: Bailiwick value to query
+      description: Bailiwick value to query.
     - name: limit
-      description: Limit the number of returned records
+      description: Limit the number of returned records.
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX timestamp, relative if negative).
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX timestamp, relative if negative).
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX timestamp, relative if negative).
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX timestamp, relative if negative).
     - name: aggr
-      description: Aggregate identical RRsets
+      description: Aggregate identical RRsets.
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
     - name: max_count
-      description: Stop when the summary count is reached
+      description: Stop when the summary count is reached.
     outputs:
     - contextPath: DNSDB.Summary.Count
       type: number
@@ -337,7 +337,7 @@ script:
     - contextPath: DNSDB.Summary.ZoneTimeLast
       type: date
       description: The most recent time that the resource record was observed in a zone file.
-    description: Lookup RRset records
+    description: Lookup RRset records.
   - name: dnsdb-rate-limit
     outputs:
     - contextPath: DNSDB.Rate.Limit
@@ -385,9 +385,11 @@ script:
     - contextPath: DNSDB.Rate.BurstWindow
       type: number
       description: The number of seconds over which a burst of queries is measured.
-    description: Retrieve service limits
+    description: Retrieve service limits.
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.83255
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
