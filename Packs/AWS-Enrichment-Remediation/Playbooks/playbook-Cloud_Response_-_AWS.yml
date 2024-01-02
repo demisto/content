@@ -12,7 +12,7 @@ description: |-
   - Access key remediation:
      - Disable the access key
      - Delete the access key
-  - Block indicators
+  - Block indicators.
 starttaskid: "0"
 tasks:
   "0":
@@ -1088,10 +1088,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7ee887b7-5042-486f-806a-559a4407f755
+    taskid: 6ee1b8cf-879c-4592-8e24-cf77e77047cb
     type: collection
     task:
-      id: 7ee887b7-5042-486f-806a-559a4407f755
+      id: 6ee1b8cf-879c-4592-8e24-cf77e77047cb
       version: -1
       name: Choose a user for access key remediation
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
@@ -1120,8 +1120,7 @@ tasks:
         simple: XCLOUD Cryptominig Alert - Credentials Remediation
       body:
         simple: Analyst interaction is needed for the credentials remediation.
-      methods:
-      - email
+      methods: []
       format: ""
       bcc:
       cc:
@@ -1207,10 +1206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: c6dddc29-dff7-45aa-8519-77e8b07ce776
+    taskid: 45617fee-be4e-455e-823b-d808752896f5
     type: collection
     task:
-      id: c6dddc29-dff7-45aa-8519-77e8b07ce776
+      id: 45617fee-be4e-455e-823b-d808752896f5
       version: -1
       name: Choose resources to remediate
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
@@ -1234,7 +1233,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
         simple: XCLOUD Cryptominig Alert - Resource Remediation
       body:
@@ -1384,10 +1383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 3914e80e-b350-498c-8bdc-d1cda4b9632c
+    taskid: 45209b5d-6952-45fd-8874-0254ec26d039
     type: collection
     task:
-      id: 3914e80e-b350-498c-8bdc-d1cda4b9632c
+      id: 45209b5d-6952-45fd-8874-0254ec26d039
       version: -1
       name: Choose user to remediate
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
@@ -1411,7 +1410,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
         simple: XCLOUD Cryptominig Alert - User Remediation
       body:
@@ -1639,10 +1638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: b5d97b04-5f48-48bd-8347-40d99210f3a4
+    taskid: ffac410b-ada0-42a8-819b-a017faff78aa
     type: collection
     task:
-      id: b5d97b04-5f48-48bd-8347-40d99210f3a4
+      id: ffac410b-ada0-42a8-819b-a017faff78aa
       version: -1
       name: Choose indicators to block
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
@@ -1658,7 +1657,7 @@ tasks:
       {
         "position": {
           "x": -2300,
-          "y": 890
+          "y": 885
         }
       }
     note: false
@@ -1671,8 +1670,7 @@ tasks:
         simple: XCLOUD Cryptominig Alert - Block Indicators
       body:
         simple: Analyst interaction is needed for the indicators remediation.
-      methods:
-      - email
+      methods: []
       format: ""
       bcc:
       cc:
@@ -1806,7 +1804,7 @@ view: |-
       "19_23_#default#": 0.77,
       "24_25_yes": 0.37,
       "24_30_#default#": 0.37,
-      "25_26_yes": 0.48,
+      "25_26_yes": 0.12,
       "25_45_#default#": 0.56,
       "26_27_Terminate": 0.68,
       "26_28_Stop": 0.45,
@@ -1911,3 +1909,6 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
