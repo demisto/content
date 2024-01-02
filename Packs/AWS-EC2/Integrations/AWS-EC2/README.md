@@ -14,12 +14,12 @@ Amazon Web Services Elastic Compute Cloud (EC2).
     | Role Session Duration |  | False |
     | Access Key |  | False |
     | Secret Key |  | False |
-    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | PrivateLink service URL. |  | False |
-    | STS PrivateLink URL. |  | False |
-    | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross organization account access must be provided to use this feature. This feature is explained bellow. | False |
-    | Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. This feature is explained bellow. | False |
+    | PrivateLink service URL |  | False |
+    | STS PrivateLink URL |  | False |
+    | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature. This feature is explained below. | False |
+    | Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. This feature is explained below. | False |
     | Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts". | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -44,7 +44,7 @@ Using the `roleArn`, `roleSessionName` and `roleSessionDuration` arguments in EC
 
 ---
 
-In this case the user configured with `Access Key` and `Secret Key` must be able to perform ***AssumeRole*** with the ***RoleArn***s:
+In this case, the user configured with `Access Key` and `Secret Key` must be able to perform ***AssumeRole*** with the ***RoleArn***:
 `arn:aws:iam::12345678:role/CrossAccountAccessRole`
 `arn:aws:iam::98765432:role/CrossAccountAccessRole`
 
@@ -69,9 +69,9 @@ Describes one or more of your instances.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options.  | Optional | 
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -314,7 +314,7 @@ Describes your IAM instance profile associations.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details `&` filter options.  | The IAM instance profile associations. | Optional | 
+| filters | One or more filters. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options.  | The IAM instance profile associations. | Optional | 
 | maxResults | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
 | nextToken | The token for the next set of results. | Optional | 
 | region | The AWS region. If not specified, the default region will be used. | Optional | 
@@ -380,8 +380,8 @@ Describes one or more of the images (AMIs, AKIs, and ARIs) available to you. Ima
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
-| imageIds | One or more image IDs, Seperated by comma. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options.  | Optional | 
+| imageIds | A comma-separated list of image IDs. | Optional | 
 | owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. | Optional | 
 | executableUsers | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
@@ -502,10 +502,10 @@ Describes one or more of your Elastic IP addresses.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | publicIps | One or more Elastic IP addresses. | Optional | 
 | allocationIds | One or more allocation IDs. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -522,7 +522,7 @@ Describes one or more of your Elastic IP addresses.
 | AWS.EC2.ElasticIPs.NetworkInterfaceId | string | The ID of the network interface. | 
 | AWS.EC2.ElasticIPs.NetworkInterfaceOwnerId | string | The ID of the AWS account that owns the network interface. | 
 | AWS.EC2.ElasticIPs.PrivateIpAddress | string | The private IP address associated with the Elastic IP address. | 
-| AWS.EC2.ElasticIPs.Region | string | The aws region were the elastic ip is located. | 
+| AWS.EC2.ElasticIPs.Region | string | The AWS region where the elastic IP is located. | 
 | AWS.EC2.ElasticIPs.Tags.Key | string | The key of the tag. | 
 | AWS.EC2.ElasticIPs.Tags.Value | string | The value of the tag. | 
 | AWS.EC2.ElasticIPs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
@@ -581,11 +581,11 @@ Describes one or more of the EBS snapshots available to you.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options.  | Optional | 
 | ownerIds | Returns the snapshots owned by the specified owner. Multiple owners can be specified. | Optional | 
-| snapshotIds | One or more snapshot IDs. Seperated by commas. | Optional | 
+| snapshotIds | A comma-separated list of snapshot IDs. | Optional | 
 | restorableByUserIds | One or more AWS accounts IDs that can create volumes from the snapshot. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -607,7 +607,7 @@ Describes one or more of the EBS snapshots available to you.
 | AWS.EC2.Snapshots.VolumeId | string | The ID of the volume that was used to create the snapshot. | 
 | AWS.EC2.Snapshots.VolumeSize | number | The size of the volume, in GiB. | 
 | AWS.EC2.Snapshots.OwnerAlias | string | Value from an Amazon-maintained list of snapshot owners. | 
-| AWS.EC2.Snapshots.Region | string | The aws region were the snapshot is located. | 
+| AWS.EC2.Snapshots.Region | string | The AWS region where the snapshot is located. | 
 | AWS.EC2.Snapshots.Tags.Key | string | The key of the tag. | 
 | AWS.EC2.Snapshots.Tags.Value | string | The value of the tag. | 
 | AWS.EC2.Snapshots.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
@@ -625,10 +625,10 @@ Describes one or more launch templates.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
-| LaunchTemplateNames | One or more launch template names. Sepereted by comma. | Optional | 
-| LaunchTemplateIds | One or more launch template IDs. Sepereted by comma. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| Filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
+| LaunchTemplateNames | A comma-separated list of launch template names. | Optional | 
+| LaunchTemplateIds | A comma-separated list of launch template IDs. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -691,9 +691,9 @@ Describes one or more of your key pairs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
-| keyNames | One or more key pair names. Sepereted by comma. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
+| keyNames | A comma-separated list of key pair names.  | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -704,7 +704,7 @@ Describes one or more of your key pairs.
 | --- | --- | --- |
 | AWS.EC2.KeyPairs.KeyFingerprint | Unknown | If you used CreateKeyPair to create the key pair, this is the SHA-1 digest of the DER encoded private key. If you used ImportKeyPair to provide AWS the public key, this is the MD5 public key fingerprint as specified in section 4 of RFC4716. | 
 | AWS.EC2.KeyPairs.KeyName | Unknown | The name of the key pair. | 
-| AWS.EC2.KeyPairs.Region | Unknown | The aws region where the key pair is located. | 
+| AWS.EC2.KeyPairs.Region | Unknown | The AWS region where the key pair is located. | 
 | AWS.EC2.KeyPairs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 ### aws-ec2-describe-volumes
@@ -755,9 +755,9 @@ Describes the specified EBS volumes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
-| volumeIds | One or more volume IDs. Sepereted by comma. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
+| volumeIds | A comma-separated list of volume IDs. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -865,9 +865,9 @@ Describes one or more of your VPCs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
-| vpcIds | One or more VPC IDs. Sepereted by comma. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
+| vpcIds |A comma-separated list of  VPC IDs.  | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -947,9 +947,9 @@ Describes one or more of your subnets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
-| subnetIds | One or more subnet IDs. Sepereted by comma. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
+| subnetIds | A comma-separated list of subnet IDs.  | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1028,10 +1028,10 @@ Describes one or more of your security groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
-| groupIds | One or more security group IDs. Required for security groups in a nondefault VPC. Sepereted by comma. | Optional | 
-| groupNames | One or more security group names. Sepereted by comma. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
+| groupIds | A comma-separated list of  security group IDs. Required for security groups in a nondefault VPC.  | Optional | 
+| groupNames | A comma-separated list of  security group names. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1204,7 +1204,7 @@ Allocates an Elastic IP address.
 | AWS.EC2.ElasticIPs.PublicIp | Unknown | The Elastic IP address. | 
 | AWS.EC2.ElasticIPs.AllocationId | string | The ID that AWS assigns to represent the allocation of the Elastic IP address for use with instances in a VPC. | 
 | AWS.EC2.ElasticIPs.Domain | string | Indicates whether this Elastic IP address is for use with instances in EC2-Classic \(standard \) or instances in a VPC \(vpc\). | 
-| AWS.EC2.ElasticIPs.Region | Unknown | The aws region where the elastic IP is located. | 
+| AWS.EC2.ElasticIPs.Region | Unknown | The AWS region where the elastic IP is located. | 
 | AWS.EC2.ElasticIPs.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 ### aws-ec2-associate-address
@@ -1225,7 +1225,7 @@ Associates an Elastic IP address with an instance or a network interface.
 | allowReassociation | For a VPC in an EC2-Classic account, specify true to allow an Elastic IP address that is already associated with an instance or network interface to be reassociated with the specified instance or network interface. Otherwise, the operation fails. In a VPC in an EC2-VPC-only account, reassociation is automatic, therefore you can specify false to ensure the operation fails if the Elastic IP address is already associated with another resource. Possible values are: True, False. Default is False. | Optional | 
 | networkInterfaceId | The ID of the network interface. If the instance has more than one network interface, you must specify a network interface ID. | Optional | 
 | privateIpAddress | The primary or secondary private IP address to associate with the Elastic IP address. If no private IP address is specified, the Elastic IP address is associated with the primary private IP address. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1317,8 +1317,8 @@ Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that is eith
 | name | A name for the new image. | Required | 
 | instanceId | The ID of the instance. | Required | 
 | description | A description for the new image. | Optional | 
-| noReboot | By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the noReboot option is set, Amazon EC2 wont shut down the instance before creating the image. When this option is used, file system integrity on the created image cant be guaranteed. Possible values are: True, False. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| noReboot | By default, Amazon EC2 attempts to shut down and reboot the instance before creating the image. If the noReboot option is set, Amazon EC2 won't shut down the instance before creating the image. When this option is used, file system integrity on the created image cant be guaranteed. Possible values are: True, False. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1330,7 +1330,7 @@ Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance that is eith
 | AWS.EC2.Images.ImageId | string | The ID of the new AMI. | 
 | AWS.EC2.Images.Name | string | The name of the new AMI. | 
 | AWS.EC2.Images.InstanceId | string | The ID of the instance. | 
-| AWS.EC2.Images.Region | string | The aws region where the image is located. | 
+| AWS.EC2.Images.Region | string | The AWS region where the image is located. | 
 | AWS.EC2.Images.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 ### aws-ec2-deregister-image
@@ -1410,7 +1410,7 @@ Adds or overwrites one or more tags for the specified Amazon EC2 resource or res
 | --- | --- | --- |
 | resources | The IDs of one or more resources to tag. For example, ami-1a2b3c4d. | Required | 
 | tags | One or more tags. | Required | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1498,7 +1498,7 @@ Stops an Amazon EBS-backed instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instanceIds | One or more instance IDs. | Required | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1520,7 +1520,7 @@ Shuts down one or more instances. This operation is idempotent; if you terminate
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instanceIds | One or more instance IDs. | Required | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1548,8 +1548,8 @@ Creates an EBS volume that can be attached to an instance in the same Availabili
 | size | The size of the volume, in GiBs. | Optional | 
 | snapshotId | The snapshot from which to create the volume. | Optional | 
 | volumeType | The volume type. Possible values are: standard, io1, gp2, sc1, st1. | Optional | 
-| tags | One or more tags.Example key=Name,value=test;key=Owner,value=Bob. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| tags | One or more tags. Example key=Name,value=test;key=Owner,value=Bob. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1674,10 +1674,10 @@ Launches the specified number of instances using an AMI for which you have permi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| count | The number of instances to launch. must be grater then 0. Default is 1. | Required | 
+| count | The number of instances to launch. Must be greater than 0. Default is 1. | Required | 
 | imageId | The ID of the AMI, which you can get by calling DescribeImages . An AMI is required to launch an instance and must be specified here or in a launch template. | Optional | 
-| instanceType | The instance type. for example: t2.large. | Optional | 
-| securityGroupIds | One or more security group IDs. Sepereted by comma. | Optional | 
+| instanceType | The instance type. For example: t2.large. | Optional | 
+| securityGroupIds | A comma-separated list of security group IDs.  | Optional | 
 | securityGroups | One or more security group names. For a nondefault VPC, you must use security group IDs instead. | Optional | 
 | subnetId | The ID of the subnet to launch the instance into. | Optional | 
 | userData | The user data to make available to the instance.This value will be base64 encoded automatically. Do not base64 encode this value prior to performing the operation. | Optional | 
@@ -1805,11 +1805,11 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
+| filter | One or more filters. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | instanceIds | One or more instance IDs. Sepreted by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15. | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1820,7 +1820,7 @@ There is no context output for this command.
 ### aws-ec2-waiter-instance-status-ok
 
 ***
-A waiter function that runs every 15  seconds until a successful state is reached.
+A waiter function that runs every 15 seconds until a successful state is reached.
 
 #### Base Command
 
@@ -1834,7 +1834,7 @@ A waiter function that runs every 15  seconds until a successful state is reache
 | instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15. | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1855,11 +1855,11 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
-| instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
+| filter | One or more filters. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
+| instanceIds | A comma-separated list of instance IDs. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15. | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1870,7 +1870,7 @@ There is no context output for this command.
 ### aws-ec2-waiter-instance-terminated
 
 ***
-A waiter function that runs every 15  seconds until a successful state is reached.
+A waiter function that runs every 15 seconds until a successful state is reached.
 
 #### Base Command
 
@@ -1880,11 +1880,11 @@ A waiter function that runs every 15  seconds until a successful state is reache
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | One or more filters. See documentation for details &amp; filter options. | Optional | 
-| instanceIds | One or more instance IDs. Seprated by comma. | Optional | 
+| filter | One or more filters. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
+| instanceIds | A comma-separated list of instance IDs.  | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15. | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1905,13 +1905,13 @@ A waiter function that waits until image is avilable.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | imageIds | One or more image IDs. Sperated by comma. | Optional | 
 | owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. | Optional | 
 | executableUsers | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15. | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1932,13 +1932,13 @@ A waiter function that waits until the snapshot is complate.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | ownerIds | Returns the snapshots owned by the specified owner. Multiple owners can be specified. Sperated by comma. | Optional | 
 | snapshotIds | One or more snapshot IDs. Sperated by comma. | Optional | 
 | restorableByUserIds | One or more AWS accounts IDs that can create volumes from the snapshot. | Optional | 
 | waiterDelay | The amount of time in seconds to wait between attempts. Default 15. | Optional | 
 | waiterMaxAttempts | The maximum number of attempts to be made. Default 40. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -1959,10 +1959,10 @@ Get The latest AMI.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. | Optional | 
 | executableUsers | Scopes the images by users with explicit launch permissions. Specify an AWS account ID, self (the sender of the request), or all (public AMIs). | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -2238,7 +2238,7 @@ Initiates the copy of an AMI from the specified source region to the current reg
 | encrypted | Specifies whether the destination snapshots of the copied image should be encrypted. The default CMK for EBS is used unless a non-default AWS Key Management Service (AWS KMS) CMK is specified with KmsKeyId . Possible values are: True, False. | Optional | 
 | kmsKeyId | An identifier for the AWS Key Management Service (AWS KMS) customer master key (CMK) to use when creating the encrypted volume. This parameter is only required if you want to use a non-default CMK; if this parameter is not specified, the default CMK for EBS is used. If a KmsKeyId is specified, the Encrypted flag must also be set. | Optional | 
 | clientToken | nique, case-sensitive identifier you provide to ensure idempotency of the request. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -2295,10 +2295,10 @@ Describes one or more of the Reserved Instances that you purchased.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | reservedInstancesIds | One or more Reserved Instance IDs. Separated by comma. | Optional | 
 | offeringClass | Describes whether the Reserved Instance is Standard or Convertible. Possible values are: standard, convertible. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -2452,7 +2452,7 @@ Modifies the specified network interface attribute. You can specify only one att
 | description | A description for the network interface. | Optional | 
 | attachmentId | The ID of the network interface attachment. Information about the interface attachment. If modifying the 'delete on termination' attribute, you must specify the ID of the interface attachment. | Optional | 
 | deleteOnTermination | Indicates whether the network interface is deleted when the instance is terminated. Information about the interface attachment. If modifying the 'delete on termination' attribute, you must specify the ID of the interface attachment. Possible values are: True, False. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -2481,7 +2481,7 @@ Modifies the specified attribute of the specified instance. You can specify only
 | instanceType | Changes the instance type to the specified value. | Optional | 
 | instanceInitiatedShutdownBehavior | Specifies whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown). Possible values are: Stop, Terminate. | Optional | 
 | groups | [EC2-VPC] Changes the security groups of the instance. You must specify at least one security group, even if it's just the default security group for the VPC. You must specify the security group ID, not the security group name. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -2504,7 +2504,7 @@ Creates a network ACL in a VPC. Network ACLs provide an optional layer of securi
 | --- | --- | --- |
 | DryRun | Checks whether you have the required permissions for the action, without actually making the request, and provides an error response. Possible values are: True, False. | Optional | 
 | VpcId | The ID of the VPC. | Required | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -2699,7 +2699,7 @@ Describes one or more of your EC2 Fleets.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | FleetIds | The ID of the EC2 Fleets. | Optional | 
 | MaxResults | The maximum number of results to return in a single call. Specify a value between 1 and 1000. | Optional | 
 | NextToken | The token for the next set of results. | Optional | 
@@ -2794,7 +2794,7 @@ Describes the running instances for the specified EC2 Fleet.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | FleetId | The ID of the EC2 Fleet. | Required | 
 | MaxResults | The maximum number of results to return in a single call. Specify a value between 1 and 1000. | Optional | 
 | NextToken | The token for the next set of results. | Optional | 
@@ -3069,7 +3069,7 @@ Describes one or more of your internet gateways.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| filters | One or more filters Separated by ';'. See AWS documentation for details &amp; filter options. | Optional | 
+| filters | One or more filters separated by ';'. See the [AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_Filter.html) for details &amp; filter options. | Optional | 
 | InternetGatewayIds | One or more internet gateway IDs. | Optional | 
 
 #### Context Output
@@ -3162,11 +3162,11 @@ Removes egress rule from a security group. To remove a rule, the values that you
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | groupId | The ID of the security group. | Required | 
-| IpPermissionsfromPort | The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
-| IpPermissionsToPort | The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
+| IpPermissionsfromPort | The start of the port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
+| IpPermissionsToPort | The end of the port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6 types, you must specify all codes. | Optional | 
 | IpPermissionsIpProtocol | The IP protocol name (tcp, udp, icmp, icmpv6) or number. | Optional | 
 | IpRangesCidrIp | The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length. | Optional | 
-| IpRangesDescription | A description for the security group rule that references this IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!. | Optional | 
+| IpRangesDescription | A description for the security group rule that references this IPv4 address range. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!. | Optional | 
 | Ipv6RangesCidrIp | The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length. | Optional | 
 | Ipv6RangesDescription | A description for the security group rule that references this IPv6 address range. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&amp;;{}!$*. | Optional | 
 | PrefixListId | The ID of the prefix. | Optional | 
@@ -3178,11 +3178,11 @@ Removes egress rule from a security group. To remove a rule, the values that you
 | UserIdGroupPairsUserId | The ID of an AWS account. For a referenced security group in another VPC, the account ID of the referenced security group is returned in the response. If the referenced security group is deleted, this value is not returned. [EC2-Classic] Required when adding or removing rules that reference a security group in another AWS account. | Optional | 
 | UserIdGroupPairsVpcId | The ID of the VPC for the referenced security group, if applicable. | Optional | 
 | UserIdGroupPairsVpcPeeringConnectionId | The ID of the VPC peering connection, if applicable. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| IpPermissionsFull | Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). | Optional | 
+| IpPermissionsFull | Full IpPermissions argument as a string to more easily target rules (for example, """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). | Optional | 
 
 #### Context Output
 
