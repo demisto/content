@@ -466,23 +466,18 @@ def create_dict_context(url, last_url, verdict, pred_json, score, is_white_liste
             'output_rasterize': output_rasterize}
 
 
-def extract_created_date(entry_list: list):
+def extract_created_date(entry: dict):
     """
     Check if domain age is younger than THRESHOLD_NEW_DOMAIN_YEAR year
     :param entry_list: output of the whois command
     :return: bool
     """
-    for entry in entry_list:
-        if is_error(entry):
-            continue
-        else:
-            date_str = (
-                entry.get('EntryContext') or {}
-            ).get('Domain(val.Name && val.Name == obj.Name)', {}).get('WHOIS', {}).get('CreationDate')
-            if date_str:
-                date = datetime.strptime(date_str, '%d-%m-%Y')
-                threshold_date = datetime.now() - timedelta(days=THRESHOLD_NEW_DOMAIN_MONTHS * 30)
-                return date > threshold_date
+    if not is_error(entry):
+        date_str = dict_safe_get(entry, ['EntryContext', 'Domain(val.Name && val.Name == obj.Name)', 'WHOIS', 'CreationDate'])
+        if date_str:
+            date = datetime.strptime(date_str, '%d-%m-%Y')
+            threshold_date = datetime.now() - timedelta(days=THRESHOLD_NEW_DOMAIN_MONTHS * 30)
+            return date > threshold_date
     return None
 
 
@@ -550,6 +545,7 @@ def get_whois_verdict(domains: list[dict]) -> list:
 def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout):
 
     rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
+    # demisto.debug(f'Rasterize Outputs: {json.dumps(rasterize_outputs, indent=4)}')
 
     # Get final url and redirection
     final_urls = [res[KEY_CURRENT_URL_RASTERIZE] for res in rasterize_outputs]
@@ -557,7 +553,8 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
     # Check domain age from WHOIS command
     domains = list(map(extract_domainv2, final_urls))
 
-    whois_results = get_whois_verdict(domains)  # plural
+    whois_results = get_whois_verdict(domains)
+    # demisto.debug(f'Domains: {json.dumps(whois_results, indent=4)}')
 
     results = []
     for url, final_url, res_whois, output_rasterize in zip(urls, final_urls, whois_results, rasterize_outputs):
@@ -567,7 +564,8 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
         if in_white_list(model, final_url):
             is_white_listed = True
             if not force_model:
-                return create_dict_context(url_redirect, final_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
+                results.append(create_dict_context(url_redirect, final_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {}))
+                continue
         else:
             is_white_listed = False
 
@@ -796,7 +794,7 @@ def main():
 
         # Run the model and get predictions
         results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
-
+        # demisto.debug(f'Results: {json.dumps(results, indent=4)}')
         # Return outputs
         general_summary = return_general_summary(results)
         detailed_summary = return_detailed_summary(results, reliability)
