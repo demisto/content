@@ -1,0 +1,29 @@
+name: test_test
+on: push
+
+
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${gh search prs --state=open}
+        # env:
+        #   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # pre-commit:
+  #   permissions:
+  #     checks: write
+  #     pull-requests: write
+  #     contents: write
+
+  #   if: "!contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
+  #   uses: ./.github/workflows/pre-commit-reuse.yml
+      
+  # pre-commit-community-level:
+  #   permissions:
+  #     checks: write
+  #     pull-requests: write
+  #     contents: write
+
+  #   if: contains(github.event.pull_request.labels.*.name, 'Community Support Level')
+  #   uses: ./.github/workflows/pre-commit-reuse.yml
