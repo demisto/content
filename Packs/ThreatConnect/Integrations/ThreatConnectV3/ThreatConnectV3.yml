@@ -779,8 +779,6 @@ script:
       name: rating
     - description: The confidence rating of the indicator. Can be "0%" - "Unknown," "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidence
-    - description: The description of the indicator.
-      name: description
     - description: A comma-separated list of the tags to apply to the campaign.
       name: tags
     description: Adds a new indicator to ThreatConnect.
@@ -887,6 +885,8 @@ script:
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
+      - TLP:AMBER+STRICT
+      - TLP:CLEAR
     - description: The description of the incident.
       name: description
     description: Creates a new incident group.
@@ -1218,14 +1218,14 @@ script:
       description: Whether the DNS indicator is active (only for hosts).
       name: dnsActive
       predefined:
-      - 'True'
-      - 'False'
+      - True
+      - False
     - auto: PREDEFINED
       description: Whether the indicator is active (only for hosts).
       name: whoisActive
       predefined:
-      - 'True'
-      - 'False'
+      - True
+      - False
     - auto: PREDEFINED
       description: The security label applied to the incident.
       name: securityLabel
@@ -1234,6 +1234,8 @@ script:
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
+      - TLP:AMBER+STRICT
+      - TLP:CLEAR
     - description: A comma-separated list of tags.
       name: tags
     description: Updates the indicator in ThreatConnect.
@@ -1441,6 +1443,8 @@ script:
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
+      - TLP:AMBER+STRICT
+      - TLP:CLEAR
     description: Creates a group based on the Campaign type.
     name: tc-create-campaign
     outputs:
@@ -1521,6 +1525,8 @@ script:
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
+      - TLP:AMBER+STRICT
+      - TLP:CLEAR
     - description: The description of the threat.
       name: description
     description: Creates a group based on the "Threats" type.
@@ -1742,6 +1748,8 @@ script:
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
+      - TLP:AMBER+STRICT
+      - TLP:CLEAR
       required: true
     deprecated: true
     description: Deprecated. Use the tc-update-group command.
@@ -1798,6 +1806,8 @@ script:
       description: The name of the indicator.
       type: String
   - arguments:
+    - description: The ID of the group to upload the document to. If not specified, a new group would be created.
+      name: group_id
     - description: The name of the file to display in the UI.
       name: file_name
       required: true
@@ -1808,8 +1818,8 @@ script:
       description: Whether the file is malware. If "true", ThreatConnect creates a password-protected ZIP file on your local machine that contains the sample and uploads the ZIP file.
       name: malware
       predefined:
-      - 'true'
-      - 'false'
+      - True
+      - False
     - description: The password of the ZIP file.
       name: password
     - auto: PREDEFINED
@@ -1820,6 +1830,8 @@ script:
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
+      - TLP:AMBER+STRICT
+      - TLP:CLEAR
     - description: A description of the group.
       name: description
     - description: The ID of the entry, as displayed in the War Room.
@@ -2100,8 +2112,12 @@ script:
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
+      - TLP:AMBER+STRICT
+      - TLP:CLEAR
     - description: An ID to associate a group by.
       name: associated_group_id
+    - description: An ID of a victim to associate to the group.
+      name: associated_victim_asset_id
     - description: An ID to associate an indicator by.
       name: associated_indicator_id
     - auto: PREDEFINED
@@ -2133,7 +2149,721 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group.
       type: string
-  dockerimage: demisto/python3:3.10.13.83255
+  - arguments:
+      - default: true
+        description: The name of the victim.
+        name: name
+        required: true
+      - description: The nationality of the victim.
+        name: nationality
+      - description: The organization of the victim.
+        name: org
+      - description: The sub-organization of the victim.
+        name: sub_org
+      - auto: PREDEFINED
+        description: A comma-separated list of the security labels to apply to the victim.
+        name: security_labels
+        predefined:
+          - TLP:RED
+          - TLP:GREEN
+          - TLP:AMBER
+          - TLP:WHITE
+          - TLP:AMBER+STRICT
+          - TLP:CLEAR
+      - description: A comma-separated list of tags.
+        name: tags
+      - description: The work location of the victim.
+        name: work_location
+      - auto: PREDEFINED
+        description: The asset type of the victim.
+        name: asset_type
+        predefined:
+          - EmailAddress
+          - NetworkAccount
+          - Phone
+          - SocialNetwork
+          - WebSite
+      - description: The asset value of the victim.
+        name: asset_value
+      - description: The asset address type. Relevant only when the asset_type is EmailAddress.
+        name: asset_address_type
+      - description: The asset network type. Relevant only when the asset_type is NetworkAccount.
+        name: asset_network_type
+      - description: The asset social network. Relevant only when the asset_type is SocialNetwork.
+        name: asset_social_network
+      - description: A comma-separated list of group IDs to associate to the victim.
+        name: associated_groups_ids
+      - description: The attribute type of the victim.
+        name: attribute_type
+      - description: The attribute value of the victim.
+        name: attribute_value
+    description: Creates a victim.
+    name: tc-create-victim
+    outputs:
+      - contextPath: TC.Victim.Name
+        description: The name of the victim.
+        type: string
+      - contextPath: TC.Victim.ownerId
+        description: The ownerId of the victim.
+        type: string
+      - contextPath: TC.Victim.id
+        description: The ID of the victim.
+        type: string
+      - contextPath: TC.Victim.ownerName
+        description: The ownerName of the victim.
+        type: string
+      - contextPath: TC.Victim.webLink
+        description: The webLink of the victim.
+        type: string
+      - contextPath: TC.Victim.description
+        description: The description of the victim.
+        type: string
+      - contextPath: TC.Victim.org
+        description: The organization of the victim.
+        type: string
+      - contextPath: TC.Victim.suborg
+        description: The sub organization of the victim.
+        type: string
+      - contextPath: TC.Victim.workLocation
+        description: The workLocation of the victim.
+        type: string
+      - contextPath: TC.Victim.nationality
+        description: The nationality of the victim.
+        type: string
+  - arguments:
+      - default: true
+        description: The ID of the victim.
+        name: victim_id
+        required: true
+      - description: The name of the victim.
+        name: name
+      - description: The nationality of the victim.
+        name: nationality
+      - description: The organization of the victim.
+        name: org
+      - description: The sub-organization of the victim.
+        name: sub_org
+      - auto: PREDEFINED
+        description: A comma-separated list of the security labels to apply to the victim.
+        name: security_labels
+        predefined:
+          - TLP:RED
+          - TLP:GREEN
+          - TLP:AMBER
+          - TLP:WHITE
+          - TLP:AMBER+STRICT
+          - TLP:CLEAR
+      - description: A comma-separated list of tags.
+        name: tags
+      - description: The work location of the victim.
+        name: work_location
+      - auto: PREDEFINED
+        description: The asset type of the victim.
+        name: asset_type
+        predefined:
+          - EmailAddress
+          - NetworkAccount
+          - Phone
+          - SocialNetwork
+          - WebSite
+      - description: The asset value of the victim.
+        name: asset_value
+      - description: The asset address type. Relevant only when the asset_type is EmailAddress.
+        name: asset_address_type
+      - description: The asset network type. Relevant only when the asset_type is NetworkAccount.
+        name: asset_network_type
+      - description: The asset social network. Relevant only when the asset_type is SocialNetwork.
+        name: asset_social_network
+      - description: A comma-separated list of group IDs to associate to the victim.
+        name: associated_groups_ids
+      - description: The attribute type of the victim.
+        name: attribute_type
+      - description: The attribute value of the victim.
+        name: attribute_value
+      - auto: PREDEFINED
+        description: The mode of the update operation. Default is append.
+        name: mode
+        predefined:
+          - append
+          - delete
+          - replace
+        defaultValue: append
+    description: Updates a victim.
+    name: tc-update-victim
+    outputs:
+      - contextPath: TC.Victim.Name
+        description: The name of the victim.
+        type: string
+      - contextPath: TC.Victim.ownerId
+        description: The ownerId of the victim.
+        type: string
+      - contextPath: TC.Victim.id
+        description: The ID of the victim.
+        type: string
+      - contextPath: TC.Victim.ownerName
+        description: The ownerName of the victim.
+        type: string
+      - contextPath: TC.Victim.webLink
+        description: The webLink of the victim.
+        type: string
+      - contextPath: TC.Victim.description
+        description: The description of the victim.
+        type: string
+      - contextPath: TC.Victim.org
+        description: The organization of the victim.
+        type: string
+      - contextPath: TC.Victim.suborg
+        description: The sub organization of the victim.
+        type: string
+      - contextPath: TC.Victim.workLocation
+        description: The workLocation of the victim.
+        type: string
+      - contextPath: TC.Victim.nationality
+        description: The nationality of the victim.
+        type: string
+  - arguments:
+      - default: true
+        description: The ID of the victim.
+        name: victim_id
+        required: true
+    description: Deletes a victim.
+    name: tc-delete-victim
+  - arguments:
+      - description: The ID of a specific victim to retrieve. If not specified, all victims will be retrieved.
+        name: victim_id
+      - description: TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
+        name: filter
+      - auto: PREDEFINED
+        description: Whether to add victim's assets metadata to the result.
+        name: include_assets
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'false'
+      - auto: PREDEFINED
+        description: Whether to add victim's associated groups metadata to the result.
+        name: include_associated_groups
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'false'
+      - auto: PREDEFINED
+        description: Whether to add victim's attributes metadata to the result.
+        name: include_attributes
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'false'
+      - auto: PREDEFINED
+        description: Whether to add victim's security labels metadata to the result.
+        name: include_security_labels
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'false'
+      - auto: PREDEFINED
+        description: Whether to add all victim metadata to the results.
+        name: include_all_metaData
+        predefined:
+          - 'true'
+          - 'false'
+        defaultValue: 'false'
+      - description: The page to take the results from.
+        name: page
+      - description: The maximum number of results that can be returned.
+        name: limit
+        defaultValue: '50'
+    description: Retrieves victims.
+    name: tc-list-victims
+    outputs:
+      - contextPath: TC.Victim.id
+        description: The victim's ID.
+        type: Number
+      - contextPath: TC.Victim.securityLabels.data.id
+        description: The security label ID.
+        type: Number
+      - contextPath: TC.Victim.securityLabels.data.name
+        description: The security label name.
+        type: String
+      - contextPath: TC.Victim.securityLabels.data.description
+        description: The security label description.
+        type: String
+      - contextPath: TC.Victim.securityLabels.data.color
+        description: The security label color.
+        type: String
+      - contextPath: TC.Victim.securityLabels.data.owner
+        description: The security label owner.
+        type: String
+      - contextPath: TC.Victim.securityLabels.data.dateAdded
+        description: The security label date added.
+        type: Date
+      - contextPath: TC.Victim.ownerId
+        description: The victim's owner ID.
+        type: Number
+      - contextPath: TC.Victim.ownerName
+        description: The victim's owner name.
+        type: String
+      - contextPath: TC.Victim.webLink
+        description: The victim's web link.
+        type: String
+      - contextPath: TC.Victim.tags.data.id
+        description: The victim's tag ID.
+        type: Number
+      - contextPath: TC.Victim.tags.data.name
+        description: The victim's tag name.
+        type: String
+      - contextPath: TC.Victim.tags.data.lastUsed
+        description: The victim's tag last use.
+        type: Date
+      - contextPath: TC.Victim.name
+        description: The victim's name.
+        type: String
+      - contextPath: TC.Victim.description
+        description: The victim's description.
+        type: String
+      - contextPath: TC.Victim.org
+        description: The victim's organization.
+        type: String
+      - contextPath: TC.Victim.workLocation
+        description: The victim's work location.
+        type: String
+      - contextPath: TC.Victim.nationality
+        description: The victim's nationality.
+        type: String
+      - contextPath: TC.Victim.suborg
+        description: The victim's sub organization.
+        type: String
+      - contextPath: TC.Victim.assets.data.id
+        description: The victim asset ID.
+        type: Number
+      - contextPath: TC.Victim.assets.data.type
+        description: The victim asset type.
+        type: String
+      - contextPath: TC.Victim.assets.data.victimId
+        description: The victim asset victim ID.
+        type: Number
+      - contextPath: TC.Victim.assets.data.phone
+        description: The victim asset phone.
+        type: String
+      - contextPath: TC.Victim.assets.data.webLink
+        description: The victim asset web link.
+        type: String
+      - contextPath: TC.Victim.assets.data.website
+        description: The victim asset website.
+        type: String
+      - contextPath: TC.Victim.assets.data.accountName
+        description: The victim asset account name.
+        type: String
+      - contextPath: TC.Victim.assets.data.networkType
+        description: The victim asset network type.
+        type: String
+      - contextPath: TC.Victim.assets.data.address
+        description: The victim asset address.
+        type: String
+      - contextPath: TC.Victim.assets.data.addressType
+        description: The victim asset address type.
+        type: String
+      - contextPath: TC.Victim.assets.data.socialNetwork
+        description: The victim asset social network.
+        type: String
+      - contextPath: TC.Victim.associatedGroups.id
+        description: The victim's associated group ID.
+        type: Unknown
+      - contextPath: TC.Victim.attributes.data.id
+        description: The victim attribute ID.
+        type: Number
+      - contextPath: TC.Victim.attributes.data.dateAdded
+        description: The victim attribute date added.
+        type: Date
+      - contextPath: TC.Victim.attributes.data.type
+        description: The victim attribute type.
+        type: String
+      - contextPath: TC.Victim.attributes.data.value
+        description: The victim attribute value.
+        type: String
+      - contextPath: TC.Victim.attributes.data.source
+        description: The victim attribute source.
+        type: String
+      - contextPath: TC.Victim.attributes.data.createdBy.id
+        description: The victim attribute creator ID.
+        type: Number
+      - contextPath: TC.Victim.attributes.data.createdBy.userName
+        description: The victim attribute creator user name.
+        type: String
+      - contextPath: TC.Victim.attributes.data.createdBy.firstName
+        description: The victim attribute creator first name.
+        type: String
+      - contextPath: TC.Victim.attributes.data.createdBy.lastName
+        description: The victim attribute creator last name.
+        type: String
+      - contextPath: TC.Victim.attributes.data.createdBy.pseudonym
+        description: The victim attribute creator pseudonym.
+        type: String
+      - contextPath: TC.Victim.attributes.data.createdBy.owner
+        description: The victim attribute creator owner.
+        type: String
+      - contextPath: TC.Victim.attributes.data.lastModified
+        description: The victim attribute last modified time.
+        type: Date
+      - contextPath: TC.Victim.attributes.data.pinned
+        description: Whether the victim attribute is pinned.
+        type: String
+      - contextPath: TC.Victim.attributes.data.default
+        description: Whether the victim attribute is default.
+        type: String
+  - arguments:
+      - default: true
+        description: The ID of the victim.
+        name: victim_id
+        required: true
+      - auto: PREDEFINED
+        description: The asset type.
+        name: asset_type
+        required: true
+        predefined:
+          - EmailAddress
+          - NetworkAccount
+          - Phone
+          - SocialNetwork
+          - WebSite
+      - description: The asset value.
+        name: asset_value
+        required: true
+      - description: The asset address type. Relevant only when the asset_type is EmailAddress.
+        name: asset_address_type
+      - description: The asset network type. Relevant only when the asset_type is NetworkAccount.
+        name: asset_network_type
+      - description: The asset social network. Relevant only when the asset_type is SocialNetwork.
+        name: asset_social_network
+    description: Creates a victim asset.
+    name: tc-create-victim-asset
+    outputs:
+      - contextPath: TC.VictimAsset.id
+        description: The ID of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.type
+        description: The type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.victimId
+        description: The ID of the victim.
+        type: string
+      - contextPath: TC.VictimAsset.webLink
+        description: The web link of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.phone
+        description: The phone of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.address
+        description: The address of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.accountName
+        description: The account name of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.addressType
+        description: The address type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.networkType
+        description: The network type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.socialNetwork
+        description: The social network of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.website
+        description: The website of the victim asset.
+        type: string
+  - arguments:
+      - default: true
+        description: The ID of the victim asset.
+        name: victim_asset_id
+        required: true
+      - description: The asset value.
+        name: asset_value
+        required: true
+      - description: The asset address type. Relevant only when the asset_type is EmailAddress.
+        name: asset_address_type
+      - description: The asset network type. Relevant only when the asset_type is NetworkAccount.
+        name: asset_network_type
+      - description: The asset social network. Relevant only when the asset_type is SocialNetwork.
+        name: asset_social_network
+    description: Updates a victim asset.
+    name: tc-update-victim-asset
+    outputs:
+      - contextPath: TC.VictimAsset.id
+        description: The ID of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.type
+        description: The type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.victimId
+        description: The ID of the victim.
+        type: string
+      - contextPath: TC.VictimAsset.webLink
+        description: The web link of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.phone
+        description: The phone of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.address
+        description: The address of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.accountName
+        description: The account name of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.addressType
+        description: The address type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.networkType
+        description: The network type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.socialNetwork
+        description: The social network of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.website
+        description: The website of the victim asset.
+        type: string
+  - arguments:
+      - default: true
+        description: The ID of the victim asset.
+        name: victim_asset_id
+        required: true
+    description: Deletes a victim asset.
+    name: tc-delete-victim-asset
+  - arguments:
+      - description: The ID of a specific victim asset to retrieve. If not specified, all victim assets will be retrieved.
+        name: victim_asset_id
+      - description: TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
+        name: filter
+      - description: The page to take the results from.
+        name: page
+      - description: The maximum number of results that can be returned.
+        name: limit
+        defaultValue: '50'
+    description: Retrieves victim assets.
+    name: tc-list-victim-assets
+    outputs:
+      - contextPath: TC.VictimAsset.id
+        description: The ID of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.type
+        description: The type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.victimId
+        description: The ID of the victim.
+        type: string
+      - contextPath: TC.VictimAsset.webLink
+        description: The web link of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.phone
+        description: The phone of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.address
+        description: The address of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.accountName
+        description: The account name of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.addressType
+        description: The address type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.networkType
+        description: The network type of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.socialNetwork
+        description: The social network of the victim asset.
+        type: string
+      - contextPath: TC.VictimAsset.website
+        description: The website of the victim asset.
+        type: string
+  - arguments:
+      - default: true
+        description: The ID of the victim.
+        name: victim_id
+        required: true
+      - auto: PREDEFINED
+        description: A comma-separated list of the security labels to apply to the victim asset.
+        name: security_labels
+        predefined:
+          - TLP:RED
+          - TLP:GREEN
+          - TLP:AMBER
+          - TLP:WHITE
+          - TLP:AMBER+STRICT
+          - TLP:CLEAR
+      - description: The attribute type.
+        name: attribute_type
+        required: true
+      - description: The attribute value.
+        name: attribute_value
+        required: true
+      - description: The attribute source.
+        name: source
+    description: Creates a victim attribute.
+    name: tc-create-victim-attribute
+    outputs:
+      - contextPath: TC.VictimAttribute.dateAdded
+        description: The date that the victim attribute was added.
+        type: string
+      - contextPath: TC.VictimAttribute.default
+        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added
+        type: string
+      - contextPath: TC.VictimAttribute.id
+        description: The ID of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.lastModified
+        description: The date that the victim attribute was last modified.
+        type: string
+      - contextPath: TC.VictimAttribute.pinned
+        description: Whether the victim attribute is pinned.
+        type: string
+      - contextPath: TC.VictimAttribute.type
+        description: The type of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.value
+        description: The value of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.firstName
+        description: The first name of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.id
+        description: The ID of the victim the attribute associated to.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.lastName
+        description: The last name of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.owner
+        description: The owner of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.pseudonym
+        description: The pseudonym of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.userName
+        description: The user name of the user created the victim attribute.
+        type: string
+  - arguments:
+      - default: true
+        description: The ID of the victim attribute.
+        name: victim_attribute_id
+        required: true
+      - auto: PREDEFINED
+        description: A comma-separated list of the security labels to apply to the victim attribute.
+        name: security_labels
+        predefined:
+          - TLP:RED
+          - TLP:GREEN
+          - TLP:AMBER
+          - TLP:WHITE
+          - TLP:AMBER+STRICT
+          - TLP:CLEAR
+      - description: The attribute value.
+        name: attribute_value
+        required: true
+      - description: The attribute source.
+        name: source
+    description: Updates a victim attribute.
+    name: tc-update-victim-attribute
+    outputs:
+      - contextPath: TC.VictimAttribute.dateAdded
+        description: The date that the victim attribute was added.
+        type: string
+      - contextPath: TC.VictimAttribute.default
+        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added
+        type: string
+      - contextPath: TC.VictimAttribute.id
+        description: The ID of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.lastModified
+        description: The date that the victim attribute was last modified.
+        type: string
+      - contextPath: TC.VictimAttribute.pinned
+        description: Whether the victim attribute is pinned.
+        type: string
+      - contextPath: TC.VictimAttribute.type
+        description: The type of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.value
+        description: The value of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.firstName
+        description: The first name of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.id
+        description: The ID of the victim the attribute associated to.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.lastName
+        description: The last name of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.owner
+        description: The owner of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.pseudonym
+        description: The pseudonym of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.userName
+        description: The user name of the user created the victim attribute.
+        type: string
+  - arguments:
+      - default: true
+        description: The ID of the victim attribute.
+        name: victim_attribute_id
+        required: true
+    description: Deletes a victim attribute.
+    name: tc-delete-victim-attribute
+  - arguments:
+      - default: true
+        description: The ID of a specific victim attribute to retrieve. If not specified, all victim attributes will be retrieved.
+        name: victim_attribute_id
+      - description: The ID of a specific victim to retrieve its attributes.
+        name: victim_id
+      - description: TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
+        name: filter
+      - description: The page to take the results from.
+        name: page
+      - description: The maximum number of results that can be returned.
+        name: limit
+        defaultValue: '50'
+    description: Retrieves victim attributes.
+    name: tc-list-victim-attributes
+    outputs:
+      - contextPath: TC.VictimAttribute.dateAdded
+        description: The date that the victim attribute was added.
+        type: string
+      - contextPath: TC.VictimAttribute.default
+        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added
+        type: string
+      - contextPath: TC.VictimAttribute.id
+        description: The ID of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.lastModified
+        description: The date that the victim attribute was last modified.
+        type: string
+      - contextPath: TC.VictimAttribute.pinned
+        description: Whether the victim attribute is pinned.
+        type: string
+      - contextPath: TC.VictimAttribute.type
+        description: The type of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.value
+        description: The value of the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.firstName
+        description: The first name of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.id
+        description: The ID of the victim the attribute associated to.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.lastName
+        description: The last name of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.owner
+        description: The owner of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.pseudonym
+        description: The pseudonym of the user created the victim attribute.
+        type: string
+      - contextPath: TC.VictimAttribute.createdBy.userName
+        description: The user name of the user created the victim attribute.
+        type: string
+  dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
   script: ''
   subtype: python3
