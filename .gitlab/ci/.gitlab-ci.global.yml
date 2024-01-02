@@ -393,6 +393,7 @@
 .unlock-machine:
   - section_start "Unlock Machine" --collapsed
   - |
+    gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/content-locks/locks-xsiam-ga/machines_locks/qa2-test-9996843272057-lock-737974"
     if [[ -f "CloudEnvVariables" ]]; then
       source CloudEnvVariables
 
@@ -400,7 +401,7 @@
         if [[ -e "${ARTIFACTS_FOLDER}/logs/lock_file.txt" ]]; then
           echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
           gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-          gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/content-locks/locks-xsiam-ga/machines_locks/qa2-test-9992015237760-lock-737930"
+          gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/content-locks/locks-xsiam-ga/machines_locks/qa2-test-9996843272057-lock-737974"
           gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
           gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_PIPELINE_ID"
           echo "Finished removing lock file(s)"
