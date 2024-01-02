@@ -1011,8 +1011,6 @@ inputs:
   description: The IDs of the victim endpoint
   playbookInputQuery:
 outputs: []
-tests:
-- T1036 - Masquerading - Test
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2

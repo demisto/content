@@ -17,10 +17,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Command-Line Analysis
-* Get entity alerts by MITRE tactics
 * Threat Hunting - Generic
 * Block Indicators - Generic v3
+* Command-Line Analysis
+* Get entity alerts by MITRE tactics
 * Enrichment for Verdict
 
 ### Integrations
@@ -33,11 +33,11 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* setIncident
 * extractIndicators
-* setAlert
 * core-get-endpoints
 * core-run-script-execute-commands
+* setAlert
+* setIncident
 
 ## Playbook Inputs
 
