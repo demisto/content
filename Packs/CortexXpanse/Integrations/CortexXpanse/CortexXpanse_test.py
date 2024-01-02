@@ -758,3 +758,42 @@ def test_fetch_incidents(requests_mock, mocker):
     assert incidents[0]['name'] == "Networking Infrastructure"
     assert json.loads(incidents[0]['rawJSON']).pop('local_insert_ts')
     assert next_run == {'last_fetch': 1659452809020}
+
+
+def test_get_external_websites_command(requests_mock):
+    """Tests get_external_websites_command command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate get_external_websites_command API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'get_external_websites_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, get_external_websites_command
+
+    from test_data.raw_response import EXTERNAL_WEBSITES_RESPONSE
+    from test_data.expected_results import EXTERNAL_WEBSITES_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/get_external_websites/',
+                       json=EXTERNAL_WEBSITES_RESPONSE)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+
+    args = {
+        'limit': 2
+    }
+
+    response = get_external_websites_command(client, args)
+
+    assert response.outputs == EXTERNAL_WEBSITES_RESULTS.get('ExternalWebsites')
+    assert response.outputs_prefix == 'ASM.ExternalWebsites'
+    # assert response.outputs_key_field == ''

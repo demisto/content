@@ -1695,3 +1695,199 @@ IP_DOMAIN_RAW = {
         ]
     }
 }
+
+EXTERNAL_WEBSITES_RESPONSE = response = {
+    "reply": {
+        "total_count": 32747,
+        "result_count": 500,
+        "websites": [
+            {
+                "website_id": "f6a2c8d1-137a-31bb-b36a-4577c3341710",
+                "host": "011e2d775c428f5c10acbc654273a90d80f880ac.xdr.us.paloaltonetworks.com",
+                "protocol": "HTTPS",
+                "is_active": "ACTIVE",
+                "site_categories": [],
+                "technology_ids": [
+                    "core-js",
+                    "underscore-js",
+                    "java",
+                    "nginx",
+                    "backbone-js",
+                    "recaptcha",
+                    "hsts",
+                    "bootstrap"
+                ],
+                "first_observed": 1690932480000,
+                "last_observed": 1694217780000,
+                "provider_names": [
+                    "Google"
+                ],
+                "ips": [
+                    "1.1.1.1"
+                ],
+                "port": 443,
+                "active_service_ids": [
+                    "47124029-a12d-3a8e-9b3d-a60c8e760138"
+                ],
+                "http_type": "HTTPS",
+                "third_party_script_domains": [],
+                "security_assessments": [
+                    {
+                        "name": "Has HTTPS Enabled",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "This website uses HTTPS which encrypts data in transit between browser and server."
+                        }
+                    },
+                    {
+                        "name": "Protocol Downgrade",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "Redirects never downgrade from HTTPS to HTTP."
+                        }
+                    }
+                ],
+                "authentication": [
+                    "No Auth Detected"
+                ],
+                "rootPageHttpStatusCode": "302",
+                "isNonConfiguredHost": false,
+                "externally_inferred_vulnerability_score": null,
+                "externally_inferred_cves": [],
+                "tags": [
+                    "BU:Prod Ev2 Branch6 1003125405062"
+                ]
+            },
+            {
+                "website_id": "29fee850-f13d-3ae6-ba80-649083f4b581",
+                "host": "02019001702.xsoar.paloaltonetworks.com",
+                "protocol": "HTTPS",
+                "is_active": "ACTIVE",
+                "site_categories": [],
+                "technology_ids": [
+                    "aws-certificate-manager",
+                    "core-js",
+                    "node-js",
+                    "lodash",
+                    "babel",
+                    "hsts",
+                    "amazon-web-services",
+                    "marko"
+                ],
+                "first_observed": 1686599400000,
+                "last_observed": 1694380080000,
+                "provider_names": [
+                    "Amazon Web Services"
+                ],
+                "ips": [
+                    "1.1.1.1",
+                    "1.1.1.1",
+                    "1.1.1.1",
+                    "1.1.1.1",
+                    "1.1.1.1",
+                    "1.1.1.1"
+                ],
+                "port": 443,
+                "active_service_ids": [
+                    "29fee850-f13d-3ae6-ba80-649083f4b581"
+                ],
+                "http_type": "HTTPS",
+                "third_party_script_domains": [],
+                "security_assessments": [
+                    {
+                        "name": "Has HTTPS Enabled",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "This website uses HTTPS which encrypts data in transit between browser and server."
+                        }
+                    },
+                    {
+                        "name": "Secure Forms",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "Forms on this website are submitted over HTTPS."
+                        }
+                    },
+                    {
+                        "name": "No Mixed Content",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "Pages on this website do not include content fetched using cleartext HTTP."
+                        }
+                    },
+                    {
+                        "name": "Sets valid X-Frame-Options Header",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "This header prevents browser from rendering this site inside an iframe or other embedding methods. This helps to prevent click-jacking attacks."
+                        }
+                    },
+                    {
+                        "name": "Sets valid X-Content-Type-Options Header",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "This header is used by the server to prevent browsers from guessing the media type (MIME type) known as MIME sniffing. The absence of this header might cause browsers to transform non-executable content into executable content."
+                        }
+                    },
+                    {
+                        "name": "Sets valid Content-Type Header",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "This header is used to indicate the original media type of the resource. The charset attribute is necessary in this header to prevent XSS in HTML pages."
+                        }
+                    },
+                    {
+                        "name": "Sets HTTP Strict Transport Security Header",
+                        "priority": 10,
+                        "score": 1,
+                        "securityAssessmentDetails": {
+                            "pages": [],
+                            "description": "This website sets a HSTS Header which ensures that the browser will always request the encrypted HTTPS version of the website regardless of what links are clicked or URL a site visitor enters."
+                        }
+                    },
+                    {
+                        "name": "Sets valid Referrer-Policy Header",
+                        "priority": 10,
+                        "score": 0,
+                        "securityAssessmentDetails": {
+                            "pages": [
+                                {
+                                    "url": "https://02019001702.xsoar.paloaltonetworks.com/",
+                                    "message": "not_set",
+                                    "elements": []
+                                }
+                            ],
+                            "description": "This HTTP header controls how much referrer information should be included with requests. Today, the default behavior in modern browsers is to no longer send all referrer information (origin, path, and query string) to the same site but to only send the origin to other sites. However, since not all users may be using the latest browsers we suggest forcing this behavior by sending this header on all requests."
+                        }
+                    }
+                ],
+                "authentication": [
+                    "No Auth Detected"
+                ],
+                "rootPageHttpStatusCode": "200",
+                "isNonConfiguredHost": false,
+                "externally_inferred_vulnerability_score": null,
+                "externally_inferred_cves": [],
+                "tags": [
+                    "BU:Prod Ev2 Branch6 1003125405062"
+                ]
+            },
+        ]
+    }
+}
