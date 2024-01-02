@@ -41,12 +41,13 @@ configuration:
   name: unsecure
   type: 8
   required: false
-#  advanced: true
+  advanced: true
   section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  advanced: true
   section: Connect
 - display: Events Settings
   name: events
