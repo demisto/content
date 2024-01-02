@@ -4,7 +4,6 @@ from collections.abc import Callable
 
 
 import requests
-
 from urllib3 import disable_warnings
 
 
@@ -323,6 +322,26 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: dict[str, dict[Any, Any]] = {
         "human_readable_massage": "Asset tag deleted.",
         "json_path": ["ServiceResponse", "data", "Tag"],
     },
+    "qualys-update-vmware-record": {
+        "table_name": "Update Vmware Record",
+        "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+    },
+    "qualys-update-vcenter-record": {
+        "table_name": "Update vCenter Record",
+        "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "table_name": "List vCenter ESXi mapping records",
+        "json_path": ["VCENTER_ESXI_MAP_LIST_OUTPUT", "RESPONSE"],
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "table_name": "Update vCenter ESXi mapping Records",
+        "json_path": ["SIMPLE_RETURN", "RESPONSE"],
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "table_name": "Update Vmware Record",
+        "json_path": ["SIMPLE_RETURN", "RESPONSE"],
+    },
 }
 
 # Context prefix and key for each command
@@ -524,6 +543,26 @@ COMMANDS_CONTEXT_DATA = {
     "qualys-asset-tag-delete": {
         "context_prefix": "",
         "context_key": "",
+    },
+    "qualys-update-vmware-record": {
+        "context_prefix": "Qualys.VmwareRecord",
+        "context_key": "ID",
+    },
+    "qualys-update-vcenter-record": {
+        "context_prefix": "Qualys.vCenterRecord",
+        "context_key": "ID",
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "context_prefix": "Qualys.vCenterList",
+        "context_key": "ID",
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "context_prefix": "Qualys.vCenterImport",
+        "context_key": "ID",
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "context_prefix": "Qualys.vCenterPurge",
+        "context_key": "ID",
     },
 }
 
@@ -773,6 +812,31 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "api_route": "/msp/time_zone_code_list.php",
         "call_method": "GET",
         "resp_type": "text",
+    },
+    "qualys-update-vmware-record": {
+        "api_route": API_SUFFIX + "auth/vmware/?action=update",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-update-vcenter-record": {
+        "api_route": API_SUFFIX + "auth/vcenter/?action=update",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=list",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=import",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=purge",
+        "call_method": "POST",
+        "resp_type": "text"
     },
 }
 
@@ -1266,6 +1330,21 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     "qualys-update-unix-record": {
         "args": ["ids", "add_ips"],
     },
+    "qualys-update-vmware-record": {
+        "args": ["ids", "add_ips"],
+    },
+    "qualys-update-vcenter-record": {
+        "args": ["ids", "add_ips"],
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "args": ["network_id", "esxi_ip", "output_format"],
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "args": ["csv_data"],
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "args": ["csv_data"],
+    },
     "qualys-asset-group-add": {
         "args": [
             "title",
@@ -1472,6 +1551,7 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     "qualys-asset-tag-update": {"args": ["id", "name", "rule_type", "rule_text", "child_to_remove", "criticality_score"]},
     "qualys-asset-tag-delete": {"args": ["id"]},
     "qualys-asset-tag-list": {"args": ["criteria", "operator", "search_data", "limit"]},
+
 }
 
 # Dictionary for arguments used by Qualys API
@@ -1958,6 +2038,8 @@ def handle_asset_tag_request_parameters(args: dict[str, str], command_name: str)
     # generate request body if required by the command
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
         TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
+
+
 
 
 """ PARSERS """
@@ -2481,6 +2563,7 @@ def build_tag_asset_output(**kwargs) -> tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
+
     if type(handled_result) == dict and (children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
         handled_result["childTags"] = children_list
         handled_result.pop("children")
@@ -2807,13 +2890,36 @@ def main():  # pragma: no cover
             "result_handler": handle_asset_tag_result,
             "output_builder": build_tag_asset_output,
         },
+        "qualys-update-vmware-record": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-update-vcenter-record": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-list": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-import": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-purge": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
     }
 
     requested_command = demisto.command()
 
     demisto.debug(f"Command being called is {requested_command}")
     try:
-        headers: dict = {"X-Requested-With": "Demisto"}
+        if requested_command=="qualys-vcenter-esxi-mapped-record-import" or requested_command=="qualys-vcenter-esxi-mapped-record-purge":
+           headers: Dict = {"X-Requested-With": "Demisto", "Content-Type": "application/octet-stream"}
+        else:
+           headers: dict = {"X-Requested-With": "Demisto"}
 
         client = Client(
             base_url=base_url, username=username, password=password, verify=verify_certificate, headers=headers, proxy=proxy
