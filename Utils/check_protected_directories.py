@@ -4,6 +4,7 @@ from pathlib import Path
 
 CONTENT_ROOT = Path(__file__).parents[1]
 assert CONTENT_ROOT.name == "content"
+assert CONTENT_ROOT.name == "content", f"Excpected content root dir to be named `content`, got ({CONTENT_ROOT.name}). Full path: {CONTENT_ROOT}"
 
 PROTECTED_DIRECTORY_PATHS: set[Path] = {
     Path(CONTENT_ROOT, dir_name)
