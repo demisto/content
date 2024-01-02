@@ -14,14 +14,15 @@ def test_get_account_ids(mocker):
                     {"Id": "1234"},
                     {"Id": "5678"},
                 ]
-            }
+            },
+            "HumanReadable": "human_readable"
         }
     ]
 
-    account_ids = get_account_ids()
+    account_ids = get_account_ids('instance_name')
 
-    assert account_ids == ["1234", "5678"]
-    mock_execute_command.assert_called_with("aws-org-account-list", {})
+    assert account_ids == (["1234", "5678"], "human_readable")
+    mock_execute_command.assert_called_with("aws-org-account-list", {'using': 'instance_name'})
 
 
 def test_set_instance(mocker):
@@ -102,8 +103,8 @@ def test_update_ec2_instance(mocker):
 
     result = AwsEC2SyncAccounts.update_ec2_instance(["1234", "5678"], "AWS - EC2")
 
-    assert internal_request.mock_calls[0].args == ('POST', '/settings/integration/search')
-    assert internal_request.mock_calls[1].args == ('PUT', '/settings/integration', {
+    assert internal_request.mock_calls[0].args == ('post', '/settings/integration/search')
+    assert internal_request.mock_calls[1].args == ('put', '/settings/integration', {
             "id": "2fa1071e-af66-4668-8f79-8c57a3e4851d",
             "name": "AWS - EC2",
             "configvalues": {
@@ -123,4 +124,4 @@ def test_update_ec2_instance(mocker):
             ],
         }
     )
-    assert result == "Successfully updated 'AWS - EC2' with accounts: 1234,5678"
+    assert result == "Successfully updated ***AWS - EC2*** with accounts:"
