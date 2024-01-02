@@ -734,12 +734,9 @@ class Client(BaseClient):
         Otherwise, an exception should be raised by self._http_request()
         """
         incident_type = self.fetch_incidents_type
-        query = self.fetch_query if self.fetch_query else ""
-        self.get_incident(
-            {"verb": "query", "limit": 1, "query": query}
-        ) if incident_type == "incident" else self.get_event_list(
-            {"verb": "query", "limit": 1, "query": query}
-        )
+        query = self.fetch_query or ""
+        fetch_args = {"verb": "query", "limit": 1, "query": query}
+        self.get_incident(fetch_args) if incident_type == "incident" else self.get_event_list(fetch_args)
         return "ok"
 
 
@@ -2345,13 +2342,14 @@ def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> Command
 """ FETCHES INCIDENTS """
 
 
-def fetch_incidents(client: Client) -> list:
+def fetch_incidents(client: Client, query_start_time: str) -> list:
     """
     Fetching Incidents pulls incidents and events from third party tools and convert then into incidents.
     Args:
         client: Client Object
+        query_start_time: Start Time
     Returns:
-        Incident List
+        Incident Tuple
     """
     seperator = " OR "
     priority_list = [REVERSE_INCIDENT_PRIORITY.get(i) for i in client.fetch_priority]  # type: ignore[union-attr]
@@ -2366,27 +2364,13 @@ def fetch_incidents(client: Client) -> list:
         state_list[0] if len(state_list) == 1 else seperator.join(map(str, state_list))
     )
 
-    query = client.fetch_query
-
-    last_run = demisto.getLastRun()
-    demisto.debug(f"Last Run Object : {last_run}")
-
-    # demisto.getLastRun() will return an obj with the previous run in it.
-    # set First Fetch starting time in case running first time or reset
-    previous_start_time, previous_end_time = get_fetch_run_time_range(
-        last_run=last_run, first_fetch=client.first_fetch
+    fetch_query = (
+        client.fetch_query or f"priority_level: ({priority}) AND state: ({state})"
     )
-
-    query_start_time = (
-        convert_to_iso8601(last_run.get("time"))
-        if last_run and "time" in last_run
-        else convert_to_iso8601(previous_start_time)
-    )
-    condition = query if query else f"priority_level: ({priority}) AND state: ({state})"
     incident_payload = {
         "verb": "query",
         "limit": client.fetch_limit,
-        "query": condition,
+        "query": fetch_query,
         "start_time": query_start_time,
     }
     demisto.debug(f"Incident query with {incident_payload}")
@@ -2436,33 +2420,18 @@ def fetch_incidents(client: Client) -> list:
                 }
             )
 
-    # remove duplicate incidents which were already fetched
-    incidents_insert = filter_incidents_by_duplicates_and_limit(
-        incidents_res=incidents,
-        last_run=last_run,
-        fetch_limit=client.fetch_limit,
-        id_field="name",
-    )
-
-    current_end_time = convert_to_iso8601("now")
-    last_run = update_last_run_object(
-        last_run=last_run,
-        incidents=incidents_insert,
-        fetch_limit=client.fetch_limit,
-        start_fetch_time=query_start_time,
-        end_fetch_time=current_end_time,
-        look_back=30,
-        created_time_field="occurred",
-        id_field="name",
-        date_format=f"{ISO8601_F_FORMAT}Z",
-    )
-
-    demisto.debug(f"Incident insert: {len(incidents_insert)}")
-    demisto.setLastRun(last_run)
-    return incidents_insert
+    return incidents
 
 
-def fetch_events(client: Client):
+def fetch_events(client: Client, query_start_time: str) -> list:
+    """
+    Fetching Events pulls events from third party tools and convert then into incidents.
+    Args:
+        client: Client Object
+        query_start_time: Start Time
+    Returns:
+        Incident list
+    """
     seperator = "OR"
 
     severity_list = [REVERSE_EVENT_SEVERITY.get(i.lower()) for i in client.fetch_event_severity]  # type: ignore[union-attr]
@@ -2477,29 +2446,18 @@ def fetch_events(client: Client):
         if len(status_list) == 1
         else seperator.join(map(str, status_list))
     )
-    query = client.fetch_query
-    demisto.debug(f"fetch_query {query}")
-    last_run = demisto.getLastRun()
-    demisto.debug(f"Last Run Object : {last_run}")
-    previous_start_time, previous_end_time = get_fetch_run_time_range(
-        last_run=last_run, first_fetch=client.first_fetch
+    fetch_query = (
+        client.fetch_query or f"severity_id: ({severity}) and status_id: ({status})"
     )
-
-    query_start_time = (
-        convert_to_iso8601(last_run.get("time"))
-        if last_run and "time" in last_run
-        else convert_to_iso8601(previous_start_time)
-    )
-    condition = query if query else f"severity_id: {severity} and status_id: {status}"
     event_payload = {
         "verb": "query",
         "limit": client.fetch_limit,
-        "query": condition,
+        "query": fetch_query,
         "start_time": query_start_time,
     }
-    demisto.debug(f"Incident query with {event_payload}")
+    demisto.debug(f"Event query with {event_payload}")
     results = client.get_event_list(event_payload).get("result", [])
-    demisto.debug(f"length {len(results)}")
+    demisto.debug(f"Fetched {len(results)}")
     incidents = []
     for result in results:
         event_type = EVENT_TYPE.get(str(result.get("type_id")))
@@ -2513,14 +2471,44 @@ def fetch_events(client: Client):
                 "uuid": result.get("uuid"),
             }
         )
+    return incidents
+
+
+def fetch_xsaor_incidents(client: Client, fetch_incident_type: str) -> list:
+    """
+    Common function for fetch incidents and events.
+    Args:
+        client: Client Object
+        fetch_incident_type: Fetch Type
+    Returns:
+        Incident list
+    """
+    function_mapping = {
+        "incidents": (fetch_incidents, "name"),
+        "events": (fetch_events, "uuid"),
+    }
+    # demisto.getLastRun() will return an obj with the previous run in it.
+    last_run = demisto.getLastRun()
+    demisto.debug(f"Last Run Object : {last_run}")
+    # set First Fetch starting time in case running first time or reset
+    previous_start_time, previous_end_time = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=client.first_fetch
+    )
+
+    query_start_time = (
+        convert_to_iso8601(last_run.get("time"))
+        if last_run and "time" in last_run
+        else convert_to_iso8601(previous_start_time)
+    )
+    fetch_function, id_field = function_mapping[fetch_incident_type]
+    incidents = fetch_function(client, query_start_time)
     # remove duplicate incidents which were already fetched
     incidents_insert = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents,
         last_run=last_run,
         fetch_limit=client.fetch_limit,
-        id_field="uuid",
+        id_field=id_field,
     )
-
     current_end_time = convert_to_iso8601("now")
     last_run = update_last_run_object(
         last_run=last_run,
@@ -2530,11 +2518,11 @@ def fetch_events(client: Client):
         end_fetch_time=current_end_time,
         look_back=30,
         created_time_field="occurred",
-        id_field="uuid",
+        id_field=id_field,
         date_format=f"{ISO8601_F_FORMAT}Z",
     )
 
-    demisto.debug(f"Events insert: {len(incidents_insert)}")
+    demisto.debug(f"Incident insert: {len(incidents_insert)}")
     demisto.setLastRun(last_run)
     demisto.debug(f"length of incident {len(incidents_insert)}")
     return incidents_insert
@@ -2871,11 +2859,8 @@ def main() -> None:
         if command == "test-module":
             command_output = client.test_module()
         elif command == "fetch-incidents":
-            if fetch_incidents_type == "incidents":
-                data = fetch_incidents(client)
-            else:
-                data = fetch_events(client)
-            demisto.incidents(data)
+            incidents = fetch_xsaor_incidents(client, fetch_incidents_type)
+            demisto.incidents(incidents)
             command_output = "OK"
         elif command in [
             "symantec-edr-endpoint-isolate",

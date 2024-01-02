@@ -1706,14 +1706,15 @@ def test_fetch_incidents(mocker, raw_data, expected):
     client.fetch_status = ["Open", "Closed"]
     client.fetch_limit = 1
     mocker.patch.object(client, "get_incident", side_effect=[raw_data])
-    incident_list = fetch_incidents(client)
+    incident_list = fetch_incidents(client, "2023-12-30T11:48:40.000Z")
 
     # results incident list
     assert incident_list[0].get("name") == expected
 
 
 @pytest.mark.parametrize(
-    "raw_data, expected", [(EVENT_LIST_RESPONSE, "SEDR Event 8001: Process Events - WIN-TFB8L7BI77H")]
+    "raw_data, expected",
+    [(EVENT_LIST_RESPONSE, "SEDR Event 8001: Process Events - WIN-TFB8L7BI77H")],
 )
 def test_fetch_event(mocker, raw_data, expected):
     """
@@ -1734,7 +1735,7 @@ def test_fetch_event(mocker, raw_data, expected):
     client.fetch_event_status = ["Success"]
     client.fetch_limit = 1
     mocker.patch.object(client, "get_event_list", side_effect=[raw_data])
-    incident_list = fetch_events(client)
+    incident_list = fetch_events(client, "2023-12-30T11:48:40.000Z")
 
     # results event list
     assert incident_list[0].get("name") == expected
