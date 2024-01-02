@@ -43,7 +43,7 @@ def test_ask_command(mocker):
     - Ensure that the result is correct and JSON.
     """
     from AwsBedrock import ask_command
-    args = {'question': '3 + 3', 'model': 'anthropic.claude-v2'}
+    args = {'question': '3 + 3', 'model': 'anthropic.claude-v2', 'max_tokens_to_sample': "30"}
     response = util_load_json('test_data/aws_bedrock_response.json')
     mocker.patch.object(AWSBedrockClient, "invoke_model", return_value=response)
     aws_bedrock_session = AWSBedrockClient()
