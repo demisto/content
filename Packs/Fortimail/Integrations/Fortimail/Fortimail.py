@@ -1954,22 +1954,12 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     command_name: str = args.get("command_name", "")
     command_entity_title, _ = get_command_entity(command_name=command_name)
+    # Get the 'delete' request function
     delete_request = get_command_request(command_name=command_name, client=client)
     # Get the relevant item key to remove
     command_args = handle_delete_command_args(args=args)
-    get_request = get_command_request(command_name=command_name.replace("delete", "list"), client=client)
-    # Remove the 'values' argument in case exist before calling GET
-    values = command_args.pop("values", None)
 
-    # Make a GET request to insure the item is exist before delete
-    try:
-        get_request(**command_args)
-    except DemistoException as exc:
-        raise ValueError(f"Item doesn't exist. {exc}")
-
-    # Reset the 'values' argument in case exist
-    if values:
-        command_args["values"] = values
+    validate_value_exist_before_delete(client=client, command_args=command_args, command_name=command_name)
 
     delete_request(**command_args)
 
@@ -2477,6 +2467,34 @@ def update_group_member_args(command_args: dict[str, Any]) -> dict[str, Any]:
     if ip := group_member_args.get("ip"):
         group_member_args["ip"] = convert_cidr_to_ip_range(ip)
     return group_member_args
+
+
+def validate_value_exist_before_delete(client: Client, command_args: dict[str, Any], command_name: str):
+    """
+    Validate item exist before delete it.
+
+    Args:
+        client (Client): API client.
+        command_args (dict[str, Any]): The command args.
+        command_name (str): The command name.
+
+    Raises:
+        ValueError: In case the item doesn't exist.
+    """
+    # Get the 'get' request function
+    get_request = get_command_request(command_name=command_name.replace("delete", "list"), client=client)
+    # Remove the 'values' argument in case exist before calling GET
+    values = command_args.pop("values", None)
+
+    # Make a GET request to insure the item is exist before delete
+    try:
+        get_request(**command_args)
+    except DemistoException as exc:
+        raise ValueError(f"Item doesn't exist. {exc}")
+
+    # Reset the 'values' argument in case exist
+    if values:
+        command_args["values"] = values
 
 
 def get_command_request(command_name: str, client: Client) -> Callable[..., Any]:
