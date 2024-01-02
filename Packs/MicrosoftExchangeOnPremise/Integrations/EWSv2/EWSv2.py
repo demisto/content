@@ -2153,16 +2153,23 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragm
                                 marked_items)
 
 
-def parse_quoted_printable(email_content: str):
+def parse_quoted_printable(email_content: str) -> str:
     """
     Parses email content if this email is encoded in quoted-printable, using quopri.
     """
     if 'Content-Transfer-Encoding: quoted-printable' in email_content:
-        split_email = email_content.split('charset="')
+        split_email = email_content.split('charset=')
         charset = 'utf-8'
         if len(split_email) > 1:
-            charset = split_email[1].split('"')[0] or charset
+            charset = split_email[1].strip('"').split('"')[0] or charset
         email_content = quopri.decodestring(email_content).decode(charset, errors='ignore')
+
+        email_content = email_content.replace('Content-Transfer-Encoding: quoted-printable\n', '')
+        # email_content = email_content.replace(f"charset=\"{charset}\"", "charset=\"utf-8\"")
+        # email_content = email_content.replace("charset=\"iso-8859-2\"", "charset=\"utf-8\"")
+        # email_content = email_content.replace("charset=utf-8\"", "charset=\"utf-8\";")
+        # email_content = email_content.replace("content=\"text/html;", "content=\"text/html\";")
+
         demisto.info(f'After replacing, {email_content=}')
     return email_content
 

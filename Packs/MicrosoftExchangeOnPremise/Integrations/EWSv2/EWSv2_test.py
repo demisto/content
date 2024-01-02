@@ -914,3 +914,33 @@ def test_get_item_as_eml(mocker):
                          'proident, sunt in culpa qui officia deserunt mollit anim id est ' \
                          'laborum.<o:p></o:p></p>\n</div>\n</body>\n</html>\n\n--_012_--\n '
     mocked.assert_called_with('Test pobierania emla.eml', file_expected_data)
+
+
+def test_parse_quoted_printable():
+    """
+    Given:
+        - A quoted-printable encoded email as a string.
+    When:
+        - The "ews-get-items-as-eml" command is called and parses email content.
+    Then:
+        - A string returns with the right parsed content
+    """
+    from EWSv2 import parse_quoted_printable
+
+    email_content = '\n--_012_\nContent-Type: text/plain; charset="iso-8859-2"\nContent-Transfer-Encoding: quoted-printable\n\n' \
+                    'NEWn=EAtrzne\n=A1=B3=BF=F3=E6\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod ' \
+                    'tem=\npor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, q=\nuis nostrud ' \
+                    'exercitation ullamco laboris nisi ut aliquip ex ea commodo cons=\nequat. Duis aute irure dolor in ' \
+                    'reprehenderit in voluptate velit esse cillu=\nm dolore eu fugiat nulla pariatur. Excepteur sint occaecat ' \
+                    'cupidatat non pr=\noident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n--_012_\n' \
+                    'Content-Type: text/html; charset="iso-8859-2"\nContent-Transfer-Encoding: quoted-printable\n\n' \
+                    '<html>\n</html>\n\n--_012_--\n '
+    parsed_email_content = '\n--_012_\nContent-Type: text/plain; charset="utf-8"\n\nNEWnętrzne\nĄłżóć\n\nLorem ipsum dolor ' \
+                           'sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna ' \
+                           'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea ' \
+                           'commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu ' \
+                           'fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia ' \
+                           'deserunt mollit anim id est laborum.\n\n--_012_\nContent-Type: text/html; charset="utf-8"\n\n' \
+                           '<html>\n</html>\n\n--_012_--\n '
+
+    assert parse_quoted_printable(email_content) == parsed_email_content
