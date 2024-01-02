@@ -543,6 +543,9 @@
     - if: '$VALIDATE_SCRIPT == "new-validate-flow"'
       when: on_success
       allow_failure: true
+    - if: '$VALIDATE_SCRIPT == "old-validate-flow"'
+      when: on_success
+      allow_failure: false
 .jobs-done-check:
   stage: are-jobs-really-done
   extends:
