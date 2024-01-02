@@ -21,17 +21,18 @@ DATEPARSER_SETTINGS = {
     "RETURN_AS_TIMEZONE_AWARE": True,
     "TIMEZONE": "UTC",
 }
+DATE_TIME_FORMAT = "%d/%m/%Y %H:%M:%S"
 
 
 """ CLIENT CLASS """
 
 
 def to_str_time(t: datetime) -> str:
-    return t.strftime("%m/%d/%Y %H:%M:%S") # FIXME move to constant
+    return t.strftime(DATE_TIME_FORMAT)
 
 
 def from_str_time(s: str) -> datetime:
-    return datetime.strptime(s, "%m/%d/%Y %H:%M:%S")
+    return datetime.strptime(s, DATE_TIME_FORMAT)
 
 
 class Client(BaseClient):
@@ -83,7 +84,7 @@ class Client(BaseClient):
         token_initiate_time = integration_context.get('token_initiate_time')
         token_expiration_seconds = integration_context.get('token_expiration_seconds')
 
-        if access_token and not Client.is_token_expired(
+        if access_token and Client.is_token_valid(
             token_initiate_time=float(token_initiate_time),
             token_expiration_seconds=float(token_expiration_seconds)
         ):
@@ -96,12 +97,12 @@ class Client(BaseClient):
             'token_expiration_seconds': token_expiration_seconds,
             'token_initiate_time': time.time()
         }
-        demisto.debug(updating access token')
+        demisto.info("successfully updated access token")
         set_integration_context(context=integration_context)
 
         return access_token
 
-    def get_token(self) -> tuple[str, str]:
+    def get_token_request(self) -> tuple[str, str]:
         """
         Sends request to retrieve token.
 
@@ -127,7 +128,7 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:  # FIXME is_token_valid
+    def is_token_valid(token_initiate_time: float, token_expiration_seconds: float) -> bool:
         """
         Check whether a token has expired. A token is considered expired if it reached its expiration date in
         seconds minus a minute.
@@ -143,7 +144,7 @@ class Client(BaseClient):
         Returns:
             bool: True if token has expired, False if not.
         """
-        return time.time() - token_initiate_time >= token_expiration_seconds - 60
+        return time.time() - token_initiate_time < token_expiration_seconds - 60
 
 
 """ HELPER FUNCTIONS """
