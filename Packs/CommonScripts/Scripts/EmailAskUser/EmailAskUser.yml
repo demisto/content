@@ -31,6 +31,8 @@ args:
   description: Send mail to all users of these roles (csv list)
 - name: attachIds
   description: Attachments
+- name: attachCIDs
+  description: A comma-separated list of CIDs to embed attachments within the actual email.
 - name: bodyType
   auto: PREDEFINED
   predefined:

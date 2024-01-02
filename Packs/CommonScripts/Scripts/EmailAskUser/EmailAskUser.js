@@ -108,14 +108,16 @@ if (addresses.length > 0) {
     if (args.bcc) {
         emailArgs.bcc = args.bcc;
     }
-
+    if (args.attachCIDs) {
+        emailArgs.attachCIDs = args.attachCIDs;
+    }
      // Add additional fields from args to emailArgs
     for (const key in args) {
         if (args.hasOwnProperty(key) && !emailArgs.hasOwnProperty(key)) {
             emailArgs[key] = args[key];
         }
     }
-
+    
   return executeCommand('send-mail', emailArgs);
 
 } else {
