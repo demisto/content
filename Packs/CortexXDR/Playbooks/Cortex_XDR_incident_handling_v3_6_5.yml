@@ -2114,6 +2114,8 @@ inputSections:
   - CriticalUsernames
   - CriticalHostnames
   - CriticalADGroups
+  - incident_id
+  - XDRDomain
   name: Incident Management
   description: Incident management settings and data, including escalation processes, user engagements and ticketing methods
 - inputs:
@@ -2133,11 +2135,6 @@ inputSections:
   - UserVerification
   name: Remediation
   description: Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - incident_id
-  - XDRDomain
-  name: Incident Data
-  description: Incident details and metadata.
 outputSections:
 - outputs: []
   name: General (Outputs group)

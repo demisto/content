@@ -531,6 +531,11 @@ inputs:
   playbookInputQuery:
 inputSections:
 - inputs:
+  - Username
+  - cloudProvider
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
+- inputs:
   - AzureSearchTime
   - failedLogonThreshold
   - MfaAttemptThreshold
@@ -545,11 +550,6 @@ inputSections:
   - GcpProjectName
   name: GCP Investigation
   description: GCP Investigation settings and data, including any deep dive incident investigation and verdict determination.
-- inputs:
-  - Username
-  - cloudProvider
-  name: Incident Data
-  description: Incident details and metadata.
 outputSections:
 - outputs:
   - AwsMFAConfigCount

@@ -816,6 +816,10 @@ inputs:
   playbookInputQuery:
 inputSections:
 - inputs:
+  - alert_id
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
+- inputs:
   - autoAccessKeyRemediation
   - autoBlockIndicators
   - autoUserRemediation
@@ -835,10 +839,6 @@ inputSections:
   - GCP-userRemediationType
   name: GCP Remediation
   description: GCP Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - alert_id
-  name: Incident Data
-  description: Incident details and metadata.
 outputSections:
 - outputs: []
   name: General (Outputs group)

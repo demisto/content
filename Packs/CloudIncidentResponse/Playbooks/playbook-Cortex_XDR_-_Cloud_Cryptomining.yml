@@ -1165,14 +1165,11 @@ inputs:
   playbookInputQuery:
 inputSections:
 - inputs:
+  - SOCEmailAddress
+  - requireAnalystReview
   - incident_id
   - alert_id
   - cloudProvider
-  name: Incident Data
-  description: Incident details and metadata.
-- inputs:
-  - SOCEmailAddress
-  - requireAnalystReview
   name: Incident Management
   description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
 - inputs:

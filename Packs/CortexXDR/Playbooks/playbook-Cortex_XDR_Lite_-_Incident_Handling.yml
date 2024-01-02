@@ -2176,6 +2176,14 @@ inputs:
   playbookInputQuery:
 inputSections:
 - inputs:
+  - Username
+  - incident_id
+  - Hostname
+  - EndpointID
+  - XDRDomain
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods
+- inputs:
   - InternalRange
   name: Enrichment
   description: Enrichment settings and data, including assets and indicators enrichment using third-side enrichers.
@@ -2189,14 +2197,6 @@ inputSections:
   - UserVerification
   name: Remediation
   description: Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - Username
-  - incident_id
-  - Hostname
-  - EndpointID
-  - XDRDomain
-  name: Incident Data
-  description: Incident details and metadata.
 outputSections:
 - outputs: []
   name: General (Outputs group)
