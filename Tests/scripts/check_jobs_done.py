@@ -9,7 +9,8 @@ from Tests.scripts.utils.log_util import install_logging
 CONTENT_NIGHTLY_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
-    'run-validations',
+    'run-validations: [old-validate-flow]',
+    'run-validations: [new-validate-flow]',
     'trigger-private-build',
     'mpv2-prepare-testing-bucket',
     'xpanse-prepare-testing-bucket',
@@ -62,7 +63,8 @@ BUCKET_UPLOAD_JOBS = [
 CONTENT_COMMON_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
-    'run-validations',
+    'run-validations: [old-validate-flow]',
+    'run-validations: [new-validate-flow]',
     'test-upload-flow',
     'trigger-private-build',
     'validate-content-conf',
