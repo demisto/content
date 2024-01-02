@@ -355,8 +355,8 @@ def test_list_command(
     )
     outputs_key_field = "mkey"
     response = load_mock_response(response_file)
-    updated_response = Fortimail.get_mapped_response(response)
-    _, outputs = Fortimail.get_updated_response_and_readable_output(output=updated_response, command_args=command_args)
+    updated_response = Fortimail.map_api_response_values_to_readable_string(response)
+    _, outputs = Fortimail.prepare_outputs_and_readable_output(output=updated_response, command_args=command_args)
 
     if outputs_prefix == "SystemList":
         requests_mock.post(
@@ -371,6 +371,7 @@ def test_list_command(
         )
 
     _, _, outputs_prefix = Fortimail.get_command_entity(command_name=command_args["command_name"])
+
     command_results = Fortimail.list_command(mock_client, command_args)
 
     assert command_results.raw_response == response
@@ -508,7 +509,7 @@ def test_delete_command(
     command_args.pop("command_name")
 
     assert command_results.raw_response == response
-    assert command_results.outputs == Fortimail.get_removed_item_key(command_args)
+    assert command_results.outputs == Fortimail.get_output_for_delete_command(command_args)
     assert command_results.outputs_prefix == f"FortiMail.{outputs_prefix}"
     assert command_results.outputs_key_field == "mkey"
 
@@ -698,7 +699,7 @@ def test_group_member_add_replace_command(
     command_args.pop("command_name")
 
     assert command_results.raw_response == response
-    assert command_results.outputs == Fortimail.get_output_for_replaced_and_added_items(command_args)
+    assert command_results.outputs == Fortimail.prepare_output_for_replaced_and_added_items(command_args)
     assert command_results.outputs_prefix == f"FortiMail.{outputs_prefix}"
     assert command_results.outputs_key_field == "mkey"
 
@@ -734,9 +735,6 @@ def test_add_system_safe_block_command(
     outputs = [{"item": "1", "list_type": "Bloklist"}, {"item": "2", "list_type": "Bloklist"}]
 
     assert command_results.raw_response == response
-    assert command_results.outputs == outputs
-    assert command_results.outputs_prefix == "FortiMail.SystemList"
-    assert command_results.outputs_key_field == "mkey"
 
 
 @pytest.mark.parametrize(
@@ -875,7 +873,7 @@ def test_recipient_policy_create_update_command(
             url=urljoin(API_URL, endpoint),
             json=response,
         )
-    response = Fortimail.get_mapped_response(response)
+    response = Fortimail.map_api_response_values_to_readable_string(response)
     command_results = Fortimail.recipient_policy_create_update_command(mock_client, command_args)
 
     assert command_results.raw_response == response
@@ -953,7 +951,7 @@ def test_access_control_create_update_command(
             url=urljoin(API_URL, endpoint),
             json=response,
         )
-    response = Fortimail.get_mapped_response(response)
+    response = Fortimail.map_api_response_values_to_readable_string(response)
     command_results = Fortimail.access_control_create_update_command(mock_client, command_args)
 
     assert command_results.raw_response == response
@@ -1026,7 +1024,7 @@ def test_ip_policy_create_update_command(
             url=urljoin(API_URL, endpoint),
             json=response,
         )
-    response = Fortimail.get_mapped_response(response)
+    response = Fortimail.map_api_response_values_to_readable_string(response)
     command_results = Fortimail.ip_policy_create_update_command(mock_client, command_args)
 
     assert command_results.raw_response == response
@@ -1038,7 +1036,20 @@ def test_ip_policy_create_update_command(
 # Test Helper Functions #
 
 
-def test_get_removed_item_key():
+@pytest.mark.parametrize(
+    "command_args, expected_result",
+    [
+        (
+            {"values": "some_value", "group_name": "some_group", "id": "1"},
+            {"mkey": "1"},
+        ),
+        (
+            {"ip": "1.1.1.1"},
+            {"mkey": "1.1.1.1"},
+        ),
+    ],
+)
+def test_get_output_for_delete_command(command_args, expected_result):
     """
     Scenario:
     - Test retrieving removed item key.
@@ -1050,9 +1061,8 @@ def test_get_removed_item_key():
     - Ensure that the return item key is correct.
 
     """
-    command_args = {"values": "some_value", "group_name": "some_group", "id": "1"}
-    result = Fortimail.get_removed_item_key(command_args=command_args)
-    assert result == {"mkey": "1"}
+    result = Fortimail.get_output_for_delete_command(command_args=command_args)
+    assert result == expected_result
 
 
 @pytest.mark.parametrize(
@@ -1097,11 +1107,11 @@ def test_get_output_for_replaced_and_added_items(
     - Ensure that the return output is correct.
 
     """
-    result = Fortimail.get_output_for_replaced_and_added_items(command_args=command_args)
+    result = Fortimail.prepare_output_for_replaced_and_added_items(command_args=command_args)
     assert result == expected_result
 
 
-def test_get_updated_response_and_readable_output():
+def test_prepare_outputs_and_readable_output():
     """
     Scenario:
     - Test retrieving updated response.
@@ -1114,7 +1124,7 @@ def test_get_updated_response_and_readable_output():
 
     """
     output = [{"mkey": "value1", "level": "high"}, {"mkey": "value2", "level": "low"}]
-    result, _ = Fortimail.get_updated_response_and_readable_output(output, {})
+    result, _ = Fortimail.prepare_outputs_and_readable_output(output, {})
     expected_result = [
         {"Name": "value1", "TLS level": "high"},
         {"Name": "value2", "TLS level": "low"},
@@ -1169,7 +1179,14 @@ def test_update_group_member_args(command_args: dict[str, Any], expected_result:
     assert result == expected_result
 
 
-def test_get_command_entity():
+@pytest.mark.parametrize(
+    "command_name, expected_result",
+    [
+        ("fortimail-ip-policy-create", ("create_ip_policy", "Ip Policy created successfully", "IPPolicy")),
+        ("fortimail-ip-policy-list", ("list_ip_policy", "Ip Policy", "IPPolicy")),
+    ],
+)
+def test_get_command_entity(command_name: str, expected_result):
     """
     Scenario:
     - Test retrieving command entity data.
@@ -1187,7 +1204,7 @@ def test_get_command_entity():
     assert result == expected_result
 
 
-def test_get_mapped_response():
+def test_map_api_response_values_to_readable_string():
     """
     Scenario:
     - Test updating response integer values to readable strings.
@@ -1214,7 +1231,7 @@ def test_get_mapped_response():
             }
         ],
     }
-    result = Fortimail.get_mapped_response(response)
+    result = Fortimail.map_api_response_values_to_readable_string(response)
     expected_result = [
         {
             "sender_pattern_type": "Regular Expression",

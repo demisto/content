@@ -1,3 +1,4 @@
+import copy
 import http
 from functools import wraps
 from typing import Callable, Tuple
@@ -148,7 +149,7 @@ def validate_authentication(func: Callable) -> Callable:
                 raise
 
         def update_cookie():
-            """Updates the session and integration context with a new cookie with."""
+            """Updates the session and integration context with a new cookie."""
             cookie_name, cookie_value = try_authentication()
             cookie = requests.utils.cookiejar_from_dict({cookie_name: cookie_value})
             client._session.cookies.update(cookie)
@@ -164,6 +165,7 @@ def validate_authentication(func: Callable) -> Callable:
             cookie = requests.utils.cookiejar_from_dict(instance_cookie)
             client._session.cookies.update(cookie)
             return try_request()
+        # could happen on first run or if previous cookie setup failed or if previous cookie is expired
         update_cookie()
         return func(client, *args, **kwargs)
 
@@ -1690,19 +1692,9 @@ def add_system_safe_block_command(client: Client, args: Dict[str, Any]) -> Comma
 
     response = client.add_system_safe_block(list_type, list_items)
     items = argToList(list_items)
-    output = [{"item": item, "list_type": list_type} for item in items]
-
-    readable_output = tableToMarkdown(
-        name=f"System {list_type.removesuffix('list')} List Items Was Added Successfully",
-        t=output,
-        removeNull=True,
-    )
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="FortiMail.SystemList",
-        outputs_key_field="mkey",
-        outputs=output,
+        readable_output=f"Items: {items} Were Added Successfully to System {list_type.removesuffix('list')} List",
         raw_response=response,
     )
 
@@ -1722,34 +1714,11 @@ def ip_policy_create_update_command(client: Client, args: Dict[str, Any]) -> Com
     command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
 
-    command_args = remove_empty_elements(
-        {
-            "ip_policy_id": args.get("ip_policy_id"),
-            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
-            "comment": args.get("comment"),
-            "source": args.get("source"),
-            "destination_type": DESTINATION_MAPPER.get(args.get("destination_type", "")),
-            "destination": args.get("destination", ""),
-            "action": IP_ACTION_MAPPER.get(args.get("action", "")),
-            "source_type": AC_SENDER_IP_TYPE_MAPPER.get(args.get("source_type", "")),
-            "ip_pool_profile": args.get("ip_pool_profile"),
-            "antispam_profile": args.get("antispam_profile"),
-            "antivirus_profile": args.get("antivirus_profile"),
-            "content_profile": args.get("content_profile"),
-            "session_profile": args.get("session_profile"),
-            "auth_profile": args.get("auth_profile"),
-            "auth_type": RP_AUTH_MAPPER.get(args.get("auth_type", "")),
-            "use_smtp_auth": BOOLEAN_MAPPER.get(args.get("use_smtp_auth", "")),
-            "smtp_different": BOOLEAN_MAPPER.get(args.get("smtp_different", "")),
-            "smtp_diff_identity_ldap": BOOLEAN_MAPPER.get(args.get("smtp_diff_identity_ldap", "")),
-            "smtp_diff_identity_ldap_profile": args.get("smtp_diff_identity_ldap_profile"),
-            "exclusive": BOOLEAN_MAPPER.get(args.get("exclusive", "")),
-        }
-    )
+    command_args = handle_ip_policy_command_args(args=args)
 
     response = command_request(**command_args)
-    response = get_mapped_response(response)
-    output_table, _ = get_updated_response_and_readable_output(output=response, command_args=command_args)
+    response = map_api_response_values_to_readable_string(response)
+    output_table, _ = prepare_outputs_and_readable_output(output=response, command_args=command_args)
 
     readable_output = tableToMarkdown(
         name=command_entity_title,
@@ -1780,30 +1749,11 @@ def access_control_create_update_command(client: Client, args: Dict[str, Any]) -
     command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
 
-    command_args = remove_empty_elements(
-        {
-            "access_control_id": args.get("access_control_id"),
-            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
-            "sender_type": AC_PATTERN_TYPE_MAPPER.get(args.get("sender_type", "")),
-            "sender": args.get("sender"),
-            "recipient_type": AC_PATTERN_TYPE_MAPPER.get(args.get("recipient_type", "")),
-            "recipient": args.get("recipient"),
-            "sender_ldap_profile": args.get("sender_ldap_profile"),
-            "recipient_ldap_profile": args.get("recipient_ldap_profile"),
-            "source_type": AC_SENDER_IP_TYPE_MAPPER.get(args.get("source_type", "")),
-            "source": args.get("source"),
-            "reverse_dns_pattern": args.get("reverse_dns_pattern"),
-            "reverse_dns_pattern_regex": BOOLEAN_MAPPER.get(args.get("reverse_dns_pattern_regex", "")),
-            "authentication_status": AC_AUTH_MAPPER.get(args.get("authentication_status", "")),
-            "tls_profile": args.get("tls_profile"),
-            "action": AC_ACTION_MAPPER.get(args.get("action", "")),
-            "comment": args.get("comment"),
-        }
-    )
+    command_args = handle_access_control_command_args(args=args)
 
     response = command_request(**command_args)
-    response = get_mapped_response(response)
-    output_table, _ = get_updated_response_and_readable_output(output=response, command_args=command_args)
+    response = map_api_response_values_to_readable_string(response)
+    output_table, _ = prepare_outputs_and_readable_output(output=response, command_args=command_args)
 
     readable_output = tableToMarkdown(
         name=command_entity_title,
@@ -1834,38 +1784,11 @@ def recipient_policy_create_update_command(client: Client, args: Dict[str, Any])
     command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
 
-    command_args = remove_empty_elements(
-        {
-            "recipient_policy_id": args.get("recipient_policy_id"),
-            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
-            "comment": args.get("comment"),
-            "direction": RP_DIRECTION_MAPPER.get(args.get("type", "")),
-            "sender_type": RP_PATTERN_TYPE_MAPPER.get(args.get("sender_type", "")),
-            "sender_pattern": args.get("sender_pattern"),
-            "sender_ldap_profile": args.get("sender_ldap_profile"),
-            "sender_email_address_group": args.get("sender_email_address_group"),
-            "recipient_email_address_group": args.get("recipient_email_address_group"),
-            "recipient_type": RP_PATTERN_TYPE_MAPPER.get(args.get("recipient_type", "")),
-            "recipient_pattern": args.get("recipient_pattern"),
-            "recipient_ldap_profile": args.get("recipient_ldap_profile"),
-            "antispam_profile": args.get("antispam_profile"),
-            "antivirus_profile": args.get("antivirus_profile"),
-            "content_profile": args.get("content_profile"),
-            "resource_profile": args.get("resource_profile"),
-            "auth_profile": args.get("auth_profile"),
-            "pki_profile": args.get("pki_profile"),
-            "auth_type": RP_AUTH_MAPPER.get(args.get("auth_type", "")),
-            "use_smtp_auth": BOOLEAN_MAPPER.get(args.get("use_smtp_auth", "")),
-            "smtp_different": BOOLEAN_MAPPER.get(args.get("smtp_different", "")),
-            "smtp_diff_identity_ldap": BOOLEAN_MAPPER.get(args.get("smtp_diff_identity_ldap", "")),
-            "smtp_diff_identity_ldap_profile": args.get("smtp_diff_identity_ldap_profile"),
-            "enable_pki": BOOLEAN_MAPPER.get(args.get("enable_pki", "")),
-            "certificate_validation": BOOLEAN_MAPPER.get(args.get("certificate_validation", "")),
-        }
-    )
+    command_args = handle_recipient_policy_command_args(args=args)
+
     response = command_request(**command_args)
-    response = get_mapped_response(response)
-    output_table, _ = get_updated_response_and_readable_output(output=response, command_args=command_args)
+    response = map_api_response_values_to_readable_string(response)
+    output_table, _ = prepare_outputs_and_readable_output(output=response, command_args=command_args)
 
     readable_output = tableToMarkdown(
         name=command_entity_title,
@@ -1947,12 +1870,12 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = command_request(**command_args)
     # Map the response fields values from integer to string to be informative.
-    output = get_mapped_response(response)
+    output = map_api_response_values_to_readable_string(response)
 
     if not argToBoolean(args.get("all_results")):
         output = output[: arg_to_number(args.get("limit"))]
 
-    output_table, output = get_updated_response_and_readable_output(output=output, command_args=command_args)
+    output_table, output = prepare_outputs_and_readable_output(output=output, command_args=command_args)
 
     # Check if command called as list or get command.
     if not command_args:
@@ -1961,7 +1884,8 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         name=command_entity_title,
         t=remove_empty_elements(output_table),
-        headers=list(output_table[0]) if output_table else [],  # Add ordered headers keys by the updated outputs.
+        # Add ordered headers keys by the updated outputs.
+        headers=list(output_table[0]) if output_table else [],
         removeNull=True,
     )
 
@@ -2032,19 +1956,7 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
     command_request = getattr(client, command_request_name)
     # Get the relevant item key to remove
-    command_args = remove_empty_elements(
-        {
-            "name": args.get("name"),
-            "group_name": args.get("group_name"),
-            "ip": args.get("ip"),
-            "email": args.get("email"),
-            "values": args.get("values"),
-            "list_type": args.get("list_type"),
-            "access_control_id": args.get("access_control_id"),
-            "policy_id": args.get("policy_id"),
-            "recipient_policy_id": args.get("recipient_policy_id"),
-        }
-    )
+    command_args = handle_delete_command_args(args=args)
     get_request = getattr(client, command_request_name.replace("delete", "list"))
     # Remove the 'values' argument in case exist before calling GET
     values = command_args.pop("values", None)
@@ -2061,7 +1973,7 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = command_request(**command_args)
     # Get output for removed item cause the API response is empty
-    outputs = get_removed_item_key(command_args)
+    outputs = get_output_for_delete_command(command_args)
 
     return CommandResults(
         readable_output=command_entity_title,
@@ -2083,6 +1995,7 @@ def group_member_add_replace_command(client: Client, args: Dict[str, Any]) -> Co
     Returns:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
+    is_valid_email(args.get("email", args.get("emails")))
     command_name: str = args.get("command_name", "")
     command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
 
@@ -2096,11 +2009,10 @@ def group_member_add_replace_command(client: Client, args: Dict[str, Any]) -> Co
             "emails": argToList(args.get("emails")),
         }
     )
-    is_valid_email(command_args.get("email", command_args.get("emails")))
 
-    output = get_output_for_replaced_and_added_items(command_args=command_args)
     updated_args = update_group_member_args(command_args=command_args)
     response = command_request(**updated_args)
+    output = prepare_output_for_replaced_and_added_items(command_args=command_args)
 
     return CommandResults(
         readable_output=command_entity_title,
@@ -2128,14 +2040,8 @@ def test_module(client: Client) -> str:
         str: : 'ok' if test passed, or an error message if were too many login attempts
             or credentials are incorrect.
     """
-    try:
-        client.list_pki_user()
 
-    except DemistoException as exc:
-        if exc.res is not None and exc.res.status_code == http.HTTPStatus.FORBIDDEN:
-            return AUTHORIZATION_ERROR
-
-        raise exc
+    client.list_pki_user()
     return "ok"
 
 
@@ -2157,11 +2063,11 @@ def is_valid_email(emails: List[str] | str | None):
 
     emails = emails if isinstance(emails, list) else [emails]
     for email in emails:
-        if not re.match(r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$", email):
+        if not re.match(emailRegex, email):
             raise DemistoException(f"{email} is not a valid email address.")
 
 
-def get_mapped_response(response: dict[str, Any]) -> list[dict[str, Any]]:
+def map_api_response_values_to_readable_string(response: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Update the response integer values to readable strings by existing mappers.
     The mapper used to map input arguments from string to integer for the API call
@@ -2184,54 +2090,120 @@ def get_mapped_response(response: dict[str, Any]) -> list[dict[str, Any]]:
 
         # Map access control commands
         if "MailSetAccessRule" in object_id:
-            pattern_type_mapper = reverse_dict(AC_PATTERN_TYPE_MAPPER)
-            auth_mapper = reverse_dict(AC_AUTH_MAPPER)
-            sender_ip_type_mapper = reverse_dict(AC_SENDER_IP_TYPE_MAPPER)
-            action_mapper = reverse_dict(AC_ACTION_MAPPER)
-
-            for item in updated_response:
-                item["sender_pattern_type"] = pattern_type_mapper.get(item.get("sender_pattern_type"))
-                item["recipient_pattern_type"] = pattern_type_mapper.get(item.get("recipient_pattern_type"))
-                item["sender_ip_type"] = sender_ip_type_mapper.get(item.get("sender_ip_type"))
-                item["authenticated"] = auth_mapper.get(item.get("authenticated"))
-                item["action"] = action_mapper.get(item.get("action"))
-                item["status"] = boolean_mapper.get(item.get("status"))
+            updated_response = map_access_control_response(
+                updated_response=updated_response,
+                boolean_mapper=boolean_mapper,
+            )
 
         # Map recipient policy commands
         elif "PolicyRcpt" in object_id:
-            direction_mapper = reverse_dict(RP_DIRECTION_MAPPER)
-            auth_mapper = reverse_dict(RP_AUTH_MAPPER)
-            pattern_type = reverse_dict(RP_PATTERN_TYPE_MAPPER)
-
-            for item in updated_response:
-                item["direction"] = direction_mapper.get(item.get("direction"))
-                item["auth"] = auth_mapper.get(item.get("auth"))
-                item["sender_type"] = pattern_type.get(item.get("sender_type"))
-                item["status"] = boolean_mapper.get(item.get("status"))
-                item["use_smtp_auth"] = boolean_mapper.get(item.get("use_smtp_auth"))
-                item["smtp_different"] = boolean_mapper.get(item.get("smtp_different"))
-                item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap"))
-                item["pkiauth"] = boolean_mapper.get(item.get("pkiauth"))
+            updated_response = map_recipient_policy_response(
+                updated_response=updated_response,
+                boolean_mapper=boolean_mapper,
+            )
 
         # Map policy IP commands
         elif "PolicyIp" in object_id:
-            destination_mapper = reverse_dict(DESTINATION_MAPPER)
-            auth_mapper = reverse_dict(RP_AUTH_MAPPER)
-            ip_action_mapper = reverse_dict(IP_ACTION_MAPPER)
-            source_ip_type_mapper = reverse_dict(AC_SENDER_IP_TYPE_MAPPER)
-
-            for item in updated_response:
-                item["client_type"] = source_ip_type_mapper.get(item.get("client_type"))
-                item["server_type"] = destination_mapper.get(item.get("server_type"))
-                item["action"] = ip_action_mapper.get(item.get("action"))
-                item["auth_type"] = auth_mapper.get(item.get("auth_type"))
-                item["status"] = boolean_mapper.get(item.get("status"))
-                item["exclusive"] = boolean_mapper.get(item.get("exclusive"))
-                item["use_smtp_auth"] = boolean_mapper.get(item.get("use_smtp_auth"))
-                item["smtp_different"] = boolean_mapper.get(item.get("smtp_different"))
-                item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap"))
+            updated_response = map_ip_policy_response(
+                updated_response=updated_response,
+                boolean_mapper=boolean_mapper,
+            )
 
     return remove_empty_elements(updated_response)
+
+
+def map_access_control_response(
+    updated_response: list[dict[str, Any]],
+    boolean_mapper: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """
+    Map access control response values to readable string.
+
+    Args:
+        updated_response (list[dict[str, Any]]): The API response.
+        boolean_mapper (dict[str, Any]): Boolean mapper for enable and disable values.
+
+    Returns:
+        list[dict[str, Any]]: The updated response.
+    """
+    pattern_type_mapper = reverse_dict(AC_PATTERN_TYPE_MAPPER)
+    auth_mapper = reverse_dict(AC_AUTH_MAPPER)
+    sender_ip_type_mapper = reverse_dict(AC_SENDER_IP_TYPE_MAPPER)
+    action_mapper = reverse_dict(AC_ACTION_MAPPER)
+
+    for item in updated_response:
+        item["sender_pattern_type"] = pattern_type_mapper.get(item.get("sender_pattern_type"))
+        item["recipient_pattern_type"] = pattern_type_mapper.get(item.get("recipient_pattern_type"))
+        item["sender_ip_type"] = sender_ip_type_mapper.get(item.get("sender_ip_type"))
+        item["authenticated"] = auth_mapper.get(item.get("authenticated"))
+        item["action"] = action_mapper.get(item.get("action"))
+        item["status"] = boolean_mapper.get(item.get("status"))
+
+    return updated_response
+
+
+def map_recipient_policy_response(
+    updated_response: list[dict[str, Any]],
+    boolean_mapper: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """
+    Map recipient policy response values to readable string.
+
+    Args:
+        updated_response (list[dict[str, Any]]): The API response.
+        boolean_mapper (dict[str, Any]): Boolean mapper for enable and disable values.
+
+    Returns:
+        list[dict[str, Any]]: The updated response.
+    """
+    direction_mapper = reverse_dict(RP_DIRECTION_MAPPER)
+    auth_mapper = reverse_dict(RP_AUTH_MAPPER)
+    pattern_type = reverse_dict(RP_PATTERN_TYPE_MAPPER)
+
+    for item in updated_response:
+        item["direction"] = direction_mapper.get(item.get("direction"))
+        item["auth"] = auth_mapper.get(item.get("auth"))
+        item["sender_type"] = pattern_type.get(item.get("sender_type"))
+        item["status"] = boolean_mapper.get(item.get("status"))
+        item["use_smtp_auth"] = boolean_mapper.get(item.get("use_smtp_auth"))
+        item["smtp_different"] = boolean_mapper.get(item.get("smtp_different"))
+        item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap"))
+        item["pkiauth"] = boolean_mapper.get(item.get("pkiauth"))
+
+    return updated_response
+
+
+def map_ip_policy_response(
+    updated_response: list[dict[str, Any]],
+    boolean_mapper: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """
+    Map IP policy response values to readable string.
+
+    Args:
+        updated_response (list[dict[str, Any]]): The API response.
+        boolean_mapper (dict[str, Any]): Boolean mapper for enable and disable values.
+
+    Returns:
+        list[dict[str, Any]]: The updated response.
+    """
+    destination_mapper = reverse_dict(DESTINATION_MAPPER)
+    auth_mapper = reverse_dict(RP_AUTH_MAPPER)
+    ip_action_mapper = reverse_dict(IP_ACTION_MAPPER)
+    source_ip_type_mapper = reverse_dict(AC_SENDER_IP_TYPE_MAPPER)
+
+    for item in updated_response:
+        item["client_type"] = source_ip_type_mapper.get(item.get("client_type"))
+        item["server_type"] = destination_mapper.get(item.get("server_type"))
+        item["action"] = ip_action_mapper.get(item.get("action"))
+        item["auth_type"] = auth_mapper.get(item.get("auth_type"))
+        item["status"] = boolean_mapper.get(item.get("status"))
+        item["exclusive"] = boolean_mapper.get(item.get("exclusive"))
+        item["use_smtp_auth"] = boolean_mapper.get(item.get("use_smtp_auth"))
+        item["smtp_different"] = boolean_mapper.get(item.get("smtp_different"))
+        item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap"))
+
+    return updated_response
 
 
 def reverse_dict(original_dict: dict[str, Any]) -> dict[str, Any]:
@@ -2247,7 +2219,7 @@ def reverse_dict(original_dict: dict[str, Any]) -> dict[str, Any]:
     return {value: key for key, value in original_dict.items()}
 
 
-def get_removed_item_key(command_args: dict[str, Any]) -> dict[str, Any]:
+def get_output_for_delete_command(command_args: dict[str, Any]) -> dict[str, Any]:
     """
     Get outputs_key_field value for removed item.
 
@@ -2265,7 +2237,7 @@ def get_removed_item_key(command_args: dict[str, Any]) -> dict[str, Any]:
     return {"mkey": next(iter((command_args.values())))}
 
 
-def get_output_for_replaced_and_added_items(command_args: dict[str, Any]) -> dict[str, Any]:
+def prepare_output_for_replaced_and_added_items(command_args: dict[str, Any]) -> dict[str, Any]:
     """
     Get outputs for IPs or emails that replaced or added to a group member.
 
@@ -2285,7 +2257,7 @@ def get_output_for_replaced_and_added_items(command_args: dict[str, Any]) -> dic
         updated_output = [{"mkey": item} for item in command_args.get("emails", [])]
         updated_output += [{"mkey": convert_cidr_to_ip_range(item=item)} for item in command_args.get("ips", [])]
 
-    return {"Member": updated_output, **group_name_data}
+    return {"Member": updated_output} | group_name_data
 
 
 def convert_cidr_to_ip_range(item: str) -> str:
@@ -2305,7 +2277,7 @@ def convert_cidr_to_ip_range(item: str) -> str:
     return f"{ip_data[0]}-{ip_data[0]}"
 
 
-def get_updated_response_and_readable_output(
+def prepare_outputs_and_readable_output(
     output: list[dict[str, Any]],
     command_args: Dict[str, Any],
 ) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
@@ -2389,6 +2361,140 @@ def get_updated_response_and_readable_output(
     return output_table, output
 
 
+def handle_recipient_policy_command_args(args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Get and convert recipient policy command arguments.
+
+    Args:
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        dict[str, Any]: Updated command arguments.
+    """
+    return remove_empty_elements(
+        {
+            "recipient_policy_id": args.get("recipient_policy_id"),
+            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
+            "comment": args.get("comment"),
+            "direction": RP_DIRECTION_MAPPER.get(args.get("type", "")),
+            "sender_type": RP_PATTERN_TYPE_MAPPER.get(args.get("sender_type", "")),
+            "sender_pattern": args.get("sender_pattern"),
+            "sender_ldap_profile": args.get("sender_ldap_profile"),
+            "sender_email_address_group": args.get("sender_email_address_group"),
+            "recipient_email_address_group": args.get("recipient_email_address_group"),
+            "recipient_type": RP_PATTERN_TYPE_MAPPER.get(args.get("recipient_type", "")),
+            "recipient_pattern": args.get("recipient_pattern"),
+            "recipient_ldap_profile": args.get("recipient_ldap_profile"),
+            "antispam_profile": args.get("antispam_profile"),
+            "antivirus_profile": args.get("antivirus_profile"),
+            "content_profile": args.get("content_profile"),
+            "resource_profile": args.get("resource_profile"),
+            "auth_profile": args.get("auth_profile"),
+            "pki_profile": args.get("pki_profile"),
+            "auth_type": RP_AUTH_MAPPER.get(args.get("auth_type", "")),
+            "use_smtp_auth": BOOLEAN_MAPPER.get(args.get("use_smtp_auth", "")),
+            "smtp_different": BOOLEAN_MAPPER.get(args.get("smtp_different", "")),
+            "smtp_diff_identity_ldap": BOOLEAN_MAPPER.get(args.get("smtp_diff_identity_ldap", "")),
+            "smtp_diff_identity_ldap_profile": args.get("smtp_diff_identity_ldap_profile"),
+            "enable_pki": BOOLEAN_MAPPER.get(args.get("enable_pki", "")),
+            "certificate_validation": BOOLEAN_MAPPER.get(args.get("certificate_validation", "")),
+        }
+    )
+
+
+def handle_ip_policy_command_args(args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Get and convert IP policy command arguments.
+
+    Args:
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        dict[str, Any]: Updated command arguments.
+    """
+    return remove_empty_elements(
+        {
+            "ip_policy_id": args.get("ip_policy_id"),
+            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
+            "comment": args.get("comment"),
+            "source": args.get("source"),
+            "destination_type": DESTINATION_MAPPER.get(args.get("destination_type", "")),
+            "destination": args.get("destination", ""),
+            "action": IP_ACTION_MAPPER.get(args.get("action", "")),
+            "source_type": AC_SENDER_IP_TYPE_MAPPER.get(args.get("source_type", "")),
+            "ip_pool_profile": args.get("ip_pool_profile"),
+            "antispam_profile": args.get("antispam_profile"),
+            "antivirus_profile": args.get("antivirus_profile"),
+            "content_profile": args.get("content_profile"),
+            "session_profile": args.get("session_profile"),
+            "auth_profile": args.get("auth_profile"),
+            "auth_type": RP_AUTH_MAPPER.get(args.get("auth_type", "")),
+            "use_smtp_auth": BOOLEAN_MAPPER.get(args.get("use_smtp_auth", "")),
+            "smtp_different": BOOLEAN_MAPPER.get(args.get("smtp_different", "")),
+            "smtp_diff_identity_ldap": BOOLEAN_MAPPER.get(args.get("smtp_diff_identity_ldap", "")),
+            "smtp_diff_identity_ldap_profile": args.get("smtp_diff_identity_ldap_profile"),
+            "exclusive": BOOLEAN_MAPPER.get(args.get("exclusive", "")),
+        }
+    )
+
+
+def handle_access_control_command_args(args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Get and convert access control command arguments.
+
+    Args:
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        dict[str, Any]: Updated command arguments.
+    """
+    return remove_empty_elements(
+        {
+            "access_control_id": args.get("access_control_id"),
+            "status": BOOLEAN_MAPPER.get(args.get("status", "")),
+            "sender_type": AC_PATTERN_TYPE_MAPPER.get(args.get("sender_type", "")),
+            "sender": args.get("sender"),
+            "recipient_type": AC_PATTERN_TYPE_MAPPER.get(args.get("recipient_type", "")),
+            "recipient": args.get("recipient"),
+            "sender_ldap_profile": args.get("sender_ldap_profile"),
+            "recipient_ldap_profile": args.get("recipient_ldap_profile"),
+            "source_type": AC_SENDER_IP_TYPE_MAPPER.get(args.get("source_type", "")),
+            "source": args.get("source"),
+            "reverse_dns_pattern": args.get("reverse_dns_pattern"),
+            "reverse_dns_pattern_regex": BOOLEAN_MAPPER.get(args.get("reverse_dns_pattern_regex", "")),
+            "authentication_status": AC_AUTH_MAPPER.get(args.get("authentication_status", "")),
+            "tls_profile": args.get("tls_profile"),
+            "action": AC_ACTION_MAPPER.get(args.get("action", "")),
+            "comment": args.get("comment"),
+        }
+    )
+
+
+def handle_delete_command_args(args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Get and convert delete command arguments.
+
+    Args:
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        dict[str, Any]: Updated command arguments.
+    """
+    return remove_empty_elements(
+        {
+            "name": args.get("name"),
+            "group_name": args.get("group_name"),
+            "ip": args.get("ip"),
+            "email": args.get("email"),
+            "values": args.get("values"),
+            "list_type": args.get("list_type"),
+            "access_control_id": args.get("access_control_id"),
+            "policy_id": args.get("policy_id"),
+            "recipient_policy_id": args.get("recipient_policy_id"),
+        }
+    )
+
+
 def modify_group_member_args_before_replace(group_members: list[str]) -> dict[str, Any]:
     """
     Get the IP/email group members and modify it for the API.
@@ -2418,16 +2524,18 @@ def update_group_member_args(command_args: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The updated request arguments.
     """
-    if ips := command_args.get("ips"):
+    group_member_args = copy.deepcopy(command_args)
+
+    if ips := group_member_args.get("ips"):
         updated_ips = [convert_cidr_to_ip_range(item) for item in ips]
-        command_args["ips"] = modify_group_member_args_before_replace(group_members=updated_ips)
+        group_member_args["ips"] = modify_group_member_args_before_replace(group_members=updated_ips)
 
-    if emails := command_args.get("emails"):
-        command_args["emails"] = modify_group_member_args_before_replace(group_members=emails)
+    if emails := group_member_args.get("emails"):
+        group_member_args["emails"] = modify_group_member_args_before_replace(group_members=emails)
 
-    if ip := command_args.get("ip"):
-        command_args["ip"] = convert_cidr_to_ip_range(ip)
-    return command_args
+    if ip := group_member_args.get("ip"):
+        group_member_args["ip"] = convert_cidr_to_ip_range(ip)
+    return group_member_args
 
 
 def get_command_entity(command_name: str) -> tuple[str, str, str]:
@@ -2466,7 +2574,7 @@ def main() -> None:
 
     command = demisto.command()
     args["command_name"] = command
-    demisto.debug(f"\n\n***** Command being called is {command}")
+    demisto.debug(f"Command being called is {command}")
 
     try:
         client: Client = Client(
