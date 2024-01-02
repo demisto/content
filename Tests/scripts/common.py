@@ -295,29 +295,30 @@ def are_pipelines_in_order_as_commits(commits, current_pipeline_sha, previous_pi
     return current_pipeline_commit_timestamp > previous_pipeline_commit_timestamp, the_triggering_commit
 
 
-def is_pivot(single_pipeline_id, list_of_pipelines, commits):
+def is_pivot(commit_sha, list_of_pipelines, commits):
     """
-    Check if a given pipeline is a pivot, i.e. if the previous pipeline was successful and the current pipeline failed and vise versa
+    Check if a the pipeline of thee given commit is a pivot, i.e. if the previous pipeline was successful and the current pipeline failed and vise versa
    Args:
-    single_pipeline_id: gitlab pipeline ID
+    commit_sha: string
     list_of_pipelines: list of gitlab pipelines
     commits: list of gitlab commits
     Return:
         boolean | None, gitlab commit object| None
     """
-    current_pipeline = next((pipeline for pipeline in list_of_pipelines if pipeline.id == int(single_pipeline_id)), None)
-    pipeline_index = list_of_pipelines.index(current_pipeline) if current_pipeline else 0
+    commits_pipeline = next(pipeline for pipeline in list_of_pipelines if pipeline.sha == commit_sha)
+    
+    pipeline_index = list_of_pipelines.index( commits_pipeline) if commits_pipeline else 0
     if pipeline_index == 0:         # either current_pipeline is not in the list , or it is the first pipeline
         return None, None
     previous_pipeline = list_of_pipelines[pipeline_index - 1]
 
     # if previous pipeline was successful and current pipeline failed, and current pipeline was created after
     # previous pipeline (n), then it is a negative pivot
-    in_order, pivot_commit = are_pipelines_in_order_as_commits(commits, current_pipeline.sha, previous_pipeline.sha)
+    in_order, pivot_commit = are_pipelines_in_order_as_commits(commits, commits_pipeline.sha, previous_pipeline.sha)
     if in_order:
-        if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
+        if previous_pipeline.status == 'success' and commits_pipeline.status == 'failed':
             return True, pivot_commit
-        if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
+        if previous_pipeline.status == 'failed' and commits_pipeline.status == 'success':
             return False, pivot_commit
     return None, None
 

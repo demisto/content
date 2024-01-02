@@ -484,6 +484,7 @@ def main():
     options = options_handler()
     triggering_workflow = options.triggering_workflow  # ci workflow type that is triggering the slack notifier
     pipeline_id = options.pipeline_id
+    commit_sha = CI_COMMIT_SHA
     project_id = options.gitlab_project_id
     server_url = options.url
     ci_token = options.ci_token
@@ -527,9 +528,7 @@ def main():
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
-        pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
-                                                         list_of_pipelines=list_of_pipelines,
-                                                         commits=commits)
+        pipeline_changed_status, pivot_commit = is_pivot(commit_sha, list_of_pipelines, commits)
         logging.info(f'we are investigating pipeline {pipeline_id}')
         logging.info(f'Pivot commit is {pivot_commit}, pipeline changed status is {pipeline_changed_status}')
         if pipeline_changed_status is not None:
