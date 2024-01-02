@@ -44,7 +44,7 @@ build-machines-cleanup:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     MARKETPLACE_NAME: "marketplacev2"
     NON_REMOVABLE_PACKS: "Base"
 
