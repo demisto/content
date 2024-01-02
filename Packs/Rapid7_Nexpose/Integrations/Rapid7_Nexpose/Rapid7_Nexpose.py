@@ -116,7 +116,15 @@ class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
 class Client(BaseClient):
     """Client class for interactions with Rapid7 Nexpose API."""
 
-    def __init__(self, url: str, username: str, password: str, token: str | None = None, verify: bool = True):
+    def __init__(
+        self,
+        url: str,
+        username: str,
+        password: str,
+        token: str | None = None,
+        verify: bool = True,
+        connection_error_retries: int = CONNECTION_ERRORS_RETRIES
+    ):
         """
         Initialize the client.
 
@@ -135,6 +143,7 @@ class Client(BaseClient):
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
+        self.connection_error_retries = CONNECTION_ERRORS_RETRIES
 
         # Add 2FA token to headers if provided
         if token:
@@ -150,7 +159,7 @@ class Client(BaseClient):
 
     def _http_request(self, **kwargs):
         """Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses."""
-        for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
+        for _time in range(1, self.connection_error_retries + 1):
             try:
                 response = super()._http_request(**kwargs)
                 if REMOVE_RESPONSE_LINKS:
@@ -161,7 +170,7 @@ class Client(BaseClient):
                 if (
                     isinstance(error, DemistoException) and not isinstance(
                         error.exception, requests.ConnectionError
-                    ) or _time == CONNECTION_ERRORS_RETRIES
+                    ) or _time == self.connection_error_retries
                 ):
                     raise
                 else:
@@ -5390,7 +5399,8 @@ def main():  # pragma: no cover
             username=params["credentials"].get("identifier"),
             password=params["credentials"].get("password"),
             token=token,
-            verify=not params.get("unsecure")
+            verify=not params.get("unsecure"),
+            connection_error_retries=arg_to_number(params.get("connection_error_retries")) or CONNECTION_ERRORS_RETRIES
         )
 
         results: CommandResults | list[CommandResults] | dict | str

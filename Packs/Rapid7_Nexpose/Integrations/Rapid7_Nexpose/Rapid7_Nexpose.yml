@@ -25,6 +25,11 @@ configuration:
   name: proxy
   type: 8
   required: false
+- defaultvalue: '5'
+  display: "Number of connection error retries"
+  name: connection_error_retries
+  additionalinfo: "The number of times to try and re-create connections with rapid7 instance when there are temporary connection errors"
+  type: 0
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
