@@ -1,6 +1,6 @@
 # from rasterize import (rasterize, find_zombie_processes, get_chrome_options, CHROME_OPTIONS, rasterize_image_command,
 #                        RasterizeMode, RasterizeType, rasterize_html_command)
-from rasterize import *
+from rasterize_v2 import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
