@@ -68,6 +68,7 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source ${SCRIPT_DIR}/trigger_build_url.sh
 
