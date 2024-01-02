@@ -566,9 +566,9 @@ class Client(BaseClient):
     def get_security_events(self,
                             next_run: str
                             ):
-        url_suffix = "/PasswordVault/API/pta/API/Events/"
-        self._headers["lastUpdatedEventDate"] = next_run
-        return self._http_request("GET", url_suffix)
+        url_suffix = f"/PasswordVault/API/pta/API/Events/"
+        # self._headers["lastUpdatedEventDate"] = next_run
+        return self._http_request("GET", url_suffix, params={"fromUpdateDate": next_run})
 
 
 def test_module(
@@ -582,13 +582,14 @@ def test_module(
     :return: ok if got a valid accesses token
     """
     start, _ = parse_date_range("7 days")
-    start_time_timestamp = str(date_to_timestamp(start))
-    security_events = client.get_security_events(start_time_timestamp)
-    # if there were security events in the last week
-    if security_events:
-        event = security_events[0]
-        if not event.get("id") or not event.get("type") or not event.get("score"):
-            raise Exception("Security events from CyberArk PAS are missing mandatory fields.")
+    # start_time_timestamp = str(date_to_timestamp(start))
+    accounts = client.get_list_accounts("", "", "0", "50", "")
+    # security_events = client.get_security_events(start_time_timestamp)
+    # # if there were security events in the last week
+    # if security_events:
+    #     event = security_events[0]
+    #     if not event.get("id") or not event.get("type") or not event.get("score"):
+    #         raise Exception("Security events from CyberArk PAS are missing mandatory fields.")
     return "ok"
 
 
