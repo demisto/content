@@ -59,36 +59,44 @@ script:
     name: branddefense-get-assets
     outputs:
     - contextPath: branddefense_assets
+    description: Assets from Branddefense Platform.
   - arguments:
     - name: assetid
+    description: The id of the asset.
       required: true
     description: Call a specific asset from Brandefense.
     name: branddefense-get-specific-asset
     outputs:
     - contextPath: branddefense_requested_asset
+    description: The requested asset from Brandefense.
   - arguments: []
     description: Get audit logs from Brandefense platform.
     name: branddefense-get-audit-logs
     outputs:
     - contextPath: branddefense_audit_logs
+    description: Audit logs from Brandefense.
   - arguments:
     - name: audit_log_id
+    description: The id of the audit log from Brandefense platform.
       required: true
     description: Get a specific audit log from Brandefense platform.
     name: branddefense-get-specific-audit-log
     outputs:
     - contextPath: branddefense_requested_audit_log
+    description: The requested audit log from Brandefense.
   - arguments:
     - name: search_uuid
     description: Get Threat Search endpoint allows you to investigate indicator of compromises by UUID.
     name: branddefense-get-threat-search
   - arguments:
     - name: incident_code
+    description: The incident code for the unique incident on the Brandefense.
       required: true
     description: Search for a specific incident on Brandefense.
     name: branddefense-get-specific-incident
     outputs:
     - contextPath: branddefense_requested_incident
+    description: The requested incident via incident code from Brandefense.
   - arguments:
     - description: The required code parameter should be given to perform incident searches on Brandefense.
       name: incident_code
