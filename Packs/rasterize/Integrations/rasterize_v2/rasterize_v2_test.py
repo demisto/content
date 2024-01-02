@@ -69,28 +69,6 @@ def test_rasterize_no_defunct_processes(caplog, capfd):
         caplog.clear()
 
 
-# @pytest.mark.filterwarnings('ignore::ResourceWarning')
-# def test_find_zombie_processes(mocker):
-#     ps_output = '''   PID  PPID S CMD
-#     1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
-#    39     1 Z [soffice.bin] <defunct>
-#    55     1 Z [gpgconf] <defunct>
-#    57     1 Z [gpgconf] <defunct>
-#    59     1 Z [gpg] <defunct>
-#    61     1 Z [gpgsm] <defunct>
-#    63     1 Z [gpgconf] <defunct>
-#    98     1 Z [gpgconf] <defunct>
-#   100     1 Z [gpgconf] <defunct>
-#   102     1 Z [gpg] <defunct>
-# '''
-#     mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
-#     mocker.patch.object(os, 'getpid', return_value=1)
-#     zombies, output = find_zombie_processes()
-
-#     assert len(zombies) == 9
-#     assert output == ps_output
-
-
 def test_get_chrome_options():
     res = get_chrome_options(CHROME_OPTIONS, '')
     assert res == CHROME_OPTIONS
