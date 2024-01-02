@@ -507,11 +507,7 @@
     - section_start "Validate Files and Yaml"
     - |
       ./Tests/scripts/linters_runner.sh
-      if [ $VALIDATE_SCRIPT == "old-validate-flow" ]; then
-        ./Tests/scripts/validate.sh
-      else
-        ./Tests/scripts/new_validate.sh
-      fi
+      ./Tests/scripts/validate.sh
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
@@ -536,12 +532,7 @@
     - section_end "Revoking GCP Auth"
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
-  parallel:
-      matrix:
-        - VALIDATE_SCRIPT: ['old-validate-flow','new-validate-flow']
-  rules:
-    - if: '$VALIDATE_SCRIPT == "new-validate-flow"'
-      allow_failure: true
+
 .jobs-done-check:
   stage: are-jobs-really-done
   extends:
