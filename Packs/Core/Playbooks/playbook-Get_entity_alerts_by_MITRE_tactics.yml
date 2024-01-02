@@ -2,7 +2,7 @@ id: Get entity alerts by MITRE tactics
 version: -1
 name: Get entity alerts by MITRE tactics
 description: |-
-  This playbook searches XDR alerts related to specific entities , on a given timeframe, based on MITRE tactics.
+  This playbook searches XDR alerts related to specific entities, on a given timeframe, based on MITRE tactics.
   Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
 starttaskid: "0"
 tasks:
@@ -312,7 +312,7 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
@@ -2113,7 +2113,7 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
