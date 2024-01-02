@@ -130,6 +130,7 @@ class TestGetRequestsKwargs:
 
 class TestPrepareCommands:
 
+    @freeze_time('2022-04-14T00:00:00Z')
     def test_prepare_get_changes(self):
         """
             Given:
