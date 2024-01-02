@@ -1,4 +1,5 @@
 Update an AWS - EC2 instance with a list of accounts in an AWS organization, which will allow EC2 commands to run in all of them.
+This script can be run on a schedule to keep an AWS - EC2 instance in sync with the created, deleted or removed accounts of the organization.
 
 ### Prerequisites
 - An ***AWS - EC2*** instance.
