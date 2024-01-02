@@ -224,13 +224,16 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
             investigation_id = qradar_incident_response.get("investigationId")
             assert investigation_id, f'investigation ID is empty in {qradar_incident_response}'
 
+            close_offense_command = f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED"
+
             # close the qradar offense
             war_room_entries, context = xsoar_saas_client.run_cli_command(
-                f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
+                close_offense_command,
                 investigation_id=investigation_id
             )
             assert context.get("QRadar", {}).get("Offense", {}).get(
-                "Status") == "CLOSED", f"Error validating context when closing qradar command, context: {context}, " \
+                "Status") == "CLOSED", f"Error validating context when running " \
+                                       f"{close_offense_command} command, context: {context}, " \
                                        f"war-rooom error entries: " \
                                        f"{xsoar_saas_client.get_formatted_error_entries(war_room_entries)}"
 
