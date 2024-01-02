@@ -228,8 +228,7 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
 
 def get_pipelines_and_commits(gitlab_client: Gitlab, project_id, look_back_hours: int):
     """
-    Get all pipelines and commits on the master branch in the last X hours,
-    pipelines are filtered to only include successful and failed pipelines.
+    Get all pipelines and commits on the master branch in the last X hours.
     Args:
         gitlab_client - the gitlab instance
         project_id - the id of the project to query
@@ -247,11 +246,7 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id, look_back_hours
     pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
                                        source='push', order_by='id', sort='asc')
 
-    # Filter out pipelines that are not done
-    filtered_pipelines = [
-        pipeline for pipeline in pipelines if pipeline.status in ('success', 'failed')]
-
-    return filtered_pipelines, commits
+    return pipelines, commits
 
 
 def shame(commit):
