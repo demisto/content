@@ -1218,14 +1218,14 @@ script:
       description: Whether the DNS indicator is active (only for hosts).
       name: dnsActive
       predefined:
-      - 'True'
-      - 'False'
+      - True
+      - False
     - auto: PREDEFINED
       description: Whether the indicator is active (only for hosts).
       name: whoisActive
       predefined:
-      - 'True'
-      - 'False'
+      - True
+      - False
     - auto: PREDEFINED
       description: The security label applied to the incident.
       name: securityLabel
@@ -1818,8 +1818,8 @@ script:
       description: Whether the file is malware. If "true", ThreatConnect creates a password-protected ZIP file on your local machine that contains the sample and uploads the ZIP file.
       name: malware
       predefined:
-      - 'true'
-      - 'false'
+      - True
+      - False
     - description: The password of the ZIP file.
       name: password
     - auto: PREDEFINED

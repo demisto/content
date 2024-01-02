@@ -54,12 +54,12 @@ class Client(BaseClient):
         self.base_url = base_url
         self.verify = verify
 
-    def make_request(self, method: Method, url_suffix: str, payload: dict = None, params: dict = None,
+    def make_request(self, method: Method, url_suffix: str, payload: str = None, params: dict = None,
                      parse_json=True, content_type=None, responseType='json'):  # pragma: no cover # noqa # type: ignore
         headers = self.create_header(url_suffix, method)
         if content_type:
             headers['Content-Type'] = content_type
-        response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type=responseType,
+        response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type=responseType, # type: ignore
                                       params=params,
                                       headers=headers)
         return response
@@ -595,7 +595,7 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
         }
     })
     url = '/api/v3/groups'
-    response = client.make_request(Method.POST, url, payload=payload)  # type: ignore
+    response = client.make_request(Method.POST, url, payload=payload)
 
     ec = {
         'ID': response.get('data').get('id'),
@@ -620,17 +620,17 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
 
 def set_additional_data(labels: list, mode: str = '') -> dict:
     """
-    Sets the security labels in the api structure
+    Sets the security labels and tags in the API structure
     Args:
-        labels: list of security labels
+        labels: list of labels
         mode: mode for update commands
     Returns:
-        Security labels dictionary
+        Labels dictionary
     """
-    labels = {'data': [{'name': label} for label in labels]}
+    data = {'data': [{'name': label} for label in labels]}
     if mode:
-        labels['mode'] = mode
-    return labels
+        data['mode'] = mode
+    return data
 
 
 def set_victim_asset(is_update,
@@ -654,7 +654,7 @@ def set_victim_asset(is_update,
     """
 
     body = {MAP_ASSET_TYPE_TO_REQUEST_KEY[asset_type]: asset_value}
-    if  not is_update:
+    if not is_update:
         body['type'] = asset_type
     if address_type:
         body['addressType'] = address_type
@@ -677,7 +677,6 @@ def set_fields(fields: Optional[list], is_victim_command: bool = False) -> str: 
             else:
                 fields_str += '&fields=associatedIndicators&fields=associatedVictimAssets'
             return fields_str
-
 
         for field in fields:
             fields_str += f'&fields={field}'
@@ -1002,7 +1001,7 @@ def create_document_group(client: Client, args: dict) -> None:  # pragma: no cov
     contents = f.read()
     url = f'/api/v3/groups/{group_id}/upload'
     payload = f"{contents}"  # type: ignore
-    client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')  # type: ignore
+    client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')
     content = {
         'ID': group_id,
         'Name': response.get('name'),
@@ -1147,7 +1146,7 @@ def create_group(client: Client, args: dict, name: str = '', event_date: str = '
             payload['malware'] = malware
             payload['password'] = password
     url = '/api/v3/groups'
-    response = client.make_request(Method.POST, url, payload=json.dumps(payload))  # type: ignore
+    response = client.make_request(Method.POST, url, payload=json.dumps(payload))
 
     return response.get('data')
 
@@ -1189,7 +1188,7 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
         payload[hash_type] = indicator
 
     url = '/api/v3/indicators'
-    response = client.make_request(Method.POST, url, payload=json.dumps(payload))  # type: ignore
+    response = client.make_request(Method.POST, url, payload=json.dumps(payload))
 
     ec, human_readable = create_context([response.get('data')])
     return_results({
@@ -1230,7 +1229,7 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
     if args.get('incidentId', incident_id):
         payload['associatedGroups'] = {'data': [{'id': args.get('incidentId', incident_id)}], 'mode': mode}
     url = f'/api/v3/indicators/{indicator}'
-    response = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore[arg-type]
+    response = client.make_request(Method.PUT, url, payload=json.dumps(payload))
 
     if return_raw:
         return response.get('data'),
@@ -1345,7 +1344,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
     if not group_id:
         group_id = args.get("id")
     url = f'/api/v3/groups/{group_id}'
-    response = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore
+    response = client.make_request(Method.PUT, url, payload=json.dumps(payload))
 
     if raw_data:
         return response.get('data')
@@ -1730,10 +1729,10 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
         social_network = args.get('asset_social_network')
         asset = set_victim_asset(is_update=False,
                                  asset_type=asset_type,
-                                asset_value=asset_value,
-                                address_type=address_type,
-                                network_type=network_type,
-                                social_network=social_network)
+                                 asset_value=asset_value,
+                                 address_type=address_type,
+                                 network_type=network_type,
+                                 social_network=social_network)
         body['assets'] = {'data': [asset]}
 
     # Create attribute for the victim
@@ -1741,7 +1740,6 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
     attribute_value = args.get('attribute_value')
     if attribute_value and attribute_type:
         body['attributes'] = {'data': [{'type': attribute_type, 'value': attribute_value}]}
-
 
     if associated_groups_ids := argToList(args.get('associated_groups_ids')):
         body['associatedGroups'] = {'data': [{'id': associated_group_id} for associated_group_id in associated_groups_ids]}
@@ -1756,7 +1754,6 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
         raw_response=response,
         readable_output=readable_output,
     ))
-
 
 
 def tc_update_victim_command(client: Client, args: dict) -> None:
@@ -1785,7 +1782,7 @@ def tc_update_victim_command(client: Client, args: dict) -> None:
         body['workLocation'] = work_location
 
     # Create asset for the victim
-    asset_type =args.get('asset_type')
+    asset_type = args.get('asset_type')
     asset_value = args.get('asset_value')
     if asset_type and asset_value:
         asset_type = AssetType(asset_type)
@@ -1854,7 +1851,6 @@ def tc_list_victims_command(client: Client, args: dict) -> None:
     include_security_labels = argToBoolean(args.get('include_security_labels', False))
     include_all_metadata = argToBoolean(args.get('include_all_metaData', False))
 
-
     list_of_fields = [field for field, should_include in
                       {'securityLabels': include_security_labels,
                        'attributes': include_attributes,
@@ -1909,7 +1905,7 @@ def tc_create_victim_asset_command(client: Client, args: dict) -> None:
                             address_type=address_type,
                             network_type=network_type,
                             social_network=social_network)
-    body |=  {'victimId': victim_id, 'type': asset_type}
+    body |= {'victimId': victim_id, 'type': asset_type}
 
     response = client.make_request(method=Method.POST, url_suffix=VICTIM_ASSET_API_PREFIX, payload=json.dumps(body))
     outputs = response.get('data', {})
@@ -1922,6 +1918,7 @@ def tc_create_victim_asset_command(client: Client, args: dict) -> None:
         readable_output=readable_output,
     ))
 
+
 def tc_update_victim_asset_command(client: Client, args: dict):
     """
     Updates a victim asset
@@ -1931,7 +1928,8 @@ def tc_update_victim_asset_command(client: Client, args: dict):
     """
     victim_asset_id = args.get('victim_asset_id')
     # type is needed to determine which value should be sent in the request body
-    victim_asset = client.make_request(method=Method.GET, url_suffix=f'{VICTIM_ASSET_API_PREFIX}/{victim_asset_id}').get('data', {})
+    victim_asset = client.make_request(method=Method.GET,
+                                       url_suffix=f'{VICTIM_ASSET_API_PREFIX}/{victim_asset_id}').get('data', {})
     asset_type = AssetType(victim_asset.get('type'))
 
     asset_value = args.get('asset_value')
