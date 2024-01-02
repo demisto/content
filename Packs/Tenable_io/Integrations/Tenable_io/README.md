@@ -50,6 +50,9 @@ This integration was integrated and tested with January 2023 release of Tenable.
 | Three concurrent requests per Tenable.io customer instance.<br>Note: This limit is subject to change.                                                                     | tenable-io-list-scans<br>tenable-io-launch-scan<br>tenable-io-get-scan-report<br>tenable-io-get-vulnerability-details<br>tenable-io-get-vulnerabilities-by-asset <br>tenable-io-get-scan-status<br>tenable-io-resume-scan<br>tenable-io-pause-scan<br>tenable-io-get-asset-details |
 | Two concurrent asset exports per container. Tenable.io also prevents duplicate exports from running concurrently. <br>For example, export requests with the same filters. | tenable-io-export-assets<br>tenable-io-export-vulnerabilities                                                                                                                                                                                                                      |
 
+## Notes:
+- ***Fetch assets and vulnerabilities*** command fetches assets and vulnerabilities from the last 90 days only.
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
