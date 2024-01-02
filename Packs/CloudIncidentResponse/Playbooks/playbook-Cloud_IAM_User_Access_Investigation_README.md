@@ -18,7 +18,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* CortexCoreIR
 
 ### Scripts
 
