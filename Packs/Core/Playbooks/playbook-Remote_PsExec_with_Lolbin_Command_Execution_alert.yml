@@ -1011,6 +1011,8 @@ inputs:
   description: The IDs of the victim endpoint
   playbookInputQuery:
 outputs: []
+tests:
+- No tests
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
