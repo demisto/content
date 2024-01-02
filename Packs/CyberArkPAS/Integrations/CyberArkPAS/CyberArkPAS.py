@@ -583,7 +583,7 @@ def test_module(
     """
     start, _ = parse_date_range("7 days")
     # start_time_timestamp = str(date_to_timestamp(start))
-    accounts = client.get_list_accounts("", "", "0", "50", "")
+    client.get_list_accounts("", "", "0", "50", "")
     # security_events = client.get_security_events(start_time_timestamp)
     # # if there were security events in the last week
     # if security_events:
