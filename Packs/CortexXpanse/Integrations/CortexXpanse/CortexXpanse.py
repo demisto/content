@@ -279,6 +279,13 @@ class Client(BaseClient):
 
         return response
 
+    def get_external_websites(self, request_data: dict) -> Dict[str, Any]:
+        data = {"request_data": request_data}
+
+        response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/get_external_websites/', json_data=data)
+
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -976,6 +983,36 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
     return command_results
 
 
+def get_external_websites_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = args.get('limit', DEFAULT_SEARCH_LIMIT)
+    searchFilter = args.get('filter')
+    if limit > MAX_ALERTS:
+        raise ValueError('Limit cannot be more than 100, please try again')
+
+    request_data = {}
+    if searchFilter != 'ALL':
+        request_data = {"filters": {"field": "authentication",
+                                    "operator": "contains",
+                                    "value": searchFilter}}
+    request_data["search_to"] = limit
+    response = client.get_external_websites(request_data)
+
+    hosts = []
+    for each in response['reply']['websites']:
+        hosts.append(each['host'])
+
+    human_readable = (f"Total results: {len(hosts)}\n{tableToMarkdown('External Websites Domains', {'Domains': hosts})}" if hosts
+                      else "No Results")
+    command_results = CommandResults(
+        outputs_prefix='ASM.ExternalWebsites',
+        outputs_key_field='',
+        outputs=[response.get('reply', {})],
+        raw_response=response,
+        readable_output=human_readable
+    )
+    return command_results
+
+
 def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-update-incident command: Updates the state of an incident.
@@ -1381,6 +1418,7 @@ def main() -> None:
             'asm-get-incident': get_incident_command,
             'asm-update-incident': update_incident_command,
             'asm-update-alerts': update_alert_command,
+            'asm-get-external-websites': get_external_websites_command,
             'ip': ip_command,
             'domain': domain_command
         }
