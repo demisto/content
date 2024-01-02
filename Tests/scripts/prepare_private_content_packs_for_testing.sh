@@ -24,12 +24,12 @@ mkdir -p "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/" || echo "Directory ${ARTIFACTS_
 gcloud auth activate-service-account --key-file="$KF" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/gcloud_auth.log" 2>&1
 echo "Auth loaded successfully."
 
-GCS_MARKET_BUCKET="${TEST_XDR_PREFIX}marketplace-dist"
-GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build-private"
-GCS_PRIVATE_TESTING_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build-private"
-GCS_PRIVATE_PROD_BUCKET="${TEST_XDR_PREFIX}marketplace-dist-private"
-GCS_TESTING_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
-GCS_PUBLIC_PROD_BUCKET="${TEST_XDR_PREFIX}marketplace-dist"
+GCS_MARKET_BUCKET="marketplace-dist"
+GCS_BUILD_BUCKET="marketplace-ci-build-private"
+GCS_PRIVATE_TESTING_BUCKET="marketplace-ci-build-private"
+GCS_PRIVATE_PROD_BUCKET="marketplace-dist-private"
+GCS_TESTING_BUCKET="marketplace-ci-build"
+GCS_PUBLIC_PROD_BUCKET="marketplace-dist"
 SOURCE_PATH="content/packs"
 
 PRIVATE_BUILD_BUCKET_PATH="content/builds/$GIT_BRANCH/$GITHUB_RUN_NUMBER"
@@ -41,8 +41,8 @@ gsutil -m cp -r "gs://$GCS_PRIVATE_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_PRIVATE_
 echo "Finished copying private bucket successfully."
 
 
-echo "Copying index.zip at: gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip to target path: gs://marketplace-ci-build/private/dummy_index/index.zip ..."
-gsutil -m cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build/private/dummy_index/index.zip" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
+echo "Copying index.zip at: gs://marketplace-dist/content/packs/index.zip to target path: gs://marketplace-ci-build/private/dummy_index/index.zip ..."
+gsutil -m cp "gs://marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build/private/dummy_index/index.zip" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
 echo "Finished copying private index.zip successfully."
 
 
