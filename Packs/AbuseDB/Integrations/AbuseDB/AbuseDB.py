@@ -166,7 +166,7 @@ def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
                 "IsTor": analysis.get("isTor"),
                 "IsWhitelisted": analysis.get("isWhitelisted"),
                 "LastReportedAt": analysis.get("lastReportedAt"),
-                "NumDistinctUsers": analysis.get("numDistinctUsers"),
+                "NumDistinctUsers": analysis.get("numDistinctUsers")
             }
         }
 
