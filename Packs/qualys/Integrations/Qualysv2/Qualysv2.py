@@ -4,13 +4,10 @@ from collections.abc import Callable
 
 
 import requests
-				  
-
 from urllib3 import disable_warnings
 
 
 disable_warnings()  # pylint: disable=no-member
-										  
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -1416,12 +1413,7 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
             "end_after",
             "target_from",
             "tag_include_selector", "tag_exclude_selector", "tag_set_by", "tag_set_include", "tag_set_exclude",
-								   
-						 
-							  
-							  
             "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude",
-										   
             "active",
             "scanners_in_network",
             "fqdn",
@@ -2047,7 +2039,7 @@ def handle_asset_tag_request_parameters(args: dict[str, str], command_name: str)
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
         TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
 
-		  
+
 
 
 """ PARSERS """
@@ -2571,7 +2563,7 @@ def build_tag_asset_output(**kwargs) -> tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
-									
+
     if type(handled_result) == dict and (children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
         handled_result["childTags"] = children_list
         handled_result.pop("children")
@@ -2948,4 +2940,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
