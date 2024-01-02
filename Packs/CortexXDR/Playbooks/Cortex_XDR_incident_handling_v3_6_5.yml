@@ -1593,14 +1593,14 @@ tasks:
     continueonerrortype: ""
   "78":
     id: "78"
-    taskid: cd52a989-d59a-4204-831c-60f8724e6a20
+    taskid: bbbe7cb3-668d-4dc2-80a3-7ff7a1586e6a
     type: playbook
     task:
-      id: cd52a989-d59a-4204-831c-60f8724e6a20
+      id: bbbe7cb3-668d-4dc2-80a3-7ff7a1586e6a
       version: -1
-      name: Cortex XDR Alerts Handling
-      description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan"
-      playbookName: Cortex XDR Alerts Handling
+      name: Cortex XDR Alerts Handling v2
+      description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation."
+      playbookName: Cortex XDR Alerts Handling v2
       type: playbook
       iscommand: false
       brand: ""
@@ -1631,7 +1631,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 340
+          "y": 350
         }
       }
     note: false
