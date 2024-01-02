@@ -23,7 +23,7 @@ Two applications and two instances are required, one for the administrator and o
 Configuration:
 
 1. In the Microsoft website:
-   1. Create "Admin" application with the `Sites.FullControl.All - Application` permission.
+   1. Create "Admin" application with the `Sites.FullControl.All` permission.
    2. Create "User" application with the `Site.Selected - Application` permission.
 2. In Cortex XSOAR, navigate to **Settings** > **Integrations**.
 3. Search for O365 File Management (Onedrive/Sharepoint/Teams).
@@ -86,6 +86,11 @@ Deletes an item from OneDrive.
 
 `msgraph-delete-file`
 
+#### Required Permissions
+
+Client Credentials Flow - `Files.ReadWrite.All - Application`\
+Authorization Code Flow - `Files.ReadWrite	- Delegated`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -117,6 +122,11 @@ Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 #### Base Command
 
 `msgraph-upload-new-file`
+
+#### Required Permissions
+
+Client Credentials Flow - `Files.ReadWrite.All - Application`\
+Authorization Code Flow - `Files.ReadWrite	- Delegated`
 
 #### Input
 
@@ -218,6 +228,12 @@ Replaces the content of the file in the specified MS Graph resource.
 #### Base Command
 
 `msgraph-replace-existing-file`
+
+#### Required Permissions
+
+Client Credentials Flow - `Files.ReadWrite.All - Application`\
+Authorization Code Flow - `Files.ReadWrite	- Delegated`
+
 
 #### Input
 
@@ -322,6 +338,11 @@ Creates a new folder in a drive with the specified parent item or path.
 
 `msgraph-create-new-folder`
 
+#### Required Permissions
+
+Client Credentials Flow - `Files.ReadWrite.All - Application`\
+Authorization Code Flow - `Files.ReadWrite	- Delegated`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -418,6 +439,11 @@ Returns the list of document libraries (drives) available for a target site.
 
 `msgraph-list-drives-in-site`
 
+#### Required Permissions
+
+Client Credentials Flow - `Files.Read.All - Application`\
+Authorization Code Flow - `Files.Read	- Delegated`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -498,6 +524,11 @@ Returns a list of files and folders in the specified drive.
 #### Base Command
 
 `msgraph-list-drive-content`
+
+#### Required Permissions
+
+Client Credentials Flow - `Files.Read.All - Application`\
+Authorization Code Flow - `Files.Read	- Delegated`
 
 #### Input
 
@@ -603,6 +634,11 @@ Returns a list of the tenant sites. This command requires the 'Sites.Read.All' p
 
 `msgraph-list-sharepoint-sites`
 
+#### Required Permissions
+
+Client Credentials Flow - `Sites.Read.All - Application`\
+Authorization Code Flow - `Sites.Read.All - Delegated`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -671,6 +707,11 @@ Downloads the file contents of the drive item.
 
 `msgraph-download-file`
 
+#### Required Permissions
+
+Client Credentials Flow - `Files.Read.All - Application`\
+Authorization Code Flow - `Files.Read - Delegated`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -700,31 +741,14 @@ Downloads the file contents of the drive item.
 ```!msgraph-download-file object_type=drives object_type_id=123 item_id=123```
 
 
-### msgraph-files-auth-reset
-
-***
-Run this command if for some reason you need to rerun the authentication process.
-
-#### Base Command
-
-`msgraph-files-auth-reset`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
 ### msgraph-list-site-permissions
 
 ***
 List of apps with permissions for the site. If permission_id is provided, it will return the details of that permission.
 
-#### Permission required
+#### Required Permissions
 
-`Sites.FullControl.All  - Application`
+`Sites.FullControl.All`
 The command only runs from admin instance.
 
 #### Base Command
@@ -818,9 +842,9 @@ The command only runs from admin instance.
 ***
 Create a new application permission for a site.
 
-#### Permission required
+#### Required Permissions
 
-`Sites.FullControl.All  - Application`
+`Sites.FullControl.All`
 The command only runs from admin instance.
 
 #### Base Command
@@ -891,9 +915,9 @@ There is no context output for this command.
 ***
 Updates an existing permission for a site.
 
-#### Permission required
+#### Required Permissions
 
-`Sites.FullControl.All  - Application`
+`Sites.FullControl.All`
 The command only runs from admin instance.
 
 #### Base Command
@@ -926,9 +950,9 @@ There is no context output for this command.
 ***
 Deletes an app permission from a site.
 
-#### Permission required
+#### Required Permissions
 
-`Sites.FullControl.All  - Application`
+`Sites.FullControl.All`
 The command only runs from admin instance.
 
 #### Base Command
@@ -979,6 +1003,23 @@ Generate the login url used for Authorization code flow.
 #### Base Command
 
 `msgraph-files-generate-login-url`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-files-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-files-auth-reset`
 
 #### Input
 
