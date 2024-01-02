@@ -1271,6 +1271,8 @@ inputSections:
   - requireAnalystReview
   - ShouldCloseAutomatically
   - ShouldHandleFPautomatically
+  - cloudProvider
+  - alert_id
   name: Alert Management
   description: Alert management settings and data, including escalation processes, user engagements, and ticketing methods
 - inputs:
@@ -1302,11 +1304,6 @@ inputSections:
   - GCP-userRemediationType
   name: GCP Remediation
   description: GCP Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
-  - alert_id
-  - cloudProvider
-  name: Alert Data
-  description: Alert details and metadata.
 - inputs:
   - ShouldOpenTicket
   - serviceNowShortDescription
