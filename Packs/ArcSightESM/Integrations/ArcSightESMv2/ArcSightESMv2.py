@@ -340,6 +340,7 @@ def get_query_viewer_results(query_viewer_id):
     ]
     """
     results = [{field: result.get('value')[idx].get('$') for idx, field in enumerate(fields)} for result in results]
+    demisto.debug(f"XSUP-29725: results of get_query_viewer_results {results}")
     return fields, results
 
 
@@ -378,11 +379,14 @@ def fetch():
     type_of_incident = 'case' if events_query_viewer_id else 'event'
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
     already_fetched = last_run.get('already_fetched', [])
-
+    demisto.debug(f"XSUP-29725: Current last run is {last_run}")
     fields, query_results = get_query_viewer_results(events_query_viewer_id or cases_query_viewer_id)
     # sort query_results by creation time
     query_results.sort(key=lambda k: int(k.get('Start Time') or k.get('Create Time')))
-
+    start_time_query_sort = query_results.sort(key=lambda k: int(k.get('Start Time')))
+    create_time_query_sort = query_results.sort(key=lambda k: int(k.get('Create Time')))
+    demisto.debug(f"XSUP-29725: sorting by Start time {start_time_query_sort}")
+    demisto.debug(f"XSUP-29725: sorting by create time {create_time_query_sort}")
     incidents = []
     for result in query_results:
         # convert case or event to demisto incident
@@ -412,9 +416,10 @@ def fetch():
     last_run = {
         'already_fetched': already_fetched,
     }
+    demisto.debug(f"XSUP-29725: New last run is {last_run}")
     demisto.setLastRun({'value': json.dumps(last_run)})
     decode_arcsight_output(incidents)
-
+    demisto.debug(f"XSUP-29725: incidents {incidents}")
     if demisto.command() == 'as-fetch-incidents':
         contents = {
             'last_run': last_run,
