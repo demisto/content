@@ -1,0 +1,47 @@
+name: Run External Tests
+
+on:
+  pull_request:
+  
+jobs:
+  test_master:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install pytest
+        run: python -m pip install pytest
+
+      - name: Find companion branch on other repo
+        run:  |
+         GIT_OUTPUT=$(git ls-remote --heads git@github.com:demisto/content.git refs/heads/${{ github.ref_name }} | wc -l)
+          if [ $GIT_OUTPUT == "1" ]; then
+            echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "BRANCH_NAME=master" >> $GITHUB_ENV
+          fi
+
+      - name: Print companion branch name
+        run: echo ${{ env.BRANCH_NAME }}
+
+      - name: Checkout Custom Tests
+        uses: actions/checkout@v4
+        with:
+            repository: dorschw/CustomContentTests
+            path: custom_tests
+            ref: ${{ env.BRANCH_NAME }}
+
+      - name: Checkout Content
+        uses: actions/checkout@v4
+        with:
+            path: content
+            ref: ${{ github.ref_name}}
+
+      - name: Copy content into respective Tests dir
+        run: python custom_tests/.github/workflows/copy_content_into_tests.py
+
+      - name: Run Pytest
+        run: python -m pytest custom_tests/**/test_*.py
