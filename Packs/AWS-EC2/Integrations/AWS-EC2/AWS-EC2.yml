@@ -716,9 +716,9 @@ script:
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: Filters
-    - description: One or more launch template names. Sepereted by comma.
+    - description: A comma-separated list of launch template names.
       name: LaunchTemplateNames
-    - description: One or more launch template IDs. Sepereted by comma.
+    - description: A comma-separated list of launch template IDs.
       name: LaunchTemplateIds
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -764,7 +764,7 @@ script:
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more key pair names. Sepereted by comma.
+    - description: A comma-separated list of key pair names.
       name: keyNames
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -792,7 +792,7 @@ script:
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more volume IDs. Sepereted by comma.
+    - description: A comma-separated list of volume IDs.
       name: volumeIds
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -862,7 +862,7 @@ script:
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more VPC IDs. Sepereted by comma.
+    - description: A comma-separated list of VPC IDs.
       name: vpcIds
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -929,7 +929,7 @@ script:
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more subnet IDs. Sepereted by comma.
+    - description: A comma-separated list of subnet IDs.
       name: subnetIds
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -993,9 +993,9 @@ script:
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more security group IDs. Required for security groups in a nondefault VPC. Sepereted by comma.
+    - description: A comma-separated list of security group IDs. Required for security groups in a non-default VPC.
       name: groupIds
-    - description: One or more security group names. Sepereted by comma.
+    - description: A comma-separated list of security group names.
       name: groupNames
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -1440,7 +1440,7 @@ script:
     execution: true
     name: aws-ec2-release-address
   - arguments:
-    - description: One or more instance IDs. Sepereted by comma.
+    - description: A comma-separated list of instance IDs.
       name: instanceIds
       required: true
     - description: The AWS Region, if not specified the default region will be used.
@@ -1674,7 +1674,7 @@ script:
       name: imageId
     - description: 'The instance type. for example: t2.large'
       name: instanceType
-    - description: One or more security group IDs. Sepereted by comma.
+    - description: One or more security group IDs.
       name: securityGroupIds
     - description: One or more security group names. For a nondefault VPC, you must use security group IDs instead.
       name: securityGroups
@@ -3932,7 +3932,6 @@ script:
       name: roleSessionDuration
     description: Release on demand dedicated host.
     name: aws-ec2-release-hosts
-
   - arguments:
     - description: The ID of the EBS snapshot.
       name: snapshotId
