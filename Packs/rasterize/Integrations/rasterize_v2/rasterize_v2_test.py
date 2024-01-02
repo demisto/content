@@ -108,6 +108,7 @@ def test_get_chrome_options():
     res = get_chrome_options(CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
+
 def test_rasterize_large_html(capfd):
     with capfd.disabled():
         path = os.path.realpath('test_data/large.html')
@@ -298,7 +299,6 @@ class TestRasterizeIncludeUrl:
 
         def quit(self):
             pass
-
 
     @pytest.mark.parametrize('include_url', [False, True])
     def test_sanity_rasterize_with_include_url(self, mocker, include_url, capfd):

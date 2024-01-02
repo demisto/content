@@ -1,7 +1,9 @@
 # TODO rasterizeV2-Pre-Release
 # TODO V start_chrome_headless.sh in Python
-# TODO V Restart the chrome after 500 rasterizations
-# TODO V/2 Write the pid in a local file. Use the pid os the subprocess when starting the chrome from Python. Use DevTools, or kill the process
+# TODO V Restart the Chrome after 500 rasterizations
+# TODO V/2 Write the pid in a local file.
+#      Use the pid os the subprocess when starting the Chrome from Python.
+#      Use DevTools, or kill the process
 # TODO V Backwards Compatibility: Add support for full_Screen
 # TODO V Backwards Compatibility: Add support for include_url
 # TODO V Backwards Compatibility: chrome_options, support removal of options
@@ -32,13 +34,14 @@ from PyPDF2 import PdfReader
 
 # Chrome respects proxy env params
 handle_proxy()
-# Make sure our python code doesn't go through a proxy when communicating with chrome webdriver
+# Make sure our python code doesn't go through a proxy when communicating with Chrome webdriver
 os.environ['no_proxy'] = 'localhost,127.0.0.1'
 # Needed for cases that rasterize is running with non-root user (docker hardening)
 os.environ['HOME'] = tempfile.gettempdir()
 
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
-USER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36"
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64" \
+             " Safari/537.36"
 CHROME_OPTIONS = ["--headless",
                   "--disable-gpu",
                   "--no-sandbox",
@@ -51,7 +54,7 @@ CHROME_OPTIONS = ["--headless",
                   f'--user-agent="{USER_AGENT}"',
                   ]
 
-CHROME_PID = 0
+# CHROME_PID = 0
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 
@@ -66,6 +69,7 @@ DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
 
 MAX_RASTERIZATIONS_COUNT = int(demisto.args().get('max_rasterizations_count', '500'))
+NEED_TO_TERMINATE_CHROME = False
 
 FIRST_CHROME_PORT = 9301
 MAX_CHROMES_COUNT = int(demisto.params().get('max_chromes_count', "64"))
@@ -85,6 +89,7 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 
 PORT_FILE_PATH = '/var/port.txt'
 RASTERIZATIONS_COUNTER_FILE_PATH = '/var/rasterizations_counter.txt'
+
 
 class RasterizeType(Enum):
     PNG = 'png'
@@ -281,7 +286,7 @@ def get_chrome_options(default_options, user_options):
         return default_options.copy()
 
     user_options = re.split(r'(?<!\\),', user_options)
-    demisto.debug(f'user chrome options: {user_options}')
+    demisto.debug(f'user Chrome options: {user_options}')
 
     options = []
     remove_opts = []
@@ -329,7 +334,6 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
 
         if process:
             demisto.debug(f'New Chrome session active on Port {chrome_port}')
-            CHROME_PID = process.pid
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = is_chrome_running_locally(chrome_port)
@@ -395,7 +399,7 @@ def ensure_chrome_running():  # pragma: no cover
             demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
 
         if chrome_port == ports_list[-1]:
-            demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to chrome')
+            demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
             return None, None
 
     demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
@@ -534,15 +538,15 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
 
 
 def rasterize_thread(browser, chrome_port, path: str,
-              rasterize_type: RasterizeType = RasterizeType.PNG,
-              wait_time: int = DEFAULT_WAIT_TIME,
-              offline_mode: bool = False,
-              navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
-              include_url: bool = False,
-              full_screen: bool = False,
-              width=DEFAULT_WIDTH,
-              height=DEFAULT_HEIGHT
-              ):
+                     rasterize_type: RasterizeType = RasterizeType.PNG,
+                     wait_time: int = DEFAULT_WAIT_TIME,
+                     offline_mode: bool = False,
+                     navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
+                     include_url: bool = False,
+                     full_screen: bool = False,
+                     width=DEFAULT_WIDTH,
+                     height=DEFAULT_HEIGHT
+                     ):
     demisto.debug(f'rasterize_thread, starting TabLifecycleManager, {path=}, {rasterize_type=}')
     with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
         tab.call_method("Emulation.setVisibleSize", width=width, height=height)
@@ -601,12 +605,14 @@ def rasterize(path: str,
                     current_path = f'http://{current_path}'
 
                 # start a new thread in group of max_tabs
-                rasterization_threads.append(executor.submit(rasterize_thread,
-                                            browser=browser, chrome_port=chrome_port,
-                                            path=current_path, rasterize_type=rasterize_type, wait_time=wait_time,
-                                            offline_mode=offline_mode, navigation_timeout=navigation_timeout,
-                                            include_url=include_url, full_screen=full_screen, width=width, height=height
-                                            ))
+                rasterization_threads.append(
+                    executor.submit(
+                        rasterize_thread, browser=browser, chrome_port=chrome_port, path=current_path,
+                        rasterize_type=rasterize_type, wait_time=wait_time, offline_mode=offline_mode,
+                        navigation_timeout=navigation_timeout, include_url=include_url, full_screen=full_screen, width=width,
+                        height=height
+                    )
+                )
             # Wait for all tasks to complete
             executor.shutdown(wait=True)
             demisto.info(f"Finished {len(rasterization_threads)} rasterizations, active tabs len: {len(browser.list_tab())}")
@@ -616,8 +622,9 @@ def rasterize(path: str,
                 total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
             else:
                 total_rasterizations_count = len(rasterization_threads)
-            demisto.debug(f"Should kill Chrome? {total_rasterizations_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
-            if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
+            demisto.debug(f"Should Chrome be terminated? {NEED_TO_TERMINATE_CHROME=}, {total_rasterizations_count=},"
+                          f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
+            if NEED_TO_TERMINATE_CHROME or total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
                 demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
                 terminate_chrome(browser)
                 demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
