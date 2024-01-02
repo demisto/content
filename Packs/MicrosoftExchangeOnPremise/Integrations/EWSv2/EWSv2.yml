@@ -1,7 +1,4 @@
 category: Email
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: EWS v2
   version: -1
@@ -67,9 +64,7 @@ configuration:
   section: Connect
   required: false
 - display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                           Manual Mode
-    Exchange Server Hostname or IP address
+    Manual Mode Exchange Server Hostname or IP address
   name: ewsServer
   type: 0
   section: Connect
@@ -81,7 +76,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, and 2016)'
+- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010 SP2, 2013, and 2016)'
   name: defaultServerVersion
   type: 0
   section: Connect
@@ -94,9 +89,7 @@ configuration:
   advanced: true
   required: false
 - display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                         Advanced Mode
-    Override Authentication Type (NTLM, Basic, or Digest).
+    Advanced Mode Override Authentication Type (NTLM, Basic, or Digest).
   name: authType
   type: 0
   section: Connect
@@ -122,6 +115,11 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
@@ -238,6 +236,7 @@ script:
     - contextPath: EWS.Mailboxes.externalEmailAddress
       description: The external email address.
       type: string
+    arguments: []
   - arguments:
     - description: The filter query to search.
       name: filter
@@ -354,6 +353,7 @@ script:
       name: selected-fields
       predefined:
       - ''
+      auto: PREDEFINED
     description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
     name: ews-search-mailbox
     outputs:
@@ -866,6 +866,7 @@ script:
       type: Unknown
   - description: Returns the auto-discovery information. Can be used to manually configure the Exchange Server.
     name: ews-get-autodiscovery-config
+    arguments: []
   - arguments:
     - description: Email address of the group to expand.
       name: email-address
@@ -1025,7 +1026,7 @@ script:
   dockerimage: demisto/py-ews:5.0.3.82926
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
@@ -1033,6 +1034,4 @@ tests:
 - EWS V2 Send Mail Test
 - EWS V2 Send Mail Test 2
 - EWS Public Folders Test
-defaultmapperin: EWS v2-mapper
-defaultclassifier: EWS v2
 fromversion: 5.0.0
