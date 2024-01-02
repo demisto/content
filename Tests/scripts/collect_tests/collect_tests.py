@@ -1478,7 +1478,7 @@ if __name__ == '__main__':
 
     marketplace = MarketplaceVersions(args.marketplace)
 
-    nightly = args.nightly
+    nightly = True
     service_account = args.service_account
     graph = args.graph
     pack_to_upload = args.pack_names
