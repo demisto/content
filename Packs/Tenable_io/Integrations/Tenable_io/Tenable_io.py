@@ -1779,7 +1779,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
             last_run.update({'nextTrigger': '30', "type": 1})
         # set params for next run
         if status == 'FINISHED':
-            last_run.pop('vuln_export_uuid')
+            last_run.pop('vuln_export_uuid', None)
             if not last_run.get('assets_export_uuid'):
                 last_run.pop('nextTrigger', None)
                 last_run.pop('type', None)
