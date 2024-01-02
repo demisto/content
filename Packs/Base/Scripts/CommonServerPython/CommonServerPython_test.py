@@ -1011,7 +1011,7 @@ def test_flatten_cell():
     dict_to_flatten = {'first': u'会'}
     expected_flatten_dict = u'{\n    "first": "\u4f1a"\n}'
     assert flattenCell(dict_to_flatten) == expected_flatten_dict
-    
+
     # datetime test
     datetime_value = datetime(2019, 9, 17, 6, 16, 39)
     dict_to_flatten = {'date': datetime_value}
@@ -2680,7 +2680,7 @@ class TestCommandResults:
         )
         context = res.to_context()
         assert context["EntryContext"] == {"Path.To(true)": {"Value": "next_token"}}
-    
+
     def test_replace_existing_not_nested(self):
         """
         Given:
@@ -3461,6 +3461,7 @@ def test_batch(iterable, sz, expected):
 
 regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.1.1:8080', True),
     (ipv4Regex, '192.168.1.1/24', False),
     (ipv4Regex, '192.168.a.1', False),
     (ipv4Regex, '192.168..1.1', False),
@@ -3492,6 +3493,7 @@ def test_regexes(pattern, string, expected):
 
 IP_TO_INDICATOR_TYPE_PACK = [
     ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1:8080', FeedIndicatorType.IP),
     ('192.168.1.1/32', FeedIndicatorType.CIDR),
     ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
     ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
@@ -8185,15 +8187,15 @@ class TestFetchWithLookBack:
         assert results.get('limit') == expected_results3.get('limit')
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
-    
+
     def test_lookback_with_offset_update_last_run(self):
         """
         Given:
             A last run
-        
+
         When:
             Calling create_updated_last_run_object with a new offset to change
-            
+
         Then:
             - The last run is updated with the new offset, and the start time remains as it was.
             - When the offset needs to be reset, the last time is the latest incident time and the offset resets
@@ -8214,7 +8216,7 @@ class TestFetchWithLookBack:
         # make sure that the start time is unchanged because of the offset, and the offset is updated
         assert new_last_run["offset"] == 4
         assert new_last_run["time"] == last_time
-        
+
         last_run = {"time": last_time, "offset": new_offset}
         new_offset = 0
         new_last_run, _ = create_updated_last_run_object(last_run,
@@ -8228,17 +8230,17 @@ class TestFetchWithLookBack:
                                                          )
         assert new_last_run["offset"] == 0
         assert new_last_run["time"] == "2022-04-01T10:51:00"
-        
+
     def test_calculate_new_offset(self):
         """
         Test that the new offset for the next run calculated correctly based on the old offset, number of incidents and total number of incidents.
         The first argument is the old offset, the second is number of incidents and the third is the total number of incidents returned.
         Given:
             old offset, number of incidents, total number of incidents (could be None)
-        
+
         When:
             Calculating a new offset to the next run
-            
+
         Then:
             Make sure that the new offset is correct
         """
@@ -9178,8 +9180,8 @@ class TestIsIntegrationCommandExecution:
 
 
 @pytest.mark.parametrize("timestamp_str, seconds_threshold, expected", [
-    ("2019-01-01T00:00:00Z", 60, True), 
-    ("2022-01-01T00:00:00GMT+1", 60, True), 
+    ("2019-01-01T00:00:00Z", 60, True),
+    ("2022-01-01T00:00:00GMT+1", 60, True),
     ("2022-01-01T00:00:00Z", 60, False),
     ("invalid", 60, ValueError)
 ])
@@ -9208,9 +9210,9 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
 
 
 @pytest.mark.parametrize("indicator,expected_result", [
-    ("e61fcc6a06420106fa6642ef833b9c38", "md5"), 
+    ("e61fcc6a06420106fa6642ef833b9c38", "md5"),
     ("3fec1b14cea32bbcd97fad4507b06888","md5"),
-    ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "sha256"), 
+    ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "sha256"),
     ("bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa", "sha256"),
     ("193:iAklVz3fzvBk5oFblLPBN1iXf2bCRErwyN4aEbwyiNwyiQwNeDAi4XMG:iAklVzfzvBTFblLpN1iXOYpyuapyiWym", "ssdeep"),
     ("3:Wg8oEIjOH9+KS3qvRBTdRi690oVqzBUGyT0/n:Vx0HgKnTdE6eoVafY8", "ssdeep"),
@@ -9237,5 +9239,5 @@ def test_detect_file_indicator_type(indicator,expected_result):
     """
     from CommonServerPython import detect_file_indicator_type
     assert detect_file_indicator_type(indicator) == expected_result
-    
+
 
