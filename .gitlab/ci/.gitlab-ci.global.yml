@@ -493,7 +493,7 @@
     - SHOULD_LINT_ALL=true # TODO remove, for testing only
     - |
       if [[ -n "${SHOULD_LINT_ALL}" ]]; then
-        echo "Pre Commit all files"";
+        echo "Pre Commit all files";
         demisto-sdk pre-commit -a --mode=nightly 
       fi
       else
