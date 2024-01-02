@@ -31,7 +31,7 @@ configuration:
   hidden: true
   required: false
   section: Connect
-- displaypassword: secret key
+- displaypassword: Secret key
   name: credentials_secret_key
   hiddenusername: true
   type: 9
@@ -41,6 +41,7 @@ configuration:
   name: unsecure
   type: 8
   required: false
+#  advanced: true
   section: Connect
 - display: Use system proxy settings
   name: proxy
@@ -63,12 +64,13 @@ configuration:
   name: max_fetch
   type: 0
   required: false
+  advanced: true
   section: Collect - events
 - display: Assets Settings
   name: assets
   type: 20
   section: Collect - assets
-- display: Severity
+- display: Vulnerability severity
   additionalinfo: The severity of the vulnerabilities to include in the export.
   name: severity
   options:

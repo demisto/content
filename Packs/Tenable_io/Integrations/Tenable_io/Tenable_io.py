@@ -331,30 +331,6 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/assets/export/{export_uuid}/chunks/{chunk_id}',
                                   headers=self._headers)
 
-    def get_export_uuid(self, num_assets: int, last_found: Optional[float], severity: List[str]):
-        """
-
-        Args:
-            num_assets: number of assets used to chunk the vulnerabilities.
-            last_found: vulnerabilities that were last found between the specified date (in Unix time) and now.
-            severity: severity of the vulnerabilities to include in the export.
-
-        Returns: The UUID of the vulnerabilities export job.
-
-        """
-        payload: dict[str, Any] = {
-            "filters":
-                {
-                    "severity": severity
-                },
-            "num_assets": num_assets
-        }
-        if last_found:
-            payload['filters'].update({"last_found": last_found})
-
-        res = self._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
-        return res.get('export_uuid', '')
-
 
 def flatten(d):
     r = {}  # type: ignore
