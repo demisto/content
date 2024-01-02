@@ -1,9 +1,15 @@
+# pylint: disable=invalid-name,protected-access,unused-wildcard-import,wildcard-import,wrong-import-order
+"""
+NVD Feed Integration to retrieve CVEs from NIST NVD and parse them
+into a normalized XSOAR data structure for threat intelligence management
+"""
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import urllib3
 import contextlib
-import datetime         # type: ignore
+import datetime  # type: ignore[no-redef]
 from dateparser import parse
 
 
@@ -54,19 +60,31 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
                                         entity_a=cve_id,
                                         entity_a_type="cve",
                                         entity_b=vendor,
-                                        entity_b_type="identity").to_indicator() for vendor in vendors]
+                                        entity_b_type="identity").
+                     to_indicator() for vendor in vendors]
 
     relationships.extend([EntityRelationship(name="targets",
                                              entity_a=cve_id,
                                              entity_a_type="cve",
                                              entity_b=product,
-                                             entity_b_type="software").to_indicator() for product in products])
+                                             entity_b_type="software")
+                          .to_indicator() for product in products])
 
     return list(vendors | products | parts), relationships
 
 
 def test_module(client: BaseClient, params: Dict[str, Any]):
+    """
+    Performs a simple API call to NVD for CVE-2021-44228 using the provided API key
 
+    Args:
+        client: An instance of the BaseClient connection class
+        params: A dictionary containing HTTP parameters
+
+    Returns:
+        'ok' if a successful HTTP 200 message is returned
+
+    """
     api_key = params.get('apiKey', {}).get('password')
     try:
         headers = {
@@ -78,10 +96,24 @@ def test_module(client: BaseClient, params: Dict[str, Any]):
         return_results('ok')
 
     except Exception as e:  # pylint: disable=broad-except
-        return_error("Invalid API key specified in integration instance configuration\nError Message: " + str(e))    # noqa: UP034
+        return_error("Invalid API key specified in integration instance configuration"
+                     + "\nError Message: " + str(e))    # noqa: UP034
 
 
 def retrieve_cves(client, params):
+    """
+    Iteratively retrieves CVEs from NVD from the specified modification date
+    through the date the fetch-indicators or nvd-get-indicators command is 
+    called
+
+    Args:
+        client: An instance of the BaseClient connection class
+        params: A dictionary containing HTTP parameters
+
+    Returns:
+        Total number of CVE indicators fetched
+
+    """
     command = demisto.command()
     api_key = params.get('apiKey', {}).get('password')
     has_kev = params.get('hasKev') or None  # type: ignore
@@ -157,8 +189,9 @@ def retrieve_cves(client, params):
             demisto.debug(f'\n\nlastModStartDate: {last_mod_start_date.strftime(DATE_FORMAT)}'
                           + f'\nlastModEndDate: {last_mod_end_date.strftime(DATE_FORMAT)}'
                           + f'\nFetch Iteration: {str(iteration)}' + '\nIteration Count: '
-                          + str(iteration_count) + '\nTotal Results for Iteration: ' + str(total_results)
-                          + '\nCurrent Total Fetched Indicator Count: ' + str(total_items) + '\n\n')
+                          + f'{str(iteration_count)}\nTotal Results for Iteration: '
+                          + f'{str(total_results)}\nCurrent Total Fetched Indicator Count: '
+                          + f'{str(total_items)}\n\n')
             try:
                 res = client._http_request('GET', url, params=param, headers=headers, timeout=300)
                 # Check to see if there are any errors
@@ -193,6 +226,19 @@ def retrieve_cves(client, params):
 
 
 def process_cves(params, cve_list):
+    """
+    Iteratively processes the retrieved CVEs from retrieve_cves function
+    and parses the returned JSON into the required XSOAR data structure
+
+    Args:
+        params: A dictionary containing HTTP parameters
+        cve_list: CVEs retrieved using the retrieve_cves function
+
+    Returns:
+        None
+
+    """
+
     feed_tags = params.get('feedTags')
 
     indicators = []
@@ -245,9 +291,10 @@ def process_cves(params, cve_list):
             fields["cvssversion"] = "3.1"
 
         if cvss_metric:
-            fields["cvssscore"] = cve.get('cve').get('metrics').get(cvss_metric)[0].get('impactScore')
-            fields["cvssvector"] = cve.get('cve').get('metrics').get(cvss_metric)[0].get('cvssData')\
-                .get('vectorString')
+            fields["cvssscore"] = cve.get('cve').get('metrics').get(cvss_metric)[0]\
+                .get('impactScore')
+            fields["cvssvector"] = cve.get('cve').get('metrics').get(cvss_metric)[0]\
+                .get('cvssData').get('vectorString')
             fields["sourceoriginalseverity"] = cve.get('cve').get('metrics').get(cvss_metric)[0]\
                 .get('impactScore')
 
@@ -280,12 +327,25 @@ def process_cves(params, cve_list):
 
         indicators.append(indicator)
 
-    demisto.debug(f'First CVE of run: {str(indicators[0]["value"])}\nLast CVE of run: {str(indicators[-1]["value"])}')
+    demisto.debug(f'First CVE of run: {str(indicators[0]["value"])}'
+                  + f'\nLast CVE of run: {str(indicators[-1]["value"])}')
 
     demisto.createIndicators(indicators)
 
 
 def fetch_indicators_command(client, params):
+    """
+    Initiates the CVE retrieval process while tracking the total run time and indicator fetch count
+
+    Args:
+        client: An instance of the BaseClient connection class
+        params: A dictionary containing HTTP parameters
+
+    Returns:
+        Total number of CVE indicators fetched
+
+    """
+
     fetch_start = datetime.datetime.now(datetime.timezone.utc)  # type: ignore[attr-defined]
 
     retrieve_cves(client, params)
@@ -297,10 +357,11 @@ def fetch_indicators_command(client, params):
     demisto.debug(f"NVD CVE Fetch completed at: {fetch_finish.strftime(DATE_FORMAT)}")
 
     # Set new integration lastRun value
-    demisto.setLastRun({"lastRun": datetime.datetime.now(datetime.timezone.utc).isoformat()})  # type: ignore[attr-defined]
-
+    demisto.setLastRun({"lastRun": datetime.datetime.now  # type: ignore[attr-defined]
+                        (datetime.timezone.utc).isoformat()})  # type: ignore[attr-defined]
 
 # COMMAND CONSTANTS
+
 
 commands = {
     'test-module': test_module,
@@ -310,6 +371,18 @@ commands = {
 
 
 def main() -> None:
+    """
+    Main integration function that defines the client object and initiates calls to
+    the user-specified integration command
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+
     params = demisto.params()
     base_url = "https://services.nvd.nist.gov"  # disable-secrets-detection
     verify_cert = not params.get('insecure', False)
