@@ -26,6 +26,8 @@ build-machines-cleanup:
         for _ in {1..3}; do
           if gsutil -q stat "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${LOCK_MACHINE_NAME}-lock-${CI_PIPELINE_ID}" 2>/dev/null; then
             echo "File found in GCS bucket."
+            CLOUD_CHOSEN_MACHINE_IDS = ${LOCK_MACHINE_NAME}
+            - echo "CLOUD Chosen machine ids are:${CLOUD_CHOSEN_MACHINE_IDS}" | tee "${ARTIFACTS_FOLDER}/logs/lock_file.txt"
             break
           else
             echo "File not found. Retrying in 120 seconds..."
