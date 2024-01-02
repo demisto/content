@@ -107,13 +107,6 @@ script:
     - defaultValue: '80'
       description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
       name: threshold
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether or not to get the raw response with all the analysis' details.
-      predefined:
-      - 'true'
-      - 'false'
-      name: raw_response
     description: Checks the specified IP address against the AbuseIP database.
     name: ip
     outputs:
@@ -149,6 +142,24 @@ script:
       type: String
     - contextPath: AbuseIPDB.IP.Hostnames
       description: The hostame(s) of the IP address.
+      type: String
+    - contextPath: AbuseIPDB.IP.IpVersion
+      description: The version of the IP address.
+      type: String
+    - contextPath: AbuseIPDB.IP.IsPublic
+      description: Is the IP address public.
+      type: String
+    - contextPath: AbuseIPDB.IP.IsTor
+      description: Is the IP address a Tor IP.
+      type: String¨
+    - contextPath: AbuseIPDB.IP.IsWhitelisted
+      description: Is the IP address whitelisted.
+      type: String
+    - contextPath: AbuseIPDB.IP.LastReportedAt
+      description: When the IP address was last reported.
+      type: String
+    - contextPath: AbuseIPDB.IP.NumDistinctUsers
+      description: The distinct number of users.
       type: String
     - contextPath: AbuseIPDB.IP.Reports
       description: The reports summary (for "verbose" reports).
@@ -237,6 +248,24 @@ script:
       type: String
     - contextPath: AbuseIPDB.IP.Hostnames
       description: The hostame(s) of the IP address.
+      type: String
+    - contextPath: AbuseIPDB.IP.IpVersion
+      description: The version of the IP address.
+      type: String
+    - contextPath: AbuseIPDB.IP.IsPublic
+      description: Is the IP address public.
+      type: String
+    - contextPath: AbuseIPDB.IP.IsTor
+      description: Is the IP address a Tor IP.
+      type: String¨
+    - contextPath: AbuseIPDB.IP.IsWhitelisted
+      description: Is the IP address whitelisted.
+      type: String
+    - contextPath: AbuseIPDB.IP.LastReportedAt
+      description: When the IP address was last reported.
+      type: String
+    - contextPath: AbuseIPDB.IP.NumDistinctUsers
+      description: The distinct number of users.
       type: String
     - contextPath: AbuseIPDB.IP.Reports
       description: Reports summary (for "verbose" reports).

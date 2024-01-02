@@ -69,11 +69,6 @@
 <td style="width: 532px;">Enrichment of private IP addresses will be conducted even if it has been disabled at the integration level, default is "false"</td>
 <td style="width: 71px;">Optional</td>
 </tr>
-<tr>
-<td style="width: 137px;">raw_response</td>
-<td style="width: 532px;">Whether or not to get the raw response with all the analysis' details, default is "false"</td>
-<td style="width: 71px;">Optional</td>
-</tr>
 </tbody>
 </table>
 <p> </p>
@@ -116,6 +111,36 @@
 <td style="width: 268px;">AbuseIPDB.IP.Hostnames</td>
 <td style="width: 58px;">String</td>
 <td style="width: 414px;">The hostame(s) of the IP address.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IpVersion</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The version of the IP address.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsPublic</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address public.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsTor</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address a Tor IP.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsWhitelisted</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address whitelisted.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.LastReportedAt</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">When the IP address was last reported.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.NumDistinctUsers</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The distinct number of users.</td>
 </tr>
 <tr>
 <td style="width: 268px;">AbuseIPDB.IP.Address.Reports</td>
@@ -242,6 +267,36 @@
 <td style="width: 268px;">AbuseIPDB.IP.Hostnames</td>
 <td style="width: 58px;">String</td>
 <td style="width: 414px;">The hostame(s) of the IP address.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IpVersion</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The version of the IP address.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsPublic</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address public.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsTor</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address a Tor IP.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsWhitelisted</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address whitelisted.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.LastReportedAt</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">When the IP address was last reported.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.NumDistinctUsers</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The distinct number of users.</td>
 </tr>
 <tr>
 <td style="width: 271px;">AbuseIPDB.IP.TotalReports</td>

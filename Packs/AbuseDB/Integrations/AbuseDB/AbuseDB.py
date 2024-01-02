@@ -156,11 +156,17 @@ def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
                     "CountryCode": analysis.get("countryCode")
                 },
                 "AbuseConfidenceScore": analysis.get('abuseConfidenceScore'),
-                "TotalReports": analysis.get("totalReports") or analysis.get("numReports") or "0",
+                "TotalReports": analysis.get("totalReports") or analysis.get("numReports") or 0,
                 "ISP": analysis.get("isp"),
                 "UsageType": analysis.get("usageType"),
                 "Domain": analysis.get("domain"),
-                "Hostnames": analysis.get("hostnames")
+                "Hostnames": analysis.get("hostnames"),
+                "IpVersion": analysis.get("ipVersion"),
+                "IsPublic": analysis.get("isPublic"),
+                "IsTor": analysis.get("isTor"),
+                "IsWhitelisted": analysis.get("isWhitelisted"),
+                "LastReportedAt": analysis.get("lastReportedAt"),
+                "NumDistinctUsers": analysis.get("numDistinctUsers"),
             }
         }
 
@@ -241,7 +247,7 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
         'EntryContext': {
             'IP(val.Address && val.Address == obj.Address)': createContext(context_ip_generic, removeNull=True),
             'AbuseIPDB(val.IP.Address && val.IP.Address == obj.IP.Address)': createContext(context_ip, removeNull=True),
-            'DBotScore': createContext(dbot_scores, removeNull=True) if dbot_scores else None
+            'DBotScore': createContext(dbot_scores, removeNull=True)
         },
         'IndicatorTimeline': timeline
     }
@@ -259,7 +265,6 @@ def check_ip_command(
     verbose=VERBOSE,
     threshold=THRESHOLD,
     disable_private_ip_lookup=DISABLE_PRIVATE_IP_LOOKUP,
-    raw_response=False
 ):
     params = {
         "maxAgeInDays": days
@@ -283,10 +288,7 @@ def check_ip_command(
         if analysis == API_QUOTA_REACHED_MESSAGE:
             continue
         analysis_data = analysis.get("data")
-        if not argToBoolean(raw_response):
-            entry_list.append(analysis_to_entry(analysis_data, reliability, verbose=verbose, threshold=threshold))
-        else:
-            entry_list.append(createEntry(analysis_data, analysis_data, analysis_data, None, None, title=ANALYSIS_TITLE))
+        entry_list.append(analysis_to_entry(analysis_data, reliability, verbose=verbose, threshold=threshold))
     if private_ips and disable_private_ip_lookup:
         demisto.results(format_privte_ips(private_ips))
     return entry_list
