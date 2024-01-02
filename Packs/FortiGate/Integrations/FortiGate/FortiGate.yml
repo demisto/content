@@ -1258,7 +1258,7 @@ script:
     - name: address
       description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
     - name: excluded_addresses
-      description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+      description: Comma-separated list of address names to exclude. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
     - name: allow_routing
       description: Enable/disable use of this address in the static route configuration.
       auto: PREDEFINED
@@ -1287,7 +1287,7 @@ script:
       description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
       isArray: true
     - name: excluded_addresses
-      description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+      description: Comma-separated list of address names to exclude. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
       isArray: true
     - name: allow_routing
       description: Enable/disable use of this address in the static route configuration.
