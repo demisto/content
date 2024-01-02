@@ -10,7 +10,7 @@
     "categories": "Data Enrichment & Threat Intelligence",
     "tags": ["Security"],
     "useCases": "Credential Theft Control/Attack Surface Management",
-    "keywords": "Threat Intelligence",
+    "keywords": ["Threat Intelligence"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
