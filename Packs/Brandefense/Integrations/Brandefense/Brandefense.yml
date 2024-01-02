@@ -97,7 +97,7 @@ script:
     name: branddefense-get-specific-incident
     outputs:
     - contextPath: branddefense_requested_incident
-    description: The requested incident via incident code from Brandefense.
+      description: The requested incident via incident code from Brandefense.
   - arguments:
     - description: The required code parameter should be given to perform incident searches on Brandefense.
       name: incident_code
@@ -116,13 +116,16 @@ script:
     name: branddefense-get-incident-indicators
     outputs:
     - contextPath: branddefense_requested_incident_indicators
+      description: Requested indicators from Brandefense based on provided incident code.
   - arguments:
-    - name: indicator_type
+    - description: The indicator type on the Brandefense.  
+      name: indicator_type
       required: true
     description: The required ioc_type parameter allows you to select Indicators of Compromise (IoCs) types from the threat lists on Brandefense.
     name: branddefense-get-indicators
     outputs:
     - contextPath: branddefense_requested_indicator
+      description: Requested indicator based on the indicator type from Brandefense
   - arguments:
     - description: The required ioc_type parameter allows you to select Indicators of Compromise (IoCs) types from the threat lists.
       name: ioc_type
@@ -137,23 +140,29 @@ script:
       name: created_at__range
     - description: Cti rule search.
       name: search
-    - name: tag
-    - name: source__ilike
+    - description: Tag for the Brandefense search 
+      name: tag
+    - description: Source from Brandefense CTI rule search 
+      name: source__ilike
     description: Get CTI rules from Brandefense.
     name: branddefense-get-cti-rules
   - arguments:
-    - name: value
+    - description: Required value for Created Threat Search such as an IP address, domain, Hash or url
+      name: value
       required: true
     description: Create Threat Search endpoint allows you to post indicator of compromises to investigate suspicious/malicious IP, Domain, URL address or Hash values.
     name: branddefense-create-threat-search
     outputs:
     - contextPath: search_result
+      description: The result of Theat search from Brandefense
   - arguments:
-    - name: created_at
+    - description: Exact created date of the incident 
+      name: created_at
     description: Get incidents from the Brandefense platform.
     name: branddefense-get-incidents
     outputs:
     - contextPath: branddefense_all_incidents
+      description: All incidents from the Brandefense platform
   dockerimage: demisto/python3:3.10.13.74666
   runonce: false
   script: ''
