@@ -1,13 +1,12 @@
 [MODEL: dataset=trendmicro_iwss_raw]
-alter event_type = arrayindex(regextract(_raw_log, "\[(\w+)"), 0),
+alter // Extract message header fields & message payload 
+    event_type = arrayindex(regextract(_raw_log, "\[(\w+)"), 0),
     event_severity = arrayindex(regextract(_raw_log, "\[\w+\|(\w+)\]"), 0),
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)), 
     syslog_hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\s*(\w+)\:"), 0),
     msg_payload = arrayindex(regextract(_raw_log, "\[\w+\|\w+\]\s*(.+)"), 0)
-| alter 
-    syslog_facility = floor(divide(syslog_priority, 8))
-| alter
-    syslog_severity = subtract(syslog_priority, multiply(syslog_facility, 8))
+| alter syslog_facility = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8)))
 | alter // Extract event payload fields 
     event_name = arrayindex(regextract(msg_payload, "(.+?)\w+\="), 0),
     action = arrayindex(regextract(msg_payload, "tk_action=([^\,]+)"), 0),
@@ -45,7 +44,7 @@ alter event_type = arrayindex(regextract(_raw_log, "\[(\w+)"), 0),
 	target_ipv6 = arrayindex(regextract(server_ip, "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"), 0),
     target_file_extension = arrayindex(regextract(file_name, "\.(\w+)") , 0)
 | alter 
-    xdm.alert.severity = coalesce(syslog_severity, event_severity),
+    xdm.alert.severity = syslog_severity,
     xdm.event.description = description,
     xdm.event.original_event_type = event_type,
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, event_severity),
