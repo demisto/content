@@ -511,13 +511,13 @@ script:
       description: Fully Qualified Domain Name address.
       type: String
     - contextPath: Fortigate.Address.MACAddresses
-      description: Multiple MAC address ranges <start>[-<end>] separated by space.
+      description: Multiple MAC address ranges <start>[-<end>] separated by a space.
       type: String
     - contextPath: Fortigate.Address.Type
-      description: 'Type of the address, can be: `ipmask`, `iprange`, `fqdn`, `geography`, `wildcard`, `dynamic`, `interface-subnet` or `mac`.'
+      description: 'Type of the address. Can be: `ipmask`, `iprange`, `fqdn`, `geography`, `wildcard`, `dynamic`, `interface-subnet` or `mac`.'
       type: String
     - contextPath: Fortigate.Address.FabricObject
-      description: Security Fabric global object setting. Can be `enable` or `disable`, if `enable` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
       type: String
     - contextPath: Fortigate.Address.AllowRouting
       description: Enable/disable use of this address in the static route configuration.
@@ -529,10 +529,10 @@ script:
       description: List of IP addresses.
       type: String
     - contextPath: Fortigate.Address.SDNAddressType
-      description: Type of addresses to collect `private`, `public`, or `all`.
+      description: 'Type of addresses to collect. Can be: `private`, `public`, or `all`.'
       type: String
     - contextPath: Fortigate.Address.AssociatedInterface
-      description: Network interface associated with address.
+      description: Network interface associated with the address.
       type: String
     - contextPath: Fortigate.Address.Comment
       description: The object`s comment.
@@ -550,7 +550,7 @@ script:
       description: IP or MAC address.
       type: String
     - contextPath: Fortigate.Address.Interface
-      description: Name of interface whose IP address is to be used.
+      description: Name of the interface whose IP address is to be used.
       type: String
     - contextPath: Fortigate.Address.FSSOGroup
       description: Fortinet Single Sign-On group name.
@@ -568,10 +568,10 @@ script:
       description: IP addresses associated to a specific country.
       type: String
     - contextPath: Fortigate.Address.ClearpassSPT
-      description: 'System Posture Token value, can be: `unknown`, `healthy`, `quarantine`, `checkup`, `transient` or `infected`.'
+      description: 'System Posture Token value. Can be: `unknown`, `healthy`, `quarantine`, `checkup`, `transient` or `infected`.'
       type: String
     - contextPath: Fortigate.Address.SubType
-      description: 'Sub-type of address, can be: `sdn`, `clearpass-spt`, `fsso`, `ems-tag`, `fortivoice-tag`, `fortinac-tag`, `fortipolicy-tag` or `swc-tag`.'
+      description: 'Sub-type of address. Can be: `sdn`, `clearpass-spt`, `fsso`, `ems-tag`, `fortivoice-tag`, `fortinac-tag`, `fortipolicy-tag` or `swc-tag`.'
       type: String
     - contextPath: Fortigate.Address.UUID
       description: Universally Unique Identifier.
@@ -604,7 +604,7 @@ script:
     - name: country
       description: 'IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`.'
     - name: mac_addresses
-      description: 'Comma-separated list of MAC addresses. Can be single or range, range must be separated by `-`, for examle: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
+      description: 'Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for examlpe: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
       isArray: true
     - name: associated_interface
       description: Network interface associated with address.
@@ -664,7 +664,7 @@ script:
     - name: country
       description: 'IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`.'
     - name: mac_addresses
-      description: 'Comma-separated list of MAC addresses. Can be single or range, range must be separated by `-`, for examle: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
+      description: 'Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
       isArray: true
     - name: associated_interface
       description: Network interface associated with address.
@@ -736,7 +736,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Fortigate.Address6.FabricObject
-      description: Security Fabric global object setting. Can be `enable` or `disable`, if `enable` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
       type: String
     - contextPath: Fortigate.Address6.SDNTag
       description: Software-defined networking tag.
@@ -751,7 +751,7 @@ script:
       description: The subnet segment name.
       type: String
     - contextPath: Fortigate.Address6.SubnetSegment.Type
-      description: The subnet segment type, can be a wildcard or a specific address.
+      description: The subnet segment type. Can be a wildcard or a specific address.
       type: String
     - contextPath: Fortigate.Address6.SubnetSegment.Value
       description: The subnet segment value.
@@ -787,10 +787,10 @@ script:
       description: Software-defined networking.
       type: String
     - contextPath: Fortigate.Address6.MACAddresses
-      description: Multiple MAC address ranges <start>[-<end>] separated by space.
+      description: Multiple MAC address ranges <start>[-<end>] separated by a space.
       type: Unknown
     - contextPath: Fortigate.Address6.Type
-      description: 'Type of IPv6 address object, can be: `ipprefix`, `iprange`, `fqdn`, `geography`, `dynamic`, `template`, `mac`.'
+      description: 'Type of IPv6 address object. Can be: `ipprefix`, `iprange`, `fqdn`, `geography`, `dynamic`, `template`, `mac`.'
       type: String
     - contextPath: Fortigate.Address6.UUID
       description: Universally Unique Identifier.
@@ -799,7 +799,7 @@ script:
       description: Address name.
       type: String
     - contextPath: Fortigate.Address6.Host
-      description: Host Address.
+      description: Host address.
       type: String
     - contextPath: Fortigate.Address6.CacheTTL
       description: Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds.
@@ -829,10 +829,10 @@ script:
     - name: country
       description: 'IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`.'
     - name: mac_addresses
-      description: 'Comma-separated list of MAC addresses. Can be single or range, range must be separated by `-`, for examle: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
+      description: 'Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
       isArray: true
     - name: sdn_connector
-      description: 'Software-defined networking connector enables to interact with SDN controllers. For more information go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors.'
+      description: 'Software-defined networking connector enables to interact with SDN controllers. For more information, go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors.'
     - name: comment
       description: A comment for the address.
     outputs:
@@ -896,10 +896,10 @@ script:
     - name: country
       description: 'IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`.'
     - name: mac_addresses
-      description: 'Comma-separated list of MAC addresses. Can be single or range, range must be separated by `-`, for examle: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
+      description: 'Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
       isArray: true
     - name: sdn_connector
-      description: 'Software-defined networking connector enables to interact with SDN controllers. For more information go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors.'
+      description: 'Software-defined networking connector enables to interact with SDN controllers. For more information, go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors.'
     - name: comment
       description: A comment for the address.
     outputs:
@@ -983,7 +983,7 @@ script:
       description: Broadcast address and subnet.
       type: String
     - contextPath: Fortigate.AddressMulticast.Type
-      description: 'Type of the address multicast, can be: `multicastrange` or `broadcastmask`.'
+      description: 'Type of the address multicast. Can be: `multicastrange` or `broadcastmask`.'
       type: String
     - contextPath: Fortigate.AddressMulticast.Name
       description: Address multicast name.
@@ -1204,7 +1204,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Frotigate.AddressGroup.FabricObject
-      description: Security Fabric global object setting. Can be `enable` or `disable`, if `enable` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
       type: String
     - contextPath: Frotigate.AddressGroup.AllowRouting
       description: Enable/disable use of this address in the static route configuration.
@@ -1228,7 +1228,7 @@ script:
       description: Universally Unique Identifier.
       type: String
     - contextPath: Frotigate.AddressGroup.Category
-      description: 'Address group category. `default`: Default address group category (cannot be used as ztna-ems-tag/ztna-geo-tag in policy). `ztna-ems-tag`: Members must be ztna-ems-tag group or ems-tag address, can be used as ztna-ems-tag in policy. `ztna-geo-tag`: Members must be ztna-geo-tag group or geographic address, can be used as ztna-geo-tag in policy.'
+      description: 'Address group category. `default`: Default address group category (cannot be used as ztna-ems-tag/ztna-geo-tag in policy). `ztna-ems-tag`: Members must be ztna-ems-tag group or ems-tag address. Can be used as ztna-ems-tag in policy. `ztna-geo-tag`: Members must be ztna-geo-tag group or geographic address. Can be used as ztna-geo-tag in policy.'
       type: String
     - contextPath: Frotigate.AddressGroup.Type
       description: Address group type. Default address group type (address may belong to multiple groups). Address folder group (members may not belong to any other group).
@@ -1348,7 +1348,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Frotigate.Address6Group.FabricObject
-      description: Security Fabric global object setting. Can be `enable` or `disable`, if `enable` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
       type: String
     - contextPath: Frotigate.Address6Group.Tagging
       description: List of tags associated to the object.
@@ -1449,7 +1449,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Fortigate.Service.FabricObject
-      description: Security Fabric global object setting. Can be `enable` or `disable`, if `enable` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
       type: String
     - contextPath: Fortigate.Service.Application
       description: The application ID.
@@ -1458,7 +1458,7 @@ script:
       description: Application category ID.
       type: Number
     - contextPath: Fortigate.Service.AppServiceType
-      description: 'Application service type, can be: `disable`, `app-id` or `app-category`.'
+      description: 'Application service type. Can be: `disable`, `app-id` or `app-category`.'
       type: String
     - contextPath: Fortigate.Service.Comment
       description: The object`s comment.
@@ -1497,7 +1497,7 @@ script:
       description: Fully Qualified Domain Name address.
       type: String
     - contextPath: Fortigate.Service.IPRange
-      description: Start and end of the IP range associated with service.
+      description: Start and end of the IP range associated with the service.
       type: String
     - contextPath: Fortigate.Service.Helper
       description: Helper protocol name.
@@ -1541,19 +1541,19 @@ script:
     - name: category
       description: Service category.
     - name: start_ip
-      description: Start of the IP range associated with service.
+      description: Start of the IP range associated with the service.
     - name: end_ip
-      description: End of the IP range associated with service.
+      description: End of the IP range associated with the service.
     - name: fqdn
       description: Fully Qualified Domain Name address.
     - name: tcpRange
-      description: 'Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
       isArray: true
     - name: udpRange
-      description: 'Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
       isArray: true
     - name: sctpRange
-      description: 'Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
       isArray: true
     - name: icmp_type
       description: Specifies the ICMP message type, defining the purpose or condition of the message.
@@ -1581,10 +1581,10 @@ script:
       description: Fully Qualified Domain Name address.
       type: String
     - contextPath: Fortigate.Service.StartIP
-      description: Start of the IP range associated with service.
+      description: Start of the IP range associated with the service.
       type: String
     - contextPath: Fortigate.Service.EndIP
-      description: End of the IP range associated with service.
+      description: End of the IP range associated with the service.
       type: String
     - contextPath: Fortigate.Service.ICMPCode
       description: ICMP code.
@@ -1614,19 +1614,19 @@ script:
     - name: category
       description: Service category.
     - name: start_ip
-      description: Start of the IP range associated with service.
+      description: Start of the IP range associated with the service.
     - name: end_ip
-      description: End of the IP range associated with service.
+      description: End of the IP range associated with the service.
     - name: fqdn
       description: Fully Qualified Domain Name address.
     - name: tcpRange
-      description: 'Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
       isArray: true
     - name: udpRange
-      description: 'Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
       isArray: true
     - name: sctpRange
-      description: 'Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
       isArray: true
     - name: action
       description: Whether to add or remove destination and source ports from TCP/UDP/SCTP.
@@ -1660,7 +1660,7 @@ script:
       description: Fully Qualified Domain Name address.
       type: String
     - contextPath: Fortigate.Service.IPRange
-      description: Start and end of the IP range associated with service.
+      description: Start and end of the IP range associated with the service.
       type: String
     - contextPath: Fortigate.Service.ICMPCode
       description: ICMP code.
@@ -1686,7 +1686,7 @@ script:
       defaultValue: root
     outputs:
     - contextPath: Fortigate.Service.Name
-      description: The name of deleted service.
+      description: The name of the deleted service.
       type: String
     - contextPath: Fortigate.Service.Deleted
       description: Whether the service was deleted.
@@ -1709,7 +1709,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Fortigate.ServiceGroup.FabricObject
-      description: Security Fabric global object setting. Can be `enable` or `disable`, if `enable` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
       type: String
     - contextPath: Fortigate.ServiceGroup.Comment
       description: The object`s comment.
@@ -1816,16 +1816,16 @@ script:
       description: When enabled specifies what the service must not be.
       type: String
     - contextPath: Fortigate.Policy.Destination6Negate
-      description: When enabled specifies what the destination IPv6 address must not be.
+      description: When enabled, specifies what the destination IPv6 address must not be.
       type: String
     - contextPath: Fortigate.Policy.DestinationNegate
-      description: When enabled specifies what the destination IPv4 address must not be.
+      description: When enabled, specifies what the destination IPv4 address must not be.
       type: String
     - contextPath: Fortigate.Policy.Source6Negate
-      description: When enabled specifies what the source IPv6 address must not be.
+      description: When enabled, specifies what the source IPv6 address must not be.
       type: String
     - contextPath: Fortigate.Policy.SourceNegate
-      description: When enabled specifies what the source IPv4 address must not be.
+      description: When enabled, specifies what the source IPv4 address must not be.
       type: String
     - contextPath: Fortigate.Policy.NAT
       description: Whether the source NAT is enabled or disabled.
@@ -1917,13 +1917,13 @@ script:
       description: Comma-separated list of destination IPv6 address name and address group names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv6s`, `fortigate-list-firewall-address-ipv6-multicasts` and `fortigate-list-firewall-address-ipv6-groups`.
       isArray: true
     - name: negate_source_address
-      description: When enabled source address specifies what the source address must not be.
+      description: When enabled, the source address specifies what the source address must not be.
       auto: PREDEFINED
       predefined:
       - enable
       - disable
     - name: negate_destination_address
-      description: When enabled destination address specifies what the destination address must not be.
+      description: When enabled, the destination address specifies what the destination address must not be.
       auto: PREDEFINED
       predefined:
       - enable
@@ -1933,7 +1933,7 @@ script:
       required: true
       isArray: true
     - name: negate_service
-      description: When enabled service specifies what the service must not be.
+      description: When enabled, the service specifies what the service must not be.
       auto: PREDEFINED
       predefined:
       - enable
@@ -2061,19 +2061,19 @@ script:
       - remove
     outputs:
     - contextPath: Fortigate.Policy.ServiceNegate
-      description: When enabled specifies what the service must not be.
+      description: When enabled, specifies what the service must not be.
       type: String
     - contextPath: Fortigate.Policy.Destination6Negate
-      description: When enabled specifies what the destination IPv6 address must not be.
+      description: When enabled, specifies what the destination IPv6 address must not be.
       type: String
     - contextPath: Fortigate.Policy.DestinationNegate
-      description: When enabled specifies what the destination IPv4 address must not be.
+      description: When enabled, specifies what the destination IPv4 address must not be.
       type: String
     - contextPath: Fortigate.Policy.Source6Negate
-      description: When enabled specifies what the source IPv6 address must not be.
+      description: When enabled, specifies what the source IPv6 address must not be.
       type: String
     - contextPath: Fortigate.Policy.SourceNegate
-      description: When enabled specifies what the source IPv4 address must not be.
+      description: When enabled, specifies what the source IPv4 address must not be.
       type: String
     - contextPath: Fortigate.Policy.NAT
       description: Whether the source NAT is enabled or disabled.
