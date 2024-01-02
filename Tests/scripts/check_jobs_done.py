@@ -64,7 +64,7 @@ CONTENT_COMMON_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'run-validations: [old-validate-flow]',
-    'run-validations: [new validate flow]',
+    'run-validations: [new-validate-flow]',
     'test-upload-flow',
     'trigger-private-build',
     'validate-content-conf',
