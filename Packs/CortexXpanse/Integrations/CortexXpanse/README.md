@@ -1,5 +1,5 @@
 Integration to pull assets and other ASM related information.
-This integration was integrated and tested with version xx of Cortex Xpanse.
+This integration was integrated and tested with version 6.12 of Cortex Xpanse.
 
 ## Configure Cortex Xpanse on Cortex XSOAR
 

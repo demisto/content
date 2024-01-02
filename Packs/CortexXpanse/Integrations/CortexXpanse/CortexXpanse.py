@@ -279,8 +279,8 @@ class Client(BaseClient):
 
         return response
 
-    def get_external_websites(self, request_data: dict) -> Dict[str, Any]:
-        data = {"request_data": request_data}
+    def get_external_websites(self, request_data: dict, limit: int) -> Dict[str, Any]:
+        data = {"request_data": {"filters": [request_data], "search_to": limit}}
 
         response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/get_external_websites/', json_data=data)
 
@@ -984,18 +984,17 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
 
 
 def get_external_websites_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    limit = args.get('limit', DEFAULT_SEARCH_LIMIT)
+    limit = int(args.get('limit', DEFAULT_SEARCH_LIMIT))
     searchFilter = args.get('filter')
-    if limit > MAX_ALERTS:
-        raise ValueError('Limit cannot be more than 100, please try again')
+    if limit > 500:
+        raise ValueError('Limit cannot be more than 500, please try again')
 
     request_data = {}
     if searchFilter != 'ALL':
-        request_data = {"filters": {"field": "authentication",
-                                    "operator": "contains",
-                                    "value": searchFilter}}
-    request_data["search_to"] = limit
-    response = client.get_external_websites(request_data)
+        request_data = {"field": "authentication",
+                        "operator": "contains",
+                        "value": searchFilter}
+    response = client.get_external_websites(request_data, limit)
 
     hosts = []
     for each in response['reply']['websites']:
