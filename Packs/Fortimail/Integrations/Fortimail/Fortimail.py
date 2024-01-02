@@ -1711,8 +1711,8 @@ def ip_policy_create_update_command(client: Client, args: Dict[str, Any]) -> Com
         CommandResults: Outputs of the command that represent an entry in war room.
     """
     command_name: str = args.get("command_name", "")
-    command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
-    command_request = getattr(client, command_request_name)
+    command_entity_title, _ = get_command_entity(command_name=command_name)
+    command_request = get_command_request(command_name=command_name, client=client)
 
     command_args = handle_ip_policy_command_args(args=args)
 
@@ -1746,8 +1746,8 @@ def access_control_create_update_command(client: Client, args: Dict[str, Any]) -
         CommandResults: Outputs of the command that represent an entry in war room.
     """
     command_name: str = args.get("command_name", "")
-    command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
-    command_request = getattr(client, command_request_name)
+    command_entity_title, _ = get_command_entity(command_name=command_name)
+    command_request = get_command_request(command_name=command_name, client=client)
 
     command_args = handle_access_control_command_args(args=args)
 
@@ -1781,8 +1781,8 @@ def recipient_policy_create_update_command(client: Client, args: Dict[str, Any])
         CommandResults: Outputs of the command that represent an entry in war room.
     """
     command_name: str = args.get("command_name", "")
-    command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
-    command_request = getattr(client, command_request_name)
+    command_entity_title, _ = get_command_entity(command_name=command_name)
+    command_request = get_command_request(command_name=command_name, client=client)
 
     command_args = handle_recipient_policy_command_args(args=args)
 
@@ -1818,8 +1818,8 @@ def move_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
     command_name: str = args.get("command_name", "")
-    command_request_name, command_entity_title, _ = get_command_entity(command_name=command_name)
-    command_request = getattr(client, command_request_name)
+    command_entity_title, _ = get_command_entity(command_name=command_name)
+    command_request = get_command_request(command_name=command_name, client=client)
 
     command_args = remove_empty_elements(
         {
@@ -1850,9 +1850,9 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
     command_name: str = args.get("command_name", "")
-    command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
+    command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
     # Get the client request function by attribute entity name.
-    command_request = getattr(client, command_request_name)
+    command_request = get_command_request(command_name=command_name, client=client)
     # Get the relevant item key to fetch in case user use the command as GET.
     # Those arguments cover 22 list commands.
     command_args = remove_empty_elements(
@@ -1911,7 +1911,7 @@ def group_create_update_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: Outputs of the command that represent an entry in war room.
     """
     command_name: str = args.get("command_name", "")
-    command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
+    command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
 
     command_args = remove_empty_elements(
         {
@@ -1919,7 +1919,7 @@ def group_create_update_command(client: Client, args: Dict[str, Any]) -> Command
             "comment": args.get("comment"),
         }
     )
-    command_request = getattr(client, command_request_name)
+    command_request = get_command_request(command_name=command_name, client=client)
     response = command_request(**command_args)
     # Get updated output for created/updated group
     output = {key: response[key] for key in ["mkey", "comment"] if key in response}
@@ -1953,11 +1953,11 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: Outputs of the command that represent an entry in war room.
     """
     command_name: str = args.get("command_name", "")
-    command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
-    command_request = getattr(client, command_request_name)
+    command_entity_title, _ = get_command_entity(command_name=command_name)
+    delete_request = get_command_request(command_name=command_name, client=client)
     # Get the relevant item key to remove
     command_args = handle_delete_command_args(args=args)
-    get_request = getattr(client, command_request_name.replace("delete", "list"))
+    get_request = get_command_request(command_name=command_name.replace("delete", "list"), client=client)
     # Remove the 'values' argument in case exist before calling GET
     values = command_args.pop("values", None)
 
@@ -1971,17 +1971,9 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if values:
         command_args["values"] = values
 
-    response = command_request(**command_args)
-    # Get output for removed item cause the API response is empty
-    outputs = get_output_for_delete_command(command_args)
+    delete_request(**command_args)
 
-    return CommandResults(
-        readable_output=command_entity_title,
-        outputs_prefix=f"FortiMail.{command_outputs_prefix}",
-        outputs_key_field="mkey",
-        outputs=outputs,
-        raw_response=response,
-    )
+    return CommandResults(readable_output=command_entity_title)
 
 
 def group_member_add_replace_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1997,9 +1989,9 @@ def group_member_add_replace_command(client: Client, args: Dict[str, Any]) -> Co
     """
     is_valid_email(args.get("email", args.get("emails")))
     command_name: str = args.get("command_name", "")
-    command_request_name, command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
+    command_entity_title, _ = get_command_entity(command_name=command_name)
 
-    command_request = getattr(client, command_request_name)
+    command_request = get_command_request(command_name=command_name, client=client)
     command_args = remove_empty_elements(
         {
             "group_name": args.get("group_name"),
@@ -2011,16 +2003,9 @@ def group_member_add_replace_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
     updated_args = update_group_member_args(command_args=command_args)
-    response = command_request(**updated_args)
-    output = prepare_output_for_replaced_and_added_items(command_args=command_args)
+    command_request(**updated_args)
 
-    return CommandResults(
-        readable_output=command_entity_title,
-        outputs_prefix=f"FortiMail.{command_outputs_prefix}",
-        outputs_key_field="mkey",
-        outputs=output,
-        raw_response=response,
-    )
+    return CommandResults(readable_output=command_entity_title)
 
 
 def test_module(client: Client) -> str:
@@ -2088,21 +2073,18 @@ def map_api_response_values_to_readable_string(response: dict[str, Any]) -> list
     if object_id:
         boolean_mapper = reverse_dict(BOOLEAN_MAPPER)
 
-        # Map access control commands
         if "MailSetAccessRule" in object_id:
             updated_response = map_access_control_response(
                 updated_response=updated_response,
                 boolean_mapper=boolean_mapper,
             )
 
-        # Map recipient policy commands
         elif "PolicyRcpt" in object_id:
             updated_response = map_recipient_policy_response(
                 updated_response=updated_response,
                 boolean_mapper=boolean_mapper,
             )
 
-        # Map policy IP commands
         elif "PolicyIp" in object_id:
             updated_response = map_ip_policy_response(
                 updated_response=updated_response,
@@ -2217,47 +2199,6 @@ def reverse_dict(original_dict: dict[str, Any]) -> dict[str, Any]:
         dict[str, Any]: A new dictionary with keys and values swapped.
     """
     return {value: key for key, value in original_dict.items()}
-
-
-def get_output_for_delete_command(command_args: dict[str, Any]) -> dict[str, Any]:
-    """
-    Get outputs_key_field value for removed item.
-
-    Args:
-        command_args (dict[str, Any]): Command arguments.
-
-    Returns:
-        dict[str, Any]: The outputs_key_field.
-    """
-    command_args.pop("values", None)
-    command_args.pop("group_name", None)
-    if removed_item := command_args.get("ip"):
-        return {"mkey": removed_item}
-
-    return {"mkey": next(iter((command_args.values())))}
-
-
-def prepare_output_for_replaced_and_added_items(command_args: dict[str, Any]) -> dict[str, Any]:
-    """
-    Get outputs for IPs or emails that replaced or added to a group member.
-
-    Args:
-        command_args (dict[str, Any]): The command arguments.
-
-    Returns:
-        dict[str, str] | list[dict[str, str]]: The updated outputs.
-    """
-    group_name_data = {"mkey": command_args.get("group_name")}
-
-    if item := command_args.get("ip"):
-        updated_output = [{"mkey": convert_cidr_to_ip_range(item=item)}]
-    elif item := command_args.get("email"):
-        updated_output = [{"mkey": item}]
-    else:
-        updated_output = [{"mkey": item} for item in command_args.get("emails", [])]
-        updated_output += [{"mkey": convert_cidr_to_ip_range(item=item)} for item in command_args.get("ips", [])]
-
-    return {"Member": updated_output} | group_name_data
 
 
 def convert_cidr_to_ip_range(item: str) -> str:
@@ -2538,7 +2479,71 @@ def update_group_member_args(command_args: dict[str, Any]) -> dict[str, Any]:
     return group_member_args
 
 
-def get_command_entity(command_name: str) -> tuple[str, str, str]:
+def get_command_request(command_name: str, client: Client) -> Callable[..., Any]:
+    """
+    Get request function by command name.
+
+    Args:
+        command_name (str): The command name.
+        client (Client): API client.
+
+    Returns:
+        Callable[..., Any]: The request function.
+    """
+    request_by_command_name = {
+        "fortimail-system-safe-block-add": client.add_system_safe_block,
+        "fortimail-ip-policy-create": client.create_ip_policy,
+        "fortimail-ip-policy-update": client.update_ip_policy,
+        "fortimail-access-control-create": client.create_access_control,
+        "fortimail-access-control-update": client.update_access_control,
+        "fortimail-recipient-policy-create": client.create_recipient_policy,
+        "fortimail-recipient-policy-update": client.update_recipient_policy,
+        "fortimail-pki-user-list": client.list_pki_user,
+        "fortimail-recipient-policy-list": client.list_recipient_policy,
+        "fortimail-tls-profile-list": client.list_tls_profile,
+        "fortimail-ldap-group-list": client.list_ldap_group,
+        "fortimail-geoip-group-list": client.list_geoip_group,
+        "fortimail-antispam-profile-list": client.list_antispam_profile,
+        "fortimail-antivirus-profile-list": client.list_antivirus_profile,
+        "fortimail-content-profile-list": client.list_content_profile,
+        "fortimail-ip-pool-list": client.list_ip_pool,
+        "fortimail-session-profile-list": client.list_session_profile,
+        "fortimail-access-control-list": client.list_access_control,
+        "fortimail-ip-policy-list": client.list_ip_policy,
+        "fortimail-email-group-member-list": client.list_email_group_member,
+        "fortimail-system-safe-block-list": client.list_system_safe_block,
+        "fortimail-ip-group-list": client.list_ip_group,
+        "fortimail-ip-group-member-list": client.list_ip_group_member,
+        "fortimail-email-group-list": client.list_email_group,
+        "fortimail-smtp-auth-profile-list": client.list_smtp_auth_profile,
+        "fortimail-resource-profile-list": client.list_resource_profile,
+        "fortimail-imap-auth-profile-list": client.list_imap_auth_profile,
+        "fortimail-radius-auth-profile-list": client.list_radius_auth_profile,
+        "fortimail-pop3-auth-profile-list": client.list_pop3_auth_profile,
+        "fortimail-email-group-create": client.create_email_group,
+        "fortimail-ip-group-create": client.create_ip_group,
+        "fortimail-email-group-update": client.update_email_group,
+        "fortimail-ip-group-update": client.update_ip_group,
+        "fortimail-ip-group-delete": client.delete_ip_group,
+        "fortimail-ip-group-member-delete": client.delete_ip_group_member,
+        "fortimail-email-group-delete": client.delete_email_group,
+        "fortimail-email-group-member-delete": client.delete_email_group_member,
+        "fortimail-system-safe-block-delete": client.delete_system_safe_block,
+        "fortimail-ip-policy-delete": client.delete_ip_policy,
+        "fortimail-access-control-delete": client.delete_access_control,
+        "fortimail-recipient-policy-delete": client.delete_recipient_policy,
+        "fortimail-ip-policy-move": client.move_ip_policy,
+        "fortimail-access-control-move": client.move_access_control,
+        "fortimail-recipient-policy-move": client.move_recipient_policy,
+        "fortimail-ip-group-member-add": client.add_ip_group_member,
+        "fortimail-ip-group-member-replace": client.replace_ip_group_member,
+        "fortimail-email-group-member-add": client.add_email_group_member,
+        "fortimail-email-group-member-replace": client.replace_email_group_member,
+    }
+    return request_by_command_name[command_name]
+
+
+def get_command_entity(command_name: str) -> tuple[str, str]:
     """
     Return the command request name, title, and output prefix name by command name.
 
@@ -2550,7 +2555,6 @@ def get_command_entity(command_name: str) -> tuple[str, str, str]:
     command_name_parts = command_name.split("-")
     command_operator = command_name_parts[-1]
     command_entity = "_".join(command_name_parts[1:-1])
-    command_request_name = f"{command_operator}_{command_entity}"
     command_entity_title = command_entity.replace("_", " ").title()
     command_outputs_prefix = OUTPUT_PREFIX_MAPPER[command_entity]
 
@@ -2559,7 +2563,7 @@ def get_command_entity(command_name: str) -> tuple[str, str, str]:
     elif command_operator != "list":
         command_entity_title = f"{command_entity_title} {command_operator}d successfully"
 
-    return command_request_name, command_entity_title, command_outputs_prefix
+    return command_entity_title, command_outputs_prefix
 
 
 def main() -> None:

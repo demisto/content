@@ -370,7 +370,7 @@ def test_list_command(
             json=response,
         )
 
-    _, _, outputs_prefix = Fortimail.get_command_entity(command_name=command_args["command_name"])
+    _, outputs_prefix = Fortimail.get_command_entity(command_name=command_args["command_name"])
 
     command_results = Fortimail.list_command(mock_client, command_args)
 
@@ -504,14 +504,10 @@ def test_delete_command(
             url=urljoin(API_URL, ENTITY_ENDPOINT[outputs_prefix]["DELETE"]),
             json=response,
         )
-    _, _, outputs_prefix = Fortimail.get_command_entity(command_name=command_args["command_name"])
+    command_entity_title, _ = Fortimail.get_command_entity(command_name=command_args["command_name"])
     command_results = Fortimail.delete_command(mock_client, command_args)
-    command_args.pop("command_name")
 
-    assert command_results.raw_response == response
-    assert command_results.outputs == Fortimail.get_output_for_delete_command(command_args)
-    assert command_results.outputs_prefix == f"FortiMail.{outputs_prefix}"
-    assert command_results.outputs_key_field == "mkey"
+    assert command_results.readable_output == command_entity_title
 
 
 @pytest.mark.parametrize(
@@ -614,7 +610,7 @@ def test_group_create_update_command(
 
 
 @pytest.mark.parametrize(
-    "command_args, endpoint_suffix, outputs_prefix, response_file",
+    "command_args, endpoint_suffix, response_file",
     [
         (
             {
@@ -623,7 +619,6 @@ def test_group_create_update_command(
                 "ip": "1.1.1.1/24",
             },
             "ProfIp_address_group/group_name/ProfIp_address_groupIpAddressGroupMember/1.1.1.1-1.1.1.1",
-            "IPGroup",
             "ip_group_member.json",
         ),
         (
@@ -633,7 +628,6 @@ def test_group_create_update_command(
                 "email": "email@email.com",
             },
             "ProfEmail_address_group/group_name/ProfEmail_address_groupEmailAddressGroupMember/email@email.com",
-            "EmailGroup",
             "email_group_member.json",
         ),
         (
@@ -643,7 +637,6 @@ def test_group_create_update_command(
                 "ips": ["1.1.1.1/24", "1.1.1.2/24"],
             },
             "ProfIp_address_group/group_name/ProfIp_address_groupIpAddressGroupMember",
-            "IPGroup",
             "ip_group_member_replace.json",
         ),
         (
@@ -653,7 +646,6 @@ def test_group_create_update_command(
                 "emails": ["email@email.com", "email2@email.com"],
             },
             "ProfEmail_address_group/group_name/ProfEmail_address_groupEmailAddressGroupMember",
-            "EmailGroup",
             "email_group_member_replace.json",
         ),
     ],
@@ -663,7 +655,6 @@ def test_group_member_add_replace_command(
     mock_client: Fortimail.Client,
     command_args: dict[str, Any],
     endpoint_suffix: str,
-    outputs_prefix: str,
     response_file: str,
 ):
     """
@@ -694,14 +685,11 @@ def test_group_member_add_replace_command(
         url=urljoin(API_URL, endpoint_suffix),
         json=response,
     )
-
     command_results = Fortimail.group_member_add_replace_command(mock_client, command_args)
-    command_args.pop("command_name")
+    command_name = command_args.pop("command_name")
+    command_entity_title, _ = Fortimail.get_command_entity(command_name=command_name)
 
-    assert command_results.raw_response == response
-    assert command_results.outputs == Fortimail.prepare_output_for_replaced_and_added_items(command_args)
-    assert command_results.outputs_prefix == f"FortiMail.{outputs_prefix}"
-    assert command_results.outputs_key_field == "mkey"
+    assert command_results.readable_output == command_entity_title
 
 
 def test_add_system_safe_block_command(
@@ -793,7 +781,7 @@ def test_move_command(
         json=EXAMPLE_COOKIE,
     )
     response = load_mock_response(response_file)
-    _, command_entity_title, outputs_prefix = Fortimail.get_command_entity(command_name=command_args["command_name"])
+    command_entity_title, outputs_prefix = Fortimail.get_command_entity(command_name=command_args["command_name"])
     endpoint = ENTITY_ENDPOINT[outputs_prefix]["GET"].split("/1")[0]
     requests_mock.post(
         url=urljoin(API_URL, endpoint),
@@ -1036,80 +1024,6 @@ def test_ip_policy_create_update_command(
 # Test Helper Functions #
 
 
-@pytest.mark.parametrize(
-    "command_args, expected_result",
-    [
-        (
-            {"values": "some_value", "group_name": "some_group", "id": "1"},
-            {"mkey": "1"},
-        ),
-        (
-            {"ip": "1.1.1.1"},
-            {"mkey": "1.1.1.1"},
-        ),
-    ],
-)
-def test_get_output_for_delete_command(command_args, expected_result):
-    """
-    Scenario:
-    - Test retrieving removed item key.
-
-    Given:
-    - command_args.
-
-    Then:
-    - Ensure that the return item key is correct.
-
-    """
-    result = Fortimail.get_output_for_delete_command(command_args=command_args)
-    assert result == expected_result
-
-
-@pytest.mark.parametrize(
-    "command_args, expected_result",
-    [
-        (
-            {"ip": "127.0.0.1", "group_name": "group_name"},
-            {"Member": [{"mkey": "127.0.0.1-127.0.0.1"}], "mkey": "group_name"},
-        ),
-        (
-            {"email": "test@example.com", "group_name": "group_name"},
-            {"Member": [{"mkey": "test@example.com"}], "mkey": "group_name"},
-        ),
-        (
-            {"ips": ["192.168.0.1", "192.168.0.2"], "group_name": "group_name"},
-            {
-                "Member": [{"mkey": "192.168.0.1-192.168.0.1"}, {"mkey": "192.168.0.2-192.168.0.2"}],
-                "mkey": "group_name",
-            },
-        ),
-        (
-            {"emails": ["test1@example.com", "test2@example.com"], "group_name": "group_name"},
-            {
-                "Member": [{"mkey": "test1@example.com"}, {"mkey": "test2@example.com"}],
-                "mkey": "group_name",
-            },
-        ),
-    ],
-)
-def test_get_output_for_replaced_and_added_items(
-    command_args: dict[str, str],
-    expected_result: dict[str, str] | list[dict[str, str]],
-):
-    """
-    Scenario:
-    - Test retrieving output for replaced and added items.
-
-    Given:
-    - command_args.
-
-    Then:
-    - Ensure that the return output is correct.
-
-    """
-    result = Fortimail.prepare_output_for_replaced_and_added_items(command_args=command_args)
-    assert result == expected_result
-
 
 def test_prepare_outputs_and_readable_output():
     """
@@ -1182,8 +1096,8 @@ def test_update_group_member_args(command_args: dict[str, Any], expected_result:
 @pytest.mark.parametrize(
     "command_name, expected_result",
     [
-        ("fortimail-ip-policy-create", ("create_ip_policy", "Ip Policy created successfully", "IPPolicy")),
-        ("fortimail-ip-policy-list", ("list_ip_policy", "Ip Policy", "IPPolicy")),
+        ("fortimail-ip-policy-create", ("Ip Policy created successfully", "IPPolicy")),
+        ("fortimail-ip-policy-list", ("Ip Policy", "IPPolicy")),
     ],
 )
 def test_get_command_entity(command_name: str, expected_result):
@@ -1198,9 +1112,7 @@ def test_get_command_entity(command_name: str, expected_result):
     - Ensure that the return command request, title, and outputs prefix is correct.
 
     """
-    command_name = "fortimail-ip-policy-create"
     result = Fortimail.get_command_entity(command_name)
-    expected_result = ("create_ip_policy", "Ip Policy created successfully", "IPPolicy")
     assert result == expected_result
 
 
