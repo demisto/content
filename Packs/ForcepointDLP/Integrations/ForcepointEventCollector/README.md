@@ -1,4 +1,4 @@
-Use this integration to fetch security incidents from Forcepoint DLP as XSIAM events.
+Use this integration to fetch security incidents from Forcepoint DLP as Cortex XSIAM events.
 
 ## Configure Forcepoint DLP Event Collector on Cortex XSIAM
 
