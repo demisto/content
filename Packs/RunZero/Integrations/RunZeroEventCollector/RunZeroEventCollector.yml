@@ -71,11 +71,11 @@ script:
       required: true
     - description: Maximum number of results to return.
       name: limit
-    - description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+    - description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\"."
       name: start_time
     description: Gets events from RunZero.
     name: runzero-get-events
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.83255
   isfetchevents: true
   script: '-'
   subtype: python3
