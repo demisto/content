@@ -7,7 +7,7 @@ jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
-      - run: echo gh search prs --state=open
+      - run: gh search prs --state=open
         # env:
         #   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # pre-commit:
