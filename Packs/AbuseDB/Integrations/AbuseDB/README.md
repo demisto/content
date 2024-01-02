@@ -69,6 +69,11 @@
 <td style="width: 532px;">Enrichment of private IP addresses will be conducted even if it has been disabled at the integration level, default is "false"</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 137px;">raw_response</td>
+<td style="width: 532px;">Whether or not to get the raw response with all the analysis' details, default is "false"</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -98,9 +103,19 @@
 <td style="width: 414px;">The number of times this address has been reported</td>
 </tr>
 <tr>
-<td style="width: 268px;">AbuseIPDB.IP.Geo.Country</td>
-<td style="width: 58px;">unknown</td>
-<td style="width: 414px;">Country associated with this IP Address</td>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.CountryName</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Country name associated with this IP Address</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.CountryCode</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Country code associated with this IP Address</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.Hostnames</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The hostame(s) of the IP address.</td>
 </tr>
 <tr>
 <td style="width: 268px;">AbuseIPDB.IP.Address.Reports</td>
@@ -214,9 +229,19 @@
 <td style="width: 414px;">Confidence score fetched from AbuseIPDB</td>
 </tr>
 <tr>
-<td style="width: 271px;">AbuseIPDB.IP.Geo.Country</td>
-<td style="width: 55px;">unknown</td>
-<td style="width: 414px;">Country associated with this IP Address</td>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.CountryName</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Country name associated with this IP Address</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.CountryCode</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Country code associated with this IP Address</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.Hostnames</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The hostame(s) of the IP address.</td>
 </tr>
 <tr>
 <td style="width: 271px;">AbuseIPDB.IP.TotalReports</td>

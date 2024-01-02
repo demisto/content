@@ -107,14 +107,24 @@ script:
     - defaultValue: '80'
       description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
       name: threshold
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether or not to get the raw response with all the analysis' details.
+      predefined:
+      - 'true'
+      - 'false'
+      name: raw_response
     description: Checks the specified IP address against the AbuseIP database.
     name: ip
     outputs:
     - contextPath: IP.Address
       description: The address of the IP.
       type: String
-    - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located.
+    - contextPath: IP.Geo.CountryName
+      description: The country name in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.CountryCode
+      description: The country code in which the IP address is located.
       type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
@@ -131,8 +141,14 @@ script:
     - contextPath: AbuseIPDB.IP.TotalReports
       description: The number of times the address has been reported.
       type: Number
-    - contextPath: AbuseIPDB.IP.Geo.Country
-      description: The country associated with the IP Address.
+    - contextPath: AbuseIPDB.IP.Geo.CountryName
+      description: The country name associated with the IP Address.
+      type: String
+    - contextPath: AbuseIPDB.IP.Geo.CountryCode
+      description: The country code associated with the IP Address.
+      type: String
+    - contextPath: AbuseIPDB.IP.Hostnames
+      description: The hostame(s) of the IP address.
       type: String
     - contextPath: AbuseIPDB.IP.Reports
       description: The reports summary (for "verbose" reports).
@@ -189,8 +205,11 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
-    - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located.
+    - contextPath: IP.Geo.CountryName
+      description: The country name in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.CountryCode
+      description: The country code in which the IP address is located.
       type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
@@ -210,9 +229,15 @@ script:
     - contextPath: AbuseIPDB.IP.TotalReports
       description: The number of times this address has been reported.
       type: Unknown
-    - contextPath: AbuseIPDB.IP.Geo.Country
-      description: The country associated with this IP Address.
-      type: Unknown
+    - contextPath: AbuseIPDB.IP.Geo.CountryName
+      description: The country name associated with the IP Address.
+      type: String
+    - contextPath: AbuseIPDB.IP.Geo.CountryCode
+      description: The country code associated with the IP Address.
+      type: String
+    - contextPath: AbuseIPDB.IP.Hostnames
+      description: The hostame(s) of the IP address.
+      type: String
     - contextPath: AbuseIPDB.IP.Reports
       description: Reports summary (for "verbose" reports).
       type: Unknown
@@ -285,7 +310,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.80014
+  dockerimage: demisto/python3:3.10.13.83255
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test
