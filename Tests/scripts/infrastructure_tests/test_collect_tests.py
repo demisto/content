@@ -268,10 +268,12 @@ NIGHTLY_TESTS: tuple = (
     # Validate that when collecting test for xsoar_saas xsoarNightly does not collect xsoar_saas only packs.
     (MockerCases.A_xsoar_saas, XSOARNightlyTestCollector, {}, (), None, None, ()),
 
+    # Checks that tests are collected according to the marketplace entry they hold - xsoar_on_prem
     (MockerCases.conf_marketplaces_entry, XSOARNightlyTestCollector,
      {'myTestPlaybook_both', 'myTestPlaybook_both2', 'myTestPlaybook_on_prem', 'myTestPlaybook_two_entries'},
      ('myPack',), None, None, (MarketplaceVersions.XSOAR,)),
 
+    # Checks that tests are collected according to the marketplace entry they hold - xsoar_saas
     (MockerCases.conf_marketplaces_entry, XSOARNightlyTestCollector,
      {'myTestPlaybook_both', 'myTestPlaybook_both2', 'myTestPlaybook_saas', 'myTestPlaybook_two_entries'},
      ('myPack',), None, None, (MarketplaceVersions.XSOAR_SAAS,)),

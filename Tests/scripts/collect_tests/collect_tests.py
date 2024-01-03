@@ -250,7 +250,7 @@ class CollectionResult:
                         )
                 test_marketplaces = conf.tests_to_marketplace_set[test]  # type: ignore[union-attr]
                 logger.info(f'HERE MARKETPLACES: {test_marketplaces=}, {conf.marketplace=}')  # type: ignore[union-attr]
-                if test_marketplaces and conf.marketplace not in test_marketplaces:  # type: ignore[union-attr]
+                if test_marketplaces and (conf.marketplace not in test_marketplaces):  # type: ignore[union-attr]
                     raise IncompatibleTestMarketplaceException(test_name=test,
                                                                test_marketplaces=test_marketplaces,
                                                                expected_marketplace=conf.marketplace)  # type: ignore[union-attr]
@@ -1454,7 +1454,7 @@ class XPANSENightlyTestCollector(NightlyTestCollector):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20231205')
+    logger.info('TestCollector v20240301')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
