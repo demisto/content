@@ -937,16 +937,16 @@ script:
       description: 'The sender (source) type. Optional values: IP/Netmask,IP Group,GeoIP Group,ISDB.'
       type: Number
     - contextPath: FortiMail.AccessControl.recipient_pattern_ldap_groupname
-      description: Recipient pattern. Relevant when recipient_pattern_typeis LDAP Group.
+      description: Recipient pattern. Relevant when recipient_pattern_type is LDAP Group.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_ldap
-      description: Recipient pattern profile. Relevant when recipient_pattern_typeis LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.
+      description: Recipient pattern profile. Relevant when recipient_pattern_type is LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_group
-      description: Recipient email group. Relevant when recipient_pattern_typeis Email Group.
+      description: Recipient email group. Relevant when recipient_pattern_type is Email Group.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern
-      description: Recipient pattern. Relevant when recipient_pattern_typeis Regular Expression or User Defined.
+      description: Recipient pattern. Relevant when recipient_pattern_type is Regular Expression or User Defined.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_type
       description: Recipient pattern type.
