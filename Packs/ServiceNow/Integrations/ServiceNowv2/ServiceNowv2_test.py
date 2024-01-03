@@ -8,12 +8,12 @@ import ServiceNowv2
 import requests
 from CommonServerPython import DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
-    generate_body, parse_dict_ticket_fields, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
+    generate_body, parse_dict_ticket_fields, split_fields, Client, update_ticket_command, create_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, delete_ticket_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
