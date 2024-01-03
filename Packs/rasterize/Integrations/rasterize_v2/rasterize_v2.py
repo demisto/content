@@ -697,7 +697,10 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str):
         images = []
         for page in sorted(os.listdir(output_folder)):
             if os.path.isfile(os.path.join(output_folder, page)) and 'converted_pdf_' in page:
-                images.append(Image.open(os.path.join(output_folder, page)))
+                image = Image.open(os.path.join(output_folder, page))
+                output = BytesIO()
+                image.save(output, 'JPEG')  # type: ignore
+                images.append(output.getvalue())
 
         return images
 
