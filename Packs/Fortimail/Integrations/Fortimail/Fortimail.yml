@@ -2019,7 +2019,7 @@ script:
       description: The name of the session profile.
       type: String
     - contextPath: FortiMail.SessionProfile.comment
-      description: A brief comment for the anti spam profile.
+      description: A brief comment for the anti-spam profile.
       type: String
     - contextPath: FortiMail.SessionProfile.action
       description: The action of the session profile.
