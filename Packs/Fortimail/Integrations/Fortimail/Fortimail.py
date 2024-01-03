@@ -1712,7 +1712,8 @@ def ip_policy_create_update_command(client: Client, args: Dict[str, Any]) -> Com
     """
     command_name: str = args.get("command_name", "")
     command_entity_title, _ = get_command_entity(command_name=command_name)
-    command_request = get_command_request(command_name=command_name, client=client)
+    # Get the client request function by command name.
+    command_request: Callable = get_command_request(command_name=command_name, client=client)
 
     command_args = handle_ip_policy_command_args(args=args)
 
@@ -1747,7 +1748,8 @@ def access_control_create_update_command(client: Client, args: Dict[str, Any]) -
     """
     command_name: str = args.get("command_name", "")
     command_entity_title, _ = get_command_entity(command_name=command_name)
-    command_request = get_command_request(command_name=command_name, client=client)
+    # Get the client request function by command name.
+    command_request: Callable = get_command_request(command_name=command_name, client=client)
 
     command_args = handle_access_control_command_args(args=args)
 
@@ -1782,7 +1784,8 @@ def recipient_policy_create_update_command(client: Client, args: Dict[str, Any])
     """
     command_name: str = args.get("command_name", "")
     command_entity_title, _ = get_command_entity(command_name=command_name)
-    command_request = get_command_request(command_name=command_name, client=client)
+    # Get the client request function by command name.
+    command_request: Callable = get_command_request(command_name=command_name, client=client)
 
     command_args = handle_recipient_policy_command_args(args=args)
 
@@ -1819,7 +1822,8 @@ def move_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     command_name: str = args.get("command_name", "")
     command_entity_title, _ = get_command_entity(command_name=command_name)
-    command_request = get_command_request(command_name=command_name, client=client)
+    # Get the client request function by command name.
+    command_request: Callable = get_command_request(command_name=command_name, client=client)
 
     command_args = remove_empty_elements(
         {
@@ -1851,22 +1855,13 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     command_name: str = args.get("command_name", "")
     command_entity_title, command_outputs_prefix = get_command_entity(command_name=command_name)
-    # Get the client request function by attribute entity name.
-    command_request = get_command_request(command_name=command_name, client=client)
+
+    # Get the client request function by command name.
+    command_request: Callable = get_command_request(command_name=command_name, client=client)
+
     # Get the relevant item key to fetch in case user use the command as GET.
     # Those arguments cover 22 list commands.
-    command_args = remove_empty_elements(
-        {
-            "group_name": args.get("group_name"),
-            "ip": args.get("ip"),
-            "access_control_id": args.get("access_control_id"),
-            "policy_id": args.get("policy_id"),
-            "recipient_policy_id": args.get("recipient_policy_id"),
-            "email": args.get("email"),
-            "name": args.get("name"),
-            "list_type": args.get("list_type"),
-        }
-    )
+    command_args = handle_list_command_args(args=args)
 
     response = command_request(**command_args)
     # Map the response fields values from integer to string to be informative.
@@ -1877,8 +1872,8 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     output_table, output = prepare_outputs_and_readable_output(output=output, command_args=command_args)
 
-    # Check if command called as list or get command.
     if not command_args:
+        # Case list and not a get command.
         command_entity_title = f"{command_entity_title} list"
 
     readable_output = tableToMarkdown(
@@ -1892,7 +1887,7 @@ def list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"FortiMail.{command_outputs_prefix}",
-        # Set the outputs_key_field to 'item' in case 'list_item' exist, else 'mkey'
+        # Handle output_key_field for system safe block list command that has a different response structure.
         outputs_key_field="item" if command_args.get("list_type") else "mkey",
         outputs=output,
         raw_response=response,
@@ -1919,7 +1914,8 @@ def group_create_update_command(client: Client, args: Dict[str, Any]) -> Command
             "comment": args.get("comment"),
         }
     )
-    command_request = get_command_request(command_name=command_name, client=client)
+    # Get the client request function by command name.
+    command_request: Callable = get_command_request(command_name=command_name, client=client)
     response = command_request(**command_args)
     # Get updated output for created/updated group
     output = {key: response[key] for key in ["mkey", "comment"] if key in response}
@@ -1954,8 +1950,8 @@ def delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     command_name: str = args.get("command_name", "")
     command_entity_title, _ = get_command_entity(command_name=command_name)
-    # Get the 'delete' request function
-    delete_request = get_command_request(command_name=command_name, client=client)
+    # Get the 'delete' request function by command name.
+    delete_request: Callable = get_command_request(command_name=command_name, client=client)
     # Get the relevant item key to remove
     command_args = handle_delete_command_args(args=args)
 
@@ -1980,8 +1976,8 @@ def group_member_add_replace_command(client: Client, args: Dict[str, Any]) -> Co
     is_valid_email(args.get("email", args.get("emails")))
     command_name: str = args.get("command_name", "")
     command_entity_title, _ = get_command_entity(command_name=command_name)
-
-    command_request = get_command_request(command_name=command_name, client=client)
+    # Get the client request function by command name.
+    command_request: Callable = get_command_request(command_name=command_name, client=client)
     command_args = remove_empty_elements(
         {
             "group_name": args.get("group_name"),
@@ -2208,6 +2204,25 @@ def convert_cidr_to_ip_range(item: str) -> str:
     return f"{ip_data[0]}-{ip_data[0]}"
 
 
+def prepare_outputs_for_system_list(
+    list_items: list[str],
+    command_args: Dict[str, Any],
+) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """
+    Update the system list API response keys names according to Fortimail UI, for the readable output.
+
+    Args:
+        list_items (list[str]): The system list items.
+        command_args (Dict[str, Any]): The list command arguments.
+
+    Returns:
+        Tuple[list[dict[str, Any]], list[dict[str, Any]]]: New readable output and Updated response.
+    """
+    values = argToList(list_items)
+    output_table = [{"item": value, "list_type": command_args.get("list_type")} for value in values]
+    return output_table, output_table
+
+
 def prepare_outputs_and_readable_output(
     output: list[dict[str, Any]],
     command_args: Dict[str, Any],
@@ -2217,6 +2232,7 @@ def prepare_outputs_and_readable_output(
 
     Args:
         output (list[dict[str, Any]]): The API response.
+        command_args (Dict[str, Any]): The list command arguments.
 
     Returns:
         Tuple[list[dict[str, Any]], list[dict[str, Any]]]: New readable output and Updated response.
@@ -2225,9 +2241,7 @@ def prepare_outputs_and_readable_output(
 
     for item in output:
         if list_items := item.get("listitems"):
-            values = argToList(list_items)
-            output_table = [{"item": value, "list_type": command_args.get("list_type")} for value in values]
-            return output_table, output_table
+            return prepare_outputs_for_system_list(list_items=list_items, command_args=command_args)
         # Build an ordered output table, response field value by header.
         # Map API response common fields (common for all commands).
         output_table.append(
@@ -2426,6 +2440,30 @@ def handle_delete_command_args(args: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+def handle_list_command_args(args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Get and convert list command arguments.
+
+    Args:
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        dict[str, Any]: Updated command arguments.
+    """
+    return remove_empty_elements(
+        {
+            "group_name": args.get("group_name"),
+            "ip": args.get("ip"),
+            "access_control_id": args.get("access_control_id"),
+            "policy_id": args.get("policy_id"),
+            "recipient_policy_id": args.get("recipient_policy_id"),
+            "email": args.get("email"),
+            "name": args.get("name"),
+            "list_type": args.get("list_type"),
+        }
+    )
+
+
 def modify_group_member_args_before_replace(group_members: list[str]) -> dict[str, Any]:
     """
     Get the IP/email group members and modify it for the API.
@@ -2481,8 +2519,8 @@ def validate_value_exist_before_delete(client: Client, command_args: dict[str, A
     Raises:
         ValueError: In case the item doesn't exist.
     """
-    # Get the 'get' request function
-    get_request = get_command_request(command_name=command_name.replace("delete", "list"), client=client)
+    # Get the 'get' request function by command name.
+    get_request: Callable = get_command_request(command_name=command_name.replace("delete", "list"), client=client)
     # Remove the 'values' argument in case exist before calling GET
     values = command_args.pop("values", None)
 
