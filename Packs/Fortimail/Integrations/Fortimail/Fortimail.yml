@@ -1180,7 +1180,7 @@ script:
       description: Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit.
       type: Number
     - contextPath: FortiMail.AccessControl.reverse_dns_pattern_regexp
-      description: Whether to use regular expression in the reverse DNS pastern.
+      description: Whether to use a regular expression in the reverse DNS pastern.
       type: Number
     - contextPath: FortiMail.AccessControl.reverse_dns_pattern
       description: Whether to use regular expression syntax instead of wildcards to specify the reverse DNS pattern.
