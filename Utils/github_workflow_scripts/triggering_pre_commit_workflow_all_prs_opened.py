@@ -65,7 +65,7 @@ def trigger_workflow(repo_owner, repo_name, workflow_name, access_token):
 def trigger_workflow_for_pr(
     repo_owner, repo_name, workflow_name, pr_name, access_token=None
 ):
-    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/{workflow_name}/dispatches"
+    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/7399575629/dispatches"
 
     headers = (
         {
