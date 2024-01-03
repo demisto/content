@@ -1,14 +1,13 @@
 id: Prisma Cloud Remediation - GCP Compute Engine Misconfiguration v2
 version: -1
-fromversion: 6.5.0
 name: Prisma Cloud Remediation - GCP Compute Engine Misconfiguration v2
-description: |
+description: |-
   This playbook remediates Prisma Cloud GCP Compute Engine alerts.  It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
    - GCP VM instances have serial port access enabled
    - GCP VM instances have block project-wide SSH keys feature disabled
-   - GCP VM instances without any custom metadata information
+   - GCP VM instances without any custom metadata information.
 starttaskid: "0"
 tasks:
   "0":
@@ -19,9 +18,9 @@ tasks:
       id: 61bee172-14d4-4a48-815c-913b49bef800
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -102,10 +101,10 @@ tasks:
       id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -341,14 +340,14 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
       id:
         complex:
           root: incident
           accessor: id
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
       mndadone: {}
       phishingsubtype: {}
     separatecontext: false
@@ -421,7 +420,6 @@ tasks:
       - "9"
       "yes":
       - "12"
-    continueonerror: true
     separatecontext: false
     conditions:
     - label: "yes"
@@ -450,6 +448,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -491,8 +490,8 @@ tasks:
                   simple: id
       dismissal_note:
         simple: ${incident.labels.id} has been remediated by Cortex XSOAR.
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -542,13 +541,17 @@ inputs:
               simple: policyId
   required: false
   description: Grab the Prima Cloud policy ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoRemediateComputeEngine
   value:
     simple: "no"
   required: false
   description: Execute GCP Compute Engine remediation automatically?
-  playbookInputQuery: null
+  playbookInputQuery:
+outputs: []
+tests:
+- No Test
+fromversion: 6.5.0
 inputSections:
 - inputs:
   - policyId
@@ -557,12 +560,8 @@ inputSections:
 - inputs:
   - AutoRemediateComputeEngine
   name: Remediation
-  description: Remediation settings and data, including containment, eradication,
-    and recovery.
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
-outputs: []
-tests:
-- No Test

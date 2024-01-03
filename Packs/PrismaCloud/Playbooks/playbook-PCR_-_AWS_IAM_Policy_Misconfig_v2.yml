@@ -1,6 +1,5 @@
 id: Prisma Cloud Remediation - AWS IAM Policy Misconfiguration v2
 version: -1
-fromversion: 6.5.0
 name: Prisma Cloud Remediation - AWS IAM Policy Misconfiguration v2
 description: This playbook remediates Prisma Cloud AWS IAM policy alerts. It uses sub-playbooks that perform the remediation steps.
 starttaskid: "0"
@@ -13,9 +12,9 @@ tasks:
       id: 972c2cba-e9e8-4b4e-8f92-407ca7fb7917
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -248,14 +247,14 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
       id:
         complex:
           root: incident
           accessor: id
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
       phishingsubtype: {}
     separatecontext: false
     view: |-
@@ -276,10 +275,10 @@ tasks:
       id: a8d06dc1-f186-4459-87b6-3d05d85f70d0
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -300,10 +299,10 @@ tasks:
       version: -1
       name: Dismiss Prisma Cloud alert
       description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
-      script: PrismaCloud v2|||prisma-cloud-alert-dismiss
+      script: 'PrismaCloud v2|||prisma-cloud-alert-dismiss'
       type: regular
       iscommand: true
-      brand: PrismaCloud v2
+      brand: "PrismaCloud v2"
     nexttasks:
       '#none#':
       - "7"
@@ -331,8 +330,8 @@ tasks:
               field:
                 value:
                   simple: policyId
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -503,7 +502,6 @@ tasks:
       - "7"
       "yes":
       - "9"
-    continueonerror: true
     separatecontext: false
     conditions:
     - label: "yes"
@@ -532,6 +530,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -580,13 +579,17 @@ inputs:
               simple: policyId
   required: false
   description: Get the Prisma Cloud policy ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoUpdatePasswordPolicy
   value:
     simple: "no"
   required: false
   description: Update AWS IAM password policy automatically?
-  playbookInputQuery: null
+  playbookInputQuery:
+outputs: []
+tests:
+- No Test
+fromversion: 6.5.0
 inputSections:
 - inputs:
   - policyId
@@ -595,12 +598,8 @@ inputSections:
 - inputs:
   - AutoUpdatePasswordPolicy
   name: Remediation
-  description: Remediation settings and data, including containment, eradication,
-    and recovery.
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
-outputs: []
-tests:
-- No Test

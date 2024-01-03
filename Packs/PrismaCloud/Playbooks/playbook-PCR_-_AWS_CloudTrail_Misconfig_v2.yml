@@ -1,6 +1,5 @@
 id: Prisma Cloud Remediation - AWS CloudTrail Misconfiguration v2
 version: -1
-fromversion: 6.5.0
 name: Prisma Cloud Remediation - AWS CloudTrail Misconfiguration v2
 description: |-
   This playbook remediates Prisma Cloud AWS CloudTrail alerts.  It calls sub-playbooks that perform the actual remediation steps.
@@ -9,7 +8,7 @@ description: |-
    - AWS CloudTrail Trail Log Validation Is Not Enabled In All Regions
    - AWS CloudTrail is not enabled in all regions
    - AWS CloudTrail Trail Is Not Integrated With CloudWatch Logs
-   - AWS CloudTrail is not enabled on the account
+   - AWS CloudTrail is not enabled on the account.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,9 +19,9 @@ tasks:
       id: 972c2cba-e9e8-4b4e-8f92-407ca7fb7917
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -225,14 +224,14 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
       id:
         complex:
           root: incident
           accessor: id
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
       phishingsubtype: {}
     separatecontext: false
     view: |-
@@ -253,10 +252,10 @@ tasks:
       id: a8d06dc1-f186-4459-87b6-3d05d85f70d0
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -285,7 +284,6 @@ tasks:
       - "7"
       "yes":
       - "17"
-    continueonerror: true
     separatecontext: false
     conditions:
     - label: "yes"
@@ -314,6 +312,7 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -445,11 +444,11 @@ tasks:
       id: 5a898bb5-6f8e-4c9f-8dd9-d064da965868
       version: -1
       name: Prisma Cloud Remediation - AWS CloudTrail Trail Misconfiguration
-      description: ""
       playbookName: Prisma Cloud Remediation - AWS CloudTrail Trail Misconfiguration
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -516,11 +515,11 @@ tasks:
       id: 025549f1-f265-49b3-8ae7-05e7f344a502
       version: -1
       name: Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch Logs
-      description: ""
       playbookName: Prisma Cloud Remediation - AWS CloudTrail Is Not Integrated With CloudWatch Logs
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -566,8 +565,8 @@ tasks:
                   simple: id
       dismissal_note:
         simple: ${incident.labels.id} has been remediated by Cortex XSOAR.
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -620,13 +619,17 @@ inputs:
               simple: policyId
   required: false
   description: Get the Prisma Cloud policy ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AutoUpdateCloudTrail
   value:
     simple: "no"
   required: false
   description: Update AWS CloudTrail automatically?
-  playbookInputQuery: null
+  playbookInputQuery:
+outputs: []
+tests:
+- No Test
+fromversion: 6.5.0
 inputSections:
 - inputs:
   - policyId
@@ -635,12 +638,8 @@ inputSections:
 - inputs:
   - AutoUpdateCloudTrail
   name: Remediation
-  description: Remediation settings and data, including containment, eradication,
-    and recovery.
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
-outputs: []
-tests:
-- No Test
