@@ -525,15 +525,15 @@ def rasterize_thread(browser, chrome_port, path: str,
     with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
         tab.call_method("Emulation.setVisibleSize", width=width, height=height)
 
-        if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
+        if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                     full_screen=full_screen, include_url=include_url)
 
-        elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
+        elif rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
             return screenshot_pdf(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                   include_url=include_url)
 
-        elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
+        elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                     full_screen=full_screen, include_url=include_url, include_source=True)
         else:
