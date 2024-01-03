@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 from _pytest.fixtures import SubRequest
+from requests.exceptions import RequestException
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common.clients import XsoarSaasClient
@@ -93,7 +94,7 @@ def test_taxii2_server_returns_indicators(
         )
         # there are cases where the port can be taken in the machine, trying in a few other ports
         try:
-            for port in ("8000", "8001", "8002"):
+            for port in ("8000", "8001", "8002", "8003", "8004"):
                 integration_params["longRunningPort"] = port
                 with save_integration_instance(
                     xsoar_saas_client,
@@ -133,9 +134,15 @@ def test_taxii2_server_returns_indicators(
                     indicators = get_json_response(response).get("objects")
                     assert indicators, f'could not get indicators from url={response.request.url} with available ' \
                         f'indicators={available_indicators}, status code={response.status_code}, response={indicators}'
-        except ApiException as error:
-            logging.info(f'Got error when running test_taxii2_server_returns_indicators with {port=} error:\n{error}')
-            if port == "8002":
+        except (ApiException, RequestException) as error:
+            if isinstance(error, ApiException):
+                logging.error(f'Got error when running test_taxii2_server_returns_indicators with {port=}, error:\n{error}')
+            else:
+                logging.error(
+                    f'Got error response {error.response} when running '
+                    f'test_taxii2_server_returns_indicators with {port=} when sending request {error.request}'
+                )
+            if port == "8004":
                 raise
 
 
@@ -201,7 +208,6 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
         integration_id="QRadar v3",
         is_long_running=True,
         instance_name=instance_name,
-        should_run_test_module=False
     ):
         incidents_type = integration_params["incident_type"]
         with get_fetched_incident(
@@ -218,12 +224,18 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
             investigation_id = qradar_incident_response.get("investigationId")
             assert investigation_id, f'investigation ID is empty in {qradar_incident_response}'
 
+            close_offense_command = f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED"
+
             # close the qradar offense
-            context = xsoar_saas_client.run_cli_command(
-                f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
+            war_room_entries, context = xsoar_saas_client.run_cli_command(
+                close_offense_command,
                 investigation_id=investigation_id
             )
-            assert context.get("QRadar", {}).get("Offense", {}).get("Status") == "CLOSED"
+            assert context.get("QRadar", {}).get("Offense", {}).get(
+                "Status") == "CLOSED", f"Error validating context when running " \
+                                       f"{close_offense_command} command, context: {context}, " \
+                                       f"war-rooom error entries: " \
+                                       f"{xsoar_saas_client.get_formatted_error_entries(war_room_entries)}"
 
             # make sure the incident gets closed after closing it in Qradar
             assert xsoar_saas_client.poll_incident_state(incident_id, expected_states=(IncidentState.CLOSED,), timeout=300)

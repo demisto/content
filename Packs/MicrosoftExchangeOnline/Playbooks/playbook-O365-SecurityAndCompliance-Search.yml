@@ -623,6 +623,15 @@ tasks:
           right:
             value:
               simple: "true"
+      - - operator: greaterThan
+          left:
+            value:
+              simple: O365.SecurityAndCompliance.ContentSearch.Search.Items
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {

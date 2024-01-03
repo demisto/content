@@ -40,7 +40,6 @@ from Tests.test_integration import __get_integration_config, test_integration_in
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
 
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 NO_PROXY = ','.join([
@@ -76,10 +75,10 @@ XSOAR_SASS_SERVER_TYPE = "XSOAR SAAS"
 XSIAM_SERVER_TYPE = "XSIAM"
 SERVER_TYPES = [XSOAR_SERVER_TYPE, XSOAR_SASS_SERVER_TYPE, XSIAM_SERVER_TYPE]
 MARKETPLACE_TEST_BUCKET = (
-    f'{TEST_XDR_PREFIX}marketplace-ci-build/content/builds'
+    'marketplace-ci-build/content/builds'
 )
 MARKETPLACE_XSIAM_BUCKETS = (
-    f'{TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam'
+    'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
 )
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
@@ -221,6 +220,7 @@ class Build(ABC):
         self.branch_name = options.branch
         self.ci_build_number = options.build_number
         self.is_nightly = options.is_nightly
+        self.is_sdk_nightly = options.sdk_nightly
         self.secret_conf = get_json_file(options.secret)
         self.username = options.user if options.user else self.secret_conf.get('username')
         self.password = options.password if options.password else self.secret_conf.get('userPassword')
@@ -752,7 +752,7 @@ class XSOARBuild(Build):
         url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
         config = {config_path:
-                  f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{url_suffix}'}
+                  f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
         for server in servers:
             server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
         logging.success('Updated marketplace url and restarted servers')
@@ -963,6 +963,7 @@ def options_handler(args=None):
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
+    parser.add_argument('-sn', '--sdk-nightly', type=str2bool, help='Is SDK nightly build')
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
@@ -1714,8 +1715,13 @@ def test_pack_zip(content_path, target, packs: list = None):
             test = test.name
             with open(test_path) as test_file:
                 if not (test.startswith(('playbook-', 'script-'))):
-                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
+                    test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml', path=test_path).value
                     test_file.seek(0)
+                    # we need to convert to the regular filetype if we get a test type, because that what the server expects
+                    if test_type == FileType.TEST_PLAYBOOK.value:
+                        test_type = FileType.PLAYBOOK.value
+                    if test_type == FileType.TEST_SCRIPT.value:
+                        test_type = FileType.SCRIPT.value
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
                 else:
                     test_target = f'test_pack/TestPlaybooks/{test}'
@@ -1957,7 +1963,7 @@ def main():
     build.configure_servers_and_restart()
     build.disable_instances()
 
-    if build.is_nightly:
+    if build.is_nightly or build.is_sdk_nightly:
         success = build.install_nightly_pack()
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)

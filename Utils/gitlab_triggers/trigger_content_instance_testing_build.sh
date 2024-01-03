@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # This script triggers an instance-testing job in gitlab-CI.
 
-# For this script to work you will need to use a trigger token (see here for more about that: https://code.pan.run/help/ci/triggers/README#trigger-token)  # disable-secrets-detection
+# For this script to work you will need to use a trigger token (see here for more about that: https://docs.gitlab.com/ee/ci/triggers/#create-a-pipeline-trigger-token)
 
 # This script takes the gitlab-ci trigger token as first parameter and the branch name as an optional second parameter (the default is the current branch).
 

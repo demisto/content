@@ -1,14 +1,8 @@
-# from CommonServerPython import *
-from DBotFindSimilarIncidents import normalize_command_line, main, demisto, keep_high_level_field, \
-    preprocess_incidents_field, PREFIXES_TO_REMOVE, check_list_of_dict, REGEX_IP, match_one_regex, \
-    SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, euclidian_similarity_capped, find_incorrect_fields, \
-    MESSAGE_NO_INCIDENT_FETCHED, MESSAGE_INCORRECT_FIELD, MESSAGE_WARNING_TRUNCATED, COLUMN_ID, COLUMN_TIME, \
-    TAG_SCRIPT_INDICATORS, Model
-
-import pytest
+import demistomock as demisto
 import json
 import numpy as np
 import pandas as pd
+import pytest
 
 CURRENT_INCIDENT_NOT_EMPTY = [
     {'id': '123', 'commandline': 'powershell IP=1.1.1.1', 'CustomFields': {"nested_field": 'value_nested_field'},
@@ -41,7 +35,13 @@ SIMILAR_INDICATORS_NOT_EMPTY = [
 SIMILAR_INDICATORS_EMPTY = []
 
 
+@pytest.fixture(autouse=True)
+def mock_demistoVersion(mocker):
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'platform': 'xsoar'})
+
+
 def executeCommand(command, args):
+    from DBotFindSimilarIncidents import TAG_SCRIPT_INDICATORS
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     if command == 'DBotFindSimilarIncidentsByIndicators':
         return [[], {'Contents': SIMILAR_INDICATORS, 'Type': 'note', 'Tags': [TAG_SCRIPT_INDICATORS]}]
@@ -58,22 +58,26 @@ def check_exist_dataframe_columns(*fields, df):
 
 
 def test_keep_high_level_field():
+    from DBotFindSimilarIncidents import keep_high_level_field
     incidents_field = ['xdralerts.comandline', 'commandline', 'CustomsFields.commandline']
     res = ['xdralerts', 'commandline', 'CustomsFields']
     assert keep_high_level_field(incidents_field) == res
 
 
 def test_preprocess_incidents_field():
+    from DBotFindSimilarIncidents import preprocess_incidents_field, PREFIXES_TO_REMOVE
     assert preprocess_incidents_field('incident.commandline', PREFIXES_TO_REMOVE) == 'commandline'
     assert preprocess_incidents_field('commandline', PREFIXES_TO_REMOVE) == 'commandline'
 
 
 def test_check_list_of_dict():
+    from DBotFindSimilarIncidents import check_list_of_dict
     assert check_list_of_dict([{'test': 'value_test'}, {'test1': 'value_test1'}]) is True
     assert check_list_of_dict({'test': 'value_test'}) is False
 
 
 def test_match_one_regex():
+    from DBotFindSimilarIncidents import match_one_regex, REGEX_IP
     assert match_one_regex('123.123.123.123', [REGEX_IP]) is True
     assert match_one_regex('123.123.123', [REGEX_IP]) is False
     assert match_one_regex('abc', [REGEX_IP]) is False
@@ -81,11 +85,13 @@ def test_match_one_regex():
 
 
 def test_normalize_command_line():
+    from DBotFindSimilarIncidents import normalize_command_line
     assert normalize_command_line('cmd -k IP=1.1.1.1 [1.1.1.1]') == 'cmd -k ip = IP IP'
     assert normalize_command_line('powershell "remove_quotes"') == 'powershell remove_quotes'
 
 
 def test_euclidian_similarity_capped():
+    from DBotFindSimilarIncidents import euclidian_similarity_capped
     x = np.array([[1, 1, 1], [2, 2, 2]])
     y = np.array([[2.1, 2.1, 2.1]])
     distance = euclidian_similarity_capped(x, y)
@@ -94,6 +100,7 @@ def test_euclidian_similarity_capped():
 
 
 def test_main_regular(mocker):
+    from DBotFindSimilarIncidents import SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, main, COLUMN_ID, COLUMN_TIME
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
@@ -117,7 +124,7 @@ def test_main_regular(mocker):
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    res, msg = main()
+    res, _ = main()
     assert ('empty_current_incident_field' not in res.columns)
     assert (res.loc['3', 'Identical indicators'] == 'ind_2')
     assert (res.loc['2', 'Identical indicators'] == "")
@@ -133,6 +140,7 @@ def test_main_no_indicators_found(mocker):
     :param mocker:
     :return:
     """
+    from DBotFindSimilarIncidents import SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, main, COLUMN_ID, COLUMN_TIME
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
@@ -156,7 +164,7 @@ def test_main_no_indicators_found(mocker):
                         })
     mocker.patch.object(demisto, 'dt', return_value=None)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    res, msg = main()
+    res, _ = main()
     assert ('empty_current_incident_field' not in res.columns)
     assert (res['Identical indicators'] == ["", "", ""]).all()
     assert check_exist_dataframe_columns(SIMILARITY_COLUNM_NAME_INDICATOR, SIMILARITY_COLUNM_NAME, COLUMN_ID,
@@ -170,6 +178,7 @@ def test_main_no_fetched_incidents_found(mocker):
     :param mocker:
     :return:
     """
+    from DBotFindSimilarIncidents import MESSAGE_NO_INCIDENT_FETCHED, main
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_EMPTY
     CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
@@ -199,6 +208,7 @@ def test_main_no_fetched_incidents_found(mocker):
 
 
 def test_main_some_incorrect_fields():
+    from DBotFindSimilarIncidents import find_incorrect_fields
     wrong_field_1 = 'wrong_field_1'
     wrong_field_2 = 'wrong_field_2'
     correct_field_1 = 'empty_fetched_incident_field'
@@ -217,6 +227,7 @@ def test_main_all_incorrect_field(mocker):
     :param mocker:
     :return:
     """
+    from DBotFindSimilarIncidents import MESSAGE_INCORRECT_FIELD, main
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
@@ -255,6 +266,7 @@ def test_main_incident_truncated(mocker):
     :param mocker:
     :return:
     """
+    from DBotFindSimilarIncidents import main, MESSAGE_WARNING_TRUNCATED
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
@@ -293,6 +305,7 @@ def test_main_incident_nested(mocker):
     :param mocker:
     :return:
     """
+    from DBotFindSimilarIncidents import main
     global SIMILAR_INDICATORS, FETCHED_INCIDENT, CURRENT_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     CURRENT_INCIDENT = CURRENT_INCIDENT_NOT_EMPTY
@@ -320,13 +333,13 @@ def test_main_incident_nested(mocker):
                         })
     mocker.patch.object(demisto, 'dt', return_value=['nested_val_1', 'nested_val_2'])
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    df, msg = main()
+    df, _ = main()
     assert not df.empty
     assert (df['similarity %s' % nested_field] == [1.0, 1.0, 1.0]).all()
 
 
 def test_get_get_data_from_indicators_automation():
-    from DBotFindSimilarIncidents import get_data_from_indicators_automation
+    from DBotFindSimilarIncidents import TAG_SCRIPT_INDICATORS, get_data_from_indicators_automation
 
     res = get_data_from_indicators_automation(None, TAG_SCRIPT_INDICATORS)
     assert res is None
@@ -364,6 +377,7 @@ expected_results = ['created']
 
 
 def test_remove_empty_or_short_fields(sample_data):
+    from DBotFindSimilarIncidents import Model
     """
     Given:
         - sample_data: a dataframe with a column of strings

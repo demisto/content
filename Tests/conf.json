@@ -199,6 +199,13 @@
             "playbookID": "SetAndHandleEmpty_Test"
         },
         {
+            "playbookID": "ExtractEmailTransformer_Test",
+            "fromversion": "6.11.0"
+        },
+        {
+            "playbookID": "IsIntegrationAvailable - Test"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
@@ -1857,7 +1864,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 1000,
+            "timeout": 5000,
             "is_mockable": false
         },
         {
@@ -1916,7 +1923,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
-            "memory_threshold": 100,
+            "memory_threshold": 250,
             "instance_names": "use_default_handler",
             "is_mockable": false
         },
@@ -2264,14 +2271,16 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft Graph Calendar",
@@ -2933,7 +2942,15 @@
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
-            "fromversion": "4.1.0"
+            "external_playbook_config": {
+                "playbookID": "IP Enrichment - Generic v2",
+                "input_parameters": {
+                    "UseReputationCommand": {
+                        "simple": "True"
+                    }
+                }
+            },
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Cherwell",
@@ -3508,6 +3525,11 @@
         {
             "playbookID": "Code42 Suspicious Activity Action v2 - Test",
             "integrations": "Code42",
+            "fromversion": "6.10.0"
+        },
+        {
+            "playbookID": "HasiCoprTerraformTest",
+            "integrations": "HashicorpTerraform",
             "fromversion": "6.10.0"
         },
         {
@@ -5797,7 +5819,8 @@
         "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
         "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
         "ThreatStream-Test": "Issue CRTX-96526",
-        "MSG-Threat-Assessment-test": "API limitation"
+        "MSG-Threat-Assessment-test": "API limitation",
+        "BambenekConsultingFeed_Test": "Issue CRTX-99480"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",

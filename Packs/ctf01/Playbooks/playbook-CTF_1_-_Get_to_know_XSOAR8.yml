@@ -231,7 +231,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Try to check the integration's python, search for custom integration -> which starts with 'oh...' . Oh and remember that the answer isn't always on the wall....
+        tooltip: Try to check the integration's python, search for enabled integration from the CTF packs -> which starts with 'oh...' . Oh and remember that the answer isn't always on the wall....
         readonly: false
       title: Integration Settings
       description: "XSOAR 8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go! \n\nXSOAR (including version 8) can support multiple instances of each integration. We’ve hidden the flag in one of the already-configured integrations for you. \nSadly our attempt to hide it on a deserted island failed, so we put it here instead.\n\n**Did you know?**\n\nXSOAR 8 uses the same ingestion systems as previous versions. Integrations in each of the content packs are still the place to go!\n[Click here to read more.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Migration-Guide-From-V6-to-V8/Integration-Instance-Configuration)\n___\n![myfile](https://raw.githubusercontent.com/demisto/content/10b88c87c2954c3b97108b3c07596fcf3cf128b7/Packs/ctf01/doc_files/E.gif)\n___\n"
@@ -466,6 +466,7 @@ tasks:
           root: Get to know the Marketplace.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: toLowerCase
           - operator: uniq
     separatecontext: false
@@ -510,6 +511,7 @@ tasks:
           root: Check the Playbooks.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: toLowerCase
           - operator: uniq
     separatecontext: false
@@ -554,6 +556,7 @@ tasks:
           root: Incident fields.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -673,6 +676,7 @@ tasks:
           root: Practicing with Reports.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -716,6 +720,7 @@ tasks:
           root: Integration Settings.Answers
           accessor: "0"
           transformers:
+          - operator: LastArrayElement
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
