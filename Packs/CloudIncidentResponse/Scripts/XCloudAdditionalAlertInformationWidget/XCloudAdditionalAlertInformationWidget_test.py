@@ -34,6 +34,8 @@ class TestXCloudAdditionalAlertInformationWidget(unittest.TestCase):
                             'Operation Status': 'Success',
                             'User Agent': 'Browser1'}]
 
+        from unittest.mock import MagicMock
+        demisto.searchIndicators = MagicMock(return_value={"total": 0})
         result = get_additonal_info()  # Corrected function name
         assert result == expected_result
 
