@@ -37,7 +37,7 @@ configuration:
   section: Collect
   type: 0
 - advanced: true
-  defaultvalue: "true"
+  defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -118,7 +118,7 @@ script:
     - contextPath: branddefense_requested_incident_indicators
       description: Requested indicators from Brandefense based on provided incident code.
   - arguments:
-    - description: The indicator type on the Brandefense.  
+    - description: The indicator type on the Brandefense.
       name: indicator_type
       required: true
     description: The required ioc_type parameter allows you to select Indicators of Compromise (IoCs) types from the threat lists on Brandefense.
@@ -142,7 +142,7 @@ script:
       name: search
     - description: Tag for the Brandefense search.
       name: tag
-    - description: Source from Brandefense CTI rule search. 
+    - description: Source from Brandefense CTI rule search.
       name: source__ilike
     description: Get CTI rules from Brandefense.
     name: branddefense-get-cti-rules
@@ -156,14 +156,14 @@ script:
     - contextPath: search_result
       description: The result of Theat search from Brandefense.
   - arguments:
-    - description: Exact created date of the incident. 
+    - description: Exact created date of the incident.
       name: created_at
     description: Get incidents from the Brandefense platform.
     name: branddefense-get-incidents
     outputs:
     - contextPath: branddefense_all_incidents
       description: All incidents from the Brandefense platform.
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.83255
   runonce: false
   script: ''
   subtype: python3
