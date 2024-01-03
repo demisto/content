@@ -525,6 +525,7 @@ def test_paginate_with_page_size_more_than_INCIDENT_API_LIMIT():
     with pytest.raises(DemistoException, match="The max size for page is 100. Please provide a lower page size."):
         pagination_incidents({"user_ids": "test_id"}, {"page_size": 200, "page": 2}, "")
 
+
 @pytest.mark.parametrize('add_content', [True, False])
 def test_main_handles_httperror(requests_mock, mocker, add_content):
     """
@@ -535,6 +536,7 @@ def test_main_handles_httperror(requests_mock, mocker, add_content):
     mocker.patch.object(demisto, 'params', return_value={'APIKey': 'test', 'ServiceKey': 'test', 'FetchInterval': '1'})
 
     from PagerDuty import main, SERVER_URL, ON_CALLS_USERS_SUFFIX
+
     class Response:
         def __init__(self, add_content):
             if add_content:
