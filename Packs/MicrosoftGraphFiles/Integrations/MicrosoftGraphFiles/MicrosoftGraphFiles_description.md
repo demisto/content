@@ -13,7 +13,7 @@ There are two application authentication methods available:
 Depending on the authentication method that you use, the integration parameters might change.
 
 
-To use the **Cortex XSOAR application** and allow us access to O365 File Management (Onedrive/Sharepoint/Teams), an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-files)**.
+To use the **Cortex XSOAR application** and allow Cortex XSOAR access to O365 File Management (Onedrive/Sharepoint/Teams), an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-files)**.
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 
 
