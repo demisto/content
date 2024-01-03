@@ -1929,10 +1929,10 @@ script:
       defaultValue: '50'
     outputs:
     - contextPath: FortiMail.AntivirusProfile.mkey
-      description: The name of the anti virus profile.
+      description: The name of the antivirus profile.
       type: String
     - contextPath: FortiMail.AntivirusProfile.comment
-      description: A brief comment for the anti virus profile.
+      description: A brief comment for the antivirus profile.
       type: String
   - name: fortimail-content-profile-list
     description: List Content profiles. Content profile lets to allow match email based upon its subject line, message body, and attachments. if an name is given, the command will return the information about the wanted content profile. Mainly used in the configuration of IP policy.
