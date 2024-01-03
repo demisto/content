@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from pathlib import Path
+import json
 import requests
 import urllib3
 
@@ -80,7 +80,7 @@ def trigger_workflow_for_pr(
         "ref": pr_name,
     }
 
-    response = requests.post(api_url, headers=headers, json=payload)
+    response = requests.post(api_url, headers=headers, json=json.dumps(payload))
     response.raise_for_status()
     print("Workflow triggered successfully. Status code: 200")
 
