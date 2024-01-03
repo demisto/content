@@ -1,0 +1,8 @@
+{
+    "names":{
+    "Mike": "mike",
+    "Sam": "sam"},
+    "docker_images": {
+        "owner": "the owner"
+    }
+}

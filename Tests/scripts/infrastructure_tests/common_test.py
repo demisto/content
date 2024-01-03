@@ -1,6 +1,6 @@
-from Tests.scripts import common
+from Tests.scripts.common import get_reviewer, person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name
 import pytest
-
+from unittest.mock import  patch
 
 def test_person_in_charge(mocker):
     """
@@ -15,7 +15,7 @@ def test_person_in_charge(mocker):
 
     expected = ('John Doe', 'https://github.com/demisto/content/pull/123')
 
-    result = common.person_in_charge(commit)
+    result = person_in_charge(commit)
 
     assert result == expected
 
@@ -41,7 +41,7 @@ def test_are_pipelines_in_order(mocker, pipeline1_date, pipeline2_date, expected
     pipeline2.id = '2'
     pipeline2.created_at = pipeline2_date
 
-    result = common.are_pipelines_in_order(pipeline1, pipeline2)
+    result = are_pipelines_in_order(pipeline1, pipeline2)
 
     assert result == expected
 
@@ -70,10 +70,55 @@ def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     pipeline2 = mocker.Mock()
     pipeline2.status = pipeline2_status
     
-    mocker.patch.object(common, 'are_pipelines_in_order', return_value=(True))
-    result = common.is_pivot(pipeline2, pipeline1)
+    mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
+    result = is_pivot(pipeline2, pipeline1)
 
     assert result == expected
+    
+    
+@pytest.mark.parametrize('response, expected', [
+    ([], None),
+    ([{"Jon":"test", "state": "test","user":{"login": "Jon"}},
+      {"Jane Doe":"test", "state": "APPROVED","user":{"login": "Jane Doe"}}], "Jane Doe"),
+   ([{"Jon":"test", "state": "APPROVED","user":{"login": "Jon"}},
+      {"Jane Doe":"test", "state": "APPROVED","user":{"login": "Jane Doe"}}], "Jon")
+])
+def test_get_reviewer(response, expected):
+    """
+    Given:
+        - A PR URL.
+    When:
+        - get_reviewer is called on it.
+    Then:
+        - It should return the expected result.
+        scenario 1: No reviewers -> None
+        scenario 2: One reviewer who approved -> "Jane Doe"
+        scenario 3: Two reviewers who approved -> the first one - "Jon"
+    """
+    with patch('Tests.scripts.common.requests.get') as mock_get:
+        mock_get.return_value.json.return_value = response
+        pr_url = 'https://github.com/owner/repo/pull/123'
+        result = get_reviewer(pr_url)
 
+    assert result == expected
+    
 
-
+@pytest.mark.parametrize('name, expected', [
+    ("Mike", "mike"),
+    ( "Jon", "Jon"),
+    ("github-actions[bot]" , "the owner")
+])
+def test_get_slack_user_name(name, expected):
+    """
+    Given:
+        - A name and a name mapping file path.
+    When:
+        - get_slack_user_name is called on it.
+    Then:
+        - It should return the expected result.
+        scenario 1: name is in the mapping -> the mapped name
+        scenario 2: name is not in the mapping -> name
+        scenario 3: name is 'github-actions[bot]' -> the owner of the docker image update bot.
+    """
+    results = get_slack_user_name(name, 'tests_data/test_mapping.json')
+    assert results == expected

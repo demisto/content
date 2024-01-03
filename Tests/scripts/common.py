@@ -286,31 +286,37 @@ def is_pivot(current_pipeline, previous_pipeline):
     return None
 
 
-def get_reviewer(pr_url: str) -> str|None:
-    # Extract the owner, repo, and pull request number from the URL
-    parts = pr_url.split('/')
-    repo_owner = parts[-4]
-    repo_name = parts[-3]
-    pr_number = parts[-1]
+def get_reviewer(pr_url: str) -> str | None:
+    approved_reviewer = None
+    try:
+        # Extract the owner, repo, and pull request number from the URL
+        parts = pr_url.split("/")
+        repo_owner = parts[-4]
+        repo_name = parts[-3]
+        pr_number = parts[-1]
 
-    # Get reviewers
-    reviews_url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews'
-    reviews_response = requests.get(reviews_url, verify=False)
-    reviews_data = reviews_response.json()
+        # Get reviewers
+        reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
+        reviews_response = requests.get(reviews_url, verify=False)
+        reviews_data = reviews_response.json()
 
-    # Find the reviewer who provided approval
-    approved_reviewer= None
-    for review in reviews_data:
-        if review['state'] == 'APPROVED':
-            approved_reviewer = review['user']['login']
-            break
-    return approved_reviewer if approved_reviewer else None
+        
+        # Find the reviewer who provided approval
+        for review in reviews_data:
+            if review["state"] == "APPROVED":
+                approved_reviewer = review["user"]["login"]
+                break
+    except Exception as e:
+        logging.error(f"Failed to get reviewer for PR {pr_url}: {e}")
+    return approved_reviewer
+
+
 
 
 def get_slack_user_name(name:str, name_mapping_path: str) -> str:
     with open(name_mapping_path) as map:
         mapping = json.load(map)
-    # If the name is 'github-actions[bot]', then return the owner of the docker image update bot.
+    # If the name is 'github-actions[bot]' (docker image update bot reviewer)  return the owner of that bot.
         if name == 'github-actions[bot]':
             return mapping["docker_images"]["owner"]
         else:
