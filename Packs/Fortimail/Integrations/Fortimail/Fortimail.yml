@@ -1195,7 +1195,7 @@ script:
       description: The sender Geo IP group. Relevant when sender_type is Geo IP group.
       type: String
     - contextPath: FortiMail.AccessControl.sender_ip_mask
-      description: The sender IP/Netmask. Relevant when sender_type is IP Address.
+      description: The sender IP/Netmask. Relevant when sender_type is IP address.
       type: String
     - contextPath: FortiMail.AccessControl.sender_ip_type
       description: 'The sender (source) type. Optional values: IP/Netmask,IP Group,GeoIP Gorup,ISDB.'
