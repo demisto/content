@@ -9,7 +9,8 @@ from Tests.scripts.utils.log_util import install_logging
 CONTENT_NIGHTLY_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
-    'run-validations',
+    'run-validations: [old-validate-flow]',
+    'run-validations: [new-validate-flow]',
     'trigger-private-build',
     'mpv2-prepare-testing-bucket',
     'xpanse-prepare-testing-bucket',
@@ -43,7 +44,8 @@ SDK_NIGHTLY_JOBS = [
 BUCKET_UPLOAD_JOBS = [
     'run-unittests-and-lint-upload-flow: [native:dev,from-yml]',
     'run-unittests-and-lint-upload-flow: [native:ga,native:maintenance,native:candidate]',
-    'run-validations-upload-flow',
+    'run-validations-upload-flow[old-validate-flow]',
+    'run-validations-upload-flow[new-validate-flow]',
     'mpv2-prepare-testing-bucket-upload-flow',
     'upload-id-set-bucket',
     'xpanse-prepare-testing-bucket-upload-flow',
@@ -62,7 +64,8 @@ BUCKET_UPLOAD_JOBS = [
 CONTENT_COMMON_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
-    'run-validations',
+    'run-validations: [old-validate-flow]',
+    'run-validations: [new-validate-flow]',
     'test-upload-flow',
     'trigger-private-build',
     'validate-content-conf',
