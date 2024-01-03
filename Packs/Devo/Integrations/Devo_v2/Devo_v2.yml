@@ -115,6 +115,8 @@ script:
       defaultValue: "true"
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
+    - name: fieldsToView
+      description: Final result contains columes only specified in the list.
     outputs:
     - contextPath: Devo.QueryResults
       description: List of dictionary alerts from the specified time range.
@@ -147,6 +149,8 @@ script:
       defaultValue: "true"
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
+    - name: fieldsToView
+      description: Final result contains columes only specified in the list.
     outputs:
     - contextPath: Devo.AlertsResults
       description: List of dictionary alerts from the specified time range.
@@ -179,6 +183,8 @@ script:
     - name: items_per_page
       description: Enter the per page value you want to set.
       defaultValue: "50"
+    - name: fieldsToView
+      description: Final result contains columes only specified in the list.
     outputs:
     - contextPath: Devo.MultiResults
       description: A list of dictionary results.
