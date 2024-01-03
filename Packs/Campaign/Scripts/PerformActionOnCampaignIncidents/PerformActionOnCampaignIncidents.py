@@ -293,7 +293,7 @@ def get_custom_field(filed_name: str) -> Any:
     return demisto.incidents()[0].get("CustomFields", {}).get(filed_name)
 
 
-def _get_campaign_info():
+def _get_campaign_info() -> tuple[str, Any, list]:
     """Gets information about the current campaign.
 
     Returns:

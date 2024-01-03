@@ -123,7 +123,6 @@ def get_incidents_info_md(incidents: list, fields_to_display: list | None = None
 
     if incidents:
         headers = fields_to_display or DEFAULT_HEADERS
-        # TODO do i need to add the 'Added Manually To The Campaign' key into fields_to_display or just in DEFAULT_HEADERS
         converted_incidents = [convert_incident_to_hr(incident) for incident in incidents]
 
         return tableToMarkdown(
