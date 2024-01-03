@@ -46,13 +46,13 @@ ENTITY_ENDPOINT = {
 }
 
 
-def load_mock_response(file_name: str) -> str:
+def load_mock_response(file_name: str) -> dict[str, Any]:
     """Load mock file that simulates an API response.
 
     Args:
         file_name (str): Name of the mock response JSON file to return.
     Returns:
-        str: Mock file content.
+        dict[str, Any]: Mock file content.
     """
     file_path = os.path.join(TEST_DATA, file_name)
 
@@ -602,8 +602,8 @@ def test_group_create_update_command(
 
     assert command_results.raw_response == response
     assert command_results.outputs == {
-        "mkey": response.get("mkey"),
-        "comment": response.get("comment"),
+        "mkey": command_args.get("name"),
+        "comment": command_args.get("comment"),
     }
     assert command_results.outputs_prefix == f"FortiMail.{outputs_prefix}"
     assert command_results.outputs_key_field == "mkey"
@@ -720,7 +720,6 @@ def test_add_system_safe_block_command(
     )
 
     command_results = Fortimail.add_system_safe_block_command(mock_client, {"list_type": "Bloklist", "values": "1,2"})
-    outputs = [{"item": "1", "list_type": "Bloklist"}, {"item": "2", "list_type": "Bloklist"}]
 
     assert command_results.raw_response == response
 
@@ -849,19 +848,19 @@ def test_recipient_policy_create_update_command(
         url=urljoin(API_URL, "AdminLogin/"),
         json=EXAMPLE_COOKIE,
     )
-    response = load_mock_response(response_file)
+    mock_response = load_mock_response(response_file)
 
     if command_args.get("recipient_policy_id"):
         requests_mock.put(
             url=urljoin(API_URL, endpoint),
-            json=response,
+            json=mock_response,
         )
     else:
         requests_mock.post(
             url=urljoin(API_URL, endpoint),
-            json=response,
+            json=mock_response,
         )
-    response = Fortimail.map_api_response_values_to_readable_string(response)
+    response = Fortimail.map_api_response_values_to_readable_string(mock_response)
     command_results = Fortimail.recipient_policy_create_update_command(mock_client, command_args)
 
     assert command_results.raw_response == response
@@ -927,19 +926,19 @@ def test_access_control_create_update_command(
         url=urljoin(API_URL, "AdminLogin/"),
         json=EXAMPLE_COOKIE,
     )
-    response = load_mock_response(response_file)
+    mock_response = load_mock_response(response_file)
 
     if command_args.get("access_control_id"):
         requests_mock.put(
             url=urljoin(API_URL, endpoint),
-            json=response,
+            json=mock_response,
         )
     else:
         requests_mock.post(
             url=urljoin(API_URL, endpoint),
-            json=response,
+            json=mock_response,
         )
-    response = Fortimail.map_api_response_values_to_readable_string(response)
+    response = Fortimail.map_api_response_values_to_readable_string(mock_response)
     command_results = Fortimail.access_control_create_update_command(mock_client, command_args)
 
     assert command_results.raw_response == response
@@ -1000,19 +999,19 @@ def test_ip_policy_create_update_command(
         url=urljoin(API_URL, "AdminLogin/"),
         json=EXAMPLE_COOKIE,
     )
-    response = load_mock_response("ip_policy.json")
+    mock_response = load_mock_response("ip_policy.json")
 
     if command_args.get("ip_policy_id"):
         requests_mock.put(
             url=urljoin(API_URL, endpoint),
-            json=response,
+            json=mock_response,
         )
     else:
         requests_mock.post(
             url=urljoin(API_URL, endpoint),
-            json=response,
+            json=mock_response,
         )
-    response = Fortimail.map_api_response_values_to_readable_string(response)
+    response = Fortimail.map_api_response_values_to_readable_string(mock_response)
     command_results = Fortimail.ip_policy_create_update_command(mock_client, command_args)
 
     assert command_results.raw_response == response
@@ -1022,7 +1021,6 @@ def test_ip_policy_create_update_command(
 
 
 # Test Helper Functions #
-
 
 
 def test_prepare_outputs_and_readable_output():

@@ -2104,12 +2104,12 @@ def map_access_control_response(
     action_mapper = reverse_dict(AC_ACTION_MAPPER)
 
     for item in updated_response:
-        item["sender_pattern_type"] = pattern_type_mapper.get(item.get("sender_pattern_type"))
-        item["recipient_pattern_type"] = pattern_type_mapper.get(item.get("recipient_pattern_type"))
-        item["sender_ip_type"] = sender_ip_type_mapper.get(item.get("sender_ip_type"))
-        item["authenticated"] = auth_mapper.get(item.get("authenticated"))
-        item["action"] = action_mapper.get(item.get("action"))
-        item["status"] = boolean_mapper.get(item.get("status"))
+        item["sender_pattern_type"] = pattern_type_mapper.get(item.get("sender_pattern_type", ""))
+        item["recipient_pattern_type"] = pattern_type_mapper.get(item.get("recipient_pattern_type", ""))
+        item["sender_ip_type"] = sender_ip_type_mapper.get(item.get("sender_ip_type", ""))
+        item["authenticated"] = auth_mapper.get(item.get("authenticated", ""))
+        item["action"] = action_mapper.get(item.get("action", ""))
+        item["status"] = boolean_mapper.get(item.get("status", ""))
 
     return updated_response
 
@@ -2133,14 +2133,14 @@ def map_recipient_policy_response(
     pattern_type = reverse_dict(RP_PATTERN_TYPE_MAPPER)
 
     for item in updated_response:
-        item["direction"] = direction_mapper.get(item.get("direction"))
-        item["auth"] = auth_mapper.get(item.get("auth"))
-        item["sender_type"] = pattern_type.get(item.get("sender_type"))
-        item["status"] = boolean_mapper.get(item.get("status"))
-        item["use_smtp_auth"] = boolean_mapper.get(item.get("use_smtp_auth"))
-        item["smtp_different"] = boolean_mapper.get(item.get("smtp_different"))
-        item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap"))
-        item["pkiauth"] = boolean_mapper.get(item.get("pkiauth"))
+        item["direction"] = direction_mapper.get(item.get("direction", ""))
+        item["auth"] = auth_mapper.get(item.get("auth", ""))
+        item["sender_type"] = pattern_type.get(item.get("sender_type", ""))
+        item["status"] = boolean_mapper.get(item.get("status", ""))
+        item["use_smtp_auth"] = boolean_mapper.get(item.get("use_smtp_auth", ""))
+        item["smtp_different"] = boolean_mapper.get(item.get("smtp_different", ""))
+        item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap", ""))
+        item["pkiauth"] = boolean_mapper.get(item.get("pkiauth", ""))
 
     return updated_response
 
@@ -2165,15 +2165,15 @@ def map_ip_policy_response(
     source_ip_type_mapper = reverse_dict(AC_SENDER_IP_TYPE_MAPPER)
 
     for item in updated_response:
-        item["client_type"] = source_ip_type_mapper.get(item.get("client_type"))
-        item["server_type"] = destination_mapper.get(item.get("server_type"))
-        item["action"] = ip_action_mapper.get(item.get("action"))
-        item["auth_type"] = auth_mapper.get(item.get("auth_type"))
-        item["status"] = boolean_mapper.get(item.get("status"))
-        item["exclusive"] = boolean_mapper.get(item.get("exclusive"))
-        item["use_smtp_auth"] = boolean_mapper.get(item.get("use_smtp_auth"))
-        item["smtp_different"] = boolean_mapper.get(item.get("smtp_different"))
-        item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap"))
+        item["client_type"] = source_ip_type_mapper.get(item.get("client_type", ""))
+        item["server_type"] = destination_mapper.get(item.get("server_type", ""))
+        item["action"] = ip_action_mapper.get(item.get("action", ""))
+        item["auth_type"] = auth_mapper.get(item.get("auth_type", ""))
+        item["status"] = boolean_mapper.get(item.get("status", ""))
+        item["exclusive"] = boolean_mapper.get(item.get("exclusive", ""))
+        item["use_smtp_auth"] = boolean_mapper.get(item.get("use_smtp_auth", ""))
+        item["smtp_different"] = boolean_mapper.get(item.get("smtp_different", ""))
+        item["smtp_diff_identity_ldap"] = boolean_mapper.get(item.get("smtp_diff_identity_ldap", ""))
 
     return updated_response
 
