@@ -8,7 +8,7 @@
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Core Server URL |  | True |
+    | Core Server URL | For Cortex XSOAR 6.x, use the server URL. For Cortex XSOAR 8 and Cortex XSIAM, click the **COPY API URL** button on the API Keys page in **Integrations** > **API Keys** | True |
     | API Key ID | The API Key ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
     | API Key (Password) | The core server API key. | True |
     | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
