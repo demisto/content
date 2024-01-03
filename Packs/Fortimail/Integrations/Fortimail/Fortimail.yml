@@ -1133,7 +1133,7 @@ script:
       required: true
       default: true
   - name: fortimail-access-control-move
-    description: Move an Access control rule location in the rules list. FortiMail units match the policies in sequence, from the top of the list downwards. Therefore, you must put the more specific policies on top of the more generic ones.
+    description: Move an access control rule location in the rules list. FortiMail units match the policies in sequence, from the top of the list downwards. Therefore, you must put the more specific policies on top of the more generic ones.
     arguments:
     - name: access_control_id
       description: The ID of the access control to be moved. Use fortimail-access-control-list to retrieve all the access control.
