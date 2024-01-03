@@ -1,7 +1,7 @@
 {
     "name": "Sophos Central",
     "description": "The unified console for managing Sophos products",
-    "support": "partner",
+    "support": "xsoar",
     "currentVersion": "1.2.8",
     "author": "Sophos",
     "url": "https://www.sophos.com",
