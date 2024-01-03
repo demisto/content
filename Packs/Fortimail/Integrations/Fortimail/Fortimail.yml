@@ -487,7 +487,7 @@ script:
       description: The status of the IP policy.
       type: Boolean
     - contextPath: FortiMail.IPPolicy.server_ip_group
-      description: The destination IP group. Relevant when server_typeis IP group. Use fortimail-ip-group-list to retrieve all the IP groups.
+      description: The destination IP group. Relevant when server_type is IP group. Use fortimail-ip-group-list to retrieve all the IP groups.
       type: String
     - contextPath: FortiMail.IPPolicy.server
       description: The destination IP/Netmask. Relevant when server_type is IP/Netmask.
