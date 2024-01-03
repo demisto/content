@@ -34,7 +34,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -rv|--release-version) _release_versionZ="$2"
+  -rv|--release-version) _release_version="$2"
     shift
     shift;;
 

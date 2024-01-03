@@ -16,6 +16,7 @@ stages:
   - run-instances
   - results
   - upload-to-marketplace
+  - trigger-nightlies
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
@@ -29,3 +30,4 @@ include:
   - local: .gitlab/ci/.gitlab-ci.test-native-candidate.yml
   - local: .gitlab/ci/.gitlab-ci.security-scans.yml
   - local: .gitlab/ci/.gitlab-ci.build-machines-cleanup.yml
+  - local: .gitlab/ci/.gitlab-ci.sdk-release.yml
