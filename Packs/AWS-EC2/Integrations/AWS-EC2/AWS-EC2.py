@@ -159,7 +159,6 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                     readable_output=f'#### Error in command call for account `{account_id}`\n{e}',
                     entry_type=EntryType.ERROR,
                     content_format=EntryFormat.MARKDOWN,
-                    raw_response=
                 )
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             results = executor.map(run_command, accounts)
@@ -2873,7 +2872,6 @@ def describe_ipam_resource_discoveries_command(args: dict) -> CommandResults:
     component that enables IPAM to manage and monitor resources that belong to the owning account.
 
     Args:
-        client (AWSClient): AWS client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
 
     Returns:
@@ -2915,7 +2913,6 @@ def describe_ipam_resource_discovery_associations_command(args: dict) -> Command
     IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
 
     Args:
-        client (AWSClient): AWS client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
 
     Returns:
@@ -2956,7 +2953,6 @@ def get_ipam_discovered_public_addresses_command(args: dict) -> CommandResults:
     aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
 
     Args:
-        client (AWSClient): AWS client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
 
     Returns:
@@ -2982,14 +2978,14 @@ def get_ipam_discovered_public_addresses_command(args: dict) -> CommandResults:
     if len(response['IpamDiscoveredPublicAddresses']) == 0:
         return CommandResults(readable_output='No Ipam Discovered Public Addresses were found.')
 
-    output = json.dumps(response, cls=DatetimeEncoder)
+    output = json.loads(json.dumps(response, cls=DatetimeEncoder))
 
-    human_readable = tableToMarkdown('Ipam Discovered Public Addresses', json.loads(output)['IpamDiscoveredPublicAddresses'])
+    human_readable = tableToMarkdown('Ipam Discovered Public Addresses', output['IpamDiscoveredPublicAddresses'])
     command_results = CommandResults(
         outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
         outputs_key_field="Address",
-        outputs=json.loads(output)['IpamDiscoveredPublicAddresses'],
-        raw_response=json.loads(output),
+        outputs=output['IpamDiscoveredPublicAddresses'],
+        raw_response=output,
         readable_output=human_readable,
     )
     return command_results
