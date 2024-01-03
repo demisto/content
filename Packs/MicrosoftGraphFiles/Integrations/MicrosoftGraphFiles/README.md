@@ -629,7 +629,7 @@ Authorization Code Flow - `Files.Read - Delegated`
 ### msgraph-list-sharepoint-sites
 
 ***
-Returns a list of the tenant sites. This command requires the 'Sites.Read.All' permission.
+Returns a list of the tenant sites.
 
 #### Base Command
 
