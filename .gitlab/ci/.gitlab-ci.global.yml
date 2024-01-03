@@ -356,7 +356,7 @@
       echo "machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
       section_start "Create Clean Machine Branch"
       export BRANCH="${CI_COMMIT_BRANCH}-clean_machine_branch-${CI_PIPELINE_ID}"
-      git checkout -B $BRANCH $CI_COMMIT_BRANCH
+      git push origin $CI_COMMIT_BRANCH:$BRANCH 
       echo "Created clean machine branch:${BRANCH}"
       section_end "Create Clean Machine Branch"
       for _ in {1..3}; do
