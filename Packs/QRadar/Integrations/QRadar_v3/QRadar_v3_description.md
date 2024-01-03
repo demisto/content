@@ -8,8 +8,8 @@
 
 Note: If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version.
 ### Fetch incidents
-To start fetching incidents, enable the *Long running instance* parameter. This will start a long-running process that will fetch incidents periodically.
-Depending on the system load, the initial fetch might take a long time.
+**The *Long Running Instance* parameter must be enabled to fetch incidents. Enabling this parameter will start a long-running process that will fetch incidents periodically.
+Depending on the system load, the initial fetch might take a long time.**
 
 #### Query to fetch offenses
 You can apply additional (optional) filters for the fetch-incident query using the *Query to fetch offenses* integration parameter. For more information on how to use the filter syntax: 
