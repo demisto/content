@@ -1,147 +1,79 @@
 from Tests.scripts import common
+import pytest
 
 
 def test_person_in_charge(mocker):
     """
     Given a commit object
     When person_in_charge is called on it
-    Then it should return the expected name, email and PR link
+    Then it should return the expected name and PR link
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
     commit.author_email = 'john@doe.com'
     commit.title = 'Merge branch \'master\' into branch-name (#123)'
 
-    expected = ('John Doe', 'john@doe.com', 'https://github.com/demisto/content/pull/123')
+    expected = ('John Doe', 'https://github.com/demisto/content/pull/123')
 
     result = common.person_in_charge(commit)
 
     assert result == expected
 
-
-def test_are_pipelines_in_order_as_commits_true(mocker):
+@pytest.mark.parametrize('pipeline1_date, pipeline2_date, expected', [
+    ('2020-01-01T00:00:00Z', '2020-01-02T00:00:00Z', False),
+    ('2020-01-02T00:00:00Z', '2020-01-01T00:00:00Z', True)])
+def test_are_pipelines_in_order(mocker, pipeline1_date, pipeline2_date, expected):
     """
-    Given a list of commits and two pipeline SHAs
-    When the pipeline SHAs are in the same order as the commits
-    Then it should return True and the commit that triggered the later pipeline
-
+    Given:
+        - Two pipelines with their created_at dates.
+    When:
+        - are_pipelines_in_order is called on them.
+    Then:
+        - It should return the expected result.
+          scenario 1: pipeline1.created_at > pipeline2.created_at -> False
+          scenario 2: pipeline1.created_at < pipeline2.created_at -> True
     """
-    commit1 = mocker.Mock()
-    commit1.id = '1'
-    commit1.created_at = '2020-01-01T00:00:00Z'
+    pipeline1 = mocker.Mock()
+    pipeline1.id = '1'
+    pipeline1.created_at = pipeline1_date
 
-    commit2 = mocker.Mock()
-    commit2.id = '2'
-    commit2.created_at = '2020-01-02T00:00:00Z'
+    pipeline2 = mocker.Mock()
+    pipeline2.id = '2'
+    pipeline2.created_at = pipeline2_date
 
-    commits = [commit1, commit2]
-    current_sha = '2'
-    previous_sha = '1'
-
-    expected = (True, commit2)
-
-    result = common.are_pipelines_in_order_as_commits(commits, current_sha, previous_sha)
+    result = common.are_pipelines_in_order(pipeline1, pipeline2)
 
     assert result == expected
 
 
-def test_are_pipelines_in_order_as_commits_false(mocker):
+@pytest.mark.parametrize('pipeline1_status, pipeline2_status, expected', [
+    ('success', 'failed', True),
+    ('failed','success', False),
+    ('success','success', None),
+    ('failed', 'in progress', None)
+    ])
+def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     """
-    Given a list of commits and two pipeline SHAs
-    When the pipeline SHAs are not in the same order as the commits
-    Then it should return False and None
+    Given:
+        - Two pipelines with their statuses.
+    When:
+        - is_pivot is called on them.
+    Then:
+        - It should return the expected result.
+          scenario 1: pipeline1.status =='success' and pipeline2.status == 'failed' -> True
+          scenario 2: pipeline1.status == 'failed' and pipeline2.status =='success' -> False
+          scenario 3: pipeline1.status =='success' and pipeline2.status =='success' -> None
+          scenario 4: pipeline1.status == 'failed' and pipeline2.status == 'in progress' -> None
     """
-    commit1 = mocker.Mock()
-    commit1.id = '1'
-    commit1.created_at = '2020-01-01T00:00:00Z'
-
-    commit2 = mocker.Mock()
-    commit2.id = '2'
-    commit2.created_at = '2020-01-02T00:00:00Z'
-
-    commits = [commit1, commit2]
-    current_sha = '1'
-    previous_sha = '2'
-
-    expected = (False, None)
-
-    result = common.are_pipelines_in_order_as_commits(commits, current_sha, previous_sha)
-    # there is a problem to test if side effect that is None is equal to None, so for now its removed from the assert
-    assert result[0] == expected[0]
-
-
-def test_is_pivot_first_pipeline(mocker):
-    """
-    Given a pipeline id, list of pipelines and commits
-    When the pipeline is the first in the list
-    Then it should return None, None
-    """
-    pipeline_id = '1'
-    pipelines = [mocker.Mock(id=1)]
-    commits = [mocker.Mock()]
-
-    expected = (None, None)
-
-    result = common.is_pivot(pipeline_id, pipelines, commits)
+    pipeline1 = mocker.Mock()
+    pipeline1.status = pipeline1_status
+    pipeline2 = mocker.Mock()
+    pipeline2.status = pipeline2_status
+    
+    mocker.patch.object(common, 'are_pipelines_in_order', return_value=(True))
+    result = common.is_pivot(pipeline2, pipeline1)
 
     assert result == expected
 
 
-def test_is_pivot_pipeline_not_in_list(mocker):
-    """
-    Given a pipeline id, list of pipelines and commits
-    When the pipeline id is not in the list of pipelines
-    Then it should return None, None
-    """
-    pipeline_id = '1'
-    pipelines = [mocker.Mock(id=2)]
-    commits = [mocker.Mock()]
 
-    expected = (None, None)
-
-    result = common.is_pivot(pipeline_id, pipelines, commits)
-
-    assert result == expected
-
-
-def test_is_pivot_negative(mocker):
-    """
-    Given a pipeline id, list of pipelines and commits
-    When previous pipeline succeeded and current failed and in order
-    Then it should return True, commit
-    """
-    pipeline_id = '2'
-    pipelines = [
-        mocker.Mock(id=1, status='success'),
-        mocker.Mock(id=2, status='failed')
-    ]
-    commit = mocker.Mock()
-    commits = [commit]
-
-    expected = (True, commit)
-    mocker.patch.object(common, 'are_pipelines_in_order_as_commits', return_value=(True, commit))
-    result = common.is_pivot(pipeline_id, pipelines, commits)
-
-    assert result == expected
-
-
-def test_is_pivot_positive(mocker):
-    """
-    Given a pipeline id, list of pipelines and commits
-    When previous pipeline failed and current succeeded and in order
-    Then it should return False, commit
-
-    """
-    pipeline_id = '2'
-    pipelines = [
-        mocker.Mock(id=1, status='failed'),
-        mocker.Mock(id=2, status='success')
-    ]
-    commit = mocker.Mock()
-    commits = [commit]
-
-    expected = (False, commit)
-    mocker.patch.object(common, 'are_pipelines_in_order_as_commits', return_value=(True, commit))
-    result = common.is_pivot(pipeline_id, pipelines, commits)
-
-    assert result == expected

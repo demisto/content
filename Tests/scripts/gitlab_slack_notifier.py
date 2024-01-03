@@ -51,6 +51,8 @@ CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
 LOOK_BACK_HOURS = 48
+# This is the github username of the bot that pushes contributions and docker updates to the content repo.
+CONTENT_BOT ='content-bot'
 
 
 def options_handler() -> argparse.Namespace:
@@ -484,7 +486,7 @@ def main():
     options = options_handler()
     triggering_workflow = options.triggering_workflow  # ci workflow type that is triggering the slack notifier
     pipeline_id = options.pipeline_id
-    commit_sha = CI_COMMIT_SHA
+    commit_sha = options.current_sha
     project_id = options.gitlab_project_id
     server_url = options.url
     ci_token = options.ci_token
@@ -536,17 +538,17 @@ def main():
             previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
             if current_pipeline and previous_pipeline:
                 pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
-                logging.info(f'we are investigating pipeline {pipeline_id}')
-                logging.info(f'Pivot commit is {current_commit}, pipeline changed status is {pipeline_changed_status}')
+                logging.info(f'Checking pipeline {pipeline_id}, the commit is {current_commit} and the pipeline change status is: {pipeline_changed_status}')
                 if pipeline_changed_status is not None:
                     name, pr = person_in_charge(current_commit)
-                    if name == 'content-bot':
+                    if name == CONTENT_BOT:
                         name = get_reviewer(pr)
                     name = get_slack_user_name(name, options.name_mapping_path)
                     msg = "broke" if pipeline_changed_status else "fixed" 
                     color = "danger" if pipeline_changed_status else "good"  
                     emoji = ":cry:" if pipeline_changed_status else ":muscle:"
-                    shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ", f" That was done in this {slack_link(pr,'PR.')}", color)
+                    shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
+                                     f" That was done in this {slack_link(pr,'PR.')}", color)
 
                     computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
