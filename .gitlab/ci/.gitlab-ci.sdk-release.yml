@@ -10,10 +10,12 @@ trigger-nightlies:
     - .default-job-settings
   variables:
     BRANCH_NAME: $BRANCH_NAME
+    CI_TOKEN: $CI_TOKEN
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
   script:
 #    - python3 ./Tests/sdk_release/trigger_nightlies.py
+    - trigger_content_nightly_build.sh -ct $CI_TOKEN
     - ./Tests/sdk_release/create_release_branch.sh --release-branch $RELEASE_VERSION
 
 
