@@ -1,15 +1,7 @@
 id: Detonate URL - Generic v1.5
-version: 10
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CommonPlaybooks
-    packName: Common Playbooks
-    itemVersion: 2.5.1
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Detonate URL - Generic v1.5
 description: |-
   Detonate URL through one or more active integrations that support URL detonation.
@@ -44,6 +36,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -72,10 +65,10 @@ tasks:
       version: -1
       name: Detonate URL - ThreatGrid v2
       description: Detonate one or more URLs using the ThreatGrid integration.
-      playbookName: Detonate URL - ThreatGrid v2
       type: playbook
       iscommand: false
       brand: ""
+      playbookName: Detonate URL - ThreatGrid v2
     nexttasks:
       '#default#':
       - "20"
@@ -117,6 +110,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -205,8 +199,7 @@ tasks:
       id: f880c851-c874-4f45-8e30-a31dcd6bd034
       version: -1
       name: Detonate URL - McAfee ATD
-      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
-        integration.
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox integration.
       playbookName: Detonate URL - McAfee ATD
       type: playbook
       iscommand: false
@@ -488,6 +481,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -716,8 +710,7 @@ tasks:
       id: 8139a6d0-05e9-4633-8c60-b840a51c7e11
       version: -1
       name: Detonate URL - SecneurX Analysis
-      description: Detonates a URL using the SecneurX Analysis integration. Returns
-        relevant reports to the War Room and file reputations to the context data.
+      description: Detonates a URL using the SecneurX Analysis integration. Returns relevant reports to the War Room and file reputations to the context data.
       playbookName: Detonate URL - SecneurX Analysis
       type: playbook
       iscommand: false
@@ -813,6 +806,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -837,9 +831,7 @@ tasks:
       id: 60bd5acb-bfa4-411c-89bb-c07a71574ebf
       version: -1
       name: Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
-      description: Detonate one or more URLs using the CrowdStrike Falcon Intelligence
-        Sandbox integration. This playbook returns relevant reports to the War Room
-        and file reputations to the context data.
+      description: Detonate one or more URLs using the CrowdStrike Falcon Intelligence Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
       playbookName: Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
       type: playbook
       iscommand: false
@@ -880,7 +872,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -905,7 +896,7 @@ inputs:
       - operator: uniq
   required: false
   description: The URL object of the URL to be detonated.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: ThreatGrid.Sample.id
   description: The sample id.
@@ -914,8 +905,7 @@ outputs:
   description: The sample filename.
   type: string
 - contextPath: ThreatGrid.Sample.state
-  description: The state of the sample, one of a stable set of strings "wait, prep,
-    run, proc, succ, fail".
+  description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail".
   type: string
 - contextPath: ThreatGrid.Sample.status
   description: The sample status.
@@ -1137,8 +1127,7 @@ outputs:
   description: List of network connections done by the analysis subject.
   type: string
 - contextPath: Lastline.Submission.DownloadedFiles
-  description: List of files that were downloaded using the Microsoft Windows file-download
-    API functions. Each element is a tuple of file-origin URL and a File element.
+  description: List of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
   type: string
 - contextPath: Lastline.Submission.UUID
   description: ID of the submission.
@@ -1486,8 +1475,7 @@ outputs:
   description: The information about Domain indicators.
   type: string
 - contextPath: Polygon.Analysis.RegistryKey
-  description: The information about registry keys which were modified during the
-    analysis.
+  description: The information about registry keys which were modified during the analysis.
   type: string
 - contextPath: Polygon.Analysis.Process
   description: The information about processes started during the analysis.
@@ -1724,8 +1712,7 @@ outputs:
   description: The process pid.
   type: string
 - contextPath: WildFire.Report.ProcessList.ProcessFile
-  description: Lists files that started a child processes, including the process name
-    and the action the process performed.
+  description: Lists files that started a child processes, including the process name and the action the process performed.
   type: string
 - contextPath: WildFire.Report.ProcessTree.ProcessName
   description: The process name.
@@ -1842,8 +1829,7 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Sample.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
-    Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Sample.Type
   description: The file type.
@@ -1876,8 +1862,7 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Submission.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
-    Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Submission.SSDeep
   description: The SSDeep hash of the sample in submission.
@@ -2254,3 +2239,4 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+system: true
