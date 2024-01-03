@@ -345,7 +345,7 @@ script:
       - enable
       - disable
     - name: source
-      description: The source of the policy. When source_type is IP/Netmask enter the IP address and sub-net mask of the SMTP client to whose connections this policy will apply.When source_type is IP Group enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups).When source_type is GeoIP enter the Geo IP group.When source_type is ISDB enter the name of an internet service provider.To match all clients, enter 0.0.0.0/0.
+      description: The source of the policy. When source_type is IP/Netmask enter the IP address and subnet mask of the SMTP client to whose connections this policy will apply. When source_type is IP Group, enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups). When source_type is GeoIP, enter the Geo IP group. When source_type is ISDB, enter the name of an internet service provider. To match all clients, enter 0.0.0.0/0.
       defaultValue: 0.0.0.0/0
     - name: destination
       description: The destination of the policy. When destination_type is IP/Netmask enter the IP address and sub-net mask of the SMTP client to whose connections this policy will apply. When destination_type is IP Group enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups).To match all clients, enter 0.0.0.0/0.
