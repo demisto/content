@@ -107,6 +107,7 @@ def arguments_handler():
 
 def main():
     options = arguments_handler()
+    print(options.github_token)
     trigger_workflow_for_pr(
         "demisto",
         "content",
