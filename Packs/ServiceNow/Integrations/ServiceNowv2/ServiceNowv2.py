@@ -2317,14 +2317,11 @@ def login_command(client: Client, args: dict[str, Any]) -> tuple[str, dict[Any, 
 
 
 def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
-    demisto.info(f"[Test] in check_assigned_to_field, assigned_to is: {assigned_to}, and type is: {type(assigned_to)}")
     if assigned_to:
-        demisto.info("[Test] in check_assigned_to_field, in first if")
         user_result = client.get('sys_user', assigned_to.get('value'),  # type: ignore[arg-type]
                                  no_record_found_res={'result': {}})
         user = user_result.get('result', {})
         if user:
-            demisto.info("[Test] in check_assigned_to_field, in second if.")
             user_email = user.get('email')
             return user_email
         else:
@@ -2333,7 +2330,7 @@ def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
 
 
 def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
-    demisto.info(f"[Test] In parse_dict_ticket_fields, ticket is: {ticket}")
+
     # Parse user dict to email
     assigned_to = ticket.get('assigned_to', {})
     caller = ticket.get('caller_id', {})
@@ -2346,7 +2343,6 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
         ticket['assignment_group'] = group_name
 
     user_assigned = check_assigned_to_field(client, assigned_to)
-    demisto.info(f"[Test] in parse_dict_ticket_fields, {user_assigned=}")
     ticket['assigned_to'] = user_assigned
 
     if caller:
@@ -2413,7 +2409,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     else:
         ticket = result['result']
-    demisto.info(f"[Test] In get_remote_data_command, ticket is: {ticket}")
+
     ticket_last_update = arg_to_timestamp(
         arg=ticket.get('sys_updated_on'),
         arg_name='sys_updated_on',
@@ -2428,11 +2424,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     else:
         demisto.debug(f'ticket is updated: {ticket}')
-    demisto.info(f"[Test] in get_remote_data_command, the ticket that we're sending to parse_dict_ticket_fields is: {ticket}")
     if ticket:
         parse_dict_ticket_fields(client, ticket)
 
-    demisto.info(f"[Test] in get_remote_data_command, the ticket that got back from parse_dict_ticket_fields is: {ticket}")
     # get latest comments and files
     entries = []
     file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))  # type: ignore
