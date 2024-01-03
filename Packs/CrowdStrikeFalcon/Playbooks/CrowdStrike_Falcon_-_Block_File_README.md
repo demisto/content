@@ -27,9 +27,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SHA256 | The SHA256 of the file for block. |  | Optional |
 | Severity  | The severity of the indicator \(informational, low, medium, high and critical\)  | medium | Required |
-| MD5 | The MD5 of the file for block. |  | Optional |
+| Hash | In this input you can insert either MD5 or SHA256 that you wish to block. |  | Optional |
 
 ## Playbook Outputs
 
