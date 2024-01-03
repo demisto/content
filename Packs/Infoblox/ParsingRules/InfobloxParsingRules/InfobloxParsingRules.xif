@@ -7,5 +7,13 @@ filter _raw_log ~= "\<\d+\>\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2}\s+"
 | alter 
     tmp_time_format = arraystring(arraycreate(tmp_year, tmp_time_without_year), " ")
 | alter 
-    _time = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time_format)
-| fields -tmp_time_without_year, tmp_year, tmp_time_format;
+    tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time_format)
+| alter tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "DAY")
+// Check if the date is a future date
+| alter tmp_year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_year),1)),null)
+// Create timestamp minus 1 year if the timestamp is a future one
+| alter tmp_time1_2 = if(tmp_year2 != null, concat(tmp_year2, " ", tmp_time_without_year ),null)
+| alter tmp_time1_2 = if(tmp_time1_2 != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_time1_2 ),null)
+| alter tmp_time_without_year = coalesce(tmp_time1_2, tmp_time1_1)
+| alter _time = tmp_time_without_year
+| fields -tmp_time_without_year, tmp_year, tmp_time_format, tmp_time1_1 , tmp_timeDiff , tmp_year2 , tmp_time1_2;git 
