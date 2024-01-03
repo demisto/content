@@ -809,7 +809,7 @@ script:
       description: LDAP profile for SMTP sender identity verification.
       type: String
     - contextPath: FortiMail.IPPolicy.exclusive
-      description: Whether to take precedence over recipient based policy match.
+      description: Whether to take precedence over recipient-based policy match.
       type: Boolean
     - contextPath: FortiMail.IPPolicy.mkey
       description: The ID of the IP policy.
