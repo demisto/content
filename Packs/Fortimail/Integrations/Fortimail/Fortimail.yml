@@ -1371,7 +1371,7 @@ script:
       description: The sender email address regular expression pattern.
       type: String
     - contextPath: FortiMail.RecipientPolicy.groupmode
-      description: 'Define recipient (RCPT TO:) email addresses that match this policy. 0: User (wildcard), 2: LDAP group ,3:Email address group ,4: User(regex).'
+      description: 'Define recipient (RCPT TO:) email addresses that match this policy. 0: User (wildcard), 2: LDAP group, 3:Email address group, 4: User(regex).'
       type: String
     - contextPath: FortiMail.RecipientPolicy.recipient_pattern
       description: The local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy.
