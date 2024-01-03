@@ -1999,7 +1999,7 @@ script:
       description: Whether the certificate expired.
       type: Boolean
   - name: fortimail-session-profile-list
-    description: List IP session profiles. Session profiles focus on the connection and envelope portion of the SMTP session. If a name is given, the command will return the information about the wanted session profile. Mainly used in the configuration of IP policy.
+    description: List IP session profiles. Session profiles focus on the connection and envelope portion of the SMTP session. If a name is given, the command will return the information about the specified session profile. Mainly used in the configuration of IP policy.
     arguments:
     - name: name
       description: The name of the session profile.
