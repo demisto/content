@@ -1824,7 +1824,7 @@ script:
     - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command).
       name: groupId
       required: true
-    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command).
       isArray: true
       name: endpointIds
       required: true
@@ -1844,7 +1844,7 @@ script:
     - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command).
       name: groupId
       required: true
-    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command).
       isArray: true
       name: endpointIds
       required: true
