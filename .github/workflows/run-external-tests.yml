@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
         with:
             path: content
-            ref: ${{ github.ref_name}}
+            ref: ${{ github.ref }}
 
       - name: Copy content into respective Tests dir
         run: python custom_tests/.github/workflows/copy_content_into_tests.py
