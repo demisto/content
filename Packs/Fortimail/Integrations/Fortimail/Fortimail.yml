@@ -113,7 +113,7 @@ script:
       required: true
       default: true
     - name: ips
-      description: A list of IP address (separated with a comma) that you want to replace in the IP group. Use the net-mask, the portion after the slash (/), to specify the matching sub-net. For example, 10.10.10.10/24,12.12.12.12/24,172.20.130.10-172.20.130.30.
+      description: A comma-separated list of IP address that you want to replace in the IP group. Use the netmask, the portion after the slash (/), to specify the matching subnet. For example, 10.10.10.10/24,12.12.12.12/24,172.20.130.10-172.20.130.30.
       required: true
       isArray: true
   - name: fortimail-ip-group-member-delete
