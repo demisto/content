@@ -99,8 +99,12 @@ def get_last_job_id_pre_commit(repo_owner, repo_name, run_id, access_token):
             "Authorization": f"Bearer {access_token}",
         }
     )
+    params = {
+        "per_page": 100,
+        "page": 3,
+    }
 
-    response = requests.get(api_url, headers=headers)
+    response = requests.get(api_url, headers=headers, params=params)
     print(type(response))
     print(response.status_code)
     print(response.json())
