@@ -1915,7 +1915,7 @@ script:
     description: List AntiVirus profiles. if the FortiMail unit detects a virus, it will take actions as you define in the antivirus action profiles. if an name is given, the command will return the information about the wanted AntiVirus profile. Mainly used in the configuration of IP policy.
     arguments:
     - name: name
-      description: The name of the anti virus profile.
+      description: The name of the antivirus profile.
       default: true
     - name: all_results
       description: Whether to retrieve all results by overriding the default limit.
