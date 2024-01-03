@@ -1,9 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Main integration script."""
+from CommonServerUserPython import *
+
+'''IMPORTS'''
 import dateparser
 from typing import Dict, Tuple
-from CommonServerUserPython import *
+
+'''GLOBAL VARS'''
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 COMMON_BASE_URL = "https://api.central.sophos.com"
