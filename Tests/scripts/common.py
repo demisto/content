@@ -251,7 +251,7 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id, look_back_hours
     return pipelines, commits
 
 
-def shame(commit):
+def person_in_charge(commit):
     """
     Returns the name, email, and PR link for the author of the provided commit.
 
