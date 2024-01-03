@@ -1025,7 +1025,7 @@ script:
       - GeoIP Group
       - ISDB
     - name: source
-      description: When sender_type = IP/Netmask insert the source IP address and net-mask of the SMTP client attempting to send the email message. Use the net-mask, the portion after the slash (/), to specify the matching sub-net.When sender_type = IP Group, insert email group (use fortimail-ip-group-list to retrieve all the IP Groups).When sender_type = GeoIP Group, insert a Geo IP group.When sender_type = ISDB, insert an ISDB.
+      description: When sender_type = IP/Netmask, insert the source IP address and netmask of the SMTP client attempting to send the email message. Use the netmask, the portion after the slash (/), to specify the matching subnet. When sender_type = IP Group, insert email group (use fortimail-ip-group-list to retrieve all the IP groups). When sender_type = GeoIP Group, insert a Geo IP group (use fortimail-geoip-group-list to retrieve all the Geo IP groups). When sender_type = ISDB, insert an ISDB.
     - name: reverse_dns_pattern
       description: A pattern to compare to the result of a reverse DNS look-up of the source IP address of the SMTP client attempting to send the email message.
     - name: reverse_dns_pattern_regex
