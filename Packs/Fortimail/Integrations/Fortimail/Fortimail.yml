@@ -1493,7 +1493,7 @@ script:
     - name: recipient_email_address_group
       description: Recipient Email group (use fortimail-email-group-list to retrieve all the Email groups). Relevant when recipient_type=Email address group.
     - name: antispam_profile
-      description: The name of an outgoing anti spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles.
+      description: The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles.
     - name: antivirus_profile
       description: The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles.
     - name: content_profile
