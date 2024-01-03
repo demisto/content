@@ -952,16 +952,16 @@ script:
       description: Recipient pattern type.
       type: Number
     - contextPath: FortiMail.AccessControl.sender_pattern_ldap_groupname
-      description: Sender pattern. Relevant when sender_pattern_typeis LDAP Group.
+      description: Sender pattern. Relevant when sender_pattern_type is LDAP Group.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_ldap
-      description: Sender pattern profile. Relevant when sender_pattern_typeis LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.
+      description: Sender pattern profile. Relevant when sender_pattern_type is LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_group
-      description: Sender email group. Relevant when sender_pattern_typeis Email Group.
+      description: Sender email group. Relevant when sender_pattern_type is Email Group.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern
-      description: Sender pattern. Relevant when sender_pattern_typeis Regular Expression or User Defined.
+      description: Sender pattern. Relevant when sender_pattern_type is Regular Expression or User Defined.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_type
       description: 'Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined.'
