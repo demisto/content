@@ -564,7 +564,7 @@ script:
     - name: content_profile
       description: The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. This option is applicable only if action is Scan.
     - name: ip_pool_profile
-      description: The name of an IP pool profile, if any, that this policy will apply.The IP addresses in the IP pool is used as the source IP address for the SMTP sessions matching this policy.An IP pool in an IP policy will be used to deliver incoming email from FortiMail to the protected server. An IP pool (either in an IP policy or domain settings) will be used to deliver emails to the protected domain servers if the mail flow is from internal to internal domains.Use fortimail-ip-pool-list to retrieve all the IP pool profiles.
+      description: The name of an IP pool profile, if any, that this policy will apply .The IP addresses in the IP pool are used as the source IP address for the SMTP sessions matching this policy. An IP pool in an IP policy will be used to deliver incoming email from FortiMail to the protected server. An IP pool (either in an IP policy or domain settings) will be used to deliver emails to the protected domain servers if the mail flow is from internal to internal domains. Use fortimail-ip-pool-list to retrieve all the IP pool profiles.
     - name: auth_type
       description: The type of the authentication profile that this policy will apply.If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP).
       auto: PREDEFINED
