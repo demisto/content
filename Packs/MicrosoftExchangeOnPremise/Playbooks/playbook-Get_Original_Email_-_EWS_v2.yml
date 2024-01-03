@@ -58,7 +58,7 @@ tasks:
       - "3"
     scriptarguments:
       brandname:
-        simple: EWS v2
+        simple:
     results:
     - brandInstances
     separatecontext: false
@@ -129,7 +129,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.TargetMailbox
+                root: inputs
             iscontext: true
       - - operator: isExists
           left:
@@ -172,7 +172,7 @@ tasks:
     scriptarguments:
       message-id:
         complex:
-          root: inputs.MessageID
+          root: MessageID
       selected-fields:
         simple: message_id
       target-mailbox:
