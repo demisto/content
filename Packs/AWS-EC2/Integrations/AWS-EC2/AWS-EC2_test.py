@@ -223,7 +223,7 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
     # case 2
     AWS_EC2.ROLE_NAME = None
     AWS_EC2.IS_ARN_PROVIDED = False
-    
+
     result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
     result: CommandResults = result_func({})
 

@@ -179,7 +179,7 @@ def test_module() -> str:
             return CommandResults(readable_output='ok')
         fails = [
             result.readable_output.split('`')[1]
-            for result in run_on_all_accounts(test_account)({})
+            for result in run_on_all_accounts(test_account)({})  # type: ignore
             if result.entry_type == EntryType.ERROR
         ]
         if fails:
@@ -867,7 +867,9 @@ def delete_snapshot_command(args: dict) -> CommandResults:
     response = client.delete_snapshot(SnapshotId=args.get('snapshotId'))
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Unexpected response from AWS - EC2:\n{response}')
-    return CommandResults(readable_output="The Snapshot with ID: {snapshot_id} was deleted".format(snapshot_id=args.get('snapshotId')))
+    return CommandResults(
+        readable_output="The Snapshot with ID: {snapshot_id} was deleted".format(snapshot_id=args.get('snapshotId'))
+    )
 
 
 @run_on_all_accounts
@@ -918,11 +920,11 @@ def modify_volume_command(args: dict) -> CommandResults:
     kwargs = {'VolumeId': args.get('volumeId')}
 
     if args.get('size') is not None:
-        kwargs.update({'Size': int(args.get('size'))})
+        kwargs.update({'Size': arg_to_number(args.get('size'))})
     if args.get('volumeType') is not None:
         kwargs.update({'VolumeType': args.get('volumeType')})
     if args.get('iops') is not None:
-        kwargs.update({'Iops': int(args.get('iops'))})
+        kwargs.update({'Iops': arg_to_number(args.get('iops'))})
 
     response = client.modify_volume(**kwargs)
     volumeModification = response['VolumeModification']
@@ -1025,9 +1027,9 @@ def create_volume_command(args: dict) -> CommandResults:
     if args.get('encrypted') is not None:
         kwargs.update({'Encrypted': argToBoolean(args.get('encrypted'))})
     if args.get('iops') is not None:
-        kwargs.update({'Iops': int(args.get('iops'))})
+        kwargs.update({'Iops': arg_to_number(args.get('iops'))})
     if args.get('size') is not None:
-        kwargs.update({'Size': int(args.get('size'))})
+        kwargs.update({'Size': arg_to_number(args.get('size'))})
     if args.get('snapshotId') is not None:
         kwargs.update({'SnapshotId': args.get('snapshotId')})
     if args.get('volumeType') is not None:
@@ -1118,7 +1120,7 @@ def detach_volume_command(args: dict) -> CommandResults:
         kwargs.update({'Force': argToBoolean(args.get('force'))})
         kwargs.update({'Force': argToBoolean(args.get('force'))})
     if args.get('device') is not None:
-        kwargs.update({'Device': int(args.get('device'))})
+        kwargs.update({'Device': arg_to_number(args.get('device'))})
     if args.get('instanceId') is not None:
         kwargs.update({'InstanceId': args.get('instanceId')})
 
@@ -1159,8 +1161,8 @@ def run_instances_command(args: dict) -> CommandResults:
     client = build_client(args)
     obj = vars(client._client_config)
     kwargs = {
-        'MinCount': int(args.get('count')),
-        'MaxCount': int(args.get('count'))
+        'MinCount': arg_to_number(args.get('count')),
+        'MaxCount': arg_to_number(args.get('count'))
     }  # type: dict
     BlockDeviceMappings = {}  # type: dict
     if args.get('imageId') is not None:
@@ -1185,11 +1187,11 @@ def run_instances_command(args: dict) -> CommandResults:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
         BlockDeviceMappings.update({'Ebs': {}})
     if args.get('ebsVolumeSize') is not None:
-        BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
+        BlockDeviceMappings['Ebs'].update({'VolumeSize': arg_to_number(args.get('ebsVolumeSize'))})
     if args.get('ebsVolumeType') is not None:
         BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
     if args.get('ebsIops') is not None:
-        BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
+        BlockDeviceMappings['Ebs'].update({'Iops': arg_to_number(args.get('ebsIops'))})
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
             {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
@@ -1287,9 +1289,9 @@ def waiter_instance_running_command(args: dict) -> CommandResults:
     if args.get('instanceIds') is not None:
         kwargs.update({'InstanceIds': parse_resource_ids(args.get('instanceIds'))})
     if args.get('waiterDelay') is not None:
-        kwargs.update({'WaiterConfig': {'Delay': int(args.get('waiterDelay'))}})
+        kwargs.update({'WaiterConfig': {'Delay': arg_to_number(args.get('waiterDelay'))}})
     if args.get('waiterMaxAttempts') is not None:
-        kwargs.update({'WaiterConfig': {'MaxAttempts': int(args.get('waiterMaxAttempts'))}})
+        kwargs.update({'WaiterConfig': {'MaxAttempts': arg_to_number(args.get('waiterMaxAttempts'))}})
 
     waiter = client.get_waiter('instance_running')
     waiter.wait(**kwargs)
@@ -1305,9 +1307,9 @@ def waiter_instance_status_ok_command(args: dict) -> CommandResults:
     if args.get('instanceIds') is not None:
         kwargs.update({'InstanceIds': parse_resource_ids(args.get('instanceIds'))})
     if args.get('waiterDelay') is not None:
-        kwargs.update({'WaiterConfig': {'Delay': int(args.get('waiterDelay'))}})
+        kwargs.update({'WaiterConfig': {'Delay': arg_to_number(args.get('waiterDelay'))}})
     if args.get('waiterMaxAttempts') is not None:
-        kwargs.update({'WaiterConfig': {'MaxAttempts': int(args.get('waiterMaxAttempts'))}})
+        kwargs.update({'WaiterConfig': {'MaxAttempts': arg_to_number(args.get('waiterMaxAttempts'))}})
 
     waiter = client.get_waiter('instance_status_ok')
     waiter.wait(**kwargs)
@@ -1323,9 +1325,9 @@ def waiter_instance_stopped_command(args: dict) -> CommandResults:
     if args.get('instanceIds') is not None:
         kwargs.update({'InstanceIds': parse_resource_ids(args.get('instanceIds'))})
     if args.get('waiterDelay') is not None:
-        kwargs.update({'WaiterConfig': {'Delay': int(args.get('waiterDelay'))}})
+        kwargs.update({'WaiterConfig': {'Delay': arg_to_number(args.get('waiterDelay'))}})
     if args.get('waiterMaxAttempts') is not None:
-        kwargs.update({'WaiterConfig': {'MaxAttempts': int(args.get('waiterMaxAttempts'))}})
+        kwargs.update({'WaiterConfig': {'MaxAttempts': arg_to_number(args.get('waiterMaxAttempts'))}})
 
     waiter = client.get_waiter('instance_stopped')
     waiter.wait(**kwargs)
@@ -1341,9 +1343,9 @@ def waiter_instance_terminated_command(args: dict) -> CommandResults:
     if args.get('instanceIds') is not None:
         kwargs.update({'InstanceIds': parse_resource_ids(args.get('instanceIds'))})
     if args.get('waiterDelay') is not None:
-        kwargs.update({'WaiterConfig': {'Delay': int(args.get('waiterDelay'))}})
+        kwargs.update({'WaiterConfig': {'Delay': arg_to_number(args.get('waiterDelay'))}})
     if args.get('waiterMaxAttempts') is not None:
-        kwargs.update({'WaiterConfig': {'MaxAttempts': int(args.get('waiterMaxAttempts'))}})
+        kwargs.update({'WaiterConfig': {'MaxAttempts': arg_to_number(args.get('waiterMaxAttempts'))}})
 
     waiter = client.get_waiter('instance_terminated')
     waiter.wait(**kwargs)
@@ -1363,9 +1365,9 @@ def waiter_image_available_command(args: dict) -> CommandResults:
     if args.get('owners') is not None:
         kwargs.update({'Owners': parse_resource_ids(args.get('owners'))})
     if args.get('waiterDelay') is not None:
-        kwargs.update({'WaiterConfig': {'Delay': int(args.get('waiterDelay'))}})
+        kwargs.update({'WaiterConfig': {'Delay': arg_to_number(args.get('waiterDelay'))}})
     if args.get('waiterMaxAttempts') is not None:
-        kwargs.update({'WaiterConfig': {'MaxAttempts': int(args.get('waiterMaxAttempts'))}})
+        kwargs.update({'WaiterConfig': {'MaxAttempts': arg_to_number(args.get('waiterMaxAttempts'))}})
 
     waiter = client.get_waiter('image_available')
     waiter.wait(**kwargs)
@@ -1385,9 +1387,9 @@ def waiter_snapshot_completed_command(args: dict) -> CommandResults:
     if args.get('snapshotIds') is not None:
         kwargs.update({'SnapshotIds': parse_resource_ids(args.get('snapshotIds'))})
     if args.get('waiterDelay') is not None:
-        kwargs.update({'WaiterConfig': {'Delay': int(args.get('waiterDelay'))}})
+        kwargs.update({'WaiterConfig': {'Delay': arg_to_number(args.get('waiterDelay'))}})
     if args.get('waiterMaxAttempts') is not None:
-        kwargs.update({'WaiterConfig': {'MaxAttempts': int(args.get('waiterMaxAttempts'))}})
+        kwargs.update({'WaiterConfig': {'MaxAttempts': arg_to_number(args.get('waiterMaxAttempts'))}})
 
     waiter = client.get_waiter('snapshot_completed')
     waiter.wait(**kwargs)
@@ -1848,7 +1850,7 @@ def modify_network_interface_attribute_command(args: dict) -> CommandResults:
 @run_on_all_accounts
 def modify_instance_attribute_command(args: dict) -> CommandResults:
     client = build_client(args)
-    
+
     kwargs = {'InstanceId': args.get('instanceId')}
     if args.get('sourceDestCheck') is not None:
         kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
@@ -1913,20 +1915,20 @@ def create_network_acl_entry_command(args: dict) -> CommandResults:
         'NetworkAclId': args.get('NetworkAclId'),
         'Protocol': args.get('Protocol'),
         'RuleAction': args.get('RuleAction'),
-        'RuleNumber': int(args.get('RuleNumber'))
+        'RuleNumber': arg_to_number(args.get('RuleNumber'))
     }
     if args.get('CidrBlock') is not None:
         kwargs.update({'CidrBlock': args.get('CidrBlock')})
     if args.get('Code') is not None:
-        kwargs.update({'IcmpTypeCode': {'Code': int(args.get('Code'))}})
+        kwargs.update({'IcmpTypeCode': {'Code': arg_to_number(args.get('Code'))}})
     if args.get('Type') is not None:
-        kwargs.update({'IcmpTypeCode': {'Type': int(args.get('Type'))}})
+        kwargs.update({'IcmpTypeCode': {'Type': arg_to_number(args.get('Type'))}})
     if args.get('Ipv6CidrBlock') is not None:
         kwargs.update({'Ipv6CidrBlock': args.get('Ipv6CidrBlock')})
     if args.get('From') is not None:
-        kwargs.update({'PortRange': {'From': int(args.get('From'))}})
+        kwargs.update({'PortRange': {'From': arg_to_number(args.get('From'))}})
     if args.get('To') is not None:
-        kwargs.update({'PortRange': {'To': int(args.get('To'))}})
+        kwargs.update({'PortRange': {'To': arg_to_number(args.get('To'))}})
     if args.get('DryRun') is not None:
         kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
@@ -1968,7 +1970,7 @@ def create_fleet_command(args: dict) -> CommandResults:
         })
     if args.get('MinTargetCapacity') is not None:
         SpotOptions.update({
-            'MinTargetCapacity': int(args.get('MinTargetCapacity'))
+            'MinTargetCapacity': arg_to_number(args.get('MinTargetCapacity'))
         })
 
     if SpotOptions:
@@ -1989,7 +1991,7 @@ def create_fleet_command(args: dict) -> CommandResults:
         })
     if args.get('OnDemandMinTargetCapacity') is not None:
         SpotOptions.update({
-            'MinTargetCapacity': int(args.get('OnDemandMinTargetCapacity'))
+            'MinTargetCapacity': arg_to_number(args.get('OnDemandMinTargetCapacity'))
         })
 
     if OnDemandOptions:
@@ -2080,15 +2082,15 @@ def create_fleet_command(args: dict) -> CommandResults:
     TargetCapacitySpecification = {}
     if args.get('TotalTargetCapacity') is not None:
         TargetCapacitySpecification.update({
-            'TotalTargetCapacity': int(args.get('TotalTargetCapacity'))
+            'TotalTargetCapacity': arg_to_number(args.get('TotalTargetCapacity'))
         })
     if args.get('OnDemandTargetCapacity') is not None:
         TargetCapacitySpecification.update({
-            'OnDemandTargetCapacity': int(args.get('OnDemandTargetCapacity'))
+            'OnDemandTargetCapacity': arg_to_number(args.get('OnDemandTargetCapacity'))
         })
     if args.get('SpotTargetCapacity') is not None:
         TargetCapacitySpecification.update({
-            'SpotTargetCapacity': int(args.get('SpotTargetCapacity'))
+            'SpotTargetCapacity': arg_to_number(args.get('SpotTargetCapacity'))
         })
     if args.get('DefaultTargetCapacityType') is not None:
         TargetCapacitySpecification.update({
@@ -2114,7 +2116,7 @@ def create_fleet_command(args: dict) -> CommandResults:
 
     TagSpecifications = []  # type: List[dict]
     if args.get('Tags') is not None:
-        arr = args.get('Tags').split('#')
+        arr = args.get('Tags', '').split('#')
         for i, item in enumerate(arr):
             if len(TagSpecifications) - 1 < (i):
                 TagSpecifications.append({})
@@ -2256,7 +2258,7 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
     if args.get('FleetId') is not None:
         kwargs.update({'FleetId': args.get('FleetId')})
     if args.get('MaxResults') is not None:
-        kwargs.update({'MaxResults': int(args.get('MaxResults'))})
+        kwargs.update({'MaxResults': arg_to_number(args.get('MaxResults'))})
     if args.get('NextToken') is not None:
         kwargs.update({'NextToken': args.get('NextToken')})
 
@@ -2301,15 +2303,15 @@ def modify_fleet_command(args: dict) -> CommandResults:
     TargetCapacitySpecification = {}
     if args.get('TotalTargetCapacity') is not None:
         TargetCapacitySpecification.update({
-            'TotalTargetCapacity': int(args.get('TotalTargetCapacity'))
+            'TotalTargetCapacity': arg_to_number(args.get('TotalTargetCapacity'))
         })
     if args.get('OnDemandTargetCapacity') is not None:
         TargetCapacitySpecification.update({
-            'OnDemandTargetCapacity': int(args.get('OnDemandTargetCapacity'))
+            'OnDemandTargetCapacity': arg_to_number(args.get('OnDemandTargetCapacity'))
         })
     if args.get('SpotTargetCapacity') is not None:
         TargetCapacitySpecification.update({
-            'SpotTargetCapacity': int(args.get('SpotTargetCapacity'))
+            'SpotTargetCapacity': arg_to_number(args.get('SpotTargetCapacity'))
         })
     if args.get('DefaultTargetCapacityType') is not None:
         TargetCapacitySpecification.update({
@@ -2363,11 +2365,11 @@ def create_launch_template_command(args: dict) -> CommandResults:
     if args.get('VirtualName') is not None:
         BlockDeviceMappings.update({'VirtualName': {args.get('VirtualName')}})
     if args.get('ebsVolumeSize') is not None:
-        BlockDeviceMappings['Ebs'].update({'VolumeSize': int(args.get('ebsVolumeSize'))})
+        BlockDeviceMappings['Ebs'].update({'VolumeSize': arg_to_number(args.get('ebsVolumeSize'))})
     if args.get('ebsVolumeType') is not None:
         BlockDeviceMappings['Ebs'].update({'VolumeType': args.get('ebsVolumeType')})
     if args.get('ebsIops') is not None:
-        BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
+        BlockDeviceMappings['Ebs'].update({'Iops': arg_to_number(args.get('ebsIops'))})
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
             {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
@@ -2396,7 +2398,7 @@ def create_launch_template_command(args: dict) -> CommandResults:
     if args.get('Ipv6AddressCount') is not None:
         NetworkInterfaces.update({'Ipv6AddressCount': args.get('Ipv6AddressCount')})
     if args.get('Ipv6Addresses') is not None:
-        arr = args.get('Ipv6Addresses').split(',')
+        arr = args.get('Ipv6Addresses', '').split(',')
         NetworkInterfaces.update({'Ipv6Addresses': []})
         for a in arr:
             NetworkInterfaces['Ipv6Addresses'].append({'Ipv6Address': a})
@@ -2457,7 +2459,7 @@ def create_launch_template_command(args: dict) -> CommandResults:
         LaunchTemplateData.update({'UserData': args.get('UserData')})
     TagSpecifications = []  # type: list
     if args.get('Tags') is not None:
-        arr = args.get('Tags').split('#')
+        arr = args.get('Tags', '').split('#')
         for i, item in enumerate(arr):
             if len(TagSpecifications) - 1 < (i):
                 TagSpecifications.append({})
@@ -2752,11 +2754,11 @@ def create_traffic_mirror_session_command(args: dict) -> CommandResults:
     if args.get('TrafficMirrorFilterId') is not None:
         kwargs.update({'TrafficMirrorFilterId': args.get('TrafficMirrorFilterId')})
     if args.get('PacketLength') is not None:
-        kwargs.update({'PacketLength': int(args.get('PacketLength'))})
+        kwargs.update({'PacketLength': arg_to_number(args.get('PacketLength'))})
     if args.get('SessionNumber') is not None:
-        kwargs.update({'SessionNumber': int(args.get('SessionNumber'))})
+        kwargs.update({'SessionNumber': arg_to_number(args.get('SessionNumber'))})
     if args.get('VirtualNetworkId') is not None:
-        kwargs.update({'VirtualNetworkId': int(args.get('VirtualNetworkId'))})
+        kwargs.update({'VirtualNetworkId': arg_to_number(args.get('VirtualNetworkId'))})
     if args.get('Description') is not None:
         kwargs.update({'Description': args.get('Description')})
     if args.get('ClientToken') is not None:
@@ -2766,7 +2768,7 @@ def create_traffic_mirror_session_command(args: dict) -> CommandResults:
 
     tag_specifications = []  # type: list
     if args.get('Tags') is not None:
-        arr = args.get('Tags').split('#')
+        arr = args.get('Tags', '').split('#')
         for i, item in enumerate(arr):
             if len(tag_specifications) - 1 < (i):
                 tag_specifications.append({})
@@ -2807,7 +2809,7 @@ def allocate_hosts_command(args: dict) -> CommandResults:
     client = build_client(args)
 
     availability_zone = args.get('availability_zone')
-    quantity = int(args.get('quantity'))
+    quantity = arg_to_number(args.get('quantity'))
 
     kwargs = {}
     if args.get('auto_placement'):
