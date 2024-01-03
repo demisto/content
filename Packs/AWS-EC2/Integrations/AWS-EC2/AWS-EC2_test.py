@@ -50,35 +50,10 @@ class Boto3Client:
         pass
 
 
-def create_client():
-    aws_client_args = {
-        'aws_default_region': 'us-east-1',
-        'aws_role_arn': None,
-        'aws_role_session_name': None,
-        'aws_role_session_duration': None,
-        'aws_role_policy': None,
-        'aws_access_key_id': 'test_access_key',
-        'aws_secret_access_key': 'test_secret_key',
-        'aws_session_token': 'test_sts_token',
-        'verify_certificate': False,
-        'timeout': 60,
-        'retries': 3
-    }
-
-    client = AWSClient(**aws_client_args)
-    return client
-
-
-AWS_EC2.build_client = lambda x: create_client().aws_session(**x)
+AWS_EC2.build_client = lambda _: Boto3Client
 
 
 def validate_kwargs(*args, **kwargs):
-    normal_kwargs = {'IpPermissions': [{'ToPort': 23, 'FromPort': 23, 'UserIdGroupPairs': [{}], 'IpProtocol': 'TCP'}],
-                     'GroupId': 'sg-0566450bb5ae17c7d'}
-    ippermsfull_kwargs = {'GroupId': 'sg-0566450bb5ae17c7d', 'IpPermissions':
-                          [{'IpProtocol': '-1', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}],
-                           'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': []}]}
-    if kwargs in (normal_kwargs, ippermsfull_kwargs):
     normal_kwargs = {'IpPermissions': [{'ToPort': 23, 'FromPort': 23, 'UserIdGroupPairs': [{}], 'IpProtocol': 'TCP'}],
                      'GroupId': 'sg-0566450bb5ae17c7d'}
     ippermsfull_kwargs = {'GroupId': 'sg-0566450bb5ae17c7d', 'IpPermissions':
@@ -103,7 +78,6 @@ def test_aws_ec2_authorize_security_group_ingress_rule(mocker):
     - Case 1: Should ensure that the right message was resulted return true.
     - Case 2: Should ensure that no message was resulted return true.
     """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'authorize_security_group_ingress', side_effect=validate_kwargs)
     mocker.patch.object(AWS_EC2, 'return_results')
 
@@ -144,7 +118,6 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker):
     - Case 1: Should ensure that the right message was resulted return true.
     - Case 2: Should ensure that no message was resulted return true.
     """
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'authorize_security_group_egress', side_effect=validate_kwargs)
     mocker.patch.object(AWS_EC2, 'return_results')
 
@@ -207,7 +180,7 @@ def test_run_on_all_accounts(mocker):
     assert results[0].outputs == [{'AccountId': '1'}]
     assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
     assert results[1].outputs == [{'AccountId': '2'}]
-    
+
     # dict as output
     result_func = AWS_EC2.run_on_all_accounts(lambda _: CommandResults(
         outputs={},
@@ -215,7 +188,7 @@ def test_run_on_all_accounts(mocker):
         outputs_prefix='prefix',
     ))
     results: list[CommandResults] = result_func({})
-    
+
     assert results[0].readable_output == '#### Result for account `1`:\nreadable_output'
     assert results[0].outputs == {'AccountId': '1'}
     assert results[1].readable_output == '#### Result for account `2`:\nreadable_output'
@@ -237,8 +210,9 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
     Then:
         - Ensure account_runner returns the command function unchanged.
     """
+    # case 1
     AWS_EC2.ROLE_NAME = role_name
-    mocker.patch.object(demisto, 'getArg', return_value=roleArn)
+    AWS_EC2.IS_ARN_PROVIDED = True
 
     result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
     result: CommandResults = result_func({})
@@ -246,7 +220,17 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
     assert result.readable_output == 'readable_output'
     assert result.outputs == [{}]
 
+    # case 2
+    AWS_EC2.ROLE_NAME = None
+    AWS_EC2.IS_ARN_PROVIDED = False
     
+    result_func = AWS_EC2.run_on_all_accounts(mock_command_func)
+    result: CommandResults = result_func({})
+
+    assert result.readable_output == 'readable_output'
+    assert result.outputs == [{}]
+
+
 @pytest.mark.parametrize('return_boto, expected_results', [
     ({'IpamResourceDiscoveries': []}, 'No Ipam Resource Discoveries were found.'),
     ({"IpamResourceDiscoveries":
@@ -284,7 +268,7 @@ def test_describe_ipam_resource_discoveries_command(mocker, return_boto, expecte
     - Case 2: Should ensure that information on resource was returned.
     """
     mocker.patch.object(Boto3Client, 'describe_ipam_resource_discoveries', return_value=return_boto)
-    results = AWS_EC2.describe_ipam_resource_discoveries_command({}, Boto3Client)
+    results = AWS_EC2.describe_ipam_resource_discoveries_command({})
     assert results.readable_output == expected_results
 
 
@@ -326,7 +310,7 @@ def test_describe_ipam_resource_discovery_associations_command(mocker, return_bo
     - Case 2: Should ensure that information on resource was returned.
     """
     mocker.patch.object(Boto3Client, 'describe_ipam_resource_discovery_associations', return_value=return_boto)
-    results = AWS_EC2.describe_ipam_resource_discovery_associations_command({}, Boto3Client)
+    results = AWS_EC2.describe_ipam_resource_discovery_associations_command({})
     assert results.readable_output == expected_results
 
 
@@ -380,11 +364,9 @@ def test_get_ipam_discovered_public_addresses_command(mocker, return_boto, expec
     - Case 1: Should ensure that generic "nothing found" message returned.
     - Case 2: Should ensure that information on resource was returned.
     """
-    aws_client = create_client()
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'get_ipam_discovered_public_addresses', return_value=return_boto)
     args = {"IpamResourceDiscoveryId": "ipam-res-disco-11111111111111111",
             "AddressRegion": "us-east-1",
             "Filters": "Name=address,Values=1.1.1.1"}
-    results = AWS_EC2.get_ipam_discovered_public_addresses_command(args, aws_client)
+    results = AWS_EC2.get_ipam_discovered_public_addresses_command(args)
     assert results.readable_output == expected_results
