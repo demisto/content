@@ -1,6 +1,3 @@
-from AWSApiModule import *
-from CommonServerPython import *  # noqa: F401
-import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 import importlib

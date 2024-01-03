@@ -2531,7 +2531,7 @@ Creates a network ACL in a VPC. Network ACLs provide an optional layer of securi
 | AWS.EC2.VpcId.NetworkAcl.Tags.Value | String | The value of the tag. | 
 | AWS.EC2.VpcId.NetworkAcl.VpcId | String | The ID of the VPC for the network ACL. | 
 | AWS.EC2.VpcId.NetworkAcl.OwnerId | String | The ID of the AWS account that owns the network ACL. | 
-| AWS.EC2.VpcId.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+| AWS.EC2.VpcId.NetworkAcl.AccountId | String | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
 
 ### aws-ec2-create-network-acl-entry
 
