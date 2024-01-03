@@ -3852,6 +3852,7 @@ VALID_URL_INDICATORS = [
     'https[:]//www.test.com/test',  # defanged colon sign
     "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
     "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
+    "https://test.com/a/b/c-d-e",  # hyphen in the path
 ]
 
 
