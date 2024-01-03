@@ -1,6 +1,7 @@
 from Tests.scripts.common import get_reviewer, person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name
 import pytest
-from unittest.mock import  patch
+from unittest.mock import patch
+
 
 def test_person_in_charge(mocker):
     """
@@ -18,6 +19,7 @@ def test_person_in_charge(mocker):
     result = person_in_charge(commit)
 
     assert result == expected
+
 
 @pytest.mark.parametrize('pipeline1_date, pipeline2_date, expected', [
     ('2020-01-01T00:00:00Z', '2020-01-02T00:00:00Z', False),
@@ -48,10 +50,10 @@ def test_are_pipelines_in_order(mocker, pipeline1_date, pipeline2_date, expected
 
 @pytest.mark.parametrize('pipeline1_status, pipeline2_status, expected', [
     ('success', 'failed', True),
-    ('failed','success', False),
-    ('success','success', None),
+    ('failed', 'success', False),
+    ('success', 'success', None),
     ('failed', 'in progress', None)
-    ])
+])
 def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     """
     Given:
@@ -69,19 +71,19 @@ def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     pipeline1.status = pipeline1_status
     pipeline2 = mocker.Mock()
     pipeline2.status = pipeline2_status
-    
+
     mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
     result = is_pivot(pipeline2, pipeline1)
 
     assert result == expected
-    
-    
+
+
 @pytest.mark.parametrize('response, expected', [
     ([], None),
-    ([{"Jon":"test", "state": "test","user":{"login": "Jon"}},
-      {"Jane Doe":"test", "state": "APPROVED","user":{"login": "Jane Doe"}}], "Jane Doe"),
-   ([{"Jon":"test", "state": "APPROVED","user":{"login": "Jon"}},
-      {"Jane Doe":"test", "state": "APPROVED","user":{"login": "Jane Doe"}}], "Jon")
+    ([{"Jon": "test", "state": "test", "user": {"login": "Jon"}},
+      {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jane Doe"),
+    ([{"Jon": "test", "state": "APPROVED", "user": {"login": "Jon"}},
+     {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jon")
 ])
 def test_get_reviewer(response, expected):
     """
@@ -101,12 +103,12 @@ def test_get_reviewer(response, expected):
         result = get_reviewer(pr_url)
 
     assert result == expected
-    
+
 
 @pytest.mark.parametrize('name, expected', [
     ("Mike", "mike"),
-    ( "Jon", "Jon"),
-    ("github-actions[bot]" , "the owner")
+    ("Jon", "Jon"),
+    ("github-actions[bot]", "the owner")
 ])
 def test_get_slack_user_name(name, expected):
     """

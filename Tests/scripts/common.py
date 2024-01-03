@@ -227,7 +227,8 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
     return sentence
 
 
-def get_pipelines_and_commits(gitlab_client: Gitlab, project_id, look_back_hours: int)-> tuple[list[ProjectPipeline], list[ProjectCommit]]:
+def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
+                              look_back_hours: int) -> tuple[list[ProjectPipeline], list[ProjectCommit]]:
     """
     Get all pipelines and commits on the master branch in the last X hours.
     The commits and pipelines are in order of creation time.
@@ -276,12 +277,12 @@ def are_pipelines_in_order(current_pipeline, previous_pipeline):
 
 
 def is_pivot(current_pipeline, previous_pipeline):
-   
+
     in_order = are_pipelines_in_order(current_pipeline, previous_pipeline)
     if in_order:
-        if previous_pipeline.status == 'success' and  current_pipeline.status == 'failed':
+        if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
             return True
-        if previous_pipeline.status == 'failed' and  current_pipeline.status == 'success':
+        if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
             return False
     return None
 
@@ -300,7 +301,6 @@ def get_reviewer(pr_url: str) -> str | None:
         reviews_response = requests.get(reviews_url, verify=False)
         reviews_data = reviews_response.json()
 
-        
         # Find the reviewer who provided approval
         for review in reviews_data:
             if review["state"] == "APPROVED":
@@ -311,9 +311,7 @@ def get_reviewer(pr_url: str) -> str | None:
     return approved_reviewer
 
 
-
-
-def get_slack_user_name(name:str, name_mapping_path: str) -> str:
+def get_slack_user_name(name: str, name_mapping_path: str) -> str:
     with open(name_mapping_path) as map:
         mapping = json.load(map)
     # If the name is 'github-actions[bot]' (docker image update bot reviewer)  return the owner of that bot.

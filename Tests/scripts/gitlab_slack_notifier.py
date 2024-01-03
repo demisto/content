@@ -24,7 +24,8 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.common import get_pipelines_and_commits, is_pivot, person_in_charge, get_reviewer, get_slack_user_name, get_commit_by_sha, get_pipeline_by_commit
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, person_in_charge, get_reviewer,\
+    get_slack_user_name, get_commit_by_sha, get_pipeline_by_commit
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -52,7 +53,7 @@ DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
 LOOK_BACK_HOURS = 48
 # This is the github username of the bot that pushes contributions and docker updates to the content repo.
-CONTENT_BOT ='content-bot'
+CONTENT_BOT = 'content-bot'
 
 
 def options_handler() -> argparse.Namespace:
@@ -411,7 +412,7 @@ def construct_slack_msg(triggering_workflow: str,
             "title": shame_title + "\n" + shame_value,
             "color": shame_color
         })
-    return slack_msg_start +[{
+    return slack_msg_start + [{
         'fallback': title,
         'color': color,
         'title': title,
@@ -529,7 +530,7 @@ def main():
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
-                                                               project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
+                                                                       project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
@@ -538,14 +539,16 @@ def main():
             previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
             if current_pipeline and previous_pipeline:
                 pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
-                logging.info(f'Checking pipeline {pipeline_id}, the commit is {current_commit} and the pipeline change status is: {pipeline_changed_status}')
+                logging.info(
+                    f"""Checking pipeline {pipeline_id},
+                    the commit is {current_commit} and the pipeline change status is: {pipeline_changed_status}""")
                 if pipeline_changed_status is not None:
                     name, pr = person_in_charge(current_commit)
                     if name == CONTENT_BOT:
                         name = get_reviewer(pr)
                     name = get_slack_user_name(name, options.name_mapping_path)
-                    msg = "broke" if pipeline_changed_status else "fixed" 
-                    color = "danger" if pipeline_changed_status else "good"  
+                    msg = "broke" if pipeline_changed_status else "fixed"
+                    color = "danger" if pipeline_changed_status else "good"
                     emoji = ":cry:" if pipeline_changed_status else ":muscle:"
                     shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
                                      f" That was done in this {slack_link(pr,'PR.')}", color)
