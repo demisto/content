@@ -15,8 +15,7 @@ trigger-nightlies:
     RELEASE_VERSION: $RELEASE_VERSION
   script:
 #    - python3 ./Tests/sdk_release/trigger_nightlies.py
-    - trigger_content_nightly_build.sh -ct $CI_TOKEN
+    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
     - ./Tests/sdk_release/create_release_branch.sh --release-branch $RELEASE_VERSION
-#    - ./Tests/sdk_release/create_release_branch.sh --release-branch $RELEASE_VERSION
 
 
