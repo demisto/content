@@ -382,7 +382,7 @@ script:
     - name: antispam_profile
       description: The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles. This option is applicable only if action is Scan.
     - name: antivirus_profile
-      description: The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles.This option is applicable only if action is Scan.
+      description: The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles. This option is applicable only if action is Scan.
     - name: content_profile
       description: The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles.This option is applicable only if action is Scan.
     - name: ip_pool_profile
