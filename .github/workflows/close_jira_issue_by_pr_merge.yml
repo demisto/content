@@ -1,4 +1,4 @@
-name: Add PR link to Related Jira Issue
+name: Close Jira Issue Related To PR
 on:
   pull_request:
     types: [ closed ]
