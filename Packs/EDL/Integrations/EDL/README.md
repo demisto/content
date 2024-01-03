@@ -151,19 +151,17 @@ Optional system fields are:
 In addition to the system fields, you can also search for custom fields.
 In order to get the list of all available fields to search by, you can configure the `Exported Fields` parameter with the `all` option and check the list returned.
 
-### Access the Export Indicators Service by Instance Name (HTTPS)
+### Access the Export Indicators Service by Instance Name (HTTPS) - For Cortex XSOAR 6.x only
 
 **Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled.
 
-1. For Cortex XSOAR 6.x:
-   1. Navigate to **Settings > About > Troubleshooting**.
-   2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-2. In a web browser, go to:
+1. Navigate to **Settings > About > Troubleshooting**.
+2.  In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to:
+    `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
  
-   - (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
-   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
 
 
 ### URL Inline Arguments
