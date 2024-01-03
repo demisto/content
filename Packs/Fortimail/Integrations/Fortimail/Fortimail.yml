@@ -106,7 +106,7 @@ script:
       description: The name of the IP member.
       type: String
   - name: fortimail-ip-group-member-replace
-    description: Replace IP group members with new members. This command overwrites all the IP group members that defined in the IP group.
+    description: Replace IP group members with new members. This command overwrites all the IP group members that were defined in the IP group.
     arguments:
     - name: group_name
       description: The name of the IP group. Use fortimail-ip-group-create to retrieve all the IP groups.
