@@ -217,7 +217,7 @@ script:
       description: The name of the email group.
       type: String
   - name: fortimail-email-group-member-add
-    description: Add an email group member (email address) to email group.
+    description: Add an email group member (email address) to an email group.
     arguments:
     - name: group_name
       description: The name of the email group. Use fortimail-email-group-list to retrieve all the email groups.
