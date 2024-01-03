@@ -27,12 +27,11 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SHA256 | SHA256 of the file to block. |  | Optional |
 | Severity  | The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all. |  | Optional |
 | IndicatorDescription | Brief description \(100 characters or less\) of the threat represented by the indicator. | Added by Cortex XSOAR | Required |
 | IndicatorTitle | The indicator alert title in Defender. | Added by Cortex XSOAR | Required |
 | GenerateAlert | Whether to generate alert or not \(the default is true\) | true | Optional |
-| MD5 | The MD5 of the file to block. |  | Optional |
+| Hash | In this input you can insert either MD5 or SHA256 that you wish to block. |  | Optional |
 
 ## Playbook Outputs
 

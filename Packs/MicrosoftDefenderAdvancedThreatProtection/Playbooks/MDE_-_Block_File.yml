@@ -51,7 +51,6 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "2"
       - "6"
     scriptarguments:
       brandname:
@@ -72,56 +71,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: c8b728c6-84da-44e2-8f41-a1d3e81b22ce
-    type: condition
-    task:
-      id: c8b728c6-84da-44e2-8f41-a1d3e81b22ce
-      version: -1
-      name: Is there any SHA256?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.SHA256
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 630,
-          "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 97972c3e-2b25-45e3-8709-c46a3f183050
+    taskid: 32e7827d-3a6f-4154-8ef5-6e3a0d20a518
     type: title
     task:
-      id: 97972c3e-2b25-45e3-8709-c46a3f183050
+      id: 32e7827d-3a6f-4154-8ef5-6e3a0d20a518
       version: -1
       name: Done
       type: title
@@ -133,8 +88,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 730
+          "x": 450,
+          "y": 910
         }
       }
     note: false
@@ -146,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 985ef8c2-5bac-4700-80c7-6d95ce4fdda6
+    taskid: ae03f7d2-a316-4255-83fb-87c50a8281fc
     type: regular
     task:
-      id: 985ef8c2-5bac-4700-80c7-6d95ce4fdda6
+      id: ae03f7d2-a316-4255-83fb-87c50a8281fc
       version: -1
       name: Block Indicators by SHA256
       description: Creates a new indicator.
@@ -177,6 +132,15 @@ tasks:
       indicator_value:
         complex:
           root: inputs.SHA256
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
           transformers:
           - operator: uniq
       severity:
@@ -187,8 +151,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 560
+          "x": 1310,
+          "y": 730
         }
       }
     note: false
@@ -200,10 +164,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: abc28cfe-18bb-4792-839e-48cbe4adf72c
+    taskid: a42d4ac7-6f1d-4481-8b8d-869e76b71de9
     type: regular
     task:
-      id: abc28cfe-18bb-4792-839e-48cbe4adf72c
+      id: a42d4ac7-6f1d-4481-8b8d-869e76b71de9
       version: -1
       name: Block Indicators by MD5
       description: Creates a new indicator.
@@ -231,6 +195,15 @@ tasks:
       indicator_value:
         complex:
           root: inputs.MD5
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
           transformers:
           - operator: uniq
       severity:
@@ -241,8 +214,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 560
+          "x": 890,
+          "y": 730
         }
       }
     note: false
@@ -254,12 +227,57 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7002c9e6-8b34-4164-8562-f47b3ed2df02
+    taskid: aeda8e30-f52c-4e9d-8f10-67e049054750
     type: condition
     task:
-      id: 7002c9e6-8b34-4164-8562-f47b3ed2df02
+      id: aeda8e30-f52c-4e9d-8f10-67e049054750
       version: -1
-      name: Is there any MD5?
+      name: Is there any file to block?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Hash
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4b1ab765-8f50-44ab-8f68-1649fec5095c
+    type: condition
+    task:
+      id: 4b1ab765-8f50-44ab-8f68-1649fec5095c
+      version: -1
+      name: Has MD5 hashes?
       type: condition
       iscommand: false
       brand: ""
@@ -273,18 +291,70 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: stringHasLength
           left:
             value:
               complex:
-                root: inputs.MD5
+                root: inputs.Hash
+                transformers:
+                - operator: uniq
             iscontext: true
+          right:
+            value:
+              simple: "32"
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 350
+          "x": 890,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3d4dde8d-e1ec-4712-8a31-b18d40635b1f
+    type: condition
+    task:
+      id: 3d4dde8d-e1ec-4712-8a31-b18d40635b1f
+      version: -1
+      name: Has SHA256 hashes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: stringHasLength
+          left:
+            value:
+              complex:
+                root: inputs.Hash
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "64"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 535
         }
       }
     note: false
@@ -296,22 +366,24 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "1_3_#default#": 0.42,
+      "6_3_#default#": 0.32,
+      "6_7_yes": 0.54,
+      "6_8_yes": 0.62,
+      "7_3_#default#": 0.43,
+      "8_3_#default#": 0.17
+    },
     "paper": {
       "dimensions": {
-        "height": 745,
-        "width": 1130,
-        "x": 300,
+        "height": 925,
+        "width": 1240,
+        "x": 450,
         "y": 50
       }
     }
   }
 inputs:
-- key: SHA256
-  value: {}
-  required: false
-  description: SHA256 of the file to block.
-  playbookInputQuery:
 - key: 'Severity '
   value: {}
   required: false
@@ -335,10 +407,10 @@ inputs:
   required: false
   description: Whether to generate alert or not (the default is true)
   playbookInputQuery:
-- key: MD5
+- key: Hash
   value: {}
   required: false
-  description: The MD5 of the file to block.
+  description: In this input you can insert either MD5 or SHA256 that you wish to block.
   playbookInputQuery:
 outputs: []
 tests:
