@@ -234,7 +234,7 @@ script:
       description: The name of the email member.
       type: String
   - name: fortimail-email-group-member-replace
-    description: Replace Email group members with new members. This command overwrites all the email group members that defined in the email group.
+    description: Replace email group members with new members. This command overwrites all the email group members that were defined in the email group.
     arguments:
     - name: group_name
       description: The name of the email group. Use fortimail-email-group-list to retrieve all the email groups.
