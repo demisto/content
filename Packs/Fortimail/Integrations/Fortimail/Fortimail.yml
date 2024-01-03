@@ -1580,7 +1580,7 @@ script:
       description: The local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy.
       type: String
     - contextPath: FortiMail.RecipientPolicy.recipient_domain
-      description: The domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy.
+      description: The domain part of the recipient email address to define recipient (RCPT TO:) email addresses that match this policy.
       type: String
     - contextPath: FortiMail.RecipientPolicy.ldap_profile
       description: Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group.
