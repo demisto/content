@@ -1035,7 +1035,7 @@ script:
       - enable
       - disable
     - name: authentication_status
-      description: 'Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit.any: Match or do not match this access control rule regardless of whether the client has authenticated with the FortiMail unit.authenticated: Match this access control rule only for clients that have authenticated with the FortiMail unit.not-authenticated: Match this access control rule only for clients that have not authenticated with the FortiMail unit.'
+      description: 'Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit. any: Match or do not match this access control rule regardless of whether the client has authenticated with the FortiMail unit. authenticated: Match this access control rule only for clients that have authenticated with the FortiMail unit. not-authenticated: Match this access control rule only for clients that have not authenticated with the FortiMail unit.'
       auto: PREDEFINED
       predefined:
       - Any
