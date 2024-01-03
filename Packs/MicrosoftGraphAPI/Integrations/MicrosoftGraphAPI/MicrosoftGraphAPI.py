@@ -83,15 +83,14 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
 
 
 def test_module(client: MsGraphClient,
-                app_secret: str,
-                tenant_id: str,
                 managed_identities_client_id: str | None) -> str:  # pragma: no cover
     if client.ms_client.grant_type == CLIENT_CREDENTIALS or managed_identities_client_id:
         client.ms_client.get_access_token()
         return 'ok'
     else:
-        raise DemistoException('The *Test* button is not functional when using `Cortex XSOAR Azure app` or '
-                               '`self-deployed - Authorization Code Flow`, '
+        raise DemistoException('The *Test* button is not functional when using `Cortex XSOAR Azure app`, '
+                               '`self-deployed - Device Code Flow` or '
+                               ' `self-deployed - Authorization Code Flow`, '
                                'run the !msgraph-api-test command instead once all relevant parameters have been entered.')
 
 
@@ -178,7 +177,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == 'test-module':
-            result = test_module(client, app_secret, params.get('tenant_id'), managed_identities_client_id)
+            result = test_module(client, managed_identities_client_id)
             return_results(result)
         elif command == 'msgraph-api-request':
             return_results(generic_command(client, demisto.args()))
