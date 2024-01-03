@@ -89,7 +89,7 @@ script:
       description: The name of the IP group.
       type: String
   - name: fortimail-ip-group-member-add
-    description: Add an IP group member (IP/Netmask or IP range) to IP group. IP group member is an IP addresses that can be used when configuring access control rules (define the source IP group of the SMTP client attempting to send the email message) and IP-based policies (define the IP group of the SMTP source/destination to which the policy applies).
+    description: Add an IP group member (IP/Netmask or IP range) to an IP group. An IP group member is an IP address that can be used when configuring access control rules (define the source IP group of the SMTP client attempting to send the email message) and IP-based policies (define the IP group of the SMTP source/destination to which the policy applies).
     arguments:
     - name: group_name
       description: The name of the IP group. Use fortimail-ip-group-list to retrieve all the IP groups.
