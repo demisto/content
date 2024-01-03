@@ -522,6 +522,7 @@ def fetch_incidents():
 
 def run_query_command(offset, items):
     to_query = demisto.args()["query"]
+    fields_to_view = check_type(demisto.args()["fieldsToView"], list)
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
@@ -553,7 +554,10 @@ def run_query_command(offset, items):
             linq_base=linq_base,
         )
     }
-
+    
+    if fields_to_view:
+        results = filter_results_by_fields(results,fields_to_view)
+    
     entry = {
         "Type": entryTypes["note"],
         "Contents": results,
@@ -589,6 +593,42 @@ def run_query_command(offset, items):
     return [entry, entry_linq]
 
 
+def filter_results_by_fields(results, fields_to_view):
+    """
+    Filter a list of dictionaries by including only specified fields.
+
+    Parameters:
+        - results (list): A list of dictionaries representing rows of data.
+        - fields_to_view (list): A list containing field names to include.
+
+    Returns:
+        list: A new list of dictionaries with only the specified fields.
+    """
+    if not fields_to_view:
+        return results
+
+    # fields_to_view_list = fields_to_view_string.split(',')
+    
+    # Check if all fields from fields_to_view are present in the first dictionary in results
+    first_dict = results[0]
+    missing_columns = set(fields_to_view) - set(first_dict)
+    if missing_columns:
+        raise ValueError(f"column names in fieldsToView:{ missing_columns } not found in results")
+    
+    filtered_results = []
+    # Iterate over each dictionary in the 'results' list
+    for result in results:
+        # Create a new dictionary with only the specified columns
+        filtered_result = {
+            column: tuple(result.get(column, None)) if isinstance(result.get(column, None), list) else result.get(column, None)
+            for column in fields_to_view
+        }
+        # Add the new dictionary to the 'filtered_results' list
+        filtered_results.append(filtered_result)
+
+    return filtered_results
+
+
 def get_alerts_command(offset, items):
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
@@ -596,6 +636,7 @@ def get_alerts_command(offset, items):
     write_context = demisto.args()["writeToContext"].lower()
     query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
     linq_base = demisto.args().get("linqLinkBase", None)
+    fields_to_view = check_type(demisto.args()["fieldsToView"], list) 
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
     user_alert_table = user_alert_table if user_alert_table else DEFAULT_ALERT_TABLE
@@ -661,6 +702,9 @@ def get_alerts_command(offset, items):
 
         for ed in res[extra_data]:
             res[extra_data][ed] = urllib.parse.unquote_plus(res[extra_data][ed])
+    
+    if fields_to_view:
+        results = filter_results_by_fields(results,fields_to_view)
 
     entry = {
         "Type": entryTypes["note"],
@@ -674,7 +718,7 @@ def get_alerts_command(offset, items):
         "ContentsFormat": formats["json"],
         "ReadableContentsFormat": formats["markdown"],
     }
-
+    
     if len(results) == 0:
         entry["HumanReadable"] = "No results found"
         entry["Devo.AlertsResults"] = None
@@ -705,6 +749,7 @@ def multi_table_query_command(offset, items):
     search_token = demisto.args()["searchToken"]
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
+    fields_to_view = check_type(demisto.args()["fieldsToView"], list)
     write_context = demisto.args()["writeToContext"].lower()
     query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
     global COUNT_MULTI_TABLE
@@ -750,6 +795,8 @@ def multi_table_query_command(offset, items):
 
     concurrent.futures.wait(futures)
 
+    if fields_to_view:
+        filter_results_by_fields(all_results,fields_to_view)
     entry = {
         "Type": entryTypes["note"],
         "Contents": all_results,
