@@ -622,7 +622,7 @@ script:
       description: A brief comment for the IP policy.
       type: String
     - contextPath: FortiMail.IPPolicy.exclusive
-      description: Whether to take precedence over recipient based policy match.
+      description: Whether to take precedence over recipient-based policy match.
       type: Boolean
     - contextPath: FortiMail.IPPolicy.smtp_auth
       description: The authentication profile when auth_type=SMTP. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles.
