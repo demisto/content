@@ -8,11 +8,9 @@ import requests
 from google.cloud import storage  # noqa
 import argparse
 from Utils.github_workflow_scripts.utils import get_env_var
-import os
 
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
-LOCKS_BUCKET = f'{TEST_XDR_PREFIX}xsoar-ci-artifacts'
+LOCKS_BUCKET = 'xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
 MACHINES_LOCKS_REPO = 'machines_locks'
 JOB_STATUS_URL = '{}/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
