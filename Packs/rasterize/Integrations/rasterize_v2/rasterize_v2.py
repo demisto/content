@@ -44,7 +44,7 @@ CHROME_OPTIONS = ["--headless",
                   f'--user-agent="{USER_AGENT}"',
                   ]
 
-# CHROME_PID = 0
+CHROME_PROCESS = None
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 
@@ -97,11 +97,7 @@ def excepthook_recv_loop(args):
     """
     exc_value = args.exc_value
     if args.exc_type == json.decoder.JSONDecodeError:
-        # demisto.debug("Caught a JSONDecodeError exception in _recv_loop, suppressing, json.decoder.JSONDecodeError")
-        # if exc_value:
-        #     demisto.debug(f"Caught a JSONDecodeError exception in _recv_loop, suppressing, {exc_value}")
-        # else:
-        #     demisto.debug("Caught a JSONDecodeError exception in _recv_loop, suppressing, empty exc_value")
+        # Suppress
         pass
     else:
         demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}")
@@ -237,7 +233,7 @@ def is_chrome_running_locally(port):
                 demisto.debug(
                     f"Failed to connect to Chrome on port {port} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
 
-        # mild backoff
+        # Mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
 
     return None
@@ -272,7 +268,7 @@ def get_chrome_options(default_options, user_options):
     """
     demisto.debug(f"get_chrome_options, {default_options=}, {user_options=}")
     if not user_options:
-        # nothing to do
+        # Nothing to do
         return default_options.copy()
 
     user_options = re.split(r'(?<!\\),', user_options)
@@ -286,31 +282,17 @@ def get_chrome_options(default_options, user_options):
             remove_opts.append(opt[1:-1])
         else:
             options.append(opt.replace(r'\,', ','))
-    # remove values (such as in user-agent)
+    # Remove values (such as in user-agent)
     option_names = [opt_name(x) for x in options]
-    # add filtered defaults only if not in removed and we don't have it already
+    # Add filtered defaults only if not in removed and we don't have it already
     options.extend([x for x in default_options if (opt_name(x) not in remove_opts and opt_name(x) not in option_names)])
     return options
 
 
 def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""):
+    global CHROME_PROCESS
     try:
         logfile = open("/var/chrome_headless.log", 'ab')
-        # process = subprocess.Popen([chrome_binary,
-        #                           "--headless",
-        #                           "--disable-gpu",
-        #                           "--no-sandbox",
-        #                           "--hide-scrollbars",
-        #                           "--disable-infobars",
-        #                           "--start-maximized",
-        #                           "--start-fullscreen",
-        #                           "--ignore-certificate-errors",
-        #                           "--disable-dev-shm-usage",
-        #                           f'--user-agent="{USER_AGENT}"',
-        #                           user_options,
-        #                           f"--remote-debugging-port={chrome_port}",
-        #                          ],
-        #                          stdout=logfile, stderr=subprocess.STDOUT)
 
         default_chrome_options = CHROME_OPTIONS
         default_chrome_options.append(f"--remote-debugging-port={chrome_port}")
@@ -323,6 +305,7 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
         demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
 
         if process:
+            CHROME_PROCESS = process
             demisto.debug(f'New Chrome session active on Port {chrome_port}')
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
@@ -339,15 +322,17 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
 
 
 def terminate_chrome(browser):
+    global CHROME_PROCESS
+
     tab = browser.new_tab()
     tab.start()
-    # try:
     tab.Browser.close()
-    # TODO Kill
-    # CHROME_PID
+
     os.remove(PORT_FILE_PATH)
-    # except Exception as e:
-    #     demisto.info(f"Exception when closing browser, {type(e)}, {e}")
+
+    if CHROME_PROCESS:
+        CHROME_PROCESS.kill()
+        CHROME_PROCESS = None
 
 
 def ensure_chrome_running():  # pragma: no cover
@@ -478,7 +463,6 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
 
     # Page URL, if needed
     if include_url:
-        # captured_image_object = Image(captured_image)
         captured_image_object = Image.open(BytesIO(captured_image))
         image_with_url = Image.new(captured_image_object.mode, (css_content_size['width'], css_content_size['height'] + 20))
         image_with_url.paste(captured_image_object, (0, 20))
@@ -594,7 +578,7 @@ def rasterize(path: str,
                 if not (current_path.startswith('http')):
                     current_path = f'http://{current_path}'
 
-                # start a new thread in group of max_tabs
+                # Start a new thread in group of max_tabs
                 rasterization_threads.append(
                     executor.submit(
                         rasterize_thread, browser=browser, chrome_port=chrome_port, path=current_path,
@@ -764,14 +748,14 @@ def rasterize_html_command():
 
 
 def module_test():  # pragma: no cover
-    # setting up a mock email file
+    # Setting up a mock email file
     with tempfile.NamedTemporaryFile('w+') as test_file:
         test_file.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                         '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         test_file.flush()
         file_path = f'file://{os.path.realpath(test_file.name)}'
 
-        # rasterizing the file
+        # Rasterize the file
         rasterize(path=file_path)
 
     demisto.results('ok')
