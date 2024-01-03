@@ -369,7 +369,8 @@ def test_fetch__last_run_not_none(mocker):
         client=client,
         last_run='2023-09-20T03:44:55Z',
         fetch_time='3 days',
-        limit='2'
+        limit='2',
+        subcategories=[]
     )
 
     assert last_run == {'lastRun': '2023-09-20T03:44:55Z'}
@@ -453,7 +454,8 @@ def test_get_incidents_with_offset(mocker):
         client=client,
         last_run='2023-09-20T03:44:55Z',
         fetch_time='3 days',
-        limit='4'
+        limit='4',
+        subcategories=[]
     )
 
     assert len(incident_report) == 4
@@ -477,9 +479,9 @@ def test_get_incidents_with_subcategory(mocker):
 
         for i in range(total_res):
             if i < total_res / 2:
-                incidents.append({'id': i, 'created': 'test', 'details': {'subClassification': "No Threat Detected"}})
+                incidents.append({'id': i, 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}})
             else:
-                incidents.append({'id': i, 'created': 'test2', 'details': {'subClassification': "Test"}})
+                incidents.append({'id': i, 'created': '2023-09-20T03:45:55Z', 'details': {'subClassification': "Test"}})
 
         return {'metadata': {'count': total_res - offset}, 'incidents': incidents}
 
@@ -499,4 +501,4 @@ def test_get_incidents_with_subcategory(mocker):
     )
 
     assert len(incident_report) == 2
-    assert new_last_run.get('lastRun') == 'test2'
+    assert new_last_run.get('lastRun') == '2023-09-20T03:45:55Z'
