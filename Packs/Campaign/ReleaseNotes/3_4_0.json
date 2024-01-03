@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### Incident Fields\n\n**Actions On Campaign Incidents**\n\nReplaced the 'Link' button with the 'Add to campaign' button.\nReplaced the 'Unlink' button with the 'Remove from Campaign' button.\nReplaced the 'Link & Close' button with the 'Add To Campaign & Close' button."
+}
