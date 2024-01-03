@@ -304,7 +304,7 @@ script:
       description: The value of the item in the list.
       type: String
     - contextPath: FortiMail.SystemList.list_type
-      description: The type of the list (whitelist or blocklist).
+      description: The type of the list (safelist or blocklist).
       type: String
   - name: fortimail-system-safe-block-add
     description: Add an email address/ domain name/ IP address to the system white/ block list. Block/Safe List lets you reject, discard, or allow email messages based on email addresses, domain names, and IP addresses. As one of the first steps to detect spam, FortiMail units evaluate whether an email message matches a block list or safe list entry. Choose the wanted list by the type argument.
