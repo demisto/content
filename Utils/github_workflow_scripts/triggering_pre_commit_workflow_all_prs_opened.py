@@ -91,7 +91,7 @@ def trigger_workflow_for_pr(
 
 
 def get_last_job_id_pre_commit(repo_owner, repo_name, run_id, access_token):
-    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/runs/{run_id}/jobs"
+    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/runs"
 
     headers = (
         {
@@ -100,14 +100,17 @@ def get_last_job_id_pre_commit(repo_owner, repo_name, run_id, access_token):
         }
     )
     params = {
-        "per_page": 100,
-        "page": 3,
+        "event": "pull_request",
     }
 
     response = requests.get(api_url, headers=headers, params=params)
     print(type(response))
     print(response.status_code)
-    print(response.json())
+    result = response.json()
+    print(result["total_count"])
+    for workflow in result["workflow_runs"]:
+        print(workflow)
+    
 
 def arguments_handler():
     """Validates and parses script arguments.
