@@ -1,4 +1,4 @@
-V The "Remote PsExec-like LOLBIN Command Execution" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. 
+The "Remote PsExec-like LOLBIN Command Execution" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. 
 The playbook aims to efficiently:
 
 - Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).
