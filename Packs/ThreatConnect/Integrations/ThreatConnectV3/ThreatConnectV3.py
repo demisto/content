@@ -618,7 +618,7 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
     })
 
 
-def set_additional_data(labels: list, mode: str = '') -> Dict[str: Any]:
+def set_additional_data(labels: list, mode: str = '') -> dict:
     """
     Sets the security labels and tags in the API structure
     Args:
@@ -629,7 +629,7 @@ def set_additional_data(labels: list, mode: str = '') -> Dict[str: Any]:
     """
     data = {'data': [{'name': label} for label in labels]}
     if mode:
-        data['mode'] = mode
+        data['mode'] = mode  # type: ignore
     return data
 
 
