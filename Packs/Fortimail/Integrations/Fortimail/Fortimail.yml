@@ -1150,7 +1150,7 @@ script:
       - before
       - after
   - name: fortimail-access-control-list
-    description: List access control rules. If a id is given, the command will return the information about the wanted access control rule.
+    description: List access control rules. If an ID is given, the command will return the information about the specific access control rule.
     arguments:
     - name: access_control_id
       description: The ID of the IP policy to retrieve.
