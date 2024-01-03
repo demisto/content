@@ -2176,7 +2176,7 @@ script:
       description: Number of referencing entities.
       type: Number
   - name: fortimail-pki-user-list
-    description: List PKI users. PKI users can authenticate by presenting a valid client certificate, rather than by entering a username and password. If an name is given, the command will return the information about the wanted PKI user. Mainly used in the configuration of recipient policy.
+    description: List PKI users. PKI users can authenticate by presenting a valid client certificate, rather than by entering a username and password. If a name is given, the command will return the information about the specified PKI user. Mainly used in the configuration of recipient policy.
     arguments:
     - name: name
       description: The name of the PKI user.
