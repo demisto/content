@@ -78,7 +78,14 @@ EVENT_NODE_ROLE: dict[str, str] = {
     "5": "All in One",
 }
 
-EVENT_SEVERITY_MAPPING = {"1": 0.5, "2": 1, "3": 2, "4": 3, "5": 4, "6": 4}
+EVENT_SEVERITY_MAPPING = {
+    "1": IncidentSeverity.INFO,
+    "2": IncidentSeverity.LOW,
+    "3": IncidentSeverity.MEDIUM,
+    "4": IncidentSeverity.HIGH,
+    "5": IncidentSeverity.CRITICAL,
+    "6": IncidentSeverity.CRITICAL
+}
 
 EVENT_TYPE: dict[str, str] = {
     "1": "Application Activity",
