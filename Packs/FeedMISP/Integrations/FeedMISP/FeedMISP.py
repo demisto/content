@@ -166,6 +166,7 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
     except KeyError as err:
         demisto.debug(str(err))
         raise KeyError(f'Could not parse returned data as attributes list. \nError massage: {err}')
+    demisto.debug(f' Number of indicators: {len(indicators_iterator)}')
     return indicators_iterator
 
 
@@ -318,6 +319,7 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
     Returns: Sorted list of new indicators
     """
     last_run = demisto.getLastRun()
+    demisto.debug(f"last_run: {last_run}")
     indicators_iterator.sort(key=lambda indicator: indicator['value']['timestamp'])
 
     if last_run is None:
@@ -335,6 +337,18 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
     return []
 
 
+def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]:
+    params_dict['page'] = 1
+    response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
+    search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
+    while len(search_query_per_page):
+        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators: {len(search_query_per_page)}')
+        response['response']['Attribute'].extend(search_query_per_page)
+        params_dict['page'] += 1
+        search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
+    return response
+
+
 def fetch_indicators(client: Client,
                      tags: List[str],
                      attribute_type: List[str],
@@ -346,11 +360,11 @@ def fetch_indicators(client: Client,
                      limit: int = -1,
                      is_fetch: bool = True) -> List[Dict]:
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
-
     if limit and limit not in params_dict:
         params_dict['limit'] = limit
-
-    response = client.search_query(params_dict)
+    response = search_query_indicators_pagination(client, params_dict) if is_fetch else client.search_query(params_dict)
+    if error_message := response.get('Error'):
+        raise DemistoException(error_message)
     indicators_iterator = build_indicators_iterator(response, url)
     added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, is_fetch)
     indicators = []
@@ -380,7 +394,6 @@ def fetch_indicators(client: Client,
         create_and_add_relationships(indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)
-
     return indicators
 
 
@@ -524,10 +537,8 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     feed_tags = argToList(params.get("feedTags", []))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
-
     indicators = fetch_indicators(client, tags, attribute_type,
                                   query, tlp_color, params.get('url'), reputation, feed_tags, limit, False)
-
     hr_indicators = []
     for indicator in indicators:
         hr_indicators.append({
@@ -561,7 +572,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-
     indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color,
                                   params.get('url'), reputation, feed_tags)
     return indicators

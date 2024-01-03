@@ -6739,7 +6739,7 @@ class TestIndicatorsSearcher:
             if searchAfter in search_after_options:
                 search_after_value = searchAfter + 1
             else:
-                return {'searchAfter': None, 'iocs': []}
+                return {'searchAfter': None, 'iocs': [], "total": 0}
         iocs = [{'value': 'mock{}'.format(search_after_value)}]
         return {'searchAfter': search_after_value, 'iocs': iocs, 'total': 4}
 
