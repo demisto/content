@@ -323,7 +323,7 @@ def oauth_complete(client: Client, args: dict) -> CommandResults:
         readable_output='### Logged in successfully.\n'
                         'A refresh token was saved to the integration context. This token will be used to '
                         'generate a new access token once the current one expires.\n'
-                        'In order to complete the test process please run the `!cisco-oauth-test` command.'
+                        'In order to complete the test process please run the `!cisco-webex-oauth-test` command.'
     )
 
 
