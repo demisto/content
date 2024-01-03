@@ -8,24 +8,24 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def has_file_changed(
-    repo_owner: str = "",
-    repo_name: str = "content",
-    files: list[Path] = [],
-    branch: str = "master",
-    access_token: str | None = None,
-):
-    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits/{branch}"
+# def has_file_changed(
+#     repo_owner: str = "",
+#     repo_name: str = "content",
+#     files,
+#     branch: str = "master",
+#     access_token
+# ):
+#     api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits/{branch}"
 
-    headers = {"Authorization": f"token {access_token}"} if access_token else {}
+#     headers = {"Authorization": f"token {access_token}"} if access_token else {}
 
-    response = requests.get(api_url, headers=headers)
-    response.raise_for_status()
+#     response = requests.get(api_url, headers=headers)
+#     response.raise_for_status()
 
-    commit_details = response.json()
+#     commit_details = response.json()
 
-    files_changed = commit_details.get("files", [])
-    return any(file["filename"] in files for file in files_changed)
+#     files_changed = commit_details.get("files", [])
+#     return any(file["filename"] in files for file in files_changed)
 
 
 def get_open_pull_requests(repo_owner, repo_name, access_token=None):
