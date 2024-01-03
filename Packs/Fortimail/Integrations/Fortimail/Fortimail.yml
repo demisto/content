@@ -66,7 +66,7 @@ script:
       required: true
       default: true
   - name: fortimail-ip-group-list
-    description: List IP groups. if a name is given, the command will return the information about the wanted IP group.
+    description: List IP groups. If a name is given, the command will return the information about the specified IP group.
     arguments:
     - name: name
       description: The name of the IP group to retrieve.
