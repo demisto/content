@@ -109,6 +109,12 @@ def http_request(method: str, url: str, params_dict=None, data=None, json_data=N
 
         return unicode_to_str_recur(res.json())
 
+    except HTTPError as http_error:
+        if hasattr(http_error, 'response') and hasattr(http_error.response, 'content'):
+            exp_message = f"Error in API request {str(http_error.response.content)}"
+        else:
+            exp_message = f"Error in API request {str(http_error)}"
+        raise Exception(exp_message) from http_error
     except Exception as e:
         demisto.debug(str(e))
         raise
@@ -928,11 +934,6 @@ def main():
             return_results(run_response_play(**args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-    except HTTPError as http_error:
-        if hasattr(http_error, 'response') and hasattr(http_error.response, 'content'):
-            return_error(f"Error in API request {str(http_error.response.content)}")
-        else:
-            return_error(f"Error in API request {str(http_error)}")
     except Exception as err:
         return_error(str(err))
 
