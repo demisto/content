@@ -1993,7 +1993,7 @@ script:
       description: The SMTP greeting name.
       type: Number
     - contextPath: FortiMail.IPPool.comment
-      description: A brief comment for the anti spam profile.
+      description: A brief comment for the anti-spam profile.
       type: String
     - contextPath: FortiMail.IPPool.is_certificate_expired
       description: Whether the certificate expired.
