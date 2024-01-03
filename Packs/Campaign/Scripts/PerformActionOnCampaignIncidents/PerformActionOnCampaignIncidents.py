@@ -93,7 +93,7 @@ def _set_incidents_to_campaign(campaign_id: str, incidents_context: list | dict,
     Args:
         campaign_id (str): The ID of the campaign incident. Required.
         incidents_context (list or dict): The incidents context to add. Required.
-        append (bool): Whether to append the incidents to existing ones 
+        append (bool): Whether to append the incidents to existing ones
             or override. Default is False. Optional.
     """
     res = demisto.executeCommand(
@@ -172,7 +172,7 @@ def extract_single_or_list(data) -> Any:
         data (list): The list to extract from or return directly. Required.
 
     Returns:
-        str | list: A single item if there was only one in the list, otherwise 
+        str | list: A single item if there was only one in the list, otherwise
             the original list.
 
     """
@@ -260,7 +260,7 @@ def _parse_incident_context_to_valid_incident_campaign_context(incident_id: str,
 
     Args:
         incident_id (str): The ID of the incident to get context for.
-        fields_to_display (List[str]): The fields from the incident context to include in 
+        fields_to_display (List[str]): The fields from the incident context to include in
             the returned dict.
 
     Returns:
@@ -339,7 +339,7 @@ def perform_add_to_campaign(ids: list[str], action: str) -> str:
         2. Get the existing campaign incident IDs
         3. Calculate new count of involved incidents
         4. Filter new incidents to add
-        5. Parse incident contexts 
+        5. Parse incident contexts
         6. Update campaign metadata
         7. Update links between incidents
         8. Return success message
@@ -371,7 +371,7 @@ def perform_remove_from_campaign(ids: list[str], action: str) -> str:
 
     Args:
         ids (list[str]): The IDs of the incidents to remove. Required.
-        action (str): The action that was performed to trigger this, e.g. "unlink". 
+        action (str): The action that was performed to trigger this, e.g. "unlink".
             Required.
 
     Returns:
