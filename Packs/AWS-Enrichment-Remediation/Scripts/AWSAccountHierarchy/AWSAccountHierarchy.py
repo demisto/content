@@ -72,22 +72,21 @@ def aws_account_heirarchy(args: Dict[str, Any]) -> CommandResults:
 
     if not account_id:
         raise ValueError('account_id not specified')
-    match = False
+    # Using `demisto.executeCommand` instead of `execute_command` because for multiple integration instances we can expect one too error out.
     account_info = demisto.executeCommand("aws-org-account-list", {"account_id": account_id})
-    for account in account_info:
-        if not isError(account) and account.get('Contents').get('Arn'):
-            match = True
-            match_account = account.get('Contents')
-            instance_to_use = account['Metadata']['instance']
-    if not match:
+    account_returned = [account for account in account_info if (not isError(account) and account.get('Contents').get('Arn'))]
+    if not account_returned:
         return CommandResults(readable_output = "could not find specified account info")
+    else:
+        match_account = account_returned[0].get('Contents')
+        instance_to_use = account_returned[0]['Metadata']['instance']
     level = 1
     hierarchy = [{"level": "account", "id": match_account.get(
         'Id', ''), "name": match_account.get('Name', ''), "arn": match_account.get('Arn', '')}]
-    account_parent = execute_command("aws-org-parent-list", {"child_id": account_id, "using": instance_to_use})
-    if not account_parent:
+    account_parent = demisto.executeCommand("aws-org-parent-list", {"child_id": account_id, "using": instance_to_use})
+    if isError(account_parent):
         return CommandResults(readable_output =  "could not find specified account parent")
-    next_one, to_append = lookup(account_parent[0].get('Id', ''), level, instance_to_use)
+    next_one, to_append = lookup(account_parent[0].get('Contents', {}).get('Id', ''), level, instance_to_use)
     if next_one == "NONE":
         return CommandResults(readable_output = "could not find specified ou/root info")
     hierarchy.append(to_append)
