@@ -367,7 +367,7 @@ script:
       - IP/Netmask
       - IP Group
     - name: action
-      description: 'An action for the policy. Proxy-bypass: Bypass the FortiMail unit’s scanning. This action is for transparent mode only.Scan: Accept the connection and perform any scans configured in the profiles selected in this policy.Reject: Reject the email and respond to the SMTP client with SMTP reply code 550, indicating a permanent failure.Fail Temporarily: Reject the email and respond to the SMTP client with SMTP reply code 451, indicating and indicate a temporary failure.'
+      description: 'An action for the policy. Proxy-bypass: Bypass the FortiMail unit’s scanning. This action is for transparent mode only.Scan: Accept the connection and perform any scans configured in the profiles selected in this policy. Reject: Reject the email and respond to the SMTP client with SMTP reply code 550, indicating a permanent failure. Fail Temporarily: Reject the email and respond to the SMTP client with SMTP reply code 451, indicating a temporary failure.'
       defaultValue: Scan
       auto: PREDEFINED
       predefined:
