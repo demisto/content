@@ -196,7 +196,7 @@ script:
       description: Date the employee submitted their resignation.
       type: String
     - contextPath: Workday.Worker.Has_International_Assignment
-      description: Indicates whether the worker has internaitonal assignment
+      description: Indicates whether the worker has internaitonal assignment.
       type: String
     - contextPath: Workday.Worker.Home_Country_Reference
       description: Contains the home country for worker's primary job (ISO_3166-1_Alpha-2_Code).
@@ -259,7 +259,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.83255
 fromversion: 5.0.0
 tests:
 - Workday - Test
