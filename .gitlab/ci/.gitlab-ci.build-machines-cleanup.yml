@@ -78,6 +78,8 @@ fan-in-build-machines-cleanup:
     - echo "fan in"
 
 slack-notify-build-machines-cleanup:
+  rules:
+    - if: '$NIGHTLY'
   extends:
     - .trigger-slack-notification
     - .build-machines-cleanup-rule-always
