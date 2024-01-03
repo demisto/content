@@ -1742,7 +1742,7 @@ script:
       description: The name of the resource profile that you want to apply to connections matching the policy. Use fortimail-resource-profile to retrieve all the resources.
       type: String
     - contextPath: FortiMail.RecipientPolicy.antivirus
-      description: The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles.
+      description: The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles.
       type: String
     - contextPath: FortiMail.RecipientPolicy.misc
       description: The type of the authentication profile that this policy apply.
