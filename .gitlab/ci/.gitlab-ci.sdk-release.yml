@@ -17,8 +17,8 @@ trigger-nightlies:
     - git clone https://github.com/demisto/demisto-sdk.git /demisto-sdk
     - cd /demisto-sdk
     - git pull
-    - git checkout -b $_release_branch
-    - git push origin $_release_branch
+    - git checkout -b $RELEASE_VERSION
+    - git push origin $RELEASE_VERSION
     - echo "test"
 #    - python3 ./Tests/sdk_release/trigger_nightlies.py
 #    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
