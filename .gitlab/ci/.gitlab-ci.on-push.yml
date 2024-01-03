@@ -630,7 +630,7 @@ xsiam_server_ga:
       variables:
         CLOUD_MACHINES_TYPE: "testing"
         CLOUD_MACHINES_COUNT: 1
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
   timeout: 12 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
