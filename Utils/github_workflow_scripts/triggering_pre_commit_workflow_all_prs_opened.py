@@ -89,6 +89,22 @@ def trigger_workflow_for_pr(
     return response.json()
 
 
+
+def get_last_job_id_pre_commit(repo_owner, repo_name, run_id, access_token):
+    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/runs/{run_id}/jobs"
+
+    headers = (
+        {
+            "Accept": "application/vnd.github.v3+json",
+            "Authorization": f"Bearer {access_token}",
+        }
+    )
+
+    response = requests.get(api_url, headers=headers)
+    print(type(response))
+    print(response.status_code)
+    print(response.json())
+
 def arguments_handler():
     """Validates and parses script arguments.
 
@@ -110,11 +126,18 @@ def arguments_handler():
 def main():
     options = arguments_handler()
     print(f"aaaaaaaaaaaaaaaaaaaa0000000{options.github_token}")
-    trigger_workflow_for_pr(
+    # trigger_workflow_for_pr(
+    #     "demisto",
+    #     "content",
+    #     "pre-commit.yml",
+    #     "workflow_trigger_when_infrastructure_are_changed",
+    #     options.github_token,
+    # )
+    run_id = "7401864719"
+    get_last_job_id_pre_commit(
         "demisto",
         "content",
-        "pre-commit.yml",
-        "workflow_trigger_when_infrastructure_are_changed",
+        run_id,
         options.github_token,
     )
 
