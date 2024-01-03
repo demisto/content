@@ -2997,232 +2997,233 @@ def main():
         command = demisto.command()
         args = demisto.args()
 
-        LOG(f'Command being called is {command}')
+        demisto.debug(f'Command being called is {command}')
 
-        if command == 'test-module':
-            return_results(test_module())
+        match command:
+            case 'test-module':
+                return_results(test_module())
 
-        elif command == 'aws-ec2-describe-regions':
-            return_results(describe_regions_command(args))
+            case  'aws-ec2-describe-regions':
+                return_results(describe_regions_command(args))
 
-        elif command == 'aws-ec2-describe-instances':
-            return_results(describe_instances_command(args))
+            case  'aws-ec2-describe-instances':
+                return_results(describe_instances_command(args))
 
-        elif command == 'aws-ec2-describe-iam-instance-profile-associations':
-            return_results(describe_iam_instance_profile_associations_command(args))
+            case  'aws-ec2-describe-iam-instance-profile-associations':
+                return_results(describe_iam_instance_profile_associations_command(args))
 
-        elif command == 'aws-ec2-describe-images':
-            return_results(describe_images_command(args))
+            case  'aws-ec2-describe-images':
+                return_results(describe_images_command(args))
 
-        elif command == 'aws-ec2-describe-addresses':
-            return_results(describe_addresses_command(args))
+            case  'aws-ec2-describe-addresses':
+                return_results(describe_addresses_command(args))
 
-        elif command == 'aws-ec2-describe-snapshots':
-            return_results(describe_snapshots_command(args))
+            case  'aws-ec2-describe-snapshots':
+                return_results(describe_snapshots_command(args))
 
-        elif command == 'aws-ec2-describe-volumes':
-            return_results(describe_volumes_command(args))
+            case  'aws-ec2-describe-volumes':
+                return_results(describe_volumes_command(args))
 
-        elif command == 'aws-ec2-describe-launch-templates':
-            return_results(describe_launch_templates_command(args))
+            case  'aws-ec2-describe-launch-templates':
+                return_results(describe_launch_templates_command(args))
 
-        elif command == 'aws-ec2-describe-key-pairs':
-            return_results(describe_key_pairs_command(args))
+            case  'aws-ec2-describe-key-pairs':
+                return_results(describe_key_pairs_command(args))
 
-        elif command == 'aws-ec2-describe-vpcs':
-            return_results(describe_vpcs_command(args))
+            case  'aws-ec2-describe-vpcs':
+                return_results(describe_vpcs_command(args))
 
-        elif command == 'aws-ec2-describe-subnets':
-            return_results(describe_subnets_command(args))
+            case  'aws-ec2-describe-subnets':
+                return_results(describe_subnets_command(args))
 
-        elif command == 'aws-ec2-describe-security-groups':
-            return_results(describe_security_groups_command(args))
+            case  'aws-ec2-describe-security-groups':
+                return_results(describe_security_groups_command(args))
 
-        elif command == 'aws-ec2-allocate-address':
-            return_results(allocate_address_command(args))
+            case  'aws-ec2-allocate-address':
+                return_results(allocate_address_command(args))
 
-        elif command == 'aws-ec2-associate-address':
-            return_results(associate_address_command(args))
+            case  'aws-ec2-associate-address':
+                return_results(associate_address_command(args))
 
-        elif command == 'aws-ec2-create-snapshot':
-            return_results(create_snapshot_command(args))
+            case  'aws-ec2-create-snapshot':
+                return_results(create_snapshot_command(args))
 
-        elif command == 'aws-ec2-delete-snapshot':
-            return_results(delete_snapshot_command(args))
+            case  'aws-ec2-delete-snapshot':
+                return_results(delete_snapshot_command(args))
 
-        elif command == 'aws-ec2-create-image':
-            return_results(create_image_command(args))
+            case  'aws-ec2-create-image':
+                return_results(create_image_command(args))
 
-        elif command == 'aws-ec2-deregister-image':
-            return_results(deregister_image_command(args))
+            case  'aws-ec2-deregister-image':
+                return_results(deregister_image_command(args))
 
-        elif command == 'aws-ec2-modify-volume':
-            return_results(modify_volume_command(args))
+            case  'aws-ec2-modify-volume':
+                return_results(modify_volume_command(args))
 
-        elif command == 'aws-ec2-create-tags':
-            return_results(create_tags_command(args))
+            case  'aws-ec2-create-tags':
+                return_results(create_tags_command(args))
 
-        elif command == 'aws-ec2-disassociate-address':
-            return_results(disassociate_address_command(args))
+            case  'aws-ec2-disassociate-address':
+                return_results(disassociate_address_command(args))
 
-        elif command == 'aws-ec2-release-address':
-            return_results(release_address_command(args))
+            case  'aws-ec2-release-address':
+                return_results(release_address_command(args))
 
-        elif command == 'aws-ec2-start-instances':
-            return_results(start_instances_command(args))
+            case  'aws-ec2-start-instances':
+                return_results(start_instances_command(args))
 
-        elif command == 'aws-ec2-stop-instances':
-            return_results(stop_instances_command(args))
+            case  'aws-ec2-stop-instances':
+                return_results(stop_instances_command(args))
 
-        elif command == 'aws-ec2-terminate-instances':
-            return_results(terminate_instances_command(args))
+            case  'aws-ec2-terminate-instances':
+                return_results(terminate_instances_command(args))
 
-        elif command == 'aws-ec2-create-volume':
-            return_results(create_volume_command(args))
+            case  'aws-ec2-create-volume':
+                return_results(create_volume_command(args))
 
-        elif command == 'aws-ec2-attach-volume':
-            return_results(attach_volume_command(args))
+            case  'aws-ec2-attach-volume':
+                return_results(attach_volume_command(args))
 
-        elif command == 'aws-ec2-detach-volume':
-            return_results(detach_volume_command(args))
+            case  'aws-ec2-detach-volume':
+                return_results(detach_volume_command(args))
 
-        elif command == 'aws-ec2-delete-volume':
-            return_results(delete_volume_command(args))
+            case  'aws-ec2-delete-volume':
+                return_results(delete_volume_command(args))
 
-        elif command == 'aws-ec2-run-instances':
-            return_results(run_instances_command(args))
+            case  'aws-ec2-run-instances':
+                return_results(run_instances_command(args))
 
-        elif command == 'aws-ec2-waiter-instance-running':
-            return_results(waiter_instance_running_command(args))
+            case  'aws-ec2-waiter-instance-running':
+                return_results(waiter_instance_running_command(args))
 
-        elif command == 'aws-ec2-waiter-instance-status-ok':
-            return_results(waiter_instance_status_ok_command(args))
+            case  'aws-ec2-waiter-instance-status-ok':
+                return_results(waiter_instance_status_ok_command(args))
 
-        elif command == 'aws-ec2-waiter-instance-stopped':
-            return_results(waiter_instance_stopped_command(args))
+            case  'aws-ec2-waiter-instance-stopped':
+                return_results(waiter_instance_stopped_command(args))
 
-        elif command == 'aws-ec2-waiter-instance-terminated':
-            return_results(waiter_instance_terminated_command(args))
+            case  'aws-ec2-waiter-instance-terminated':
+                return_results(waiter_instance_terminated_command(args))
 
-        elif command == 'aws-ec2-waiter-image-available':
-            return_results(waiter_image_available_command(args))
+            case  'aws-ec2-waiter-image-available':
+                return_results(waiter_image_available_command(args))
 
-        elif command == 'aws-ec2-waiter-snapshot_completed':
-            return_results(waiter_snapshot_completed_command(args))
+            case  'aws-ec2-waiter-snapshot_completed':
+                return_results(waiter_snapshot_completed_command(args))
 
-        elif command == 'aws-ec2-get-latest-ami':
-            return_results(get_latest_ami_command(args))
+            case  'aws-ec2-get-latest-ami':
+                return_results(get_latest_ami_command(args))
 
-        elif command == 'aws-ec2-create-security-group':
-            return_results(create_security_group_command(args))
+            case  'aws-ec2-create-security-group':
+                return_results(create_security_group_command(args))
 
-        elif command == 'aws-ec2-delete-security-group':
-            return_results(delete_security_group_command(args))
+            case  'aws-ec2-delete-security-group':
+                return_results(delete_security_group_command(args))
 
-        elif command == 'aws-ec2-authorize-security-group-ingress-rule':
-            return_results(authorize_security_group_ingress_command(args))
+            case  'aws-ec2-authorize-security-group-ingress-rule':
+                return_results(authorize_security_group_ingress_command(args))
 
-        elif command == 'aws-ec2-authorize-security-group-egress-rule':
-            return_results(authorize_security_group_egress_command(args))
+            case  'aws-ec2-authorize-security-group-egress-rule':
+                return_results(authorize_security_group_egress_command(args))
 
-        elif command == 'aws-ec2-revoke-security-group-ingress-rule':
-            return_results(revoke_security_group_ingress_command(args))
+            case  'aws-ec2-revoke-security-group-ingress-rule':
+                return_results(revoke_security_group_ingress_command(args))
 
-        elif command == 'aws-ec2-revoke-security-group-egress-rule':
-            return_results(revoke_security_group_egress_command(args))
+            case  'aws-ec2-revoke-security-group-egress-rule':
+                return_results(revoke_security_group_egress_command(args))
 
-        elif command == 'aws-ec2-copy-image':
-            return_results(copy_image_command(args))
+            case  'aws-ec2-copy-image':
+                return_results(copy_image_command(args))
 
-        elif command == 'aws-ec2-copy-snapshot':
-            return_results(copy_snapshot_command(args))
+            case  'aws-ec2-copy-snapshot':
+                return_results(copy_snapshot_command(args))
 
-        elif command == 'aws-ec2-describe-reserved-instances':
-            return_results(describe_reserved_instances_command(args))
+            case  'aws-ec2-describe-reserved-instances':
+                return_results(describe_reserved_instances_command(args))
 
-        elif command == 'aws-ec2-monitor-instances':
-            return_results(monitor_instances_command(args))
+            case  'aws-ec2-monitor-instances':
+                return_results(monitor_instances_command(args))
 
-        elif command == 'aws-ec2-unmonitor-instances':
-            return_results(unmonitor_instances_command(args))
+            case  'aws-ec2-unmonitor-instances':
+                return_results(unmonitor_instances_command(args))
 
-        elif command == 'aws-ec2-reboot-instances':
-            return_results(reboot_instances_command(args))
+            case  'aws-ec2-reboot-instances':
+                return_results(reboot_instances_command(args))
 
-        elif command == 'aws-ec2-get-password-data':
-            return_results(get_password_data_command(args))
+            case  'aws-ec2-get-password-data':
+                return_results(get_password_data_command(args))
 
-        elif command == 'aws-ec2-modify-network-interface-attribute':
-            return_results(modify_network_interface_attribute_command(args))
+            case  'aws-ec2-modify-network-interface-attribute':
+                return_results(modify_network_interface_attribute_command(args))
 
-        elif command == 'aws-ec2-create-network-acl':
-            return_results(create_network_acl_command(args))
+            case  'aws-ec2-create-network-acl':
+                return_results(create_network_acl_command(args))
 
-        elif command == 'aws-ec2-create-network-acl-entry':
-            return_results(create_network_acl_entry_command(args))
+            case  'aws-ec2-create-network-acl-entry':
+                return_results(create_network_acl_entry_command(args))
 
-        elif command == 'aws-ec2-create-fleet':
-            return_results(create_fleet_command(args))
+            case  'aws-ec2-create-fleet':
+                return_results(create_fleet_command(args))
 
-        elif command == 'aws-ec2-delete-fleet':
-            return_results(delete_fleet_command(args))
+            case  'aws-ec2-delete-fleet':
+                return_results(delete_fleet_command(args))
 
-        elif command == 'aws-ec2-describe-fleets':
-            return_results(describe_fleets_command(args))
+            case  'aws-ec2-describe-fleets':
+                return_results(describe_fleets_command(args))
 
-        elif command == 'aws-ec2-describe-fleet-instances':
-            return_results(describe_fleet_instances_command(args))
+            case  'aws-ec2-describe-fleet-instances':
+                return_results(describe_fleet_instances_command(args))
 
-        elif command == 'aws-ec2-modify-fleet':
-            return_results(modify_fleet_command(args))
+            case  'aws-ec2-modify-fleet':
+                return_results(modify_fleet_command(args))
 
-        elif command == 'aws-ec2-create-launch-template':
-            return_results(create_launch_template_command(args))
+            case  'aws-ec2-create-launch-template':
+                return_results(create_launch_template_command(args))
 
-        elif command == 'aws-ec2-delete-launch-template':
-            return_results(delete_launch_template_command(args))
+            case  'aws-ec2-delete-launch-template':
+                return_results(delete_launch_template_command(args))
 
-        elif command == 'aws-ec2-modify-image-attribute':
-            return_results(modify_image_attribute_command(args))
+            case  'aws-ec2-modify-image-attribute':
+                return_results(modify_image_attribute_command(args))
 
-        elif command == 'aws-ec2-modify-instance-attribute':
-            return_results(modify_instance_attribute_command(args))
+            case  'aws-ec2-modify-instance-attribute':
+                return_results(modify_instance_attribute_command(args))
 
-        elif command == 'aws-ec2-detach-internet-gateway':
-            return_results(detach_internet_gateway_command(args))
+            case  'aws-ec2-detach-internet-gateway':
+                return_results(detach_internet_gateway_command(args))
 
-        elif command == 'aws-ec2-delete-internet-gateway':
-            return_results(delete_internet_gateway_command(args))
+            case  'aws-ec2-delete-internet-gateway':
+                return_results(delete_internet_gateway_command(args))
 
-        elif command == 'aws-ec2-describe-internet-gateway':
-            return_results(describe_internet_gateway_command(args))
+            case  'aws-ec2-describe-internet-gateway':
+                return_results(describe_internet_gateway_command(args))
 
-        elif command == 'aws-ec2-delete-subnet':
-            return_results(delete_subnet_command(args))
+            case  'aws-ec2-delete-subnet':
+                return_results(delete_subnet_command(args))
 
-        elif command == 'aws-ec2-delete-vpc':
-            return_results(delete_vpc_command(args))
+            case  'aws-ec2-delete-vpc':
+                return_results(delete_vpc_command(args))
 
-        elif command == 'aws-ec2-create-traffic-mirror-session':
-            return_results(create_traffic_mirror_session_command(args))
+            case  'aws-ec2-create-traffic-mirror-session':
+                return_results(create_traffic_mirror_session_command(args))
 
-        elif command == 'aws-ec2-allocate-hosts':
-            return_results(allocate_hosts_command(args))
+            case  'aws-ec2-allocate-hosts':
+                return_results(allocate_hosts_command(args))
 
-        elif command == 'aws-ec2-release-hosts':
-            return_results(release_hosts_command(args))
+            case  'aws-ec2-release-hosts':
+                return_results(release_hosts_command(args))
 
-        elif command == 'aws-ec2-modify-snapshot-permission':
-            return_results(modify_snapshot_permission_command(args))
+            case  'aws-ec2-modify-snapshot-permission':
+                return_results(modify_snapshot_permission_command(args))
 
-        elif command == 'aws-ec2-describe-ipam-resource-discoveries':
-            return_results(describe_ipam_resource_discoveries_command(args))
+            case  'aws-ec2-describe-ipam-resource-discoveries':
+                return_results(describe_ipam_resource_discoveries_command(args))
 
-        elif command == 'aws-ec2-describe-ipam-resource-discovery-associations':
-            return_results(describe_ipam_resource_discovery_associations_command(args))
+            case  'aws-ec2-describe-ipam-resource-discovery-associations':
+                return_results(describe_ipam_resource_discovery_associations_command(args))
 
-        elif command == 'aws-ec2-get-ipam-discovered-public-addresses':
-            return_results(get_ipam_discovered_public_addresses_command(args))
+            case  'aws-ec2-get-ipam-discovered-public-addresses':
+                return_results(get_ipam_discovered_public_addresses_command(args))
 
     except Exception as e:
         LOG(e)
