@@ -14079,722 +14079,714 @@ def main():  # pragma: no cover
         # Remove proxy if not set to true in params
         handle_proxy()
 
-        if command == 'test-module':
-            # Log the API version
-            if is_debug_mode():
-                demisto.debug(f'PAN-OS Version (debug-mode): {get_pan_os_version()}')
-            panorama_test(params)
+        match command:
+            case 'test-module':
+                # Log the API version
+                if is_debug_mode():
+                    demisto.debug(f'PAN-OS Version (debug-mode): {get_pan_os_version()}')
+                panorama_test(params)
 
-        # Fetch incidents
-        elif command == 'fetch-incidents':
-            last_run = demisto.getLastRun()
-            first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
-            configured_max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
-            queries_dict = log_types_queries_to_dict(params)
-            fetch_job_polling_max_num_attempts = arg_to_number(params.get(
-                'fetch_job_polling_max_num_attempts')) or GET_LOG_JOB_ID_MAX_RETRIES
-            max_fetch_dict = last_run.get('max_fetch_dict') or create_max_fetch_dict(
-                queries_dict=queries_dict, configured_max_fetch=configured_max_fetch)
+            # Fetch incidents
+            case 'fetch-incidents':
+                last_run = demisto.getLastRun()
+                first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
+                configured_max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
+                queries_dict = log_types_queries_to_dict(params)
+                fetch_job_polling_max_num_attempts = arg_to_number(params.get(
+                    'fetch_job_polling_max_num_attempts')) or GET_LOG_JOB_ID_MAX_RETRIES
+                max_fetch_dict = last_run.get('max_fetch_dict') or create_max_fetch_dict(
+                    queries_dict=queries_dict, configured_max_fetch=configured_max_fetch)
 
-            last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(
-                last_run, first_fetch, queries_dict, max_fetch_dict, fetch_job_polling_max_num_attempts)
-            next_max_fetch_dict = update_max_fetch_dict(configured_max_fetch=configured_max_fetch,
-                                                        max_fetch_dict=max_fetch_dict,
-                                                        last_fetch_dict=last_fetch_dict)
+                last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(
+                    last_run, first_fetch, queries_dict, max_fetch_dict, fetch_job_polling_max_num_attempts)
+                next_max_fetch_dict = update_max_fetch_dict(configured_max_fetch=configured_max_fetch,
+                                                            max_fetch_dict=max_fetch_dict,
+                                                            last_fetch_dict=last_fetch_dict)
 
-            demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict,
-                                'max_fetch_dict': next_max_fetch_dict})
-            demisto.incidents(incident_entries_list)
+                demisto.setLastRun({'last_fetch_dict': last_fetch_dict, 'last_id_dict': last_id_dict,
+                                    'max_fetch_dict': next_max_fetch_dict})
+                demisto.incidents(incident_entries_list)
 
-        elif command == 'panorama' or command == 'pan-os':
-            panorama_command(args)
+            case 'panorama' | 'pan-os':
+                panorama_command(args)
 
-        elif command == 'panorama-commit' or command == 'pan-os-commit':
-            return_results(panorama_commit_command(args))
+            case 'panorama-commit' | 'pan-os-commit':
+                return_results(panorama_commit_command(args))
 
-        elif command == 'panorama-commit-status' or command == 'pan-os-commit-status':
-            panorama_commit_status_command(args)
+            case 'panorama-commit-status' | 'pan-os-commit-status':
+                panorama_commit_status_command(args)
 
-        elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
-            return_results(panorama_push_to_device_group_command(args))
-        elif command == 'pan-os-push-to-template':
-            panorama_push_to_template_command(args)
-        elif command == 'pan-os-push-to-template-stack':
-            panorama_push_to_template_stack_command(args)
-        elif command == 'panorama-push-status' or command == 'pan-os-push-status':
-            panorama_push_status_command(args)
+            case 'panorama-push-to-device-group' | 'pan-os-push-to-device-group':
+                return_results(panorama_push_to_device_group_command(args))
+            case 'pan-os-push-to-template':
+                panorama_push_to_template_command(args)
+            case 'pan-os-push-to-template-stack':
+                panorama_push_to_template_stack_command(args)
+            case 'panorama-push-status' | 'pan-os-push-status':
+                panorama_push_status_command(args)
 
-        # Addresses commands
-        elif command == 'panorama-list-addresses' or command == 'pan-os-list-addresses':
-            panorama_list_addresses_command(args)
+            # Addresses commands
+            case 'panorama-list-addresses' | 'pan-os-list-addresses':
+                panorama_list_addresses_command(args)
 
-        elif command == 'panorama-get-address' or command == 'pan-os-get-address':
-            panorama_get_address_command(args)
+            case 'panorama-get-address' | 'pan-os-get-address':
+                panorama_get_address_command(args)
 
-        elif command == 'panorama-create-address' or command == 'pan-os-create-address':
-            panorama_create_address_command(args)
+            case 'panorama-create-address' | 'pan-os-create-address':
+                panorama_create_address_command(args)
 
-        elif command == 'pan-os-edit-address':
-            return_results(pan_os_edit_address_command(args))
+            case 'pan-os-edit-address':
+                return_results(pan_os_edit_address_command(args))
 
-        elif command == 'panorama-delete-address' or command == 'pan-os-delete-address':
-            panorama_delete_address_command(args)
+            case 'panorama-delete-address' | 'pan-os-delete-address':
+                panorama_delete_address_command(args)
 
-        # Address groups commands
-        elif command == 'panorama-list-address-groups' or command == 'pan-os-list-address-groups':
-            panorama_list_address_groups_command(args)
+            # Address groups commands
+            case 'panorama-list-address-groups' | 'pan-os-list-address-groups':
+                panorama_list_address_groups_command(args)
 
-        elif command == 'panorama-get-address-group' or command == 'pan-os-get-address-group':
-            panorama_get_address_group_command(args)
+            case 'panorama-get-address-group' | 'pan-os-get-address-group':
+                panorama_get_address_group_command(args)
 
-        elif command == 'panorama-create-address-group' or command == 'pan-os-create-address-group':
-            panorama_create_address_group_command(args)
+            case 'panorama-create-address-group' | 'pan-os-create-address-group':
+                panorama_create_address_group_command(args)
 
-        elif command == 'panorama-delete-address-group' or command == 'pan-os-delete-address-group':
-            panorama_delete_address_group_command(args.get('name'))
+            case 'panorama-delete-address-group' | 'pan-os-delete-address-group':
+                panorama_delete_address_group_command(args.get('name'))
 
-        elif command == 'panorama-edit-address-group' or command == 'pan-os-edit-address-group':
-            panorama_edit_address_group_command(args)
+            case 'panorama-edit-address-group' | 'pan-os-edit-address-group':
+                panorama_edit_address_group_command(args)
 
-        # Services commands
-        elif command == 'panorama-list-services' or command == 'pan-os-list-services':
-            panorama_list_services_command(args.get('tag'))
+            # Services commands
+            case 'panorama-list-services' | 'pan-os-list-services':
+                panorama_list_services_command(args.get('tag'))
 
-        elif command == 'panorama-get-service' or command == 'pan-os-get-service':
-            panorama_get_service_command(args.get('name'))
+            case 'panorama-get-service' | 'pan-os-get-service':
+                panorama_get_service_command(args.get('name'))
 
-        elif command == 'panorama-create-service' or command == 'pan-os-create-service':
-            panorama_create_service_command(args)
+            case 'panorama-create-service' | 'pan-os-create-service':
+                panorama_create_service_command(args)
 
-        elif command == 'panorama-delete-service' or command == 'pan-os-delete-service':
-            panorama_delete_service_command(args.get('name'))
+            case 'panorama-delete-service' | 'pan-os-delete-service':
+                panorama_delete_service_command(args.get('name'))
 
-        # Service groups commands
-        elif command == 'panorama-list-service-groups' or command == 'pan-os-list-service-groups':
-            panorama_list_service_groups_command(args.get('tags'))
+            # Service groups commands
+            case 'panorama-list-service-groups' | 'pan-os-list-service-groups':
+                panorama_list_service_groups_command(args.get('tags'))
 
-        elif command == 'panorama-get-service-group' or command == 'pan-os-get-service-group':
-            panorama_get_service_group_command(args.get('name'))
+            case 'panorama-get-service-group' | 'pan-os-get-service-group':
+                panorama_get_service_group_command(args.get('name'))
 
-        elif command == 'panorama-create-service-group' or command == 'pan-os-create-service-group':
-            panorama_create_service_group_command(args)
+            case 'panorama-create-service-group' | 'pan-os-create-service-group':
+                panorama_create_service_group_command(args)
 
-        elif command == 'panorama-delete-service-group' or command == 'pan-os-delete-service-group':
-            panorama_delete_service_group_command(args.get('name'))
+            case 'panorama-delete-service-group' | 'pan-os-delete-service-group':
+                panorama_delete_service_group_command(args.get('name'))
 
-        elif command == 'panorama-edit-service-group' or command == 'pan-os-edit-service-group':
-            panorama_edit_service_group_command(args)
+            case 'panorama-edit-service-group' | 'pan-os-edit-service-group':
+                panorama_edit_service_group_command(args)
 
-        # Custom Url Category commands
-        elif command == 'panorama-get-custom-url-category' or command == 'pan-os-get-custom-url-category':
-            panorama_get_custom_url_category_command(args.get('name'))
+            # Custom Url Category commands
+            case 'panorama-get-custom-url-category' | 'pan-os-get-custom-url-category':
+                panorama_get_custom_url_category_command(args.get('name'))
 
-        elif command == 'panorama-create-custom-url-category' or command == 'pan-os-create-custom-url-category':
-            panorama_create_custom_url_category_command(args)
+            case 'panorama-create-custom-url-category' | 'pan-os-create-custom-url-category':
+                panorama_create_custom_url_category_command(args)
 
-        elif command == 'panorama-delete-custom-url-category' or command == 'pan-os-delete-custom-url-category':
-            panorama_delete_custom_url_category_command(args.get('name'))
+            case 'panorama-delete-custom-url-category' | 'pan-os-delete-custom-url-category':
+                panorama_delete_custom_url_category_command(args.get('name'))
 
-        elif command == 'panorama-edit-custom-url-category' or command == 'pan-os-edit-custom-url-category':
-            panorama_edit_custom_url_category_command(args)
+            case 'panorama-edit-custom-url-category' | 'pan-os-edit-custom-url-category':
+                panorama_edit_custom_url_category_command(args)
 
-        # URL Filtering capabilities
-        elif command == 'url':
-            if USE_URL_FILTERING:  # default is false
+            # URL Filtering capabilities
+            case 'url':
+                if USE_URL_FILTERING:  # default is false
+                    panorama_get_url_category_command(
+                        url_cmd='url',
+                        url=args.get('url'),
+                        additional_suspicious=additional_suspicious,
+                        additional_malicious=additional_malicious,
+                        reliability=reliability
+                    )
+                # do not error out
+
+            case 'panorama-get-url-category' | 'pan-os-get-url-category':
                 panorama_get_url_category_command(
                     url_cmd='url',
                     url=args.get('url'),
                     additional_suspicious=additional_suspicious,
                     additional_malicious=additional_malicious,
+                    target=args.get('target'),
                     reliability=reliability
                 )
-            # do not error out
 
-        elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
-            panorama_get_url_category_command(
-                url_cmd='url',
-                url=args.get('url'),
-                additional_suspicious=additional_suspicious,
-                additional_malicious=additional_malicious,
-                target=args.get('target'),
-                reliability=reliability
-            )
-
-        elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
-            panorama_get_url_category_command(
-                url_cmd='url-info-cloud',
-                url=args.get('url'),
-                additional_suspicious=additional_suspicious,
-                additional_malicious=additional_malicious,
-                reliability=reliability
-            )
-
-        elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
-            panorama_get_url_category_command(
-                url_cmd='url-info-host',
-                url=args.get('url'),
-                additional_suspicious=additional_suspicious,
-                additional_malicious=additional_malicious,
-                reliability=reliability
-            )
-
-        # URL Filter
-        elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':
-            panorama_get_url_filter_command(args.get('name'))
-
-        elif command == 'panorama-create-url-filter' or command == 'pan-os-create-url-filter':
-            panorama_create_url_filter_command(args)
-
-        elif command == 'panorama-edit-url-filter' or command == 'pan-os-edit-url-filter':
-            panorama_edit_url_filter_command(args)
-
-        elif command == 'panorama-delete-url-filter' or command == 'pan-os-delete-url-filter':
-            panorama_delete_url_filter_command(demisto.args().get('name'))
-
-        # EDL
-        elif command == 'panorama-list-edls' or command == 'pan-os-list-edls':
-            panorama_list_edls_command()
-
-        elif command == 'panorama-get-edl' or command == 'pan-os-get-edl':
-            panorama_get_edl_command(demisto.args().get('name'))
-
-        elif command == 'panorama-create-edl' or command == 'pan-os-create-edl':
-            panorama_create_edl_command(args)
-
-        elif command == 'panorama-edit-edl' or command == 'pan-os-edit-edl':
-            panorama_edit_edl_command(args)
-
-        elif command == 'panorama-delete-edl' or command == 'pan-os-delete-edl':
-            panorama_delete_edl_command(demisto.args().get('name'))
-
-        elif command == 'panorama-refresh-edl' or command == 'pan-os-refresh-edl':
-            panorama_refresh_edl_command(args)
-
-        # Registered IPs
-        elif command == 'panorama-register-ip-tag' or command == 'pan-os-register-ip-tag':
-            panorama_register_ip_tag_command(args)
-
-        elif command == 'panorama-unregister-ip-tag' or command == 'pan-os-unregister-ip-tag':
-            panorama_unregister_ip_tag_command(args)
-
-        # Registered Users
-        elif command == 'panorama-register-user-tag' or command == 'pan-os-register-user-tag':
-            panorama_register_user_tag_command(args)
-
-        elif command == 'panorama-unregister-user-tag' or command == 'pan-os-unregister-user-tag':
-            panorama_unregister_user_tag_command(args)
-
-        # Security Rules Managing
-        elif command == 'panorama-list-rules' or command == 'pan-os-list-rules':
-            panorama_list_rules_command(args)
-
-        elif command == 'panorama-move-rule' or command == 'pan-os-move-rule':
-            panorama_move_rule_command(args)
-
-        # Security Rules Configuration
-        elif command == 'panorama-create-rule' or command == 'pan-os-create-rule':
-            panorama_create_rule_command(args)
-
-        elif command == 'panorama-custom-block-rule' or command == 'pan-os-custom-block-rule':
-            panorama_custom_block_rule_command(args)
-
-        elif command == 'panorama-edit-rule' or command == 'pan-os-edit-rule':
-            panorama_edit_rule_command(args)
-
-        elif command == 'panorama-delete-rule' or command == 'pan-os-delete-rule':
-            panorama_delete_rule_command(args.get('rulename'))
-
-        # Traffic Logs - deprecated
-        elif command == 'panorama-query-traffic-logs' or command == 'pan-os-query-traffic-logs':
-            panorama_query_traffic_logs_command(args)
-
-        elif command == 'panorama-check-traffic-logs-status' or command == 'pan-os-check-traffic-logs-status':
-            panorama_check_traffic_logs_status_command(args.get('job_id'))
-
-        elif command == 'panorama-get-traffic-logs' or command == 'pan-os-get-traffic-logs':
-            panorama_get_traffic_logs_command(args.get('job_id'))
-
-        # Logs
-        elif command == 'panorama-query-logs' or command == 'pan-os-query-logs':
-            return_results(panorama_query_logs_command(args))
-
-        elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
-            panorama_check_logs_status_command(args.get('job_id'))
-
-        elif command == 'panorama-get-logs' or command == 'pan-os-get-logs':
-            panorama_get_logs_command(args)
-
-        # Pcaps
-        elif command == 'panorama-list-pcaps' or command == 'pan-os-list-pcaps':
-            panorama_list_pcaps_command(args)
-
-        elif command == 'panorama-get-pcap' or command == 'pan-os-get-pcap':
-            panorama_get_pcap_command(args)
-
-        # Application
-        elif command == 'panorama-list-applications' or command == 'pan-os-list-applications':
-            panorama_list_applications_command(args)
-
-        # Test security policy match
-        elif command == 'panorama-security-policy-match' or command == 'pan-os-security-policy-match':
-            panorama_security_policy_match_command(args)
-
-        # Static Routes
-        elif command == 'panorama-list-static-routes' or command == 'pan-os-list-static-routes':
-            panorama_list_static_routes_command(args)
-
-        elif command == 'panorama-get-static-route' or command == 'pan-os-get-static-route':
-            panorama_get_static_route_command(args)
-
-        elif command == 'panorama-add-static-route' or command == 'pan-os-add-static-route':
-            panorama_add_static_route_command(args)
-
-        elif command == 'panorama-delete-static-route' or command == 'pan-os-delete-static-route':
-            panorama_delete_static_route_command(args)
-
-        # Firewall Upgrade
-        # Check device software version
-        elif command == 'panorama-show-device-version' or command == 'pan-os-show-device-version':
-            panorama_show_device_version_command(args.get('target'))
-
-        # Download the latest content update
-        elif command == 'panorama-download-latest-content-update' or command == 'pan-os-download-latest-content-update':
-            panorama_download_latest_content_update_command(args)
-
-        # Download the latest content update
-        elif command == 'panorama-content-update-download-status' or command == 'pan-os-content-update-download-status':
-            panorama_content_update_download_status_command(args)
-
-        # Install the latest content update
-        elif command == 'panorama-install-latest-content-update' or command == 'pan-os-install-latest-content-update':
-            panorama_install_latest_content_update_command(args.get('target'))
-
-        # Content update install status
-        elif command == 'panorama-content-update-install-status' or command == 'pan-os-content-update-install-status':
-            panorama_content_update_install_status_command(args)
-
-        # Check PAN-OS latest software update
-        elif command == 'panorama-check-latest-panos-software' or command == 'pan-os-check-latest-panos-software':
-            return_results(panorama_check_latest_panos_software_command(args.get('target')))
-
-        # Download target PAN-OS version
-        elif command == 'panorama-download-panos-version' or command == 'pan-os-download-panos-version':
-            panorama_download_panos_version_command(args)
-
-        # PAN-OS download status
-        elif command == 'panorama-download-panos-status' or command == 'pan-os-download-panos-status':
-            panorama_download_panos_status_command(args)
-
-        # PAN-OS software install
-        elif command == 'panorama-install-panos-version' or command == 'pan-os-install-panos-version':
-            panorama_install_panos_version_command(args)
-
-        # PAN-OS install status
-        elif command == 'panorama-install-panos-status' or command == 'pan-os-install-panos-status':
-            panorama_install_panos_status_command(args)
-
-        # Reboot Panorama Device
-        elif command == 'panorama-device-reboot' or command == 'pan-os-device-reboot':
-            panorama_device_reboot_command(args)
-
-        # PAN-OS Set vulnerability to drop
-        elif command == 'panorama-block-vulnerability' or command == 'pan-os-block-vulnerability':
-            panorama_block_vulnerability(args)
-
-        # Get pre-defined threats list from the firewall
-        elif command == 'panorama-get-predefined-threats-list' or command == 'pan-os-get-predefined-threats-list':
-            panorama_get_predefined_threats_list_command(args.get('target'))
-
-        elif command == 'panorama-show-location-ip' or command == 'pan-os-show-location-ip':
-            panorama_show_location_ip_command(args.get('ip_address'))
-
-        elif command == 'panorama-get-licenses' or command == 'pan-os-get-licenses':
-            panorama_get_license_command()
-
-        elif command == 'panorama-get-security-profiles' or command == 'pan-os-get-security-profiles':
-            get_security_profiles_command(args.get('security_profile'))
-
-        elif command == 'panorama-apply-security-profile' or command == 'pan-os-apply-security-profile':
-            apply_security_profile_command(args)
-
-        elif command == 'pan-os-remove-security-profile':
-            apply_security_profile_command(args)
-
-        elif command == 'panorama-get-ssl-decryption-rules' or command == 'pan-os-get-ssl-decryption-rules':
-            get_ssl_decryption_rules_command(**args)
-
-        elif command == 'panorama-get-wildfire-configuration' or command == 'pan-os-get-wildfire-configuration':
-            get_wildfire_configuration_command(**args)
-
-        elif command == 'panorama-get-wildfire-best-practice' or command == 'pan-os-get-wildfire-best-practice':
-            get_wildfire_best_practice_command()
-
-        elif command == 'panorama-enforce-wildfire-best-practice' or command == 'pan-os-enforce-wildfire-best-practice':
-            enforce_wildfire_best_practice_command(**args)
-
-        elif command == 'panorama-url-filtering-block-default-categories' \
-                or command == 'pan-os-url-filtering-block-default-categories':
-            url_filtering_block_default_categories_command(**args)
-
-        elif command == 'panorama-get-anti-spyware-best-practice' or command == 'pan-os-get-anti-spyware-best-practice':
-            get_anti_spyware_best_practice_command()
-
-        elif command == 'panorama-get-file-blocking-best-practice' \
-                or command == 'pan-os-get-file-blocking-best-practice':
-            get_file_blocking_best_practice_command()
-
-        elif command == 'panorama-get-antivirus-best-practice' or command == 'pan-os-get-antivirus-best-practice':
-            get_antivirus_best_practice_command()
-
-        elif command == 'panorama-get-vulnerability-protection-best-practice' \
-                or command == 'pan-os-get-vulnerability-protection-best-practice':
-            get_vulnerability_protection_best_practice_command()
-
-        elif command == 'panorama-get-url-filtering-best-practice' \
-                or command == 'pan-os-get-url-filtering-best-practice':
-            get_url_filtering_best_practice_command()
-
-        elif command == 'panorama-create-antivirus-best-practice-profile' \
-                or command == 'pan-os-create-antivirus-best-practice-profile':
-            create_antivirus_best_practice_profile_command(**args)
-
-        elif command == 'panorama-create-anti-spyware-best-practice-profile' \
-                or command == 'pan-os-create-anti-spyware-best-practice-profile':
-            create_anti_spyware_best_practice_profile_command(**args)
-
-        elif command == 'panorama-create-vulnerability-best-practice-profile' \
-                or command == 'pan-os-create-vulnerability-best-practice-profile':
-            create_vulnerability_best_practice_profile_command(**args)
-
-        elif command == 'panorama-create-url-filtering-best-practice-profile' \
-                or command == 'pan-os-create-url-filtering-best-practice-profile':
-            create_url_filtering_best_practice_profile_command(**args)
-
-        elif command == 'panorama-create-file-blocking-best-practice-profile' \
-                or command == 'pan-os-create-file-blocking-best-practice-profile':
-            create_file_blocking_best_practice_profile_command(**args)
-
-        elif command == 'panorama-create-wildfire-best-practice-profile' \
-                or command == 'pan-os-create-wildfire-best-practice-profile':
-            create_wildfire_best_practice_profile_command(**args)
-
-        elif command == 'panorama-show-user-id-interfaces-config' or command == 'pan-os-show-user-id-interfaces-config':
-            show_user_id_interface_config_command(args)
-
-        elif command == 'panorama-show-zones-config' or command == 'pan-os-show-zones-config':
-            show_zone_config_command(args)
-
-        elif command == 'panorama-list-configured-user-id-agents' or command == 'pan-os-list-configured-user-id-agents':
-            list_configured_user_id_agents_command(args)
-
-        elif command == 'panorama-upload-content-update-file' or command == 'pan-os-upload-content-update-file':
-            return_results(panorama_upload_content_update_file_command(args))
-
-        elif command == 'panorama-install-file-content-update' or command == 'pan-os-install-file-content-update':
-            panorama_install_file_content_update_command(args)
-        elif command == 'pan-os-platform-get-arp-tables':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_arp_tables(topology, **demisto.args()),
-                    empty_result_message="No ARP entries."
+            case 'panorama-get-url-category-from-cloud' | 'pan-os-get-url-category-from-cloud':
+                panorama_get_url_category_command(
+                    url_cmd='url-info-cloud',
+                    url=args.get('url'),
+                    additional_suspicious=additional_suspicious,
+                    additional_malicious=additional_malicious,
+                    reliability=reliability
                 )
-            )
-        elif command == 'pan-os-platform-get-route-summary':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_route_summaries(topology, **demisto.args()),
-                    empty_result_message="Empty route summary result."
+
+            case 'panorama-get-url-category-from-host' | 'pan-os-get-url-category-from-host':
+                panorama_get_url_category_command(
+                    url_cmd='url-info-host',
+                    url=args.get('url'),
+                    additional_suspicious=additional_suspicious,
+                    additional_malicious=additional_malicious,
+                    reliability=reliability
                 )
-            )
-        elif command == 'pan-os-platform-get-routes':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_routes(topology, **demisto.args()),
-                    empty_result_message="Empty route summary result."
+
+            # URL Filter
+            case 'panorama-get-url-filter' | 'pan-os-get-url-filter':
+                panorama_get_url_filter_command(args.get('name'))
+
+            case 'panorama-create-url-filter' | 'pan-os-create-url-filter':
+                panorama_create_url_filter_command(args)
+
+            case 'panorama-edit-url-filter' | 'pan-os-edit-url-filter':
+                panorama_edit_url_filter_command(args)
+
+            case 'panorama-delete-url-filter' | 'pan-os-delete-url-filter':
+                panorama_delete_url_filter_command(demisto.args().get('name'))
+
+            # EDL
+            case 'panorama-list-edls' | 'pan-os-list-edls':
+                panorama_list_edls_command()
+
+            case 'panorama-get-edl' | 'pan-os-get-edl':
+                panorama_get_edl_command(demisto.args().get('name'))
+
+            case 'panorama-create-edl' | 'pan-os-create-edl':
+                panorama_create_edl_command(args)
+
+            case 'panorama-edit-edl' | 'pan-os-edit-edl':
+                panorama_edit_edl_command(args)
+
+            case 'panorama-delete-edl' | 'pan-os-delete-edl':
+                panorama_delete_edl_command(demisto.args().get('name'))
+
+            case 'panorama-refresh-edl' | 'pan-os-refresh-edl':
+                panorama_refresh_edl_command(args)
+
+            # Registered IPs
+            case 'panorama-register-ip-tag' | 'pan-os-register-ip-tag':
+                panorama_register_ip_tag_command(args)
+
+            case 'panorama-unregister-ip-tag' | 'pan-os-unregister-ip-tag':
+                panorama_unregister_ip_tag_command(args)
+
+            # Registered Users
+            case 'panorama-register-user-tag' | 'pan-os-register-user-tag':
+                panorama_register_user_tag_command(args)
+
+            case 'panorama-unregister-user-tag' | 'pan-os-unregister-user-tag':
+                panorama_unregister_user_tag_command(args)
+
+            # Security Rules Managing
+            case 'panorama-list-rules' | 'pan-os-list-rules':
+                panorama_list_rules_command(args)
+
+            case 'panorama-move-rule' | 'pan-os-move-rule':
+                panorama_move_rule_command(args)
+
+            # Security Rules Configuration
+            case 'panorama-create-rule' | 'pan-os-create-rule':
+                panorama_create_rule_command(args)
+
+            case 'panorama-custom-block-rule' | 'pan-os-custom-block-rule':
+                panorama_custom_block_rule_command(args)
+
+            case 'panorama-edit-rule' | 'pan-os-edit-rule':
+                panorama_edit_rule_command(args)
+
+            case 'panorama-delete-rule' | 'pan-os-delete-rule':
+                panorama_delete_rule_command(args.get('rulename'))
+
+            # Traffic Logs - deprecated
+            case 'panorama-query-traffic-logs' | 'pan-os-query-traffic-logs':
+                panorama_query_traffic_logs_command(args)
+
+            case 'panorama-check-traffic-logs-status' | 'pan-os-check-traffic-logs-status':
+                panorama_check_traffic_logs_status_command(args.get('job_id'))
+
+            case 'panorama-get-traffic-logs' | 'pan-os-get-traffic-logs':
+                panorama_get_traffic_logs_command(args.get('job_id'))
+
+            # Logs
+            case 'panorama-query-logs' | 'pan-os-query-logs':
+                return_results(panorama_query_logs_command(args))
+
+            case 'panorama-check-logs-status' | 'pan-os-check-logs-status':
+                panorama_check_logs_status_command(args.get('job_id'))
+
+            case 'panorama-get-logs' | 'pan-os-get-logs':
+                panorama_get_logs_command(args)
+
+            # Pcaps
+            case 'panorama-list-pcaps' | 'pan-os-list-pcaps':
+                panorama_list_pcaps_command(args)
+
+            case 'panorama-get-pcap' | 'pan-os-get-pcap':
+                panorama_get_pcap_command(args)
+
+            # Application
+            case 'panorama-list-applications' | 'pan-os-list-applications':
+                panorama_list_applications_command(args)
+
+            # Test security policy match
+            case 'panorama-security-policy-match' | 'pan-os-security-policy-match':
+                panorama_security_policy_match_command(args)
+
+            # Static Routes
+            case 'panorama-list-static-routes' | 'pan-os-list-static-routes':
+                panorama_list_static_routes_command(args)
+
+            case 'panorama-get-static-route' | 'pan-os-get-static-route':
+                panorama_get_static_route_command(args)
+
+            case 'panorama-add-static-route' | 'pan-os-add-static-route':
+                panorama_add_static_route_command(args)
+
+            case 'panorama-delete-static-route' | 'pan-os-delete-static-route':
+                panorama_delete_static_route_command(args)
+
+            # Firewall Upgrade
+            # Check device software version
+            case 'panorama-show-device-version' | 'pan-os-show-device-version':
+                panorama_show_device_version_command(args.get('target'))
+
+            # Download the latest content update
+            case 'panorama-download-latest-content-update' | 'pan-os-download-latest-content-update':
+                panorama_download_latest_content_update_command(args)
+
+            # Download the latest content update
+            case 'panorama-content-update-download-status' | 'pan-os-content-update-download-status':
+                panorama_content_update_download_status_command(args)
+
+            # Install the latest content update
+            case 'panorama-install-latest-content-update' | 'pan-os-install-latest-content-update':
+                panorama_install_latest_content_update_command(args.get('target'))
+
+            # Content update install status
+            case 'panorama-content-update-install-status' | 'pan-os-content-update-install-status':
+                panorama_content_update_install_status_command(args)
+
+            # Check PAN-OS latest software update
+            case 'panorama-check-latest-panos-software' | 'pan-os-check-latest-panos-software':
+                return_results(panorama_check_latest_panos_software_command(args.get('target')))
+
+            # Download target PAN-OS version
+            case 'panorama-download-panos-version' | 'pan-os-download-panos-version':
+                panorama_download_panos_version_command(args)
+
+            # PAN-OS download status
+            case 'panorama-download-panos-status' | 'pan-os-download-panos-status':
+                panorama_download_panos_status_command(args)
+
+            # PAN-OS software install
+            case 'panorama-install-panos-version' | 'pan-os-install-panos-version':
+                panorama_install_panos_version_command(args)
+
+            # PAN-OS install status
+            case 'panorama-install-panos-status' | 'pan-os-install-panos-status':
+                panorama_install_panos_status_command(args)
+
+            # Reboot Panorama Device
+            case 'panorama-device-reboot' | 'pan-os-device-reboot':
+                panorama_device_reboot_command(args)
+
+            # PAN-OS Set vulnerability to drop
+            case 'panorama-block-vulnerability' | 'pan-os-block-vulnerability':
+                panorama_block_vulnerability(args)
+
+            # Get pre-defined threats list from the firewall
+            case 'panorama-get-predefined-threats-list' | 'pan-os-get-predefined-threats-list':
+                panorama_get_predefined_threats_list_command(args.get('target'))
+
+            case 'panorama-show-location-ip' | 'pan-os-show-location-ip':
+                panorama_show_location_ip_command(args.get('ip_address'))
+
+            case 'panorama-get-licenses' | 'pan-os-get-licenses':
+                panorama_get_license_command()
+
+            case 'panorama-get-security-profiles' | 'pan-os-get-security-profiles':
+                get_security_profiles_command(args.get('security_profile'))
+
+            case 'panorama-apply-security-profile' | 'pan-os-apply-security-profile':
+                apply_security_profile_command(args)
+
+            case 'pan-os-remove-security-profile':
+                apply_security_profile_command(args)
+
+            case 'panorama-get-ssl-decryption-rules' | 'pan-os-get-ssl-decryption-rules':
+                get_ssl_decryption_rules_command(**args)
+
+            case 'panorama-get-wildfire-configuration' | 'pan-os-get-wildfire-configuration':
+                get_wildfire_configuration_command(**args)
+
+            case 'panorama-get-wildfire-best-practice' | 'pan-os-get-wildfire-best-practice':
+                get_wildfire_best_practice_command()
+
+            case 'panorama-enforce-wildfire-best-practice' | 'pan-os-enforce-wildfire-best-practice':
+                enforce_wildfire_best_practice_command(**args)
+
+            case 'panorama-url-filtering-block-default-categories' | 'pan-os-url-filtering-block-default-categories':
+                url_filtering_block_default_categories_command(**args)
+
+            case 'panorama-get-anti-spyware-best-practice' | 'pan-os-get-anti-spyware-best-practice':
+                get_anti_spyware_best_practice_command()
+
+            case 'panorama-get-file-blocking-best-practice' | 'pan-os-get-file-blocking-best-practice':
+                get_file_blocking_best_practice_command()
+
+            case 'panorama-get-antivirus-best-practice' | 'pan-os-get-antivirus-best-practice':
+                get_antivirus_best_practice_command()
+
+            case 'panorama-get-vulnerability-protection-best-practice' | 'pan-os-get-vulnerability-protection-best-practice':
+                get_vulnerability_protection_best_practice_command()
+
+            case 'panorama-get-url-filtering-best-practice' | 'pan-os-get-url-filtering-best-practice':
+                get_url_filtering_best_practice_command()
+
+            case 'panorama-create-antivirus-best-practice-profile' | 'pan-os-create-antivirus-best-practice-profile':
+                create_antivirus_best_practice_profile_command(**args)
+
+            case 'panorama-create-anti-spyware-best-practice-profile' | 'pan-os-create-anti-spyware-best-practice-profile':
+                create_anti_spyware_best_practice_profile_command(**args)
+
+            case 'panorama-create-vulnerability-best-practice-profile' | 'pan-os-create-vulnerability-best-practice-profile':
+                create_vulnerability_best_practice_profile_command(**args)
+
+            case 'panorama-create-url-filtering-best-practice-profile' | 'pan-os-create-url-filtering-best-practice-profile':
+                create_url_filtering_best_practice_profile_command(**args)
+
+            case 'panorama-create-file-blocking-best-practice-profile' | 'pan-os-create-file-blocking-best-practice-profile':
+                create_file_blocking_best_practice_profile_command(**args)
+
+            case 'panorama-create-wildfire-best-practice-profile' | 'pan-os-create-wildfire-best-practice-profile':
+                create_wildfire_best_practice_profile_command(**args)
+
+            case 'panorama-show-user-id-interfaces-config' | 'pan-os-show-user-id-interfaces-config':
+                show_user_id_interface_config_command(args)
+
+            case 'panorama-show-zones-config' | 'pan-os-show-zones-config':
+                show_zone_config_command(args)
+
+            case 'panorama-list-configured-user-id-agents' | 'pan-os-list-configured-user-id-agents':
+                list_configured_user_id_agents_command(args)
+
+            case 'panorama-upload-content-update-file' | 'pan-os-upload-content-update-file':
+                return_results(panorama_upload_content_update_file_command(args))
+
+            case 'panorama-install-file-content-update' | 'pan-os-install-file-content-update':
+                panorama_install_file_content_update_command(args)
+            case 'pan-os-platform-get-arp-tables':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_arp_tables(topology, **demisto.args()),
+                        empty_result_message="No ARP entries."
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-system-info':
-            topology = get_topology()
-            return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
-        elif command == 'pan-os-platform-get-device-groups':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_device_groups(topology, **demisto.args()),
-                    empty_result_message="No device groups found."
+            case 'pan-os-platform-get-route-summary':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_route_summaries(topology, **demisto.args()),
+                        empty_result_message="Empty route summary result."
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-template-stacks':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_template_stacks(topology, **demisto.args()),
-                    empty_result_message="No template stacks found."
+            case 'pan-os-platform-get-routes':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_routes(topology, **demisto.args()),
+                        empty_result_message="Empty route summary result."
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-global-counters':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_global_counters(topology, **demisto.args()),
-                    empty_result_message="No Global Counters Found"
+            case 'pan-os-platform-get-system-info':
+                topology = get_topology()
+                return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
+            case 'pan-os-platform-get-device-groups':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_device_groups(topology, **demisto.args()),
+                        empty_result_message="No device groups found."
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-bgp-peers':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_bgp_peers(topology, **demisto.args()),
-                    empty_result_message="No BGP Peers found."
+            case 'pan-os-platform-get-template-stacks':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_template_stacks(topology, **demisto.args()),
+                        empty_result_message="No template stacks found."
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-available-software':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_available_software(topology, **demisto.args()),
-                    empty_result_message="No Available software images found"
+            case 'pan-os-platform-get-global-counters':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_global_counters(topology, **demisto.args()),
+                        empty_result_message="No Global Counters Found"
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-ha-state':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_ha_state(topology, **demisto.args()),
-                    empty_result_message="No HA information available"
+            case 'pan-os-platform-get-bgp-peers':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_bgp_peers(topology, **demisto.args()),
+                        empty_result_message="No BGP Peers found."
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-jobs':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_jobs(topology, **demisto.args()),
-                    empty_result_message="No jobs returned"
+            case 'pan-os-platform-get-available-software':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_available_software(topology, **demisto.args()),
+                        empty_result_message="No Available software images found"
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-download-software':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    download_software(topology, **demisto.args()),
-                    empty_result_message="Software download not started"
+            case 'pan-os-platform-get-ha-state':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_ha_state(topology, **demisto.args()),
+                        empty_result_message="No HA information available"
+                    )
                 )
-            )
-        elif command == 'pan-os-apply-dns-signature-policy':
-            return_results(
-                apply_dns_signature_policy_command(args)
-            )
-        elif command == 'pan-os-platform-install-software':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    install_software(topology, **demisto.args()),
-                    empty_result_message="Software Install not started"
+            case 'pan-os-platform-get-jobs':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_jobs(topology, **demisto.args()),
+                        empty_result_message="No jobs returned"
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-reboot':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    reboot(topology, **demisto.args()),
-                    empty_result_message="Device not rebooted, or did not respond."
+            case 'pan-os-platform-download-software':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        download_software(topology, **demisto.args()),
+                        empty_result_message="Software download not started"
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-system-status':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    system_status(topology, **demisto.args()),
-                    empty_result_message="No system status."
+            case 'pan-os-apply-dns-signature-policy':
+                return_results(
+                    apply_dns_signature_policy_command(args)
                 )
-            )
-        elif command == 'pan-os-platform-update-ha-state':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    update_ha_state(topology, **demisto.args()),
-                    empty_result_message="HA State either wasn't change or the device did not respond."
+            case 'pan-os-platform-install-software':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        install_software(topology, **demisto.args()),
+                        empty_result_message="Software Install not started"
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-check-log-forwarding':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    check_log_forwarding(topology, **demisto.args()),
-                    empty_result_message="At least one log forwarding profile is configured according to best practices."
+            case 'pan-os-platform-reboot':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        reboot(topology, **demisto.args()),
+                        empty_result_message="Device not rebooted, or did not respond."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-check-vulnerability-profiles':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    check_vulnerability_profiles(topology, **demisto.args()),
-                    empty_result_message="At least one vulnerability profile is configured according to best practices."
+            case 'pan-os-platform-get-system-status':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        system_status(topology, **demisto.args()),
+                        empty_result_message="No system status."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-conforming-vulnerability-profiles':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_conforming_vulnerability_profiles(topology, **demisto.args()),
-                    empty_result_message="No Conforming Vulnerability Profiles.",
-                    override_table_headers=["hostid", "name", "object_type", "container_name"],
-                    override_table_name="Best Practices conforming Vulnerability profiles"
+            case 'pan-os-platform-update-ha-state':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        update_ha_state(topology, **demisto.args()),
+                        empty_result_message="HA State either wasn't change or the device did not respond."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-check-spyware-profiles':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    check_spyware_profiles(topology, **demisto.args()),
-                    empty_result_message="At least one Spyware profile is configured according to best practices."
+            case 'pan-os-hygiene-check-log-forwarding':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        check_log_forwarding(topology, **demisto.args()),
+                        empty_result_message="At least one log forwarding profile is configured according to best practices."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-check-url-filtering-profiles':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    check_url_filtering_profiles(topology, **demisto.args()),
-                    empty_result_message="At least one Spyware profile is configured according to best practices."
+            case 'pan-os-hygiene-check-vulnerability-profiles':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        check_vulnerability_profiles(topology, **demisto.args()),
+                        empty_result_message="At least one vulnerability profile is configured according to best practices."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-conforming-url-filtering-profiles':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_conforming_url_filtering_profiles(topology, **demisto.args()),
-                    empty_result_message="No conforming URL filtering profiles.",
-                    override_table_headers=["hostid", "name", "object_type", "container_name"],
-                    override_table_name="Best Practices conforming URL Filtering profiles"
+            case 'pan-os-hygiene-conforming-vulnerability-profiles':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_conforming_vulnerability_profiles(topology, **demisto.args()),
+                        empty_result_message="No Conforming Vulnerability Profiles.",
+                        override_table_headers=["hostid", "name", "object_type", "container_name"],
+                        override_table_name="Best Practices conforming Vulnerability profiles"
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-conforming-spyware-profiles':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_conforming_spyware_profiles(topology, **demisto.args()),
-                    empty_result_message="No conforming Spyware profiles.",
-                    override_table_headers=["hostid", "name", "object_type", "container_name"],
-                    override_table_name="Best Practices conforming Anti-spyware profiles"
+            case 'pan-os-hygiene-check-spyware-profiles':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        check_spyware_profiles(topology, **demisto.args()),
+                        empty_result_message="At least one Spyware profile is configured according to best practices."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-check-security-zones':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    check_security_zones(topology, **demisto.args()),
-                    empty_result_message="All security zones are configured correctly."
+            case 'pan-os-hygiene-check-url-filtering-profiles':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        check_url_filtering_profiles(topology, **demisto.args()),
+                        empty_result_message="At least one Spyware profile is configured according to best practices."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-check-security-rules':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    check_security_rules(topology, **demisto.args()),
-                    empty_result_message="All security rules are configured correctly."
+            case 'pan-os-hygiene-conforming-url-filtering-profiles':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_conforming_url_filtering_profiles(topology, **demisto.args()),
+                        empty_result_message="No conforming URL filtering profiles.",
+                        override_table_headers=["hostid", "name", "object_type", "container_name"],
+                        override_table_name="Best Practices conforming URL Filtering profiles"
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-fix-log-forwarding':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    fix_log_forwarding(topology, **demisto.args()),
-                    empty_result_message="Nothing to fix."
+            case 'pan-os-hygiene-conforming-spyware-profiles':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_conforming_spyware_profiles(topology, **demisto.args()),
+                        empty_result_message="No conforming Spyware profiles.",
+                        override_table_headers=["hostid", "name", "object_type", "container_name"],
+                        override_table_name="Best Practices conforming Anti-spyware profiles"
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-fix-security-zone-log-settings':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    fix_security_zone_log_setting(topology, **demisto.args()),
-                    empty_result_message="Nothing to fix."
+            case 'pan-os-hygiene-check-security-zones':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        check_security_zones(topology, **demisto.args()),
+                        empty_result_message="All security zones are configured correctly."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-fix-security-rule-log-settings':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    fix_security_rule_log_setting(topology, **demisto.args()),
-                    empty_result_message="Nothing to fix."
+            case 'pan-os-hygiene-check-security-rules':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        check_security_rules(topology, **demisto.args()),
+                        empty_result_message="All security rules are configured correctly."
+                    )
                 )
-            )
-        elif command == 'pan-os-hygiene-fix-security-rule-profile-settings':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    fix_security_rule_security_profile_group(topology, **demisto.args()),
-                    empty_result_message="Nothing to fix."
+            case 'pan-os-hygiene-fix-log-forwarding':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        fix_log_forwarding(topology, **demisto.args()),
+                        empty_result_message="Nothing to fix."
+                    )
                 )
-            )
-        elif command == 'pan-os-config-get-object':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_object(topology, **demisto.args()),
-                    empty_result_message="No objects found."
+            case 'pan-os-hygiene-fix-security-zone-log-settings':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        fix_security_zone_log_setting(topology, **demisto.args()),
+                        empty_result_message="Nothing to fix."
+                    )
                 )
-            )
-        elif command == 'pan-os-platform-get-device-state':
-            topology = get_topology()
-            # This just returns a fileResult object directly.
-            return_results(get_device_state(topology, **demisto.args()))
-        elif command == 'pan-os-get-merged-config':
-            return_results(pan_os_get_merged_config(args))
-        elif command == 'pan-os-get-running-config':
-            return_results(pan_os_get_running_config(args))
-        elif command == 'pan-os-list-nat-rules':
-            return_results(pan_os_list_nat_rules_command(args))
-        elif command == 'pan-os-create-nat-rule':
-            return_results(pan_os_create_nat_rule_command(args))
-        elif command == 'pan-os-delete-nat-rule':
-            return_results(pan_os_delete_nat_rule_command(args))
-        elif command == 'pan-os-edit-nat-rule':
-            return_results(pan_os_edit_nat_rule_command(args))
-        elif command == 'pan-os-list-virtual-routers':
-            return_results(pan_os_list_virtual_routers_command(args))
-        elif command == 'pan-os-list-redistribution-profiles':
-            return_results(pan_os_list_redistribution_profile_command(args))
-        elif command == 'pan-os-create-redistribution-profile':
-            return_results(pan_os_create_redistribution_profile_command(args))
-        elif command == 'pan-os-edit-redistribution-profile':
-            return_results(pan_os_edit_redistribution_profile_command(args))
-        elif command == 'pan-os-delete-redistribution-profile':
-            return_results(pan_os_delete_redistribution_profile_command(args))
-        elif command == 'pan-os-list-pbf-rules':
-            return_results(pan_os_list_pbf_rules_command(args))
-        elif command == 'pan-os-create-pbf-rule':
-            return_results(pan_os_create_pbf_rule_command(args))
-        elif command == 'pan-os-edit-pbf-rule':
-            return_results(pan_os_edit_pbf_rule_command(args))
-        elif command == 'pan-os-delete-pbf-rule':
-            return_results(pan_os_delete_pbf_rule_command(args))
-        elif command == 'pan-os-list-application-groups':
-            return_results(pan_os_list_application_groups_command(args))
-        elif command == 'pan-os-create-application-group':
-            return_results(pan_os_create_application_group_command(args))
-        elif command == 'pan-os-edit-application-group':
-            return_results(pan_os_edit_application_group_command(args))
-        elif command == 'pan-os-delete-application-group':
-            return_results(pan_os_delete_application_group_command(args))
-        elif command == 'pan-os-list-templates':
-            return_results(pan_os_list_templates_command(args))
-        elif command == 'pan-os-list-tag':
-            return_results(pan_os_list_tag_command(args))
-        elif command == 'pan-os-create-tag':
-            return_results(pan_os_create_tag_command(args))
-        elif command == 'pan-os-edit-tag':
-            return_results(pan_os_edit_tag_command(args))
-        elif command == 'pan-os-delete-tag':
-            return_results(pan_os_delete_tag_command(args))
-        elif command == 'pan-os-list-device-groups':
-            return_results(list_device_groups_names())
-        elif command == 'pan-os-export-tech-support-file':
-            return_results(export_tsf_command(args))
-        else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            case 'pan-os-hygiene-fix-security-rule-log-settings':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        fix_security_rule_log_setting(topology, **demisto.args()),
+                        empty_result_message="Nothing to fix."
+                    )
+                )
+            case 'pan-os-hygiene-fix-security-rule-profile-settings':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        fix_security_rule_security_profile_group(topology, **demisto.args()),
+                        empty_result_message="Nothing to fix."
+                    )
+                )
+            case 'pan-os-config-get-object':
+                topology = get_topology()
+                return_results(
+                    dataclasses_to_command_results(
+                        get_object(topology, **demisto.args()),
+                        empty_result_message="No objects found."
+                    )
+                )
+            case 'pan-os-platform-get-device-state':
+                topology = get_topology()
+                # This just returns a fileResult object directly.
+                return_results(get_device_state(topology, **demisto.args()))
+            case 'pan-os-get-merged-config':
+                return_results(pan_os_get_merged_config(args))
+            case 'pan-os-get-running-config':
+                return_results(pan_os_get_running_config(args))
+            case 'pan-os-list-nat-rules':
+                return_results(pan_os_list_nat_rules_command(args))
+            case 'pan-os-create-nat-rule':
+                return_results(pan_os_create_nat_rule_command(args))
+            case 'pan-os-delete-nat-rule':
+                return_results(pan_os_delete_nat_rule_command(args))
+            case 'pan-os-edit-nat-rule':
+                return_results(pan_os_edit_nat_rule_command(args))
+            case 'pan-os-list-virtual-routers':
+                return_results(pan_os_list_virtual_routers_command(args))
+            case 'pan-os-list-redistribution-profiles':
+                return_results(pan_os_list_redistribution_profile_command(args))
+            case 'pan-os-create-redistribution-profile':
+                return_results(pan_os_create_redistribution_profile_command(args))
+            case 'pan-os-edit-redistribution-profile':
+                return_results(pan_os_edit_redistribution_profile_command(args))
+            case 'pan-os-delete-redistribution-profile':
+                return_results(pan_os_delete_redistribution_profile_command(args))
+            case 'pan-os-list-pbf-rules':
+                return_results(pan_os_list_pbf_rules_command(args))
+            case 'pan-os-create-pbf-rule':
+                return_results(pan_os_create_pbf_rule_command(args))
+            case 'pan-os-edit-pbf-rule':
+                return_results(pan_os_edit_pbf_rule_command(args))
+            case 'pan-os-delete-pbf-rule':
+                return_results(pan_os_delete_pbf_rule_command(args))
+            case 'pan-os-list-application-groups':
+                return_results(pan_os_list_application_groups_command(args))
+            case 'pan-os-create-application-group':
+                return_results(pan_os_create_application_group_command(args))
+            case 'pan-os-edit-application-group':
+                return_results(pan_os_edit_application_group_command(args))
+            case 'pan-os-delete-application-group':
+                return_results(pan_os_delete_application_group_command(args))
+            case 'pan-os-list-templates':
+                return_results(pan_os_list_templates_command(args))
+            case 'pan-os-list-tag':
+                return_results(pan_os_list_tag_command(args))
+            case 'pan-os-create-tag':
+                return_results(pan_os_create_tag_command(args))
+            case 'pan-os-edit-tag':
+                return_results(pan_os_edit_tag_command(args))
+            case 'pan-os-delete-tag':
+                return_results(pan_os_delete_tag_command(args))
+            case 'pan-os-list-device-groups':
+                return_results(list_device_groups_names())
+            case 'pan-os-export-tech-support-file':
+                return_results(export_tsf_command(args))
+            case _:
+                raise NotImplementedError(f'Command {command} is not implemented.')
+        
     except Exception as err:
         return_error(str(err), error=traceback.format_exc())
 
