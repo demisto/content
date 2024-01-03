@@ -134,7 +134,8 @@ URL_SUFFIX: dict[str, str] = {
     'FILE_PERMISSION_UPDATE': 'drive/v3/files/{}/permissions/{}',
     'FILE_PERMISSION_DELETE': 'drive/v3/files/{}/permissions/{}',
     'FILE_MODIFY_LABEL': 'drive/v3/files/{}/modifyLabels',
-    'FILE_GET_LABELS': 'drive/v3/files/{}/listLabels'
+    'FILE_GET_LABELS': 'drive/v3/files/{}/listLabels',
+    'FILE_GET_PARENTS': 'drive/v2/files/{}/parents'
 }
 
 OUTPUT_PREFIX: dict[str, str] = {
@@ -158,7 +159,8 @@ OUTPUT_PREFIX: dict[str, str] = {
     'GOOGLE_DRIVE_FILE_PERMISSION_HEADER': 'GoogleDrive.FilePermission',
     'FILE_PERMISSION': 'FilePermission',
 
-    'LABELS': 'GoogleDrive.Labels'
+    'LABELS': 'GoogleDrive.Labels',
+    'PARENTS': 'GoogleDrive.File.Parents'
 
 }
 
@@ -1056,6 +1058,46 @@ def file_get_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandRes
     return handle_response_single_file(response, args)
 
 
+@logger
+def file_get_parents(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+    """
+    google-drive-get-file-parents
+    Query a single file in Google Drive to retrieve its parents.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    # Specific file
+    is_root = False
+    parents = []
+    file_id = args.get('file_id')
+    while not is_root:
+        modify_label_request_res = prepare_file_modify_labels_request(
+            client, args, scopes=COMMAND_SCOPES['FILES'])
+        http_request_params = modify_label_request_res['http_request_params']
+        http_request_params['fileId'] = file_id
+        url_suffix = URL_SUFFIX['FILE_GET_PARENTS'].format(file_id)
+        response = client.http_request(url_suffix=url_suffix, method='GET', params=http_request_params)
+
+        for parent in response.get('items', []):
+            is_root = parent.get('isRoot', False)
+            parents.append(parent.get('id', ''))
+            file_id = parent.get('id', '')
+            break
+
+    outputs: dict = {
+        OUTPUT_PREFIX['PARENTS']: parents
+    }
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=f"Parents of file {args.get('file_id')} are {parents}",
+        raw_response=response,
+    )
+
+
 def handle_response_files_list(response: dict[str, Any]) -> CommandResults:
     outputs_context = []
     readable_output = ''
@@ -1897,6 +1939,7 @@ def main() -> None:  # pragma: no cover
         'google-drive-file-modify-label': modify_label_command,
         'google-drive-get-labels': get_labels_command,
         'google-drive-get-file-labels': get_file_labels_command,
+        'google-drive-file-get-parents': file_get_parents,
     }
     command = demisto.command()
 
