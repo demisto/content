@@ -9,7 +9,7 @@
     "created": "2023-12-25T14:59:45Z",
     "categories": "Data Enrichment & Threat Intelligence",
     "tags": ["Security"],
-    "useCases": "Credential Theft Control/Attack Surface Management",
+    "useCases": ["Credential Theft Control/Attack Surface Management"],
     "keywords": ["Threat Intelligence"],
     "marketplaces": [
         "xsoar",
