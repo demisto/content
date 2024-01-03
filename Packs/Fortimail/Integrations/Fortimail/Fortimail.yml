@@ -1054,10 +1054,10 @@ script:
       - Safe
       - Safe & Relay
     - name: comment
-      description: A brief comment for the Access control.
+      description: A brief comment for the access control.
     outputs:
     - contextPath: FortiMail.AccessControl.comment
-      description: A brief comment for the Access control.
+      description: A brief comment for the access control.
       type: String
     - contextPath: FortiMail.AccessControl.action
       description: The delivery action that FortiMail unit will perform for SMTP sessions matching this access control rule.
