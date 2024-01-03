@@ -80,7 +80,9 @@ def trigger_workflow_for_pr(
         "ref": pr_name,
     }
 
-    response = requests.post(api_url, headers=headers, data=payload)
+    response = requests.post(api_url, headers=headers, data=json.dumps(payload))
+    if response.status_code == 204:
+        print(f"Workflow '{workflow_name}' triggered successfully for branch '{pr_name}'.")
     response.raise_for_status()
     print("Workflow triggered successfully. Status code: 200")
 
