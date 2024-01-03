@@ -2425,7 +2425,6 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     else:
         demisto.debug(f'ticket is updated: {ticket}')
-    
     parse_dict_ticket_fields(client, ticket)
 
     # get latest comments and files
