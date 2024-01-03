@@ -20,7 +20,7 @@ jobs:
           poetry install --with ci
       - name: Run Secrets Detection
         env:
-          TOKEM: ${{ secrets.GITHUB_TOKEN }}
+          TOKEM: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
             echo "test "
             poetry run python ./Utils/github_workflow_scripts/triggering_pre_commit_workflow_all_prs_opened.py --github_token $TOKEM
