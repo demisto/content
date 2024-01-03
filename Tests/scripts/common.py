@@ -10,7 +10,8 @@ from gitlab import Gitlab
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
 from Tests.scripts.utils import logging_wrapper as logging
-import gitlab
+from gitlab.v4.objects.pipelines import ProjectPipeline
+from gitlab.v4.objects.commits import ProjectCommit
 from datetime import datetime, timedelta
 from dateutil import parser
 
@@ -226,9 +227,10 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
     return sentence
 
 
-def get_pipelines_and_commits(gitlab_client: Gitlab, project_id, look_back_hours: int):
+def get_pipelines_and_commits(gitlab_client: Gitlab, project_id, look_back_hours: int)-> tuple[list[ProjectPipeline], list[ProjectCommit]]:
     """
     Get all pipelines and commits on the master branch in the last X hours.
+    The commits and pipelines are in order of creation time.
     Args:
         gitlab_client - the gitlab instance
         project_id - the id of the project to query
@@ -262,65 +264,26 @@ def shame(commit):
         pr: The GitHub PR link for the Gitlab commit.
     """
     name = commit.author_name
-    email = commit.author_email
     pr_number = commit.title.split()[-1][2:-1]
     pr = f"https://github.com/demisto/content/pull/{pr_number}"
-    return name, email, pr
+    return name, pr
 
 
-def are_pipelines_in_order_as_commits(commits, current_pipeline_sha, previous_pipeline_sha):
-    """
-    This function checks if the commit that triggered the current pipeline was pushed
-    after the commit that triggered the the previous pipeline,
-    to avoid rare condition that pipelines are not in the same order as their commits.
-    Args:
-        commits: list of gitlab commits
-        current_pipeline_sha: string
-        previous_pipeline_sha: string
-
-    Returns:
-        boolean , the commit that triggered the current pipeline
-    """
-    current_pipeline_commit_timestamp = None
-    previous_pipeline_commit_timestamp = None
-    the_triggering_commit = None
-    for commit in commits:
-        if commit.id == previous_pipeline_sha:
-            previous_pipeline_commit_timestamp = parser.parse(commit.created_at)
-        if commit.id == current_pipeline_sha:
-            current_pipeline_commit_timestamp = parser.parse(commit.created_at)
-            the_triggering_commit = commit
-    if not current_pipeline_commit_timestamp or not previous_pipeline_commit_timestamp:
-        return False, None
-    return current_pipeline_commit_timestamp > previous_pipeline_commit_timestamp, the_triggering_commit
+def are_pipelines_in_order(current_pipeline, previous_pipeline):
+    previous_pipeline_timestamp = parser.parse(previous_pipeline.created_at)
+    current_pipeline_timestamp = parser.parse(current_pipeline.created_at)
+    return current_pipeline_timestamp > previous_pipeline_timestamp
 
 
-def is_pivot(commit_sha, list_of_pipelines, commits):
-    """
-    Check if a the pipeline of thee given commit is a pivot, i.e. if the previous pipeline was successful and the current pipeline failed and vise versa
-   Args:
-    commit_sha: string
-    list_of_pipelines: list of gitlab pipelines
-    commits: list of gitlab commits
-    Return:
-        boolean | None, gitlab commit object| None
-    """
-    commits_pipeline = next(pipeline for pipeline in list_of_pipelines if pipeline.sha == commit_sha)
-    
-    pipeline_index = list_of_pipelines.index( commits_pipeline) if commits_pipeline else 0
-    if pipeline_index == 0:         # either current_pipeline is not in the list , or it is the first pipeline
-        return None, None
-    previous_pipeline = list_of_pipelines[pipeline_index - 1]
-
-    # if previous pipeline was successful and current pipeline failed, and current pipeline was created after
-    # previous pipeline (n), then it is a negative pivot
-    in_order, pivot_commit = are_pipelines_in_order_as_commits(commits, commits_pipeline.sha, previous_pipeline.sha)
+def is_pivot(current_pipeline, previous_pipeline):
+   
+    in_order = are_pipelines_in_order(current_pipeline, previous_pipeline)
     if in_order:
-        if previous_pipeline.status == 'success' and commits_pipeline.status == 'failed':
-            return True, pivot_commit
-        if previous_pipeline.status == 'failed' and commits_pipeline.status == 'success':
-            return False, pivot_commit
-    return None, None
+        if previous_pipeline.status == 'success' and  current_pipeline.status == 'failed':
+            return True
+        if previous_pipeline.status == 'failed' and  current_pipeline.status == 'success':
+            return False
+    return None
 
 
 def get_reviewer(pr_url: str) -> str|None:
@@ -352,3 +315,11 @@ def get_slack_user_name(name:str, name_mapping_path: str) -> str:
             return mapping["docker_images"]["owner"]
         else:
             return mapping["names"].get(name, name)
+
+
+def get_commit_by_sha(commit_sha: str, list_of_commits: list) -> ProjectCommit | None:
+    return next((commit for commit in list_of_commits if commit.id == commit_sha), None)
+
+
+def get_pipeline_by_commit(commit, list_of_pipelines):
+    return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)

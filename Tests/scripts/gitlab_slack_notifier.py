@@ -24,7 +24,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.common import get_pipelines_and_commits, is_pivot, shame, get_reviewer, get_slack_user_name
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, shame, get_reviewer, get_slack_user_name, get_commit_by_sha, get_pipeline_by_commit
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -526,22 +526,29 @@ def main():
     shame_message = None
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
-        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
+        list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
-        pipeline_changed_status, pivot_commit = is_pivot(commit_sha, list_of_pipelines, commits)
-        logging.info(f'we are investigating pipeline {pipeline_id}')
-        logging.info(f'Pivot commit is {pivot_commit}, pipeline changed status is {pipeline_changed_status}')
-        if pipeline_changed_status is not None:
-            name, email, pr = shame(pivot_commit)
-            if name == 'content-bot':
-                name = get_reviewer(pr)
-            name = get_slack_user_name(name, options.name_mapping_path)
-            msg = "broke" if pipeline_changed_status else "fixed" 
-            color = "danger" if pipeline_changed_status else "good"  
-            emoji = ":cry:" if pipeline_changed_status else ":muscle:"
-            shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ", f" That was done in this {slack_link(pr,'PR.')}", color)
+        current_commit = get_commit_by_sha(commit_sha, list_of_commits)
+        if current_commit:
+            current_commit_index = list_of_commits.index(current_commit)
+            previous_commit = list_of_commits[current_commit_index + 1]
+            current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
+            previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
+            if current_pipeline and previous_pipeline:
+                pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
+                logging.info(f'we are investigating pipeline {pipeline_id}')
+                logging.info(f'Pivot commit is {current_commit}, pipeline changed status is {pipeline_changed_status}')
+                if pipeline_changed_status is not None:
+                    name, pr = shame(current_commit)
+                    if name == 'content-bot':
+                        name = get_reviewer(pr)
+                    name = get_slack_user_name(name, options.name_mapping_path)
+                    msg = "broke" if pipeline_changed_status else "fixed" 
+                    color = "danger" if pipeline_changed_status else "good"  
+                    emoji = ":cry:" if pipeline_changed_status else ":muscle:"
+                    shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ", f" That was done in this {slack_link(pr,'PR.')}", color)
 
-            computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+                    computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
             computed_slack_channel = "dmst-build-test"
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request, shame_message)
