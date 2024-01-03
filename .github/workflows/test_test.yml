@@ -7,23 +7,22 @@ jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
-      - run: gh search prs --state=open
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v8
+      - name: Install Python Dependencies
+        run: |
+          poetry install --with ci
+      - name: Run Secrets Detection
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # pre-commit:
-  #   permissions:
-  #     checks: write
-  #     pull-requests: write
-  #     contents: write
-
-  #   if: "!contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
-  #   uses: ./.github/workflows/pre-commit-reuse.yml
-      
-  # pre-commit-community-level:
-  #   permissions:
-  #     checks: write
-  #     pull-requests: write
-  #     contents: write
-
-  #   if: contains(github.event.pull_request.labels.*.name, 'Community Support Level')
-  #   uses: ./.github/workflows/pre-commit-reuse.yml
+          TOKEM: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            echo "test "
+            poetry run python ./Utils/github_workflow_scripts/triggering_pre_commit_workflow_all_prs_opened.py --github_token $TOKEM
+        
+          
