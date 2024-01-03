@@ -8,7 +8,7 @@ import ServiceNowv2
 import requests
 from CommonServerPython import DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
-    generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
+    generate_body, parse_dict_ticket_fields, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
@@ -2031,3 +2031,34 @@ def test_send_request_with_str_error_response(mocker, mock_json, expected_result
     with pytest.raises(Exception) as e:
         client.send_request(path='table')
     assert str(e.value) == expected_results
+
+
+@pytest.mark.parametrize('ticket, expected_ticket',
+                         [
+                             ({}, {}),
+                             ({"assigned_to": ""}, {"assigned_to": ""}),
+                              ({"assigned_to": {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
+                   'value': 'oscar@example.com'}}, {'assigned_to': 'oscar@example.com'})
+                         ])
+def test_parse_dict_ticket_fields_empty_ticket(ticket, expected_ticket):
+    """
+    Given:
+     - a ticket
+     - case 1: Ticket is completely empty (obtained from the case where last_update > ticket_last_update).
+     - case 2: Ticket contains assigned_to field with an empty string as a value.
+     - case 3: Ticket contains assigned_to field with a user dict as a value.
+
+    When:
+     - Running parse_dict_ticket_fields function.
+
+    Then:
+     - Verify that the ticket fields were updated correctly.
+     - case 1: Shouldn't add the assigned_to field to the obtained ticket.
+     - case 2: Should add assigned_to field with an empty string as a value.
+     - case 3: Should add assigned_to field with the user email as a value.
+    """
+    class Client:
+        def get(self, table, value, no_record_found_res):
+            return USER_RESPONSE
+    parse_dict_ticket_fields(Client(), ticket) # type: ignore
+    assert ticket == expected_ticket
