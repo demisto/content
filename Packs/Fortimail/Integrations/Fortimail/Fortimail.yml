@@ -1763,7 +1763,7 @@ script:
       description: SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles.
       type: String
     - contextPath: FortiMail.RecipientPolicy.smtp_auth
-      description: Whether the policy allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password.
+      description: Whether the policy allows email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password.
       type: String
     - contextPath: FortiMail.RecipientPolicy.pkiauth
       description: Whether to allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password.
