@@ -78,7 +78,6 @@ def trigger_workflow_for_pr(
 
     payload = {
         "ref": pr_name,
-        "inputs": {}
     }
 
     response = requests.post(api_url, headers=headers, data=payload)
