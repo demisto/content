@@ -219,12 +219,14 @@ def init_last_run(last_run: dict) -> dict:
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
+    args = demisto.args()
     command = demisto.command()
     vendor, product = params.get('vendor', 'vmware_carbon_black'), params.get('product', 'cloud')
-    # support_multithreading()  # audit_logs will be fetched on a separate thread
+    support_multithreading()  # audit_logs will be fetched on a separate thread
     demisto.debug(f'Command being called is {command}')
     try:
         last_run = init_last_run(demisto.getLastRun())
+        should_push_events = (command == 'fetch-events') or argToBoolean(args.get('should_push_events', False))
         add_audit_logs = params.get('add_audit_logs')
         max_alerts = min(arg_to_number(params.get('max_alerts') or MAX_ALERTS), MAX_ALERTS)  # type: ignore
         max_audit_logs = min(arg_to_number(params.get('max_audit_logs') or MAX_AUDITS), MAX_AUDITS)  # type: ignore
@@ -241,7 +243,7 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
 
-        elif command == 'fetch-events':
+        elif command in ('fetch-events', 'carbonblack-endpoint-standard-get-events'):
             demisto.debug(f'Sending request with last run {last_run}')
             events, new_last_run = get_events(
                 client=client,
@@ -249,9 +251,11 @@ def main() -> None:  # pragma: no cover
                 add_audit_logs=add_audit_logs,
             )
             demisto.debug(f'sending {len(events)} to xsiam')
-            send_events_to_xsiam(events=events, vendor=vendor, product=product)
+            if should_push_events:
+                send_events_to_xsiam(events=events, vendor=vendor, product=product)
             demisto.debug(f'Handled {len(events)} total events')
             demisto.setLastRun(new_last_run)
+
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
