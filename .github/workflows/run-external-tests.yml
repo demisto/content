@@ -21,7 +21,7 @@ jobs:
           if [ $GIT_OUTPUT == "1" ]; then
             echo "BRANCH_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
           else
-            echo "BRANCH_NAME=master" >> $GITHUB_ENV
+            echo "BRANCH_NAME=main" >> $GITHUB_ENV
           fi
 
       - name: Print companion branch name
