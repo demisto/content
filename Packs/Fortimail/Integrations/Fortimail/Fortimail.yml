@@ -194,7 +194,7 @@ script:
       required: true
       default: true
   - name: fortimail-email-group-list
-    description: List email groups. If a name is given, the command will return the information about the wanted email group.
+    description: List email groups. If a name is given, the command will return the information about the specified email group.
     arguments:
     - name: name
       description: The name of the email group to retrieve.
