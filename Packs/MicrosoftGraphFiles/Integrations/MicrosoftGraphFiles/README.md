@@ -110,9 +110,9 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-| 123 |
-| --- |
-| Item was deleted successfully |
+>| 123 |
+>| --- |
+>| Item was deleted successfully |
 
 
 ### msgraph-upload-new-file
@@ -216,9 +216,9 @@ Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Human Readable Output
 
-| CreatedBy       | CreatedDateTime      | ID   | LastModifiedBy  | Name     | Size | WebUrl |
-| --- | --- | --- | --- | --- | --- | --- |
-| Microsoft Graph | 2020-01-22T20:03:00Z | Test | Microsoft Graph | test.txt | 15   | Test   |
+>| CreatedBy       | CreatedDateTime      | ID   | LastModifiedBy  | Name     | Size | WebUrl |
+>| --- | --- | --- | --- | --- | --- | --- |
+>| Microsoft Graph | 2020-01-22T20:03:00Z | Test | Microsoft Graph | test.txt | 15   | Test   |
 
 
 ### msgraph-replace-existing-file
@@ -323,11 +323,11 @@ Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Human Readable Output
 
-### MsGraphFiles - File information:
+>### MsGraphFiles - File information:
 
-| Created By     | Created Date Time    | ID   | Last Modified By | Name     | Size | Web Url |
-| -------------- | -------------------- | ---- | ---------------- | -------- | ---- | ------- |
-| SharePoint DEV | 2020-01-05T15:30:21Z | 123  | Microsoft Graph  | yaya.txt | 15   | 123     |
+>| Created By     | Created Date Time    | ID   | Last Modified By | Name     | Size | Web Url |
+>| -------------- | -------------------- | ---- | ---------------- | -------- | ---- | ------- |
+>| SharePoint DEV | 2020-01-05T15:30:21Z | 123  | Microsoft Graph  | yaya.txt | 15   | 123     |
 
 
 ### msgraph-create-new-folder
@@ -424,11 +424,11 @@ Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Human Readable Output
 
-### MsGraphFiles - Folder information:
+>### MsGraphFiles - Folder information:
 
-| Child Count   | Created By      | Created Date Time    | ID   | Last Modified By | Name      | Size | Web Url |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| ChildCount: 0 | Microsoft Graph | 2020-01-22T20:03:09Z | 123  | Microsoft Graph  | test11 19 | 0    | 123     |
+>| Child Count   | Created By      | Created Date Time    | ID   | Last Modified By | Name      | Size | Web Url |
+>| --- | --- | --- | --- | --- | --- | --- | --- |
+>| ChildCount: 0 | Microsoft Graph | 2020-01-22T20:03:09Z | 123  | Microsoft Graph  | test11 19 | 0    | 123     |
 
 
 ### msgraph-list-drives-in-site
@@ -510,11 +510,11 @@ Authorization Code Flow - `Files.Read - Delegated`
 
 #### Human Readable Output
 
-### MsGraphFiles - Drives information:
+>### MsGraphFiles - Drives information:
 
-| Created By     | Created Date Time    | Description | Drive Type      | ID   | Last Modified Date Time | Name      | Web Url |
-| -------------- | -------------------- | ----------- | --------------- | ---- | ----------------------- | --------- | ------- |
-| System Account | 2019-09-21T08:17:20Z |             | documentLibrary | Test | 2019-09-21T08:17:20Z    | Documents | Test    |
+>| Created By     | Created Date Time    | Description | Drive Type      | ID   | Last Modified Date Time | Name      | Web Url |
+>| -------------- | -------------------- | ----------- | --------------- | ---- | ----------------------- | --------- | ------- |
+>| System Account | 2019-09-21T08:17:20Z |             | documentLibrary | Test | 2019-09-21T08:17:20Z    | Documents | Test    |
 
 
 ### msgraph-list-drive-content
@@ -619,11 +619,11 @@ Authorization Code Flow - `Files.Read - Delegated`
 
 #### Human Readable Output
 
-### MsGraphFiles - drivesItems information:
+>### MsGraphFiles - drivesItems information:
 
-| Created By         | Created Date Time    | Description | ID   | Last Modified Date Time | Name        | Size | Web Url |
-| ------------------ | -------------------- | ----------- | ---- | ----------------------- | ----------- | ---- | ------- |
-| MS Graph Files Dev | 2019-12-29T11:57:41Z |             | 123  | 2019-12-29T11:57:41Z    | Attachments | 0    | 123     |
+>| Created By         | Created Date Time    | Description | ID   | Last Modified Date Time | Name        | Size | Web Url |
+>| ------------------ | -------------------- | ----------- | ---- | ----------------------- | ----------- | ---- | ------- |
+>| MS Graph Files Dev | 2019-12-29T11:57:41Z |             | 123  | 2019-12-29T11:57:41Z    | Attachments | 0    | 123     |
 
 
 ### msgraph-list-sharepoint-sites
@@ -694,9 +694,9 @@ Authorization Code Flow - `Sites.Read.All - Delegated`
 
 #### Human Readable Output
 
-| Created Date Time    | ID   | Last Modified Date Time | Name                 | Web Url |
-| -------------------- | ---- | ----------------------- | -------------------- | ------- |
-| 2016-09-14T11:12:59Z | 123  | 2016-09-14T11:13:53Z    | 123                  | 123     |
+>| Created Date Time    | ID   | Last Modified Date Time | Name                 | Web Url |
+>| -------------------- | ---- | ----------------------- | -------------------- | ------- |
+>| 2016-09-14T11:12:59Z | 123  | 2016-09-14T11:13:53Z    | 123                  | 123     |
 
 
 ### msgraph-download-file
