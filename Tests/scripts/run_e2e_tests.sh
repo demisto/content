@@ -29,11 +29,7 @@ fi
 
 
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-if [ "${TEST_XDR_ENV}" == "true" ]; then
-    cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-else
-    echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-fi
+cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
 
 if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
   test_path="./Tests/tests_e2e/content/xsiam"
