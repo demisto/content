@@ -9,6 +9,7 @@ The required permission depends on whether you want to access all sites (Sites.R
 - `Sites.ReadWrite.All`: Provides read and write access to all sites.\
 `Client Credentials Flow` - Application permission.
 `Authorization Code Flow` - Delegated permission.
+* This permission is sufficient for all the commands, but if you want the least privileged permissions for each command, they are listed for each command definition.
 
 OR
 - `Sites.Selected - Application`: Provides read and write access to specific sites.\
@@ -89,7 +90,7 @@ Deletes an item from OneDrive.
 #### Required Permissions
 
 Client Credentials Flow - `Files.ReadWrite.All - Application`\
-Authorization Code Flow - `Files.ReadWrite	- Delegated`
+Authorization Code Flow - `Files.ReadWrite - Delegated`
 
 #### Input
 
@@ -126,7 +127,7 @@ Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 #### Required Permissions
 
 Client Credentials Flow - `Files.ReadWrite.All - Application`\
-Authorization Code Flow - `Files.ReadWrite	- Delegated`
+Authorization Code Flow - `Files.ReadWrite - Delegated`
 
 #### Input
 
@@ -232,7 +233,7 @@ Replaces the content of the file in the specified MS Graph resource.
 #### Required Permissions
 
 Client Credentials Flow - `Files.ReadWrite.All - Application`\
-Authorization Code Flow - `Files.ReadWrite	- Delegated`
+Authorization Code Flow - `Files.ReadWrite - Delegated`
 
 
 #### Input
@@ -341,7 +342,7 @@ Creates a new folder in a drive with the specified parent item or path.
 #### Required Permissions
 
 Client Credentials Flow - `Files.ReadWrite.All - Application`\
-Authorization Code Flow - `Files.ReadWrite	- Delegated`
+Authorization Code Flow - `Files.ReadWrite - Delegated`
 
 #### Input
 
@@ -442,7 +443,7 @@ Returns the list of document libraries (drives) available for a target site.
 #### Required Permissions
 
 Client Credentials Flow - `Files.Read.All - Application`\
-Authorization Code Flow - `Files.Read	- Delegated`
+Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
 
@@ -528,7 +529,7 @@ Returns a list of files and folders in the specified drive.
 #### Required Permissions
 
 Client Credentials Flow - `Files.Read.All - Application`\
-Authorization Code Flow - `Files.Read	- Delegated`
+Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
 
