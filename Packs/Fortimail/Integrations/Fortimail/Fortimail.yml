@@ -466,7 +466,7 @@ script:
       description: The authentication profile when auth_type=RADIUS. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles.
       type: String
     - contextPath: FortiMail.IPPolicy.auth_type
-      description: The type of the authentication profile that this policy will apply.If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP).
+      description: The type of the authentication profile that this policy will apply. If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP).
       type: Number
     - contextPath: FortiMail.IPPolicy.ip_pool_profile
       description: The name of the content profile that you want to apply to connections matching the policy. Use fortimail-ip-pool-list to retrieve all the IP pool profiles.
