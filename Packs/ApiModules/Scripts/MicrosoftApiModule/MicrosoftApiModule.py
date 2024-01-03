@@ -1496,7 +1496,7 @@ def generate_login_url(client: MicrosoftClient,
 
     login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
                                    f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
-                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
+                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}&prompt=consent')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
