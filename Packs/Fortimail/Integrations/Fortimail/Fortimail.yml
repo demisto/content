@@ -280,7 +280,7 @@ script:
       description: The name of the email member.
       type: String
   - name: fortimail-system-safe-block-list
-    description: List the system Block/Safe list. Choose the wanted list by the type argument.
+    description: List the system Block/Safe list. Choose the required list by the type argument.
     arguments:
     - name: list_type
       description: The type of the list to retrieve.
