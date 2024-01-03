@@ -3,22 +3,23 @@ from CommonServerPython import *
 
 from collections import defaultdict
 from typing import Any, Dict, Tuple, List
-import httplib2
+
 import urllib.parse
-from oauth2client import service_account
+from google.oauth2 import service_account
+from google.auth.transport import requests as auth_requests
 from copy import deepcopy
 import dateparser
 from hashlib import sha256
 from datetime import datetime
-
-# A request will be tried 3 times if it fails at the socket/connection level
-httplib2.RETRIES = 3
 
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 SCOPES = ['https://www.googleapis.com/auth/chronicle-backstory']
+STATUS_LIST_TO_RETRY = [429] + [i for i in range(500, 600)]
+MAX_RETRIES = 4
+BACKOFF_FACTOR = 7.5
 
 BACKSTORY_API_V1_URL = 'https://{}backstory.googleapis.com/v1'
 BACKSTORY_API_V2_URL = 'https://{}backstory.googleapis.com/v2'
@@ -185,9 +186,25 @@ class Client:
         """
         encoded_service_account = str(params.get('service_account_credential'))
         service_account_credential = json.loads(encoded_service_account, strict=False)
-        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credential,
-                                                                                       scopes=SCOPES)
-        self.http_client = credentials.authorize(get_http_client(proxy, disable_ssl))
+        # Create a credential using the Google Developer Service Account Credential and Chronicle API scope.
+        credentials = service_account.Credentials.from_service_account_info(service_account_credential, scopes=SCOPES)
+        # Build an HTTP client which can make authorized OAuth requests.
+        self.http_client = auth_requests.AuthorizedSession(credentials)
+
+        proxies = {}
+        if proxy:
+            proxies = handle_proxy()
+            if not proxies.get('https', True):
+                raise DemistoException('https proxy value is empty. Check Demisto server configuration' + str(proxies))
+            https_proxy = proxies['https']
+            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+                proxies['https'] = 'https://' + https_proxy
+        self.proxy_info = proxies
+        self.disable_ssl = disable_ssl
+
+        self._implement_retry(retries=MAX_RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY,
+                              backoff_factor=BACKOFF_FACTOR)
+
         region = params.get('region', '')
         other_region = params.get('other_region', '').strip()
         if region:
@@ -197,37 +214,84 @@ class Client:
         else:
             self.region = REGIONS['General']
 
+    def _implement_retry(self, retries=0,
+                         status_list_to_retry=None,
+                         backoff_factor=5,
+                         raise_on_redirect=False,
+                         raise_on_status=False):
+        """
+        Implements the retry mechanism.
+        In the default case where retries = 0 the request will fail on the first time.
+
+        :type retries: ``int``
+        :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time.
+
+        :type status_list_to_retry: ``iterable``
+        :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+            A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+            and the response status code is in ``status_list_to_retry``.
+
+        :type backoff_factor ``float``
+        :param backoff_factor:
+            A backoff factor to apply between attempts after the second try
+            (most errors are resolved immediately by a second try without a
+            delay). urllib3 will sleep for::
+
+                {backoff factor} * (2 ** ({number of total retries} - 1))
+
+            seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+            for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+            than :attr:`Retry.BACKOFF_MAX`.
+
+            By default, backoff_factor set to 5
+
+        :type raise_on_redirect ``bool``
+        :param raise_on_redirect: Whether, if the number of redirects is
+            exhausted, to raise a MaxRetryError, or to return a response with a
+            response code in the 3xx range.
+
+        :type raise_on_status ``bool``
+        :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+            whether we should raise an exception, or return a response,
+            if status falls in ``status_forcelist`` range and retries have
+            been exhausted.
+        """
+        try:
+            method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT,  # type: ignore[attr-defined]
+                                                            "allowed_methods") else "method_whitelist"
+            whitelist_kawargs = {
+                method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+            }
+            retry = Retry(
+                total=retries,
+                read=retries,
+                connect=retries,
+                backoff_factor=backoff_factor,
+                status=retries,
+                status_forcelist=status_list_to_retry,
+                raise_on_status=raise_on_status,
+                raise_on_redirect=raise_on_redirect,
+                **whitelist_kawargs  # type: ignore[arg-type]
+            )
+            http_adapter = HTTPAdapter(max_retries=retry)
+
+            if not self.disable_ssl:
+                https_adapter = http_adapter
+            elif IS_PY3 and PY_VER_MINOR >= 10:
+                https_adapter = SSLAdapter(max_retries=retry, verify=not self.disable_ssl)  # type: ignore[arg-type]
+            else:
+                https_adapter = http_adapter
+
+            self.http_client.mount('https://', https_adapter)
+
+        except NameError:
+            pass
+
 
 ''' HELPER FUNCTIONS '''
 
 
-def get_http_client(proxy, disable_ssl):
-    """
-    Construct HTTP Client.
-
-    :param proxy: if proxy is enabled, http client with proxy is constructed
-    :param disable_ssl: insecure
-    :return: http_client object
-    """
-    proxy_info = {}
-    if proxy:
-        proxies = handle_proxy()
-        if not proxies.get('https', True):
-            raise DemistoException('https proxy value is empty. Check Demisto server configuration' + str(proxies))
-        https_proxy = proxies['https']
-        if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-            https_proxy = 'https://' + https_proxy
-        parsed_proxy = urllib.parse.urlparse(https_proxy)
-        proxy_info = httplib2.ProxyInfo(
-            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
-            proxy_host=parsed_proxy.hostname,
-            proxy_port=parsed_proxy.port,
-            proxy_user=parsed_proxy.username,
-            proxy_pass=parsed_proxy.password)
-    return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl)
-
-
-def validate_response(client, url, method='GET', body=None):
+def validate_response(client: Client, url, method='GET', body=None):
     """
     Get response from Chronicle Search API and validate it.
 
@@ -246,23 +310,30 @@ def validate_response(client, url, method='GET', body=None):
     :return: response
     """
     demisto.info('[CHRONICLE DETECTIONS]: Request URL: ' + url.format(client.region))
-    raw_response = client.http_client.request(url.format(client.region), method, body=body)
-    if not raw_response:
-        raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
-    if raw_response[0].status == 500:
-        raise ValueError('Internal server error occurred, Reattempt will be initiated.')
-    if raw_response[0].status == 429:
-        raise ValueError('API rate limit exceeded. Reattempt will be initiated.')
-    if raw_response[0].status == 400 or raw_response[0].status == 404:
+    raw_response = client.http_client.request(url=url.format(client.region), method=method, data=body,
+                                              proxies=client.proxy_info, verify=not client.disable_ssl)
+
+    if 500 <= raw_response.status_code <= 599:
         raise ValueError(
-            'Status code: {}\nError: {}'.format(raw_response[0].status,
-                                                parse_error_message(raw_response[1], client.region)))
-    if raw_response[0].status != 200:
+            'Internal server error occurred. Failed to execute request with 3 retries.\nMessage: {}'.format(
+                parse_error_message(raw_response.text, client.region)))
+    if raw_response.status_code == 429:
         raise ValueError(
-            'Status code: {}\nError: {}'.format(raw_response[0].status,
-                                                parse_error_message(raw_response[1], client.region)))
+            'API rate limit exceeded. Failed to execute request with 3 retries.\nMessage: {}'.format(
+                parse_error_message(raw_response.text, client.region)))
+    if raw_response.status_code == 400 or raw_response.status_code == 404:
+        raise ValueError(
+            'Status code: {}\nError: {}'.format(raw_response.status_code,
+                                                parse_error_message(raw_response.text, client.region)))
+    if raw_response.status_code != 200:
+        raise ValueError(
+            'Status code: {}\nError: {}'.format(raw_response.status_code,
+                                                parse_error_message(raw_response.text, client.region)))
+    if not raw_response.text:
+        raise ValueError('Technical Error while making API call to Chronicle. '
+                         f'Empty response received with the status code: {raw_response.status_code}')
     try:
-        response = remove_empty_elements(json.loads(raw_response[1]))
+        response = remove_empty_elements(raw_response.json())
         return response
     except json.decoder.JSONDecodeError:
         raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
@@ -696,12 +767,12 @@ def get_gcb_udm_search_command_args_value(args: Dict[str, Any], max_limit=1000, 
     return start_time, end_time, limit, query
 
 
-def parse_error_message(error, region: str):
+def parse_error_message(error: str, region: str):
     """
     Extract error message from error object.
 
-    :type error: bytearray
-    :param error: Error byte response to be parsed
+    :type error: str
+    :param error: Error string response to be parsed
     :type region: str
     :param region: Region value based on the location of the chronicle backstory instance.
 
@@ -713,7 +784,7 @@ def parse_error_message(error, region: str):
         if isinstance(json_error, list):
             json_error = json_error[0]
     except json.decoder.JSONDecodeError:
-        if region not in REGIONS.values() and b'404' in error:
+        if region not in REGIONS.values() and '404' in error:
             error_message = 'Invalid response from Chronicle API. Check the provided "Other Region" parameter.'
         else:
             error_message = 'Invalid response received from Chronicle API. Response not in JSON format.'
@@ -2272,7 +2343,7 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
             _, raw_resp = get_detections(client_obj, rule_id, max_fetch, start_time, end_time, next_page_token,
                                          alert_state, list_basis=fetch_detection_by_list_basis)
         except ValueError as e:
-            if str(e).endswith('Reattempt will be initiated.'):
+            if str(e).startswith('API rate limit') or str(e).startswith('Internal server error'):
                 attempts = simple_backoff_rules.get('attempts', 0)
                 if attempts < MAX_ATTEMPTS:
                     demisto.error(
@@ -2381,7 +2452,7 @@ def get_max_fetch_curatedrule_detections(client_obj, start_time, end_time, max_f
                                                      next_page_token, alert_state,
                                                      list_basis=fetch_detection_by_list_basis)
         except ValueError as e:
-            if str(e).endswith('Reattempt will be initiated.'):
+            if str(e).startswith('API rate limit') or str(e).startswith('Internal server error'):
                 attempts = simple_backoff_rules.get('attempts', 0)
                 if attempts < MAX_ATTEMPTS:
                     demisto.error(
