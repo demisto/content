@@ -3504,97 +3504,11 @@ inputs:
   required: true
   description: The default role to assign the incident to.
   playbookInputQuery:
-- key: SearchAndDelete
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Enables the Search and Delete capability.
-    For a malicious email, the "Search and Delete" sub-playbook looks for other instances of the email and deletes them pending analyst approval.
-  playbookInputQuery:
-- key: BlockIndicators
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    This input manages the automated block indicators capability.
-    Set to "True" for automatically block all malicious indicators.
-    Set to "False" to manually choose which indicators to block, if any.
-  playbookInputQuery:
-- key: AuthenticateEmail
-  value:
-    simple: "True"
-  required: false
-  description: Determines whether the authenticity of the email should be verified using SPF, DKIM, and DMARC.
-  playbookInputQuery:
 - key: OnCall
   value:
     simple: "False"
   required: false
   description: Set to True to assign only the user that is currently on shift.
-  playbookInputQuery:
-- key: SearchAndDeleteIntegration
-  value:
-    simple: EWS
-  required: false
-  description: |-
-    Determines which product and playbook is used to search and delete the phishing email from user inboxes.
-      - Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.
-      - Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.
-      - Set this to "Gmail" to use the "Search And Delete - Gmail" playbook.
-  playbookInputQuery:
-- key: O365DeleteType
-  value:
-    simple: Soft
-  required: false
-  description: |-
-    Sets the method to delete emails in the "O365 - Security And Compliance - Search And Delete" playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
-    This is only applicable if the SearchAndDeleteIntegration input is set to "O365".
-  playbookInputQuery:
-- key: O365ExchangeLocation
-  value: {}
-  required: false
-  description: The exchange location. Determines from where to search and delete emails using O365 playbooks. Use the value "All" to search all mailboxes. If no input provided, it will search and delete the email only from the recipient's mailboxes. Note - Searching all mailboxes may take a significant amount of time. This input is used only when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration input is set to O365.
-  playbookInputQuery:
-- key: O365AllowNotFoundSearchLocations
-  value:
-    simple: "False"
-  required: false
-  description: Used only when searching and deleting emails in O365. Determines whether to include mailboxes other than regular user mailboxes in the compliance search.
-  playbookInputQuery:
-- key: O365ExchangeLocationExclusion
-  value: {}
-  required: false
-  description: Used only when searching and deleting emails in O365. A comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the O365ExchangeLocation input.
-  playbookInputQuery:
-- key: CheckMicrosoftHeaders
-  value:
-    simple: "True"
-  required: false
-  description: Whether to check Microsoft headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly.
-  playbookInputQuery:
-- key: InternalDomains
-  value: {}
-  required: false
-  description: A CSV list of internal domains. The list is used to determine whether an email address is internal or external.
-  playbookInputQuery:
-- key: DetonateURL
-  value:
-    simple: "False"
-  required: false
-  description: Determines whether to use the "URL Detonation" playbook. Detonating a URL may take a few minutes.
-  playbookInputQuery:
-- key: InternalRange
-  value: {}
-  required: false
-  description: |-
-    This input is used in the "Entity Enrichment - Phishing v2" playbook.
-    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
-  playbookInputQuery:
-- key: PhishingModelName
-  value: {}
-  required: false
-  description: Optional - the name of a pre-trained phishing model to predict phishing type using machine learning.
   playbookInputQuery:
 - key: GetOriginalEmail
   value:
@@ -3610,6 +3524,77 @@ inputs:
     - For MSGraph: As described in these links
     https://docs.microsoft.com/en-us/graph/api/message-get
     https://docs.microsoft.com/en-us/graph/api/user-list-messages
+  playbookInputQuery:
+- key: EmailHuntingCreateNewIncidents
+  value:
+    simple: "False"
+  required: false
+  description: When "True", the "Phishing - Handle Microsoft 365 Defender Results" sub-playbook will open new phishing incidents for each email that contains one of the malicious indicators. Default is "False".
+  playbookInputQuery:
+- key: ListenerMailbox
+  value: {}
+  required: false
+  description: |-
+    The mailbox which is being used to fetch phishing incidents. This mailbox would be excluded in the "Phishing - Indicators Hunting" playbook.
+    In case the value of this input is empty, the value of the "Email To" incident field will be automatically used as the listener mailbox.
+  playbookInputQuery:
+- key: SendMailInstance
+  value: {}
+  required: false
+  description: The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used (default).
+  playbookInputQuery:
+- key: UserEngagement
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Specify whether to engage with the user via email for investigation updates.
+    Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: |-
+    This input is used in the "Entity Enrichment - Phishing v2" playbook.
+    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
+  playbookInputQuery:
+- key: DetonateURL
+  value:
+    simple: "False"
+  required: false
+  description: Determines whether to use the "URL Detonation" playbook. Detonating a URL may take a few minutes.
+  playbookInputQuery:
+- key: InternalDomains
+  value: {}
+  required: false
+  description: A CSV list of internal domains. The list is used to determine whether an email address is internal or external.
+  playbookInputQuery:
+- key: AuthenticateEmail
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether the authenticity of the email should be verified using SPF, DKIM, and DMARC.
+  playbookInputQuery:
+- key: KeyWordsToSearch
+  value: {}
+  required: false
+  description: |-
+    A comma-separated list of keywords to search in the email body.
+    For example: name of the organization finance app that the attacker might impersonate.
+    This input is used in the "Spear Phishing Investigation" sub-playbook.
+  playbookInputQuery:
+- key: OriginalAuthenticationHeader
+  value: {}
+  required: false
+  description: |-
+    This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.
+    The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header.
+  playbookInputQuery:
+- key: HuntEmailIndicators
+  value:
+    simple: "True"
+  required: false
+  description: Whether to enter the "Email Indicators Hunting" branch in the playbook. Under this branch, sub-playbooks would be triggered in order to hunt malicious indicators found in other emails and optionally, automatically create new incidents for each found email (configurable through next playbook inputs). Default is "True".
   playbookInputQuery:
 - key: DBotPredictURLPhishingURLsNumber
   value:
@@ -3641,44 +3626,56 @@ inputs:
     Outer file: The file at the first level is parsed.
     All files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run.
   playbookInputQuery:
-- key: HuntEmailIndicators
+- key: CheckMicrosoftHeaders
   value:
     simple: "True"
   required: false
-  description: Whether to enter the "Email Indicators Hunting" branch in the playbook. Under this branch, sub-playbooks would be triggered in order to hunt malicious indicators found in other emails and optionally, automatically create new incidents for each found email (configurable through next playbook inputs). Default is "True".
+  description: Whether to check Microsoft headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly.
   playbookInputQuery:
-- key: EmailHuntingCreateNewIncidents
+- key: PhishingModelName
+  value: {}
+  required: false
+  description: Optional - the name of a pre-trained phishing model to predict phishing type using machine learning.
+  playbookInputQuery:
+- key: BlockIndicators
   value:
     simple: "False"
   required: false
-  description: When "True", the "Phishing - Handle Microsoft 365 Defender Results" sub-playbook will open new phishing incidents for each email that contains one of the malicious indicators. Default is "False".
-  playbookInputQuery:
-- key: ListenerMailbox
-  value: {}
-  required: false
   description: |-
-    The mailbox which is being used to fetch phishing incidents. This mailbox would be excluded in the "Phishing - Indicators Hunting" playbook.
-    In case the value of this input is empty, the value of the "Email To" incident field will be automatically used as the listener mailbox.
+    This input manages the automated block indicators capability.
+    Set to "True" for automatically block all malicious indicators.
+    Set to "False" to manually choose which indicators to block, if any.
   playbookInputQuery:
-- key: SendMailInstance
-  value: {}
-  required: false
-  description: The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used (default).
-  playbookInputQuery:
-- key: OriginalAuthenticationHeader
-  value: {}
-  required: false
-  description: |-
-    This input will be used as the "original_authentication_header" argument in the "CheckEmailAuthenticity" script under the "Authenticate email" task.
-    The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header.
-  playbookInputQuery:
-- key: UserEngagement
+- key: SearchAndDelete
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
-    Specify whether to engage with the user via email for investigation updates.
-    Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement.
+    Enables the Search and Delete capability.
+    For a malicious email, the "Search and Delete" sub-playbook looks for other instances of the email and deletes them pending analyst approval.
+  playbookInputQuery:
+- key: SearchAndDeleteIntegration
+  value:
+    simple: EWS
+  required: false
+  description: |-
+    Determines which product and playbook is used to search and delete the phishing email from user inboxes.
+      - Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.
+      - Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.
+      - Set this to "Gmail" to use the "Search And Delete - Gmail" playbook.
+  playbookInputQuery:
+- key: O365DeleteType
+  value:
+    simple: Soft
+  required: false
+  description: |-
+    Sets the method to delete emails in the "O365 - Security And Compliance - Search And Delete" playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
+    This is only applicable if the SearchAndDeleteIntegration input is set to "O365".
+  playbookInputQuery:
+- key: O365ExchangeLocation
+  value: {}
+  required: false
+  description: The exchange location. Determines from where to search and delete emails using O365 playbooks. Use the value "All" to search all mailboxes. If no input provided, it will search and delete the email only from the recipient's mailboxes. Note - Searching all mailboxes may take a significant amount of time. This input is used only when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: TakeManualActions
   value:
@@ -3688,58 +3685,63 @@ inputs:
     Specify whether to stop the playbook to take additional action before closing the incident.
     Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done.
   playbookInputQuery:
-- key: KeyWordsToSearch
+- key: O365AllowNotFoundSearchLocations
+  value:
+    simple: "False"
+  required: false
+  description: Used only when searching and deleting emails in O365. Determines whether to include mailboxes other than regular user mailboxes in the compliance search.
+  playbookInputQuery:
+- key: O365ExchangeLocationExclusion
   value: {}
   required: false
-  description: |-
-    A comma-separated list of keywords to search in the email body.
-    For example: name of the organization finance app that the attacker might impersonate.
-    This input is used in the "Spear Phishing Investigation" sub-playbook.
+  description: Used only when searching and deleting emails in O365. A comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the O365ExchangeLocation input.
   playbookInputQuery:
 inputSections:
-- name: Role and Assignment
-  description:  Parameters defining user responsibilities and task allocations.
-  inputs: 
+- inputs:
   - Role
   - OnCall
-- name: Search and Delete Functionality
-  description: Input criteria to locate specific entries and actions to remove them.
-  inputs:
-  - SearchAndDelete
-  - SearchAndDeleteIntegration
-  - O365DeleteType
-  - O365ExchangeLocation
-  - O365AllowNotFoundSearchLocations
-  - O365ExchangeLocationExclusion
-- name: Email Verification and Classification
-  description: Criteria and actions for authenticating email sources and categorizing by content.
-  inputs:
-  - AuthenticateEmail
-  - CheckMicrosoftHeaders
-  - InternalDomains
   - GetOriginalEmail
-  - OriginalAuthenticationHeader
-- name: Analysis and Threat Detection
-  description: Parameters for examining data, identifying, and assessing security threats.
-  inputs:
-  - BlockIndicators
-  - DetonateURL
-  - InternalRange
-  - PhishingModelName
-  - DBotPredictURLPhishingURLsNumber
-  - EmailFileToExtract
-  - HuntEmailIndicators
-- name: Incident Management and User Engagement
-  description: Input settings for handling security events and involving end-users in the resolution process.
-  inputs:
   - EmailHuntingCreateNewIncidents
   - ListenerMailbox
   - SendMailInstance
   - UserEngagement
-  - TakeManualActions
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods
+- inputs:
+  - InternalRange
+  - DetonateURL
+  - InternalDomains
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-side enrichers.
+- inputs:
+  - AuthenticateEmail
   - KeyWordsToSearch
+  - OriginalAuthenticationHeader
+  - HuntEmailIndicators
+  - DBotPredictURLPhishingURLsNumber
+  - EmailFileToExtract
+  - CheckMicrosoftHeaders
+  - PhishingModelName
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - BlockIndicators
+  - SearchAndDelete
+  - SearchAndDeleteIntegration
+  - O365DeleteType
+  - O365ExchangeLocation
+  - TakeManualActions
+  - O365AllowNotFoundSearchLocations
+  - O365ExchangeLocationExclusion
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
+- playbook-checkEmailAuthenticity-test
 - Phishing v3 - Get Original Email + Search & Delete - Test
 fromversion: 6.8.0

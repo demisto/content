@@ -1,8 +1,17 @@
 id: Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration v2
-version: -1
-fromversion: 6.5.0
+version: 5
+contentitemexportablefields:
+  contentitemfields:
+    packID: PrismaCloud
+    packName: Prisma Cloud by Palo Alto Networks
+    itemVersion: 4.2.15
+    fromServerVersion: 6.5.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Prisma Cloud Remediation - GCP Kubernetes Engine Misconfiguration v2
-description: |
+description: |-
   This playbook remediates Prisma Cloud GCP Kubernetes Engine alerts.  It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
@@ -15,7 +24,7 @@ description: |
   * GCP Kubernetes Engine Clusters have Stackdriver Monitoring disabled
   * GCP Kubernetes Engine Clusters have binary authorization disabled
   * GCP Kubernetes Engine Clusters web UI/Dashboard is set to Enabled
-  * GCP Kubernetes cluster intra-node visibility disabled
+  * GCP Kubernetes cluster intra-node visibility disabled.
 starttaskid: "0"
 tasks:
   "0":
@@ -26,13 +35,13 @@ tasks:
       id: 61bee172-14d4-4a48-815c-913b49bef800
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "14"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -45,6 +54,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
@@ -53,11 +64,11 @@ tasks:
       id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -70,6 +81,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: c29ab7ff-a6fd-4211-80e8-eeccafa8981c
@@ -97,6 +110,7 @@ tasks:
               complex:
                 root: inputs.policyId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -109,6 +123,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 14ec4b6b-a5b7-4981-85be-a18ba5f49a84
@@ -141,6 +157,7 @@ tasks:
           right:
             value:
               simple: "yes"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -153,6 +170,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 16fb9188-5edd-4d99-814a-33090e0b03d2
@@ -161,7 +180,8 @@ tasks:
       id: 16fb9188-5edd-4d99-814a-33090e0b03d2
       version: -1
       name: Auto remediate?
-      description: Determines if the event is automatically remediated or manually updated.
+      description: Determines if the event is automatically remediated or manually
+        updated.
       type: condition
       iscommand: false
       brand: ""
@@ -171,6 +191,7 @@ tasks:
       "Yes":
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -182,23 +203,27 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
-        simple: ${incident.id} Autoremediate?
+        simple: ${alert.id} Autoremediate?
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
       replyOptions:
       - "Yes"
       - "No"
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: dc7b1198-6db2-4115-8ac2-e6661561335f
@@ -207,7 +232,8 @@ tasks:
       id: dc7b1198-6db2-4115-8ac2-e6661561335f
       version: -1
       name: Execute playbook
-      description: Executes the appropriate remediation sub-playbook based on the Prisma Cloud policy ID.
+      description: Executes the appropriate remediation sub-playbook based on the
+        Prisma Cloud policy ID.
       type: condition
       iscommand: false
       brand: ""
@@ -310,6 +336,7 @@ tasks:
           right:
             value:
               simple: bee0893d-85fb-403f-9ba7-a5269a46d382
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -322,6 +349,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 5d63c6a5-e9c0-484a-84ee-11d31cd44017
@@ -338,6 +367,7 @@ tasks:
       '#none#':
       - "11"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -350,6 +380,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: fb37a3ed-6884-4601-8841-f9414cf4a2ac
@@ -358,7 +390,7 @@ tasks:
       id: fb37a3ed-6884-4601-8841-f9414cf4a2ac
       version: -1
       name: Close investigation
-      description: Closes the current incident.
+      description: Closes the current alert.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -367,17 +399,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
       id:
         complex:
-          root: incident
+          root: alert
           accessor: id
-      mndadone: {}
-      phishingsubtype: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -390,6 +417,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: ec388f16-6c05-47b6-8cd8-d3e4bf955f6e
@@ -407,7 +436,6 @@ tasks:
       - "9"
       "yes":
       - "12"
-    continueonerror: true
     separatecontext: false
     conditions:
     - label: "yes"
@@ -436,6 +464,8 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -448,15 +478,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 1491bb10-b009-4dd8-8d1b-f12ff53a746a
+    taskid: a9f2cbfa-6e0e-43f6-840b-a0781fb6664e
     type: regular
     task:
-      id: 1491bb10-b009-4dd8-8d1b-f12ff53a746a
+      id: a9f2cbfa-6e0e-43f6-840b-a0781fb6664e
       version: -1
       name: Dismiss Prisma Cloud alert
-      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either
+        policy IDs or alert IDs must be provided. When no absolute time nor relative
+        time arguments are provided, the default time range is all times. For snoozing,
+        provide "snooze_unit" and "snooze_value" arguments.
       script: PrismaCloud v2|||prisma-cloud-alert-dismiss
       type: regular
       iscommand: true
@@ -467,7 +502,7 @@ tasks:
     scriptarguments:
       alert_ids:
         complex:
-          root: incident
+          root: alert
           accessor: labels
           transformers:
           - operator: getField
@@ -476,9 +511,10 @@ tasks:
                 value:
                   simple: id
       dismissal_note:
-        simple: ${incident.labels.id} has been remediated by Cortex XSOAR.
-    continueonerror: true
+        simple: ${alert.labels.id} has been remediated by Cortex XSIAM.
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -491,6 +527,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 1ba4f261-b3a6-40c7-8c51-ad726a3b42bd
@@ -526,6 +564,7 @@ tasks:
         complex:
           root: inputs.policyId
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -543,6 +582,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 34fd8c47-e326-4ee2-8343-b9c0794a0e06
@@ -587,6 +628,7 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -599,6 +641,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -625,7 +670,7 @@ inputs:
 - key: policyId
   value:
     complex:
-      root: incident
+      root: alert
       accessor: labels.policy
       transformers:
       - operator: ParseJSON
@@ -658,5 +703,4 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-tests:
-- No Test
+dirtyInputs: true

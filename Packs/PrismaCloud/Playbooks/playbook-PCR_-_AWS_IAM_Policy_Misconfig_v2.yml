@@ -566,11 +566,6 @@ view: |-
     }
   }
 inputs:
-- key: AutoUpdatePasswordPolicy
-  value:
-    simple: "no"
-  required: false
-  description: Update AWS IAM password policy automatically?
 - key: policyId
   value:
     complex:
@@ -585,6 +580,27 @@ inputs:
               simple: policyId
   required: false
   description: Get the Prisma Cloud policy ID.
+  playbookInputQuery: null
+- key: AutoUpdatePasswordPolicy
+  value:
+    simple: "no"
+  required: false
+  description: Update AWS IAM password policy automatically?
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - policyId
+  name: Incident Data
+  description: Relevant data regarding the incident.
+- inputs:
+  - AutoUpdatePasswordPolicy
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No Test
