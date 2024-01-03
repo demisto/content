@@ -1990,7 +1990,7 @@ script:
       description: The SMTP certificate direction.
       type: String
     - contextPath: FortiMail.IPPool.smtp_greeting_reply_name
-      description: The SMTP Greeting Name.
+      description: The SMTP greeting name.
       type: Number
     - contextPath: FortiMail.IPPool.comment
       description: A brief comment for the anti spam profile.
