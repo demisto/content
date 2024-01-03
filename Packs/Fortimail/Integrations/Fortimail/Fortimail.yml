@@ -1389,7 +1389,7 @@ script:
       description: The recipient email address regular expression pattern.
       type: String
     - contextPath: FortiMail.RecipientPolicy.antispam
-      description: The name of an outgoing anti spam profile, if any, that this policy will apply.
+      description: The name of an outgoing anti-spam profile, if any, that this policy will apply.
       type: String
     - contextPath: FortiMail.RecipientPolicy.content
       description: The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles.
