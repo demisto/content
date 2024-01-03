@@ -154,7 +154,7 @@ script:
       description: The name of the IP member.
       type: String
   - name: fortimail-email-group-create
-    description: Create an email group. Email group is a container for a list of email addresses, allowing you to use it in configuring access control rules (for defining the sender and recipient matching) and recipient-based policies (for defining MAIL FROM addresses matching specific policies).
+    description: Create an email group. An email group is a container for a list of email addresses, allowing you to use it in configuring access control rules (for defining the sender and recipient matching) and recipient-based policies (for defining MAIL FROM addresses matching specific policies).
     arguments:
     - name: name
       description: The name of the email group. The name must contain only alphanumeric characters. Spaces are not allowed.
