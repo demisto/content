@@ -2808,6 +2808,15 @@ def get_integration_name():
     return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
 
 
+def get_integration_instance_name():
+    """
+    Getting calling integration instance name
+    :return: Calling integration instance name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
+
+
 def get_script_name():
     """
     Getting calling script name
@@ -9866,6 +9875,13 @@ class IndicatorsSearcher:
         res = demisto.searchIndicators(**search_args)
         self._total = res.get('total')
         demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
+        # when total is None, there is a problem with the server for returning indicators, hence need to restart the container,
+        # see XSUP-26699
+        if self._total is None:
+            raise SystemExit(
+                "Encountered issue when trying to fetch indicators for integration in instance {integration}. "
+                "Restarting container and trying again.".format(integration=get_integration_instance_name())
+            )
         if isinstance(self._page, int):
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
