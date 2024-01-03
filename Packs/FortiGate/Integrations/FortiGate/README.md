@@ -52,27 +52,27 @@ Retrieve firewall IPv4 addresses. Addresses define sources and destinations of n
 | Fortigate.Address.StartIP | String | First IP address \(inclusive\) in the range for the address. |
 | Fortigate.Address.EndIP | String | Final IP address \(inclusive\) in the range for the address. |
 | Fortigate.Address.FQDN | String | Fully Qualified Domain Name address. |
-| Fortigate.Address.MACAddresses | String | Multiple MAC address ranges &lt;start&gt;\[-&lt;end&gt;\] separated by space. |
-| Fortigate.Address.Type | String | Type of the address, can be: \`ipmask\`, \`iprange\`, \`fqdn\`, \`geography\`, \`wildcard\`, \`dynamic\`, \`interface-subnet\` or \`mac\`. |
-| Fortigate.Address.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`, if \`enable\` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
+| Fortigate.Address.MACAddresses | String | Multiple MAC address ranges &lt;start&gt;\[-&lt;end&gt;\] separated by a space. |
+| Fortigate.Address.Type | String | Type of the address. Can be: \`ipmask\`, \`iprange\`, \`fqdn\`, \`geography\`, \`wildcard\`, \`dynamic\`, \`interface-subnet\` or \`mac\`. |
+| Fortigate.Address.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`. If \`enable\`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
 | Fortigate.Address.AllowRouting | String | Enable/disable use of this address in the static route configuration. |
 | Fortigate.Address.Tagging | String | List of tags associated to the object. |
 | Fortigate.Address.IPs | String | List of IP addresses. |
-| Fortigate.Address.SDNAddressType | String | Type of addresses to collect \`private\`, \`public\`, or \`all\`. |
-| Fortigate.Address.AssociatedInterface | String | Network interface associated with address. |
+| Fortigate.Address.SDNAddressType | String | Type of addresses to collect. Can be: \`private\`, \`public\`, or \`all\`. |
+| Fortigate.Address.AssociatedInterface | String | Network interface associated with the address. |
 | Fortigate.Address.Comment | String | The object\`s comment. |
 | Fortigate.Address.Dirty | String | Whether the object is clean. |
 | Fortigate.Address.TagType | String | Tag type of dynamic address object. |
 | Fortigate.Address.TagDetectionLevel | String | Tag detection level of dynamic address object. |
 | Fortigate.Address.ObjectType | String | IP or MAC address. |
-| Fortigate.Address.Interface | String | Name of interface whose IP address is to be used. |
+| Fortigate.Address.Interface | String | Name of the interface whose IP address is to be used. |
 | Fortigate.Address.FSSOGroup | String | Fortinet Single Sign-On group name. |
 | Fortigate.Address.SDN | String | Software-defined networking. |
 | Fortigate.Address.SDNTag | String | Software-defined networking tag. |
 | Fortigate.Address.CacheTTL | Number | Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds. |
 | Fortigate.Address.Country | String | IP addresses associated to a specific country. |
-| Fortigate.Address.ClearpassSPT | String | System Posture Token value, can be: \`unknown\`, \`healthy\`, \`quarantine\`, \`checkup\`, \`transient\` or \`infected\`. |
-| Fortigate.Address.SubType | String | Sub-type of address, can be: \`sdn\`, \`clearpass-spt\`, \`fsso\`, \`ems-tag\`, \`fortivoice-tag\`, \`fortinac-tag\`, \`fortipolicy-tag\` or \`swc-tag\`. |
+| Fortigate.Address.ClearpassSPT | String | System Posture Token value. Can be: \`unknown\`, \`healthy\`, \`quarantine\`, \`checkup\`, \`transient\` or \`infected\`. |
+| Fortigate.Address.SubType | String | Sub-type of address. Can be: \`sdn\`, \`clearpass-spt\`, \`fsso\`, \`ems-tag\`, \`fortivoice-tag\`, \`fortinac-tag\`, \`fortipolicy-tag\` or \`swc-tag\`. |
 | Fortigate.Address.UUID | String | Universally Unique Identifier. |
 | Fortigate.Address.ObjectTag | String | Tag of dynamic address object. |
 | Fortigate.Address.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
@@ -101,7 +101,7 @@ Retrieve firewall IPv4 addresses. Addresses define sources and destinations of n
             "TagDetectionLevel": "",
             "TagType": "",
             "Type": "geography",
-            "UUID": "dd3e0a9c-945e-51ee-1efb-8a3c73c55429",
+            "UUID": "d30118b0-aa22-51ee-8e1b-bd78f7129431",
             "VDOM": "root"
         }
     }
@@ -137,7 +137,7 @@ Create firewall IPv4 addresses. Addresses define sources and destinations of net
 | start_ip | First IP address (inclusive) in the range for the address. | Optional |
 | end_ip | Final IP address (inclusive) in the range for the address. | Optional |
 | country | IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`. | Optional |
-| mac_addresses | Comma-separated list of MAC addresses. Can be single or range, range must be separated by `-`, for examle: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`. | Optional |
+| mac_addresses | Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for examlpe: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`. | Optional |
 | associated_interface | Network interface associated with address. | Optional |
 | allow_routing | Enable/disable use of this address in the static route configuration. Possible values are: enable, disable. | Optional |
 | comment | A comment for the address. | Optional |
@@ -194,7 +194,7 @@ Update firewall IPv4 addresses. Addresses define sources and destinations of net
 | start_ip | First IP address (inclusive) in the range for the address. | Optional |
 | end_ip | Final IP address (inclusive) in the range for the address. | Optional |
 | country | IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`. | Optional |
-| mac_addresses | Comma-separated list of MAC addresses. Can be single or range, range must be separated by `-`, for examle: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`. | Optional |
+| mac_addresses | Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`. | Optional |
 | associated_interface | Network interface associated with address. | Optional |
 | allow_routing | Enable/disable use of this address in the static route configuration. Possible values are: enable, disable. | Optional |
 | comment | A comment for the address. | Optional |
@@ -293,12 +293,12 @@ Retrieve firewall IPv6 addresses. Addresses define sources and destinations of n
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Fortigate.Address6.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`, if \`enable\` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
+| Fortigate.Address6.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`. If \`enable\`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
 | Fortigate.Address6.SDNTag | String | Software-defined networking tag. |
 | Fortigate.Address6.Tenant | String | Specifies the instance or environment in a multi-tenancy setup for configuring address objects. |
 | Fortigate.Address6.HostType | String | Can be a wildcard or a specific host address. |
 | Fortigate.Address6.SubnetSegment.Name | String | The subnet segment name. |
-| Fortigate.Address6.SubnetSegment.Type | String | The subnet segment type, can be a wildcard or a specific address. |
+| Fortigate.Address6.SubnetSegment.Type | String | The subnet segment type. Can be a wildcard or a specific address. |
 | Fortigate.Address6.SubnetSegment.Value | String | The subnet segment value. |
 | Fortigate.Address6.Template | String | IPv6 address template. |
 | Fortigate.Address6.Comment | String | The object\`s comment. |
@@ -310,11 +310,11 @@ Retrieve firewall IPv6 addresses. Addresses define sources and destinations of n
 | Fortigate.Address6.EndIP | String | Final IP address \(inclusive\) in the range for the address. |
 | Fortigate.Address6.IPv6 | String | IPv6 address prefix. |
 | Fortigate.Address6.SDN | String | Software-defined networking. |
-| Fortigate.Address6.MACAddresses | Unknown | Multiple MAC address ranges &lt;start&gt;\[-&lt;end&gt;\] separated by space. |
-| Fortigate.Address6.Type | String | Type of IPv6 address object, can be: \`ipprefix\`, \`iprange\`, \`fqdn\`, \`geography\`, \`dynamic\`, \`template\`, \`mac\`. |
+| Fortigate.Address6.MACAddresses | Unknown | Multiple MAC address ranges &lt;start&gt;\[-&lt;end&gt;\] separated by a space. |
+| Fortigate.Address6.Type | String | Type of IPv6 address object. Can be: \`ipprefix\`, \`iprange\`, \`fqdn\`, \`geography\`, \`dynamic\`, \`template\`, \`mac\`. |
 | Fortigate.Address6.UUID | String | Universally Unique Identifier. |
 | Fortigate.Address6.Name | String | Address name. |
-| Fortigate.Address6.Host | String | Host Address. |
+| Fortigate.Address6.Host | String | Host address. |
 | Fortigate.Address6.CacheTTL | Number | Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds. |
 | Fortigate.Address6.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
@@ -338,7 +338,7 @@ Retrieve firewall IPv6 addresses. Addresses define sources and destinations of n
             "Template": "",
             "Tenant": "",
             "Type": "geography",
-            "UUID": "e291625a-945e-51ee-35f8-ab6ec8c24ef0",
+            "UUID": "d827aafc-aa22-51ee-2088-2123aa731857",
             "VDOM": "root"
         }
     }
@@ -374,8 +374,8 @@ Create firewall IPv6 addresses. Addresses define sources and destinations of net
 | start_ip | First IP address (inclusive) in the range for the address. | Optional |
 | end_ip | Final IP address (inclusive) in the range for the address. | Optional |
 | country | IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`. | Optional |
-| mac_addresses | Comma-separated list of MAC addresses. Can be single or range, range must be separated by `-`, for examle: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`. | Optional |
-| sdn_connector | Software-defined networking connector enables to interact with SDN controllers. For more information go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors. | Optional |
+| mac_addresses | Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`. | Optional |
+| sdn_connector | Software-defined networking connector enables to interact with SDN controllers. For more information, go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors. | Optional |
 | comment | A comment for the address. | Optional |
 
 #### Context Output
@@ -432,8 +432,8 @@ Update firewall IPv6 addresses. Addresses define sources and destinations of net
 | start_ip | First IP address (inclusive) in the range for the address. | Optional |
 | end_ip | Final IP address (inclusive) in the range for the address. | Optional |
 | country | IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`. | Optional |
-| mac_addresses | Comma-separated list of MAC addresses. Can be single or range, range must be separated by `-`, for examle: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`. | Optional |
-| sdn_connector | Software-defined networking connector enables to interact with SDN controllers. For more information go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors. | Optional |
+| mac_addresses | Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`. | Optional |
+| sdn_connector | Software-defined networking connector enables to interact with SDN controllers. For more information, go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors. | Optional |
 | comment | A comment for the address. | Optional |
 
 #### Context Output
@@ -537,7 +537,7 @@ Retrieve firewall IPv4 multicast addresses. Multicasting allows a single source 
 | Fortigate.AddressMulticast.EndIP | String | Final IP address \(inclusive\) in the range for the address. |
 | Fortigate.AddressMulticast.StartIP | String | First IP address \(inclusive\) in the range for the address. |
 | Fortigate.AddressMulticast.Subnet | String | Broadcast address and subnet. |
-| Fortigate.AddressMulticast.Type | String | Type of the address multicast, can be: \`multicastrange\` or \`broadcastmask\`. |
+| Fortigate.AddressMulticast.Type | String | Type of the address multicast. Can be: \`multicastrange\` or \`broadcastmask\`. |
 | Fortigate.AddressMulticast.Name | String | Address multicast name. |
 | Fortigate.AddressMulticast.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
@@ -912,7 +912,7 @@ Retrieve firewall IPv4 address groups. Address groups are designed for ease of u
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Frotigate.AddressGroup.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`, if \`enable\` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
+| Frotigate.AddressGroup.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`. If \`enable\`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
 | Frotigate.AddressGroup.AllowRouting | String | Enable/disable use of this address in the static route configuration. |
 | Frotigate.AddressGroup.Tagging | String | List of tags associated to the object. |
 | Frotigate.AddressGroup.ExcludeMember | String | Address name exclusion member. |
@@ -920,7 +920,7 @@ Retrieve firewall IPv4 address groups. Address groups are designed for ease of u
 | Frotigate.AddressGroup.Comment | String | The object\`s comment. |
 | Frotigate.AddressGroup.Member.Name | String | Address objects contained within the group. |
 | Frotigate.AddressGroup.UUID | String | Universally Unique Identifier. |
-| Frotigate.AddressGroup.Category | String | Address group category. \`default\`: Default address group category \(cannot be used as ztna-ems-tag/ztna-geo-tag in policy\). \`ztna-ems-tag\`: Members must be ztna-ems-tag group or ems-tag address, can be used as ztna-ems-tag in policy. \`ztna-geo-tag\`: Members must be ztna-geo-tag group or geographic address, can be used as ztna-geo-tag in policy. |
+| Frotigate.AddressGroup.Category | String | Address group category. \`default\`: Default address group category \(cannot be used as ztna-ems-tag/ztna-geo-tag in policy\). \`ztna-ems-tag\`: Members must be ztna-ems-tag group or ems-tag address. Can be used as ztna-ems-tag in policy. \`ztna-geo-tag\`: Members must be ztna-geo-tag group or geographic address. Can be used as ztna-geo-tag in policy. |
 | Frotigate.AddressGroup.Type | String | Address group type. Default address group type \(address may belong to multiple groups\). Address folder group \(members may not belong to any other group\). |
 | Frotigate.AddressGroup.Name | String | Address group name. |
 | Fortigate.AddressGroup.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
@@ -944,7 +944,7 @@ Retrieve firewall IPv4 address groups. Address groups are designed for ease of u
             },
             "Name": "playbook-address-ipv4-group",
             "Type": "default",
-            "UUID": "f2690f3e-945e-51ee-be5d-1532630653ec",
+            "UUID": "e7adb0ca-aa22-51ee-b304-c7fc8ce5e274",
             "VDOM": "root"
         }
     }
@@ -976,7 +976,7 @@ Create firewall IPv4 address groups. Address groups are designed for ease of use
 | groupName | Name of the address group to create. | Required |
 | type | Address group type. `group`: Default address group type (address may belong to multiple groups). `folder`: Address folder group (members may not belong to any other group). Possible values are: group, folder. Default is group. | Optional |
 | address | Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`. | Optional |
-| excluded_addresses | Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`. | Optional |
+| excluded_addresses | Comma-separated list of address names to exclude. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`. | Optional |
 | allow_routing | Enable/disable use of this address in the static route configuration. Possible values are: enable, disable. | Optional |
 | comment | A comment for the address group. | Optional |
 
@@ -1008,7 +1008,7 @@ Create firewall IPv4 address groups. Address groups are designed for ease of use
 ### fortigate-update-firewall-address-ipv4-group
 
 ***
-Update firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device.
+Update firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device. New members will override the existing members within the group incase of a conflict.
 
 #### Base Command
 
@@ -1021,7 +1021,7 @@ Update firewall IPv4 address groups. Address groups are designed for ease of use
 | vdom | Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`. Default is root. | Optional |
 | groupName | Name of the address group to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4-groups`. | Required |
 | address | Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`. | Optional |
-| excluded_addresses | Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`. | Optional |
+| excluded_addresses | Comma-separated list of address names to exclude. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`. | Optional |
 | allow_routing | Enable/disable use of this address in the static route configuration. Possible values are: enable, disable. | Optional |
 | comment | A comment for the address group. | Optional |
 | action | Whether to add or remove members or excluded_members from address group. Possible values are: add, remove. | Optional |
@@ -1048,7 +1048,7 @@ Update firewall IPv4 address groups. Address groups are designed for ease of use
                 ]
             },
             "Name": "playbook-address-ipv4-group",
-            "UUID": "f2690f3e-945e-51ee-be5d-1532630653ec"
+            "UUID": "e7adb0ca-aa22-51ee-b304-c7fc8ce5e274"
         }
     }
 }
@@ -1122,7 +1122,7 @@ Retrieve firewall IPv6 address groups. Address groups are designed for ease of u
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Frotigate.Address6Group.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`, if \`enable\` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
+| Frotigate.Address6Group.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`. If \`enable\`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
 | Frotigate.Address6Group.Tagging | String | List of tags associated to the object. |
 | Frotigate.Address6Group.Member.Name | String | Address objects contained within the group. |
 | Frotigate.Address6Group.Comment | String | The object\`s comment. |
@@ -1140,7 +1140,7 @@ Retrieve firewall IPv6 address groups. Address groups are designed for ease of u
             "Comment": "",
             "FabricObject": "disable",
             "Name": "playbook-address-ipv6-group",
-            "UUID": "f7b20fc2-945e-51ee-ca46-e4a50f45ce21",
+            "UUID": "ecd06d9a-aa22-51ee-a0a1-29b8ccdf7714",
             "VDOM": "root"
         }
     }
@@ -1201,7 +1201,7 @@ Create firewall IPv6 address groups. Address groups are designed for ease of use
 ### fortigate-update-firewall-address-ipv6-group
 
 ***
-Update firewall IPv6 address groups. Address groups are designed for ease of use in the administration of the device.
+Update firewall IPv6 address groups. Address groups are designed for ease of use in the administration of the device. New members will override the existing members within the group incase of a conflict.
 
 #### Base Command
 
@@ -1310,10 +1310,10 @@ Retrieve firewall services. A service is the combination of network protocols an
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Fortigate.Service.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`, if \`enable\` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
+| Fortigate.Service.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`. If \`enable\`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
 | Fortigate.Service.Application | Number | The application ID. |
 | Fortigate.Service.AppCategory | Number | Application category ID. |
-| Fortigate.Service.AppServiceType | String | Application service type, can be: \`disable\`, \`app-id\` or \`app-category\`. |
+| Fortigate.Service.AppServiceType | String | Application service type. Can be: \`disable\`, \`app-id\` or \`app-category\`. |
 | Fortigate.Service.Comment | String | The object\`s comment. |
 | Fortigate.Service.CheckResetRange | String | The configuration type of ICMP error message verification. |
 | Fortigate.Service.SessionTTL | String | Session time to live. |
@@ -1326,7 +1326,7 @@ Retrieve firewall services. A service is the combination of network protocols an
 | Fortigate.Service.Ports.UDP | String | Multiple UDP port ranges. |
 | Fortigate.Service.Ports.TCP | String | Multiple TCP port ranges. |
 | Fortigate.Service.FQDN | String | Fully Qualified Domain Name address. |
-| Fortigate.Service.IPRange | String | Start and end of the IP range associated with service. |
+| Fortigate.Service.IPRange | String | Start and end of the IP range associated with the service. |
 | Fortigate.Service.Helper | String | Helper protocol name. |
 | Fortigate.Service.Protocol | String | Protocol type based on IANA numbers. |
 | Fortigate.Service.Category | String | The service category. |
@@ -1397,12 +1397,12 @@ Create firewall services. A service is the combination of network protocols and 
 | serviceName | Name of the service to create. | Required |
 | comment | A comment for the service. | Optional |
 | category | Service category. | Optional |
-| start_ip | Start of the IP range associated with service. | Optional |
-| end_ip | End of the IP range associated with service. | Optional |
+| start_ip | Start of the IP range associated with the service. | Optional |
+| end_ip | End of the IP range associated with the service. | Optional |
 | fqdn | Fully Qualified Domain Name address. | Optional |
-| tcpRange | Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
-| udpRange | Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
-| sctpRange | Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
+| tcpRange | Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
+| udpRange | Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
+| sctpRange | Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
 | icmp_type | Specifies the ICMP message type, defining the purpose or condition of the message. | Optional |
 | icmp_code | Identifies the variant or additional information for the corresponding ICMP message type. | Optional |
 | icmp_version | Determines the version of the Internet Control Message Protocol, either ICMP or ICMP6. Possible values are: ICMP, ICMP6. | Optional |
@@ -1416,8 +1416,8 @@ Create firewall services. A service is the combination of network protocols and 
 | Fortigate.Service.Ports.UDP | String | Multiple UDP port ranges. |
 | Fortigate.Service.Ports.TCP | String | Multiple TCP port ranges. |
 | Fortigate.Service.FQDN | String | Fully Qualified Domain Name address. |
-| Fortigate.Service.StartIP | String | Start of the IP range associated with service. |
-| Fortigate.Service.EndIP | String | End of the IP range associated with service. |
+| Fortigate.Service.StartIP | String | Start of the IP range associated with the service. |
+| Fortigate.Service.EndIP | String | End of the IP range associated with the service. |
 | Fortigate.Service.ICMPCode | Number | ICMP code. |
 | Fortigate.Service.ICMPType | Number | ICMP type. |
 | Fortigate.Service.ProtocolNumber | Number | IP protocol number. |
@@ -1462,12 +1462,12 @@ Update firewall services. A service is the combination of network protocols and 
 | name | Name of the service to update. Names can be retrieved with the command `fortigate-list-firewall-services`. | Required |
 | comment | A comment for the service. | Optional |
 | category | Service category. | Optional |
-| start_ip | Start of the IP range associated with service. | Optional |
-| end_ip | End of the IP range associated with service. | Optional |
+| start_ip | Start of the IP range associated with the service. | Optional |
+| end_ip | End of the IP range associated with the service. | Optional |
 | fqdn | Fully Qualified Domain Name address. | Optional |
-| tcpRange | Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
-| udpRange | Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
-| sctpRange | Comma separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
+| tcpRange | Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
+| udpRange | Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
+| sctpRange | Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9. | Optional |
 | action | Whether to add or remove destination and source ports from TCP/UDP/SCTP. Possible values are: add, remove. | Optional |
 | icmp_type | Specifies the ICMP message type, defining the purpose or condition of the message. | Optional |
 | icmp_code | Identifies the variant or additional information for the corresponding ICMP message type. | Optional |
@@ -1482,7 +1482,7 @@ Update firewall services. A service is the combination of network protocols and 
 | Fortigate.Service.Ports.UDP | String | Multiple UDP port ranges. |
 | Fortigate.Service.Ports.TCP | String | Multiple TCP port ranges. |
 | Fortigate.Service.FQDN | String | Fully Qualified Domain Name address. |
-| Fortigate.Service.IPRange | String | Start and end of the IP range associated with service. |
+| Fortigate.Service.IPRange | String | Start and end of the IP range associated with the service. |
 | Fortigate.Service.ICMPCode | Number | ICMP code. |
 | Fortigate.Service.ICMPType | Number | ICMP type. |
 | Fortigate.Service.ProtocolNumber | Number | IP protocol number. |
@@ -1530,7 +1530,7 @@ Delete firewall services. A service is the combination of network protocols and 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Fortigate.Service.Name | String | The name of deleted service. |
+| Fortigate.Service.Name | String | The name of the deleted service. |
 | Fortigate.Service.Deleted | Boolean | Whether the service was deleted. |
 
 #### Command example
@@ -1574,7 +1574,7 @@ Retrieve firewall service groups. Service groups are collections of predefined s
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Fortigate.ServiceGroup.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`, if \`enable\` the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
+| Fortigate.ServiceGroup.FabricObject | String | Security Fabric global object setting. Can be \`enable\` or \`disable\`. If \`enable\`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member. |
 | Fortigate.ServiceGroup.Comment | String | The object\`s comment. |
 | Fortigate.ServiceGroup.Proxy | String | Enable/disable web proxy service. |
 | Fortigate.ServiceGroup.Name | String | The service group name. |
@@ -1606,9 +1606,9 @@ Retrieve firewall service groups. Service groups are collections of predefined s
 #### Human Readable Output
 
 >### Firewall Service Groups
->|Name|
->|---|
->| playbook-service-group |
+>|Name|Members|
+>|---|---|
+>| playbook-service-group | playbook-service-1 |
 
 
 ### fortigate-create-firewall-service-group
@@ -1657,7 +1657,7 @@ Create firewall service groups. Service groups are collections of predefined ser
 ### fortigate-update-firewall-service-group
 
 ***
-Update firewall service groups. Service groups are collections of predefined services. Service groups can be used as the source and destination of the policy.
+Update firewall service groups. Service groups are collections of predefined services. Service groups can be used as the source and destination of the policy. New members will override the existing members within the group incase of a conflict.
 
 #### Base Command
 
@@ -1768,10 +1768,10 @@ Retrieve firewall policies. Firewall policies dictate the traffic flow and its p
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Fortigate.Policy.ServiceNegate | String | When enabled specifies what the service must not be. |
-| Fortigate.Policy.Destination6Negate | String | When enabled specifies what the destination IPv6 address must not be. |
-| Fortigate.Policy.DestinationNegate | String | When enabled specifies what the destination IPv4 address must not be. |
-| Fortigate.Policy.Source6Negate | String | When enabled specifies what the source IPv6 address must not be. |
-| Fortigate.Policy.SourceNegate | String | When enabled specifies what the source IPv4 address must not be. |
+| Fortigate.Policy.Destination6Negate | String | When enabled, specifies what the destination IPv6 address must not be. |
+| Fortigate.Policy.DestinationNegate | String | When enabled, specifies what the destination IPv4 address must not be. |
+| Fortigate.Policy.Source6Negate | String | When enabled, specifies what the source IPv6 address must not be. |
+| Fortigate.Policy.SourceNegate | String | When enabled, specifies what the source IPv4 address must not be. |
 | Fortigate.Policy.NAT | String | Whether the source NAT is enabled or disabled. |
 | Fortigate.Policy.LogStart | String | Whether recording logs when a session starts is enabled or disabled. |
 | Fortigate.Policy.Log | String | All log sessions or security profile sessions. |
@@ -1793,7 +1793,7 @@ Retrieve firewall policies. Firewall policies dictate the traffic flow and its p
 | Fortigate.Policy.Schedule | String | The name of the schedule. |
 
 #### Command example
-```!fortigate-list-firewall-policies policyName=playbook-policy```
+```!fortigate-list-firewall-policies policyName=playbook-policy-123456789```
 #### Context Example
 ```json
 {
@@ -1811,7 +1811,7 @@ Retrieve firewall policies. Firewall policies dictate the traffic flow and its p
             "Log": "utm",
             "LogStart": "disable",
             "NAT": "enable",
-            "Name": "playbook-policy",
+            "Name": "playbook-policy-123456789",
             "Schedule": "always",
             "Security": [
                 "no-inspection",
@@ -1829,7 +1829,7 @@ Retrieve firewall policies. Firewall policies dictate the traffic flow and its p
             ],
             "SourceNegate": "disable",
             "Status": "enable",
-            "UUID": "d4c80a48-945e-51ee-2c02-a89f2590ea3b",
+            "UUID": "cb72f302-aa22-51ee-eef0-cce9ba5b7ad3",
             "VDOM": "root"
         }
     }
@@ -1841,7 +1841,7 @@ Retrieve firewall policies. Firewall policies dictate the traffic flow and its p
 >### Firewall Policies
 >|ID|Name|From|To|Source|Destination|Schedule|Service|Action|NAT|Security Profiles|Log|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 18 | playbook-policy | port1 | port2 | playbook-address-ipv4-1 | playbook-address-ipv4-1 | always | playbook-service-1 | accept | enable | no-inspection,<br/>default,<br/>single | utm |
+>| 18 | playbook-policy-123456789 | port1 | port2 | playbook-address-ipv4-1 | playbook-address-ipv4-1 | always | playbook-service-1 | accept | enable | no-inspection,<br/>default,<br/>single | utm |
 
 
 ### fortigate-create-firewall-policy
@@ -1866,10 +1866,10 @@ Create firewall policies. Firewall policies dictate the traffic flow and its pro
 | source6 | Comma-separated list of source IPv6 address name and address group names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv6s`, `fortigate-list-firewall-address-ipv6-multicasts` and `fortigate-list-firewall-address-ipv6-groups`. | Optional |
 | destination | Comma-separated list of destination IPv4 address and address group names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`. | Optional |
 | destination6 | Comma-separated list of destination IPv6 address name and address group names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv6s`, `fortigate-list-firewall-address-ipv6-multicasts` and `fortigate-list-firewall-address-ipv6-groups`. | Optional |
-| negate_source_address | When enabled source address specifies what the source address must not be. Possible values are: enable, disable. | Optional |
-| negate_destination_address | When enabled destination address specifies what the destination address must not be. Possible values are: enable, disable. | Optional |
+| negate_source_address | When enabled, the source address specifies what the source address must not be. Possible values are: enable, disable. | Optional |
+| negate_destination_address | When enabled, the destination address specifies what the destination address must not be. Possible values are: enable, disable. | Optional |
 | service | Comma-separated list of service and service group names. Names can be retrieved with the commands `fortigate-list-firewall-services` and `fortigate-list-firewall-service-groups`. | Required |
-| negate_service | When enabled service specifies what the service must not be. Possible values are: enable, disable. | Optional |
+| negate_service | When enabled, the service specifies what the service must not be. Possible values are: enable, disable. | Optional |
 | action | Whether to accept or deny sessions that match the firewall policy. Possible values are: accept, block. | Required |
 | status | Enable or disable this policy. Possible values are: enable, disable. Default is enable. | Optional |
 | log | Enable or disable logging. Log all sessions or security profile sessions. Possible values are: all, utm, disable. Default is enable. | Optional |
@@ -1967,11 +1967,11 @@ Update firewall policies. Firewall policies dictate the traffic flow and its pro
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Fortigate.Policy.ServiceNegate | String | When enabled specifies what the service must not be. |
-| Fortigate.Policy.Destination6Negate | String | When enabled specifies what the destination IPv6 address must not be. |
-| Fortigate.Policy.DestinationNegate | String | When enabled specifies what the destination IPv4 address must not be. |
-| Fortigate.Policy.Source6Negate | String | When enabled specifies what the source IPv6 address must not be. |
-| Fortigate.Policy.SourceNegate | String | When enabled specifies what the source IPv4 address must not be. |
+| Fortigate.Policy.ServiceNegate | String | When enabled, specifies what the service must not be. |
+| Fortigate.Policy.Destination6Negate | String | When enabled, specifies what the destination IPv6 address must not be. |
+| Fortigate.Policy.DestinationNegate | String | When enabled, specifies what the destination IPv4 address must not be. |
+| Fortigate.Policy.Source6Negate | String | When enabled, specifies what the source IPv6 address must not be. |
+| Fortigate.Policy.SourceNegate | String | When enabled, specifies what the source IPv4 address must not be. |
 | Fortigate.Policy.NAT | String | Whether the source NAT is enabled or disabled. |
 | Fortigate.Policy.LogStart | String | Whether recording logs when a session starts is enabled or disabled. |
 | Fortigate.Policy.Log | String | All log sessions or security profile sessions. |
@@ -2010,7 +2010,7 @@ Update firewall policies. Firewall policies dictate the traffic flow and its pro
             "Log": "utm",
             "LogStart": "disable",
             "NAT": "enable",
-            "Name": "playbook-policy-3",
+            "Name": "playbook-policy-222",
             "Schedule": "always",
             "Security": [
                 "no-inspection",
@@ -2028,7 +2028,7 @@ Update firewall policies. Firewall policies dictate the traffic flow and its pro
             ],
             "SourceNegate": "disable",
             "Status": "enable",
-            "UUID": "e1ca127e-92a9-51ee-1493-03c29e094834"
+            "UUID": "8aaa8c5e-aa22-51ee-b28a-472e6447ac59"
         }
     }
 }
