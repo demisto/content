@@ -527,6 +527,11 @@ def test_paginate_with_page_size_more_than_INCIDENT_API_LIMIT():
 
 @pytest.mark.parametrize('add_content', [True, False])
 def test_main_handles_httperror(requests_mock, mocker, add_content):
+    """
+        Given: params that causes http error.
+        When: sending an HTTP request.
+        Then: print the correct error message.
+    """
     mocker.patch.object(demisto, 'params', return_value={'APIKey': 'test', 'ServiceKey': 'test', 'FetchInterval': '1'})
 
     from PagerDuty import main, SERVER_URL, ON_CALLS_USERS_SUFFIX
