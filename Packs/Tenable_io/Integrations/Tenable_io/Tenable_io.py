@@ -1786,7 +1786,7 @@ def skip_fetch_assets(last_run):
     to_skip = not last_run.get('nextTrigger') and (passed_time < MIN_ASSETS_INTERVAL)
     if to_skip:
         demisto.info(f"Skipping fetch-assets command. Only {passed_time} minutes have passed since the last fetch. "
-                     f"It should be minimum 1 hour.")
+                     f"It should be a minimum of 1 hour.")
     return to_skip
 
 
