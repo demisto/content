@@ -475,10 +475,10 @@ script:
       description: The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles.
       type: String
     - contextPath: FortiMail.IPPolicy.antivirus_profile
-      description: The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles.
+      description: The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles.
       type: String
     - contextPath: FortiMail.IPPolicy.antispam_profile
-      description: The name of an outgoing anti spam profile, if any, that this policy apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles.
+      description: The name of an outgoing anti-spam profile, if any, that this policy apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles.
       type: String
     - contextPath: FortiMail.IPPolicy.session_profile
       description: The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles.
