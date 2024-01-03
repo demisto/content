@@ -1,31 +1,32 @@
 id: DomainTools Auto Pivots
 version: -1
 name: DomainTools Auto Pivots
-description: 'This playbook retrieves the Iris Investigate profile of domain and automatically identifies potential connected infrastructure related to artifacts based on DomainTools Guided Pivot value. '
+description: 'This playbook retrieves the Iris Investigate profile of domain and automatically
+  identifies potential connected infrastructure related to artifacts based on DomainTools
+  Guided Pivot value. '
 tags:
 - Domaintools
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d517b724-8a70-4146-8029-cdb6b92b5970
+    taskid: 213b8282-d882-4561-8e5c-9befc488a5b5
     type: start
     task:
-      id: d517b724-8a70-4146-8029-cdb6b92b5970
+      id: 213b8282-d882-4561-8e5c-9befc488a5b5
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "56"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 642.5,
-          "y": 70
+          "y": -120
         }
       }
     note: false
@@ -37,13 +38,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 066e8866-1263-4541-839d-e1d68d4e4a5b
+    taskid: f5370915-ff94-458e-83c8-5a0824164502
     type: regular
     task:
-      id: 066e8866-1263-4541-839d-e1d68d4e4a5b
+      id: f5370915-ff94-458e-83c8-5a0824164502
       version: -1
       name: Lookup Domain(s)
-      description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If parsing of FQDNs is desired, see domainExtractAndInvestigate.
+      description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate.
+        If parsing of FQDNs is desired, see domainExtractAndInvestigate.
       script: '|||domain'
       type: regular
       iscommand: true
@@ -61,7 +63,7 @@ tasks:
       {
         "position": {
           "x": 642.5,
-          "y": 225
+          "y": 215
         }
       }
     note: false
@@ -73,16 +75,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c33e2f7d-a8c9-4107-895c-8f31efd48e07
+    taskid: d15bd4c9-69cd-40ec-8c46-bd8bf0b1d9fc
     type: title
     task:
-      id: c33e2f7d-a8c9-4107-895c-8f31efd48e07
+      id: d15bd4c9-69cd-40ec-8c46-bd8bf0b1d9fc
       version: -1
       name: Look for High Risk Domains
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -103,13 +104,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: cf6666ec-071b-41da-81f8-c41808bb0398
+    taskid: 28af5093-8965-4f10-87c9-63a0dc45e926
     type: regular
     task:
-      id: cf6666ec-071b-41da-81f8-c41808bb0398
+      id: 28af5093-8965-4f10-87c9-63a0dc45e926
       version: -1
       name: Check Pivotable Domains
-      description: 'Get guided pivot counts.'
       scriptName: CheckPivotableDomains
       type: regular
       iscommand: false
@@ -169,13 +169,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: b8ddfe87-8d73-4bb4-8c7c-f2cefd1338bf
+    taskid: b4c4c478-fdf6-4c43-8e18-64567ad0ed42
     type: regular
     task:
-      id: b8ddfe87-8d73-4bb4-8c7c-f2cefd1338bf
+      id: b4c4c478-fdf6-4c43-8e18-64567ad0ed42
       version: -1
       name: Pivot NameServer Host
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -211,13 +213,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 538b72b5-bd59-43c7-863b-a4463921d890
+    taskid: 15efb6cc-a4d8-4a28-8426-f0d9442708e7
     type: regular
     task:
-      id: 538b72b5-bd59-43c7-863b-a4463921d890
+      id: 15efb6cc-a4d8-4a28-8426-f0d9442708e7
       version: -1
       name: Pivot NameServer IP
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -253,14 +257,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: fb46caed-8e5c-45c3-8c9e-20114dd46ab2
+    taskid: 9ab9e8fd-ace2-4905-8fdd-c2e9459b811e
     type: condition
-
     task:
-      id: fb46caed-8e5c-45c3-8c9e-20114dd46ab2
+      id: 9ab9e8fd-ace2-4905-8fdd-c2e9459b811e
       version: -1
-      name: Is Pivotable NS Host?
-      description: 'Is NS Host a guided pivot.'
+      name: Pivot on Nameserver Host if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -296,13 +299,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 3116eba1-d42b-4621-848f-7880b0880799
+    taskid: 104a99dd-7cd1-4c5d-8c40-d7b7729e5efc
     type: condition
     task:
-      id: 3116eba1-d42b-4621-848f-7880b0880799
+      id: 104a99dd-7cd1-4c5d-8c40-d7b7729e5efc
       version: -1
-      name: Is Pivotable NS IP?
-      description: 'Is NS IP a guided pivot.'
+      name: Pivot on Nameserver IP if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -338,13 +341,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 9ddf8e07-b134-4094-8e53-2750c84d085a
+    taskid: 0f9ad4ea-ff20-44b0-83e3-8f52ce657f2c
     type: condition
     task:
-      id: 9ddf8e07-b134-4094-8e53-2750c84d085a
+      id: 0f9ad4ea-ff20-44b0-83e3-8f52ce657f2c
       version: -1
-      name: Is Pivotable Registrant?
-      description: 'Is Registrant a guided pivot.'
+      name: Pivot on Registrant if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -380,13 +383,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: e2307b78-c2fc-473e-8317-c4efb6550505
+    taskid: ad074580-98c4-45ab-8fa3-f5113272ee54
     type: regular
     task:
-      id: e2307b78-c2fc-473e-8317-c4efb6550505
+      id: ad074580-98c4-45ab-8fa3-f5113272ee54
       version: -1
       name: Pivot Registrant Name
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -414,13 +419,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 83a90792-329c-43a6-871b-33a4127213c5
+    taskid: 1a61da44-a300-4ecf-873a-cd5498d6f315
     type: condition
     task:
-      id: 83a90792-329c-43a6-871b-33a4127213c5
+      id: 1a61da44-a300-4ecf-873a-cd5498d6f315
       version: -1
-      name: Is Pivotable Registrant Org?
-      description: 'Is Registrant org a guided pivot.'
+      name: Pivot on registrant org if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -443,7 +448,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 632.5,
+          "x": 642.5,
           "y": 770
         }
       }
@@ -456,13 +461,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 22cd10a4-733b-45a9-89b5-95539d38e077
+    taskid: 2fb9ce3c-d2b7-48fa-8189-75369634ed13
     type: regular
     task:
-      id: 22cd10a4-733b-45a9-89b5-95539d38e077
+      id: 2fb9ce3c-d2b7-48fa-8189-75369634ed13
       version: -1
       name: Pivot Registrant Org
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -490,13 +497,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b225b62f-2d88-4eb8-88d9-79c5954b8306
+    taskid: b79d8fcb-75e7-4465-8ca1-a52a4161feb6
     type: condition
     task:
-      id: b225b62f-2d88-4eb8-88d9-79c5954b8306
+      id: b79d8fcb-75e7-4465-8ca1-a52a4161feb6
       version: -1
-      name: Is Pivotable SSL Org?
-      description: 'Is SSL org a guided pivot.'
+      name: Pivot on SSL Org if the count of domains is less than the specified threshold
       type: condition
       iscommand: false
       brand: ""
@@ -532,13 +538,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 488d8628-d5fd-4481-8dd7-7d9fb8cc703a
+    taskid: 68bb566d-7619-45f3-8160-fe08c9eedee0
     type: regular
     task:
-      id: 488d8628-d5fd-4481-8dd7-7d9fb8cc703a
+      id: 68bb566d-7619-45f3-8160-fe08c9eedee0
       version: -1
       name: Pivot SSL Org
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -566,13 +574,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 1c077ccb-1256-4fca-873d-dd73e1101122
+    taskid: a068a15c-9460-43f2-82c7-ccf698c91f8d
     type: condition
     task:
-      id: 1c077ccb-1256-4fca-873d-dd73e1101122
+      id: a068a15c-9460-43f2-82c7-ccf698c91f8d
       version: -1
-      name: Is Pivotable SSL Hash?
-      description: 'Is SSL hash a guided pivot.'
+      name: Pivot on SSL Hash if the count of domains is less than the specified threshold
       type: condition
       iscommand: false
       brand: ""
@@ -608,13 +615,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: f0069e09-6d44-4c9b-826b-bc53566dba59
+    taskid: ed5f407b-4aff-4c1f-8d25-dd5d343d2298
     type: regular
     task:
-      id: f0069e09-6d44-4c9b-826b-bc53566dba59
+      id: ed5f407b-4aff-4c1f-8d25-dd5d343d2298
       version: -1
       name: Pivot SSL Hash
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -642,13 +651,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c03d7a1d-9ac1-488c-884d-d1528ab96298
+    taskid: 87d52da9-7128-4027-899a-81dcdcb441fb
     type: condition
     task:
-      id: c03d7a1d-9ac1-488c-884d-d1528ab96298
+      id: 87d52da9-7128-4027-899a-81dcdcb441fb
       version: -1
-      name: Is Pivotable SOA Email?
-      description: 'Is SOA email a guided pivot.'
+      name: Pivot on SOA Email if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -684,13 +693,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: c1d315ea-f8af-49cf-8ab1-c30c792ed03c
+    taskid: b70d22c8-d4ad-48bb-83bd-841277aafbff
     type: regular
     task:
-      id: c1d315ea-f8af-49cf-8ab1-c30c792ed03c
+      id: b70d22c8-d4ad-48bb-83bd-841277aafbff
       version: -1
       name: Pivot SOA Email
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -718,16 +729,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a344a967-a6e7-45b2-8559-f61b1ab03228
+    taskid: 5c0d4f26-da18-4264-8d14-d26e96dae40a
     type: title
     task:
-      id: a344a967-a6e7-45b2-8559-f61b1ab03228
+      id: 5c0d4f26-da18-4264-8d14-d26e96dae40a
       version: -1
       name: Start Auto Pivoting
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -764,13 +774,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 21de504b-add9-4ea0-8289-17bd63072a76
+    taskid: c4be37b3-c232-4d7f-8f2f-c077bd67541f
     type: condition
     task:
-      id: 21de504b-add9-4ea0-8289-17bd63072a76
+      id: c4be37b3-c232-4d7f-8f2f-c077bd67541f
       version: -1
-      name: Is Pivotable IP?
-      description: 'Is IP address a guided pivot.'
+      name: Pivot on IP if the count of domains is less than the specified threshold
       type: condition
       iscommand: false
       brand: ""
@@ -806,13 +815,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 11298ba2-c21d-4b40-8476-0048cb651613
+    taskid: cd5808a1-44bd-476f-84d7-ade6f217e125
     type: regular
     task:
-      id: 11298ba2-c21d-4b40-8476-0048cb651613
+      id: cd5808a1-44bd-476f-84d7-ade6f217e125
       version: -1
       name: Pivot IP
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -840,13 +851,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 2b882c45-a316-4e99-8cac-f11d12270e1f
+    taskid: 9ad15f64-8f8e-4ff6-88fa-5d1b614834c1
     type: condition
     task:
-      id: 2b882c45-a316-4e99-8cac-f11d12270e1f
+      id: 9ad15f64-8f8e-4ff6-88fa-5d1b614834c1
       version: -1
-      name: Is Pivotable MX IP
-      description: 'Is MX IP a guided pivot.'
+      name: Pivot on MX IP if the count of domains is less than the specified threshold
       type: condition
       iscommand: false
       brand: ""
@@ -882,13 +892,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 7db1ed88-3582-40dc-8349-d0d16206b4b8
+    taskid: 75f9adcd-3de8-49bd-87f1-34b331fafbd5
     type: regular
     task:
-      id: 7db1ed88-3582-40dc-8349-d0d16206b4b8
+      id: 75f9adcd-3de8-49bd-87f1-34b331fafbd5
       version: -1
       name: Pivot MX IP
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -916,13 +928,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 35986446-8d91-4f48-8d47-3d7ffe16e67b
+    taskid: 358640e1-9019-4d0c-8603-36eaba4532f4
     type: condition
     task:
-      id: 35986446-8d91-4f48-8d47-3d7ffe16e67b
+      id: 358640e1-9019-4d0c-8603-36eaba4532f4
       version: -1
       name: Is there Any High Risk Score Domain?
-      description: 'Check high risk domains.'
       type: condition
       iscommand: false
       brand: ""
@@ -960,13 +971,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 930e0874-747f-4eed-8386-5453105bc8f5
+    taskid: d05ee486-694c-4fea-8fa8-19ffa11e82ba
     type: title
     task:
-      id: 930e0874-747f-4eed-8386-5453105bc8f5
+      id: d05ee486-694c-4fea-8fa8-19ffa11e82ba
       version: -1
       name: Done
-      description: Prints a raw representation of a string or object, visualising things likes tabs and newlines.  For instance, '\n' will be displayed instead of a newline character, or a Windows CR will be displayed as '\r\n'.  This is useful for debugging issues where things aren't behaving as expected, such as when parsing a string with a regular expression.
+      description: Prints a raw representation of a string or object, visualising
+        things likes tabs and newlines.  For instance, '\n' will be displayed instead
+        of a newline character, or a Windows CR will be displayed as '\r\n'.  This
+        is useful for debugging issues where things aren't behaving as expected, such
+        as when parsing a string with a regular expression.
       type: title
       iscommand: false
       brand: ""
@@ -974,8 +989,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
-          "y": 2630
+          "x": 642.5,
+          "y": 2710
         }
       }
     note: false
@@ -987,13 +1002,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 2b9385cc-c045-4478-8baf-3889f41d2eba
+    taskid: 97db3cba-6eaf-4c7a-8235-3e81b7551418
     type: regular
     task:
-      id: 2b9385cc-c045-4478-8baf-3889f41d2eba
+      id: 97db3cba-6eaf-4c7a-8235-3e81b7551418
       version: -1
       name: Add High Risk Domain to Context
-      description: 'Add high risk domain to context.'
       scriptName: AddDomainRiskScoreToContext
       type: regular
       iscommand: false
@@ -1032,13 +1046,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 3616ae76-1825-47bf-89e4-b382f630c95e
+    taskid: cae89ab9-a220-4e54-8d2b-e610ea32f7e2
     type: regular
     task:
-      id: 3616ae76-1825-47bf-89e4-b382f630c95e
+      id: cae89ab9-a220-4e54-8d2b-e610ea32f7e2
       version: -1
       name: Manually Review High Risk Score Domains
-      description: 'Manually review high risk score domains.'
       type: regular
       iscommand: false
       brand: ""
@@ -1064,13 +1077,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 990b24ad-dd36-4b96-8793-b36801e2024a
+    taskid: d07f2702-1865-4f94-8ab1-79cf375a8685
     type: condition
     task:
-      id: 990b24ad-dd36-4b96-8793-b36801e2024a
+      id: d07f2702-1865-4f94-8ab1-79cf375a8685
       version: -1
       name: 'Should Wait for an Analyst Review? '
-      description: 'Should Wait for an Analyst Review.'
       type: condition
       iscommand: false
       brand: ""
@@ -1104,13 +1116,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: dbcb5fa6-f951-4a8c-8e55-a1f1cb651373
+    taskid: 735b2079-f339-4d9b-8019-57b0d9bcb547
     type: condition
     task:
-      id: dbcb5fa6-f951-4a8c-8e55-a1f1cb651373
+      id: 735b2079-f339-4d9b-8019-57b0d9bcb547
       version: -1
-      name: Is Pivotable MX Host?
-      description: 'Is MX host a guided pivot.'
+      name: Pivot on MX Host if the count of domains is less than the specified threshold
       type: condition
       iscommand: false
       brand: ""
@@ -1128,6 +1139,8 @@ tasks:
             value:
               simple: PivotableDomains.PivotableMxHost.pivotable
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1144,13 +1157,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: d2fa4809-917f-48d1-85b5-414215c406c8
+    taskid: f78a19e1-9d8e-4c92-8d88-ea53b3191a05
     type: regular
     task:
-      id: d2fa4809-917f-48d1-85b5-414215c406c8
+      id: f78a19e1-9d8e-4c92-8d88-ea53b3191a05
       version: -1
       name: Pivot MX Host
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1178,13 +1193,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: cff54b01-4a0f-420a-80b0-ccac9a99f0d5
+    taskid: 2f5c8b1e-43e4-4c5b-88f2-3b59f4e0b025
     type: condition
     task:
-      id: cff54b01-4a0f-420a-80b0-ccac9a99f0d5
+      id: 2f5c8b1e-43e4-4c5b-88f2-3b59f4e0b025
       version: -1
-      name: Is Pivotable MX Domain?
-      description: 'Is MX domain a guided pivot.'
+      name: Pivot on MX Domain if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -1202,6 +1217,8 @@ tasks:
             value:
               simple: PivotableDomains.PivotableMxDomain.pivotable
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1218,13 +1235,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 5bf98c03-d021-4144-80ff-2d8a70e0e49c
+    taskid: f9b8ada5-d753-4d09-82ad-5cdb2f643f20
     type: regular
     task:
-      id: 5bf98c03-d021-4144-80ff-2d8a70e0e49c
+      id: f9b8ada5-d753-4d09-82ad-5cdb2f643f20
       version: -1
       name: Pviot MX Domain
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1252,13 +1271,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: dfd744f6-8fb0-4916-80d0-bd594a7a9711
+    taskid: 31ebefd6-946a-4ae7-8914-1ed6474a2725
     type: condition
     task:
-      id: dfd744f6-8fb0-4916-80d0-bd594a7a9711
+      id: 31ebefd6-946a-4ae7-8914-1ed6474a2725
       version: -1
-      name: Is Pivotable Registrar?
-      description: 'is registrar a guided pivot.'
+      name: Pivot on Registrar if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -1276,6 +1295,8 @@ tasks:
             value:
               simple: PivotableDomains.PivotableRegistrar.pivotable
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1292,13 +1313,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: d58dd774-b23d-4af1-88be-74dfa104861d
+    taskid: 6f8f836f-3d2e-4619-8bbb-1cfc447e0847
     type: regular
     task:
-      id: d58dd774-b23d-4af1-88be-74dfa104861d
+      id: 6f8f836f-3d2e-4619-8bbb-1cfc447e0847
       version: -1
       name: Pivot Registrar
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1326,13 +1349,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 8d9bde15-525e-4748-8a80-01fc3b5e6c41
+    taskid: a8967f9f-563c-4255-892e-dae8384e8df8
     type: condition
     task:
-      id: 8d9bde15-525e-4748-8a80-01fc3b5e6c41
+      id: a8967f9f-563c-4255-892e-dae8384e8df8
       version: -1
-      name: Is Pivotable SSL Subject?
-      description: 'Is SSL subject a guided pivot.'
+      name: Pivot on SSL Subject if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -1350,6 +1373,8 @@ tasks:
             value:
               simple: PivotableDomains.PivotableSslSubject.pivotable
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1366,13 +1391,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: c13bcb3d-56d1-4a53-8241-6a13059262fb
+    taskid: 1f9548e8-3d9a-40af-8fab-b3c37aa1f618
     type: regular
     task:
-      id: c13bcb3d-56d1-4a53-8241-6a13059262fb
+      id: 1f9548e8-3d9a-40af-8fab-b3c37aa1f618
       version: -1
       name: Pivot SSL Subject
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1400,13 +1427,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: f4abc552-69f0-40c1-8bb9-5be30639fa12
+    taskid: aed6156f-1f2c-4576-8c91-f9d4e92f7139
     type: condition
     task:
-      id: f4abc552-69f0-40c1-8bb9-5be30639fa12
+      id: aed6156f-1f2c-4576-8c91-f9d4e92f7139
       version: -1
-      name: Is Pivotable SSL Email?
-      description: 'Is SSL email a guided pivot.'
+      name: Pivot on SSL Email if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -1424,6 +1451,8 @@ tasks:
             value:
               simple: PivotableDomains.PivotableSslEmail.pivotable
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1440,13 +1469,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 3e6e805d-7d01-46b0-8d90-5ca6fc5ce8c2
+    taskid: 1869b698-22f7-44f6-81b3-f8c68c7724f8
     type: regular
     task:
-      id: 3e6e805d-7d01-46b0-8d90-5ca6fc5ce8c2
+      id: 1869b698-22f7-44f6-81b3-f8c68c7724f8
       version: -1
       name: Pivot SSL Email
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1474,13 +1505,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: ff4b596d-8de9-468a-8f1b-d3c46422b824
+    taskid: 3d5f46d6-e112-443c-8036-3d236ba90af4
     type: condition
     task:
-      id: ff4b596d-8de9-468a-8f1b-d3c46422b824
+      id: 3d5f46d6-e112-443c-8036-3d236ba90af4
       version: -1
-      name: Is Pivotable NS Domain?
-      description: 'Is NS domain a guided pivot.'
+      name: Pivot on Nameserver Domain if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -1498,6 +1529,8 @@ tasks:
             value:
               simple: PivotableDomains.PivotableNameServerDomain.pivotable
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1514,13 +1547,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 76382550-5490-4c99-837f-a08e8059584e
+    taskid: 499f2b5d-35a1-4881-8ff0-a746d5828b3e
     type: regular
     task:
-      id: 76382550-5490-4c99-837f-a08e8059584e
+      id: 499f2b5d-35a1-4881-8ff0-a746d5828b3e
       version: -1
       name: Pivot Nameserver Domain
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1548,13 +1583,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 0da04d50-78c2-4b8d-841e-01cbb96f7adf
+    taskid: 350d6700-c3f4-4291-85cc-a873ca7320e3
     type: condition
     task:
-      id: 0da04d50-78c2-4b8d-841e-01cbb96f7adf
+      id: 350d6700-c3f4-4291-85cc-a873ca7320e3
       version: -1
-      name: Is Pivotable Google Analytics?
-      description: 'Is Google analytics a guided pivot.'
+      name: Pivot on Google Analytics if the count of domains is less than the specified
+        threshold
       type: condition
       iscommand: false
       brand: ""
@@ -1572,6 +1607,8 @@ tasks:
             value:
               simple: PivotableDomains.PivotableGoogleAnalytics.pivotable
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1588,13 +1625,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 311dd4f0-bf51-4375-8f48-11515620a153
+    taskid: e2e4fbaf-94b3-4ff6-824b-6f8b5c09c2c1
     type: regular
     task:
-      id: 311dd4f0-bf51-4375-8f48-11515620a153
+      id: e2e4fbaf-94b3-4ff6-824b-6f8b5c09c2c1
       version: -1
       name: Pivot Google Analytics
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1622,13 +1661,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: c348790d-db73-4e67-8962-ae8a23c1e25f
+    taskid: 5765bb1b-27a8-4e13-832d-65507ba61458
     type: condition
     task:
-      id: c348790d-db73-4e67-8962-ae8a23c1e25f
+      id: 5765bb1b-27a8-4e13-832d-65507ba61458
       version: -1
-      name: Is Pivotable Adsense?
-      description: 'Is adsense a guided pivot.'
+      name: Pivot on Adsense if the count of domains is less than the specified threshold
       type: condition
       iscommand: false
       brand: ""
@@ -1646,6 +1684,8 @@ tasks:
             value:
               simple: PivotableDomains.PivotableAdsense.pivotable
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
@@ -1662,13 +1702,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 357eb1ab-fcd3-4b67-8b28-345b642cb5e1
+    taskid: 984b9d4e-bae3-49ec-82d8-bc9ea56ab974
     type: regular
     task:
-      id: 357eb1ab-fcd3-4b67-8b28-345b642cb5e1
+      id: 984b9d4e-bae3-49ec-82d8-bc9ea56ab974
       version: -1
       name: Pivot Adsense
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
+        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
+        a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1694,17 +1736,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 684b1854-f103-479e-86dc-f8603b105b93
+    type: condition
+    task:
+      id: 684b1854-f103-479e-86dc-f8603b105b93
+      version: -1
+      name: Check if domain input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.domains
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "17_4_#default#": 0.44
+      "17_4_#default#": 0.44,
+      "34_36_#default#": 0.37
     },
     "paper": {
       "dimensions": {
-        "height": 2625,
+        "height": 2895,
         "width": 7440,
         "x": -2960,
-        "y": 70
+        "y": -120
       }
     }
   }
@@ -1713,119 +1795,120 @@ inputs:
   value: {}
   required: true
   description: 'The domains to lookup. '
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_riskscore_threshold
   value:
     simple: "50"
   required: true
   description: The risk score threshold to compare.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: should_wait_for_analyst_review
   value:
     simple: "false"
   required: true
-  description: Flags if users should wait for an analyst to review. Default is false. Value can be either true/false only.
-  playbookInputQuery:
+  description: Flags if users should wait for an analyst to review. Default is false.
+    Value can be either true/false only.
+  playbookInputQuery: null
 - key: dt_max_name_server_host_count
   value:
     simple: "250"
   required: false
   description: The max nameserver host pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_registrant_contact_name_count
   value:
     simple: "200"
   required: false
   description: The max registrant contact name pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_registrant_org_count
   value:
     simple: "200"
   required: false
   description: 'The max registrant org pivot count threshold '
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_ssl_info_organization_count
   value:
     simple: "200"
   required: false
   description: the max ssl info organization pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_ssl_info_hash_count
   value:
     simple: "350"
   required: false
   description: the max ssl info hash pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_soa_email_count
   value:
     simple: "200"
   required: false
   description: the max soa email pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_ip_address_count
   value:
     simple: "150"
   required: false
   description: the max ip address pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_name_server_ip_count
   value:
     simple: "250"
   required: false
   description: the max nameserver ip pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_mx_ip_count
   value:
     simple: "200"
   required: false
   description: the max MX ip pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_ssl_email_count
   value:
     simple: "200"
   required: false
   description: The max ssl email pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_registrar_count
   value: {}
   required: false
   description: The max registrar pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_ssl_subject_count
   value:
     simple: "200"
   required: false
   description: the max ssl subject pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_name_server_domain_count
   value:
     simple: "200"
   required: false
   description: the max name server domain pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_mx_host_count
   value:
     simple: "200"
   required: false
   description: the max MX host pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_mx_domain_count
   value:
     simple: "200"
   required: false
   description: the max MX domain pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_google_adsense_count
   value:
     simple: "200"
   required: false
   description: the max google adsense pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: dt_max_google_analytics_count
   value: {}
   required: false
   description: the max google analytics pivot count threshold
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: HighRiskPivotedDomains.Name
   description: The domain name
@@ -2089,6 +2172,3 @@ outputs:
 - contextPath: DomainTools.Pivots.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
   description: The tracking code of Google Analytics.
   type: Number
-tests:
-- No tests (auto formatted)
-fromversion: 6.6.0
