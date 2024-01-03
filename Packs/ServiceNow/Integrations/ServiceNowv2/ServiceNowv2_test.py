@@ -2037,8 +2037,8 @@ def test_send_request_with_str_error_response(mocker, mock_json, expected_result
                          [
                              ({}, {}),
                              ({"assigned_to": ""}, {"assigned_to": ""}),
-                              ({"assigned_to": {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
-                   'value': 'oscar@example.com'}}, {'assigned_to': 'oscar@example.com'})
+                             ({"assigned_to": {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
+                                               'value': 'oscar@example.com'}}, {'assigned_to': 'oscar@example.com'})
                          ])
 def test_parse_dict_ticket_fields_empty_ticket(ticket, expected_ticket):
     """
@@ -2060,5 +2060,5 @@ def test_parse_dict_ticket_fields_empty_ticket(ticket, expected_ticket):
     class Client:
         def get(self, table, value, no_record_found_res):
             return USER_RESPONSE
-    parse_dict_ticket_fields(Client(), ticket) # type: ignore
+    parse_dict_ticket_fields(Client(), ticket)  # type: ignore
     assert ticket == expected_ticket
