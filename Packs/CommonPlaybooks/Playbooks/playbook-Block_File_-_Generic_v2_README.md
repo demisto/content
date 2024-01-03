@@ -16,9 +16,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * Cortex XDR - Block File
 * Block File - Carbon Black Response
-* Block File - Cybereason
 * MDE - Block File
 * Block File - Cylance Protect v2
+* Block File - Cybereason
 * CrowdStrike Falcon - Block File
 
 ### Integrations

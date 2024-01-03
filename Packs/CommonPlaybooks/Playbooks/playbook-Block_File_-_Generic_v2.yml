@@ -26,7 +26,6 @@ tasks:
       - "17"
       - "18"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -39,6 +38,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -82,7 +82,6 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -100,6 +99,7 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -115,7 +115,6 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -128,6 +127,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -138,8 +138,7 @@ tasks:
       id: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
       version: -1
       name: Block File - Cybereason
-      description: This playbook accepts an MD5 hash and blocks the file using the
-        Cybereason integration.
+      description: This playbook accepts an MD5 hash and blocks the file using the Cybereason integration.
       playbookName: Block File - Cybereason
       type: playbook
       iscommand: false
@@ -169,7 +168,6 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -187,6 +185,7 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -197,8 +196,7 @@ tasks:
       id: a887370c-f94a-42f9-866f-2d80b7707f41
       version: -1
       name: Block File - Cylance Protect v2
-      description: This playbook accepts a SHA256 hash and adds the hash to the Global
-        Quarantine list using the Cylance Protect v2 integration.
+      description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine list using the Cylance Protect v2 integration.
       playbookName: Block File - Cylance Protect v2
       type: playbook
       iscommand: false
@@ -228,7 +226,6 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -246,6 +243,7 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -264,7 +262,6 @@ tasks:
       '#none#':
       - "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -277,6 +274,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -295,7 +293,6 @@ tasks:
       '#none#':
       - "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -308,6 +305,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -326,7 +324,6 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -339,6 +336,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
@@ -357,7 +355,6 @@ tasks:
       '#none#':
       - "16"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -370,6 +367,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -410,7 +408,6 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -428,6 +425,7 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -500,27 +498,18 @@ tasks:
       id: 07c049da-5bbf-4804-8b51-3b58463ce5be
       version: -1
       name: CrowdStrike Falcon - Block File
+      description: "This playbook receives an MD5 or a SHA256 hash and adds it to the block list in CrowdStrike Falcon. \nThe playbook uses the integration \"CrowdStrike Falcon\"."
       playbookName: CrowdStrike Falcon - Block File
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
-      MD5:
+      Hash:
         complex:
           root: inputs.Hash
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: inputs.Hash
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
           transformers:
           - operator: append
             args:
@@ -528,20 +517,6 @@ tasks:
                 value:
                   simple: inputs.MD5
                 iscontext: true
-          - operator: uniq
-      SHA256:
-        complex:
-          root: inputs.Hash
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: inputs.Hash
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          transformers:
           - operator: append
             args:
               item:
@@ -580,33 +555,20 @@ tasks:
       id: 56668cf3-d5c5-424d-85ff-43b568a0d538
       version: -1
       name: MDE - Block File
+      description: "This playbook receives an MD5 or a SHA256 hash and adds it to the block list in Microsoft Defender for Endpoint. \nThe playbook uses the integration \"Microsoft Defender for Endpoint\"."
       playbookName: MDE - Block File
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       GenerateAlert:
         simple: "true"
-      IndicatorDescription:
-        simple: Added by Cortex XSOAR
-      IndicatorTitle:
-        simple: Added by Cortex XSOAR
-      MD5:
+      Hash:
         complex:
           root: inputs.Hash
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: inputs.Hash
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
           transformers:
           - operator: append
             args:
@@ -614,20 +576,6 @@ tasks:
                 value:
                   simple: inputs.MD5
                 iscontext: true
-          - operator: uniq
-      SHA256:
-        complex:
-          root: inputs.Hash
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: inputs.Hash
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          transformers:
           - operator: append
             args:
               item:
@@ -635,6 +583,10 @@ tasks:
                   simple: inputs.SHA256
                 iscontext: true
           - operator: uniq
+      IndicatorDescription:
+        simple: Added by Cortex XSOAR
+      IndicatorTitle:
+        simple: Added by Cortex XSOAR
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -675,7 +627,7 @@ inputs:
       accessor: MD5
   required: false
   description: The MD5 hash of the file you want to block.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256
   value:
     complex:
@@ -687,9 +639,8 @@ inputs:
 - key: Hash
   value: {}
   required: false
-  description: In this input you can insert either MD5 or SHA256 that you wish to
-    block.
-  playbookInputQuery: null
+  description: In this input you can insert either MD5 or SHA256 that you wish to block.
+  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
   description: Last block time.
