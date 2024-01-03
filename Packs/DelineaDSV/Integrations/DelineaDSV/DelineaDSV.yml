@@ -29,16 +29,16 @@ name: DelineaDSV
 script:
   commands:
   - arguments:
-    - description: Secret name for DSV
+    - description: Secret name for DSV.
       name: name
       required: true
-    description: Getting a secret fom DSV
+    description: Getting a secret fom DSV.
     name: dsv-secret-get
     outputs:
     - contextPath: secret
-      description: Received JSON object secret
+      description: Received JSON object secret.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.83255
   runonce: false
   script: '-'
   subtype: python3
