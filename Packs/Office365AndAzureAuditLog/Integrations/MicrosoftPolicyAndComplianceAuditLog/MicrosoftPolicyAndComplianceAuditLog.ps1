@@ -3,6 +3,8 @@ $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
 Import-Module ExchangeOnlineManagement
 
+# trigger tests
+
 class ExchangeOnlinePowershellV3Client
 {
     [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate

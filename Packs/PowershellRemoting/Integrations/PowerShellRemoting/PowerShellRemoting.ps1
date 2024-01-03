@@ -1,5 +1,7 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
+# trigger tests
+
 # remove progress messages such as [oo  ] - used to hide archiving operations
 $global:ProgressPreference = 'SilentlyContinue'
 

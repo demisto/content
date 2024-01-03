@@ -18,6 +18,7 @@ $script:INTEGRATION_ENTRY_CONTEXT = "EWS"
 $script:JUNK_RULE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.Rule.Junk(val.Email && val.Email == obj.Email)"
 $script:MESSAGE_TRACE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.MessageTrace(val.MessageId && val.MessageId == obj.MessageId)"
 
+# trigger tests
 
 function ParseJunkRulesToEntryContext([PSObject]$raw_response) {
     return @{

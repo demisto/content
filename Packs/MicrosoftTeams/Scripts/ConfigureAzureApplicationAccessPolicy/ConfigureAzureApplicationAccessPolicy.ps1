@@ -1,5 +1,7 @@
 Import-Module MicrosoftTeams
 
+# trigger tests
+
 function Main()
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
