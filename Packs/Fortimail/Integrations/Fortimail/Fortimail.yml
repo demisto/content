@@ -1443,7 +1443,7 @@ script:
       description: Whether to allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password.
       type: String
   - name: fortimail-recipient-policy-update
-    description: Update a Recipient policy.
+    description: Update a recipient policy.
     arguments:
     - name: recipient_policy_id
       description: The ID of the recipient policy.
