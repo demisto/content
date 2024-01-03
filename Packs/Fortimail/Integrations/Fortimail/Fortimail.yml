@@ -755,7 +755,7 @@ script:
       description: The destination IP/Netmask. Relevant when server_type is IP/Netmask.
       type: String
     - contextPath: FortiMail.IPPolicy.server_ip_group
-      description: The destination IP group. Relevant when server_typeis IP group.
+      description: The destination IP group. Relevant when server_type is IP group.
       type: String
     - contextPath: FortiMail.IPPolicy.action
       description: The action of the policy.
