@@ -307,7 +307,7 @@ script:
       description: The type of the list (safelist or blocklist).
       type: String
   - name: fortimail-system-safe-block-add
-    description: Add an email address/ domain name/ IP address to the system white/ block list. Block/Safe List lets you reject, discard, or allow email messages based on email addresses, domain names, and IP addresses. As one of the first steps to detect spam, FortiMail units evaluate whether an email message matches a block list or safe list entry. Choose the wanted list by the type argument.
+    description: Add an email address/ domain name/ IP address to the system safe/block list. Block/safe list lets you reject, discard, or allow email messages based on email addresses, domain names, and IP addresses. As one of the first steps to detect spam, FortiMail units evaluate whether an email message matches a block list or safe list entry. Choose the required list by the type argument.
     arguments:
     - name: values
       description: 'Email address/ domain name/ IP address to add to the system white/ block list. The supported entry types are Email (For example, example@example.com, *@example.com), IP/Netmask: (For example, 10.10.10.10/24), and Reverse DNS (For example, http://example.com. You can use the following wild cards:*: Matches any number of characters. You can use the asterisk (*) anywhere in a character string.?: Matches a single alphabet in a specific position.'
