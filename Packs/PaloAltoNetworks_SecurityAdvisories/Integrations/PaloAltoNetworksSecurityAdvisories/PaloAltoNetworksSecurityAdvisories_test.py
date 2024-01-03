@@ -61,5 +61,5 @@ def test_fetch_indicators_command(patched_get_advisories):
     assert result[0].get("value")
     assert result[0].get("type")
     assert result[0].get("rawJSON")
-    for field, field_value in result[0].get("fields").items():
+    for _field, field_value in result[0].get("fields").items():
         assert field_value
