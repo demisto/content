@@ -321,7 +321,7 @@ script:
       - Safelist
       required: true
   - name: fortimail-system-safe-block-delete
-    description: Delete an email address/ domain name/ IP address from the system white/ block list. Choose the wanted list by the type argument.
+    description: Delete an email address/ domain name/ IP address from the system safe/block list. Choose the required list by the type argument.
     arguments:
     - name: values
       description: Email address/ domain name/ IP address (speretaed by comma) to remove from the system white/ block list. For example, test@test.com, test2@test.com or 1.1.1.1/0,1.1.1.2/0. Use system-safe-block-list to get all safe / block list values.
