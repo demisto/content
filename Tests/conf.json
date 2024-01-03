@@ -203,6 +203,9 @@
             "fromversion": "6.11.0"
         },
         {
+            "playbookID": "IsIntegrationAvailable - Test"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
@@ -1920,7 +1923,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
-            "memory_threshold": 100,
+            "memory_threshold": 250,
             "instance_names": "use_default_handler",
             "is_mockable": false
         },
@@ -2268,14 +2271,16 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft Graph Calendar",

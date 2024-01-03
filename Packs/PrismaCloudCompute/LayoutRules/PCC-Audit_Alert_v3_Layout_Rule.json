@@ -1,0 +1,18 @@
+{
+  "rule_id": "Prisma_Cloud_Compute_Audit_Alert_v3_Layout_Rule",
+  "layout_id": "Prisma Cloud Compute Audit Layout v3",
+  "description": "Layout for Prisma Cloud Compute - Audit Alert v3 incidents.",
+  "rule_name": "Prisma Cloud Compute - Audit Alert v3 Layout Rule",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Prisma Cloud Compute Audit v3"
+        }
+      ]
+    }
+  },
+  "fromVersion": "6.10.0"
+}

@@ -938,7 +938,7 @@ def urljoin(url, suffix=""):
     return url + suffix
 
 
-def positiveUrl(entry): 
+def positiveUrl(entry):
     """
        Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
 
@@ -1832,7 +1832,7 @@ def flattenCell(data, is_pretty=True):
 
         return ',\n'.join(string_list)
     else:
-        return json.dumps(data, indent=indent, ensure_ascii=False)
+        return json.dumps(data, indent=indent, ensure_ascii=False, default=str)
 
 
 def FormatIso8601(t):
@@ -2808,6 +2808,15 @@ def get_integration_name():
     return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
 
 
+def get_integration_instance_name():
+    """
+    Getting calling integration instance name
+    :return: Calling integration instance name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
+
+
 def get_script_name():
     """
     Getting calling script name
@@ -3661,7 +3670,6 @@ class Common(object):
                 'data': self.dns_record_data
             }
 
-
     class CPE:
         """
         Represents one Common Platform Enumeration (CPE) object, see https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf
@@ -3673,6 +3681,7 @@ class Common(object):
         :rtype: ``None``
 
         """
+
         def __init__(self, cpe=None):
             self.cpe = cpe
 
@@ -3680,7 +3689,6 @@ class Common(object):
             return {
                 'CPE': self.cpe,
             }
-
 
     class File(Indicator):
         """
@@ -6024,7 +6032,7 @@ class Common(object):
                         })
                     elif isinstance(san, dict):
                         san_list.append(san)
-                    elif(isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
+                    elif (isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
                         san_list.append(san.to_context())
 
             elif self.extensions:  # autogenerate it from extensions
@@ -7061,7 +7069,7 @@ def return_results(results):
         return
 
     elif results and isinstance(results, list):
-        result_list = [] # type: list
+        result_list = []  # type: list
         for result in results:
             # Results of type dict or str are of the old results format and work with demisto.results()
             if isinstance(result, dict):
@@ -8767,7 +8775,8 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
-                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
+                method_whitelist = "allowed_methods" if hasattr(
+                    Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
                 whitelist_kawargs = {
                     method_whitelist: frozenset(['GET', 'POST', 'PUT'])
                 }
@@ -9866,6 +9875,13 @@ class IndicatorsSearcher:
         res = demisto.searchIndicators(**search_args)
         self._total = res.get('total')
         demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
+        # when total is None, there is a problem with the server for returning indicators, hence need to restart the container,
+        # see XSUP-26699
+        if self._total is None:
+            raise SystemExit(
+                "Encountered issue when trying to fetch indicators for integration in instance {integration}. "
+                "Restarting container and trying again.".format(integration=get_integration_instance_name())
+            )
         if isinstance(self._page, int):
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
@@ -9936,7 +9952,8 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
             # see XSUP-24343
             if not isinstance(last_mirror_run, dict):
                 raise TypeError("non-dictionary passed to set_last_mirror_run")
-            demisto.debug("encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
+            demisto.debug(
+                "encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
             demisto.debug(e)
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
@@ -10693,7 +10710,8 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
-    demisto.debug("lb: fetch start time: {}, fetch end time: {}".format(last_run_time.strftime(date_format), now.strftime(date_format)))
+    demisto.debug("lb: fetch start time: {}, fetch end time: {}".format(
+        last_run_time.strftime(date_format), now.strftime(date_format)))
     return last_run_time.strftime(date_format), now.strftime(date_format)
 
 
@@ -10715,6 +10733,7 @@ def get_current_time(time_zone=0):
         demisto.debug('pytz is missing, will not return timeaware object.')
         return now
 
+
 def calculate_new_offset(old_offset, num_incidents, total_incidents):
     """ This calculates the new offset based on the response
 
@@ -10735,6 +10754,7 @@ def calculate_new_offset(old_offset, num_incidents, total_incidents):
     if total_incidents and num_incidents + old_offset >= total_incidents:
         return 0
     return old_offset + num_incidents
+
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
@@ -10834,10 +10854,13 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
 
         if current_time - addition_time <= deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
-            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
+            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
+                inc_id, addition_time, deletion_threshold_in_seconds))
         else:
-            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
-    demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
+            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
+                inc_id, addition_time, deletion_threshold_in_seconds))
+    demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(
+        len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
 
@@ -10912,7 +10935,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
-    demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
+    demisto.debug("lb: Create updated last run object, len(incidents) is {},"
                   "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
@@ -11190,7 +11213,8 @@ def xsiam_api_call_with_retries(
     response = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(data_type=data_type, attempt_num=attempt_num))
+        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
+            data_type=data_type, attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         response = client._http_request(
@@ -11227,7 +11251,7 @@ def split_data_to_chunks(data, target_chunk_size):
     :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
-    target_chunk_size = min(target_chunk_size,  XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
@@ -11315,21 +11339,22 @@ def replace_spaces_in_credential(credential):
                       lambda match: match.group(0).replace(' ', '\n'), credential)
     return credential
 
+
 def has_passed_time_threshold(timestamp_str, seconds_threshold):
     """
     Checks if the time difference between the current time and the timestamp is greater than the threshold.
-    
+
     :type timestamp_str: ``str``
     :param timestamp_str: The timestamp to compare the current time to.
     :type seconds_threshold: ``int``
     :param seconds_threshold: The threshold in seconds.
-    
+
     :return: True if the time difference is greater than the threshold, otherwise False.
     :rtype: ``bool``
     """
     import pytz
     to_utc_timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
-    # using astimezone since utcnow() returns a naive datetime object when unitesting  
+    # using astimezone since utcnow() returns a naive datetime object when unitesting
     current_time = datetime.now().astimezone(pytz.utc)
     if to_utc_timestamp:
         time_difference = current_time - to_utc_timestamp
@@ -11337,8 +11362,9 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
     else:
         raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
 
+
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11422,7 +11448,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         headers['snapshot-id'] = str(round(time.time() * 1000))
         headers['total-items-count'] = str(items_count)
 
-    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type = data_type)
+    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
     def data_error_handler(res):
         """
@@ -11464,6 +11490,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     zipped_data=zipped_data, is_json_response=True)
 
     demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
