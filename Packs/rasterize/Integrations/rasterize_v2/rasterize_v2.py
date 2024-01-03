@@ -575,7 +575,7 @@ def rasterize(path: str,
             rasterization_threads = []
             rasterization_results = []
             for current_path in paths:
-                if not (current_path.startswith('http')):
+                if not current_path.startswith('http') and not current_path.startswith('file:///'):
                     current_path = f'http://{current_path}'
 
                 # Start a new thread in group of max_tabs
