@@ -1,0 +1,31 @@
+{
+    "id": "incident_abnormalsecuritymessageid",
+    "version": -1,
+    "modified": "2023-11-20T19:22:19.573198075Z",
+    "name": "Abnormal Security Message ID",
+    "ownerOnly": false,
+    "cliName": "abnormalsecuritymessageid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "AbnormalSecurity"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,3 @@
+!azure-log-analytics-run-search-job table_name=test_SRCH query=AuditLogs limit=10
+!azure-log-analytics-get-search-job table_name=test_SRCH
+!azure-log-analytics-delete-search-job table_name=test_SRCH

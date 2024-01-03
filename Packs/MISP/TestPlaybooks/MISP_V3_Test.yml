@@ -1,5 +1,5 @@
 id: MISP V3 Test
-version: -1
+version: 5
 vcShouldKeepItemLegacyProdMachine: false
 name: MISP V3 Test
 description: Test playbook for MISP V3 integration
@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 85f1f91e-02b1-4f5d-8c42-4be16a6ba4cc
+    taskid: 0f253d8a-59d0-4085-883a-23fc9c3e0823
     type: start
     task:
-      id: 85f1f91e-02b1-4f5d-8c42-4be16a6ba4cc
+      id: 0f253d8a-59d0-4085-883a-23fc9c3e0823
       version: -1
       name: ""
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -890
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 655ecb08-e239-414c-8d80-3b73e214a5db
+    taskid: 0e083698-b345-4e4b-85fe-67e6dd460a71
     type: regular
     task:
-      id: 655ecb08-e239-414c-8d80-3b73e214a5db
+      id: 0e083698-b345-4e4b-85fe-67e6dd460a71
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -755
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7d0ee08c-612f-415c-8806-8e25ab81d65b
+    taskid: 0cf51843-0be6-4284-8199-0063602bf999
     type: regular
     task:
-      id: 7d0ee08c-612f-415c-8806-8e25ab81d65b
+      id: 0cf51843-0be6-4284-8199-0063602bf999
       version: -1
       name: misp-search-events by event_id
       script: '|||misp-search-events'
@@ -95,8 +95,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 70
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6a73b164-530b-4e27-86d9-e09b73d07ba8
+    taskid: 1fd0030c-12e7-4cb4-84f7-8b27ad27f857
     type: condition
     task:
-      id: 6a73b164-530b-4e27-86d9-e09b73d07ba8
+      id: 1fd0030c-12e7-4cb4-84f7-8b27ad27f857
       version: -1
       name: Verify Search Event Outputs
       type: condition
@@ -187,8 +187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 245
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
@@ -200,10 +200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 41e9fc24-f1f4-478d-8498-d691ef6be006
+    taskid: 9a0288c1-6f56-4923-8346-7e7f511709ca
     type: regular
     task:
-      id: 41e9fc24-f1f4-478d-8498-d691ef6be006
+      id: 9a0288c1-6f56-4923-8346-7e7f511709ca
       version: -1
       name: domain
       description: Checks the reputation of the given domain.
@@ -223,7 +223,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5035
+          "y": 6085
         }
       }
     note: false
@@ -235,10 +235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3c89c63a-a29f-48b6-85c8-1a47e9c67c1a
+    taskid: 8e99488b-572d-43a7-8336-8a657bb2c11f
     type: condition
     task:
-      id: 3c89c63a-a29f-48b6-85c8-1a47e9c67c1a
+      id: 8e99488b-572d-43a7-8336-8a657bb2c11f
       version: -1
       name: Verify  Domain Outputs
       type: condition
@@ -246,7 +246,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "51"
+      - "44"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -296,7 +296,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5210
+          "y": 6260
         }
       }
     note: false
@@ -308,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 47a0b360-611a-4d19-814b-f4af2f0c9ff8
+    taskid: 252981d1-6e46-44e0-89ba-d61d8ca6f5f9
     type: regular
     task:
-      id: 47a0b360-611a-4d19-814b-f4af2f0c9ff8
+      id: 252981d1-6e46-44e0-89ba-d61d8ca6f5f9
       version: -1
       name: email
       description: Checks the reputation of the given email address.
@@ -330,8 +330,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 5035
+          "x": 50,
+          "y": 6610
         }
       }
     note: false
@@ -343,10 +343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 229d2070-287a-41f6-8502-1ad3e035d4e5
+    taskid: b3b6ccae-7f70-4c2e-83e4-40889d3a6650
     type: condition
     task:
-      id: 229d2070-287a-41f6-8502-1ad3e035d4e5
+      id: b3b6ccae-7f70-4c2e-83e4-40889d3a6650
       version: -1
       name: Verify Email Outputs
       type: condition
@@ -354,7 +354,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "51"
+      - "45"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -403,8 +403,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 5210
+          "x": 50,
+          "y": 6785
         }
       }
     note: false
@@ -416,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: b42b5f38-ef1f-498c-885c-29bc75a0d783
+    taskid: aa168591-6fd4-4eea-85e1-57296fba57f1
     type: regular
     task:
-      id: b42b5f38-ef1f-498c-885c-29bc75a0d783
+      id: aa168591-6fd4-4eea-85e1-57296fba57f1
       version: -1
       name: file
       description: Checks the file reputation of the given hash.
@@ -438,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5035
+          "x": 50,
+          "y": 7135
         }
       }
     note: false
@@ -451,10 +451,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: b4191e4e-c6de-4c03-87f6-de89b6943fe5
+    taskid: 89ac0b6d-9b00-4f22-8bf5-4595e847c2ea
     type: condition
     task:
-      id: b4191e4e-c6de-4c03-87f6-de89b6943fe5
+      id: 89ac0b6d-9b00-4f22-8bf5-4595e847c2ea
       version: -1
       name: Verify File Outputs
       type: condition
@@ -462,7 +462,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "51"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -511,8 +511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5210
+          "x": 50,
+          "y": 7310
         }
       }
     note: false
@@ -524,10 +524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 556e493e-96aa-46d6-8b5a-4670bdf11e00
+    taskid: 92b64352-5cd9-4b13-817e-5313a16e9e83
     type: regular
     task:
-      id: 556e493e-96aa-46d6-8b5a-4670bdf11e00
+      id: 92b64352-5cd9-4b13-817e-5313a16e9e83
       version: -1
       name: url
       description: Checks the reputation of the given URL.
@@ -546,8 +546,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 5035
+          "x": 50,
+          "y": 7660
         }
       }
     note: false
@@ -559,10 +559,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1e9cdddb-01b9-400d-82cf-3d140d49f5c2
+    taskid: ce7e1d84-0e64-4f86-86c2-9b1bb12ccfa8
     type: condition
     task:
-      id: 1e9cdddb-01b9-400d-82cf-3d140d49f5c2
+      id: ce7e1d84-0e64-4f86-86c2-9b1bb12ccfa8
       version: -1
       name: 'Verify URL Outputs '
       type: condition
@@ -570,7 +570,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "51"
+      - "46"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -619,8 +619,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 5210
+          "x": 50,
+          "y": 7835
         }
       }
     note: false
@@ -632,10 +632,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: aca8bdef-8b27-4615-8484-d95aab299330
+    taskid: 9e84158f-86c5-4dc0-89e7-c171161f777e
     type: regular
     task:
-      id: aca8bdef-8b27-4615-8484-d95aab299330
+      id: 9e84158f-86c5-4dc0-89e7-c171161f777e
       version: -1
       name: ip
       description: Checks the reputation of an IP address.
@@ -654,8 +654,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 5035
+          "x": 50,
+          "y": 8185
         }
       }
     note: false
@@ -667,10 +667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 00970801-ab65-4470-8d43-158c1f33c38a
+    taskid: 42c6d0dd-952e-4975-8e48-eec7a215c997
     type: condition
     task:
-      id: 00970801-ab65-4470-8d43-158c1f33c38a
+      id: 42c6d0dd-952e-4975-8e48-eec7a215c997
       version: -1
       name: Verify IP Outputs
       type: condition
@@ -727,8 +727,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 5210
+          "x": 50,
+          "y": 8360
         }
       }
     note: false
@@ -740,10 +740,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 71eeae2b-a70f-4283-82c7-30bc853dca97
+    taskid: bfad5b29-44c7-40d2-893c-50cab54b896c
     type: regular
     task:
-      id: 71eeae2b-a70f-4283-82c7-30bc853dca97
+      id: bfad5b29-44c7-40d2-893c-50cab54b896c
       version: -1
       name: misp-create-event
       script: '|||misp-create-event'
@@ -765,8 +765,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -590
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -778,10 +778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: fa620c86-29ea-4d6d-8297-ad86d3c8f3a3
+    taskid: 8bac298b-1d8d-4527-8c87-44916a31f562
     type: condition
     task:
-      id: fa620c86-29ea-4d6d-8297-ad86d3c8f3a3
+      id: 8bac298b-1d8d-4527-8c87-44916a31f562
       version: -1
       name: Verify New Event Outputs
       type: condition
@@ -913,8 +913,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -125
+          "x": 50,
+          "y": 865
         }
       }
     note: false
@@ -926,10 +926,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 1e2292c0-c06e-4dc2-862b-e7ea984c2476
+    taskid: d8c01a63-f93b-4834-854d-f0dfd7b90b40
     type: regular
     task:
-      id: 1e2292c0-c06e-4dc2-862b-e7ea984c2476
+      id: d8c01a63-f93b-4834-854d-f0dfd7b90b40
       version: -1
       name: misp-add-attribute
       script: '|||misp-add-attribute'
@@ -951,8 +951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1390
+          "x": 50,
+          "y": 2440
         }
       }
     note: false
@@ -964,10 +964,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 6187eead-dab6-43e0-85c1-65fedd64681f
+    taskid: dfe312b6-2754-49ce-8f6b-d3a3b7360c57
     type: condition
     task:
-      id: 6187eead-dab6-43e0-85c1-65fedd64681f
+      id: dfe312b6-2754-49ce-8f6b-d3a3b7360c57
       version: -1
       name: Verify Add Attribute Outputs
       type: condition
@@ -1085,8 +1085,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1565
+          "x": 50,
+          "y": 2615
         }
       }
     note: false
@@ -1098,10 +1098,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 78385687-7e4a-4012-88a6-4b9b964d2080
+    taskid: 79c5e567-ce00-4db5-88b1-caa3f911a40a
     type: regular
     task:
-      id: 78385687-7e4a-4012-88a6-4b9b964d2080
+      id: 79c5e567-ce00-4db5-88b1-caa3f911a40a
       version: -1
       name: misp-add-tag-to-event
       script: '|||misp-add-tag-to-event'
@@ -1121,8 +1121,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 6055
+          "x": 50,
+          "y": 9205
         }
       }
     note: false
@@ -1134,10 +1134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: e54a8cf8-0e54-4027-8d8a-db525509f159
+    taskid: 7cc30df8-27b5-4959-8579-43fefd3a2ca9
     type: condition
     task:
-      id: e54a8cf8-0e54-4027-8d8a-db525509f159
+      id: 7cc30df8-27b5-4959-8579-43fefd3a2ca9
       version: -1
       name: Verify Event Tags
       type: condition
@@ -1187,8 +1187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 6230
+          "x": 50,
+          "y": 9380
         }
       }
     note: false
@@ -1200,10 +1200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: ea04dc53-ddbf-4d29-8c7b-cd4078ecb4de
+    taskid: 4261a931-c370-4f29-834d-35e4b3812c18
     type: regular
     task:
-      id: ea04dc53-ddbf-4d29-8c7b-cd4078ecb4de
+      id: 4261a931-c370-4f29-834d-35e4b3812c18
       version: -1
       name: misp-add-tag-to-attribute
       script: '|||misp-add-tag-to-attribute'
@@ -1223,8 +1223,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2090
+          "x": 50,
+          "y": 3140
         }
       }
     note: false
@@ -1236,10 +1236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: f2bb7b1f-c259-4418-8a21-50e0d6b01b5c
+    taskid: 2e643bbb-c44f-4e39-8552-921a2c1a0ad3
     type: condition
     task:
-      id: f2bb7b1f-c259-4418-8a21-50e0d6b01b5c
+      id: 2e643bbb-c44f-4e39-8552-921a2c1a0ad3
       version: -1
       name: Verify Attribute Tags
       type: condition
@@ -1282,8 +1282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2440
+          "x": 50,
+          "y": 3490
         }
       }
     note: false
@@ -1295,10 +1295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4034fafe-51e1-45b0-8cfc-97566ee890ad
+    taskid: e85f287b-d75e-4780-85ba-27bcf2206ff7
     type: regular
     task:
-      id: 4034fafe-51e1-45b0-8cfc-97566ee890ad
+      id: e85f287b-d75e-4780-85ba-27bcf2206ff7
       version: -1
       name: misp-add-sighting
       script: '|||misp-add-sighting'
@@ -1318,8 +1318,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2265
+          "x": 50,
+          "y": 3315
         }
       }
     note: false
@@ -1331,10 +1331,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2afaa9f2-e39e-4199-8936-fb243408434a
+    taskid: 0d28eb61-d533-48a2-815e-927cb7afb9c3
     type: regular
     task:
-      id: 2afaa9f2-e39e-4199-8936-fb243408434a
+      id: 0d28eb61-d533-48a2-815e-927cb7afb9c3
       version: -1
       name: misp-add-events-from-feed
       script: '|||misp-add-events-from-feed'
@@ -1354,8 +1354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4015
+          "x": 50,
+          "y": 5065
         }
       }
     note: false
@@ -1367,10 +1367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 05374936-0d90-463e-8bc2-e65efc418507
+    taskid: 848f2f7e-f1ab-4328-82ec-aa2a1942a41e
     type: regular
     task:
-      id: 05374936-0d90-463e-8bc2-e65efc418507
+      id: 848f2f7e-f1ab-4328-82ec-aa2a1942a41e
       version: -1
       name: misp-add-file-object
       script: '|||misp-add-file-object'
@@ -1390,8 +1390,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 8685
+          "x": 50,
+          "y": 11830
         }
       }
     note: false
@@ -1403,10 +1403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: a3fe8db6-d578-4ed1-894c-c2612e191911
+    taskid: 07cd8be3-e79b-41d4-8ee1-7d343484ea78
     type: regular
     task:
-      id: a3fe8db6-d578-4ed1-894c-c2612e191911
+      id: 07cd8be3-e79b-41d4-8ee1-7d343484ea78
       version: -1
       name: misp-add-domain-object
       script: '|||misp-add-domain-object'
@@ -1432,8 +1432,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 8160
+          "x": 50,
+          "y": 11305
         }
       }
     note: false
@@ -1445,10 +1445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 59a439bf-96ab-4f13-8675-5b6e6c442f2c
+    taskid: ca7e7c36-7130-48d4-89ae-b02631499c09
     type: condition
     task:
-      id: 59a439bf-96ab-4f13-8675-5b6e6c442f2c
+      id: ca7e7c36-7130-48d4-89ae-b02631499c09
       version: -1
       name: Verify Domain Obj Outputs
       type: condition
@@ -1517,8 +1517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 8335
+          "x": 50,
+          "y": 11480
         }
       }
     note: false
@@ -1530,10 +1530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: f81bc845-ddb6-4104-8d3f-1c95c391c001
+    taskid: 29f04e48-b005-4340-80f1-74311d638ed4
     type: regular
     task:
-      id: f81bc845-ddb6-4104-8d3f-1c95c391c001
+      id: 29f04e48-b005-4340-80f1-74311d638ed4
       version: -1
       name: misp-add-url-object
       script: '|||misp-add-url-object'
@@ -1555,8 +1555,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 7810
+          "x": 50,
+          "y": 10955
         }
       }
     note: false
@@ -1568,10 +1568,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: e15878f9-80ed-4ba7-888f-0cbbf05c56a6
+    taskid: b21d6c74-e0c7-4fb1-8f26-2bc294549c41
     type: regular
     task:
-      id: e15878f9-80ed-4ba7-888f-0cbbf05c56a6
+      id: b21d6c74-e0c7-4fb1-8f26-2bc294549c41
       version: -1
       name: misp-add-object
       script: '|||misp-add-object'
@@ -1594,8 +1594,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 7460
+          "x": 50,
+          "y": 10605
         }
       }
     note: false
@@ -1607,10 +1607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 409b09aa-8f73-469e-819a-5109efe796c7
+    taskid: 4f978de4-2b5b-4d51-82b7-5fc7c4746adc
     type: regular
     task:
-      id: 409b09aa-8f73-469e-819a-5109efe796c7
+      id: 4f978de4-2b5b-4d51-82b7-5fc7c4746adc
       version: -1
       name: misp-add-ip-object
       script: '|||misp-add-ip-object'
@@ -1630,8 +1630,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 6580
+          "x": 50,
+          "y": 9730
         }
       }
     note: false
@@ -1643,10 +1643,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 0da6ef86-c36b-40f1-8b0e-3229bedc2b00
+    taskid: ac775837-e4dc-4369-8e6a-1bfb7eff1531
     type: regular
     task:
-      id: 0da6ef86-c36b-40f1-8b0e-3229bedc2b00
+      id: ac775837-e4dc-4369-8e6a-1bfb7eff1531
       version: -1
       name: misp-search-attributes only values
       script: '|||misp-search-attributes'
@@ -1668,8 +1668,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2965
+          "x": 50,
+          "y": 4015
         }
       }
     note: false
@@ -1681,10 +1681,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 00c8ae64-2712-461b-849f-c74977b195fd
+    taskid: d65e9bb5-e9e0-4d10-8f7b-d3e1c25f8432
     type: condition
     task:
-      id: 00c8ae64-2712-461b-849f-c74977b195fd
+      id: d65e9bb5-e9e0-4d10-8f7b-d3e1c25f8432
       version: -1
       name: Verify Search Attribute Outputs
       type: condition
@@ -1709,8 +1709,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3140
+          "x": 50,
+          "y": 4190
         }
       }
     note: false
@@ -1722,10 +1722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 86d5ed1f-ca8f-441d-8093-f0a88144df4c
+    taskid: 6deea91c-54d8-488a-8c95-b730e6340222
     type: title
     task:
-      id: 86d5ed1f-ca8f-441d-8093-f0a88144df4c
+      id: 6deea91c-54d8-488a-8c95-b730e6340222
       version: -1
       name: Test Done
       type: title
@@ -1736,8 +1736,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 9200
+          "x": 50,
+          "y": 12355
         }
       }
     note: false
@@ -1749,10 +1749,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 36eb9332-db21-4713-8c10-2153feb20b23
+    taskid: aa46c038-160a-4ff7-86bc-4c988ccc0e99
     type: regular
     task:
-      id: 36eb9332-db21-4713-8c10-2153feb20b23
+      id: aa46c038-160a-4ff7-86bc-4c988ccc0e99
       version: -1
       name: misp-search-attributes full output
       script: '|||misp-search-attributes'
@@ -1780,8 +1780,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3490
+          "x": 50,
+          "y": 4540
         }
       }
     note: false
@@ -1793,10 +1793,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: fe868766-5820-4c85-87d0-f3ea928451f1
+    taskid: 031f0765-ace8-4853-8eab-efb53e44cc0e
     type: condition
     task:
-      id: fe868766-5820-4c85-87d0-f3ea928451f1
+      id: 031f0765-ace8-4853-8eab-efb53e44cc0e
       version: -1
       name: Verify Search Attribute Outputs
       type: condition
@@ -1879,8 +1879,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3665
+          "x": 50,
+          "y": 4715
         }
       }
     note: false
@@ -1892,10 +1892,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 40e7ce32-1dde-448a-8450-eefeea9da46b
+    taskid: 5a83082e-ce65-4586-8c30-f2a8ce2d23e8
     type: regular
     task:
-      id: 40e7ce32-1dde-448a-8450-eefeea9da46b
+      id: 5a83082e-ce65-4586-8c30-f2a8ce2d23e8
       version: -1
       name: Delete Attribute Context
       scriptName: DeleteContext
@@ -1913,8 +1913,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2790
+          "x": 50,
+          "y": 3840
         }
       }
     note: false
@@ -1926,10 +1926,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 715cede4-d1d9-4350-836b-52a0a53645bf
+    taskid: 9eebc0ad-cd92-46a3-826a-384cb1d02e8b
     type: regular
     task:
-      id: 715cede4-d1d9-4350-836b-52a0a53645bf
+      id: 9eebc0ad-cd92-46a3-826a-384cb1d02e8b
       version: -1
       name: Delete Attribute Context
       scriptName: DeleteContext
@@ -1947,8 +1947,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3315
+          "x": 50,
+          "y": 4365
         }
       }
     note: false
@@ -1960,10 +1960,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 20cdd97e-a67f-469a-8060-3753760035c5
+    taskid: 0c89010e-714d-4b79-8b8b-26fd1c450924
     type: regular
     task:
-      id: 20cdd97e-a67f-469a-8060-3753760035c5
+      id: 0c89010e-714d-4b79-8b8b-26fd1c450924
       version: -1
       name: 'misp-add-attribute domain '
       script: '|||misp-add-attribute'
@@ -1984,7 +1984,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4860
+          "y": 5910
         }
       }
     note: false
@@ -1996,10 +1996,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: d3235a46-eece-49b3-803b-10fdce1528fd
+    taskid: ffe09ed3-4ff3-4bfd-8c33-3e0f01f9704a
     type: regular
     task:
-      id: d3235a46-eece-49b3-803b-10fdce1528fd
+      id: ffe09ed3-4ff3-4bfd-8c33-3e0f01f9704a
       version: -1
       name: 'misp-add-attribute email '
       script: '|||misp-add-attribute'
@@ -2019,8 +2019,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4860
+          "x": 50,
+          "y": 6435
         }
       }
     note: false
@@ -2032,10 +2032,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: d3ad28bf-f537-4c54-824d-c94871d981c2
+    taskid: 7cf5ac96-1c8c-44fb-82bf-9e2d77569410
     type: regular
     task:
-      id: d3ad28bf-f537-4c54-824d-c94871d981c2
+      id: 7cf5ac96-1c8c-44fb-82bf-9e2d77569410
       version: -1
       name: 'misp-add-attribute file '
       script: '|||misp-add-attribute'
@@ -2055,8 +2055,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4860
+          "x": 50,
+          "y": 6960
         }
       }
     note: false
@@ -2068,10 +2068,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 059fb948-83d0-4087-8c29-247e49f8b97f
+    taskid: 3702176a-5d65-4aba-8947-bab698945129
     type: regular
     task:
-      id: 059fb948-83d0-4087-8c29-247e49f8b97f
+      id: 3702176a-5d65-4aba-8947-bab698945129
       version: -1
       name: 'misp-add-attribute ip '
       script: '|||misp-add-attribute'
@@ -2091,8 +2091,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 4860
+          "x": 50,
+          "y": 8010
         }
       }
     note: false
@@ -2104,10 +2104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: cd734fd4-643d-43f7-8529-1e747f35546c
+    taskid: 9e27f9e4-b15d-4cc7-8e7c-f49da85f9670
     type: regular
     task:
-      id: cd734fd4-643d-43f7-8529-1e747f35546c
+      id: 9e27f9e4-b15d-4cc7-8e7c-f49da85f9670
       version: -1
       name: misp-add-attribute url
       script: '|||misp-add-attribute'
@@ -2127,8 +2127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 4860
+          "x": 50,
+          "y": 7485
         }
       }
     note: false
@@ -2140,10 +2140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 713ab90a-0fed-4722-8c0f-f293a32812ac
+    taskid: df2e2317-e18c-4a73-8718-891966ba2c3d
     type: condition
     task:
-      id: 713ab90a-0fed-4722-8c0f-f293a32812ac
+      id: df2e2317-e18c-4a73-8718-891966ba2c3d
       version: -1
       name: Verify URL Obj Outputs
       type: condition
@@ -2222,8 +2222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 7980
+          "x": 50,
+          "y": 11130
         }
       }
     note: false
@@ -2235,10 +2235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 03ed9f6f-43ec-43a9-81d1-9cc5c522d11a
+    taskid: f86dd8b9-9e0d-44b0-8f7d-d5bb9a169c3d
     type: title
     task:
-      id: 03ed9f6f-43ec-43a9-81d1-9cc5c522d11a
+      id: f86dd8b9-9e0d-44b0-8f7d-d5bb9a169c3d
       version: -1
       name: Reputation Commands
       type: title
@@ -2247,17 +2247,13 @@ tasks:
     nexttasks:
       '#none#':
       - "43"
-      - "44"
-      - "45"
-      - "46"
-      - "47"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4715
+          "x": 50,
+          "y": 5765
         }
       }
     note: false
@@ -2269,10 +2265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: b7e37978-cf37-4f99-840f-74da13949042
+    taskid: 9923fc6c-d1fc-4ab9-8f6a-14c9f0fac9cd
     type: title
     task:
-      id: b7e37978-cf37-4f99-840f-74da13949042
+      id: 9923fc6c-d1fc-4ab9-8f6a-14c9f0fac9cd
       version: -1
       name: MISP Commands
       type: title
@@ -2286,8 +2282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -260
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -2299,10 +2295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 0ecc542b-0dab-48a6-8dd7-6655f282eb94
+    taskid: 6f0d9493-f7bf-4dd8-8327-00d1794d09e1
     type: regular
     task:
-      id: 0ecc542b-0dab-48a6-8dd7-6655f282eb94
+      id: 6f0d9493-f7bf-4dd8-8327-00d1794d09e1
       version: -1
       name: Delete Event
       description: Deletes an event according to the given event ID.
@@ -2321,8 +2317,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5385
+          "x": 50,
+          "y": 8535
         }
       }
     note: false
@@ -2334,10 +2330,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: e6bd8c1b-f636-4d60-8c38-a1f95f55e2a4
+    taskid: 8718e224-758b-4240-8dc7-97f404afde88
     type: title
     task:
-      id: e6bd8c1b-f636-4d60-8c38-a1f95f55e2a4
+      id: 8718e224-758b-4240-8dc7-97f404afde88
       version: -1
       name: Object Commands
       type: title
@@ -2351,8 +2347,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5560
+          "x": 50,
+          "y": 8710
         }
       }
     note: false
@@ -2364,10 +2360,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: a1962255-d84a-4140-876e-c14ef5709426
+    taskid: 641eb14f-4add-407e-8a49-0cfe977f1463
     type: regular
     task:
-      id: a1962255-d84a-4140-876e-c14ef5709426
+      id: 641eb14f-4add-407e-8a49-0cfe977f1463
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2385,8 +2381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5705
+          "x": 50,
+          "y": 8855
         }
       }
     note: false
@@ -2398,10 +2394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 51bb3c34-7156-41ca-8e21-19201bd440cd
+    taskid: e8c4cd13-da1c-4102-8484-c6b900b29d48
     type: regular
     task:
-      id: 51bb3c34-7156-41ca-8e21-19201bd440cd
+      id: e8c4cd13-da1c-4102-8484-c6b900b29d48
       version: -1
       name: Delete Event
       description: Deletes an event according to the given event ID.
@@ -2420,8 +2416,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 9035
+          "x": 50,
+          "y": 12180
         }
       }
     note: false
@@ -2433,10 +2429,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: f9d13a6b-c9e4-47b6-8d53-b1e0dd81f62c
+    taskid: 6049a915-02b1-4846-8e18-84736c820c9a
     type: regular
     task:
-      id: f9d13a6b-c9e4-47b6-8d53-b1e0dd81f62c
+      id: 6049a915-02b1-4846-8e18-84736c820c9a
       version: -1
       name: misp-create-event
       script: '|||misp-create-event'
@@ -2458,8 +2454,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 5880
+          "x": 50,
+          "y": 9030
         }
       }
     note: false
@@ -2471,10 +2467,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: f91d802b-bbfb-4eeb-82e9-a3d82ce456b1
+    taskid: 7ebabf58-ca53-4a87-8bbe-052ff8b7b226
     type: condition
     task:
-      id: f91d802b-bbfb-4eeb-82e9-a3d82ce456b1
+      id: 7ebabf58-ca53-4a87-8bbe-052ff8b7b226
       version: -1
       name: Verify IP Obj Outputs
       type: condition
@@ -2537,8 +2533,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 6755
+          "x": 50,
+          "y": 9905
         }
       }
     note: false
@@ -2550,10 +2546,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 2bfe42d7-e690-48d4-8f1b-f0467cb854f1
+    taskid: 197e2c35-4290-434d-8ae0-a441812ad755
     type: condition
     task:
-      id: 2bfe42d7-e690-48d4-8f1b-f0467cb854f1
+      id: 197e2c35-4290-434d-8ae0-a441812ad755
       version: -1
       name: Verify Object Outputs
       type: condition
@@ -2632,8 +2628,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 7635
+          "x": 50,
+          "y": 10780
         }
       }
     note: false
@@ -2645,10 +2641,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: d63aa996-d49b-4750-83b1-0d1dc7ae00d6
+    taskid: 5dce0525-5ff4-4dc6-8f08-c87f77fd80f1
     type: regular
     task:
-      id: d63aa996-d49b-4750-83b1-0d1dc7ae00d6
+      id: 5dce0525-5ff4-4dc6-8f08-c87f77fd80f1
       version: -1
       name: get file
       description: Sends http request. Returns the response as json.
@@ -2671,8 +2667,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 8510
+          "x": 50,
+          "y": 11655
         }
       }
     note: false
@@ -2684,10 +2680,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 8da18bf0-ea4c-45ee-892d-5b737cf7cce2
+    taskid: 9296643a-1f2e-45d8-86af-9a3aa82c1c88
     type: condition
     task:
-      id: 8da18bf0-ea4c-45ee-892d-5b737cf7cce2
+      id: 9296643a-1f2e-45d8-86af-9a3aa82c1c88
       version: -1
       name: Verify File Obj Outputs
       type: condition
@@ -2732,8 +2728,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 8860
+          "x": 50,
+          "y": 12005
         }
       }
     note: false
@@ -2745,10 +2741,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 272184f0-dabd-45ea-81bd-af2b4ef29818
+    taskid: 22108099-d124-49bd-885f-daaa72916a6b
     type: regular
     task:
-      id: 272184f0-dabd-45ea-81bd-af2b4ef29818
+      id: 22108099-d124-49bd-885f-daaa72916a6b
       version: -1
       name: Remove Event Tag
       description: Removes a tag from the given UUID event .
@@ -2769,8 +2765,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 6405
+          "x": 50,
+          "y": 9555
         }
       }
     note: false
@@ -2782,10 +2778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: c9d61573-c2ac-41f1-813b-89f1ce1a4f62
+    taskid: 6330ee1b-3809-4fdb-8467-bc63a8fcd255
     type: regular
     task:
-      id: c9d61573-c2ac-41f1-813b-89f1ce1a4f62
+      id: 6330ee1b-3809-4fdb-8467-bc63a8fcd255
       version: -1
       name: Remove Attribute Tag
       description: Removes a tag from the given UUID attribute .
@@ -2806,8 +2802,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2615
+          "x": 50,
+          "y": 3665
         }
       }
     note: false
@@ -2819,10 +2815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 1268054d-603b-41de-8bcb-7e2a25c857a7
+    taskid: 20c3768e-c42e-4cc6-8193-fb2db8bef961
     type: regular
     task:
-      id: 1268054d-603b-41de-8bcb-7e2a25c857a7
+      id: 20c3768e-c42e-4cc6-8193-fb2db8bef961
       version: -1
       name: Delete Event
       description: Deletes an event according to the given event ID.
@@ -2841,8 +2837,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4190
+          "x": 50,
+          "y": 5240
         }
       }
     note: false
@@ -2854,10 +2850,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 9632f7b4-fdf7-40f7-8247-fab353dcb243
+    taskid: 119edf09-5981-4736-8a5e-8e9f57597a02
     type: regular
     task:
-      id: 9632f7b4-fdf7-40f7-8247-fab353dcb243
+      id: 119edf09-5981-4736-8a5e-8e9f57597a02
       version: -1
       name: misp-create-event
       script: '|||misp-create-event'
@@ -2879,8 +2875,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4540
+          "x": 50,
+          "y": 5590
         }
       }
     note: false
@@ -2892,10 +2888,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: ea431d11-33c6-4cf3-88b8-8dc0aa842769
+    taskid: 6dcdc4f0-8acf-408b-8a97-6294dd8d60c5
     type: regular
     task:
-      id: ea431d11-33c6-4cf3-88b8-8dc0aa842769
+      id: 6dcdc4f0-8acf-408b-8a97-6294dd8d60c5
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -2913,8 +2909,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4365
+          "x": 50,
+          "y": 5415
         }
       }
     note: false
@@ -2926,10 +2922,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: e601bc2a-2ade-4494-8f5c-45bdf0d63440
+    taskid: 7480adeb-6432-441b-84de-74f380152c54
     type: regular
     task:
-      id: e601bc2a-2ade-4494-8f5c-45bdf0d63440
+      id: 7480adeb-6432-441b-84de-74f380152c54
       version: -1
       name: Update attribute
       description: Update an attribute of an existing MISP event.
@@ -2952,8 +2948,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1740
+          "x": 50,
+          "y": 2790
         }
       }
     note: false
@@ -2965,10 +2961,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: d1fca5a7-3a2c-4199-8263-33578877aef5
+    taskid: 125f92aa-0693-48f7-8d17-2b2ddfbdebfe
     type: condition
     task:
-      id: d1fca5a7-3a2c-4199-8263-33578877aef5
+      id: 125f92aa-0693-48f7-8d17-2b2ddfbdebfe
       version: -1
       name: Verify Update Attribute Outputs
       type: condition
@@ -3086,8 +3082,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1915
+          "x": 50,
+          "y": 2965
         }
       }
     note: false
@@ -3099,10 +3095,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: aae7038e-1a48-4ed5-8f2a-d59786efb41b
+    taskid: 9d42662f-cde2-4d4e-8773-12fc2753c6a5
     type: regular
     task:
-      id: aae7038e-1a48-4ed5-8f2a-d59786efb41b
+      id: 9d42662f-cde2-4d4e-8773-12fc2753c6a5
       version: -1
       name: Delete Attribute
       description: Delete an attribute according to the given attribute ID.
@@ -3121,8 +3117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3840
+          "x": 50,
+          "y": 4890
         }
       }
     note: false
@@ -3134,10 +3130,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: dbc41dfb-c932-4382-86ae-d9229b2aac0c
+    taskid: 1dc885f9-2b01-4d31-8419-a8d2fd8a24fb
     type: regular
     task:
-      id: dbc41dfb-c932-4382-86ae-d9229b2aac0c
+      id: 1dc885f9-2b01-4d31-8419-a8d2fd8a24fb
       version: -1
       name: misp-publish-event
       description: Publish an event.
@@ -3156,8 +3152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -425
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -3169,10 +3165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 772da968-6cfc-4cc7-8383-00606ae5a72d
+    taskid: 6d128ce5-005b-4bd6-85df-7da73429b4aa
     type: regular
     task:
-      id: 772da968-6cfc-4cc7-8383-00606ae5a72d
+      id: 6d128ce5-005b-4bd6-85df-7da73429b4aa
       version: -1
       name: Get EMail
       description: Sends http request. Returns the response as json.
@@ -3195,8 +3191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 6935
+          "x": 50,
+          "y": 10080
         }
       }
     note: false
@@ -3208,10 +3204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 09ee6a3c-1610-4934-8725-16ec92302f4c
+    taskid: 9561c846-4251-4550-824f-3458d20cc749
     type: regular
     task:
-      id: 09ee6a3c-1610-4934-8725-16ec92302f4c
+      id: 9561c846-4251-4550-824f-3458d20cc749
       version: -1
       name: Add EMail object
       description: adds an email object to given event id
@@ -3232,8 +3228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 7100
+          "x": 50,
+          "y": 10255
         }
       }
     note: false
@@ -3245,10 +3241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 568451d4-729e-4447-808d-ad4860a252ab
+    taskid: 842d9a07-5907-4029-867a-1cfd9dd26b09
     type: condition
     task:
-      id: 568451d4-729e-4447-808d-ad4860a252ab
+      id: 842d9a07-5907-4029-867a-1cfd9dd26b09
       version: -1
       name: Verify Email Obj Outputs
       type: condition
@@ -3313,8 +3309,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 7275
+          "x": 50,
+          "y": 10430
         }
       }
     note: false
@@ -3326,10 +3322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: bc8682f1-d7e0-4709-82ca-98451e3bcfcb
+    taskid: 81a2be85-1cee-47cb-8945-cb956bb74901
     type: regular
     task:
-      id: bc8682f1-d7e0-4709-82ca-98451e3bcfcb
+      id: 81a2be85-1cee-47cb-8945-cb956bb74901
       version: -1
       name: misp-add-user
       description: Adding a new user to MISP.
@@ -3366,8 +3362,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 405
+          "x": 50,
+          "y": 1390
         }
       }
     note: false
@@ -3379,10 +3375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: cb48f333-d16a-49de-8015-080483237e86
+    taskid: 2e2d4c4a-4e2b-48cf-830a-a304d26e103f
     type: condition
     task:
-      id: cb48f333-d16a-49de-8015-080483237e86
+      id: 2e2d4c4a-4e2b-48cf-830a-a304d26e103f
       version: -1
       name: Verify Add User Outputs
       type: condition
@@ -3404,8 +3400,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 565
+          "x": 50,
+          "y": 1565
         }
       }
     note: false
@@ -3417,10 +3413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 1c17216b-52d2-43e5-8195-5dc47020eb6f
+    taskid: 403229dc-36b8-4d75-892d-7e2aeaaaed30
     type: regular
     task:
-      id: 1c17216b-52d2-43e5-8195-5dc47020eb6f
+      id: 403229dc-36b8-4d75-892d-7e2aeaaaed30
       version: -1
       name: misp-get-organization-info
       description: Display organization ids and names.
@@ -3436,8 +3432,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 740
+          "x": 50,
+          "y": 1740
         }
       }
     note: false
@@ -3449,10 +3445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 8807ca67-a2f6-4666-8567-8824e6cdaa09
+    taskid: bac5e327-c715-4edd-874f-b61a76b75c70
     type: condition
     task:
-      id: 8807ca67-a2f6-4666-8567-8824e6cdaa09
+      id: bac5e327-c715-4edd-874f-b61a76b75c70
       version: -1
       name: Verify Get Organization Info Outputs
       type: condition
@@ -3481,8 +3477,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 900
+          "x": 50,
+          "y": 1915
         }
       }
     note: false
@@ -3494,10 +3490,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 1583f421-fe4a-4fd2-8f94-558fc2a84710
+    taskid: d1ccb6f2-dff1-4652-8313-9540d017b4d1
     type: regular
     task:
-      id: 1583f421-fe4a-4fd2-8f94-558fc2a84710
+      id: d1ccb6f2-dff1-4652-8313-9540d017b4d1
       version: -1
       name: misp-get-role-info
       description: Display role names and role ids.
@@ -3513,8 +3509,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1060
+          "x": 50,
+          "y": 2090
         }
       }
     note: false
@@ -3526,10 +3522,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 3b77831b-1d84-4d30-80de-dce6bb65b075
+    taskid: 20530ef0-cb91-43b9-8fec-419abb2b55e0
     type: condition
     task:
-      id: 3b77831b-1d84-4d30-80de-dce6bb65b075
+      id: 20530ef0-cb91-43b9-8fec-419abb2b55e0
       version: -1
       name: Verify Get Role Info Outputs
       type: condition
@@ -3556,8 +3552,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1220
+          "x": 50,
+          "y": 2265
         }
       }
     note: false
@@ -3576,10 +3572,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 10155,
-        "width": 2100,
+        "height": 12370,
+        "width": 380,
         "x": 50,
-        "y": -890
+        "y": 50
       }
     }
   }

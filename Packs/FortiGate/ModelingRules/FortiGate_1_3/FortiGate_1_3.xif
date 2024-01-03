@@ -1,5 +1,11 @@
 [MODEL: dataset="fortinet_fortigate_raw"]
-alter
+ alter 
+    FTNTFGTlevel = lowercase(FTNTFGTlevel)
+| alter
+    FTNTFGTlevel = if(FTNTFGTlevel="emergency","8",FTNTFGTlevel="alert","7", FTNTFGTlevel="critical","6",FTNTFGTlevel="error","5",FTNTFGTlevel="warning","4",FTNTFGTlevel="notification","3",FTNTFGTlevel="information","2",FTNTFGTlevel="debug","1",FTNTFGTlevel)
+| alter
+    level = if(cefSeverity!="" and cefSeverity!=null,cefSeverity,FTNTFGTlevel!="" and FTNTFGTlevel!=null,FTNTFGTlevel,null)
+|alter
     xdm.network.application_protocol = if(app != "" and app != null, app, ftntfgtmethod != "" and ftntfgtmethod != null, ftntfgtmethod),
 	xdm.network.application_protocol_category = FTNTFGTcat,
 	xdm.target.host.fqdn = dhost,
@@ -33,7 +39,8 @@ alter
     xdm.event.is_completed = to_boolean("TRUE"),
     xdm.observer.version = cefDeviceVersion,
     xdm.event.operation_sub_type = FTNTFGTsubtype,
-    xdm.alert.severity = coalesce(FTNTFGTlevel, cefSeverity),
+    xdm.alert.severity = if(FTNTFGTCRlevel!=null and FTNTFGTCRlevel!="",FTNTFGTCRlevel, FTNTFGTseverity!=null and FTNTFGTseverity!= "",FTNTFGTseverity,null),
+    xdm.event.log_level = if(level="8",XDM_CONST.LOG_LEVEL_EMERGENCY,level="7",XDM_CONST.LOG_LEVEL_ALERT, level="6", XDM_CONST.LOG_LEVEL_CRITICAL, level="5", XDM_CONST.LOG_LEVEL_ERROR, level="4", XDM_CONST.LOG_LEVEL_WARNING, level="3", XDM_CONST.LOG_LEVEL_NOTICE, level="2", XDM_CONST.LOG_LEVEL_INFORMATIONAL, level="1", XDM_CONST.LOG_LEVEL_DEBUG, to_string(level)),
     xdm.source.user.domain = FTNTFGTvd,
     xdm.alert.subcategory = FTNTFGTlogdesc,
     xdm.source.application.name = ftntfgtapp,

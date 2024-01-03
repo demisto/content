@@ -859,6 +859,104 @@ Scope: `write:jira-work`
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
 
+### jira-issue-assign
+
+***
+Assigns an assignee to an existing issue.
+
+Scope: `write:jira-work`
+
+#### Base Command
+
+`jira-issue-assign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| assignee | The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name. | Optional |
+| assignee_id | The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. |
+| Ticket.Key | String | The ticket key. |
+| Ticket.Assignee | String | The user assigned to the ticket. |
+| Ticket.Creator | String | The user who created the ticket. |
+| Ticket.Summary | String | The ticket summary. |
+| Ticket.Description | String | The ticket's project description. |
+| Ticket.Labels | Array | The ticket's project labels. |
+| Ticket.Status | String | The ticket status. |
+| Ticket.Priority | String | The ticket priority. |
+| Ticket.ProjectName | String | The ticket project name. |
+| Ticket.DueDate | Date | The due date. |
+| Ticket.Created | Date | The time the ticket was created. |
+| Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Ticket.LastUpdate | Date | The last time the ticket was updated. |
+
+#### Command example
+
+```!jira-issue-assign issue_key=PROJECTKEY-35 assignee_id=12345```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "Assignee": "Example User(example@example.com)",
+        "Attachments": [
+            {
+                "created": "2023-05-07T20:00:59.121+0300",
+                "filename": "dummy_attachment_content.txt",
+                "id": "16504",
+                "size": 13264
+            },
+            {
+                "created": "2023-05-04T21:29:49.246+0300",
+                "filename": "dummy.pdf",
+                "id": "16477",
+                "size": 13264
+            }
+        ],
+        "Components": [
+            "dummy-comp",
+            "Integration"
+        ],
+        "Created": "2023-03-01T11:34:49.730+0200",
+        "Creator": "Example User(example@example.com)",
+        "Description": "Edited subbscription",
+        "DueDate": "2023-01-01",
+        "Id": "21487",
+        "Key": "PROJECTKEY-35",
+        "Labels": [
+            "label1",
+            "label2"
+        ],
+        "LastSeen": "2023-05-08T19:02:34.151+0300",
+        "LastUpdate": "2023-05-08T19:07:44.900+0300",
+        "Priority": "Highest",
+        "ProjectName": "Company Snoozing App",
+        "Status": "Backlog",
+        "Summary": "Edited Summary"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Issue PROJECTKEY-35
+>
+>|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
+
+
+
+
 ### jira-create-issue
 
 ***
@@ -876,7 +974,7 @@ Scope: `write:jira-work`
 | --- | --- | --- |
 | issue_json | The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}. | Optional |
 | issueJson | Deprecated. Please use issue_json. | Optional |
-| summary | The summary of the issue. | Required |
+| summary | The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument). | Optional |
 | project_key | The project key with which to associate the issue (Project Key or name is required). | Optional |
 | projectKey | Deprecated. Please use project_key. | Optional |
 | issue_type_name | Selects an issue type by name, for example: "Problem". (Issue type name or id is required). | Optional |

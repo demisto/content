@@ -6,13 +6,16 @@ script: ''
 type: javascript
 tags:
 - Utility
-comment: Sleep for X seconds
+comment: Sleep for X seconds.
 enabled: true
 args:
 - name: seconds
   required: true
   default: true
-  description: Amount of seconds to sleep
+  description: Amount of seconds to sleep.
 scripttarget: 0
 timeout: 1h40m0s
 fromversion: 5.0.0
+polling: true
+tests:
+- No tests (auto formatted)

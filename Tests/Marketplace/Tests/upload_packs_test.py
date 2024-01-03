@@ -6,10 +6,10 @@ import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
+from Tests.Marketplace.upload_packs import get_packs_ids_to_upload, get_updated_private_packs, is_private_packs_updated
 
 from Tests.Marketplace.marketplace_services import Pack
-
+from Tests.Marketplace.marketplace_constants import Metadata
 
 # disable-secrets-detection-start
 
@@ -20,7 +20,7 @@ class TestModifiedPacks:
         ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
     ])
     def test_get_packs_names_specific(self, packs_names_input, expected_result):
-        modified_packs = get_packs_names(packs_names_input)
+        modified_packs = get_packs_ids_to_upload(packs_names_input)
 
         assert modified_packs == expected_result
 
@@ -50,6 +50,14 @@ def scan_dir(dirs=None):
 
 
 class TestUpdateIndex:
+
+    statistics_metadata = {
+        Metadata.DOWNLOADS: 0,
+        Metadata.SEARCH_RANK: None,
+        Metadata.TAGS: [],
+        Metadata.INTEGRATIONS: None
+    }
+
     def test_update_index_folder_new_version(self, mocker):
         """
         Scenario: Update the bucket index when a pack is updated (new version)
@@ -63,19 +71,10 @@ class TestUpdateIndex:
 
         Then
         - Ensure new metadata files are created for the new version
-        - Ensure previous metadata files are not deleted
-        - Ensure other files in the index are removed and replaced
         """
         from Tests.Marketplace import upload_packs
         import shutil
-        import os
 
-        mocker.patch('glob.glob', return_value=['Index/HelloWorld/metadata-1.0.1.json',
-                                                'Index/HelloWorld/metadata-1.0.0.json',
-                                                'Index/HelloWorld/metadata-2.0.0.json'])
-        mocker.patch('os.listdir', return_value=['HelloWorld'])
-        mocker.patch('os.path.isdir', return_value=True)
-        mocker.patch('os.remove')
         mocker.patch('shutil.copy')
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
@@ -90,25 +89,20 @@ class TestUpdateIndex:
 
         mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
 
-        upload_packs.update_index_folder('Index', 'HelloWorld', 'HelloWorld', '2.0.1',
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=True)
+        dummy_pack.current_version = '2.0.1'
+        upload_packs.update_index_folder('Index', dummy_pack,
                                          pack_versions_to_keep=['1.0.1', '1.0.0', '2.0.0'])
 
-        expected_remove_args = ['Index/HelloWorld/metadata.json',
-                                'Index/HelloWorld/changelog.json', 'Index/HelloWorld/README.md']
         expected_copy_args = [('HelloWorld/metadata.json', 'Index/HelloWorld'),
                               ('HelloWorld/metadata.json', 'Index/HelloWorld/metadata-2.0.1.json'),
                               ('HelloWorld/changelog.json', 'Index/HelloWorld'),
                               ('HelloWorld/README.md', 'Index/HelloWorld')]
 
-        remove_call_count = os.remove.call_count
-        remove_call_args = os.remove.call_args_list
         copy_call_count = shutil.copy.call_count
         copy_call_args = shutil.copy.call_args_list
 
-        assert remove_call_count == 3
         assert copy_call_count == 4
-        for call_arg in remove_call_args:
-            assert call_arg[0][0] in expected_remove_args
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
 
@@ -128,11 +122,7 @@ class TestUpdateIndex:
         """
         from Tests.Marketplace import upload_packs
         import shutil
-        import os
 
-        mocker.patch('glob.glob', return_value=[])
-        mocker.patch('os.listdir', return_value=[])
-        mocker.patch('os.remove')
         mocker.patch('shutil.copy')
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
@@ -141,18 +131,18 @@ class TestUpdateIndex:
 
         mocker.patch('os.scandir', return_value=pack_dirs)
 
-        upload_packs.update_index_folder('Index', 'HelloWorld', 'HelloWorld', '1.0.0', pack_versions_to_keep=[])
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=True)
+        dummy_pack.current_version = '1.0.0'
+        upload_packs.update_index_folder('Index', dummy_pack, pack_versions_to_keep=[])
 
         expected_copy_args = [('HelloWorld/metadata.json', 'Index/HelloWorld'),
                               ('HelloWorld/metadata.json', 'Index/HelloWorld/metadata-1.0.0.json'),
                               ('HelloWorld/changelog.json', 'Index/HelloWorld'),
                               ('HelloWorld/README.md', 'Index/HelloWorld')]
 
-        remove_call_count = os.remove.call_count
         copy_call_count = shutil.copy.call_count
         copy_call_args = shutil.copy.call_args_list
 
-        assert remove_call_count == 0
         assert copy_call_count == 4
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
@@ -172,21 +162,11 @@ class TestUpdateIndex:
 
         Then
         - Ensure no new metadata files are created for the new version
-        - Ensure current metadata files are replaced
-        - Ensure previous metadata files are not deleted
-        - Ensure other files in the index are removed and replaced
+        - Ensure current metadata files are updated
         """
         from Tests.Marketplace import upload_packs
-        import shutil
-        import os
 
-        mocker.patch('glob.glob', return_value=['Index/HelloWorld/metadata-1.0.1.json',
-                                                'Index/HelloWorld/metadata-1.0.0.json',
-                                                'Index/HelloWorld/metadata-2.0.0.json'])
-        mocker.patch('os.listdir', return_value=['HelloWorld'])
-        mocker.patch('os.path.isdir', return_value=True)
-        mocker.patch('os.remove')
-        mocker.patch('shutil.copy')
+        json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
@@ -200,24 +180,17 @@ class TestUpdateIndex:
 
         mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
 
-        upload_packs.update_index_folder('Index', 'HelloWorld', 'HelloWorld', '2.0.0')
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False)
+        dummy_pack.current_version = '2.0.0'
+        upload_packs.update_index_folder('Index', dummy_pack)
 
-        expected_remove_args = ['Index/HelloWorld/metadata-2.0.0.json', 'Index/HelloWorld/metadata.json',
-                                'Index/HelloWorld/changelog.json', 'Index/HelloWorld/README.md']
-        expected_copy_args = [('HelloWorld/metadata.json', 'Index/HelloWorld'),
-                              ('HelloWorld/metadata.json', 'Index/HelloWorld/metadata-2.0.0.json'),
-                              ('HelloWorld/changelog.json', 'Index/HelloWorld'),
-                              ('HelloWorld/README.md', 'Index/HelloWorld')]
+        expected_copy_args = [('Index/HelloWorld/metadata.json', self.statistics_metadata),
+                              ('Index/HelloWorld/metadata-2.0.0.json', self.statistics_metadata)]
 
-        remove_call_count = os.remove.call_count
-        remove_call_args = os.remove.call_args_list
-        copy_call_count = shutil.copy.call_count
-        copy_call_args = shutil.copy.call_args_list
+        copy_call_count = json_write_mock.call_count
+        copy_call_args = json_write_mock.call_args_list
 
-        assert remove_call_count == 4
-        assert copy_call_count == 4
-        for call_arg in remove_call_args:
-            assert call_arg[0][0] in expected_remove_args
+        assert copy_call_count == 2
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
 
@@ -234,19 +207,12 @@ class TestUpdateIndex:
         - Updating the bucket index
 
         Then
-        - Ensure no new metadata files are created for the new version
-        - Ensure current metadata files are replaced
-        - Ensure other files in the index are removed and replaced
+        - Ensure no new metadata file is created for the new version
+        - Ensure current metadata files are updated
         """
         from Tests.Marketplace import upload_packs
-        import shutil
-        import os
 
-        mocker.patch('glob.glob', return_value=['Index/HelloWorld/metadata-1.0.0.json'])
-        mocker.patch('os.listdir', return_value=['HelloWorld'])
-        mocker.patch('os.path.isdir', return_value=True)
-        mocker.patch('os.remove')
-        mocker.patch('shutil.copy')
+        json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
@@ -257,24 +223,17 @@ class TestUpdateIndex:
                                ('Index/HelloWorld/README.md', 'README.md')])
         mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
 
-        upload_packs.update_index_folder('Index', 'HelloWorld', 'HelloWorld', '1.0.0')
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False)
+        dummy_pack.current_version = '1.0.0'
+        upload_packs.update_index_folder('Index', dummy_pack)
 
-        expected_remove_args = ['Index/HelloWorld/metadata-1.0.0.json', 'Index/HelloWorld/metadata.json',
-                                'Index/HelloWorld/changelog.json', 'Index/HelloWorld/README.md']
-        expected_copy_args = [('HelloWorld/metadata.json', 'Index/HelloWorld'),
-                              ('HelloWorld/metadata.json', 'Index/HelloWorld/metadata-1.0.0.json'),
-                              ('HelloWorld/changelog.json', 'Index/HelloWorld'),
-                              ('HelloWorld/README.md', 'Index/HelloWorld')]
+        expected_copy_args = [('Index/HelloWorld/metadata.json', self.statistics_metadata),
+                              ('Index/HelloWorld/metadata-1.0.0.json', self.statistics_metadata)]
 
-        remove_call_count = os.remove.call_count
-        remove_call_args = os.remove.call_args_list
-        copy_call_count = shutil.copy.call_count
-        copy_call_args = shutil.copy.call_args_list
+        copy_call_count = json_write_mock.call_count
+        copy_call_args = json_write_mock.call_args_list
 
-        assert remove_call_count == 4
-        assert copy_call_count == 4
-        for call_arg in remove_call_args:
-            assert call_arg[0][0] in expected_remove_args
+        assert copy_call_count == 2
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
 
@@ -291,19 +250,11 @@ class TestUpdateIndex:
 
         Then
         - Ensure a metadata file is created with the version name
-        - Ensure current metadata files are replaced
-        - Ensure previous metadata files are not deleted
-        - Ensure other files in the index are removed and replaced
+        - Ensure current metadata files are updated
         """
         from Tests.Marketplace import upload_packs
-        import shutil
-        import os
 
-        mocker.patch('glob.glob', return_value=[])
-        mocker.patch('os.listdir', return_value=['HelloWorld'])
-        mocker.patch('os.path.isdir', return_value=True)
-        mocker.patch('os.remove')
-        mocker.patch('shutil.copy')
+        json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
                               ('HelloWorld/changelog.json', 'changelog.json'),
@@ -313,80 +264,17 @@ class TestUpdateIndex:
                                ('Index/HelloWorld/README.md', 'README.md')])
         mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
 
-        upload_packs.update_index_folder('Index', 'HelloWorld', 'HelloWorld', '1.0.0')
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False)
+        dummy_pack.current_version = '1.0.0'
+        upload_packs.update_index_folder('Index', dummy_pack)
 
-        expected_remove_args = ['Index/HelloWorld/metadata.json', 'Index/HelloWorld/changelog.json',
-                                'Index/HelloWorld/README.md']
-        expected_copy_args = [('HelloWorld/metadata.json', 'Index/HelloWorld'),
-                              ('HelloWorld/metadata.json', 'Index/HelloWorld/metadata-1.0.0.json'),
-                              ('HelloWorld/changelog.json', 'Index/HelloWorld'),
-                              ('HelloWorld/README.md', 'Index/HelloWorld')]
+        expected_copy_args = [('Index/HelloWorld/metadata.json', self.statistics_metadata),
+                              ('Index/HelloWorld/metadata-1.0.0.json', self.statistics_metadata)]
 
-        remove_call_count = os.remove.call_count
-        remove_call_args = os.remove.call_args_list
-        copy_call_count = shutil.copy.call_count
-        copy_call_args = shutil.copy.call_args_list
+        copy_call_count = json_write_mock.call_count
+        copy_call_args = json_write_mock.call_args_list
 
-        assert remove_call_count == 3
-        assert copy_call_count == 4
-        for call_arg in remove_call_args:
-            assert call_arg[0][0] in expected_remove_args
-        for call_arg in copy_call_args:
-            assert call_arg[0] in expected_copy_args
-
-    def test_update_index_folder_no_version(self, mocker):
-        """
-        Scenario: Update the bucket index when a pack has no version
-
-        Given
-        - Pack exists in the index folder
-        - The pack is has no version (e.g. private pack which we do not have details for)
-
-        When
-        - Updating the bucket index
-
-        Then
-        - Ensure no new metadata files are created
-        - Ensure previous metadata files are not deleted
-        - Ensure other files in the index are removed and replaced
-        """
-        from Tests.Marketplace import upload_packs
-        import shutil
-        import os
-
-        mocker.patch('glob.glob', return_value=['Index/HelloWorld/metadata-1.0.1.json',
-                                                'Index/HelloWorld/metadata-1.0.0.json',
-                                                'Index/HelloWorld/metadata-2.0.0.json'])
-        mocker.patch('os.listdir', return_value=['HelloWorld'])
-        mocker.patch('os.path.isdir', return_value=True)
-        mocker.patch('os.remove')
-        mocker.patch('shutil.copy')
-        mocker.patch('os.path.exists')
-        pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
-                              ('HelloWorld/changelog.json', 'changelog.json'),
-                              ('HelloWorld/README.md', 'README.md')])
-        index_dirs = scan_dir([('Index/HelloWorld/metadata.json', 'metadata.json'),
-                               ('Index/HelloWorld/changelog.json', 'changelog.json'),
-                               ('Index/HelloWorld/README.md', 'README.md')])
-        mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
-
-        upload_packs.update_index_folder('Index', 'HelloWorld', 'HelloWorld')
-
-        expected_remove_args = ['Index/HelloWorld/metadata.json', 'Index/HelloWorld/changelog.json',
-                                'Index/HelloWorld/README.md']
-        expected_copy_args = [('HelloWorld/metadata.json', 'Index/HelloWorld'),
-                              ('HelloWorld/changelog.json', 'Index/HelloWorld'),
-                              ('HelloWorld/README.md', 'Index/HelloWorld')]
-
-        remove_call_count = os.remove.call_count
-        remove_call_args = os.remove.call_args_list
-        copy_call_count = shutil.copy.call_count
-        copy_call_args = shutil.copy.call_args_list
-
-        assert remove_call_count == 3
-        assert copy_call_count == 3
-        for call_arg in remove_call_args:
-            assert call_arg[0][0] in expected_remove_args
+        assert copy_call_count == 2
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
 
@@ -501,7 +389,8 @@ class TestCleanPacks:
             private_packs=private_packs,
             storage_bucket=dummy_storage_bucket,
             storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-            content_packs=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")]
+            content_packs=[Pack("public_pack", "/dummy_path"), Pack("private_pack",
+                                                                    "/dummy_path")]
         )
 
         assert not skipped_cleanup
@@ -546,16 +435,16 @@ class TestCorepacksFiles:
         assert set(os.listdir(artifacts_dir)) == {corepacks_version, GCPConfig.CORE_PACK_FILE_NAME}
 
         # Assert that the paths in the corepacks.json file are the full paths:
-        with open(os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME), 'r') as corepacks_file:
+        with open(os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)) as corepacks_file:
             corepacks_file_contents = json.load(corepacks_file)
             pack_paths = corepacks_file_contents.get('corePacks')
-            assert set(pack_paths) == {'https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_1/1.4.0'
-                                       '/pack_1.zip',
-                                       'https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_2/2.2.3'
-                                       '/pack_2.zip'}
+            assert set(pack_paths) == {'https://storage.googleapis.com/marketplace-ci-build/content/packs'
+                                       '/pack_1/1.4.0/pack_1.zip',
+                                       'https://storage.googleapis.com/marketplace-ci-build/content/packs'
+                                       '/pack_2/2.2.3/pack_2.zip'}
 
         # Assert that the paths in the versioned corepacks file are relative paths:
-        with open(os.path.join(artifacts_dir, corepacks_version), 'r') as corepacks_file:
+        with open(os.path.join(artifacts_dir, corepacks_version)) as corepacks_file:
             corepacks_file_contents = json.load(corepacks_file)
             pack_paths = corepacks_file_contents.get('corePacks')
             assert set(pack_paths) == {'pack_1/1.4.0/pack_1.zip', 'pack_2/2.2.3/pack_2.zip'}
@@ -689,7 +578,7 @@ class TestCorepacksFiles:
         override_locked_corepacks_file(build_number='456', artifacts_dir=artifacts_dir)
 
         # Assert that the file was created in the artifacts folder with the build number as expected:
-        with open(os.path.join(artifacts_dir, 'corepacks-8.2.0.json'), 'r') as corepacks_file:
+        with open(os.path.join(artifacts_dir, 'corepacks-8.2.0.json')) as corepacks_file:
             corepacks_file_contents = json.load(corepacks_file)
             assert corepacks_file_contents.get('buildNumber') == '456'
             assert corepacks_file_contents.get('corePacks') == ['pack1', 'pack2']
@@ -706,7 +595,7 @@ class TestUpdatedPrivatePacks:
     @staticmethod
     def get_pack_metadata():
         metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json')
-        with open(metadata_path, 'r') as metadata_file:
+        with open(metadata_path) as metadata_file:
             pack_metadata = json.load(metadata_file)
 
         return pack_metadata
@@ -756,8 +645,9 @@ class TestUpdatedPrivatePacks:
 
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
         assert len(updated_private_packs) == 1
-        assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
-            updated_private_packs[0] != "second_non_updated_pack"
+        assert updated_private_packs[0] == "updated_pack"
+        assert updated_private_packs[0] != "first_non_updated_pack"
+        assert updated_private_packs[0] != "second_non_updated_pack"
 
     def test_is_private_packs_updated(self, mocker):
         """
@@ -779,7 +669,7 @@ class TestUpdatedPrivatePacks:
          """
         index_folder_path = self.get_index_folder_path()
         index_file_path = os.path.join(index_folder_path, "index.json")
-        with open(index_file_path, 'r') as public_index_json_file:
+        with open(index_file_path) as public_index_json_file:
             public_index_json = json.load(public_index_json_file)
 
         private_index_json = copy.deepcopy(public_index_json)
@@ -800,67 +690,3 @@ class TestUpdatedPrivatePacks:
         private_index_json.get("packs").append({"id": "new_private_pack", "contentCommitHash": "111"})
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert is_private_packs_updated(public_index_json, index_file_path)
-
-    def test_update_index_folder_remove_old_versions(self, mocker):
-        """
-        Scenario: Update the bucket index when a pack is updated (new version), and has old pack versions.
-
-        Given
-        - Pack exists in the index folder
-        - Pack has a new version
-        - Pack has old versions to remove
-
-        When
-        - Updating the bucket index
-
-        Then
-        - Ensure new metadata files are created for the new version
-        - Ensure previous metadata files are not deleted
-        - Ensure other files in the index are removed and replaced, including old versions metadata.
-        """
-        from Tests.Marketplace import upload_packs
-        import shutil
-        import os
-
-        mocker.patch('glob.glob', return_value=['Index/HelloWorld/metadata-1.0.1.json',
-                                                'Index/HelloWorld/metadata-1.0.0.json',
-                                                'Index/HelloWorld/metadata-2.0.0.json'])
-        mocker.patch('os.listdir', return_value=['HelloWorld'])
-        mocker.patch('os.path.isdir', return_value=True)
-        mocker.patch('os.remove')
-        mocker.patch('shutil.copy')
-        mocker.patch('os.path.exists')
-        pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
-                              ('HelloWorld/changelog.json', 'changelog.json'),
-                              ('HelloWorld/README.md', 'README.md')])
-        index_dirs = scan_dir([('Index/HelloWorld/metadata-1.0.1.json', 'metadata-1.0.1.json'),
-                               ('Index/HelloWorld/metadata-1.0.0.json', 'metadata-1.0.0.json'),
-                               ('Index/HelloWorld/metadata-2.0.0.json', 'metadata-2.0.0.json'),
-                               ('Index/HelloWorld/metadata.json', 'metadata.json'),
-                               ('Index/HelloWorld/changelog.json', 'changelog.json'),
-                               ('Index/HelloWorld/README.md', 'README.md')])
-
-        mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
-
-        upload_packs.update_index_folder('Index', 'HelloWorld', 'HelloWorld', '2.0.1',
-                                         pack_versions_to_keep=['2.0.1', '2.0.0'])
-
-        expected_remove_args = ['Index/HelloWorld/metadata.json',
-                                'Index/HelloWorld/changelog.json', 'Index/HelloWorld/README.md',
-                                'Index/HelloWorld/metadata-1.0.1.json', 'Index/HelloWorld/metadata-1.0.0.json']
-        expected_copy_args = [('HelloWorld/metadata.json', 'Index/HelloWorld'),
-                              ('HelloWorld/metadata.json', 'Index/HelloWorld/metadata-2.0.1.json'),
-                              ('HelloWorld/changelog.json', 'Index/HelloWorld'),
-                              ('HelloWorld/README.md', 'Index/HelloWorld')]
-
-        remove_call_count = os.remove.call_count
-        remove_call_args = os.remove.call_args_list
-        copy_call_count = shutil.copy.call_count
-        copy_call_args = shutil.copy.call_args_list
-
-        assert remove_call_count == 5
-        assert copy_call_count == 4
-        for call_arg in remove_call_args:
-            assert call_arg[0][0] in expected_remove_args
-        for call_arg in copy_call_args:
-            assert call_arg[0] in expected_copy_args

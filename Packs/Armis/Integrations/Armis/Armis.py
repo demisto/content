@@ -41,7 +41,7 @@ class Client(BaseClient):
             AccessToken: A valid Access Token to authorize requests
         """
         if self._token is None or force_new or self._token.expired:
-            response = self._http_request('POST', '/access_token/', params={'secret_key': self._secret})
+            response = self._http_request('POST', '/access_token/', data={'secret_key': self._secret})
             token = response.get('data', {}).get('access_token')
             expiration = response.get('data', {}).get('expiration_utc')
             expiration_date = dateparser.parse(expiration)
@@ -644,6 +644,8 @@ def main():
 
     # get the service API url
     base_url = params.get('url')
+    if 'api/v1' not in base_url:
+        base_url = urljoin(base_url, '/api/v1/')
     verify = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents

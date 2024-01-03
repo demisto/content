@@ -1,15 +1,15 @@
 id: IPv6 extraction test
 version: -1
 name: IPv6 extraction test
-description: Test the flow of IPv6 extraction in XSOAR
+description: Test the flow of IPv6 extraction in XSOAR.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: def7640e-da15-498b-8e70-6498f009d81c
+    taskid: 1b434045-2df3-4f80-8b9f-157dca93b8cf
     type: start
     task:
-      id: def7640e-da15-498b-8e70-6498f009d81c
+      id: 1b434045-2df3-4f80-8b9f-157dca93b8cf
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1770,
           "y": 50
         }
       }
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: fb706760-78dc-492f-8275-13c5f2a76ed7
+    taskid: 20f8a1c6-e3d8-44ec-81b7-1edbd55f9afe
     type: regular
     task:
-      id: fb706760-78dc-492f-8275-13c5f2a76ed7
+      id: 20f8a1c6-e3d8-44ec-81b7-1edbd55f9afe
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1770,
           "y": 195
         }
       }
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 848a53a4-d5b6-48cc-8d1f-f26011ed90e7
+    taskid: e05746d3-898e-419a-8f1e-5e7be71f6bdd
     type: title
     task:
-      id: 848a53a4-d5b6-48cc-8d1f-f26011ed90e7
+      id: e05746d3-898e-419a-8f1e-5e7be71f6bdd
       version: -1
       name: IPv6
       type: title
@@ -89,7 +89,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1770,
           "y": 370
         }
       }
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 395e46d1-5643-4d5e-8b00-3d526fcfc461
+    taskid: d52862ae-52e1-4df5-8f5d-8d862b07c1be
     type: regular
     task:
-      id: 395e46d1-5643-4d5e-8b00-3d526fcfc461
+      id: d52862ae-52e1-4df5-8f5d-8d862b07c1be
       version: -1
       name: Print valid IPv6s
       description: Prints text to war room (Markdown supported)
@@ -115,7 +115,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "52"
+      - "88"
+      - "89"
+      - "90"
+      - "87"
+      - "86"
+      - "85"
+      - "84"
+      - "91"
+      - "92"
     scriptarguments:
       value:
         simple: ${valid_ipv6s}
@@ -125,7 +133,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1770,
           "y": 690
         }
       }
@@ -136,14 +144,244 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "52":
-    id: "52"
-    taskid: 5978b2d0-454f-44c4-8b61-9521bfe53a8a
+  "53":
+    id: "53"
+    taskid: 49575ef2-c65e-49b8-8e47-a19e729b8c59
+    type: regular
+    task:
+      id: 49575ef2-c65e-49b8-8e47-a19e729b8c59
+      version: -1
+      name: Set invalid IPv6s
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      key:
+        simple: invalid_ipv6s
+      value:
+        simple: '"2001:db8:::1","fe80::123::5678","2001::db8::1","::fffff:192.0.2.1","2001:db8:::1%eth0","fe80::1%eth0%vlan0"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 1eb6d5b6-14b7-4593-87fe-f29d597448aa
+    type: regular
+    task:
+      id: 1eb6d5b6-14b7-4593-87fe-f29d597448aa
+      version: -1
+      name: Print invalid IPv6s
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+      - "81"
+      - "93"
+      - "94"
+      - "95"
+      - "96"
+      - "97"
+    scriptarguments:
+      value:
+        simple: ${invalid_ipv6s}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 2640d463-ee23-4878-8118-73e423df644c
     type: condition
     task:
-      id: 5978b2d0-454f-44c4-8b61-9521bfe53a8a
+      id: 2640d463-ee23-4878-8118-73e423df644c
       version: -1
-      name: Check auto-extract - 2001:db8:85a3:8d3:1319:8a2e:370:7348
+      name: 2001:db8:::1 - Double colons in the middle
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2001:db8:::1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 3e66fd61-0094-4b4f-8943-a6a94a2524e1
+    type: regular
+    task:
+      id: 3e66fd61-0094-4b4f-8943-a6a94a2524e1
+      version: -1
+      name: Set valid IPv6s
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: valid_ipv6s
+      value:
+        simple: '"fe80::1","::1","2001:0db8:0000:0000:0000:0000:0000:0001","2001:db8:1:0:0:0:0:1","::ffff:192.0.2.1","fe80::7:8%eth0","ff02::1:ff00:1","ff02:1::ff00:1","ff02:1:ff00::1"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: cdd1e174-e0e3-4b6d-856e-fdb35a79d9e5
+    type: regular
+    task:
+      id: cdd1e174-e0e3-4b6d-856e-fdb35a79d9e5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: e0243c9f-cecc-43b2-8185-3340cd216916
+    type: condition
+    task:
+      id: e0243c9f-cecc-43b2-8185-3340cd216916
+      version: -1
+      name: fe80::123::5678 - Multiple consecutive colons
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 'fe80::123::5678'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 27750af8-3990-42e0-8239-4045b1e09c2b
+    type: condition
+    task:
+      id: 27750af8-3990-42e0-8239-4045b1e09c2b
+      version: -1
+      name: Collapsed address - ff02::1:ff00:1
       type: condition
       iscommand: false
       brand: ""
@@ -161,12 +399,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 2001:db8:85a3:8d3:1319:8a2e:370:7348
+              simple: ff02::1:ff00:1
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 865
         }
       }
@@ -177,88 +415,342 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
-    taskid: a7fc669d-72c0-4614-87b1-e85a8d661566
-    type: regular
-    task:
-      id: a7fc669d-72c0-4614-87b1-e85a8d661566
-      version: -1
-      name: Set invalid IPv6s
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "54"
-    scriptarguments:
-      key:
-        simple: invalid_ipv6s
-      value:
-        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::"'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 40da6932-8974-46c8-812a-c02525989f9d
-    type: regular
-    task:
-      id: 40da6932-8974-46c8-812a-c02525989f9d
-      version: -1
-      name: Print invalid IPv6s
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "55"
-      - "81"
-    scriptarguments:
-      value:
-        simple: ${invalid_ipv6s}
-    reputationcalc: 2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: b0dd47aa-151c-40cd-86d3-ac2cde81f01c
+  "85":
+    id: "85"
+    taskid: 27e609d6-d063-486e-8e98-309cd09059e8
     type: condition
     task:
-      id: b0dd47aa-151c-40cd-86d3-ac2cde81f01c
+      id: 27e609d6-d063-486e-8e98-309cd09059e8
       version: -1
-      name: Check non extraction of invalid IPv6s
+      name: local IPv6 with zone identifier - fe80::7:8%eth0
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: fe80::7:8%eth0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: a757a4ae-747f-45c4-8ca4-b270efccf8a5
+    type: condition
+    task:
+      id: a757a4ae-747f-45c4-8ca4-b270efccf8a5
+      version: -1
+      name: IPv4-compatible IPv6 address - ::ffff:192.0.2.1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: ::ffff:192.0.2.1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: ee664d04-7d2d-4bf9-8353-64dae4dfc546
+    type: condition
+    task:
+      id: ee664d04-7d2d-4bf9-8353-64dae4dfc546
+      version: -1
+      name: Local Address - fe80::1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: fe80::1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: a2218277-526e-479f-8d5d-03cc26f0d5d8
+    type: condition
+    task:
+      id: a2218277-526e-479f-8d5d-03cc26f0d5d8
+      version: -1
+      name: Collapsed zeros - 2001:db8:1:0:0:0:0:1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2001:db8:1:0:0:0:0:1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 8f8fb385-6766-4113-8d85-1316d760bb07
+    type: condition
+    task:
+      id: 8f8fb385-6766-4113-8d85-1316d760bb07
+      version: -1
+      name: Leading zeros - 2001:0db8:0000:0000:0000:0000:0000:0001
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2001:0db8:0000:0000:0000:0000:0000:0001
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 75aae3f7-5224-4ea2-8226-16a3d6511b60
+    type: condition
+    task:
+      id: 75aae3f7-5224-4ea2-8226-16a3d6511b60
+      version: -1
+      name: Loopback - ::1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: ::1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: d6d9ce83-d0a7-4dff-8a1b-3ae028232253
+    type: condition
+    task:
+      id: d6d9ce83-d0a7-4dff-8a1b-3ae028232253
+      version: -1
+      name: Collapsed address mid - ff02:1::ff00:1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: ff02:1::ff00:1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 2db343e3-4a96-41e2-8501-826d5996ac36
+    type: condition
+    task:
+      id: 2db343e3-4a96-41e2-8501-826d5996ac36
+      version: -1
+      name: Collapsed address mid - ff02:1:ff00::1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: ff02:1:ff00::1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 4ccb6e56-a3d3-4573-8058-cda5d34a6f1b
+    type: condition
+    task:
+      id: 4ccb6e56-a3d3-4573-8058-cda5d34a6f1b
+      version: -1
+      name: 2001::db8::1 - Double colons not at the start or end
       type: condition
       iscommand: false
       brand: ""
@@ -276,12 +768,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 2001:0db8:0000:0000:0000:ff00:0042:83292
+              simple: 2001::db8::1
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1340,
           "y": 1390
         }
       }
@@ -292,83 +784,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "73":
-    id: "73"
-    taskid: 96a5cc82-6633-4e02-8a71-280b2b62ddad
-    type: regular
-    task:
-      id: 96a5cc82-6633-4e02-8a71-280b2b62ddad
-      version: -1
-      name: Set valid IPv6s
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "51"
-    scriptarguments:
-      key:
-        simple: valid_ipv6s
-      value:
-        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348"'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "80":
-    id: "80"
-    taskid: ec63467b-c04c-42f7-8af2-43ce6be81215
-    type: regular
-    task:
-      id: ec63467b-c04c-42f7-8af2-43ce6be81215
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1565
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "81":
-    id: "81"
-    taskid: d7824f2d-d25f-4d57-8496-804986e1bd5f
+  "94":
+    id: "94"
+    taskid: 9395253d-35a2-4c28-86f5-4dc8885e1b62
     type: condition
     task:
-      id: d7824f2d-d25f-4d57-8496-804986e1bd5f
+      id: 9395253d-35a2-4c28-86f5-4dc8885e1b62
       version: -1
-      name: Check non extraction of invalid IPv6s
+      name: ::fffff:192.0.2.1 - Too many hexadecimal digits in one group
       type: condition
       iscommand: false
       brand: ""
@@ -386,12 +809,135 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '2a01:111:f406:1805::'
+              simple: ::fffff:192.0.2.1
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1770,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 9a79bb83-5353-4c1a-85a1-cdc49bc94aee
+    type: condition
+    task:
+      id: 9a79bb83-5353-4c1a-85a1-cdc49bc94aee
+      version: -1
+      name: 2001:db8:::1%eth0 - Double colons with zone identifier
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2001:db8:::1%eth0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 7c000ee0-fb0b-4728-8dba-4ed982597055
+    type: condition
+    task:
+      id: 7c000ee0-fb0b-4728-8dba-4ed982597055
+      version: -1
+      name: fe80::1%eth0%vlan0 - Multiple zone identifiers
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: fe80::1%eth0%vlan0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 8b3df2c7-76d8-4af7-8117-a28e17ad8515
+    type: condition
+    task:
+      id: 8b3df2c7-76d8-4af7-8117-a28e17ad8515
+      version: -1
+      name: 00:1A:2B:3C:4D:5E - MAC Address
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 00:1A:2B:3C:4D:5E
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3060,
           "y": 1390
         }
       }
@@ -408,7 +954,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1610,
-        "width": 810,
+        "width": 3820,
         "x": 50,
         "y": 50
       }

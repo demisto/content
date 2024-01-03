@@ -138,19 +138,19 @@ class TestCreateFile:
     ]
 
     @classmethod
-    def setup_method(self):
+    def setup_method(cls):
         # creates the file
         with open(TestCreateFile.path, 'w') as _file:
             _file.write('')
 
     @classmethod
-    def teardown_method(self):
+    def teardown_method(cls):
         # removes the file when done
         os.remove(TestCreateFile.path)
 
     @staticmethod
     def get_file(path):
-        with open(path, 'r') as _file:
+        with open(path) as _file:
             return _file.read()
 
     @staticmethod
@@ -177,7 +177,7 @@ class TestCreateFile:
             Then:
                 - Verify sync file data.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         expected_data = ''
@@ -252,7 +252,7 @@ class TestCreateFile:
                 - Verify iocs to keep file data.
         """
 
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         create_file_iocs_to_keep(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         expected_data = ''

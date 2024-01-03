@@ -1593,14 +1593,14 @@ tasks:
     continueonerrortype: ""
   "78":
     id: "78"
-    taskid: cd52a989-d59a-4204-831c-60f8724e6a20
+    taskid: bbbe7cb3-668d-4dc2-80a3-7ff7a1586e6a
     type: playbook
     task:
-      id: cd52a989-d59a-4204-831c-60f8724e6a20
+      id: bbbe7cb3-668d-4dc2-80a3-7ff7a1586e6a
       version: -1
-      name: Cortex XDR Alerts Handling
-      description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan"
-      playbookName: Cortex XDR Alerts Handling
+      name: Cortex XDR Alerts Handling v2
+      description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation."
+      playbookName: Cortex XDR Alerts Handling v2
       type: playbook
       iscommand: false
       brand: ""
@@ -1608,6 +1608,9 @@ tasks:
       '#none#':
       - "79"
     scriptarguments:
+      InternalIPRanges:
+        complex:
+          root: inputs.InternalRange
       alert_id:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
@@ -1628,7 +1631,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 340
+          "y": 350
         }
       }
     note: false
@@ -2013,7 +2016,21 @@ inputs:
   description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexReplace
+        args:
+          action_dt: {}
+          ignore_case: {}
+          multi_line: {}
+          output_format: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: IANA_Private_Address
   required: false
   description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
   playbookInputQuery:
@@ -2097,3 +2114,5 @@ tests:
 fromversion: 6.5.0
 contentitemexportablefields:
   contentitemfields: {}
+marketplaces:
+- xsoar

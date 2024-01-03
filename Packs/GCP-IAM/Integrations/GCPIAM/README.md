@@ -385,7 +385,8 @@ Retrieves the IAM access control policy for the specified folder.
 | --- | --- | --- |
 | folder_name | The folder name for which the policy is being requested. For example, folders/12342. | Required | 
 | limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
-| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional |
+| roles | A comma-separated list of roles. (Ex: "roles/bigquery.admin, roles/editor, roles/owner"). | Optional | 
 
 
 #### Context Output

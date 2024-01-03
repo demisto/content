@@ -77,7 +77,7 @@ outputs:
   description: Whether the domain belongs to the top Majestic domain list. If it does, we will always consider this domain as benign.
   type: String
 - contextPath: DBotScore.Score
-  description: Severity score
+  description: Severity score.
   type: Number
 script: '-'
 subtype: python3
@@ -85,7 +85,7 @@ tags:
 - ml
 timeout: 480ns
 type: python
-dockerimage: demisto/mlurlphishing:1.0.0.28347
+dockerimage: demisto/mlurlphishing:1.0.0.29930
 runas: DBotRole
 tests:
 - DBotPredictURLPhishing_test

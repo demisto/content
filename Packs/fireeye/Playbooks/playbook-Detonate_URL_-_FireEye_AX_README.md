@@ -19,8 +19,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* fe-submit-url-result
 * fe-submit-url
-* fe-submit-result
 * fe-submit-url-status
 
 ## Playbook Inputs
@@ -32,6 +32,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | URL | URL to detonate | URL.Data | Optional |
 | interval | How often to poll for results. | 1 | Optional |
 | timeout | How long to wait before giving up waiting for results. | 30 | Optional |
+| Info_Level | This parameter specifies the level of information to be returned in the URL submission report. Information levels include concise \(default\), normal, or extended. |  | Optional |
 
 ## Playbook Outputs
 

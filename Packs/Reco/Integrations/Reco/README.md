@@ -328,3 +328,30 @@ update alert status in Reco
 #### Context Output
 
 There is no context output for this command.
+
+### reco-get-user-context-by-email-address
+
+***
+Get user context by email address from Reco.
+
+#### Base Command
+
+`reco-get-user-context-by-email-address`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email_address | user email address. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.User.email_account | String | The email of the user. | 
+| Reco.User.departments | String | User departments. | 
+| Reco.User.job_titles | String | Job Title. | 
+| Reco.User.category | String | Category. | 
+| Reco.User.groups | String | The groups user is member of. | 
+| Reco.User.full_name | String | The user full name. | 
+| Reco.User.labels | Unknown | User Labels. | 

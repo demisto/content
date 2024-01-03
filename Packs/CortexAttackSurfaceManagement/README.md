@@ -25,7 +25,7 @@ Aditionally, [a list of integrations used for the Active Response playbook can b
 
 ### Demo Video
 
-[![Active Response in Cortex Xpanse](https://i.ytimg.com/vi/aIP1CCn9ST8/hq720.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
+[![Active Response in Cortex Xpanse](https://raw.githubusercontent.com/demisto/content/98ead849e9e32921f64f7ac07fda2bff1b5f7c0b/Packs/CortexAttackSurfaceManagement/doc_files/Active_Response_in_Cortex_Xpanse.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
 
 ### Automated Remediation Requirements
 
@@ -57,6 +57,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Rapid7 InsightVM (Nexpose)
   - Splunk
   - ServiceNow CMDB
+  - ServiceNow ITSM
   - Tenable.io Assets
   - Qualys
 - Indicators of a non-production host:
@@ -92,6 +93,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Remediation](#cortex-asm---remediation)
   - [Cortex ASM - Service Ownership](#cortex-asm---service-ownership)
   - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+  - [Cortex ASM - ServiceNow ITSM Enrichment](#cortex-asm---servicenow-itsm-enrichment)
   - [Cortex ASM - ServiceNow Notification](#cortex-asm---servicenow-notification)
   - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
@@ -100,6 +102,8 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [GetProjectOwners](#getprojectowners)
   - [RankServiceOwners](#rankserviceowners)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
+- Layouts
+  - [ASM Alert Layout](#asmalertlayout)
 
 ### Playbooks
 
@@ -229,6 +233,12 @@ A playbook that given the IP address enriches ServiceNow CMDB information releva
 
 ![Cortex ASM - ServiceNow CMDB Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
 
+#### Cortex ASM - ServiceNow ITSM Enrichment
+
+A playbook that given the search terms enriches ServiceNow ITSM service owner information relevant to ASM alerts.
+
+![Cortex ASM - ServiceNow ITSM Enrichment](https://raw.githubusercontent.com/demisto/content/0fd2fb4a7240673f3a3fcb1dec5339549f0f2fb8/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_ITSM_Enrichment.png)
+
 #### Cortex ASM - ServiceNow Notification
 
 A playbook that is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
@@ -274,3 +284,9 @@ This automation parses a GCP service account email for the project ID, then look
 An automation that is used to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
 
 ![RemediationPathRuleEvaluation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/RemediationPathRuleEvaluation.png)
+
+### Layouts
+
+#### ASM Alert Layout
+
+This layout is provides enrichment information such as system IDs, tags, and service owners for a given Attack Surface Management alert.

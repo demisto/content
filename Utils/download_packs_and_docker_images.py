@@ -26,7 +26,7 @@ def load_bucket_id_set(verify_ssl: bool) -> dict:
 
 def create_content_item_id_set(id_set_list: list) -> dict:
     """ Given an id_set.json content item list, creates a dictionary representation"""
-    res = dict()
+    res = {}
     for item in id_set_list:
         for key, val in item.items():
             res[key] = val
@@ -36,7 +36,7 @@ def create_content_item_id_set(id_set_list: list) -> dict:
 def zip_folder(source_path, output_path):
     """ Zips the folder and its containing files"""
     with ZipFile(output_path + '.zip', 'w', ZIP_DEFLATED) as source_zip:
-        for root, dirs, files in os.walk(source_path, topdown=True):
+        for root, _dirs, files in os.walk(source_path, topdown=True):
             for f in files:
                 full_file_path = os.path.join(root, f)
                 source_zip.write(filename=full_file_path, arcname=f)
@@ -75,10 +75,10 @@ def get_docker_images_with_tag(pack_names: dict, id_set_json: dict) -> set:
 
 def get_pack_names(pack_display_names: list, id_set_json: dict) -> dict:
     """ Given pack_display_names try and parse it into a pack name as appears in content repo"""
-    pack_names = dict()
+    pack_names = {}
     if 'Packs' not in id_set_json:
         raise ValueError('Packs is missing from id_set.json.')
-    d_names_id_set = dict()
+    d_names_id_set = {}
     # create display name id_set.json
     for pack_name, pack_value in id_set_json['Packs'].items():
         d_names_id_set[pack_value['name']] = pack_name

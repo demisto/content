@@ -8,6 +8,9 @@ from github import Github
 from git import Repo
 from github.Repository import Repository
 from demisto_sdk.commands.common.tools import get_pack_metadata
+from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
+from demisto_sdk.commands.content_graph.objects.integration import Integration
+from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 
 
 from utils import (
@@ -43,6 +46,9 @@ COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
 EXTERNAL_LABEL = "External PR"
 SECURITY_LABEL = "Security Review"
+TIM_LABEL = "TIM Review"
+TIM_TAGS = "Threat Intelligence Management"
+TIM_CATEGORIES = "Data Enrichment & Threat Intelligence"
 SECURITY_CONTENT_ITEMS = [
     "Playbooks",
     "IncidentTypes",
@@ -75,11 +81,8 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
         if label_to_consider not in pr_labels:
             continue
         assignees = {assignee.login for assignee in pull.assignees}
-        requested_reviewers, _ = pull.get_review_requests()
-        reviewers_info = {requested_reviewer.login for requested_reviewer in requested_reviewers}
-        combined_list = assignees.union(reviewers_info)
         for reviewer in potential_reviewers:
-            if reviewer in combined_list:
+            if reviewer in assignees:
                 assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
     print(f'{assigned_prs_per_potential_reviewer=}')
     selected_reviewer = sorted(assigned_prs_per_potential_reviewer,
@@ -88,7 +91,29 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
+def packs_to_check_in_pr(file_paths: list[str]) -> set:
+    """
+    The function gets all files in the PR and returns the packs that are part of the PR
+
+    Arguments:
+        - param file_paths: the file paths of the PR files
+    Returns:
+        - set of all packs that are part of the PR
+    """
+    pack_dirs_to_check = set()
+
+    for file_path in file_paths:
+        try:
+            if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
+                pack_dirs_to_check.add(f'Packs/{pack_name}')
+        except Exception as err:
+            print(f'Could not retrieve pack name from file {file_path}, {err=}')
+
+    print(f'{pack_dirs_to_check=}')
+    return pack_dirs_to_check
+
+
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, repo_name: str = 'content') -> str:
     """
     Get The contributions' support level label.
 
@@ -104,19 +129,12 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
     Args:
         file_paths(str): file paths
         external_pr_branch (str): the branch of the external PR.
+        repo_name(str): the name of the forked repo (without the owner)
 
     Returns:
         highest support level of the packs that were changed, empty string in case no packs were changed.
     """
-    pack_dirs_to_check_support_levels_labels = set()
-
-    for file_path in file_paths:
-        try:
-            if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
-                pack_dirs_to_check_support_levels_labels.add(f'Packs/{pack_name}')
-        except Exception as err:
-            print(f'Could not retrieve pack name from file {file_path}, {err=}')
-
+    pack_dirs_to_check_support_levels_labels = packs_to_check_in_pr(file_paths)
     print(f'{pack_dirs_to_check_support_levels_labels=}')
 
     # # we need to check out to the contributor branch in his forked repo in order to retrieve the files cause workflow
@@ -131,7 +149,8 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
             # in marketplace contributions the name of the owner should be xsoar-contrib
-            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib'
+            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
+            repo_name=repo_name
         ):
             packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
@@ -180,14 +199,59 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
+def is_tim_content(pr_files: list[str]) -> bool:
+    """
+    This is where the actual search for feed:True or relevant tags or categories are being searched
+    according to the login in is_tim_reviewer_needed
+
+    Arguments:
+    - pr_files: List[str] The list of files changed in the Pull Request.
+
+    Returns: returns True or False if tim reviewer needed
+    """
+    integrations_checked = []
+    for file in pr_files:
+        integration = BaseContent.from_path(CONTENT_PATH / file)
+        if not isinstance(integration, Integration) or integration.path in integrations_checked:
+            continue
+        integrations_checked.append(integration.path)
+        if integration.is_feed:
+            return True
+        pack = integration.in_pack
+        tags = pack.tags
+        categories = pack.categories
+        if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+            return True
+    return False
+
+
+def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
+    """
+    Checks whether the PR need to be reviewed by a TIM reviewer.
+    It check the yml file of the integration - if it has the feed: True
+    If not, it will also check if the pack has the TIM tag or the TIM category
+    The pack that will be checked are only XSOAR or Partner support
+
+    Arguments:
+    - pr_files: tThe list of files changed in the Pull Request
+    - support_label: the support label of the PR - the highest one.
+
+    Returns: True or false if tim reviewer needed
+    """
+    if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
+        return is_tim_content(pr_files)
+    return False
+
+
 def main():
     """Handles External PRs (PRs from forks)
 
     Performs the following operations:
     1. If the external PR's base branch is master we create a new branch and set it as the base branch of the PR.
     2. Labels the PR with the "Contribution" label. (Adds the "Hackathon" label where applicable.)
-    3. Assigns a Reviewer.
+    3. Assigns a Reviewer, a Security Reviewer if needed and a TIM Reviewer if needed.
     4. Creates a welcome comment
+    5. Checks if community contributed to Partner or XSOAR packs and asks the contributor to add themselves to contributors.md
 
     Will use the following env vars:
     - CONTENTBOT_GH_ADMIN_TOKEN: token to use to update the PR
@@ -207,13 +271,17 @@ def main():
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
 
     pr_number = payload.get('pull_request', {}).get('number')
+    repo_name = payload.get('pull_request', {}).get('head', {}).get('repo', {}).get('name')
+
+    print(f'{t.cyan}PR origin repo: {repo_name} {t.normal}')
+
     pr = content_repo.get_pull(pr_number)
 
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
 
     labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
-    if support_label := get_packs_support_level_label(pr_files, pr.head.ref):
+    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name):
         labels_to_add.append(support_label)
 
     # Add the initial labels to PR:
@@ -250,10 +318,11 @@ def main():
     # Parse PR reviewers from JSON and assign them
     # Exit if JSON doesn't exist or not parsable
     content_roles = load_json(CONTENT_ROLES_PATH)
-    content_reviewers, security_reviewer = get_content_reviewers(content_roles)
+    content_reviewers, security_reviewer, tim_reviewer = get_content_reviewers(content_roles)
 
     print(f"Content Reviewers: {','.join(content_reviewers)}")
     print(f"Security Reviewer: {security_reviewer}")
+    print(f"TIM Reviewer: {tim_reviewer}")
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
@@ -264,6 +333,11 @@ def main():
         reviewers.append(security_reviewer)
         pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
+
+    # adding TIM reviewer
+    if is_tim_reviewer_needed(pr_files, support_label):
+        reviewers.append(tim_reviewer)
+        pr.add_to_labels(TIM_LABEL)
 
     pr.create_review_request(reviewers=reviewers)
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')

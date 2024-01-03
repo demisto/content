@@ -14,6 +14,29 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
+- display: Colletions to fetch
+  name: incident_collections
+  type: 16
+  required: false
+  additionalinfo: Type(s) of incidents to fetch.
+  options:
+  - Darkweb Marketplaces
+  - Data Breaches
+  - Compromised Endpoints
+  - Compromised Cards
+  - All collections
+  hidden: false
+- display: Severity
+  name: incident_severity
+  type: 16
+  required: false
+  additionalinfo: Severity of incidents to fetch.
+  options:
+  - Low
+  - Medium
+  - High
+  - All severities
+  hidden: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -22,12 +45,12 @@ configuration:
   name: proxy
   type: 8
   required: false
-- additionalinfo: Maximum incidents to be fetched every time. Upper limit is 1000 incidents.
-  defaultvalue: '1'
-  display: Incident Fetch Limit
+- display: Incident Fetch Limit
   name: max_fetch
   type: 0
   required: false
+  additionalinfo: Maximum incidents to be fetched every time. Upper limit is 1000 incidents.
+  defaultvalue: '1'
 - display: Incident type
   name: incidentType
   type: 13
@@ -36,18 +59,28 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
-  defaultvalue: '1'
-  display: First fetch time (by days)
+- display: First fetch time (by days)
   name: first_fetch_timestamp
-  type: 0
   required: false
+  type: 0
+  additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
+  defaultvalue: '1'
+- display: Hide Card Details
+  hidden: false
+  name: hide_data
+  required: false
+  type: 8
+- display: Update Incident to Remote System
+  hidden: false
+  name: mirror
+  required: false
+  type: 8
 description: Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.
 display: CybleEvents v2
 name: cybleeventsv2
 script:
   commands:
-  - description: Get list of Subscribed services
+  - description: Get list of Subscribed services.
     name: cyble-vision-subscribed-services
     outputs:
     - contextPath: CybleEvents.SubscribedServices
@@ -68,7 +101,7 @@ script:
       - IPv6
       - URL
       - Emai
-    - description: Returns records for the specified indicator value
+    - description: Returns records for the specified indicator value.
       name: ioc
     - defaultValue: '0'
       description: Returns records that starts from the given page number (the value of the form parameter) in the results list.
@@ -78,7 +111,7 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: last_seen
-      description: Sorting based on the column(last_seen,first_seen,ioc_type)
+      description: Sorting based on the column (last_seen, first_seen, ioc_type).
       name: sort_by
       predefined:
       - last_seen
@@ -86,13 +119,13 @@ script:
       - ioc_type
     - auto: PREDEFINED
       default: true
-      defaultValue: desc
-      description: A sorting order for ioc. Either Ascending or Descending. The default value is Descending.
+      defaultValue: asc
+      description: A sorting order for ioc.
       name: order
       predefined:
       - asc
       - desc
-    - description: Returns records for the specified tags
+    - description: Returns records for the specified tags.
       name: tags
     - description: Timeline start date in the format "YYYY-MM-DD". Should be used with start_date as timeline range.
       name: start_date
@@ -102,21 +135,21 @@ script:
     name: cyble-vision-fetch-iocs
     outputs:
     - contextPath: CybleEvents.IoCs.Data
-      description: Returns indicator with risk score, confident rating, first seen and last seen
+      description: Returns indicator with risk score, confident rating, first seen and last seen.
       type: String
   - arguments:
     - defaultValue: '5'
       description: Number of records to return (max 50). Using a smaller limit will get faster responses.
       name: limit
-    - description: Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+    - description: Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).
       name: start_date
       required: true
-    - description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+    - description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).
       name: end_date
       required: true
     - auto: PREDEFINED
-      defaultValue: desc
-      description: A sorting order for the fetched alerts. Either Ascending or Descending. The default value is Descending.
+      defaultValue: asc
+      description: A sorting order for the fetched alerts.
       name: order_by
       predefined:
       - asc
@@ -129,21 +162,21 @@ script:
     name: cyble-vision-fetch-alerts
     outputs:
     - contextPath: CybleEvents.Events.name
-      description: Return Event name
+      description: Return Event name.
       type: String
     - contextPath: CybleEvents.Events.alert_group_id
-      description: Return alert group id
+      description: Return alert group id.
       type: String
     - contextPath: CybleEvents.Events.event_id
       description: Return event id.
       type: String
     - contextPath: CybleEvents.Events.keyword
-      description: Return keywords
+      description: Return keywords.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      defaultValue: desc
-      description: A sorting order for the fetched alerts. Either Ascending or Descending. he default value is Descending.
+      defaultValue: asc
+      description: A sorting order for the fetched alerts.
       name: order_by
       predefined:
       - asc
@@ -151,28 +184,33 @@ script:
     - defaultValue: '5'
       description: Number of records to return (max 50). Using a smaller limit will get faster responses.
       name: limit
-    - description: Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+    - description: Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).
       name: start_date
       required: true
-    - description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601)
+    - description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601).
       name: end_date
       required: true
     - defaultValue: '0'
       description: Returns records for the timeline starting from the given indice.
       name: from
       required: true
-    description: Fetch incident event group
+    description: Fetch incident event group.
     name: cyble-vision-fetch-alert-groups
     outputs:
     - contextPath: CybleEvents.AlertGroup
-      description: Fetch all the alert groups
+      description: Fetch all the alert groups.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
+    name: get-mapping-fields
+  dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0

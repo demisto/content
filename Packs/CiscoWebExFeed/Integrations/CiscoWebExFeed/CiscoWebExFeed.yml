@@ -101,7 +101,7 @@ script:
       - Both
     description: Gets indicators from the feed.
     name: webex-get-indicators
-  dockerimage: demisto/btfl-soup:1.0.1.74341
+  dockerimage: demisto/btfl-soup:1.0.1.80687
   feed: true
   script: ''
   subtype: python3

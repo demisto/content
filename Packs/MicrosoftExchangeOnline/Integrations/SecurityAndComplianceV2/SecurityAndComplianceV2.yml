@@ -485,6 +485,9 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SuccessResults.Size
       description: The byte size of the security and compliance search results in location.
       type: Number
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.SearchStatus
+      description: The status indicating whether or not the search for a given search_name was successful.
+      type: String
   - arguments:
     - description: The name of the compliance search.
       name: search_name
@@ -610,6 +613,9 @@ script:
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.SearchStatus
+      description: The status indicating whether or not the search for a given search_name was successful.
       type: String
   - arguments:
     - description: The name of the compliance search action.
@@ -1096,7 +1102,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.67595
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.80547
   runonce: true
   script: '-'
   type: powershell

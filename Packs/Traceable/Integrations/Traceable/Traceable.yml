@@ -35,7 +35,7 @@ configuration:
   type: 0
   required: false
 - name: max_fetch
-  display: Max number of records to fetch per API call to Traceable API Endpoint.
+  display: Max number of records to fetch per API call to Traceable API Endpoint
   required: false
   type: 0
   defaultvalue: '100'
@@ -43,7 +43,13 @@ configuration:
   display: Number of span queries to run in parallel
   required: false
   type: 0
-  defaultvalue: '10'
+  defaultvalue: '5'
+- display: "Max spans per thread (1 to 1000)"
+  name: span_query_batch_size
+  type: 0
+  required: false
+  additionalinfo: Provide a value between 1 and 1000.
+  defaultvalue: '50'
 - display: "Comma Separated Environment List To Process"
   name: environment
   type: 12
@@ -80,7 +86,6 @@ configuration:
   - UNKNOWN
 - display: "IP Abuse Velocity"
   name: ipAbuseVelocity
-  defaultvalue: CRITICAL,HIGH,MEDIUM
   type: 16
   required: false
   options:
@@ -89,10 +94,11 @@ configuration:
   - MEDIUM
   - LOW
   - UNKNOWN
+  defaultvalue: CRITICAL,HIGH,MEDIUM
 - display: "IP Location Type"
   name: ipCategories
-  type: 16
   required: false
+  type: 16
   options:
   - Anonymous VPN
   - Hosting Provider
@@ -106,25 +112,25 @@ configuration:
   required: false
   type: 0
 - display: Incident type
-  defaultvalue: Exploit
   name: incidentType
-  required: false
+  defaultvalue: Exploit
   type: 13
-- display: Ignore Status Codes
+  required: false
+- display: Ignore Status Codes (eg. 301, 400-499)
   name: ignoreStatusCodes
   defaultvalue: 400-499
   type: 0
   required: false
+  additionalinfo: Provide comma-separated HTTP Status ranges or individual status codes to ignore. Eg. 301, 400-499.
 - display: Incident optional field list
   name: optionalDomainEventFieldList
-  defaultvalue: actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type
+  defaultvalue: actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,actorScore,threatCategory,type
   options:
   - actorDevice
   - actorEntityId
   - actorId
   - actorScoreCategory
   - actorSession
-  - anomalousAttribute
   - apiName
   - apiUri
   - category
@@ -133,7 +139,6 @@ configuration:
   - securityEventType
   - securityScore
   - serviceId
-  - serviceName
   - actorScore
   - threatCategory
   - type
@@ -150,6 +155,18 @@ configuration:
   - isLearnt
   type: 16
   required: false
+- display: Fetch unique incidents
+  additionalinfo: Ignores repeat occurrences of a given incidence for a specified time.
+  defaultvalue: "true"
+  name: isFetchUniqueIncidents
+  type: 8
+  required: false
+- name: timegap_between_repeat_incidents
+  display: Time between raising similar incidents (in <number> <time unit>, e.g., in 12 hours, in 7 days)
+  additionalinfo: Specifies a timeframe in the future until which a repeat incidence will be ignored.
+  required: false
+  type: 0
+  defaultvalue: 'in 7 days'
 description: "Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex Xsoar for further action."
 display: "Traceable"
 name: Traceable
@@ -160,7 +177,31 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.83255
+  commands:
+  - name: list_incident_cache
+    description: List the entries present in the Traceable instance cache.
+    arguments: []
+    outputs:
+    - contextPath: Traceable.Instancecache.id
+      description: Cache entry ID.
+      type: string
+    - contextPath: Traceable.Instancecache.expiry
+      description: Cache entry expiration date.
+      type: date
+  - name: purge_incident_cache
+    description: Delete all entries in the incident cache.
+    arguments: []
+    outputs:
+    - contextPath: Traceable.Instancecache.id
+      description: Cache entry ID.
+      type: string
+    - contextPath: Traceable.Instancecache.expiry
+      description: Cache entry expiration date.
+      type: date
+    - contextPath: Traceable.Instancecache.deletion_status
+      description: Cache entry deletion status.
+      type: string
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

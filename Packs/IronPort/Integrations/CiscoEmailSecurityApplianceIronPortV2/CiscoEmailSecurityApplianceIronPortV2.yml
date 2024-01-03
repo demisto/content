@@ -101,7 +101,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.83255
   isfetch: true
   commands:
   - name: cisco-esa-spam-quarantine-message-search
@@ -484,12 +484,12 @@ script:
     - name: file_sha_256
       description: |-
         SHA256 must be 64 characters long and can contain only "0-9" and "a-f" characters.
-        e.g. e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577
+        e.g. e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577.
     - name: custom_query
       description: |-
         Custom query for cisco ESA's advanced filters.
         Syntax: <key>=<value>;<key>=<value>;<key>=<value>
-        e.g., graymail=True;message_delivered=True
+        e.g., graymail=True;message_delivered=True.
     outputs:
     - type: String
       contextPath: CiscoESA.Message.hostName
@@ -653,7 +653,7 @@ script:
       description: Event summary time.
     - type: String
       contextPath: CiscoESA.Message.summary.description
-      description: Event summary description
+      description: Event summary description.
     - type: Boolean
       contextPath: CiscoESA.Message.summary.lastEvent
       description: Whether this is the last summary event.
@@ -941,7 +941,7 @@ script:
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
     - name: order_by
-      description: The attribute by which to order the data in the response. For example, orderBy=total_clean_recipients
+      description: The attribute by which to order the data in the response. For example, orderBy=total_clean_recipients.
     - name: order_dir
       description: The report sort order direction.
       auto: PREDEFINED

@@ -118,6 +118,7 @@ configuration:
   defaultvalue: Microsoft Teams Form
   required: false
 - display: Trust any certificate (not secure)
+  additionalinfo: Do not check for Cortex XSOAR version 8
   name: insecure
   type: 8
   section: Connect
@@ -711,7 +712,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.73705
+  dockerimage: demisto/teams:1.0.0.83464
   longRunning: true
   longRunningPort: true
   script: ''

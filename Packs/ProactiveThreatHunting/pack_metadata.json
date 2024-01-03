@@ -1,0 +1,65 @@
+{
+    "name": "Proactive Threat Hunting",
+    "description": "The XSOAR Threat Hunting Pack enhances analyst capabilities by leveraging threat intelligence to uncover previously undetected threats, empowering proactive identification and mitigation of potential security risks.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "videos": [
+        "https://www.youtube.com/watch?v=yHwDTXt8Vjo"
+    ],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Use Case",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Hunting"
+    ],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "dependencies": {
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Cortex XDR by Palo Alto Networks"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "FeedLOLBAS": {
+            "mandatory": true,
+            "display_name": "LOLBAS Feed"
+        },
+        "MicrosoftDefenderAdvancedThreatProtection": {
+            "mandatory": false,
+            "display_name": "Microsoft Defender for Endpoint"
+        },
+        "FeedUnit42v2": {
+            "mandatory": false,
+            "display_name": "Feed Unit42 v2"
+        }
+    },
+    "displayedImages": [
+        "CortexXDR",
+        "FiltersAndTransformers",
+        "CommonTypes",
+        "MicrosoftDefenderAdvancedThreatProtection",
+        "LOLBASFeed",
+        "CommonPlaybooks",
+        "FeedUnit42v2"
+    ]
+}

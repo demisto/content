@@ -1,11 +1,11 @@
 args:
 - description: Define the thresholds.
   name: Thresholds
-comment: Reports on common indicators
+comment: Reports on common indicators.
 commonfields:
   id: HealthCheckCommonIndicators
   version: -1
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: HealthCheckCommonIndicators
 runas: DBotWeakRole

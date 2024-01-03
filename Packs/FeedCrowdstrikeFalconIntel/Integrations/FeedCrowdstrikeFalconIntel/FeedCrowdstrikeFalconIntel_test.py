@@ -15,12 +15,12 @@ indicators = get_fetch_data()
 @pytest.mark.parametrize(
     "params, actors_filter, expected",
     [
-        ({}, '', '/intel/combined/actors/v1'),
-        ({}, 'blabla', '/intel/combined/actors/v1blabla'),
+        ({}, '', '/intel/combined/actors/v1?fields=__full__'),
+        ({}, 'blabla', '/intel/combined/actors/v1?fields=__full__blabla'),
         ('last_modified_date%3A%3E{relevant_time}', 'blabla',
-         '/intel/combined/actors/v1blabla%2Blast_modified_date%3A%3E{relevant_time}'),
+         '/intel/combined/actors/v1?fields=__full__blabla%2Blast_modified_date%3A%3E{relevant_time}'),
         ('last_modified_date%3A%3E{relevant_time}', '',
-         '/intel/combined/actors/v1?filter=last_modified_date%3A%3E{relevant_time}')
+         '/intel/combined/actors/v1?fields=__full__&filter=last_modified_date%3A%3E{relevant_time}')
     ]
 )
 def test_build_url_suffix(params, actors_filter, expected):
@@ -33,34 +33,27 @@ def test_create_indicators_from_response():
     assert res == indicators["expected_list"]
 
 
-@pytest.mark.parametrize(
-    argnames='server_ge_620, expected_actor_type',
-    argvalues=[
-        (False, 'STIX Threat Actor'),
-        (True, 'Threat Actor')
-    ])
-def test_actor_type(mocker, server_ge_620, expected_actor_type):
+def test_actor_type(mocker):
     """
     Given:
-        - Server version above end bellow 6.2.0
+        - Server version above 6.2.0
 
     When:
         - Creating indicators
 
     Then:
         -
-        Validate 'STIX Threat Actor' are the type in server version < 6.2.0
-        and 'Threat Actor' for server >= 6.2.0
+        Validate 'Threat Actor' for server >= 6.2.0
     """
 
     # prepare
-    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=server_ge_620)
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
 
     # run
     res = Client.create_indicators_from_response(Client, indicators["list_data_cs"], {}, 'AMBER')
 
     # validate
-    assert all(indicator['type'] == expected_actor_type for indicator in res)
+    assert all(indicator['type'] == 'Threat Actor' for indicator in res)
 
 
 def test_fetch_indicators_with_limit(mocker, requests_mock):

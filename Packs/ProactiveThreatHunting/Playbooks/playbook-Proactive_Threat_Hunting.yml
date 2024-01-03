@@ -1,0 +1,557 @@
+id: Proactive Threat Hunting
+version: -1
+name: Proactive Threat Hunting
+description: |-
+  This playbook is the main playbook of the 'Proactive Threat Hunting' pack. It automatically runs during a new hunting session and guides the threat hunter through the session based on the selected hunting method. The available hunting methods are:
+
+  - SDO Hunt: Constructs the hunting hypothesis based on SDO indicators (Campaign, Malware, Intrusion Set).
+  - Freestyle Hunt: Allows the threat hunter to provide their own queries and IOCs for hunting.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 48846196-19b9-45b1-8518-ab54ed93f228
+    type: start
+    task:
+      id: 48846196-19b9-45b1-8518-ab54ed93f228
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5e812120-6fcc-422d-82f2-f0be6d684bca
+    type: collection
+    task:
+      id: 5e812120-6fcc-422d-82f2-f0be6d684bca
+      version: -1
+      name: SDO hunt
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Our organization is compromised due to
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Campaign
+        - simple: Malware
+        - simple: Intrusion Set
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: General Hypothesis
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 55f7df93-7f3b-4b7d-85ac-e35c9c61280a
+    type: regular
+    task:
+      id: 55f7df93-7f3b-4b7d-85ac-e35c9c61280a
+      version: -1
+      name: Set incident tag
+      description: Change the properties of an incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      tags:
+        complex:
+          root: inputs.IncidentTag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Block Indicators Status
+      output:
+        simple: Not Executed
+    - incidentfield: Endpoint Isolation Status
+      output:
+        simple: Not Executed
+    - incidentfield: User Block Status
+      output:
+        simple: Not Executed
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: d1fcbceb-f0d4-4716-847a-03a99ce8b89e
+    type: title
+    task:
+      id: d1fcbceb-f0d4-4716-847a-03a99ce8b89e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 768138da-2f6c-4719-8e8a-d221817fe82f
+    type: playbook
+    task:
+      id: 768138da-2f6c-4719-8e8a-d221817fe82f
+      version: -1
+      name: Proactive Threat Hunting - SDO Threat Hunting
+      playbookName: Proactive Threat Hunting - SDO Threat Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      HuntingTimeFrame:
+        complex:
+          root: inputs.HuntingTimeFrame
+      IOCsFoundTag:
+        simple: Hunting Session - Exist In Environment
+      IOCsToSearchTag:
+        simple: Hunting Session
+      SDOName:
+        complex:
+          root: incident
+          accessor: sdoname
+      SDOType:
+        complex:
+          root: General Hypothesis.Answers
+          accessor: "0"
+      StringSimilarityThreshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 6b95d466-9d56-4f1a-8829-3b1972077d66
+    type: condition
+    task:
+      id: 6b95d466-9d56-4f1a-8829-3b1972077d66
+      version: -1
+      name: Executed from indicator layout?
+      description: Checks if the incident was executed from the indicator layout.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "Yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: sdoname
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 5729a1c8-5911-4c26-8db4-14e638020822
+    type: regular
+    task:
+      id: 5729a1c8-5911-4c26-8db4-14e638020822
+      version: -1
+      name: Print message to notes
+      description: Prints text to the War Room. (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      value:
+        simple: Kindly follow the  "Hunting Session Instructions" section to execute the threat hunting session.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: db4cee47-2b68-401e-88ff-6e9b3f580b51
+    type: collection
+    task:
+      id: db4cee47-2b68-401e-88ff-6e9b3f580b51
+      version: -1
+      name: General hypothesis
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: I Want to hunt for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: SDO Indicator(Campaign/Intrusion Set/Malware)
+        - simple: Freestyle Hunt
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: I Want to hunt for
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: ec471de0-f8bb-4391-8c31-ab18223eabe2
+    type: condition
+    task:
+      id: ec471de0-f8bb-4391-8c31-ab18223eabe2
+      version: -1
+      name: Hunting method chosen
+      description: Choose hunting method based on the collection task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Freestyle:
+      - "47"
+      SDO:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: SDO
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: I Want to hunt for.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: SDO Indicator(Campaign/Intrusion Set/Malware)
+          ignorecase: true
+    - label: Freestyle
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: I Want to hunt for.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Freestyle Hunt
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 6169fd8b-1dbc-4070-8ba3-6cb757eb4709
+    type: regular
+    task:
+      id: 6169fd8b-1dbc-4070-8ba3-6cb757eb4709
+      version: -1
+      name: Set freestyle hunt true
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      freestylehunt:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 083b81ce-0303-4fa3-8a49-b960f18c4829
+    type: regular
+    task:
+      id: 083b81ce-0303-4fa3-8a49-b960f18c4829
+      version: -1
+      name: Print message to notes
+      description: Prints text to the War Room. (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      value:
+        simple: Freestyle hunt session executed. Kindly navigate to the "Freestyle hunt" to proceed.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1000
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "42_41_Yes": 0.58,
+      "45_5_SDO": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1365,
+        "width": 1220,
+        "x": -510,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: IncidentTag
+  value:
+    simple: Threat Hunting
+  required: false
+  description: A tag that will be attached to Threat Hunting incidents.
+  playbookInputQuery:
+- key: HuntingTimeFrame
+  value:
+    simple: 7 Days
+  required: false
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The query execution script default is the last 24 hours.'
+  playbookInputQuery:
+- key: StringSimilarityThreshold
+  value:
+    simple: "0.5"
+  required: false
+  description: |-
+    StringSimilarity automation threshold. StringSimilarity is being used in this playbook to compare between pattern of malicious use in a tool and command-line arguments found in the environment.
+    Please provide number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

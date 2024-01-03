@@ -76,31 +76,46 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
     # Keep track of change in SG or not.
     change = False
     for rule in info['IpPermissions']:
-        # Check if 'FromPort' is in rule, else it is an "all traffic rule".
-        if rule.get('FromPort'):
-            # Don't recrete if it targets just the port of interest.
-            if rule['FromPort'] == port and port == rule['ToPort'] and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0" and \
-               rule['IpProtocol'] == protocol:
-                change = True
-            elif rule['FromPort'] <= port and port <= rule['ToPort'] and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0" and \
-                 rule['IpProtocol'] == protocol:  # noqa: E127
+        if rule.get('IpRanges') and len(rule.get('IpRanges')) > 0:
+            # Check if 'FromPort' is in rule, else it is an "all traffic rule".
+            if rule.get('FromPort'):
+                # Don't recreate if it targets just the port of interest.
+                if (
+                    rule['FromPort'] == port
+                    and port == rule['ToPort']
+                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and rule['IpProtocol'] == protocol
+                ):
+                    change = True
+                elif (
+                    rule["FromPort"] == port and port == rule["ToPort"]
+                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
+                    and rule["IpProtocol"] == protocol
+                ):
+                    # If condition to check for Quad 0 in the rules list for matching port.
+                    change = True
+                elif (
+                    rule['FromPort'] <= port and port <= rule['ToPort']
+                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and rule['IpProtocol'] == protocol
+                ):  # noqa: E127
+                    fixed = split_rule(rule, port, protocol)
+                    for rule_fix in fixed:
+                        new_rule = (str([rule_fix])).replace("'", "\"")
+                        recreate_list.append(new_rule)
+                        change = True
+                else:
+                    new_rule = (str([rule])).replace("'", "\"")
+                    recreate_list.append(new_rule)
+            elif rule.get('IpRanges') and rule['IpRanges'][0].get('CidrIp') == "0.0.0.0/0":
                 fixed = split_rule(rule, port, protocol)
+                change = True
                 for rule_fix in fixed:
                     new_rule = (str([rule_fix])).replace("'", "\"")
                     recreate_list.append(new_rule)
-                    change = True
             else:
                 new_rule = (str([rule])).replace("'", "\"")
                 recreate_list.append(new_rule)
-        elif rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0":
-            fixed = split_rule(rule, port, protocol)
-            change = True
-            for rule_fix in fixed:
-                new_rule = (str([rule_fix])).replace("'", "\"")
-                recreate_list.append(new_rule)
-        else:
-            new_rule = (str([rule])).replace("'", "\"")
-            recreate_list.append(new_rule)
     if change is False:
         return {}
     else:
@@ -278,6 +293,15 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str, region: st
     return mapping_dict, instance_to_use
 
 
+def create_command_results(readable_output: str, output_flag: bool):
+    command_results = CommandResults(
+        outputs={'awssgrecreated': output_flag},
+        raw_response={'awssgrecreated': output_flag},
+        readable_output=readable_output,
+    )
+    return command_results
+
+
 def aws_recreate_sg(args: dict[str, Any]) -> str:
     """
     Main command that determines what interface on an EC2 instance has an over-permissive security group on,
@@ -307,12 +331,13 @@ def aws_recreate_sg(args: dict[str, Any]) -> str:
     # Determine what SGs are overpermissive for particular port.
     replace_list = determine_excessive_access(int_sg_mapping, port, protocol, assume_role, instance_to_use, region)
     if len(replace_list) == 0:
-        raise ValueError('No security groups were found to need to be replaced')
+        readable_output = 'No security groups were found to need to be replaced'
+        return create_command_results(readable_output, False)
     replace_sgs(replace_list, int_sg_mapping, assume_role, instance_to_use, region)
-    display_message = f"For interface {replace_list[0]['int']}: \r\n"
+    readable_output = f"For interface {replace_list[0]['int']}: \r\n"
     for replace in replace_list:
-        display_message += f"replaced SG {replace['old-sg']} with {replace['new-sg']} \r\n"
-    return display_message
+        readable_output += f"replaced SG {replace['old-sg']} with {replace['new-sg']} \r\n"
+    return create_command_results(readable_output, True)
 
 
 ''' MAIN FUNCTION '''

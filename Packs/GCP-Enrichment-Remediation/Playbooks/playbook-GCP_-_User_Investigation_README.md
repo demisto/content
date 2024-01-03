@@ -24,8 +24,8 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* gcp-logging-log-entries-list
 * gsuite-activity-search
+* gcp-logging-log-entries-list
 
 ## Playbook Inputs
 
@@ -43,14 +43,14 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| GcpAnomalousNetworkTraffic | Determines whether there are events of anomalous network traffic performed by the user in the GCP environment. | unknown |
-| GcpSuspiciousApiUsage | Determines whether there are events of suspicious API usage by the user in the GCP environment. | unknown |
-| GcpFailLogonCount | The number of failed logins by the user in the GCP environment. | unknown |
-| GsuiteFailLogonCount | The number of failed logins by the user in the G Suite environment. | unknown |
-| GsuiteUnusualLoginAllowedCount | The number of unusual logins performed by the user and allowed in the G Suite environment. | unknown |
-| GsuiteUnusualLoginBlockedCount | The number of unusual logins performed by the user and blocked in the G Suite environment. | unknown |
-| GsuiteSuspiciousLoginCount | The number of suspicious logons performed by the user in the G Suite environment. | unknown |
-| GsuiteUserPasswordLeaked | Determines whether the user's password was leaked in the G Suite environment. | unknown |
+| GcpAnomalousNetworkTraffic | Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.<br/>Possible values: True/False. | boolean |
+| GcpSuspiciousApiUsage | Determines whether there are events of suspicious API usage by the user in the GCP environment.<br/>Possible values: True/False. | boolean |
+| GcpFailLogonCount | The number of failed logins by the user in the GCP environment. | number |
+| GsuiteFailLogonCount | The number of failed logins by the user in the G Suite environment. | number |
+| GsuiteUnusualLoginAllowedCount | The number of unusual logins performed by the user and allowed in the G Suite environment. | number |
+| GsuiteUnusualLoginBlockedCount | The number of unusual logins performed by the user and blocked in the G Suite environment. | number |
+| GsuiteSuspiciousLoginCount | The number of suspicious logons performed by the user in the G Suite environment. | number |
+| GsuiteUserPasswordLeaked | Determines whether the user's password was leaked in the G Suite environment.<br/>Possible values: True/False. | boolean |
 
 ## Playbook Image
 

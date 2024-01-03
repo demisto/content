@@ -18,7 +18,7 @@ import pytest
 
 
 def util_load_json(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -43,7 +43,8 @@ def mock_client():
         proxy=False,
         should_create_relationships=True,
         verify=False,
-        reliability='B - Usually reliable'
+        reliability='B - Usually reliable',
+        remote_api=False,
     )
 
 
@@ -225,7 +226,9 @@ class TestReputationCommands:
                         proxy=False,
                         should_create_relationships=should_create_relationships,
                         verify=False,
-                        reliability='B - Usually reliable')
+                        reliability='B - Usually reliable',
+                        remote_api=False,
+                        )
 
         # run
         intelligence_relationships, _ = get_intelligence(client, INDICATOR[0], FeedIndicatorType.URL)
@@ -259,7 +262,7 @@ class TestReputationCommands:
 
         # prepare
 
-        test_indicator = dict(confidence=confidence, value='test_ioc', asn='', meta=dict(registrant_name='test'))
+        test_indicator = {'confidence': confidence, 'value': 'test_ioc', 'asn': '', 'meta': {'registrant_name': 'test'}}
         mocker.patch.object(demisto, 'results')
         mocker.patch('AnomaliThreatStreamv3.search_worst_indicator_by_params', return_value=test_indicator)
 
@@ -301,13 +304,13 @@ class TestReputationCommands:
 
         # prepare
 
-        test_indicator = dict(confidence=55,
-                              value='test_ioc',
-                              asn='test_asn',
-                              org='test_org',
-                              tlp='test_tlp',
-                              country='test_country',
-                              meta=dict(registrant_name='test', maltype='test_maltype'))
+        test_indicator = {'confidence': 55,
+                          'value': 'test_ioc',
+                          'asn': 'test_asn',
+                          'org': 'test_org',
+                          'tlp': 'test_tlp',
+                          'country': 'test_country',
+                          'meta': {'registrant_name': 'test', 'maltype': 'test_maltype'}}
         mocker.patch.object(demisto, 'results')
         mocker.patch('AnomaliThreatStreamv3.search_worst_indicator_by_params', return_value=test_indicator)
 
@@ -369,7 +372,7 @@ class TestReputationCommands:
         """
 
         # prepare
-        test_indicator = dict(value='test_ioc', asn='', meta=dict(registrant_name='test'))
+        test_indicator = {'value': 'test_ioc', 'asn': '', 'meta': {'registrant_name': 'test'}}
         mocker.patch.object(demisto, 'results')
         mocker.patch('AnomaliThreatStreamv3.search_worst_indicator_by_params', return_value=test_indicator)
 
@@ -606,27 +609,27 @@ class TestGetCommands:
         return {}
 
     commands_with_expected_context_key = [
-        ('threatstream-get-analysis-status', dict(report_id=1), ['ReportID', 'Status', 'Platform', 'Verdict']),
-        ('threatstream-get-passive-dns', dict(value='test'), ['Domain', 'Rrtype', 'Source', 'FirstSeen']),
-        ('threatstream-get-model-list', dict(model='Actor'), ['Name', 'ID', 'CreatedTime', 'Type']),
-        ('threatstream-get-model-description', dict(model='Actor', id='test'), ['File', 'FileID']),
-        ('threatstream-get-indicators-by-model', dict(model='Actor', id=1), ['ModelType', 'ModelID', 'Indicators']),
+        ('threatstream-get-analysis-status', {'report_id': 1}, ['ReportID', 'Status', 'Platform', 'Verdict']),
+        ('threatstream-get-passive-dns', {'value': 'test'}, ['Domain', 'Rrtype', 'Source', 'FirstSeen']),
+        ('threatstream-get-model-list', {'model': 'Actor'}, ['Name', 'ID', 'CreatedTime', 'Type']),
+        ('threatstream-get-model-description', {'model': 'Actor', 'id': 'test'}, ['File', 'FileID']),
+        ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1}, ['ModelType', 'ModelID', 'Indicators']),
         ('threatstream-get-indicators', {}, INDICATOR_EXTENDED_MAPPING.keys()),
         ('threatstream-supported-platforms', {}, ['Platform', 'Name', 'Types', 'Label']),
-        ('threatstream-analysis-report', dict(report_id=1), ['Category', 'Started', 'ReportID', 'Verdict', 'Network'])
+        ('threatstream-analysis-report', {'report_id': 1}, ['Category', 'Started', 'ReportID', 'Verdict', 'Network'])
     ]
 
     commands_with_expected_output = [
-        ('threatstream-get-analysis-status', dict(report_id=1), 'No report found with id 1'),
-        ('threatstream-get-passive-dns', dict(value='test_val'), 'No Passive DNS enrichment data found for test_val'),
-        ('threatstream-get-model-list', dict(model='Actor'), 'No Threat Model Actor found.'),
-        ('threatstream-get-model-description', dict(model='Actor', id=1),
+        ('threatstream-get-analysis-status', {'report_id': 1}, 'No report found with id 1'),
+        ('threatstream-get-passive-dns', {'value': 'test_val'}, 'No Passive DNS enrichment data found for test_val'),
+        ('threatstream-get-model-list', {'model': 'Actor'}, 'No Threat Model Actor found.'),
+        ('threatstream-get-model-description', {'model': 'Actor', 'id': 1},
          'No description found for Threat Model Actor with id 1'),
-        ('threatstream-get-indicators-by-model', dict(model='Actor', id=1),
+        ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1},
          'No indicators found for Threat Model Actor with id 1'),
         ('threatstream-get-indicators', {}, 'No indicators found from ThreatStream'),
         ('threatstream-supported-platforms', {}, 'No supported platforms found for default sandbox'),
-        ('threatstream-analysis-report', dict(report_id=1), 'No report found with id 1')
+        ('threatstream-analysis-report', {'report_id': 1}, 'No report found with id 1')
     ]
 
     @pytest.mark.parametrize(
@@ -662,7 +665,7 @@ class TestGetCommands:
         context = result['EntryContext'].popitem()[1] if 'EntryContext' in result else result
         if isinstance(context, list):
             context = context[0]
-        assert all(key in context.keys() for key in expected_context_keys)
+        assert all(key in context for key in expected_context_keys)
 
     @pytest.mark.parametrize(
         argnames='command, command_args, expected_output',
@@ -695,36 +698,38 @@ class TestGetCommands:
     @pytest.mark.parametrize(
         argnames='command, command_args, expected_http_params',
         argvalues=[
-            ('threatstream-get-model-list', dict(model='Actor'),
-             dict(limit=50, skip_intelligence="true", skip_associations="true", order_by="-created_ts")),
-            ('threatstream-get-model-description', dict(model='Actor', id=1),
-             dict(skip_intelligence="true", skip_associations="true")),
-            ('threatstream-get-indicators-by-model', dict(model='Actor', id=1), dict(limit=20)),
-            ('threatstream-get-indicators-by-model', dict(model='Actor', id=1, page=2, page_size=2),
-             dict(limit=2, offset=2)),
-            ('threatstream-get-indicators', {}, dict(limit=20, offset=0)),
-            ('threatstream-get-indicators', {'page': 2, 'page_size': 2}, dict(limit=2, offset=2)),
-            ('threatstream-list-user', {'page': 2, 'page_size': 3}, dict(limit=3, offset=3)),
-            ('threatstream-list-user', {}, dict(limit=50)),
-            ('threatstream-list-investigation', {'page': 3, 'page_size': 2}, dict(limit=2, offset=4, order_by='-created_ts')),
-            ('threatstream-list-investigation', {}, dict(limit=50, order_by='-created_ts')),
-            ('threatstream-list-rule', {'page': 2, 'page_size': 2}, dict(limit=2, offset=2, order_by='-created_ts')),
-            ('threatstream-list-rule', {}, dict(limit=50, order_by='-created_ts')),
-            ('threatstream-list-whitelist-entry', {'page': 2, 'page_size': 4}, dict(limit=4, offset=4, order_by='-created_ts',
-                                                                                    format='json', showNote='true')),
-            ('threatstream-list-whitelist-entry', {}, dict(limit=50, format='json', showNote='true', order_by='-created_ts')),
-            ('threatstream-list-import-job', {'page': 2, 'page_size': 4}, dict(limit=4, offset=4)),
-            ('threatstream-list-import-job', {}, dict(limit=50)),
+            ('threatstream-get-model-list', {'model': 'Actor'},
+             {'limit': 50, 'skip_intelligence': "true", 'skip_associations': "true", 'order_by': "-created_ts"}),
+            ('threatstream-get-model-description', {'model': 'Actor', 'id': 1},
+             {'skip_intelligence': "true", 'skip_associations': "true"}),
+            ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1}, {'limit': 20}),
+            ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1, 'page': 2, 'page_size': 2},
+             {'limit': 2, 'offset': 2}),
+            ('threatstream-get-indicators', {}, {'limit': 20}),
+            ('threatstream-get-indicators', {'page': 2, 'page_size': 2}, {'limit': 2, 'offset': 2}),
+            ('threatstream-list-user', {'page': 2, 'page_size': 3}, {'limit': 3, 'offset': 3}),
+            ('threatstream-list-user', {}, {'limit': 50}),
+            ('threatstream-list-investigation', {'page': 3, 'page_size': 2},
+             {'limit': 2, 'offset': 4, 'order_by': '-created_ts'}),
+            ('threatstream-list-investigation', {}, {'limit': 50, 'order_by': '-created_ts'}),
+            ('threatstream-list-rule', {'page': 2, 'page_size': 2}, {'limit': 2, 'offset': 2, 'order_by': '-created_ts'}),
+            ('threatstream-list-rule', {}, {'limit': 50, 'order_by': '-created_ts'}),
+            ('threatstream-list-whitelist-entry', {'page': 2, 'page_size': 4},
+             {'limit': 4, 'offset': 4, 'order_by': '-created_ts', 'format': 'json', 'showNote': 'true'}),
+            ('threatstream-list-whitelist-entry', {},
+             {'limit': 50, 'format': 'json', 'showNote': 'true', 'order_by': '-created_ts'}),
+            ('threatstream-list-import-job', {'page': 2, 'page_size': 4}, {'limit': 4, 'offset': 4}),
+            ('threatstream-list-import-job', {}, {'limit': 50}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Errors'},
-             dict(limit=4, offset=4, status='errors')),
+             {'limit': 4, 'offset': 4, 'status': 'errors'}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Approved'},
-             dict(limit=4, offset=4, status='approved')),
+             {'limit': 4, 'offset': 4, 'status': 'approved'}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Ready To Review'},
-             dict(limit=4, offset=4, status='done')),
+             {'limit': 4, 'offset': 4, 'status': 'done'}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Rejected'},
-             dict(limit=4, offset=4, status='deleted')),
+             {'limit': 4, 'offset': 4, 'status': 'deleted'}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Processing'},
-             dict(limit=4, offset=4, status='processing')),
+             {'limit': 4, 'offset': 4, 'status': 'processing'}),
         ]
     )
     def test_expected_params_in_get_requests(self, mocker, command, command_args, expected_http_params):
@@ -753,9 +758,9 @@ class TestGetCommands:
     @pytest.mark.parametrize(
         argnames='model, description',
         argvalues=[
-            ('signature', dict(notes='test_description')),
-            ('tipreport', dict(body='test_description')),
-            ('actor', dict(description='test_description'))
+            ('signature', {'notes': 'test_description'}),
+            ('tipreport', {'body': 'test_description'}),
+            ('actor', {'description': 'test_description'})
         ])
     def test_get_model_description__various_models(self, mocker, model, description):
         """
@@ -880,7 +885,7 @@ class TestUpdateCommands:
         """
 
         # prepare
-        mocked_report = dict(success=True, reports=dict(test_platform=dict(id='report_id')))
+        mocked_report = {'success': True, 'reports': {'test_platform': {'id': 'report_id'}}}
         mocker.patch.object(Client, 'http_request', return_value=mocked_report)
         mocker.patch('AnomaliThreatStreamv3.get_submission_status', return_value=('success', None))
 
@@ -914,7 +919,7 @@ class TestUpdateCommands:
         # prepare
         file_obj = util_tmp_json_file(MOCK_OBJECTS, 'test_file')
         mocker.patch.object(demisto, 'getFilePath', return_value=file_obj)
-        mocked_report = dict(success=True, reports=dict(test_platform=dict(id='report_id')))
+        mocked_report = {'success': True, 'reports': {'test_platform': {'id': 'report_id'}}}
         mocker.patch.object(Client, 'http_request', return_value=mocked_report)
         mocker.patch('AnomaliThreatStreamv3.get_submission_status', return_value=('success', None))
 
@@ -946,7 +951,7 @@ class TestUpdateCommands:
 
         # prepare
         mocker.patch.object(demisto, 'getFilePath', side_effect=lambda *args, **kwargs: open('wrong_path', 'rb'))
-        mocked_report = dict(success=True, reports=dict(test_platform=dict(id='report_id')))
+        mocked_report = {'success': True, 'reports': {'test_platform': {'id': 'report_id'}}}
         mocker.patch.object(Client, 'http_request', return_value=mocked_report)
         mocker.patch('AnomaliThreatStreamv3.get_submission_status', return_value=('success', None))
 
@@ -973,7 +978,7 @@ class TestUpdateCommands:
         """
 
         # prepare
-        mocker.patch.object(Client, 'http_request', return_value=dict(success=True))
+        mocker.patch.object(Client, 'http_request', return_value={'success': True})
 
         # run
         res = add_tag_to_model(mock_client(), model_id='test_actor_id', model='Actor', tags='tag_1,tag_2')
@@ -981,7 +986,7 @@ class TestUpdateCommands:
         # validate
         data = json.loads(Client.http_request.call_args[1]['data'])
 
-        assert data['tags'][1] == dict(name='tag_2', tlp='red')
+        assert data['tags'][1] == {'name': 'tag_2', 'tlp': 'red'}
         assert res == "Added successfully tags: ['tag_1', 'tag_2'] to Actor with test_actor_id"
 
     def test_add_tag_to_model__not_exist_model(self, mocker):
@@ -997,7 +1002,7 @@ class TestUpdateCommands:
         """
 
         # prepare
-        mocker.patch.object(Client, 'http_request', return_value=dict(success=False))
+        mocker.patch.object(Client, 'http_request', return_value={'success': False})
 
         # run & validate
         msg = "Failed to add \['tag_1'\] to Actor with test_actor_id"
@@ -1037,6 +1042,7 @@ class TestGetIndicators:
             proxy=False,
             reliability='B - Usually reliable',
             should_create_relationships=False,
+            remote_api=False,
         )
 
         results = get_indicators(client, limit='7000')
@@ -1054,13 +1060,13 @@ class TestGetIndicators:
             verify that the requested amount is returned.
         """
         mocker.patch.object(Client, 'http_request', side_effect=[
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
-            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': '/api/v2/intelligence/?&search_after=1693750222045%2C455231625'}},
+            {'objects': INDICATOR * 1000, 'meta': {'next': None}},
         ])
         client = Client(
             base_url='',
@@ -1070,6 +1076,7 @@ class TestGetIndicators:
             proxy=False,
             reliability='B - Usually reliable',
             should_create_relationships=False,
+            remote_api=False,
         )
 
         results = get_indicators(client, limit='7000')

@@ -57,7 +57,7 @@ tasks:
       version: -1
       name: Test POST without body
       description: ''
-      script: demisto-api-post
+      script: core-api-post
       type: regular
       iscommand: true
       brand: ''
@@ -91,10 +91,9 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width": 380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
 description: ''
 marketplaces:
-  - xsoar
+- xsoar

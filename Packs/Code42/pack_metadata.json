@@ -2,7 +2,7 @@
     "name": "Code42",
     "description": "The Code42 INCYDR integration accelerates insider threat incident response and remediation procedures for potential data exfiltration across computers, email, cloud and SaaS apps.",
     "support": "partner",
-    "currentVersion": "3.1.13",
+    "currentVersion": "4.0.1",
     "author": "Code42",
     "url": "https://support.code42.com/Administrator/Cloud/Monitoring_and_managing/Install_and_manage_the_Code42_app_for_Cortex_XSOAR",
     "email": "gethelp@code42.com",
@@ -10,13 +10,59 @@
     "created": "2020-03-11T13:16:53Z",
     "certification": "certified",
     "categories": [
-        "Endpoint"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Incydr"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "dependencies": {
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "Malware": {
+            "mandatory": true,
+            "display_name": "Malware Core"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Active_Directory_Query": {
+            "mandatory": true,
+            "display_name": "Active Directory Query"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CrowdStrikeFalcon": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon"
+        }
+    },
+    "displayedImages": [
+        "CoreAlertFields",
+        "Jira",
+        "FiltersAndTransformers",
+        "Malware",
+        "CommonScripts",
+        "Active_Directory_Query",
+        "CommonTypes",
+        "CrowdStrikeFalcon"
     ]
 }
