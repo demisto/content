@@ -111,7 +111,7 @@ def main():
     trigger_workflow_for_pr(
         "demisto",
         "content",
-        "pre-commit-reuse.yml",
+        "pre-commit.yml",
         "workflow_trigger_when_infrastructure_are_changed",
         options.github_token,
     )
