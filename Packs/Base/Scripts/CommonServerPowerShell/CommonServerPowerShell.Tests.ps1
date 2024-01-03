@@ -335,8 +335,13 @@ Describe "Test ParseDateRange"{
     }
 
 Describe "Test Remove-SelfReferences" {
-
+<#
+Given: Outputs or RawOutputs complicated objects with inner properties.
+When: Remove-SelfReferences is called as a part of ReturnOutputs.
+Then: Make sure removing self references works as expected.
+#>
     It "One self-reference" {
+    # (Case 1): Outputs dict containing 1 self-reference. Expect: self-reference removed, otherwise no change.
         $inputDict = [PSCustomObject]@{
             Property1 = "Value1"
             NestedProperty = [PSCustomObject]@{
@@ -361,6 +366,7 @@ Describe "Test Remove-SelfReferences" {
 
     }
     It "No self-reference" {
+    # (Case 2): Outputs dict containing no self-reference. Expect: no change.
         $inputDict = [PSCustomObject]@{
             Property1 = "Value1"
             NestedProperty = [PSCustomObject]@{
@@ -382,6 +388,7 @@ Describe "Test Remove-SelfReferences" {
 
     }
     It "Two self-reference" {
+    # (Case 3): Outputs dict containing 2 self-references. Expect: both self-references removed, otherwise no change.
         $inputDict = [PSCustomObject]@{
             Property1 = [PSCustomObject]@{
                 SelfRef = $null
@@ -412,6 +419,7 @@ Describe "Test Remove-SelfReferences" {
 
     }
     It "Deep self-reference" {
+    # (Case 4): Outputs dict containing a self-references in a deeper level. Expect: self-reference removed, otherwise no change.
         $inputDict = [PSCustomObject]@{
             Property1 = "Value1"
             NestedProperty = [PSCustomObject]@{

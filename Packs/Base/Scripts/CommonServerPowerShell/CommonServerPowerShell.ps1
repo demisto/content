@@ -42,7 +42,10 @@ function Get-SelfReferencingPaths($obj, $visited = @{}, $path = @(), $depth = 1,
     }
 
     $selfReferencingPaths = @()
-    if ($obj | Get-Member -MemberType Properties -ErrorAction SilentlyContinue) {
+    # If the object has properties (has children that can point back to it), and is not null.
+    # Get-Member function will return an error if the member type doesn't exist but here we are setting
+    # SilentlyContinue instead.
+    if (($obj | Get-Member -MemberType Properties -ErrorAction SilentlyContinue)) {
         if ($visited.ContainsKey($obj)) {
             # Circular reference detected
             if (-not ($path -like "*SyncRoot*")) {
@@ -62,11 +65,9 @@ function Get-SelfReferencingPaths($obj, $visited = @{}, $path = @(), $depth = 1,
                 $propertyPath = "$($property.Name)"
             }
 
-            if (-not ($propertyValue -is [String] -or $propertyValue -is [Int32] -or $propertyValue -is [Double] -or $propertyValue -is [DateTime] -or $propertyValue -eq $null)) {
-                # Recursively process complex object
-                $nestedPaths = Get-SelfReferencingPaths -obj $propertyValue -visited $visited -path $propertyPath -depth ($depth + 1) -maxDepth $maxDepth
-                $selfReferencingPaths += $nestedPaths
-            }
+            # Recursively process complex object
+            $nestedPaths = Get-SelfReferencingPaths -obj $propertyValue -visited $visited -path $propertyPath -depth ($depth + 1) -maxDepth $maxDepth
+            $selfReferencingPaths += $nestedPaths
         }
 
         # Remove the object from visited list after getting all its children
@@ -474,15 +475,27 @@ The outputs that will be returned to playbook/investigation context (optional)
 If not provided then will be equal to outputs. usually is the original
 raw response from the 3rd party service (optional)
 
+.PARAMETER RemoveSelfRefs
+If true, will remove self references in RawResponse and Outputs objects before conversion to json.
+
 .OUTPUTS
 The entry object returned to the server
 #>
-function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawResponse) {
+function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawResponse,
+                        [Parameter(Mandatory=$false)]
+                        [bool]$RemoveSelfRefs = $true) {
+
+    if ($RemoveSelfRefs) {
+        # Remove circular references before converting to json.
+        $RawResponse = Remove-SelfReferences $RawResponse
+        $Outputs = Remove-SelfReferences $Outputs
+    }
+
     $entry = @{
         Type           = [EntryTypes]::note;
         ContentsFormat = [EntryFormats]::json.ToString();
         HumanReadable  = $ReadableOutput;
-        Contents       = Remove-SelfReferences $RawResponse;
+        Contents       = $RawResponse;
         EntryContext   = $Outputs
     }
     # Return 'readable_output' only if needed
@@ -492,7 +505,7 @@ function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawRe
     }
     elseif ($Outputs -and -not $RawResponse) {
         # if RawResponse was not provided but outputs were provided then set Contents as outputs
-        $entry.Contents = Remove-SelfReferences $Outputs
+        $entry.Contents = $Outputs
     }
     $demisto.Results($entry) | Out-Null
     return $entry
