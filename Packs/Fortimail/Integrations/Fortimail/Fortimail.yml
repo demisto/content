@@ -96,7 +96,7 @@ script:
       required: true
       default: true
     - name: ip
-      description: The IP address and net-mask that you want to include in the IP group. Use the net-mask, the portion after the slash (/), to specify the matching sub-net. For example, 10.10.10.10/24 or 172.20.130.10-172.20.130.30.
+      description: The IP address and netmask that you want to include in the IP group. Use the netmask, the portion after the slash (/), to specify the matching subnet. For example, 10.10.10.10/24 or 172.20.130.10-172.20.130.30.
       required: true
     outputs:
     - contextPath: FortiMail.IPGroup.mkey
