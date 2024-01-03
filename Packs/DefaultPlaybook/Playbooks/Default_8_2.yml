@@ -174,7 +174,7 @@ tasks:
       handleSimilar:
         simple: Link and Close
       limit:
-        simple: "100"
+        simple: "50"
       method:
         simple: Fields and Indicators
       minimunIncidentSimilarity:
