@@ -1011,7 +1011,7 @@ script:
       - Regular Expression
       - User Defined
     - name: recipient
-      description: The recipient. Relevant when recipient_type is not External or Internal.When recipient_type= Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups).When recipient_type= LDAP Verification, insert LDAP server.When recipient_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups).When recipient_type= Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ).
+      description: The recipient. Relevant when recipient_type is not External or Internal. When recipient_type= Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When recipient_type= LDAP Verification, insert LDAP server. When recipient_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When recipient_type= Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ).
     - name: sender_ldap_profile
       description: Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when sender_type= LDAP Group.
     - name: recipient_ldap_profile
