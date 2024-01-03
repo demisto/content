@@ -1,13 +1,3 @@
-# TODO rasterizeV2-Pre-Release
-# TODO V start_chrome_headless.sh in Python
-# TODO V Restart the Chrome after 500 rasterizations
-# TODO V/2 Write the pid in a local file.
-#      Use the pid os the subprocess when starting the Chrome from Python.
-#      Use DevTools, or kill the process
-# TODO V Backwards Compatibility: Add support for full_Screen
-# TODO V Backwards Compatibility: Add support for include_url
-# TODO V Backwards Compatibility: chrome_options, support removal of options
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -652,7 +642,6 @@ def return_err_or_warn(msg):  # pragma: no cover
 # region CommandHandlers
 def rasterize_image_command():
     args = demisto.args()
-    # TODO EntryID should be isArray in the YML. Then iterate over all the files after argToList
     entry_id = args.get('EntryID')
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
@@ -753,8 +742,6 @@ def rasterize_pdf_command():  # pragma: no cover
 
 def rasterize_html_command():
     args = demisto.args()
-    # TODO EntryID should be isArray in the YML. Then iterate over all the files after argToList
-    # Should we support arrays?
     entry_id = args.get('EntryID')
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
@@ -770,7 +757,6 @@ def rasterize_html_command():
     output, _ = rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
                           rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
 
-    # TODO Should we suport arrays?
     res = fileResult(filename=file_name, data=output[0])
     if rasterize_type == 'png':
         res['Type'] = entryTypes['image']
