@@ -7,9 +7,9 @@ For more details about the authentication used in this integration, see <a href=
 ### Required Permissions
 The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
 - `Sites.ReadWrite.All`: Provides read and write access to all sites.\
-`Client Credentials Flow` - Application permission.
-`Authorization Code Flow` - Delegated permission.
-* This permission is sufficient for all the commands, but if you want the least privileged permissions for each command, they are listed for each command definition.
+`Client Credentials Flow` - Application permission.\
+`Authorization Code Flow` - Delegated permission.\
+Note: This permission is sufficient for all the commands, but if you want the least privileged permissions for each command, they are listed for each command definition.
 
 OR
 - `Sites.Selected - Application`: Provides read and write access to specific sites.\
