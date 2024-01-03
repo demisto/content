@@ -1,15 +1,7 @@
 id: playbook0
-version: 6
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Default
-    itemVersion: 2.0.0
-    fromServerVersion: 8.2.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Default
 description: |+
   This playbook executes when no other playbook is associated with an incident. It performs the following actions:
@@ -34,6 +26,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -61,8 +54,7 @@ tasks:
       id: 7d517aad-0381-4dee-8667-b5128f1e4e56
       version: -1
       name: Is remediation required?
-      description: Review the findings of the incident and decide whether remediation
-        is still required.
+      description: Review the findings of the incident and decide whether remediation is still required.
       type: condition
       iscommand: false
       brand: ""
@@ -139,6 +131,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -163,11 +156,7 @@ tasks:
       id: fb0915f8-f8f9-4601-84d0-2be77350b333
       version: -1
       name: Dedup - Generic v4
-      description: "This playbook identifies duplicate incidents using the Cortex
-        XSOAR machine learning method (script).\nIn this playbook, you can choose
-        fields and/or indicators to be compared against other incidents in the Cortex
-        XSOAR database. \n\nNote: To identify similar incidents you *must* properly
-        define the playbook inputs. "
+      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you *must* properly define the playbook inputs. "
       playbookName: Dedup - Generic v4
       type: playbook
       iscommand: false
@@ -255,21 +244,8 @@ tasks:
     nexttasks:
       '#none#':
       - "38"
-    scriptarguments:
-      Decode:
-        simple: "False"
-      File:
-        complex:
-          root: File
-          transformers:
-          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -284,6 +260,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      Decode:
+        simple: "False"
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
   "16":
     id: "16"
     taskid: d7967e5e-66a3-4b30-8c66-a3102e16f733
@@ -295,6 +284,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "69"
@@ -325,6 +315,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -420,6 +411,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -451,6 +443,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -486,6 +479,22 @@ tasks:
     nexttasks:
       '#none#':
       - "63"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
     scriptarguments:
       MD5Hash:
         complex:
@@ -505,27 +514,11 @@ tasks:
           accessor: SHA256
           transformers:
           - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
       max: 100
-    view: |-
-      {
-        "position": {
-          "x": 52.5,
-          "y": 1730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "35":
     id: "35"
     taskid: cde89024-e2ad-4fb4-8a08-5277d3fa43c4
@@ -537,6 +530,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -568,6 +562,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "68"
@@ -598,6 +593,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -625,13 +621,7 @@ tasks:
       id: bce158dc-0a33-4254-8509-277115b34463
       version: -1
       name: Should extract indicators manually (Auto-extract is off)?
-      description: Checks whether indicators in this incident should be extracted
-        and enriched manually. This should be done if Auto-extract is switched off
-        for the current incident type. When Auto-extract is turned off for the incident
-        type, it means that indicators will not be extracted from the data mapped
-        to the various incident fields upon the creation of the incident. In that
-        case, in order for the playbook to perform optimally, the indicators have
-        to be extracted explicitly using the extractIndicators command.
+      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extract is switched off for the current incident type. When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform optimally, the indicators have to be extracted explicitly using the extractIndicators command.
       type: condition
       iscommand: false
       brand: ""
@@ -676,8 +666,7 @@ tasks:
       id: 9890b9a5-b612-4d30-8f95-d763d3d6bae7
       version: -1
       name: Extract indicators from incident
-      description: Extracts all indicators from the incident and enriches the indicators
-        by using the reputation command defined for each indicator type.
+      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -717,6 +706,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -744,8 +734,7 @@ tasks:
       id: ccbd3dc4-88f5-4e78-8eb0-e9f60d83961d
       version: -1
       name: Is the incident a false positive or a true positive?
-      description: Checks whether the incident is a false positive according to the
-        calculated severity.
+      description: Checks whether the incident is a false positive according to the calculated severity.
       type: condition
       iscommand: false
       brand: ""
@@ -836,8 +825,7 @@ tasks:
       id: b63dc411-f621-43aa-87d3-8b9b6f0636d8
       version: -1
       name: Review the incident to make a verdict
-      description: Review the findings of the incident and decide whether the incident
-        is a false positive or a true positive incident.
+      description: Review the findings of the incident and decide whether the incident is a false positive or a true positive incident.
       type: condition
       iscommand: false
       brand: ""
@@ -870,8 +858,7 @@ tasks:
       id: 8df34cec-aa28-4af4-8edb-3c7c03a8b556
       version: -1
       name: Save closing reason as True Positive
-      description: Saves a key that will be used when closing the alert in the SIEM
-        (if applicable).
+      description: Saves a key that will be used when closing the alert in the SIEM (if applicable).
       scriptName: Set
       type: regular
       iscommand: false
@@ -1005,7 +992,6 @@ tasks:
               separator:
                 value:
                   simple: ', '
-    reputationcalc: 1
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1023,6 +1009,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    reputationcalc: 1
   "65":
     id: "65"
     taskid: c8c2df88-1b9f-4151-8a82-cfcde86d3436
@@ -1039,6 +1026,22 @@ tasks:
     nexttasks:
       '#none#':
       - "62"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
     scriptarguments:
       CVE:
         complex:
@@ -1104,27 +1107,11 @@ tasks:
           accessor: Username
           transformers:
           - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
       max: 0
-    view: |-
-      {
-        "position": {
-          "x": 52.5,
-          "y": 2440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "68":
     id: "68"
     taskid: b75662a2-5440-4d64-8635-47c4f552b02d
@@ -1133,8 +1120,7 @@ tasks:
       id: b75662a2-5440-4d64-8635-47c4f552b02d
       version: -1
       name: Review before closing the incident
-      description: Ensure the incident was properly remediated and report the incident
-        if needed before closing it.
+      description: Ensure the incident was properly remediated and report the incident if needed before closing it.
       type: regular
       iscommand: false
       brand: ""
@@ -1239,6 +1225,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "65"
@@ -1281,16 +1268,11 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether indicators in this incident should be extracted
-    manually. If you turned off Auto-extract for the current incident type, you may
-    want to set this value to True. Otherwise, indicators from this incident will
-    not be extracted, which will negatively affect the efficacy of the playbook.
-  playbookInputQuery: null
+  description: Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: playbook0
 marketplaces:
 - xsoar
 tests:
 - No tests (auto formatted)
 fromversion: 8.2.0
-
