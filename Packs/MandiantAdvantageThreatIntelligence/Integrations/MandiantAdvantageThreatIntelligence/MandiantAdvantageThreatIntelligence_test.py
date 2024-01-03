@@ -1,5 +1,4 @@
 import pytest
-import io
 from CommonServerPython import *
 import MandiantAdvantageThreatIntelligence
 
@@ -597,7 +596,7 @@ MOCK_MALWARE_CAMPAIGNS_RESPONSE = {
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -878,6 +877,7 @@ def test_get_malware(client: MandiantAdvantageThreatIntelligence.MandiantClient,
     )
 
     mocker.patch.object(demisto, "command", return_value="get-malware")
+    mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
 
     results = MandiantAdvantageThreatIntelligence.fetch_malware_family(
         client, args={"malware_name": "MALWARE_NAME"}
