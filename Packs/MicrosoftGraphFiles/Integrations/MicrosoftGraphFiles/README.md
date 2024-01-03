@@ -90,7 +90,7 @@ Deletes an item from OneDrive.
 #### Required Permissions
 
 Client Credentials Flow - `Files.ReadWrite.All - Application`\
-Authorization Code Flow - `Files.ReadWrite - Delegated`
+Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
 
@@ -126,8 +126,8 @@ Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.ReadWrite.All - Application`\
-Authorization Code Flow - `Files.ReadWrite - Delegated`
+Client Credentials Flow - `Sites.ReadWrite.All - Application`\
+Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
 
@@ -232,8 +232,8 @@ Replaces the content of the file in the specified MS Graph resource.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.ReadWrite.All - Application`\
-Authorization Code Flow - `Files.ReadWrite - Delegated`
+Client Credentials Flow - `Sites.ReadWrite.All - Application`\
+Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 
 #### Input
@@ -342,7 +342,7 @@ Creates a new folder in a drive with the specified parent item or path.
 #### Required Permissions
 
 Client Credentials Flow - `Files.ReadWrite.All - Application`\
-Authorization Code Flow - `Files.ReadWrite - Delegated`
+Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
 
