@@ -38,12 +38,18 @@ configuration:
   type: 8
   section: Connect
   required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.'
 display: AWS-SNS-Listener
 name: AWS-SNS-Listener
 script:
   commands: []
-  dockerimage: demisto/fastapi:1.0.0.83906
+  dockerimage: devdemisto/fastapi:1.0.0.84251
   longRunning: true
   longRunningPort: true
   script: '-'

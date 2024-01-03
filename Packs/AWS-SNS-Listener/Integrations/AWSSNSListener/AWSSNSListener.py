@@ -8,6 +8,8 @@ from fastapi import FastAPI, Request
 from fastapi.security import HTTPBasic
 from fastapi.security.api_key import APIKeyHeader
 import requests
+import base64
+from M2Crypto import X509
 
 
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
@@ -15,6 +17,58 @@ sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
+
+
+def valid_sns_message(sns_payload):
+
+    # Can only be one of these types.
+    if sns_payload["Type"] not in ["SubscriptionConfirmation", "Notification", "UnsubscribeConfirmation"]:
+        demisto.error('not a valid SNS message')
+        return False
+
+    # Amazon SNS currently supports signature version 1.
+    if sns_payload["SignatureVersion"] != "1":
+        demisto.error('not using SignatureVersion 1')
+        return False
+
+    # Fields for a standard notification.
+    fields = ["Message", "MessageId", "Subject", "Timestamp", "TopicArn", "Type"]
+
+    # Fields for subscribe or unsubscribe.
+    if sns_payload["Type"] in ["SubscriptionConfirmation", "UnsubscribeConfirmation"]:
+        fields = ["Message", "MessageId", "SubscribeURL", "Timestamp", "Token", "TopicArn", "Type"]
+
+    # Build the string to be signed.
+    string_to_sign = ""
+    for field in fields:
+        string_to_sign += field + "\n" + sns_payload[field] + "\n"
+
+    # Decode the signature from base64.
+    decoded_signature = base64.b64decode(sns_payload["Signature"])
+
+    # Retrieve the certificate.
+    certificate = X509.load_cert_string(requests.get(sns_payload["SigningCertURL"]).text)
+
+    # Extract the public key.
+    public_key = certificate.get_pubkey()
+
+    public_key.reset_context(md="sha1")
+    public_key.verify_init()
+
+    # Sign the string.
+    public_key.verify_update(string_to_sign.encode())
+
+    # Verify the signature matches.
+    verification_result = public_key.verify_final(decoded_signature)
+
+    # M2Crypto uses EVP_VerifyFinal() from openssl as the underlying verification function.
+    # 1 indicates success, anything else is either a failure or an error.
+    if verification_result != 1:
+        demisto.error('Signature verification failed.')
+        return False
+
+    demisto.error('Signature verification succeeded.')
+    return True
 
 
 @app.post('/incident/aws/snsv2')
@@ -26,12 +80,14 @@ async def handle_post(request: Request):
     except Exception as e:
         demisto.error(f'Failed to extract request {e}')
         return
+    if not valid_sns_message(payload):
+        demisto.error('Validation of SNS message failed.')
+        return
     if payload['Type'] == 'SubscriptionConfirmation':
         demisto.debug('SubscriptionConfirmation request')
         subscribe_url = payload['SubscribeURL']
         response = requests.get(subscribe_url)
         demisto.debug(f'Response from subscribe url: {response}')
-
     elif payload['Type'] == 'Notification':
         message = payload['Message']
         demisto.debug(f'Notification request msg: {message}')
@@ -40,8 +96,8 @@ async def handle_post(request: Request):
             'labels': [],
             'rawJSON': dump,
             'occurred': payload['Timestamp'],
-            'details': message,
-            'type': 'AWS-SNS'
+            'details': f'ExternalID:{payload["MessageId"]} TopicArn:{payload["TopicArn"]} Message:{message}',
+            'type': 'AWS-SNS Notification'
         }
         demisto.debug(f'demisto.createIncidents with:{incident}')
         if demisto.params().get('store_samples'):
@@ -57,7 +113,9 @@ async def handle_post(request: Request):
         data = demisto.createIncidents(incidents=[incident])
         if not data:
             demisto.error('Failed creating incident')
-
+    elif payload['Type'] == 'UnsubscribeConfirmation':
+        message = payload['Message']
+        demisto.debug(f'UnsubscribeConfirmation request msg: {message}')
     else:
         demisto.error(f"Failed handling AWS SNS request, unknown type: {payload['Type']}")
 
