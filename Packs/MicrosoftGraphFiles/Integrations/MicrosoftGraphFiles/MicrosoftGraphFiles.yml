@@ -753,7 +753,7 @@ script:
     execution: false
     name: msgraph-files-auth-test
     arguments: []
-  - description: Generate the login url used for Authorization code flow.
+  - description: Generate the login URL used for Authorization code flow.
     name: msgraph-files-generate-login-url
     arguments: []
   dockerimage: demisto/python_pancloud:1.0.0.77747
