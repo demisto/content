@@ -13,11 +13,7 @@ trigger-nightlies:
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
   script:
-    - python3 ./Tests/sdk_release/trigger_nightlies.py
-# run this lines to bash file
-#    - git clone https://github.com/demisto/demisto-sdk.git /demisto-sdk
-#    - cd /demisto-sdk
-#    - git pull
-#    - git checkout -b ${CI_PROJECT_DIR}
-#    - git push origin ${CI_PROJECT_DIR}
+#    - python3 ./Tests/sdk_release/trigger_nightlies.py
+    - ./Tests/sdk_release/create_release_branch.sh --release-branch $RELEASE_VERSION
+
 
