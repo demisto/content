@@ -328,7 +328,7 @@ script:
       required: true
       isArray: true
     - name: list_type
-      description: The type of the list to add the values. Safelist - accept mesage, Blocklist invoke block list action that defined int the settings.
+      description: The type of the list to add the values. Safelist - accept message. Blocklist-invoke block list action that was defined in the settings.
       auto: PREDEFINED
       predefined:
       - Blocklist
