@@ -1,8 +1,6 @@
 
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
 
-// triggering build
-
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);

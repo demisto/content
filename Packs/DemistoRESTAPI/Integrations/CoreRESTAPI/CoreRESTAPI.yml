@@ -120,7 +120,7 @@ script:
       description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
-    description: Deprecated.
+    description: Deprecated. Use core-delete-incidents instead.
     execution: true
     deprecated: true
   - name: demisto-api-install-packs
@@ -205,7 +205,6 @@ script:
       description: Request body.
     description: Send HTTP Multipart request to upload files to Core server.
   - name: core-delete-incidents
-    deprecated: true
     arguments:
     - name: ids
       required: true
@@ -215,7 +214,7 @@ script:
       description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
-    description: Deprecated.
+    description: Delete Core incidents.
     execution: true
   - name: core-api-install-packs
     arguments:
