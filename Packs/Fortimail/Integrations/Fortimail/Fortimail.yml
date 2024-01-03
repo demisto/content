@@ -254,7 +254,7 @@ script:
       description: The email member to remove from the email group. Use fortimail-email-group-member-list to retrieve all the email members.
       required: true
   - name: fortimail-email-group-member-list
-    description: List email group members. if a email is given, the command will return the information about the wanted email group member.
+    description: List email group members. If an email is given, the command will return the information about the specified email group member.
     arguments:
     - name: group_name
       description: The name of the email group. Use fortimail-email-group-list to retrieve all the email groups.
