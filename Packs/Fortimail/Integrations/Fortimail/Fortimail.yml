@@ -378,7 +378,7 @@ script:
     - name: comment
       description: A brief comment for the IP policy.
     - name: session_profile
-      description: The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles.This option is applicable only if action is Scan.
+      description: The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles. This option is applicable only if action is Scan.
     - name: antispam_profile
       description: The name of an outgoing anti spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles.This option is applicable only if action is Scan.
     - name: antivirus_profile
