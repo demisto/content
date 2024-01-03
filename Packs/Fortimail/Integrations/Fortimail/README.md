@@ -150,7 +150,7 @@ There is no context output for this command.
 ### fortimail-ip-group-list
 
 ***
-List IP groups. if a name is given, the command will return the information about the wanted IP group.
+List IP groups. if a name is given, the command will return the information about the specified IP group.
 
 #### Base Command
 
@@ -245,7 +245,7 @@ List IP groups. if a name is given, the command will return the information abou
 ### fortimail-ip-group-member-add
 
 ***
-Add an IP group member (IP/Netmask or IP range) to IP group. IP group member is an IP addresses that can be used when configuring access control rules (define the source IP group of the SMTP client attempting to send the email message) and IP-based policies (define the IP group of the SMTP source/destination to which the policy applies).
+Add an IP group member (IP/Netmask or IP range) to an IP group. An IP group member is an IP addresses that can be used when configuring access control rules (define the source IP group of the SMTP client attempting to send the email message) and IP-based policies (define the IP group of the SMTP source/destination to which the policy applies).
 
 #### Base Command
 
@@ -256,7 +256,7 @@ Add an IP group member (IP/Netmask or IP range) to IP group. IP group member is 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_name | The name of the IP group. Use fortimail-ip-group-list to retrieve all the IP groups. | Required |
-| ip | The IP address and net-mask that you want to include in the IP group. Use the net-mask, the portion after the slash (/), to specify the matching sub-net. For example, 10.10.10.10/24 or 172.20.130.10-172.20.130.30. | Required |
+| ip | The IP address and netmask that you want to include in the IP group. Use the netmask, the portion after the slash (/), to specify the matching subnet. For example, 10.10.10.10/24 or 172.20.130.10-172.20.130.30. | Required |
 
 #### Context Output
 
@@ -288,7 +288,7 @@ Add an IP group member (IP/Netmask or IP range) to IP group. IP group member is 
 ### fortimail-ip-group-member-replace
 
 ***
-Replace IP group members with new members. This command overwrites all the IP group members that defined in the IP group.
+Replace IP group members with new members. This command overwrites all the IP group members that was defined in the IP group.
 
 #### Base Command
 
@@ -299,7 +299,7 @@ Replace IP group members with new members. This command overwrites all the IP gr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_name | The name of the IP group. Use fortimail-ip-group-create to retrieve all the IP groups. | Required |
-| ips | A list of IP address (separated with a comma) that you want to replace in the IP group. Use the net-mask, the portion after the slash (/), to specify the matching sub-net. For example, 10.10.10.10/24,12.12.12.12/24,172.20.130.10-172.20.130.30. | Required |
+| ips | A comma-separated list of IP address that you want to replace in the IP group. Use the netmask, the portion after the slash (/), to specify the matching subnet. For example, 10.10.10.10/24,12.12.12.12/24,172.20.130.10-172.20.130.30. | Required |
 
 #### Context Output
 
@@ -368,7 +368,7 @@ There is no context output for this command.
 ### fortimail-ip-group-member-list
 
 ***
-List IP group members. If a ip is given, the command will return the information about the wanted IP group member.
+List IP group members. If an ip is given, the command will return the information about the specified IP group member.
 
 #### Base Command
 
@@ -419,7 +419,7 @@ List IP group members. If a ip is given, the command will return the information
 ### fortimail-email-group-create
 
 ***
-Create an email group. Email group is a container for a list of email addresses, allowing you to use it in configuring access control rules (for defining the sender and recipient matching) and recipient-based policies (for defining MAIL FROM addresses matching specific policies).
+Create an email group. An email group is a container for a list of email addresses, allowing you to use it in configuring access control rules (for defining the sender and recipient matching) and recipient-based policies (for defining MAIL FROM addresses matching specific policies).
 
 #### Base Command
 
@@ -544,7 +544,7 @@ There is no context output for this command.
 ### fortimail-email-group-list
 
 ***
-List email groups. If a name is given, the command will return the information about the wanted email group.
+List email groups. If a name is given, the command will return the information about the specified email group.
 
 #### Base Command
 
@@ -604,7 +604,7 @@ List email groups. If a name is given, the command will return the information a
 ### fortimail-email-group-member-add
 
 ***
-Add an email group member (email address) to email group.
+Add an email group member (email address) to an email group.
 
 #### Base Command
 
@@ -647,7 +647,7 @@ Add an email group member (email address) to email group.
 ### fortimail-email-group-member-replace
 
 ***
-Replace Email group members with new members. This command overwrites all the email group members that defined in the email group.
+Replace email group members with new members. This command overwrites all the email group members that were defined in the email group.
 
 #### Base Command
 
@@ -658,7 +658,7 @@ Replace Email group members with new members. This command overwrites all the em
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_name | The name of the email group. Use fortimail-email-group-list to retrieve all the email groups. | Required |
-| emails | A list of email address (separated with a comma) that you want to replace in the email group. For example, test1@test.com,test2@test.com. You can also use wildcards to enter partial patterns that can match multiple email addresses. The asterisk represents one or more characters and the question mark (?) represents any single character. For example, the pattern ??@*.com will match any email user with a two letter email user name from any “.com” domain name. | Required |
+| emails | A comma-separated list of email address that you want to replace in the email group. For example, test1@test.com,test2@test.com. You can also use wildcards to enter partial patterns that can match multiple email addresses. The asterisk represents one or more characters and the question mark (?) represents any single character. For example, the pattern ??@*.com will match any email user with a two letter email user name from any “.com” domain name. | Required |
 
 #### Context Output
 
@@ -691,7 +691,7 @@ There is no context output for this command.
 ### fortimail-email-group-member-delete
 
 ***
-Delete an email group member from email group.
+Delete an email group member from an email group.
 
 #### Base Command
 
@@ -727,7 +727,7 @@ There is no context output for this command.
 ### fortimail-email-group-member-list
 
 ***
-List email group members. if a email is given, the command will return the information about the wanted email group member.
+List email group members. If an email is given, the command will return the information about the specified email group member.
 
 #### Base Command
 
@@ -778,7 +778,7 @@ List email group members. if a email is given, the command will return the infor
 ### fortimail-system-safe-block-list
 
 ***
-List the system Block/Safe list. Choose the wanted list by the type argument.
+List the system Block/Safe list. Choose the specified list by the type argument.
 
 #### Base Command
 
@@ -797,7 +797,7 @@ List the system Block/Safe list. Choose the wanted list by the type argument.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiMail.SystemList.item | String | The value of the item in the list. |
-| FortiMail.SystemList.list_type | String | The type of the list \(whitelist or blocklist\). |
+| FortiMail.SystemList.list_type | String | The type of the list (safelist or blocklist). |
 
 #### Command example
 ```!fortimail-system-safe-block-list list_type=Blocklist```
@@ -866,7 +866,7 @@ List the system Block/Safe list. Choose the wanted list by the type argument.
 ### fortimail-system-safe-block-add
 
 ***
-Add an email address/ domain name/ IP address to the system white/ block list. Block/Safe List lets you reject, discard, or allow email messages based on email addresses, domain names, and IP addresses. As one of the first steps to detect spam, FortiMail units evaluate whether an email message matches a block list or safe list entry. Choose the wanted list by the type argument.
+Add an email address/ domain name/ IP address to the system safe/block list. Block/Safe List lets you reject, discard, or allow email messages based on email addresses, domain names, and IP addresses. As one of the first steps to detect spam, FortiMail units evaluate whether an email message matches a block list or safe list entry. Choose the specified list by the type argument.
 
 #### Base Command
 
@@ -876,8 +876,8 @@ Add an email address/ domain name/ IP address to the system white/ block list. B
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| values | Email address/ domain name/ IP address to add to the system white/ block list. The supported entry types are Email (For example, example@example.com, *@example.com), IP/Netmask: (For example, 10.10.10.10/24), and Reverse DNS (For example, http://example.com. You can use the following wild cards:*: Matches any number of characters. You can use the asterisk (*) anywhere in a character string.?: Matches a single alphabet in a specific position. | Required |
-| list_type | The type of the list to add the values. Safelist - accept mesage, Blocklist invoke block list action that defined int the settings. Possible values are: Blocklist, Safelist. | Required |
+| values | Email address/ domain name/ IP address to add to the system safe/block list. The supported entry types are Email (For example, example@example.com, *@example.com), IP/Netmask: (For example, 10.10.10.10/24), and Reverse DNS (For example, http://example.com. You can use the following wild cards:*: Matches any number of characters. You can use the asterisk (*) anywhere in a character string.?: Matches a single alphabet in a specific position. | Required |
+| list_type | The type of the list to add the values. Safelist - accept message. Blocklist - invoke block list action that was defined in the settings. Possible values are: Blocklist, Safelist. | Required |
 
 #### Context Output
 
@@ -907,7 +907,7 @@ There is no context output for this command.
 ### fortimail-system-safe-block-delete
 
 ***
-Delete an email address/ domain name/ IP address from the system white/ block list. Choose the wanted list by the type argument.
+Delete an email address/ domain name/ IP address from the system safe/block list. Choose the specified list by the type argument.
 
 #### Base Command
 
@@ -917,8 +917,8 @@ Delete an email address/ domain name/ IP address from the system white/ block li
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| values | Email address/ domain name/ IP address (speretaed by comma) to remove from the system white/ block list. For example, test@test.com, test2@test.com or 1.1.1.1/0,1.1.1.2/0. Use system-safe-block-list to get all safe / block list values. | Required |
-| list_type | The type of the list to add the values. Safelist - accept mesage, Blocklist invoke block list action that defined int the settings. Possible values are: Blocklist, Safelist. | Required |
+| values | Email address/ domain name/ IP address (speretaed by comma) to remove from the system safe/block list. For example, test@test.com, test2@test.com or 1.1.1.1/0,1.1.1.2/0. Use system-safe-block-list to get all safe / block list values. | Required |
+| list_type | The type of the list to add the values. Safelist - accept message. Blocklist - invoke block list action that was defined in the settings. Possible values are: Blocklist, Safelist. | Required |
 
 #### Context Output
 
@@ -954,56 +954,56 @@ Create an IP policy. IP-based policies lets you control emails based on IP/Netma
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | status | Whether to apply the policy. Possible values are: enable, disable. Default is enable. | Optional |
-| source | The source of the policy. When source_type is IP/Netmask enter the IP address and sub-net mask of the SMTP client to whose connections this policy will apply.When source_type is IP Group enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups).When source_type is GeoIP enter the Geo IP group.When source_type is ISDB enter the name of an internet service provider.To match all clients, enter 0.0.0.0/0. Default is 0.0.0.0/0. | Optional |
-| destination | The destination of the policy. When destination_type is IP/Netmask enter the IP address and sub-net mask of the SMTP client to whose connections this policy will apply. When destination_type is IP Group enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups).To match all clients, enter 0.0.0.0/0. Default is 0.0.0.0/0. | Optional |
+| source | The source of the policy. When source_type is IP/Netmask, enter the IP address and subnet mask of the SMTP client to whose connections this policy will apply. When source_type is IP Group, enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups). When source_type is GeoIP, enter the Geo IP group. When source_type is ISDB, enter the name of an internet service provider. To match all clients, enter 0.0.0.0/0. Default is 0.0.0.0/0. | Optional |
+| destination | The destination of the policy. When destination_type is IP/Netmask, enter the IP address and subnet mask of the SMTP client to whose connections this policy will apply. When destination_type is IP Group, enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups). To match all clients, enter 0.0.0.0/0. Default is 0.0.0.0/0. | Optional |
 | source_type | The type of the source. Insert the source argument corresponding to the type value. Possible values are: IP/Netmask, IP Group, GeoIP Group, ISDB. Default is IP/Netmask. | Optional |
 | destination_type | The type of the destination. Insert the source argument corresponding to the type value. Possible values are: IP/Netmask, IP Group. Default is IP/Netmask. | Optional |
 | action | An action for the policy. Proxy-bypass: Bypass the FortiMail unit’s scanning. This action is for transparent mode only.Scan: Accept the connection and perform any scans configured in the profiles selected in this policy.Reject: Reject the email and respond to the SMTP client with SMTP reply code 550, indicating a permanent failure.Fail Temporarily: Reject the email and respond to the SMTP client with SMTP reply code 451, indicating and indicate a temporary failure. Possible values are: Scan, Reject, Fail Temporarily, Proxy bypass. Default is Scan. | Optional |
 | comment | A brief comment for the IP policy. | Optional |
-| session_profile | The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles.This option is applicable only if action is Scan. | Optional |
-| antispam_profile | The name of an outgoing anti spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles.This option is applicable only if action is Scan. | Optional |
-| antivirus_profile | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles.This option is applicable only if action is Scan. | Optional |
-| content_profile | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles.This option is applicable only if action is Scan. | Optional |
-| ip_pool_profile | The name of an IP pool profile, if any, that this policy will apply.The IP addresses in the IP pool is used as the source IP address for the SMTP sessions matching this policy.An IP pool in an IP policy will be used to deliver incoming email from FortiMail to the protected server. An IP pool (either in an IP policy or domain settings) will be used to deliver emails to the protected domain servers if the mail flow is from internal to internal domains.Use fortimail-ip-pool-list to retrieve all the IP pool profiles. | Optional |
+| session_profile | The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles. This option is applicable only if action is Scan. | Optional |
+| antispam_profile | The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles. This option is applicable only if action is Scan. | Optional |
+| antivirus_profile | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles. This option is applicable only if action is Scan. | Optional |
+| content_profile | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. This option is applicable only if action is Scan. | Optional |
+| ip_pool_profile | The name of an IP pool profile, if any, that this policy will apply.The IP addresses in the IP pool are used as the source IP address for the SMTP sessions matching this policy.An IP pool in an IP policy will be used to deliver incoming email from FortiMail to the protected server. An IP pool (either in an IP policy or domain settings) will be used to deliver emails to the protected domain servers if the mail flow is from internal to internal domains.Use fortimail-ip-pool-list to retrieve all the IP pool profiles. | Optional |
 | auth_type | The type of the authentication profile that this policy will apply. If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP). Possible values are: imap, ldap, pop3, radius, smpt. | Optional |
-| auth_profile | The name of an authentication profile for the type. When auth_type is LDAP, insert LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. When auth_type is RADIUS, insert RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles.When auth_type is POP3, insert POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles.When auth_type is IMAP, insert IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles.When auth_type is SMTP, insert SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles.Relevant when auth_type is chosen. | Optional |
-| use_smtp_auth | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data.This option is available only if you have selected an auth_profile. Possible values are: enable, disable. Default is disable. | Optional |
+| auth_profile | The name of an authentication profile for the type. When auth_type is LDAP, insert LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. When auth_type is RADIUS, insert RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. When auth_type is POP3, insert POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles. When auth_type is IMAP, insert IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles. When auth_type is SMTP, insert SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles. Relevant when auth_type is chosen. | Optional |
+| use_smtp_auth | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. This option is available only if you have selected an auth_profile. Possible values are: enable, disable. Default is disable. | Optional |
 | smtp_different | Whether to require that the sender uses the same identity for: authentication name, SMTP envelope MAIL FROM:, and header FROM:. Possible values are: enable, disable. Default is disable. | Optional |
 | smtp_diff_identity_ldap | Whether to verify SMTP sender identity with LDAP for authenticated email. Possible values are: enable, disable. Default is disable. | Optional |
 | smtp_diff_identity_ldap_profile | LDAP profile for SMTP sender identity verification. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. Required when smtp_diff_identity_ldap is enable. | Optional |
-| exclusive | Whether to take precedence over recipient based policy match.Enable to omit use of recipient-based policies for connections matching this IP-based policy.This option is applicable only if action is Scan. Possible values are: enable, disable. Default is disable. | Optional |
+| exclusive | Whether to take precedence over recipient-based policy match. Enable to omit use of recipient-based policies for connections matching this IP-based policy. This option is applicable only if action is Scan. Possible values are: enable, disable. Default is disable. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiMail.IPPolicy.smtp_diff_identity_ldap_profile | String | LDAP profile for SMTP sender identity verification. |
-| FortiMail.IPPolicy.smtp_diff_identity_ldap | Boolean | Whether to verify SMTP sender identity with LDAP for authenticated email. |
-| FortiMail.IPPolicy.smtp_different | Boolean | Whether to require that the sender uses the same identity for: authentication name, SMTP envelope MAIL FROM:, and header FROM:. |
-| FortiMail.IPPolicy.use_smtp_auth | Boolean | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. |
-| FortiMail.IPPolicy.action | Number | The action of the policy. |
+| FortiMail.IPPolicy.smtp_diff_identity_ldap | String | Whether to verify SMTP sender identity with LDAP for authenticated email. |
+| FortiMail.IPPolicy.smtp_different | String | 'Whether to require that the sender uses the same identity for: authentication name, SMTP envelope MAIL FROM:, and header FROM:.' |
+| FortiMail.IPPolicy.use_smtp_auth | String | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. |
+| FortiMail.IPPolicy.action | String | The action of the policy. |
 | FortiMail.IPPolicy.comment | String | A brief comment for the IP policy. |
-| FortiMail.IPPolicy.exclusive | Boolean | Whether to take precedence over recipient based policy match. |
+| FortiMail.IPPolicy.exclusive | Boolean | Whether to take precedence over recipient-based policy match. |
 | FortiMail.IPPolicy.smtp_auth | String | The authentication profile when auth_type=SMTP. |
 | FortiMail.IPPolicy.imap_auth | String | The authentication profile when auth_type=IMAP. |
 | FortiMail.IPPolicy.pop3_auth | String | The authentication profile when auth_type=POP3. |
 | FortiMail.IPPolicy.ldap_auth | String | The authentication profile when auth_type=LDAP. |
-| FortiMail.IPPolicy.radius_auth | String | The authentication profile when auth_type=RADIUS. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. |
-| FortiMail.IPPolicy.auth_type | Number | The type of the authentication profile that this policy will apply.If you want the email user to authenticate using an external authentication server, select the authentication type of the profile \(SMTP, POP3, IMAP, RADIUS, or LDAP\). |
-| FortiMail.IPPolicy.ip_pool_profile | String | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-ip-pool-list to retrieve all the IP pool profiles. |
-| FortiMail.IPPolicy.content_profile | String | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. |
-| FortiMail.IPPolicy.antivirus_profile | String | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles. |
-| FortiMail.IPPolicy.antispam_profile | String | The name of an outgoing anti spam profile, if any, that this policy apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles. |
-| FortiMail.IPPolicy.session_profile | String | The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles. |
-| FortiMail.IPPolicy.status | Boolean | The status of the IP policy. |
-| FortiMail.IPPolicy.server_ip_group | String | The destination IP group. Relevant when server_typeis IP group. Use fortimail-ip-group-list to retrieve all the IP groups. |
+| FortiMail.IPPolicy.radius_auth | String | The authentication profile when auth_type=RADIUS. |
+| FortiMail.IPPolicy.auth_type | String | The type of the authentication profile that this policy will apply. If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP). |
+| FortiMail.IPPolicy.ip_pool_profile | String | The name of the content profile that you want to apply to connections matching the policy. |
+| FortiMail.IPPolicy.content_profile | String | The name of the content profile that you want to apply to connections matching the policy. |
+| FortiMail.IPPolicy.antivirus_profile | String | The name of an antivirus profile, if any, that this policy will apply. |
+| FortiMail.IPPolicy.antispam_profile | String | The name of an outgoing anti-spam profile, if any, that this policy apply. |
+| FortiMail.IPPolicy.session_profile | String | The name of the session profile that you want to apply to connections matching the policy. |
+| FortiMail.IPPolicy.status | String | Whether the policy applied. |
+| FortiMail.IPPolicy.server_ip_group | String | The destination IP group. Relevant when server_type is IP group. |
 | FortiMail.IPPolicy.server | String | The destination IP/Netmask. Relevant when server_type is IP/Netmask. |
-| FortiMail.IPPolicy.server_type | Number | The type of the destination. |
+| FortiMail.IPPolicy.server_type | String | The type of the destination. |
 | FortiMail.IPPolicy.client_isdb | String | The source ISDB. Relevant when client_type is ISDB. |
-| FortiMail.IPPolicy.client_ip_group | String | The source IP group. Relevant when client_type is IP group. Use fortimail-ip-group-list to retrieve all the IP groups. |
+| FortiMail.IPPolicy.client_ip_group | String | The source IP group. Relevant when client_type is IP group. |
 | FortiMail.IPPolicy.client_geoip_group | String | The Geo IP group. Relevant when client_type is Geo IP. |
 | FortiMail.IPPolicy.client | String | The source IP/Netmask. Relevant when client_type is IP/Netmask. |
-| FortiMail.IPPolicy.client_type | Number | The type of the source. |
+| FortiMail.IPPolicy.client_type | String | The type of the source. |
 | FortiMail.IPPolicy.mkey | Number | The ID of the IP policy. |
 
 #### Command example
@@ -1069,56 +1069,56 @@ Update an IP policy.
 | --- | --- | --- |
 | ip_policy_id | The ID of the IP policy. | Required |
 | status | Whether to apply the policy. Possible values are: enable, disable. Default is enable. | Optional |
-| source | The source of the policy.When source_type is IP/Netmask enter the IP address and sub-net mask of the SMTP client to whose connections this policy will apply.When source_type is IP Group enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups).When source_type is GeoIP enter the Geo IP group.When source_type is ISDB enter the name of an internet service provider.To match all clients, enter 0.0.0.0/0. | Optional |
-| destination | The destination of the policy.When destination_type is IP/Netmask enter the IP address and sub-net mask of the SMTP client to whose connections this policy will apply. When destination_type is IP Group enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups).To match all clients, enter 0.0.0.0/0. | Optional |
+| source | The source of the policy. When source_type is IP/Netmask, enter the IP address and subnet mask of the SMTP client to whose connections this policy will apply. When source_type is IP Group, enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups). When source_type is GeoIP, enter the Geo IP group. When source_type is ISDB, enter the name of an internet service provider. To match all clients, enter 0.0.0.0/0. | Optional |
+| destination | The destination of the policy. When destination_type is IP/Netmask, enter the IP address and subnet mask of the SMTP client to whose connections this policy will apply. When destination_type is IP Group, enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups). To match all clients, enter 0.0.0.0/0. | Optional |
 | source_type | The type of the source. Insert the source argument corresponding to the type value. Possible values are: IP/Netmask, IP Group, GeoIP Group, ISDB. | Optional |
 | destination_type | The type of the destination. Insert the source argument corresponding to the type value. Possible values are: IP/Netmask, IP Group. | Optional |
 | action | An action for the policy. Proxy-bypass: Bypass the FortiMail unit’s scanning. This action is for transparent mode only.Scan: Accept the connection and perform any scans configured in the profiles selected in this policy.Reject: Reject the email and respond to the SMTP client with SMTP reply code 550, indicating a permanent failure.Fail Temporarily: Reject the email and respond to the SMTP client with SMTP reply code 451, indicating and indicate a temporary failure. Possible values are: Scan, Reject, Fail Temporarily, Proxy bypass. | Optional |
 | comment | A brief comment for the IP policy. | Optional |
-| session_profile | The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles.This option is applicable only if action is Scan. | Optional |
-| antispam_profile | The name of an outgoing anti spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles.This option is applicable only if action is Scan. | Optional |
-| antivirus_profile | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles.This option is applicable only if action is Scan. | Optional |
-| content_profile | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles.This option is applicable only if action is Scan. | Optional |
-| ip_pool_profile | The name of an IP pool profile, if any, that this policy will apply.The IP addresses in the IP pool is used as the source IP address for the SMTP sessions matching this policy.An IP pool in an IP policy will be used to deliver incoming email from FortiMail to the protected server. An IP pool (either in an IP policy or domain settings) will be used to deliver emails to the protected domain servers if the mail flow is from internal to internal domains.Use fortimail-ip-pool-list to retrieve all the IP pool profiles. | Optional |
-| auth_type | The type of the authentication profile that this policy will apply.If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP). Possible values are: imap, ldap, pop3, radius, smpt. | Optional |
-| auth_profile | The name of an authentication profile for the type.When auth_type is LDAP, insert LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.When auth_type is RADIUS, insert RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles.When auth_type is POP3, insert POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles.When auth_type is IMAP, insert IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles.When auth_type is SMTP, insert SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles.Relevant when auth_type is chosen. | Optional |
-| use_smtp_auth | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data.This option is available only if you have selected an auth_profile. Possible values are: enable, disable. | Optional |
+| session_profile | The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles. This option is applicable only if action is Scan. | Optional |
+| antispam_profile | The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles. This option is applicable only if action is Scan. | Optional |
+| antivirus_profile | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles. This option is applicable only if action is Scan. | Optional |
+| content_profile | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. This option is applicable only if action is Scan. | Optional |
+| ip_pool_profile | The name of an IP pool profile, if any, that this policy will apply.The IP addresses in the IP pool are used as the source IP address for the SMTP sessions matching this policy.An IP pool in an IP policy will be used to deliver incoming email from FortiMail to the protected server. An IP pool (either in an IP policy or domain settings) will be used to deliver emails to the protected domain servers if the mail flow is from internal to internal domains.Use fortimail-ip-pool-list to retrieve all the IP pool profiles. | Optional |
+| auth_type | The type of the authentication profile that this policy will apply. If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP). Possible values are: imap, ldap, pop3, radius, smpt. | Optional |
+| auth_profile | The name of an authentication profile for the type. When auth_type is LDAP, insert LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. When auth_type is RADIUS, insert RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. When auth_type is POP3, insert POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles. When auth_type is IMAP, insert IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles. When auth_type is SMTP, insert SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles. Relevant when auth_type is chosen. | Optional |
+| use_smtp_auth | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. This option is available only if you have selected an auth_profile. Possible values are: enable, disable. | Optional |
 | smtp_different | Whether to require that the sender uses the same identity for: authentication name, SMTP envelope MAIL FROM:, and header FROM:. Possible values are: enable, disable. | Optional |
 | smtp_diff_identity_ldap | Whether to verify SMTP sender identity with LDAP for authenticated email. Possible values are: enable, disable. | Optional |
 | smtp_diff_identity_ldap_profile | LDAP profile for SMTP sender identity verification. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. Required when smtp_diff_identity_ldap is enable. | Optional |
-| exclusive | Whether to take precedence over recipient based policy match.Enable to omit use of recipient-based policies for connections matching this IP-based policy.This option is applicable only if action is Scan. Possible values are: enable, disable. | Optional |
+| exclusive | Whether to take precedence over recipient-based policy match. Enable to omit use of recipient-based policies for connections matching this IP-based policy. This option is applicable only if action is Scan. Possible values are: enable, disable. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiMail.IPPolicy.smtp_diff_identity_ldap_profile | String | LDAP profile for SMTP sender identity verification. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. Required when smtp_diff_identity_ldap is enable. |
-| FortiMail.IPPolicy.smtp_diff_identity_ldap | Boolean | Whether to verify SMTP sender identity with LDAP for authenticated email. |
-| FortiMail.IPPolicy.smtp_different | Boolean | Whether to require that the sender uses the same identity for: authentication name, SMTP envelope MAIL FROM:, and header FROM:. |
-| FortiMail.IPPolicy.use_smtp_auth | Boolean | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. |
-| FortiMail.IPPolicy.action | Number | The action of the policy. |
+| FortiMail.IPPolicy.smtp_diff_identity_ldap_profile | String | LDAP profile for SMTP sender identity verification. |
+| FortiMail.IPPolicy.smtp_diff_identity_ldap | String | Whether to verify SMTP sender identity with LDAP for authenticated email. |
+| FortiMail.IPPolicy.smtp_different | String | 'Whether to require that the sender uses the same identity for: authentication name, SMTP envelope MAIL FROM:, and header FROM:.' |
+| FortiMail.IPPolicy.use_smtp_auth | String | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. |
+| FortiMail.IPPolicy.action | String | The action of the policy. |
 | FortiMail.IPPolicy.comment | String | A brief comment for the IP policy. |
-| FortiMail.IPPolicy.exclusive | Boolean | Whether to take precedence over recipient based policy match. |
-| FortiMail.IPPolicy.smtp_auth | String | The authentication profile when auth_type=SMTP. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles. |
-| FortiMail.IPPolicy.imap_auth | String | The authentication profile when auth_type=IMAP. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles. |
-| FortiMail.IPPolicy.pop3_auth | String | The authentication profile when auth_type=POP3. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles. |
-| FortiMail.IPPolicy.ldap_auth | String | The authentication profile when auth_type=LDAP. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. |
-| FortiMail.IPPolicy.radius_auth | String | The authentication profile when auth_type=RADIUS. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. |
-| FortiMail.IPPolicy.auth_type | Number | The type of the authentication profile that this policy will apply.If you want the email user to authenticate using an external authentication server, select the authentication type of the profile \(SMTP, POP3, IMAP, RADIUS, or LDAP\). |
-| FortiMail.IPPolicy.ip_pool_profile | String | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-ip-pool-list to retrieve all the IP pool profiles. |
-| FortiMail.IPPolicy.content_profile | String | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. |
-| FortiMail.IPPolicy.antivirus_profile | String | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles. |
-| FortiMail.IPPolicy.antispam_profile | String | The name of an outgoing anti spam profile, if any, that this policy apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles. |
-| FortiMail.IPPolicy.session_profile | String | The name of the session profile that you want to apply to connections matching the policy. Use fortimail-session-profile-list to retrieve all the session profiles. |
-| FortiMail.IPPolicy.status | Boolean | The status of the IP policy. |
-| FortiMail.IPPolicy.server_ip_group | String | The destination IP group. Relevant when server_typeis IP group. Use fortimail-ip-group-list to retrieve all the IP groups. |
+| FortiMail.IPPolicy.exclusive | Boolean | Whether to take precedence over recipient-based policy match. |
+| FortiMail.IPPolicy.smtp_auth | String | The authentication profile when auth_type=SMTP. |
+| FortiMail.IPPolicy.imap_auth | String | The authentication profile when auth_type=IMAP. |
+| FortiMail.IPPolicy.pop3_auth | String | The authentication profile when auth_type=POP3. |
+| FortiMail.IPPolicy.ldap_auth | String | The authentication profile when auth_type=LDAP. |
+| FortiMail.IPPolicy.radius_auth | String | The authentication profile when auth_type=RADIUS. |
+| FortiMail.IPPolicy.auth_type | String | The type of the authentication profile that this policy will apply. If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP). |
+| FortiMail.IPPolicy.ip_pool_profile | String | The name of the content profile that you want to apply to connections matching the policy. |
+| FortiMail.IPPolicy.content_profile | String | The name of the content profile that you want to apply to connections matching the policy. |
+| FortiMail.IPPolicy.antivirus_profile | String | The name of an antivirus profile, if any, that this policy will apply. |
+| FortiMail.IPPolicy.antispam_profile | String | The name of an outgoing anti-spam profile, if any, that this policy apply. |
+| FortiMail.IPPolicy.session_profile | String | The name of the session profile that you want to apply to connections matching the policy. |
+| FortiMail.IPPolicy.status | String | Whether the policy applied. |
+| FortiMail.IPPolicy.server_ip_group | String | The destination IP group. Relevant when server_type is IP group. |
 | FortiMail.IPPolicy.server | String | The destination IP/Netmask. Relevant when server_type is IP/Netmask. |
-| FortiMail.IPPolicy.server_type | Number | The type of the destination. |
+| FortiMail.IPPolicy.server_type | String | The type of the destination. |
 | FortiMail.IPPolicy.client_isdb | String | The source ISDB. Relevant when client_type is ISDB. |
-| FortiMail.IPPolicy.client_ip_group | String | The source IP group. Relevant when client_type is IP group. Use fortimail-ip-group-list to retrieve all the IP groups. |
+| FortiMail.IPPolicy.client_ip_group | String | The source IP group. Relevant when client_type is IP group. |
 | FortiMail.IPPolicy.client_geoip_group | String | The Geo IP group. Relevant when client_type is Geo IP. |
 | FortiMail.IPPolicy.client | String | The source IP/Netmask. Relevant when client_type is IP/Netmask. |
-| FortiMail.IPPolicy.client_type | Number | The type of the source. |
+| FortiMail.IPPolicy.client_type | String | The type of the source. |
 | FortiMail.IPPolicy.mkey | Number | The ID of the IP policy. |
 
 #### Command example
@@ -1208,7 +1208,7 @@ There is no context output for this command.
 ### fortimail-ip-policy-list
 
 ***
-List an IP policy. If a id is given, the command will return the information about the wanted IP policy.
+List an IP policy. If an ID is given, the command will return the information about the specified IP policy.
 
 #### Base Command
 
@@ -1234,25 +1234,25 @@ List an IP policy. If a id is given, the command will return the information abo
 | FortiMail.IPPolicy.client_isdb | String | The source ISDB. Relevant when client_type is ISDB. |
 | FortiMail.IPPolicy.server_type | String | The type of the destination. |
 | FortiMail.IPPolicy.server | String | The destination IP/Netmask. Relevant when server_type is IP/Netmask. |
-| FortiMail.IPPolicy.server_ip_group | String | The destination IP group. Relevant when server_typeis IP group. |
+| FortiMail.IPPolicy.server_ip_group | String | The destination IP group. Relevant when server_type is IP group. |
 | FortiMail.IPPolicy.action | String | The action of the policy. |
 | FortiMail.IPPolicy.comment | String | A brief comment for the IP policy. |
 | FortiMail.IPPolicy.session_profile | String | The name of the session profile that you want to apply to connections matching the policy. |
-| FortiMail.IPPolicy.antispam_profile | String | The name of an outgoing anti spam profile, if any, that this policy apply. |
+| FortiMail.IPPolicy.antispam_profile | String | The name of an outgoing anti-spam profile, if any, that this policy apply. |
 | FortiMail.IPPolicy.antivirus_profile | String | The name of an antivirus profile, if any, that this policy will apply. |
 | FortiMail.IPPolicy.content_profile | String | The name of the content profile that you want to apply to connections matching the policy. |
 | FortiMail.IPPolicy.ip_pool_profile | String | The name of the content profile that you want to apply to connections matching the policy. |
-| FortiMail.IPPolicy.auth_type | String | The type of the authentication profile that this policy will apply.If you want the email user to authenticate using an external authentication server, select the authentication type of the profile \(SMTP, POP3, IMAP, RADIUS, or LDAP\). |
+| FortiMail.IPPolicy.auth_type | String | The type of the authentication profile that this policy will apply. If you want the email user to authenticate using an external authentication server, select the authentication type of the profile (SMTP, POP3, IMAP, RADIUS, or LDAP). |
 | FortiMail.IPPolicy.smtp_auth | String | The authentication profile when auth_type=SMTP. |
 | FortiMail.IPPolicy.imap_auth | String | The authentication profile when auth_type=IMAP. |
 | FortiMail.IPPolicy.pop3_auth | String | The authentication profile when auth_type=POP3. |
 | FortiMail.IPPolicy.ldap_auth | String | The authentication profile when auth_type=LDAP. |
 | FortiMail.IPPolicy.radius_auth | String | The authentication profile when auth_type=RADIUS. |
 | FortiMail.IPPolicy.use_smtp_auth | String | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. |
-| FortiMail.IPPolicy.smtp_different | String | Whether to require that the sender uses the same identity for: authentication name, SMTP envelope MAIL FROM:, and header FROM:. |
+| FortiMail.IPPolicy.smtp_different | String | 'Whether to require that the sender uses the same identity for: authentication name, SMTP envelope MAIL FROM:, and header FROM:.' |
 | FortiMail.IPPolicy.smtp_diff_identity_ldap | String | Whether to verify SMTP sender identity with LDAP for authenticated email. |
 | FortiMail.IPPolicy.smtp_diff_identity_ldap_profile | String | LDAP profile for SMTP sender identity verification. |
-| FortiMail.IPPolicy.exclusive | Boolean | Whether to take precedence over recipient based policy match. |
+| FortiMail.IPPolicy.exclusive | Boolean | Whether to take precedence over recipient-based policy match. |
 | FortiMail.IPPolicy.mkey | Number | The ID of the IP policy. |
 
 #### Command example
@@ -1388,46 +1388,46 @@ Create an Access control rule. Access control rules take effect after the FortiM
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | status | Whether to activate the access rule. Possible values are: enable, disable. Default is enable. | Optional |
-| sender_type | The method of the SMTP client attempting to send the email message. Select either User Defined and enter a complete or partial sender email address to match, or select:Internal: Match any email address from a protected domain.External: Match any email address from an unprotected domain. Email Group: Match any email address in the group. If you select this option, insert to sender argument an email group. LDAP Group: Match any email address in the group. If you select this option, insert to sender_ldap_profile argument a LDAP profile and insert to sender a LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, insert to sender_ldap_profile argument a LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. Default is User Defined. | Optional |
-| sender | The sender. Relevant when sender_type is not External or Internal.When sender_type = Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups).When sender_type = LDAP Verification, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups).When sender_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups).When sender_type = Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). Default is *. | Optional |
-| recipient_type | The recipient pattern type. Either select User Defined and enter a complete or partial recipient email address to match, or select: Internal: Match any email address from a protected domain. External: Match any email address from a domain that is not protected. Email Group: Match any email address in the group. If you select this option, insert to recipient argument an email group. LDAP Group: Match any email address in the group. If you select this option, insert to recipient_ldap_profile argument a LDAP profile and insert to recipient LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, insert to recipient_ldap_profile argument a LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. Default is User Defined. | Optional |
-| recipient | The recipient. Relevant when recipient_type is not External or Internal.When recipient_type= Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups).When recipient_type= LDAP Verification, insert LDAP server.When recipient_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups).When recipient_type= Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). Default is *. | Optional |
+| sender_type | The method of the SMTP client attempting to send the email message. Select either User Defined and enter a complete or partial sender email address to match, or select: Internal: Match any email address from a protected domain. External: Match any email address from an unprotected domain. Email Group: Match any email address in the group. If you select this option, in the sender argument insert an email group. LDAP Group: Match any email address in the group. If you select this option, in the sender_ldap_profile argument insert an LDAP profile and in  sender insert an LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, in the sender_ldap_profile argument insert an LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. Default is User Defined. | Optional |
+| sender | The sender. Relevant when sender_type is not External or Internal. When sender_type = Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When sender_type = LDAP Verification, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When sender_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When sender_type = Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). Default is *. | Optional |
+| recipient_type | The recipient pattern type. Either select User Defined and enter a complete or partial recipient email address to match, or select: Internal: Match any email address from a protected domain. External: Match any email address from a domain that is not protected. Email Group: Match any email address in the group. If you select this option, in the recipient argument insert an email group. LDAP Group: Match any email address in the group. If you select this option, in the recipient_ldap_profile argument insert an LDAP profile and in the recipient insert an LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, in the recipient_ldap_profile argument insert an LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. Default is User Defined. | Optional |
+| recipient | The recipient. Relevant when recipient_type is not External or Internal. When recipient_type= Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When recipient_type= LDAP Verification, insert LDAP server. When recipient_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When recipient_type= Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). Default is *. | Optional |
 | sender_ldap_profile | Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when sender_type= LDAP Group. | Optional |
 | recipient_ldap_profile | Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. | Optional |
 | source_type | The method of the SMTP client attempting to send the email message. Possible values are: IP/Netmask, IP Group, GeoIP Group, ISDB. Default is IP/Netmask. | Optional |
-| source | When sender_type = IP/Netmask insert the source IP address and net-mask of the SMTP client attempting to send the email message. Use the net-mask, the portion after the slash (/), to specify the matching sub-net.When sender_type = IP Group, insert email group (use fortimail-ip-group-list to retrieve all the IP Groups).When sender_type = GeoIP Group, insert a Geo IP group (use fortimail-geoip-group-list to retrieve all the Geo IP groups)When sender_type = ISDB, insert an ISDB. Default is 0.0.0.0/0. | Optional |
+| source | When sender_type = IP/Netmask insert the source IP address and netmask of the SMTP client attempting to send the email message. Use the netmask, the portion after the slash (/), to specify the matching subnet. When sender_type = IP Group, insert email group (use fortimail-ip-group-list to retrieve all the IP Groups). When sender_type = GeoIP Group, insert a Geo IP group (use fortimail-geoip-group-list to retrieve all the Geo IP groups)When sender_type = ISDB, insert an ISDB. Default is 0.0.0.0/0. | Optional |
 | reverse_dns_pattern | A pattern to compare to the result of a reverse DNS look-up of the source IP address of the SMTP client attempting to send the email message. Default is *. | Optional |
 | reverse_dns_pattern_regex | Whether to use regular expression syntax instead of wildcards to specify the reverse DNS pattern. Possible values are: enable, disable. | Optional |
-| authentication_status | Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit.any: Match or do not match this access control rule regardless of whether the client has authenticated with the FortiMail unit.authenticated: Match this access control rule only for clients that have authenticated with the FortiMail unit.not-authenticated: Match this access control rule only for clients that have not authenticated with the FortiMail unit. Possible values are: Any, Authenticated, Not Authenticated. Default is Any. | Optional |
-| tls_profile | A TLS profile to allow or reject the connection based on whether the communication session attributes match the settings in the TLS profile. If matching, then perform the access control rule action {discard \| receive \| reject \| relay \| safe \| safe-relay}.If not matching, then perform the TLS profile failure action instead.Use fortimail-tls-profile-list to retrieve all the TLS profiles. | Optional |
-| action | The delivery action that FortiMail unit will perform for SMTP sessions matching this access control rule. reject: Reject delivery of the email (SMTP reply code 550 Relaying denied).discard: Accept the email (SMTP reply code 250 OK), but then silently delete it and do not deliver it.relay:Accept the email (SMTP reply code 250 OK), regardless of authentication or protected domain. Do not greylist, but continue with remaining anti spam and other scans. If all scans pass, the email is delivered.safe: Accept the email (SMTP reply code 250 OK) if the sender authenticates or recipient belongs to a protected domain. Greylist, but skip remaining anti spam scans and but continue with others such as antivirus.Otherwise, if the sender does not authenticate, or the recipient does not belong to a protected domain, then reject delivery of the email (SMTP reply code 554 5.7.1 Relaying denied).In older FortiMail versions, this setting was named bypass.safe-relay: Like safe, except do not greylist.receive: Like relay, except greylist, and require authentication or protected domain.Otherwise, if the sender does not authenticate or the recipient does not belong to a protected domain, then FortiMail rejects (SMTP reply code 554 5.7.1 Relaying denied).Tip: Usually, the receive action is used when you need to apply a TLS profile, but do not want to safelist nor allow outbound, which Relay does. If you do not need to apply a TLS profile, then a rule with this action is often not required because by default, email inbound to protected domains is relayed/proxied. Possible values are: Discard, Receive, Reject, Relay, Safe, Safe &amp; Relay. Default is Reject. | Optional |
+| authentication_status | Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit. any: Match or do not match this access control rule regardless of whether the client has authenticated with the FortiMail unit. authenticated: Match this access control rule only for clients that have authenticated with the FortiMail unit. not-authenticated: Match this access control rule only for clients that have not authenticated with the FortiMail unit. Possible values are: Any, Authenticated, Not Authenticated. Default is Any. | Optional |
+| tls_profile | A TLS profile to allow or reject the connection based on whether the communication session attributes match the settings in the TLS profile. If matching, then perform the access control rule action {discard \| receive \| reject \| relay \| safe \| safe-relay}. If not matching, then perform the TLS profile failure action instead.Use fortimail-tls-profile-list to retrieve all the TLS profiles. | Optional |
+| action | The delivery action that FortiMail unit will perform for SMTP sessions matching this access control rule. reject: Reject delivery of the email (SMTP reply code 550 Relaying denied).discard: Accept the email (SMTP reply code 250 OK), but then silently delete it and do not deliver it. relay:Accept the email (SMTP reply code 250 OK), regardless of authentication or protected domain. Do not greylist, but continue with remaining anti-spam and other scans. If all scans pass, the email is delivered.safe: Accept the email (SMTP reply code 250 OK) if the sender authenticates or recipient belongs to a protected domain. Greylist, but skip remaining anti-spam scans and but continue with others such as antivirus.Otherwise, if the sender does not authenticate, or the recipient does not belong to a protected domain, then reject delivery of the email (SMTP reply code 554 5.7.1 Relaying denied).In older FortiMail versions, this setting was named bypass.safe-relay: Like safe, except do not greylist.receive: Like relay, except greylist, and require authentication or protected domain.Otherwise, if the sender does not authenticate or the recipient does not belong to a protected domain, then FortiMail rejects (SMTP reply code 554 5.7.1 Relaying denied).Tip: Usually, the receive action is used when you need to apply a TLS profile, but do not want to safelist nor allow outbound, which Relay does. If you do not need to apply a TLS profile, then a rule with this action is often not required because by default, email inbound to protected domains is relayed/proxied. Possible values are: Discard, Receive, Reject, Relay, Safe, Safe &amp; Relay. Default is Reject. | Optional |
 | comment | A brief comment for the Access control. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiMail.AccessControl.comment | String | A brief comment for the Access control. |
+| FortiMail.AccessControl.comment | String | A brief comment for the access control. |
 | FortiMail.AccessControl.action | Number | The delivery action that FortiMail unit will perform for SMTP sessions matching this access control rule. |
 | FortiMail.AccessControl.tls_profile | String | A TLS profile to allow or reject the connection based on whether the communication session attributes match the settings in the TLS profile. |
 | FortiMail.AccessControl.authenticated | Number | Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit. |
-| FortiMail.AccessControl.reverse_dns_pattern_regexp | Number | Whether to use regular expression in the reverse DNS pastern. |
+| FortiMail.AccessControl.reverse_dns_pattern_regexp | Number | Whether to use a regular expression in the reverse DNS pastern. |
 | FortiMail.AccessControl.reverse_dns_pattern | String | Whether to use regular expression syntax instead of wildcards to specify the reverse DNS pattern. |
-| FortiMail.AccessControl.sender_ip_group | String | The sender IP group. Relevant when sender_type is IP Group. Use fortimail-ip-group-list to retrieve all the IP groups. |
+| FortiMail.AccessControl.sender_ip_group | String | The sender IP group. Relevant when sender_type is IP Group. |
 | FortiMail.AccessControl.sender_isdb | String | The sender ISDB. Relevant when sender_type is ISDB. |
 | FortiMail.AccessControl.sender_geoip_group | String | The sender Geo IP group. Relevant when sender_type is Geo IP group. |
-| FortiMail.AccessControl.sender_ip_mask | String | The sender IP/Netmask. Relevant when sender_type is IP Address. |
-| FortiMail.AccessControl.sender_ip_type | Number | The sender \(source\) type. Optional values: IP/Netmask,IP Group,GeoIP Group,ISDB. |
-| FortiMail.AccessControl.recipient_pattern_ldap_groupname | String | Recipient pattern. Relevant when recipient_pattern_typeis LDAP Group. |
-| FortiMail.AccessControl.recipient_pattern_ldap | String | Recipient pattern profile. Relevant when recipient_pattern_typeis LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. |
-| FortiMail.AccessControl.recipient_pattern_group | String | Recipient email group. Relevant when recipient_pattern_typeis Email Group. |
-| FortiMail.AccessControl.recipient_pattern | String | Recipient pattern. Relevant when recipient_pattern_typeis Regular Expression or User Defined. |
+| FortiMail.AccessControl.sender_ip_mask | String | The sender IP/Netmask. Relevant when sender_type is IP address. |
+| FortiMail.AccessControl.sender_ip_type | Number | 'The sender (source) type. Optional values: IP/Netmask,IP Group,GeoIP Gorup,ISDB.' |
+| FortiMail.AccessControl.recipient_pattern_ldap_groupname | String | Recipient pattern. Relevant when recipient_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.recipient_pattern_ldap | String | Recipient pattern profile. Relevant when recipient_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.recipient_pattern_group | String | Recipient email group. Relevant when recipient_pattern_type is Email Group. |
+| FortiMail.AccessControl.recipient_pattern | String | Recipient pattern. Relevant when recipient_pattern_type is Regular Expression or User Defined. |
 | FortiMail.AccessControl.recipient_pattern_type | Number | Recipient pattern type. |
-| FortiMail.AccessControl.sender_pattern_ldap_groupname | String | Sender pattern. Relevant when sender_pattern_typeis LDAP Group. |
-| FortiMail.AccessControl.sender_pattern_ldap | String | Sender pattern profile. Relevant when sender_pattern_typeis LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. |
-| FortiMail.AccessControl.sender_pattern_group | String | Sender email group. Relevant when sender_pattern_typeis Email Group. |
-| FortiMail.AccessControl.sender_pattern | String | Sender pattern. Relevant when sender_pattern_typeis Regular Expression or User Defined. |
-| FortiMail.AccessControl.sender_pattern_type | Number | Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined. |
+| FortiMail.AccessControl.sender_pattern_ldap_groupname | String | Sender pattern. Relevant when sender_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.sender_pattern_ldap | String | Sender pattern profile. Relevant when sender_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.sender_pattern_group | String | Sender email group. Relevant when sender_pattern_type is Email Group. |
+| FortiMail.AccessControl.sender_pattern | String | Sender pattern. Relevant when sender_pattern_type is Regular Expression or User Defined. |
+| FortiMail.AccessControl.sender_pattern_type | Number | 'Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined.' |
 | FortiMail.AccessControl.status | Boolean | Whether the access control is activated. |
 | FortiMail.AccessControl.mkey | Number | The ID of the access control. |
 
@@ -1489,46 +1489,46 @@ Update an access control.
 | --- | --- | --- |
 | access_control_id | The ID of the access control. | Required |
 | status | Whether to activate the access rule. Possible values are: enable, disable. Default is enable. | Optional |
-| sender_type | The method of the SMTP client attempting to send the email message.Select either User Defined and enter a complete or partial sender email address to match, or select:Internal: Match any email address from a protected domain.External: Match any email address from an unprotected domain. Email Group: Match any email address in the group. If you select this option, insert to sender argument an email group. LDAP Group: Match any email address in the group. If you select this option, insert to sender_ldap_profile argument a LDAP profile and insert to sender a LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, insert to sender_ldap_profile argument a LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. | Optional |
-| sender | The sender. Relevant when sender_type is not External or Internal.When sender_type = Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups).When sender_type = LDAP Verification, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups).When sender_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups).When sender_type = Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). | Optional |
-| recipient_type | The recipient pattern type. Either select User Defined and enter a complete or partial recipient email address to match, or select: Internal: Match any email address from a protected domain. External: Match any email address from a domain that is not protected. Email Group: Match any email address in the group. If you select this option, insert to recipient argument an email group. LDAP Group: Match any email address in the group. If you select this option, insert to recipient_ldap_profile argument a LDAP profile and insert to recipient LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, insert to recipient_ldap_profile argument a LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. | Optional |
-| recipient | The recipient. Relevant when recipient_type is not External or Internal.When recipient_type= Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups).When recipient_type= LDAP Verification, insert LDAP server.When recipient_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups).When recipient_type= Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). | Optional |
+| sender_type | The method of the SMTP client attempting to send the email message. Select either User Defined and enter a complete or partial sender email address to match, or select: Internal: Match any email address from a protected domain. External: Match any email address from an unprotected domain. Email Group: Match any email address in the group. If you select this option, in the sender argument insert an email group. LDAP Group: Match any email address in the group. If you select this option, in the sender_ldap_profile argument insert an LDAP profile and in sender insert an LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, in the sender_ldap_profile argument insert an LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. | Optional |
+| sender | The sender. Relevant when sender_type is not External or Internal. When sender_type = Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When sender_type = LDAP Verification, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When sender_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When sender_type = Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). | Optional |
+| recipient_type | The recipient pattern type. Either select User Defined and enter a complete or partial recipient email address to match, or select: Internal: Match any email address from a protected domain. External: Match any email address from a domain that is not protected. Email Group: Match any email address in the group. If you select this option, in the recipient argument insert an email group. LDAP Group: Match any email address in the group. If you select this option, in the recipient_ldap_profile argument insert an LDAP profile and in recipient insert an LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, in the recipient_ldap_profile argument insert an LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. | Optional |
+| recipient | The recipient. Relevant when recipient_type is not External or Internal. When recipient_type= Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When recipient_type= LDAP Verification, insert LDAP server. When recipient_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When recipient_type= Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). | Optional |
 | sender_ldap_profile | Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when sender_type= LDAP Group. | Optional |
 | recipient_ldap_profile | Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. | Optional |
 | source_type | The method of the SMTP client attempting to send the email message. Possible values are: IP/Netmask, IP Group, GeoIP Group, ISDB. | Optional |
-| source | When sender_type = IP/Netmask insert the source IP address and net-mask of the SMTP client attempting to send the email message. Use the net-mask, the portion after the slash (/), to specify the matching sub-net.When sender_type = IP Group, insert email group (use fortimail-ip-group-list to retrieve all the IP Groups).When sender_type = GeoIP Group, insert a Geo IP group.When sender_type = ISDB, insert an ISDB. | Optional |
+| source | When sender_type = IP/Netmask insert the source IP address and netmask of the SMTP client attempting to send the email message. Use the netmask, the portion after the slash (/), to specify the matching subnet. When sender_type = IP Group, insert email group (use fortimail-ip-group-list to retrieve all the IP Groups). When sender_type = GeoIP Group, insert a Geo IP group. When sender_type = ISDB, insert an ISDB. | Optional |
 | reverse_dns_pattern | A pattern to compare to the result of a reverse DNS look-up of the source IP address of the SMTP client attempting to send the email message. | Optional |
 | reverse_dns_pattern_regex | Whether to use regular expression syntax instead of wildcards to specify the reverse DNS pattern. Possible values are: enable, disable. | Optional |
-| authentication_status | Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit.any: Match or do not match this access control rule regardless of whether the client has authenticated with the FortiMail unit.authenticated: Match this access control rule only for clients that have authenticated with the FortiMail unit.not-authenticated: Match this access control rule only for clients that have not authenticated with the FortiMail unit. Possible values are: Any, Authenticated, Not Authenticated. | Optional |
-| tls_profile | A TLS profile to allow or reject the connection based on whether the communication session attributes match the settings in the TLS profile.If matching, then perform the access control rule action {discard \| receive \| reject \| relay \| safe \| safe-relay}.If not matching, then perform the TLS profile failure action instead.Use fortimail-tls-profile-list to retrieve all the TLS profiles. | Optional |
-| action | The delivery action that FortiMail unit will perform for SMTP sessions matching this access control rule:reject: Reject delivery of the email (SMTP reply code 550 Relaying denied).discard: Accept the email (SMTP reply code 250 OK), but then silently delete it and do not deliver it.relay:Accept the email (SMTP reply code 250 OK), regardless of authentication or protected domain. Do not greylist, but continue with remaining anti spam and other scans. If all scans pass, the email is delivered.safe: Accept the email (SMTP reply code 250 OK) if the sender authenticates or recipient belongs to a protected domain. Greylist, but skip remaining anti spam scans and but continue with others such as antivirus.Otherwise, if the sender does not authenticate, or the recipient does not belong to a protected domain, then reject delivery of the email (SMTP reply code 554 5.7.1 Relaying denied).In older FortiMail versions, this setting was named bypass.safe-relay: Like safe, except do not greylist.receive: Like relay, except greylist, and require authentication or protected domain.Otherwise, if the sender does not authenticate or the recipient does not belong to a protected domain, then FortiMail rejects (SMTP reply code 554 5.7.1 Relaying denied).Tip: Usually, the receive action is used when you need to apply a TLS profile, but do not want to safelist nor allow outbound, which Relay does. If you do not need to apply a TLS profile, then a rule with this action is often not required because by default, email inbound to protected domains is relayed/proxied. Possible values are: Discard, Receive, Reject, Relay, Safe, Safe &amp; Relay. | Optional |
+| authentication_status | Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit. any: Match or do not match this access control rule regardless of whether the client has authenticated with the FortiMail unit. authenticated: Match this access control rule only for clients that have authenticated with the FortiMail unit. not-authenticated: Match this access control rule only for clients that have not authenticated with the FortiMail unit. Possible values are: Any, Authenticated, Not Authenticated. | Optional |
+| tls_profile | A TLS profile to allow or reject the connection based on whether the communication session attributes match the settings in the TLS profile. If matching, then perform the access control rule action {discard \| receive \| reject \| relay \| safe \| safe-relay}. If not matching, then perform the TLS profile failure action instead.Use fortimail-tls-profile-list to retrieve all the TLS profiles. | Optional |
+| action | The delivery action that FortiMail unit will perform for SMTP sessions matching this access control rule:reject: Reject delivery of the email (SMTP reply code 550 Relaying denied).discard: Accept the email (SMTP reply code 250 OK), but then silently delete it and do not deliver it.relay:Accept the email (SMTP reply code 250 OK), regardless of authentication or protected domain. Do not greylist, but continue with remaining anti-spam and other scans. If all scans pass, the email is delivered.safe: Accept the email (SMTP reply code 250 OK) if the sender authenticates or recipient belongs to a protected domain. Greylist, but skip remaining anti-spam scans and but continue with others such as antivirus.Otherwise, if the sender does not authenticate, or the recipient does not belong to a protected domain, then reject delivery of the email (SMTP reply code 554 5.7.1 Relaying denied).In older FortiMail versions, this setting was named bypass.safe-relay: Like safe, except do not greylist.receive: Like relay, except greylist, and require authentication or protected domain.Otherwise, if the sender does not authenticate or the recipient does not belong to a protected domain, then FortiMail rejects (SMTP reply code 554 5.7.1 Relaying denied).Tip: Usually, the receive action is used when you need to apply a TLS profile, but do not want to safelist nor allow outbound, which Relay does. If you do not need to apply a TLS profile, then a rule with this action is often not required because by default, email inbound to protected domains is relayed/proxied. Possible values are: Discard, Receive, Reject, Relay, Safe, Safe &amp; Relay. | Optional |
 | comment | A brief comment for the Access control. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiMail.AccessControl.comment | String | A brief comment for the Access control. |
+| FortiMail.AccessControl.comment | String | A brief comment for the access control. |
 | FortiMail.AccessControl.action | Number | The delivery action that FortiMail unit will perform for SMTP sessions matching this access control rule. |
-| FortiMail.AccessControl.tls_profile | String | A TLS profile to allow or reject the connection based on whether the communication session attributes match the settings in the TLS profile. Use fortimail-tls-profile-list to retrieve all the TLS profiles. |
+| FortiMail.AccessControl.tls_profile | String | A TLS profile to allow or reject the connection based on whether the communication session attributes match the settings in the TLS profile. |
 | FortiMail.AccessControl.authenticated | Number | Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit. |
-| FortiMail.AccessControl.reverse_dns_pattern_regexp | Number | Whether to use regular expression in the reverse DNS pastern. |
+| FortiMail.AccessControl.reverse_dns_pattern_regexp | Number | Whether to use a regular expression in the reverse DNS pastern. |
 | FortiMail.AccessControl.reverse_dns_pattern | String | Whether to use regular expression syntax instead of wildcards to specify the reverse DNS pattern. |
-| FortiMail.AccessControl.sender_ip_group | String | The sender IP group. Relevant when sender_type is IP Group. Use fortimail-ip-group-list to retrieve all the IP groups. |
+| FortiMail.AccessControl.sender_ip_group | String | The sender IP group. Relevant when sender_type is IP Group. |
 | FortiMail.AccessControl.sender_isdb | String | The sender ISDB. Relevant when sender_type is ISDB. |
 | FortiMail.AccessControl.sender_geoip_group | String | The sender Geo IP group. Relevant when sender_type is Geo IP group. |
-| FortiMail.AccessControl.sender_ip_mask | String | The sender IP/Netmask. Relevant when sender_type is IP Address. |
-| FortiMail.AccessControl.sender_ip_type | Number | The sender \(source\) type. Optional values: IP/Netmask,IP Group,GeoIP Group,ISDB. |
-| FortiMail.AccessControl.recipient_pattern_ldap_groupname | String | Recipient pattern. Relevant when recipient_pattern_typeis LDAP Group. |
-| FortiMail.AccessControl.recipient_pattern_ldap | String | Recipient pattern profile. Relevant when recipient_pattern_typeis LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. |
-| FortiMail.AccessControl.recipient_pattern_group | String | Recipient email group. Relevant when recipient_pattern_typeis Email Group. |
-| FortiMail.AccessControl.recipient_pattern | String | Recipient pattern. Relevant when recipient_pattern_typeis Regular Expression or User Defined. |
-| FortiMail.AccessControl.recipient_pattern_type | Number | Recipient pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined. |
-| FortiMail.AccessControl.sender_pattern_ldap_groupname | String | Sender pattern. Relevant when sender_pattern_typeis LDAP Group. |
-| FortiMail.AccessControl.sender_pattern_ldap | String | Sender pattern profile. Relevant when sender_pattern_typeis LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. |
-| FortiMail.AccessControl.sender_pattern_group | String | Sender email group. Relevant when sender_pattern_typeis Email Group. |
-| FortiMail.AccessControl.sender_pattern | String | Sender pattern. Relevant when sender_pattern_typeis Regular Expression or User Defined. |
-| FortiMail.AccessControl.sender_pattern_type | Number | Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined. |
+| FortiMail.AccessControl.sender_ip_mask | String | The sender IP/Netmask. Relevant when sender_type is IP address. |
+| FortiMail.AccessControl.sender_ip_type | Number | 'The sender (source) type. Optional values: IP/Netmask,IP Group,GeoIP Gorup,ISDB.' |
+| FortiMail.AccessControl.recipient_pattern_ldap_groupname | String | Recipient pattern. Relevant when recipient_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.recipient_pattern_ldap | String | Recipient pattern profile. Relevant when recipient_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.recipient_pattern_group | String | Recipient email group. Relevant when recipient_pattern_type is Email Group. |
+| FortiMail.AccessControl.recipient_pattern | String | Recipient pattern. Relevant when recipient_pattern_type is Regular Expression or User Defined. |
+| FortiMail.AccessControl.recipient_pattern_type | Number | Recipient pattern type. |
+| FortiMail.AccessControl.sender_pattern_ldap_groupname | String | Sender pattern. Relevant when sender_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.sender_pattern_ldap | String | Sender pattern profile. Relevant when sender_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.sender_pattern_group | String | Sender email group. Relevant when sender_pattern_type is Email Group. |
+| FortiMail.AccessControl.sender_pattern | String | Sender pattern. Relevant when sender_pattern_type is Regular Expression or User Defined. |
+| FortiMail.AccessControl.sender_pattern_type | Number | 'Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined.' |
 | FortiMail.AccessControl.status | Boolean | Whether the access control is activated. |
 | FortiMail.AccessControl.mkey | Number | The ID of the access control. |
 
@@ -1619,7 +1619,7 @@ There is no context output for this command.
 ### fortimail-access-control-list
 
 ***
-List access control rules. If a id is given, the command will return the information about the wanted access control rule.
+List access control rules. If an ID is given, the command will return the information about the specified access control rule.
 
 #### Base Command
 
@@ -1637,27 +1637,27 @@ List access control rules. If a id is given, the command will return the informa
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiMail.AccessControl.comment | String | A brief comment for the Access control. |
+| FortiMail.AccessControl.comment | String | A brief comment for the access control. |
 | FortiMail.AccessControl.action | Number | The delivery action that FortiMail unit will perform for SMTP sessions matching this access control rule. |
 | FortiMail.AccessControl.tls_profile | String | A TLS profile to allow or reject the connection based on whether the communication session attributes match the settings in the TLS profile. |
 | FortiMail.AccessControl.authenticated | Number | Authentication status. Indicate whether this rule applies only to messages delivered by clients that have authenticated with the FortiMail unit. |
-| FortiMail.AccessControl.reverse_dns_pattern_regexp | Number | Whether to use regular expression in the reverse DNS pastern. |
+| FortiMail.AccessControl.reverse_dns_pattern_regexp | Number | Whether to use a regular expression in the reverse DNS pastern. |
 | FortiMail.AccessControl.reverse_dns_pattern | String | Whether to use regular expression syntax instead of wildcards to specify the reverse DNS pattern. |
 | FortiMail.AccessControl.sender_ip_group | String | The sender IP group. Relevant when sender_type is IP Group. |
 | FortiMail.AccessControl.sender_isdb | String | The sender ISDB. Relevant when sender_type is ISDB. |
 | FortiMail.AccessControl.sender_geoip_group | String | The sender Geo IP group. Relevant when sender_type is Geo IP group. |
-| FortiMail.AccessControl.sender_ip_mask | String | The sender IP/Netmask. Relevant when sender_type is IP Address. |
-| FortiMail.AccessControl.sender_ip_type | Number | The sender \(source\) type. Optional values: IP/Netmask,IP Group,GeoIP Gorup,ISDB. |
-| FortiMail.AccessControl.recipient_pattern_ldap_groupname | String | Recipient pattern. Relevant when recipient_pattern_typeis LDAP Group. |
-| FortiMail.AccessControl.recipient_pattern_ldap | String | Recipient pattern profile. Relevant when recipient_pattern_typeis LDAP Group. |
-| FortiMail.AccessControl.recipient_pattern_group | String | Recipient email group. Relevant when recipient_pattern_typeis Email Group. |
-| FortiMail.AccessControl.recipient_pattern | String | Recipient pattern. Relevant when recipient_pattern_typeis Regular Expression or User Defined. |
+| FortiMail.AccessControl.sender_ip_mask | String | The sender IP/Netmask. Relevant when sender_type is IP address. |
+| FortiMail.AccessControl.sender_ip_type | Number | 'The sender (source) type. Optional values: IP/Netmask,IP Group,GeoIP Gorup,ISDB.' |
+| FortiMail.AccessControl.recipient_pattern_ldap_groupname | String | Recipient pattern. Relevant when recipient_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.recipient_pattern_ldap | String | Recipient pattern profile. Relevant when recipient_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.recipient_pattern_group | String | Recipient email group. Relevant when recipient_pattern_type is Email Group. |
+| FortiMail.AccessControl.recipient_pattern | String | Recipient pattern. Relevant when recipient_pattern_type is Regular Expression or User Defined. |
 | FortiMail.AccessControl.recipient_pattern_type | Number | Recipient pattern type. |
-| FortiMail.AccessControl.sender_pattern_ldap_groupname | String | Sender pattern. Relevant when sender_pattern_typeis LDAP Group. |
-| FortiMail.AccessControl.sender_pattern_ldap | String | Sender pattern profile. Relevant when sender_pattern_typeis LDAP Group. |
-| FortiMail.AccessControl.sender_pattern_group | String | Sender email group. Relevant when sender_pattern_typeis Email Group. |
-| FortiMail.AccessControl.sender_pattern | String | Sender pattern. Relevant when sender_pattern_typeis Regular Expression or User Defined. |
-| FortiMail.AccessControl.sender_pattern_type | Number | Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined. |
+| FortiMail.AccessControl.sender_pattern_ldap_groupname | String | Sender pattern. Relevant when sender_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.sender_pattern_ldap | String | Sender pattern profile. Relevant when sender_pattern_type is LDAP Group. |
+| FortiMail.AccessControl.sender_pattern_group | String | Sender email group. Relevant when sender_pattern_type is Email Group. |
+| FortiMail.AccessControl.sender_pattern | String | Sender pattern. Relevant when sender_pattern_type is Regular Expression or User Defined. |
+| FortiMail.AccessControl.sender_pattern_type | Number | 'Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined.' |
 | FortiMail.AccessControl.status | Boolean | Whether the access control is activated. |
 | FortiMail.AccessControl.mkey | Number | The ID of the access control. |
 
@@ -2243,19 +2243,19 @@ Create an Inbound/ Outbound Recipient policy. Recipient policies control email b
 | status | Whether to apply the policy. Possible values are: enable, disable. Default is enable. | Optional |
 | comment | A brief comment for the IP policy. | Optional |
 | sender_type | Define sender (MAIL FROM:) email addresses that match this policy. If you enter LDAP group, also configure sender_ldap_profile by entering an LDAP profile in which you have enabled and configured a group query. If you enter Email address group, also configure sender_email_address_group by entering an Email group in which you have enabled and configured a group query. Possible values are: User (wildcard), User (regex), LDAP group, Email address group. | Optional |
-| sender_pattern | The policy sender pattern. When sender_typeis User (wildcard), insert email addresses that match this policy. For example, test@test.com. When sender_type is User (regex), insert the recipient email address regular expression pattern. When sender_type is LDAP group, insert the sender pattern. When sender_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups). | Optional |
+| sender_pattern | The policy sender pattern. When sender_type is User (wildcard), insert email addresses that match this policy. For example, test@test.com. When sender_type is User (regex), insert the recipient email address regular expression pattern. When sender_type is LDAP group, insert the sender pattern. When sender_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups). | Optional |
 | sender_ldap_profile | Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when sender_type=LDAP Group. | Optional |
 | sender_email_address_group | Sender Email group (use fortimail-email-group-list to retrieve all the Email groups). Relevant when recipient_type=Email address group. | Optional |
 | recipient_type | Define recipient (RCPT TO:) email addresses that match this policy. If you enter LDAP group, also configure recipient_ldap_profile by entering an LDAP profile in which you have enabled and configured a group query. If you enter Email address group, also configure recipient_email_address_group by entering an Email group in which you have enabled and configured a group query. Possible values are: User (wildcard), User (regex), LDAP group, Email address group. | Optional |
-| recipient_pattern | The policy recipient pattern. When recipient_typeis User (wildcard), insert the local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy and after insert @ and the  domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. For example, test@test.com.When recipient_type is User (regex), insert the recipient email address regular expression pattern.When recipient_typeis LDAP group, insert the sender pattern.When recipient_typeis Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups). | Optional |
+| recipient_pattern | The policy recipient pattern. When recipient_type is User (wildcard), insert the local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy and after insert @ and the  domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. For example, test@test.com. When recipient_type is User (regex), insert the recipient email address regular expression pattern. When recipient_type is LDAP group, insert the sender pattern. When recipient_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups). | Optional |
 | recipient_ldap_profile | Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. | Optional |
 | recipient_email_address_group | Recipient Email group (use fortimail-email-group-list to retrieve all the Email groups). Relevant when recipient_type=Email address group. | Optional |
-| antispam_profile | The name of an outgoing anti spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles. | Optional |
-| antivirus_profile | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles. | Optional |
+| antispam_profile | The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles. | Optional |
+| antivirus_profile | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles. | Optional |
 | content_profile | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. | Optional |
 | resource_profile | The name of the resource profile that you want to apply to connections matching the policy. Use fortimail-resource-profile to retrieve all the resources. | Required |
 | auth_type | The type of the authentication profile that this policy will apply. Possible values are: imap, ldap, pop3, radius, smpt. | Optional |
-| auth_profile | The name of an authentication profile for the type. When auth_type is LDAP, insert LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.When auth_type is RADIUS, insert RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles.When auth_type is POP3, insert POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles.When auth_type is IMAP, insert IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles.When auth_type is SMTP, insert SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles.Relevant when auth_type is chosen. | Optional |
+| auth_profile | The name of an authentication profile for the type. When auth_type is LDAP, insert LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. When auth_type is RADIUS, insert RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. When auth_type is POP3, insert POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles. When auth_type is IMAP, insert IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles. When auth_type is SMTP, insert SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles. Relevant when auth_type is chosen. | Optional |
 | use_smtp_auth | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. Possible values are: enable, disable. Default is disable. | Optional |
 | smtp_different | Whether to reject different SMTP sender identity for authenticated user. Possible values are: enable, disable. Default is disable. | Optional |
 | smtp_diff_identity_ldap | Whether to verify SMTP sender identity with LDAP for authenticated email. Possible values are: enable, disable. Default is disable. | Optional |
@@ -2270,30 +2270,30 @@ Create an Inbound/ Outbound Recipient policy. Recipient policies control email b
 | --- | --- | --- |
 | FortiMail.RecipientPolicy.comment | String | A brief comment for the IP policy. |
 | FortiMail.RecipientPolicy.mkey | Number | The ID of the recipient policy. |
-| FortiMail.RecipientPolicy.direction | String | The type of the recipient policy. 1: Inbound, 2: Outbound. |
-| FortiMail.RecipientPolicy.sender_type | String | Define sender \(MAIL FROM:\) email addresses that match this policy. 0: User \(wildcard\), 2: LDAP group ,3:Email address group ,4: User\(regex\). |
-| FortiMail.RecipientPolicy.sender_pattern | String | The local part of sender email address to define sender \(MAIL FROM:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.sender_domain | String | The domain part of sender email address to define sender \(MAIL FROM:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.sender_ldap_profile | String | Sender LDAP profile \(use fortimail-ldap-group-list to retrieve all the LDAP profiles\). Relevant when recipient_type= LDAP Group. |
-| FortiMail.RecipientPolicy.sender_email_address_group | String | The sender email group. |
+| FortiMail.RecipientPolicy.direction | String | 'The type of the recipient policy. 1: Inbound, 2: Outbound.' |
+| FortiMail.RecipientPolicy.sender_type | String | 'Define sender (MAIL FROM:) email addresses that match this policy. 0: User (wildcard), 2: LDAP group, 3: Email address group, 4: User(regex).' |
+| FortiMail.RecipientPolicy.sender_pattern | String | The local part of sender email address to define sender (MAIL FROM:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.sender_domain | String | The domain part of sender email address to define sender (MAIL FROM:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.sender_ldap_profile | String | Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. |
+| FortiMail.RecipientPolicy.sender_email_address_group | String | The sender email group (use fortimail-email-group-list to retrieve all the email groups). |
 | FortiMail.RecipientPolicy.sender_pattern_regex | String | The sender email address regular expression pattern. |
-| FortiMail.RecipientPolicy.groupmode | String | Define recipient \(RCPT TO:\) email addresses that match this policy. 0: User \(wildcard\), 2: LDAP group ,3:Email address group ,4: User\(regex\). |
-| FortiMail.RecipientPolicy.recipient_pattern | String | The local part of recipient email address to define recipient \(RCPT TO:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.recipient_domain | String | The domain part of recipient email address to define recipient \(RCPT TO:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.ldap_profile | String | Recipient LDAP profile \(use fortimail-ldap-group-list to retrieve all the LDAP profiles\). Relevant when recipient_type= LDAP Group. |
-| FortiMail.RecipientPolicy.recipient_email_address_group | String | The recipient email group. |
+| FortiMail.RecipientPolicy.groupmode | String | 'Define recipient (RCPT TO:) email addresses that match this policy. 0: User (wildcard), 2: LDAP group, 3: Email address group, 4: User(regex).' |
+| FortiMail.RecipientPolicy.recipient_pattern | String | The local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.recipient_domain | String | The domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.ldap_profile | String | Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. |
+| FortiMail.RecipientPolicy.recipient_email_address_group | String | The recipient email group (use fortimail-email-group-list to retrieve all the email groups). |
 | FortiMail.RecipientPolicy.recipient_pattern_regex | String | The recipient email address regular expression pattern. |
-| FortiMail.RecipientPolicy.antispam | String | The name of an outgoing anti spam profile, if any, that this policy will apply. |
+| FortiMail.RecipientPolicy.antispam | String | The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles. |
 | FortiMail.RecipientPolicy.content | String | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. |
 | FortiMail.RecipientPolicy.profile_dlp | String | The name of the resource profile that you want to apply to connections matching the policy. Use fortimail-resource-profile to retrieve all the resources. |
-| FortiMail.RecipientPolicy.antivirus | String | The name of an antivirus profile, if any, that this policy will apply. |
+| FortiMail.RecipientPolicy.antivirus | String | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles. |
 | FortiMail.RecipientPolicy.misc | String | The type of the authentication profile that this policy apply. |
-| FortiMail.RecipientPolicy.auth | String | RADIUS authentication profile. |
-| FortiMail.RecipientPolicy.radius_auth | String | LDAP authentication profile. |
-| FortiMail.RecipientPolicy.ldap_auth | String | POP3 authentication profile. |
-| FortiMail.RecipientPolicy.pop3_auth | String | IMAP authentication profile. |
-| FortiMail.RecipientPolicy.imap_auth | String | SMTP authentication profile. |
-| FortiMail.RecipientPolicy.smtp_auth | String | Whether the policy allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
+| FortiMail.RecipientPolicy.auth | String | RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. |
+| FortiMail.RecipientPolicy.radius_auth | String | LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. |
+| FortiMail.RecipientPolicy.ldap_auth | String | POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles. |
+| FortiMail.RecipientPolicy.pop3_auth | String | IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles. |
+| FortiMail.RecipientPolicy.imap_auth | String | SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles. |
+| FortiMail.RecipientPolicy.smtp_auth | String | Whether the policy allows email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 | FortiMail.RecipientPolicy.pkiauth | String | Whether to allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 | FortiMail.RecipientPolicy.pkiuser | String | The name of a PKI user. Relevant when enable_pki is enable. |
 | FortiMail.RecipientPolicy.auth_allow_smtp | String | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. |
@@ -2376,19 +2376,19 @@ Update a Recipient policy.
 | status | Whether to apply the policy. Possible values are: enable, disable. Default is enable. | Optional |
 | comment | A brief comment for the IP policy. | Optional |
 | sender_type | Define sender (MAIL FROM:) email addresses that match this policy. If you enter LDAP group, also configure sender_ldap_profile by entering an LDAP profile in which you have enabled and configured a group query. If you enter Email address group, also configure sender_email_address_group by entering an Email group in which you have enabled and configured a group query. Possible values are: User (wildcard), User (regex), LDAP group, Email address group. | Optional |
-| sender_pattern | The policy sender pattern.When sender_typeis User (wildcard), insert email addresses that match this policy. For example, test@test.com. When sender_type is User (regex), insert the recipient email address regular expression pattern.When sender_type is LDAP group, insert the sender pattern. When sender_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups). | Optional |
+| sender_pattern | The policy sender pattern. When sender_type is User (wildcard), insert email addresses that match this policy. For example, test@test.com. When sender_type is User (regex), insert the recipient email address regular expression pattern. When sender_type is LDAP group, insert the sender pattern. When sender_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups). | Optional |
 | sender_ldap_profile | Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when sender_type= LDAP Group. | Optional |
 | sender_email_address_group | Sender Email group (use fortimail-email-group-list to retrieve all the Email groups). Relevant when recipient_type=Email address group. | Optional |
 | recipient_type | Define recipient (RCPT TO:) email addresses that match this policy. If you enter LDAP group, also configure recipient_ldap_profile by entering an LDAP profile in which you have enabled and configured a group query. If you enter Email address group, also configure recipient_email_address_group by entering an Email group in which you have enabled and configured a group query. Possible values are: User (wildcard), User (regex), LDAP group, Email address group. | Optional |
-| recipient_pattern | The policy recipient pattern.When recipient_typeis User (wildcard), insert the local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy and after insert @ and the  domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. For example, test@test.com.When recipient_type is User (regex), insert the recipient email address regular expression pattern.When recipient_typeis LDAP group, insert the sender pattern.When recipient_typeis Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups). | Optional |
+| recipient_pattern | The policy recipient pattern. When recipient_type is User (wildcard), insert the local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy and after insert @ and the  domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. For example, test@test.com. When recipient_type is User (regex), insert the recipient email address regular expression pattern. When recipient_type is LDAP group, insert the sender pattern. When recipient_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups). | Optional |
 | recipient_ldap_profile | Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. | Optional |
 | recipient_email_address_group | Recipient Email group (use fortimail-email-group-list to retrieve all the Email groups). Relevant when recipient_type=Email address group. | Optional |
-| antispam_profile | The name of an outgoing anti spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles. | Optional |
-| antivirus_profile | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles. | Optional |
+| antispam_profile | The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles. | Optional |
+| antivirus_profile | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles. | Optional |
 | content_profile | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. | Optional |
 | resource_profile | The name of the resource profile that you want to apply to connections matching the policy. Use fortimail-resource-profile to retrieve all the resources. | Optional |
 | auth_type | The type of the authentication profile that this policy will apply. Possible values are: imap, ldap, pop3, radius, smpt. | Optional |
-| auth_profile | The name of an authentication profile for the type.When auth_type is LDAP, insert LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.When auth_type is RADIUS, insert RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles.When auth_type is POP3, insert POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles.When auth_type is IMAP, insert IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles.When auth_type is SMTP, insert SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles.Relevant when auth_type is chosen. | Optional |
+| auth_profile | The name of an authentication profile for the type. When auth_type is LDAP, insert LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. When auth_type is RADIUS, insert RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. When auth_type is POP3, insert POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles. When auth_type is IMAP, insert IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles. When auth_type is SMTP, insert SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles. Relevant when auth_type is chosen. | Optional |
 | use_smtp_auth | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. Possible values are: enable, disable. | Optional |
 | smtp_different | Whether to reject different SMTP sender identity for authenticated user. Possible values are: enable, disable. | Optional |
 | smtp_diff_identity_ldap | Whether to verify SMTP sender identity with LDAP for authenticated email. Possible values are: enable, disable. | Optional |
@@ -2403,30 +2403,30 @@ Update a Recipient policy.
 | --- | --- | --- |
 | FortiMail.RecipientPolicy.comment | String | A brief comment for the IP policy. |
 | FortiMail.RecipientPolicy.mkey | Number | The ID of the recipient policy. |
-| FortiMail.RecipientPolicy.direction | String | The type of the recipient policy. 1: Inbound, 2: Outbound. |
-| FortiMail.RecipientPolicy.sender_type | String | Define sender \(MAIL FROM:\) email addresses that match this policy. 0: User \(wildcard\), 2: LDAP group ,3:Email address group ,4: User\(regex\). |
-| FortiMail.RecipientPolicy.sender_pattern | String | The local part of sender email address to define sender \(MAIL FROM:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.sender_domain | String | The domain part of sender email address to define sender \(MAIL FROM:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.sender_ldap_profile | String | Sender LDAP profile \(use fortimail-ldap-group-list to retrieve all the LDAP profiles\). Relevant when recipient_type= LDAP Group. |
-| FortiMail.RecipientPolicy.sender_email_address_group | String | The sender email group \(use fortimail-email-group-list to retrieve all the email groups\). |
+| FortiMail.RecipientPolicy.direction | String | 'The type of the recipient policy. 1: Inbound, 2: Outbound.' |
+| FortiMail.RecipientPolicy.sender_type | String | 'Define sender (MAIL FROM:) email addresses that match this policy. 0: User (wildcard), 2: LDAP group, 3:Email address group, 4: User(regex).' |
+| FortiMail.RecipientPolicy.sender_pattern | String | The local part of sender email address to define sender (MAIL FROM:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.sender_domain | String | The domain part of sender email address to define sender (MAIL FROM:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.sender_ldap_profile | String | Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. |
+| FortiMail.RecipientPolicy.sender_email_address_group | String | The sender email group (use fortimail-email-group-list to retrieve all the email groups). |
 | FortiMail.RecipientPolicy.sender_pattern_regex | String | The sender email address regular expression pattern. |
-| FortiMail.RecipientPolicy.groupmode | String | Define recipient \(RCPT TO:\) email addresses that match this policy. 0: User \(wildcard\), 2: LDAP group ,3:Email address group ,4: User\(regex\). |
-| FortiMail.RecipientPolicy.recipient_pattern | String | The local part of recipient email address to define recipient \(RCPT TO:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.recipient_domain | String | The domain part of recipient email address to define recipient \(RCPT TO:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.ldap_profile | String | Recipient LDAP profile \(use fortimail-ldap-group-list to retrieve all the LDAP profiles\). Relevant when recipient_type= LDAP Group. |
-| FortiMail.RecipientPolicy.recipient_email_address_group | String | The recipient email group \(use fortimail-email-group-list to retrieve all the email groups\). |
+| FortiMail.RecipientPolicy.groupmode | String | 'Define recipient (RCPT TO:) email addresses that match this policy. 0: User (wildcard), 2: LDAP group, 3:Email address group, 4: User(regex).' |
+| FortiMail.RecipientPolicy.recipient_pattern | String | The local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.recipient_domain | String | The domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.ldap_profile | String | Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. |
+| FortiMail.RecipientPolicy.recipient_email_address_group | String | The recipient email group (use fortimail-email-group-list to retrieve all the email groups). |
 | FortiMail.RecipientPolicy.recipient_pattern_regex | String | The recipient email address regular expression pattern. |
-| FortiMail.RecipientPolicy.antispam | String | The name of an outgoing anti spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles. |
+| FortiMail.RecipientPolicy.antispam | String | The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles. |
 | FortiMail.RecipientPolicy.content | String | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. |
 | FortiMail.RecipientPolicy.profile_dlp | String | The name of the resource profile that you want to apply to connections matching the policy. Use fortimail-resource-profile to retrieve all the resources. |
-| FortiMail.RecipientPolicy.antivirus | String | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles. |
+| FortiMail.RecipientPolicy.antivirus | String | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles. |
 | FortiMail.RecipientPolicy.misc | String | The type of the authentication profile that this policy apply. |
 | FortiMail.RecipientPolicy.auth | String | RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. |
 | FortiMail.RecipientPolicy.radius_auth | String | LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. |
 | FortiMail.RecipientPolicy.ldap_auth | String | POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles. |
 | FortiMail.RecipientPolicy.pop3_auth | String | IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles. |
 | FortiMail.RecipientPolicy.imap_auth | String | SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles. |
-| FortiMail.RecipientPolicy.smtp_auth | String | Whether the policy allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
+| FortiMail.RecipientPolicy.smtp_auth | String | Whether the policy allows email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 | FortiMail.RecipientPolicy.pkiauth | String | Whether to allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 | FortiMail.RecipientPolicy.pkiuser | String | The name of a PKI user. Relevant when enable_pki is enable. |
 | FortiMail.RecipientPolicy.auth_allow_smtp | String | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. |
@@ -2461,7 +2461,7 @@ Update a Recipient policy.
 ### fortimail-recipient-policy-delete
 
 ***
-Delete a Recipient policy.
+Delete a recipient policy.
 
 #### Base Command
 
@@ -2522,7 +2522,7 @@ There is no context output for this command.
 ### fortimail-recipient-policy-list
 
 ***
-List recipient policies. If a ID is given, the command will return the information about the wanted recipient policy.
+List recipient policies. If an ID is given, the command will return the information about the specified recipient policy.
 
 #### Base Command
 
@@ -2542,30 +2542,30 @@ List recipient policies. If a ID is given, the command will return the informati
 | --- | --- | --- |
 | FortiMail.RecipientPolicy.comment | String | A brief comment for the IP policy. |
 | FortiMail.RecipientPolicy.mkey | Number | The ID of the recipient policy. |
-| FortiMail.RecipientPolicy.direction | String | The type of the recipient policy. 1: Inbound, 2: Outbound. |
-| FortiMail.RecipientPolicy.sender_type | String | Define sender \(MAIL FROM:\) email addresses that match this policy. 0: User \(wildcard\), 2: LDAP group ,3:Email address group ,4: User\(regex\). |
-| FortiMail.RecipientPolicy.sender_pattern | String | The local part of sender email address to define sender \(MAIL FROM:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.sender_domain | String | The domain part of sender email address to define sender \(MAIL FROM:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.sender_ldap_profile | String | Sender LDAP profile \(use fortimail-ldap-group-list to retrieve all the LDAP profiles\). Relevant when recipient_type= LDAP Group. |
-| FortiMail.RecipientPolicy.sender_email_address_group | String | The sender email group \(use fortimail-email-group-list to retrieve all the email groups\). |
+| FortiMail.RecipientPolicy.direction | String | 'The type of the recipient policy. 1: Inbound, 2: Outbound.' |
+| FortiMail.RecipientPolicy.sender_type | String | 'Define sender (MAIL FROM:) email addresses that match this policy. 0: User (wildcard), 2: LDAP group, 3:Email address group, 4: User(regex).' |
+| FortiMail.RecipientPolicy.sender_pattern | String | The local part of sender email address to define sender (MAIL FROM:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.sender_domain | String | The domain part of sender email address to define sender (MAIL FROM:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.sender_ldap_profile | String | Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. |
+| FortiMail.RecipientPolicy.sender_email_address_group | String | The sender email group (use fortimail-email-group-list to retrieve all the email groups). |
 | FortiMail.RecipientPolicy.sender_pattern_regex | String | The sender email address regular expression pattern. |
-| FortiMail.RecipientPolicy.groupmode | String | Define recipient \(RCPT TO:\) email addresses that match this policy. 0: User \(wildcard\), 2: LDAP group ,3:Email address group ,4: User\(regex\). |
-| FortiMail.RecipientPolicy.recipient_pattern | String | The local part of recipient email address to define recipient \(RCPT TO:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.recipient_domain | String | The domain part of recipient email address to define recipient \(RCPT TO:\) email addresses that match this policy. |
-| FortiMail.RecipientPolicy.ldap_profile | String | Recipient LDAP profile \(use fortimail-ldap-group-list to retrieve all the LDAP profiles\). Relevant when recipient_type= LDAP Group. |
-| FortiMail.RecipientPolicy.recipient_email_address_group | String | The recipient email group \(use fortimail-email-group-list to retrieve all the email groups\). |
+| FortiMail.RecipientPolicy.groupmode | String | 'Define recipient (RCPT TO:) email addresses that match this policy. 0: User (wildcard), 2: LDAP group, 3:Email address group, 4: User(regex).' |
+| FortiMail.RecipientPolicy.recipient_pattern | String | The local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.recipient_domain | String | The domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. |
+| FortiMail.RecipientPolicy.ldap_profile | String | Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. |
+| FortiMail.RecipientPolicy.recipient_email_address_group | String | The recipient email group (use fortimail-email-group-list to retrieve all the email groups). |
 | FortiMail.RecipientPolicy.recipient_pattern_regex | String | The recipient email address regular expression pattern. |
-| FortiMail.RecipientPolicy.antispam | String | The name of an outgoing anti spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti spam profiles. |
+| FortiMail.RecipientPolicy.antispam | String | The name of an outgoing anti-spam profile, if any, that this policy will apply. Use fortimail-antispam-profile-list to retrieve all the anti-spam profiles. |
 | FortiMail.RecipientPolicy.content | String | The name of the content profile that you want to apply to connections matching the policy. Use fortimail-content-profile-list to retrieve all the content profiles. |
 | FortiMail.RecipientPolicy.profile_dlp | String | The name of the resource profile that you want to apply to connections matching the policy. Use fortimail-resource-profile to retrieve all the resources. |
-| FortiMail.RecipientPolicy.antivirus | String | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the anti virus profiles. |
+| FortiMail.RecipientPolicy.antivirus | String | The name of an antivirus profile, if any, that this policy will apply. Use fortimail-antivirus-profile-list to retrieve all the antivirus profiles. |
 | FortiMail.RecipientPolicy.misc | String | The type of the authentication profile that this policy apply. |
 | FortiMail.RecipientPolicy.auth | String | RADIUS authentication profile. Use fortimail-radius-auth-profile to retrieve all the RADIUS authentication profiles. |
 | FortiMail.RecipientPolicy.radius_auth | String | LDAP authentication profile. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. |
 | FortiMail.RecipientPolicy.ldap_auth | String | POP3 authentication profile. Use fortimail-pop3-auth-profile to retrieve all the POP3 authentication profiles. |
 | FortiMail.RecipientPolicy.pop3_auth | String | IMAP authentication profile. Use fortimail-imap-auth-profile to retrieve all the IMAP authentication profiles. |
 | FortiMail.RecipientPolicy.imap_auth | String | SMTP authentication profile. Use fortimail-smtp-auth-profile to retrieve all the SMTP authentication profiles. |
-| FortiMail.RecipientPolicy.smtp_auth | String | Whether the policy allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
+| FortiMail.RecipientPolicy.smtp_auth | String | Whether the policy allows email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 | FortiMail.RecipientPolicy.pkiauth | String | Whether to allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 | FortiMail.RecipientPolicy.pkiuser | String | The name of a PKI user. Relevant when enable_pki is enable. |
 | FortiMail.RecipientPolicy.auth_allow_smtp | String | Whether to authenticate SMTP connections using the authentication profile configured in sensitive-data. |
@@ -3108,7 +3108,7 @@ List recipient policies. If a ID is given, the command will return the informati
 #### Human Readable Output
 
 >### Recipient Policy list
->|Name|Status|Sender Type|Sender Pattern|Recipient Pattern Regex|Anti Spam|Content|PKI Auth|Direction|Antivirus|Resource Profile|
+>|Name|Status|Sender Type|Sender Pattern|Recipient Pattern Regex|anti-spam|Content|PKI Auth|Direction|Antivirus|Resource Profile|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 5 | enable | User (regex) | * | .* | AS_Inbound@system | CF_Inbound@system | disable | Inbound | AV_Discard@system | Res_Default@system |
 >| 1 | enable | User (wildcard) | ****@ron.com | .* |  |  | disable | Inbound |  | Res_Default@system |
@@ -3129,7 +3129,7 @@ List recipient policies. If a ID is given, the command will return the informati
 ### fortimail-tls-profile-list
 
 ***
-List TLS profiles. TLS profiles allow you to selectively disable or enable TLS for specific email recipient patterns, IP subnets, and so on. A common use of TLS profiles is to enforce TLS transport to a specific domain and verify the certificate of the receiving servers. if an name is given, the command will return the information about the wanted TLS profile. Mainly used in the configuration of Access control rule.
+List TLS profiles. TLS profiles allow you to selectively disable or enable TLS for specific email recipient patterns, IP subnets, and so on. A common use of TLS profiles is to enforce TLS transport to a specific domain and verify the certificate of the receiving servers. If a name is given, the command will return the information about the specified TLS profile. Mainly used in the configuration of access control rule.
 
 #### Base Command
 
@@ -3189,7 +3189,7 @@ List TLS profiles. TLS profiles allow you to selectively disable or enable TLS f
 ### fortimail-ldap-group-list
 
 ***
-List LDAP profiles. LDAP groups lets to allow match email addresses as sender or recipients with the LDAP profile authentication in the Access control rule configuration and is the authentication profile in case the authentication type in IP policy is LDAP. if an name is given, the command will return the information about the wanted LDAP profile. Mainly used in the configuration of Access control rule and the IP policy.
+List LDAP profiles. LDAP groups lets to allow match email addresses as sender or recipients with the LDAP profile authentication in the access control rule configuration and is the authentication profile in case the authentication type in IP policy is LDAP. If a name is given, the command will return the information about the specified LDAP profile. Mainly used in the configuration of access control rule and the IP policy.
 
 #### Base Command
 
@@ -3199,7 +3199,7 @@ List LDAP profiles. LDAP groups lets to allow match email addresses as sender or
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the anti spam LDAP profile. | Optional |
+| name | The name of the anti-spam LDAP profile. | Optional |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. Default is false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
@@ -3281,7 +3281,7 @@ List LDAP profiles. LDAP groups lets to allow match email addresses as sender or
 ### fortimail-geoip-group-list
 
 ***
-List GeoIP groups. FortiMail utilizes the GeoIP database to map the geo locations of client IP addresses. You can use GeoIP groups in access control rules and IP-based policies to geo-targeting spam and virus devices. if an name is given, the command will return the information about the wanted GeoIP profile. Mainly used in the configuration of Access control rule and the IP policy.
+List GeoIP groups. FortiMail utilizes the GeoIP database to map the geo locations of client IP addresses. You can use GeoIP groups in access control rules and IP-based policies to geo-targeting spam and virus devices. If a name is given, the command will return the information about the specified GeoIP profile. Mainly used in the configuration of access control rule and the IP policy.
 
 #### Base Command
 
@@ -3291,7 +3291,7 @@ List GeoIP groups. FortiMail utilizes the GeoIP database to map the geo location
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the anti spam GeoIP group. | Optional |
+| name | The name of the anti-spam GeoIP group. | Optional |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. Default is false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
@@ -3345,7 +3345,7 @@ List GeoIP groups. FortiMail utilizes the GeoIP database to map the geo location
 ### fortimail-antispam-profile-list
 
 ***
-List AntiSpam profiles. Antispam profiles are sets of antispam scans that you can apply by selecting one in a policy. if an name is given, the command will return the information about the wanted AntiSpam profile. Mainly used in the configuration of IP policy.
+List AntiSpam profiles. Antispam profiles are sets of antispam scans that you can apply by selecting one in a policy. If a name is given, the command will return the information about the specified AntiSpam profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3355,7 +3355,7 @@ List AntiSpam profiles. Antispam profiles are sets of antispam scans that you ca
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the anti spam profile. | Optional |
+| name | The name of the anti-spam profile. | Optional |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. Default is false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
@@ -3363,10 +3363,10 @@ List AntiSpam profiles. Antispam profiles are sets of antispam scans that you ca
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiMail.AntispamProfile.mkey | String | The name of the anti spam profile. |
+| FortiMail.AntispamProfile.mkey | String | The name of the anti-spam profile. |
 | FortiMail.AntispamProfile.dictionary_type | Number | The type of the dictionary type. |
-| FortiMail.AntispamProfile.minimum_dictionary_score | Number | The minimu, number of the dictionary score. |
-| FortiMail.AntispamProfile.comment | String | A brief comment for the anti spam profile. |
+| FortiMail.AntispamProfile.minimum_dictionary_score | Number | The minimum number of the dictionary score. |
+| FortiMail.AntispamProfile.comment | String | A brief comment for the anti-spam profile. |
 | FortiMail.AntispamProfile.isReferenced | Number | Number of referencing entities. |
 
 #### Command example
@@ -3420,7 +3420,7 @@ List AntiSpam profiles. Antispam profiles are sets of antispam scans that you ca
 ### fortimail-antivirus-profile-list
 
 ***
-List AntiVirus profiles. if the FortiMail unit detects a virus, it will take actions as you define in the antivirus action profiles. if an name is given, the command will return the information about the wanted AntiVirus profile. Mainly used in the configuration of IP policy.
+List AntiVirus profiles. if the FortiMail unit detects a virus, it will take actions as you define in the antivirus action profiles. If a name is given, the command will return the information about the specified AntiVirus profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3430,7 +3430,7 @@ List AntiVirus profiles. if the FortiMail unit detects a virus, it will take act
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the anti virus profile. | Optional |
+| name | The name of the antivirus profile. | Optional |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. Default is false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
@@ -3438,8 +3438,8 @@ List AntiVirus profiles. if the FortiMail unit detects a virus, it will take act
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiMail.AntivirusProfile.mkey | String | The name of the anti virus profile. |
-| FortiMail.AntivirusProfile.comment | String | A brief comment for the anti virus profile. |
+| FortiMail.AntivirusProfile.mkey | String | The name of the antivirus profile. |
+| FortiMail.AntivirusProfile.comment | String | A brief comment for the antivirus profile. |
 
 #### Command example
 ```!fortimail-antivirus-profile-list```
@@ -3484,7 +3484,7 @@ List AntiVirus profiles. if the FortiMail unit detects a virus, it will take act
 ### fortimail-content-profile-list
 
 ***
-List Content profiles. Content profile lets to allow match email based upon its subject line, message body, and attachments. if an name is given, the command will return the information about the wanted content profile. Mainly used in the configuration of IP policy.
+List Content profiles. Content profile lets to allow match email based upon its subject line, message body, and attachments. If a name is given, the command will return the information about the specified content profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3544,7 +3544,7 @@ List Content profiles. Content profile lets to allow match email based upon its 
 ### fortimail-ip-pool-list
 
 ***
-List IP pool profiles. IP pools define a range of IP addresses, and can be used in multiple ways: To define source IP addresses used by the FortiMail unit if you want outgoing email to originate from a range of IP addresses. To define destination addresses used by the FortiMail unit if you want incoming email to destine to the virtual host on a range of IP addresses. if an name is given, the command will return the information about the wanted IP pool. Mainly used in the configuration of IP policy.
+List IP pool profiles. IP pools define a range of IP addresses, and can be used in multiple ways: To define source IP addresses used by the FortiMail unit if you want outgoing email to originate from a range of IP addresses. To define destination addresses used by the FortiMail unit if you want incoming email to destine to the virtual host on a range of IP addresses. If a name is given, the command will return the information about the specified IP pool. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3566,8 +3566,8 @@ List IP pool profiles. IP pools define a range of IP addresses, and can be used 
 | FortiMail.IPPool.ip_range | Number | The IP pool IP group. |
 | FortiMail.IPPool.smtp_certificate | String | The SMTP certificate. |
 | FortiMail.IPPool.smtp_certificate_direction | String | The SMTP certificate direction. |
-| FortiMail.IPPool.smtp_greeting_reply_name | Number | The SMTP Greeting Name. |
-| FortiMail.IPPool.comment | String | A brief comment for the anti spam profile. |
+| FortiMail.IPPool.smtp_greeting_reply_name | Number | The SMTP greeting name. |
+| FortiMail.IPPool.comment | String | A brief comment for the anti-spam profile. |
 | FortiMail.IPPool.is_certificate_expired | Boolean | Whether the certificate expired. |
 
 #### Command example
@@ -3622,7 +3622,7 @@ List IP pool profiles. IP pools define a range of IP addresses, and can be used 
 ### fortimail-session-profile-list
 
 ***
-List IP session profiles. Session profiles focus on the connection and envelope portion of the SMTP session. If a name is given, the command will return the information about the wanted session profile. Mainly used in the configuration of IP policy.
+List IP session profiles. Session profiles focus on the connection and envelope portion of the SMTP session. If a name is given, the command will return the information about the specified session profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3641,7 +3641,7 @@ List IP session profiles. Session profiles focus on the connection and envelope 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiMail.SessionProfile.mkey | String | The name of the session profile. |
-| FortiMail.SessionProfile.comment | String | A brief comment for the anti spam profile. |
+| FortiMail.SessionProfile.comment | String | A brief comment for the anti-spam profile. |
 | FortiMail.SessionProfile.action | Boolean | The action of the session profile. |
 
 #### Command example
@@ -3678,7 +3678,7 @@ List IP session profiles. Session profiles focus on the connection and envelope 
 ### fortimail-radius-auth-profile-list
 
 ***
-List RADIUS authentication profiles. if an name is given, the command will return the information about the wanted RADIUS authentication profile. Mainly used in the configuration of IP policy.
+List RADIUS authentication profiles. If a name is given, the command will return the information about the specified RADIUS authentication profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3734,7 +3734,7 @@ List RADIUS authentication profiles. if an name is given, the command will retur
 ### fortimail-pop3-auth-profile-list
 
 ***
-List POP3 authentication profiles. if an name is given, the command will return the information about the wanted POP3 authentication profile. Mainly used in the configuration of IP policy.
+List POP3 authentication profiles. If a name is given, the command will return the information about the specified POP3 authentication profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3786,7 +3786,7 @@ List POP3 authentication profiles. if an name is given, the command will return 
 ### fortimail-imap-auth-profile-list
 
 ***
-List IMAP authentication profiles. if an name is given, the command will return the information about the wanted IMAP authentication profile. Mainly used in the configuration of IP policy.
+List IMAP authentication profiles. If a name is given, the command will return the information about the specified IMAP authentication profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3838,7 +3838,7 @@ List IMAP authentication profiles. if an name is given, the command will return 
 ### fortimail-smtp-auth-profile-list
 
 ***
-List SMTP authentication profiles. if an name is given, the command will return the information about the wanted SMTP authentication profile. Mainly used in the configuration of IP policy.
+List SMTP authentication profiles. If a name is given, the command will return the information about the specified SMTP authentication profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3890,7 +3890,7 @@ List SMTP authentication profiles. if an name is given, the command will return 
 ### fortimail-resource-profile-list
 
 ***
-List resource profiles. Resouce profile configure miscellaneous aspects of the email user accounts, such as disk space quota. If an name is given, the command will return the information about the wanted resource profile. Mainly used in the configuration of IP policy.
+List resource profiles. Resouce profile configure miscellaneous aspects of the email user accounts, such as disk space quota. If a name is given, the command will return the information about the specified resource profile. Mainly used in the configuration of IP policy.
 
 #### Base Command
 
@@ -3938,7 +3938,7 @@ List resource profiles. Resouce profile configure miscellaneous aspects of the e
 ### fortimail-pki-user-list
 
 ***
-List PKI users. PKI users can authenticate by presenting a valid client certificate, rather than by entering a username and password. If an name is given, the command will return the information about the wanted PKI user. Mainly used in the configuration of recipient policy.
+List PKI users. PKI users can authenticate by presenting a valid client certificate, rather than by entering a username and password. If a name is given, the command will return the information about the specified PKI user. Mainly used in the configuration of recipient policy.
 
 #### Base Command
 
