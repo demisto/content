@@ -127,7 +127,7 @@ script:
       description: The IP address member to remove from the IP group. Use fortimail-ip-group-member-list to retrieve all the IP group members.
       required: true
   - name: fortimail-ip-group-member-list
-    description: List IP group members. If a ip is given, the command will return the information about the wanted IP group member.
+    description: List IP group members. If an IP is given, the command will return the information about the specified IP group member.
     arguments:
     - name: group_name
       description: The name of the IP group. Use fortimail-ip-group-list to retrieve all the IP groups.
