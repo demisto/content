@@ -285,6 +285,18 @@ def main():
             create_threat_search(api_token, args)
         elif command == "branddefense-get-incidents":
             get_incidents(api_token, args)
+        elif command == "test-module":
+            url = params.get("url","https://api.brandefense.io/api/v1/incidents")
+            headers = {
+                "accept": "application/json",
+                "content-type": "application/json",
+                "authorization": "Bearer "+api_token,
+            }
+            test=requests.get(url,headers=headers)
+            if test.status_code == 200:
+                return_results('Test Successful')
+            
+            
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
