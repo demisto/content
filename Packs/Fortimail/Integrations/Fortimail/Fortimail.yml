@@ -597,7 +597,7 @@ script:
     - name: smtp_diff_identity_ldap_profile
       description: LDAP profile for SMTP sender identity verification. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles. Required when smtp_diff_identity_ldap is enable.
     - name: exclusive
-      description: Whether to take precedence over recipient based policy match.Enable to omit use of recipient-based policies for connections matching this IP-based policy.This option is applicable only if action is Scan.
+      description: Whether to take precedence over recipient-based policy match. Enable to omit use of recipient-based policies for connections matching this IP-based policy. This option is applicable only if action is Scan.
       auto: PREDEFINED
       predefined:
       - enable
