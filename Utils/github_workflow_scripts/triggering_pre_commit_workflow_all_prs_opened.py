@@ -65,7 +65,7 @@ def trigger_workflow(repo_owner, repo_name, workflow_name, access_token):
 def trigger_workflow_for_pr(
     repo_owner, repo_name, workflow_name, pr_name, access_token=None
 ):
-    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/7399034188/dispatches"
+    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/actions/workflows/{workflow_name}/dispatches"
 
     headers = (
         {
@@ -78,9 +78,10 @@ def trigger_workflow_for_pr(
 
     payload = {
         "ref": pr_name,
+        "inputs": {}
     }
 
-    response = requests.post(api_url, headers=headers, json=json.dumps(payload))
+    response = requests.post(api_url, headers=headers, data=payload)
     response.raise_for_status()
     print("Workflow triggered successfully. Status code: 200")
 
