@@ -241,7 +241,7 @@ script:
       required: true
       default: true
     - name: emails
-      description: A list of email address (separated with a comma) that you want to replace in the email group. For example, test1@test.com,test2@test.com. You can also use wildcards to enter partial patterns that can match multiple email addresses. The asterisk represents one or more characters and the question mark (?) represents any single character. For example, the pattern ??@*.com will match any email user with a two letter email user name from any “.com” domain name.
+      description: A comma-separated list of email address that you want to replace in the email group. For example, test1@test.com,test2@test.com. You can also use wildcards to enter partial patterns that can match multiple email addresses. The asterisk represents one or more characters and the question mark (?) represents any single character. For example, the pattern ??@*.com will match any email user with a two letter email user name from any “.com” domain name.
       required: true
   - name: fortimail-email-group-member-delete
     description: Delete an email group member from email group.
