@@ -7,9 +7,9 @@
     "url": "https://app.brandefense.io/",
     "email": "asimsarpkurt@gmail.com",
     "created": "2023-12-25T14:59:45Z",
-    "categories": ["Data Enrichment & Threat Intelligence"],
+    "categories": ["Network Security"],
     "tags": ["Security"],
-    "useCases": ["Credential Theft Control/Attack Surface Management"],
+    "useCases": ["Breach Notification"],
     "keywords": ["Threat Intelligence"],
     "marketplaces": [
         "xsoar",
