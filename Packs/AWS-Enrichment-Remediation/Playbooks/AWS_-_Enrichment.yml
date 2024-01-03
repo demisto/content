@@ -493,7 +493,7 @@ tasks:
       description: Determines if an AWS IPAM public IP was returned from the last command in order to proceed.
       id: 5f18ae96-f69d-44aa-8acf-2336e03a1a68
       iscommand: false
-      name: Were there an IPAM discovered public IP returned?
+      name: Was there an IPAM discovered public IP returned?
       type: condition
       version: -1
     taskid: 5f18ae96-f69d-44aa-8acf-2336e03a1a68
