@@ -528,7 +528,7 @@ script:
       - enable
       - disable
     - name: source
-      description: The source of the policy.When source_type is IP/Netmask enter the IP address and sub-net mask of the SMTP client to whose connections this policy will apply.When source_type is IP Group enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups).When source_type is GeoIP enter the Geo IP group.When source_type is ISDB enter the name of an internet service provider.To match all clients, enter 0.0.0.0/0.
+      description: The source of the policy. When source_type is IP/Netmask, enter the IP address and subnet mask of the SMTP client to whose connections this policy will apply. When source_type is IP Group, enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups). When source_type is GeoIP, enter the Geo IP group. When source_type is ISDB, enter the name of an internet service provider. To match all clients, enter 0.0.0.0/0.
     - name: destination
       description: The destination of the policy. When destination_type is IP/Netmask, enter the IP address and subnet mask of the SMTP client to whose connections this policy will apply. When destination_type is IP Group, enter the IP group of the SMTP client to whose connections this policy will apply (use fortimail-ip-group-list to retrieve all the IP groups). To match all clients, enter 0.0.0.0/0.
     - name: source_type
@@ -661,7 +661,7 @@ script:
       description: The status of the IP policy.
       type: Boolean
     - contextPath: FortiMail.IPPolicy.server_ip_group
-      description: The destination IP group. Relevant when server_typeis IP group. Use fortimail-ip-group-list to retrieve all the IP groups.
+      description: The destination IP group. Relevant when server_type is IP group. Use fortimail-ip-group-list to retrieve all the IP groups.
       type: String
     - contextPath: FortiMail.IPPolicy.server
       description: The destination IP/Netmask. Relevant when server_type is IP/Netmask.
@@ -1090,31 +1090,31 @@ script:
       description: 'The sender (source) type. Optional values: IP/Netmask,IP Group,GeoIP Group,ISDB.'
       type: Number
     - contextPath: FortiMail.AccessControl.recipient_pattern_ldap_groupname
-      description: Recipient pattern. Relevant when recipient_pattern_typeis LDAP Group.
+      description: Recipient pattern. Relevant when recipient_pattern_type is LDAP Group.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_ldap
-      description: Recipient pattern profile. Relevant when recipient_pattern_typeis LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.
+      description: Recipient pattern profile. Relevant when recipient_pattern_type is LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_group
-      description: Recipient email group. Relevant when recipient_pattern_typeis Email Group.
+      description: Recipient email group. Relevant when recipient_pattern_type is Email Group.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern
-      description: Recipient pattern. Relevant when recipient_pattern_typeis Regular Expression or User Defined.
+      description: Recipient pattern. Relevant when recipient_pattern_type is Regular Expression or User Defined.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_type
       description: 'Recipient pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined.'
       type: Number
     - contextPath: FortiMail.AccessControl.sender_pattern_ldap_groupname
-      description: Sender pattern. Relevant when sender_pattern_typeis LDAP Group.
+      description: Sender pattern. Relevant when sender_pattern_type is LDAP Group.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_ldap
-      description: Sender pattern profile. Relevant when sender_pattern_typeis LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.
+      description: Sender pattern profile. Relevant when sender_pattern_type is LDAP Group. Use fortimail-ldap-group-list to retrieve all the LDAP authentication profiles.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_group
-      description: Sender email group. Relevant when sender_pattern_typeis Email Group.
+      description: Sender email group. Relevant when sender_pattern_type is Email Group.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern
-      description: Sender pattern. Relevant when sender_pattern_typeis Regular Expression or User Defined.
+      description: Sender pattern. Relevant when sender_pattern_type is Regular Expression or User Defined.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_type
       description: 'Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined.'
@@ -1201,31 +1201,31 @@ script:
       description: 'The sender (source) type. Optional values: IP/Netmask,IP Group,GeoIP Gorup,ISDB.'
       type: Number
     - contextPath: FortiMail.AccessControl.recipient_pattern_ldap_groupname
-      description: Recipient pattern. Relevant when recipient_pattern_typeis LDAP Group.
+      description: Recipient pattern. Relevant when recipient_pattern_type is LDAP Group.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_ldap
-      description: Recipient pattern profile. Relevant when recipient_pattern_typeis LDAP Group.
+      description: Recipient pattern profile. Relevant when recipient_pattern_type is LDAP Group.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_group
-      description: Recipient email group. Relevant when recipient_pattern_typeis Email Group.
+      description: Recipient email group. Relevant when recipient_pattern_type is Email Group.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern
-      description: Recipient pattern. Relevant when recipient_pattern_typeis Regular Expression or User Defined.
+      description: Recipient pattern. Relevant when recipient_pattern_type is Regular Expression or User Defined.
       type: String
     - contextPath: FortiMail.AccessControl.recipient_pattern_type
       description: Recipient pattern type.
       type: Number
     - contextPath: FortiMail.AccessControl.sender_pattern_ldap_groupname
-      description: Sender pattern. Relevant when sender_pattern_typeis LDAP Group.
+      description: Sender pattern. Relevant when sender_pattern_type is LDAP Group.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_ldap
-      description: Sender pattern profile. Relevant when sender_pattern_typeis LDAP Group.
+      description: Sender pattern profile. Relevant when sender_pattern_type is LDAP Group.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_group
-      description: Sender email group. Relevant when sender_pattern_typeis Email Group.
+      description: Sender email group. Relevant when sender_pattern_type is Email Group.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern
-      description: Sender pattern. Relevant when sender_pattern_typeis Regular Expression or User Defined.
+      description: Sender pattern. Relevant when sender_pattern_type is Regular Expression or User Defined.
       type: String
     - contextPath: FortiMail.AccessControl.sender_pattern_type
       description: 'Sender pattern type. Optional values: External,Internal,Email Group, LDAP Group,LDAP Verification,Regular Expression,User Defined.'
@@ -1264,7 +1264,7 @@ script:
       - LDAP group
       - Email address group
     - name: sender_pattern
-      description: The policy sender pattern. When sender_typeis User (wildcard), insert email addresses that match this policy. For example, test@test.com. When sender_type is User (regex), insert the recipient email address regular expression pattern. When sender_type is LDAP group, insert the sender pattern. When sender_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups).
+      description: The policy sender pattern. When sender_type is User (wildcard), insert email addresses that match this policy. For example, test@test.com. When sender_type is User (regex), insert the recipient email address regular expression pattern. When sender_type is LDAP group, insert the sender pattern. When sender_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups).
     - name: sender_ldap_profile
       description: Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when sender_type=LDAP Group.
     - name: sender_email_address_group
@@ -1278,7 +1278,7 @@ script:
       - LDAP group
       - Email address group
     - name: recipient_pattern
-      description: The policy recipient pattern. When recipient_typeis User (wildcard), insert the local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy and after insert @ and the  domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. For example, test@test.com.When recipient_type is User (regex), insert the recipient email address regular expression pattern.When recipient_typeis LDAP group, insert the sender pattern.When recipient_typeis Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups).
+      description: The policy recipient pattern. When recipient_type is User (wildcard), insert the local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy and after insert @ and the  domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. For example, test@test.com.When recipient_type is User (regex), insert the recipient email address regular expression pattern.When recipient_type is LDAP group, insert the sender pattern.When recipient_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups).
     - name: recipient_ldap_profile
       description: Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group.
     - name: recipient_email_address_group
@@ -1473,7 +1473,7 @@ script:
       - LDAP group
       - Email address group
     - name: sender_pattern
-      description: The policy sender pattern.When sender_typeis User (wildcard), insert email addresses that match this policy. For example, test@test.com. When sender_type is User (regex), insert the recipient email address regular expression pattern.When sender_type is LDAP group, insert the sender pattern. When sender_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups).
+      description: The policy sender pattern.When sender_type is User (wildcard), insert email addresses that match this policy. For example, test@test.com. When sender_type is User (regex), insert the recipient email address regular expression pattern.When sender_type is LDAP group, insert the sender pattern. When sender_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups).
     - name: sender_ldap_profile
       description: Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when sender_type= LDAP Group.
     - name: sender_email_address_group
@@ -1487,7 +1487,7 @@ script:
       - LDAP group
       - Email address group
     - name: recipient_pattern
-      description: The policy recipient pattern.When recipient_typeis User (wildcard), insert the local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy and after insert @ and the  domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. For example, test@test.com.When recipient_type is User (regex), insert the recipient email address regular expression pattern.When recipient_typeis LDAP group, insert the sender pattern.When recipient_typeis Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups).
+      description: The policy recipient pattern.When recipient_type is User (wildcard), insert the local part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy and after insert @ and the  domain part of recipient email address to define recipient (RCPT TO:) email addresses that match this policy. For example, test@test.com.When recipient_type is User (regex), insert the recipient email address regular expression pattern.When recipient_type is LDAP group, insert the sender pattern.When recipient_type is Email address group, insert email group (use fortimail-email-group-list to retrieve all the email groups).
     - name: recipient_ldap_profile
       description: Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group.
     - name: recipient_email_address_group
