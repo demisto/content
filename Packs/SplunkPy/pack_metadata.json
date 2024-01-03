@@ -1,8 +1,8 @@
 {
     "name": "Splunk",
-    "description": "Run queries on Splunk servers.",
+    "description": "Run queries on Splunk servers description.",
     "support": "xsoar",
-    "currentVersion": "3.1.15",
+    "currentVersion": "3.1.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
