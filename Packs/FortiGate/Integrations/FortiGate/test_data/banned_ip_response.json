@@ -1,0 +1,32 @@
+{
+    "http_method": "GET",
+    "results": [
+        {
+            "expires": 1969642305,
+            "created": 1693195074,
+            "ip_address": "0.0.0.0",
+            "source": "Administrative",
+            "ipv6": 0
+        },
+        {
+            "created": 1700507213,
+            "ip_address": "0.0.0.0",
+            "source": "Administrative",
+            "ipv6": 0
+        },
+        {
+            "created": 1700507213,
+            "ip_address": "0000:0000:0000:0000:0000:0000:0000:0000",
+            "source": "Administrative",
+            "ipv6": 1
+        }
+    ],
+    "vdom": "root",
+    "path": "user",
+    "name": "banned",
+    "action": "select",
+    "status": "success",
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}
