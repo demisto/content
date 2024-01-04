@@ -55,7 +55,7 @@ tasks:
     scriptarguments:
       end_time:
         complex:
-          root: Enter the necessary inputs.Answers
+          root: TrafficRange.Answers
           accessor: "1"
       extend-context:
         simple: Illumio.TrafficAnalysis.Workload.href=dst.workload.href
@@ -74,7 +74,7 @@ tasks:
           - operator: toLowerCase
       start_time:
         complex:
-          root: Enter the necessary inputs.Answers
+          root: TrafficRange.Answers
           accessor: "0"
     separatecontext: false
     view: |-
@@ -767,7 +767,7 @@ tasks:
           days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ  For
           example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z'
         readonly: false
-      title: Enter the necessary inputs.
+      title: TrafficRange
       description: ""
       sender: ""
       expired: false
