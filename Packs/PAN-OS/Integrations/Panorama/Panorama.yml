@@ -5038,7 +5038,6 @@ script:
     - description: The serial number of the device.
       name: target
     - default: true
-      defaultValue: running_config
       description: Name of the file to save the config to. Default is "running_config"
       name: filename
     description: Pull the running config file.
