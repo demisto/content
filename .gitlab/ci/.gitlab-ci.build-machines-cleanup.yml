@@ -34,7 +34,7 @@ build-machines-cleanup:
             sleep 120
           fi
         done
-        echo "Couldn't find lock file with machine id: ${LOCK_MACHINE_NAME} and this pipeline id: ${CI_PIPELINE_ID}
+        echo "Couldn't find lock file with machine id: ${LOCK_MACHINE_NAME} and this pipeline id: ${CI_PIPELINE_ID}"
         job-done
     - else
     -   !reference [.lock-machine]
