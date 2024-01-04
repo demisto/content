@@ -48,15 +48,16 @@ def main():
     #              f"slack channel:{computed_slack_channel}")
 
 
-    title = ''
+    title = 'test'
+    fallback = 'fallback'
 
-    pipeline_url = ''
+    pipeline_url = 'https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/jobs/4175703'
     color = 'warning'
-    color = 'good'
     color = 'danger'
+    color = 'good'
 
     slack_msg_data = [{
-        'fallback': title,
+        'fallback': fallback,
         'color': color,
         'title': title,
         'title_link': pipeline_url
