@@ -166,14 +166,20 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
 
 
 def advisory_to_indicator(advisory_dict: dict) -> dict:
-    """Convert the advisory dictionary into an indicator dictionary"""
+    """Convert the advisory dictionary into an indicator dictionary
+
+    Args:
+        advisory_dict: advisory dictionary
+    Returns:
+        indicator dictionary
+    """
 
     fields = {}
 
-    if "problemtype" in advisory_dict:
+    if problem_type := advisory_dict.get("problemtype"):
         tags = []  # holds cwe information as tags
         # the dict that holds the advisory information fo CWE data
-        cwe_str = advisory_dict.get('problemtype', {}).get('problemtype_data', [])[0].get('description', [])[0].get('value', "")
+        cwe_str = problem_type.get('problemtype_data', [{}])[0].get('description', [{}])[0].get('value', "")
 
         if cwe_str and cwe_str.startswith('CWE-'):
             # split this string after the CWE-\d* first space
@@ -186,14 +192,14 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
             tags.append(cwe[0])
             fields['tags'] = tags
 
-    if "references" in advisory_dict:
-        references: list[dict] = advisory_dict.get('references', {}).get('reference_data', [{}])
+    if references := advisory_dict.get("references"):
+        references_list: list[dict] = references.get('reference_data', [{}])
         fields['publications'] = [
             {
                 "link": x.get('url'),
                 "title": x.get('name'),
                 "source": x.get('refsource')
-            } for x in references]
+            } for x in references_list]
 
     impact = advisory_dict.get("impact", {})
     cvss = impact.get("cvss", {})

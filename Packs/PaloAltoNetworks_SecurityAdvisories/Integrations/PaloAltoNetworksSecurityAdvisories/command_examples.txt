@@ -1,1 +1,2 @@
 !pan-advisories-get-advisories product="PAN-OS" q=CVE-2022-0778
+!pan-advisories-get-advisories product="PAN-OS" q=CVE-2023-38802
