@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 38e83dd9-a684-4ef8-83b0-0e0280959752
+    taskid: 3a31b4e4-290c-4325-89fa-1ee3dd8cedbd
     type: start
     task:
-      id: 38e83dd9-a684-4ef8-83b0-0e0280959752
+      id: 3a31b4e4-290c-4325-89fa-1ee3dd8cedbd
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: fdaeab03-c966-4191-80ad-9e794d65b279
+    taskid: 3f4cab54-f380-49af-8eac-b07ab7a24c06
     type: regular
     task:
-      id: fdaeab03-c966-4191-80ad-9e794d65b279
+      id: 3f4cab54-f380-49af-8eac-b07ab7a24c06
       version: -1
       name: whois
       description: Provides data enrichment for domains.
@@ -75,10 +75,10 @@ tasks:
     continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 0c318443-01c5-43fa-857f-b7b6eadf1c91
+    taskid: 7ed65fc5-bbde-4c0d-8380-403d45f6caaf
     type: condition
     task:
-      id: 0c318443-01c5-43fa-857f-b7b6eadf1c91
+      id: 7ed65fc5-bbde-4c0d-8380-403d45f6caaf
       version: -1
       name: Check results
       type: condition
@@ -126,10 +126,10 @@ tasks:
     continueonerrortype: ""
   "3":
     id: "3"
-    taskid: f16da63f-4c99-454e-8a07-bd459b5bca7c
+    taskid: 7f560683-a029-4952-8359-efeeadcad7b3
     type: regular
     task:
-      id: f16da63f-4c99-454e-8a07-bd459b5bca7c
+      id: 7f560683-a029-4952-8359-efeeadcad7b3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -161,10 +161,10 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: c01f66cb-51ca-4b85-8818-7cb3cae52eb9
+    taskid: 8242f1d6-43cd-437e-833f-b41f096f8c92
     type: regular
     task:
-      id: c01f66cb-51ca-4b85-8818-7cb3cae52eb9
+      id: 8242f1d6-43cd-437e-833f-b41f096f8c92
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -196,10 +196,10 @@ tasks:
     continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 80d995c8-4f0b-455e-801f-0647b625e65d
+    taskid: a84118b2-5f58-4700-849b-1e57d9124d1d
     type: regular
     task:
-      id: 80d995c8-4f0b-455e-801f-0647b625e65d
+      id: a84118b2-5f58-4700-849b-1e57d9124d1d
       version: -1
       name: Print
       description: Prints text to war room (Markdown supported)
@@ -231,10 +231,10 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: a46b4fed-c9cd-4260-8ce9-7820d65521ec
+    taskid: ebe3d0c7-be15-4288-8ec7-959c9f9d8b1a
     type: regular
     task:
-      id: a46b4fed-c9cd-4260-8ce9-7820d65521ec
+      id: ebe3d0c7-be15-4288-8ec7-959c9f9d8b1a
       version: -1
       name: whois
       description: Provides data enrichment for domains.
@@ -270,10 +270,10 @@ tasks:
     continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 620ad6b2-181e-4615-89e7-ba2678523532
+    taskid: df4b4c18-225f-44f0-80dd-0b6edd3440ce
     type: condition
     task:
-      id: 620ad6b2-181e-4615-89e7-ba2678523532
+      id: df4b4c18-225f-44f0-80dd-0b6edd3440ce
       version: -1
       name: Check results
       type: condition
@@ -311,10 +311,10 @@ tasks:
     continueonerrortype: ""
   "8":
     id: "8"
-    taskid: de926ac0-7651-4bd1-8903-50cbe901ed11
+    taskid: 1d6c8d02-8b2f-49fb-8156-ce77470325c1
     type: regular
     task:
-      id: de926ac0-7651-4bd1-8903-50cbe901ed11
+      id: 1d6c8d02-8b2f-49fb-8156-ce77470325c1
       version: -1
       name: Sleep
       description: Sleep for 5 seconds, due to whois rate limit
@@ -346,10 +346,10 @@ tasks:
     continueonerrortype: ""
   "9":
     id: "9"
-    taskid: adb1db20-3516-410b-886c-cc20ae72249f
+    taskid: b261b2ce-e219-459d-8d5b-ed2097d72f42
     type: regular
     task:
-      id: adb1db20-3516-410b-886c-cc20ae72249f
+      id: b261b2ce-e219-459d-8d5b-ed2097d72f42
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -381,10 +381,10 @@ tasks:
     continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 2de6e026-18c5-41f9-8ceb-8977ecc72c5e
+    taskid: b8c5cd84-71eb-40fb-892e-4e46eabae904
     type: regular
     task:
-      id: 2de6e026-18c5-41f9-8ceb-8977ecc72c5e
+      id: b8c5cd84-71eb-40fb-892e-4e46eabae904
       version: -1
       name: domain
       description: Provides data enrichment for domains.
@@ -420,10 +420,10 @@ tasks:
     continueonerrortype: ""
   "11":
     id: "11"
-    taskid: f5707afe-0987-4900-84e5-0fa83195fc9d
+    taskid: 69353f3e-dd1c-44a0-80d4-c997bbc9e0e5
     type: condition
     task:
-      id: f5707afe-0987-4900-84e5-0fa83195fc9d
+      id: 69353f3e-dd1c-44a0-80d4-c997bbc9e0e5
       version: -1
       name: Check results
       type: condition
@@ -471,10 +471,10 @@ tasks:
     continueonerrortype: ""
   "12":
     id: "12"
-    taskid: a3530a04-8734-4307-8fa6-b06722bfcf22
+    taskid: a419db10-1afd-417d-8f26-4fde8c3a58d8
     type: regular
     task:
-      id: a3530a04-8734-4307-8fa6-b06722bfcf22
+      id: a419db10-1afd-417d-8f26-4fde8c3a58d8
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -506,10 +506,10 @@ tasks:
     continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 535591d1-4a1d-4f66-86fd-c7f29626cc0e
+    taskid: e2767e9a-0493-496e-8a42-b10595755e40
     type: regular
     task:
-      id: 535591d1-4a1d-4f66-86fd-c7f29626cc0e
+      id: e2767e9a-0493-496e-8a42-b10595755e40
       version: -1
       name: domain
       description: Provides data enrichment for domains.
@@ -545,10 +545,10 @@ tasks:
     continueonerrortype: ""
   "14":
     id: "14"
-    taskid: 2270fbd9-fd1b-4dd8-82de-86b523b17447
+    taskid: 6f4b8bb1-cbbe-4496-8ff6-2f50bd56483f
     type: condition
     task:
-      id: 2270fbd9-fd1b-4dd8-82de-86b523b17447
+      id: 6f4b8bb1-cbbe-4496-8ff6-2f50bd56483f
       version: -1
       name: Check results
       type: condition
@@ -586,10 +586,10 @@ tasks:
     continueonerrortype: ""
   "15":
     id: "15"
-    taskid: 1ceae365-e868-4565-89bf-5b36e6a03c3d
+    taskid: 4f84ae6f-8dcd-4ecb-84fc-9ea16e5ce60d
     type: regular
     task:
-      id: 1ceae365-e868-4565-89bf-5b36e6a03c3d
+      id: 4f84ae6f-8dcd-4ecb-84fc-9ea16e5ce60d
       version: -1
       name: Print
       description: Prints text to war room (Markdown supprted)
@@ -621,10 +621,10 @@ tasks:
     continueonerrortype: ""
   "16":
     id: "16"
-    taskid: 27d25271-e55c-4732-862b-e10b908aae44
+    taskid: 3a4d8911-6b11-4a16-8501-e43c0c5d989f
     type: regular
     task:
-      id: 27d25271-e55c-4732-862b-e10b908aae44
+      id: 3a4d8911-6b11-4a16-8501-e43c0c5d989f
       version: -1
       name: ip
       description: Provides data enrichment for ips.
@@ -656,10 +656,10 @@ tasks:
     continueonerrortype: ""
   "17":
     id: "17"
-    taskid: c275e0a4-0c4f-42d2-8bb8-ad7426c3ec43
+    taskid: 0f7543e6-f02a-4a7b-877f-896ec855d8dd
     type: condition
     task:
-      id: c275e0a4-0c4f-42d2-8bb8-ad7426c3ec43
+      id: 0f7543e6-f02a-4a7b-877f-896ec855d8dd
       version: -1
       name: Check results
       type: condition
@@ -700,12 +700,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: LVLT-GOGL-8-8-8
+              simple: GOGL
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3440
+          "y": 3450
         }
       }
     note: false
@@ -718,10 +718,10 @@ tasks:
     continueonerrortype: ""
   "18":
     id: "18"
-    taskid: 768da15b-3206-4f20-8793-2d55dd87e4d8
+    taskid: 273cc9c4-9512-489d-8949-e4b470e36e71
     type: title
     task:
-      id: 768da15b-3206-4f20-8793-2d55dd87e4d8
+      id: 273cc9c4-9512-489d-8949-e4b470e36e71
       version: -1
       name: done
       type: title
@@ -746,10 +746,10 @@ tasks:
     continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 8f5bffad-29ac-463a-8375-c7319f24d64b
+    taskid: e6b25f8c-a46e-4bc2-8cc2-6a3f82acc296
     type: regular
     task:
-      id: 8f5bffad-29ac-463a-8375-c7319f24d64b
+      id: e6b25f8c-a46e-4bc2-8cc2-6a3f82acc296
       version: -1
       name: domain
       description: Provides data enrichment for domains.
@@ -785,10 +785,10 @@ tasks:
     continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 9eff428c-db35-4878-851d-809d085ce016
+    taskid: a0ad5ac2-a185-4e2f-8999-0fd54ce5c200
     type: condition
     task:
-      id: 9eff428c-db35-4878-851d-809d085ce016
+      id: a0ad5ac2-a185-4e2f-8999-0fd54ce5c200
       version: -1
       name: Check results
       type: condition
