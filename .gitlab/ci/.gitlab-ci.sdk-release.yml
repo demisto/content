@@ -14,7 +14,7 @@ trigger-nightlies:
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
   script:
-    - ./Tests/sdk_release/create_release_branch.sh
+#    - ./Tests/sdk_release/create_release_branch.sh
     - echo "test ############"
     - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}"
     - echo "test @@@@@@@@@@@"
