@@ -1854,8 +1854,8 @@ def tc_list_victims_command(client: Client, args: dict) -> None:
     filter = args.get('filter')
     victim_id = args.get('victim_id')
 
-    page = args.get('page') or '0'
-    limit = args.get('limit') or '50'
+    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page') or '0') * limit
 
     url = VICTIM_API_PREFIX
     if victim_id:
@@ -1974,8 +1974,8 @@ def tc_list_victim_assets_command(client: Client, args: dict) -> None:
     """
     filter = args.get('filter')
     victim_asset_id = args.get('victim_asset_id')
-    page = args.get('page') or '0'
-    limit = args.get('limit') or '50'
+    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page') or '0') * limit
 
     url = VICTIM_ASSET_API_PREFIX
     if victim_asset_id:
@@ -2098,8 +2098,8 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
     filter = args.get('filter')
     victim_attribute_id = args.get('victim_attribute_id')
     victim_id = args.get('victim_id')
-    page = args.get('page') or '0'
-    limit = args.get('limit') or '50'
+    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page') or '0') * limit
     if victim_id:
         url = f'{VICTIM_API_PREFIX}/{victim_id}?fields=attributes&resultStart={page}&resultLimit={limit}'
     else:
@@ -2123,8 +2123,8 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
 
 def tc_list_attribute_type_command(client: Client, args: dict) -> None:
     url = ATTRIBUTE_TYPE_API_PREFIX
-    page = args.get('page') or '0'
-    limit = args.get('limit') or '50'
+    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page') or '0') * limit
     if attribute_type_id := args.get('attribute_type_id'):
         url = f'{ATTRIBUTE_TYPE_API_PREFIX}/{attribute_type_id}'
     url += f'?&resultStart={page}&resultLimit={limit}'
