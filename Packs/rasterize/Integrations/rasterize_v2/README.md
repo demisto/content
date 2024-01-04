@@ -238,7 +238,7 @@ Converts a PDF file to an image file.
 
 ### rasterize-html
 ***
-Converts an html file to a PDF or PNG file.
+Converts an HTML file to a PDF or PNG file.
 
 
 #### Base Command
