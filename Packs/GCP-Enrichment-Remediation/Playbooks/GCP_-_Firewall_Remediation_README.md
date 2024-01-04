@@ -35,7 +35,7 @@ This playbook does not use any sub-playbooks.
 | RemotePort | The remote port that is publicly exposed to. | alert.remoteport | Required |
 | RemoteProtocol | The remote protocol that is publicly exposed to. |  | Required |
 | GcpProject | The name of the GCP project associated with the instance and related objects. | alert.asmcloud.Project | Required |
-| instance_name | Google Cloud Compute integration instance to use if you have multiple \(optional\). |  | Optional |
+| instance_name | Google Cloud Compute integration instance to use if you have multiple instances configured \(optional\). |  | Optional |
 
 ## Playbook Outputs
 

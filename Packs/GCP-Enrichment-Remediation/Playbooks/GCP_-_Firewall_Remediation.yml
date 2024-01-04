@@ -966,7 +966,7 @@ inputs:
   required: true
   description: The name of the GCP project associated with the instance and related objects.
   playbookInputQuery:
-- description: Google Cloud Compute integration instance to use if you have multiple (optional).
+- description: Google Cloud Compute integration instance to use if you have multiple instances configured (optional).
   key: instance_name
   playbookInputQuery:
   required: false
