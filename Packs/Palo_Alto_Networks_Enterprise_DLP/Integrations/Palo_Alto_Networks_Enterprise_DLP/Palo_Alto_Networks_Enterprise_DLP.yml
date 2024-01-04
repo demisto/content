@@ -29,7 +29,6 @@ configuration:
   - EU
   - AP
   - UK
-  defaultvalue: US,EU,AP,UK
   required: false
 - display: Data profiles to allow exemption
   name: dlp_exemptible_list
