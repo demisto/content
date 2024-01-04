@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "test!"
+echo "test!!"
 # Parsing the user inputs.
 
 #while [[ "$#" -gt 0 ]]; do
