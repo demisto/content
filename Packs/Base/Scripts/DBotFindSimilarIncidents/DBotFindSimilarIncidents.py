@@ -14,7 +14,7 @@ from typing import Any
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
 
-INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion().get('platform') == 'xsoar') else 'alert'
+INCIDENT_ALIAS = 'alert' if is_xsiam() else 'incident'
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
                          f" 2) Selected field are empty for this {INCIDENT_ALIAS}  3) Fields are misspelled"
 
