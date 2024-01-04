@@ -1028,6 +1028,8 @@ def create_volume_command(args: dict) -> CommandResults:
         kwargs.update({'Encrypted': argToBoolean(args.get('encrypted'))})
     if args.get('iops') is not None:
         kwargs.update({'Iops': arg_to_number(args.get('iops'))})
+    if args.get('kmsKeyId') is not None:
+        kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
     if args.get('size') is not None:
         kwargs.update({'Size': arg_to_number(args.get('size'))})
     if args.get('snapshotId') is not None:
