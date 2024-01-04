@@ -1112,5 +1112,5 @@ class TestFilePermissionMethods:
         }
         result: CommandResults = file_get_parents(gsuite_client, args)
 
-        assert len(result.outputs.get('GoogleDrive.File.Parents', [])) == 1 # type: ignore
+        assert len(result.outputs.get('GoogleDrive.File.Parents', [])) == 1  # type: ignore
         assert result.raw_response == mock_response
