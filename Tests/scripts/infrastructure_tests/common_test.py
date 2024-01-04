@@ -1,6 +1,7 @@
 from Tests.scripts.common import get_reviewer, person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name
 import pytest
 from unittest.mock import patch
+from Tests.scripts.infrastructure_tests import tests_data
 
 
 def test_person_in_charge(mocker):
