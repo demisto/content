@@ -249,8 +249,8 @@ Converts an HTML file to a PDF or PNG file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | EntryID | The entry ID of the html file. | Required | 
-| width | The html file width, for example, 600px. Specify with or without the px suffix. | Optional | 
-| height | The html file height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
+| width | The HTML file width, for example, 600px. Specify with or without the px suffix. | Optional | 
+| height | The HTML file height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
 | file_name | The name the file will be saved as. Default is the EntryID. | Optional | 
 | type | The file type to which to convert the html file. Can be "pdf" or "png". Default is "png". | Optional | 
 | wait_time | Time to wait before taking a screenshot (in seconds ). | Optional |
