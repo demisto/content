@@ -109,7 +109,7 @@ class Client(BaseClient):
 
         except Exception as e:
             print_debug_msg(str(e))
-            raise e
+            raise
 
     def _handle_403_errors(self, res):
         """
@@ -214,7 +214,7 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
-    def get_dlp_incidents(self, regions: str, start_time: int = None, end_time: int = None) -> dict:
+    def get_dlp_incidents(self, regions: str, start_time: int = None, end_time: int = None) -> tuple:
         url = INCIDENTS_URL
         params = {}
         if regions:
@@ -359,7 +359,7 @@ def parse_dlp_report(report_json) -> CommandResults:
 
 def test(client: Client, params: dict):
     """ Test Function to test validity of access and refresh tokens"""
-    dlp_regions = params.get("dlp_regions")
+    dlp_regions = params.get("dlp_regions", "")
     report_json, status_code = client.get_dlp_incidents(regions=dlp_regions)
     if status_code in [200, 204]:
         return_results("ok")
