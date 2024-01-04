@@ -13,6 +13,7 @@ MAX_CONTEXT = 100
 VICTIM_API_PREFIX = '/api/v3/victims'
 VICTIM_ASSET_API_PREFIX = '/api/v3/victimAssets'
 VICTIM_ATTRIBUTE_API_PREFIX = '/api/v3/victimAttributes'
+ATTRIBUTE_TYPE_API_PREFIX = '/api/v3/attributeTypes'
 
 
 class Method(str, Enum):
@@ -611,7 +612,7 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
         'ContentsFormat': formats['json'],
         'Contents': json.dumps(response.get('data')),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Incident {name} with ID {ec.get("ID")} Created successfully',
+        'HumanReadable': f'Incident {name} with ID {ec.get("ID")} created successfully',
         'EntryContext': {
             'TC.Event(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
@@ -654,6 +655,8 @@ def set_victim_asset(is_update,
     """
 
     body = {MAP_ASSET_TYPE_TO_REQUEST_KEY[asset_type]: asset_value}
+    if asset_type == AssetType.SOCIAL_NETWORK and not social_network:
+        raise DemistoException(f'asset_social_network argument is required when asset_type is {asset_type}')
     if not is_update:
         body['type'] = asset_type
     if address_type:
@@ -981,29 +984,20 @@ def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: 
 
 
 def create_document_group(client: Client, args: dict) -> None:  # pragma: no cover
-    group_id = args.get('group_id')
-    if not group_id:
-        # If not provided, a new group is created
-        name = args.get('name')
-        security_label = args.get('security_label')
-        description = args.get('description', '')
-        response = create_group(client, args, security_labels=security_label,  # type: ignore
-                                name=name, group_type='Document', description=description)  # type: ignore
-        group_id = response.get("id")
-
-    else:
-        response = list_groups(client, args, return_raw=True, group_id=group_id)
-        description = response.get('description')
-        security_label = response.get('securityLabels')
-
+    name = args.get('name')
+    security_label = args.get('security_label')
+    description = args.get('description', '')
+    response = create_group(client, args, security_labels=security_label,  # type: ignore
+                            name=name, group_type='Document', description=description)  # type: ignore
     res = demisto.getFilePath(args.get('entry_id'))
     f = open(res['path'], 'rb')
     contents = f.read()
-    url = f'/api/v3/groups/{group_id}/upload'
+    url = f'/api/v3/groups/{response.get("id")}/upload'
     payload = f"{contents}"  # type: ignore
-    client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')
+    client.make_request(Method.POST, url, payload=payload, content_type='application/octet-stream')  # type: ignore
+
     content = {
-        'ID': group_id,
+        'ID': response.get('id'),
         'Name': response.get('name'),
         'Owner': response.get('ownerName', ''),
         'EventDate': response.get('eventDate', ''),
@@ -1041,7 +1035,7 @@ def tc_create_threat_command(client: Client, args: dict) -> None:  # pragma: no 
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Threat {args.get("name")} Created successfully with id: {response.get("id")}',
+        'HumanReadable': f'Threat {args.get("name")} created successfully with id: {response.get("id")}',
         # type: ignore  # noqa
         'EntryContext': {
             'TC.Threat(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
@@ -1095,7 +1089,7 @@ def tc_create_incident_command(client: Client, args: dict) -> None:  # pragma: n
         'ContentsFormat': formats['json'],
         'Contents': response.get('data'),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Incident {name} Created successfully with id: {response.get("id")}',
+        'HumanReadable': f'Incident {name} created successfully with id: {response.get("id")}',
         # type: ignore  # noqa
         'EntryContext': {
             'TC.Incident(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
@@ -1330,8 +1324,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
             'data': [{'id': args.get('associated_indicator_id', associated_indicator_id)}],
             'mode': mode}
     if associated_victim_asset_id := args.get('associated_victim_asset_id', associated_victim_asset_id):
-        payload['associatedVictimAssets'] = {'data': [{'id': associated_victim_asset_id}],
-                                             'mode': mode}
+        payload['associatedVictimAssets'] = {'data': [{'id': associated_victim_asset_id}]}
     attribute_type = args.get('attribute_type', attribute_type)
     attribute_value = args.get('attribute_value', attribute_value)
     if attribute_value and attribute_type:
@@ -1746,7 +1739,7 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
 
     response = client.make_request(method=Method.POST, url_suffix=VICTIM_API_PREFIX, payload=json.dumps(body))
     outputs = response.get('data', {})
-    readable_output = f'Victim {name} Created successfully with id: {outputs.get("id")} '
+    readable_output = f'Victim {name} created successfully with id: {outputs.get("id")} '
     return_results(CommandResults(
         outputs_prefix='TC.Victim',
         outputs_key_field='id',
@@ -1787,7 +1780,6 @@ def tc_update_victim_command(client: Client, args: dict) -> None:
     if asset_type and asset_value:
         asset_type = AssetType(asset_type)
         address_type = args.get('asset_address_type')
-        # required for network account TODO
         network_type = args.get('asset_network_type')
         social_network = args.get('asset_social_network')
         asset = set_victim_asset(is_update=False,
@@ -1796,7 +1788,7 @@ def tc_update_victim_command(client: Client, args: dict) -> None:
                                  address_type=address_type,
                                  network_type=network_type,
                                  social_network=social_network)
-        body['assets'] = {'data': [asset], 'mode': mode}
+        body['assets'] = {'data': [asset]}
 
     # Create attribute for the victim
     attribute_type = args.get('attribute_type')
@@ -2015,7 +2007,7 @@ def tc_list_victim_assets_command(client: Client, args: dict) -> None:
                                       headers=['id', 'type', 'victimId', 'asset'])
 
     return_results(CommandResults(
-        outputs_prefix='TC.VictimAssets',
+        outputs_prefix='TC.VictimAsset',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response,
@@ -2041,7 +2033,7 @@ def tc_create_victim_attributes_command(client: Client, args: dict) -> None:
 
     response = client.make_request(method=Method.POST, url_suffix=VICTIM_ATTRIBUTE_API_PREFIX, payload=json.dumps(body))
     outputs = response.get('data', {})
-    readable_output = f'Victim attribute {outputs.get("id")} created successfully for victim id: {victim_id}'
+    readable_output = f'Victim Attribute {outputs.get("id")} created successfully for victim id: {victim_id}'
     return_results(CommandResults(
         outputs_prefix='TC.VictimAttribute',
         outputs_key_field='id',
@@ -2129,6 +2121,24 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
         readable_output=readable_output,
     ))
 
+def tc_list_attribute_type_command(client: Client, args: dict) -> None:
+    url = ATTRIBUTE_TYPE_API_PREFIX
+    page = args.get('page') or '0'
+    limit = args.get('limit') or '50'
+    if attribute_type_id := args.get('attribute_type_id'):
+        url = f'{ATTRIBUTE_TYPE_API_PREFIX}/{attribute_type_id}'
+    url += f'?&resultStart={page}&resultLimit={limit}'
+    response = client.make_request(method=Method.GET, url_suffix=url)
+    outputs = response.get('data', {})
+    readable_output = tableToMarkdown('Attribute types', outputs, headers=['id', 'name', 'description'])
+    return_results(CommandResults(
+        outputs_prefix='TC.AttributeType',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    ))
+
 
 COMMANDS = {
     'test-module': integration_test,
@@ -2190,6 +2200,8 @@ COMMANDS = {
     'tc-update-victim-attribute': tc_update_victim_attributes_command,
     'tc-delete-victim-attribute': tc_delete_victim_attributes_command,
     'tc-list-victim-attributes': tc_list_victim_attributes_command,
+
+    'tc-list-attribute-type': tc_list_attribute_type_command
 }
 
 

@@ -1806,8 +1806,6 @@ script:
       description: The name of the indicator.
       type: String
   - arguments:
-    - description: The ID of the group to upload the document to. If not specified, a new group would be created.
-      name: group_id
     - description: The name of the file to display in the UI.
       name: file_name
       required: true
@@ -2189,13 +2187,26 @@ script:
         name: asset_address_type
       - description: The asset network type. Relevant only when the asset_type is NetworkAccount.
         name: asset_network_type
-      - description: The asset social network. Relevant only when the asset_type is SocialNetwork.
+      - description: The asset social network. Required only when the asset_type is SocialNetwork.
         name: asset_social_network
       - description: A comma-separated list of group IDs to associate to the victim.
         name: associated_groups_ids
-      - description: The attribute type of the victim.
+      - auto: PREDEFINED
+        description: The attribute type to associate to the victim.
         name: attribute_type
-      - description: The attribute value of the victim.
+        predefined:
+          - Additional Analysis and Context
+          - Description
+          - External ID
+          - Impact Description
+          - Impact Score
+          - Physical Address
+          - Response Team & Staff involved
+          - Source
+          - Takedown Requests
+          - Targeted Industry Sector
+          - Title
+      - description: The attribute value to associate to the victim.
         name: attribute_value
     description: Creates a victim.
     name: tc-create-victim
@@ -2276,9 +2287,22 @@ script:
         name: asset_social_network
       - description: A comma-separated list of group IDs to associate to the victim.
         name: associated_groups_ids
-      - description: The attribute type of the victim.
+      - auto: PREDEFINED
+        description: The attribute type to associate to the victim.
         name: attribute_type
-      - description: The attribute value of the victim.
+        predefined:
+          - Additional Analysis and Context
+          - Description
+          - External ID
+          - Impact Description
+          - Impact Score
+          - Physical Address
+          - Response Team & Staff involved
+          - Source
+          - Takedown Requests
+          - Targeted Industry Sector
+          - Title
+      - description: The attribute value to associate to the victim.
         name: attribute_value
       - auto: PREDEFINED
         description: The mode of the update operation. Default is append.
@@ -2368,8 +2392,9 @@ script:
           - 'true'
           - 'false'
         defaultValue: 'false'
-      - description: The page to take the results from.
+      - description: The page to take the results from. The first is 0.
         name: page
+        defaultValue: '0'
       - description: The maximum number of results that can be returned.
         name: limit
         defaultValue: '50'
@@ -2533,7 +2558,7 @@ script:
         name: asset_address_type
       - description: The asset network type. Relevant only when the asset_type is NetworkAccount.
         name: asset_network_type
-      - description: The asset social network. Relevant only when the asset_type is SocialNetwork.
+      - description: The asset social network. Required only when the asset_type is SocialNetwork.
         name: asset_social_network
     description: Creates a victim asset.
     name: tc-create-victim-asset
@@ -2583,7 +2608,7 @@ script:
         name: asset_address_type
       - description: The asset network type. Relevant only when the asset_type is NetworkAccount.
         name: asset_network_type
-      - description: The asset social network. Relevant only when the asset_type is SocialNetwork.
+      - description: The asset social network. Required only when the asset_type is SocialNetwork.
         name: asset_social_network
     description: Updates a victim asset.
     name: tc-update-victim-asset
@@ -2633,8 +2658,9 @@ script:
         name: victim_asset_id
       - description: TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
         name: filter
-      - description: The page to take the results from.
+      - description: The page to take the results from. The first is 0.
         name: page
+        defaultValue: '0'
       - description: The maximum number of results that can be returned.
         name: limit
         defaultValue: '50'
@@ -2680,7 +2706,7 @@ script:
         name: victim_id
         required: true
       - auto: PREDEFINED
-        description: A comma-separated list of the security labels to apply to the victim asset.
+        description: A comma-separated list of the security labels to apply to the victim attribute.
         name: security_labels
         predefined:
           - TLP:RED
@@ -2689,9 +2715,22 @@ script:
           - TLP:WHITE
           - TLP:AMBER+STRICT
           - TLP:CLEAR
-      - description: The attribute type.
+      - auto: PREDEFINED
+        description: The attribute type.
         name: attribute_type
         required: true
+        predefined:
+          - Additional Analysis and Context
+          - Description
+          - External ID
+          - Impact Description
+          - Impact Score
+          - Physical Address
+          - Response Team & Staff involved
+          - Source
+          - Takedown Requests
+          - Targeted Industry Sector
+          - Title
       - description: The attribute value.
         name: attribute_value
         required: true
@@ -2704,7 +2743,7 @@ script:
         description: The date that the victim attribute was added.
         type: string
       - contextPath: TC.VictimAttribute.default
-        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added
+        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added.
         type: string
       - contextPath: TC.VictimAttribute.id
         description: The ID of the victim attribute.
@@ -2766,7 +2805,7 @@ script:
         description: The date that the victim attribute was added.
         type: string
       - contextPath: TC.VictimAttribute.default
-        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added
+        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added.
         type: string
       - contextPath: TC.VictimAttribute.id
         description: The ID of the victim attribute.
@@ -2816,8 +2855,9 @@ script:
         name: victim_id
       - description: TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
         name: filter
-      - description: The page to take the results from.
+      - description: The page to take the results from. The first is 0.
         name: page
+        defaultValue: '0'
       - description: The maximum number of results that can be returned.
         name: limit
         defaultValue: '50'
@@ -2828,7 +2868,7 @@ script:
         description: The date that the victim attribute was added.
         type: string
       - contextPath: TC.VictimAttribute.default
-        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added
+        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added.
         type: string
       - contextPath: TC.VictimAttribute.id
         description: The ID of the victim attribute.
@@ -2863,7 +2903,18 @@ script:
       - contextPath: TC.VictimAttribute.createdBy.userName
         description: The user name of the user created the victim attribute.
         type: string
-  dockerimage: demisto/python3:3.10.13.80014
+  - arguments:
+      - description: A specific attribute type to retrieve. If not specified, all attribute types will be retrieved.
+        name: attribute_type_id
+      - description: The page to take the results from. The first is 0.
+        name: page
+        defaultValue: '0'
+      - description: The maximum number of results that can be returned.
+        name: limit
+        defaultValue: '50'
+    description: Retrieved all attribute types
+    name: tc-list-attribute-type
+  dockerimage: demisto/python3:3.10.13.83255
   isfetch: true
   script: ''
   subtype: python3
