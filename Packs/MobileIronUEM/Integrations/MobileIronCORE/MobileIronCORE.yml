@@ -38,7 +38,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: MobileIron CORE Integration
+description: MobileIron CORE Integration.
 display: MobileIronCORE
 name: MobileIronCORE
 script:
