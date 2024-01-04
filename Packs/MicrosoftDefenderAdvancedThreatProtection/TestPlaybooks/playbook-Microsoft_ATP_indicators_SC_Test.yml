@@ -714,3 +714,5 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 description: Test all the indicators command which use the security center api
+
+
