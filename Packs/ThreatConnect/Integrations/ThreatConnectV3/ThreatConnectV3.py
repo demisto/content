@@ -1713,13 +1713,13 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
         body['workLocation'] = work_location
 
     # Create asset for the victim
-    asset_type = args.get('asset_type')
-    asset_value = args.get('asset_value')
+    asset_type = args.get('asset_type', '')
+    asset_value = args.get('asset_value', '')
     if asset_type and asset_value:
         asset_type = AssetType(asset_type)
-        address_type = args.get('asset_address_type')
-        network_type = args.get('asset_network_type')
-        social_network = args.get('asset_social_network')
+        address_type = args.get('asset_address_type', '')
+        network_type = args.get('asset_network_type', '')
+        social_network = args.get('asset_social_network', '')
         asset = set_victim_asset(is_update=False,
                                  asset_type=asset_type,
                                  asset_value=asset_value,

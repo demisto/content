@@ -323,7 +323,28 @@ def test_update_victim_asset_command(mocker):
     res = mocker.patch.object(Client, 'make_request', side_effect=[victim_asset_data,{}])
     tc_update_victim_asset_command(client, args)
     payload = res.call_args[1]['payload']
+    url = res.call_args[1]['url_suffix']
     payload_data = json.loads(payload)
+    assert 'test_victim_asset_id' in url
     assert payload_data['addressType'] == 'Updated Address Type'
     assert 'type' not in payload_data
+
+
+def test_update_victim_attributes_command(mocker):
+    args = {
+        'victim_attribute_id': 'test_victim_attribute_id',
+        'attribute_value': 'Updated Attribute Value',
+        'source': 'Updated Source',
+        'security_labels': ['TLP:GREEN', 'TLP:RED']
+    }
+
+    res = mocker.patch.object(Client, 'make_request', return_value={})
+    tc_update_victim_attributes_command(client, args)
+    payload = res.call_args[1]['payload']
+    payload_data = json.loads(payload)
+    url = res.call_args[1]['url_suffix']
+    assert 'test_victim_attribute_id' in url
+    assert payload_data['value'] == 'Updated Attribute Value'
+    assert payload_data['source'] == 'Updated Source'
+    assert 'securityLabels' in payload_data
 

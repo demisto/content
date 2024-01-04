@@ -61,6 +61,10 @@
             "instance_names": "active_directory_80k"
         },
         {
+        "integrations": "ThreatConnect v3",
+        "playbookID": "test-threatConnectv3"
+        },
+        {
             "playbookID": "Enrichment for Verdict - Test",
             "timeout": 500,
             "integrations": [
