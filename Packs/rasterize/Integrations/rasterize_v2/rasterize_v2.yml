@@ -299,7 +299,7 @@ script:
       - 'False'
     - description: Time in seconds to wait before taking a screenshot.
       name: wait_time
-    description: Converts an html file to an image file or a PDF file.
+    description: Converts an HTML file to an image file or a PDF file.
     name: rasterize-html
     outputs:
     - contextPath: InfoFile.EntryID
