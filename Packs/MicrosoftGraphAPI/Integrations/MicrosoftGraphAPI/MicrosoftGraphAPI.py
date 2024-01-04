@@ -88,10 +88,10 @@ def test_module(client: MsGraphClient,
         client.ms_client.get_access_token()
         return 'ok'
     else:
-        raise DemistoException('The *Test* button is not functional when using `Cortex XSOAR Azure app`, '
+        raise DemistoException('The *Test* button is not available when using `Cortex XSOAR Azure app`, '
                                '`self-deployed - Device Code Flow` or '
-                               ' `self-deployed - Authorization Code Flow`, '
-                               'run the !msgraph-api-test command instead once all relevant parameters have been entered.')
+                               ' `self-deployed - Authorization Code Flow`. '
+                               'Use the !msgraph-api-test command instead once all relevant parameters have been entered.')
 
 
 def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
