@@ -1,4 +1,4 @@
-Determine AWS Account hierarchy by looking up parent objects until the organization level is reached.
+Determine AWS account hierarchy by looking up parent objects until the organization level is reached.
 
 ## Script Data
 
@@ -35,5 +35,5 @@ This script uses the following commands and scripts.
 | --- | --- | --- |
 | AWSHierarchy.id | ID of the account/OU/root object such as \`111111111111\`. | string |
 | AWSHierarchy.level | Level in relation to the original AWS account such as account, 1, 2, etc. | string |
-| AWSHierarchy.arn | Arn of the account/OU/root object such as \`arn:aws:organizations::111111111111:root/o-2222222222/r-3333\`. | string |
+| AWSHierarchy.arn | ARN of the account/OU/root object such as \`arn:aws:organizations::111111111111:root/o-2222222222/r-3333\`. | string |
 | AWSHierarchy.name | Human readable name of the account/OU/root object such as \`aws-account-n\`. | Unknown |

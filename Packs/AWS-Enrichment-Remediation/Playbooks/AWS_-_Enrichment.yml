@@ -533,10 +533,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if the AWSAssumeRoleName Input values are defined in order to proceed.
+      description: Determines if the AWSAssumeRoleName input values are defined in order to proceed.
       id: 95e5b728-aaa4-4c5c-8caa-f7278422f282
       iscommand: false
-      name: Is AWSAssumeRoleName Input defined?
+      name: Is AWSAssumeRoleName input defined?
       type: condition
       version: -1
     taskid: 95e5b728-aaa4-4c5c-8caa-f7278422f282
@@ -728,7 +728,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determine AWS Account hierarchy by looking up parent objects until the organization level is reached.
+      description: Determine AWS account hierarchy by looking up parent objects until the organization level is reached.
       id: 7a4dfb5b-d397-4880-8a10-39c3362f2152
       iscommand: false
       name: AWSAccountHierarchy
