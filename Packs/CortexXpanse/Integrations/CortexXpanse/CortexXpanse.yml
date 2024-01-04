@@ -839,7 +839,6 @@ script:
   - name: asm-get-external-websites
     arguments:
     - name: filter
-      defaultValue: "ALL"
       description: search filter - can be used to get all login pages.
     - name: limit
       description: Maximum number of assets to return. The default and maximum is 100.
