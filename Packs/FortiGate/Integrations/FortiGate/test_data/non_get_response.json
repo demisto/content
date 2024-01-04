@@ -1,0 +1,15 @@
+{
+    "http_method": "Something",
+    "revision": "12345",
+    "revision_changed": true,
+    "old_revision": "12345",
+    "mkey": "Lior",
+    "status": "success",
+    "http_status": 200,
+    "vdom": "root",
+    "path": "of exile",
+    "name": "Super Mario",
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}
