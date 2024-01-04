@@ -1,4 +1,4 @@
- {
+{
     "available_tests_fields": {
         "context_print_dt": "Prints the incident's context dt directly to the build.",
         "external_playbook_config": "Allows to configure a test playbook inputs.",

@@ -18,7 +18,7 @@ if [ "$#" -lt "1" ]; then
   [-tmr, --test-modeling-rule-jira-tickets] Whether to enable test modeling rule jira tickets creation.
   [-tpr, --test-playbooks-jira-tickets]     Whether to enable test playbooks jira tickets creation.
   "
-  echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection TODO
+  echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
   exit 1
 fi
 
