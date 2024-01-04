@@ -14,9 +14,9 @@ trigger-nightlies:
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
   script:
-    - ./Tests/sdk_release/create_release_branch.sh
+#    - ./Tests/sdk_release/create_release_branch.sh
     - echo "test"
-    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}"
+    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
     - echo "test2"
 #    - git clone https://github.com/demisto/demisto-sdk.git /demisto-sdk
 #    - cd /demisto-sdk
