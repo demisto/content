@@ -634,12 +634,12 @@ def set_additional_data(labels: list, mode: str = '') -> dict:
     return data
 
 
-def set_victim_asset(is_update,
-                     asset_type,
-                     asset_value,
-                     address_type,
-                     network_type,
-                     social_network) -> dict:
+def set_victim_asset(is_update: bool,
+                     asset_type: AssetType,
+                     asset_value: str,
+                     address_type: str,
+                     network_type: str,
+                     social_network: str) -> dict:
     """
     Builds a victim asset object
     Args:
