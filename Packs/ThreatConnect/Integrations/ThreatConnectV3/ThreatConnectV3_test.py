@@ -175,7 +175,6 @@ def test_set_additional_data_with_mode():
     assert set_additional_data(labels, mode) == expected_output
 
 
-
 @pytest.mark.parametrize(
     "is_update, asset_type, asset_value, address_type, network_type, social_network, expected_output",
     [
@@ -224,7 +223,7 @@ def test_create_victim_command(mocker):
     payload_data = json.loads(payload)
     assert payload_data['name'] == 'Test Victim'
     assert payload_data['nationality'] == 'Test Nationality'
-    assert payload_data['org']== 'Test Org'
+    assert payload_data['org'] == 'Test Org'
     assert 'attributes' in payload_data
     assert 'assets' in payload_data
     assert 'securityLabels' in payload_data
@@ -320,7 +319,7 @@ def test_update_victim_asset_command(mocker):
             # Include other necessary fields here for a comprehensive test
         }
     }
-    res = mocker.patch.object(Client, 'make_request', side_effect=[victim_asset_data,{}])
+    res = mocker.patch.object(Client, 'make_request', side_effect=[victim_asset_data, {}])
     tc_update_victim_asset_command(client, args)
     payload = res.call_args[1]['payload']
     url = res.call_args[1]['url_suffix']
@@ -347,4 +346,3 @@ def test_update_victim_attributes_command(mocker):
     assert payload_data['value'] == 'Updated Attribute Value'
     assert payload_data['source'] == 'Updated Source'
     assert 'securityLabels' in payload_data
-

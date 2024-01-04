@@ -635,11 +635,11 @@ def set_additional_data(labels: list, mode: str = '') -> dict:
 
 
 def set_victim_asset(is_update: bool,
-                     asset_type: AssetType,
-                     asset_value: str,
-                     address_type: str,
-                     network_type: str,
-                     social_network: str) -> dict:
+                     asset_type: Optional[AssetType],
+                     asset_value: Optional[str],
+                     address_type: Optional[str],
+                     network_type: Optional[str],
+                     social_network: Optional[str]) -> dict:
     """
     Builds a victim asset object
     Args:
@@ -1713,13 +1713,13 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
         body['workLocation'] = work_location
 
     # Create asset for the victim
-    asset_type = args.get('asset_type', '')
-    asset_value = args.get('asset_value', '')
+    asset_type = args.get('asset_type')
+    asset_value = args.get('asset_value')
     if asset_type and asset_value:
         asset_type = AssetType(asset_type)
-        address_type = args.get('asset_address_type', '')
-        network_type = args.get('asset_network_type', '')
-        social_network = args.get('asset_social_network', '')
+        address_type = args.get('asset_address_type')
+        network_type = args.get('asset_network_type')
+        social_network = args.get('asset_social_network')
         asset = set_victim_asset(is_update=False,
                                  asset_type=asset_type,
                                  asset_value=asset_value,
@@ -1854,8 +1854,8 @@ def tc_list_victims_command(client: Client, args: dict) -> None:
     filter = args.get('filter')
     victim_id = args.get('victim_id')
 
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '0') * limit
+    limit = arg_to_number(args.get('limit')) or 50
+    page = (arg_to_number(args.get('page') or 0)) * limit
 
     url = VICTIM_API_PREFIX
     if victim_id:
@@ -1974,8 +1974,8 @@ def tc_list_victim_assets_command(client: Client, args: dict) -> None:
     """
     filter = args.get('filter')
     victim_asset_id = args.get('victim_asset_id')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '0') * limit
+    limit = arg_to_number(args.get('limit')) or 50
+    page = (arg_to_number(args.get('page') or 0)) * limit
 
     url = VICTIM_ASSET_API_PREFIX
     if victim_asset_id:
@@ -2098,8 +2098,8 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
     filter = args.get('filter')
     victim_attribute_id = args.get('victim_attribute_id')
     victim_id = args.get('victim_id')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '0') * limit
+    limit = arg_to_number(args.get('limit')) or 50
+    page = (arg_to_number(args.get('page') or 0)) * limit
     if victim_id:
         url = f'{VICTIM_API_PREFIX}/{victim_id}?fields=attributes&resultStart={page}&resultLimit={limit}'
     else:
@@ -2121,10 +2121,11 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
         readable_output=readable_output,
     ))
 
+
 def tc_list_attribute_type_command(client: Client, args: dict) -> None:
     url = ATTRIBUTE_TYPE_API_PREFIX
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '0') * limit
+    limit = arg_to_number(args.get('limit')) or 50
+    page = (arg_to_number(args.get('page') or 0)) * limit
     if attribute_type_id := args.get('attribute_type_id'):
         url = f'{ATTRIBUTE_TYPE_API_PREFIX}/{attribute_type_id}'
     url += f'?&resultStart={page}&resultLimit={limit}'
