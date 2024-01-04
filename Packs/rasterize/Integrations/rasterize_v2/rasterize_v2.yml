@@ -125,10 +125,10 @@ script:
     - description: Maximum time to wait for a page to load (in seconds).
       name: max_page_load_time
     - defaultValue: 1000px
-      description: The html page width, for example, 1000px. Specify with or without the px suffix.
+      description: The HTML page width, for example, 1000px. Specify with or without the px suffix.
       name: width
     - defaultValue: 1500px
-      description: The html page height, for example, 1500px. Specify with or without the px suffix.
+      description: The HTML page height, for example, 1500px. Specify with or without the px suffix.
       name: height
     - description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
       name: type
