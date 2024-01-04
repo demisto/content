@@ -32,6 +32,7 @@ CONTENT_NIGHTLY_JOBS = [
 SDK_NIGHTLY_JOBS = [
     'demisto-sdk-nightly:run-unittests-and-lint',
     'demisto-sdk-nightly:run-validations',
+    'demisto-sdk-nightly:run-validations-new-validate-flow',
     'demisto_sdk_nightly:check_idset_dependent_commands',
     'demisto-sdk-nightly:xsoar-prepare-testing-bucket',
     'demisto-sdk-nightly:marketplacev2-prepare-testing-bucket',
@@ -45,6 +46,7 @@ BUCKET_UPLOAD_JOBS = [
     'run-unittests-and-lint-upload-flow: [native:dev,from-yml]',
     'run-unittests-and-lint-upload-flow: [native:ga,native:maintenance,native:candidate]',
     'run-validations-upload-flow',
+    'run-validations-upload-flow-new-validate-flow',
     'mpv2-prepare-testing-bucket-upload-flow',
     'upload-id-set-bucket',
     'xpanse-prepare-testing-bucket-upload-flow',
