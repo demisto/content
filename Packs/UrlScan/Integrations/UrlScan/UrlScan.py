@@ -23,6 +23,7 @@ BLACKLISTED_URL_ERROR_MESSAGES = [
 ]
 BRAND = 'urlscan.io'
 IS_SYNC_MODE = argToBoolean(demisto.args().get("syncMode", False))
+DEFAULT_LIMIT = 20
 
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
@@ -664,7 +665,7 @@ def cert_format(x):
 
 
 def urlscan_search_command(client):
-    LIMIT = int(demisto.args().get('limit', 20))
+    LIMIT = int(demisto.args().get('limit', DEFAULT_LIMIT))
     HUMAN_READBALE_HEADERS = ['URL', 'Domain', 'IP', 'ASN', 'Scan ID', 'Scan Date']
     raw_query = demisto.args().get('searchParameter', '')
     search_type = demisto.args().get('searchType', '')
@@ -827,9 +828,6 @@ def format_http_transaction_list(client):
 
 def main():
     params = demisto.params()
-    demisto.debug(f"\n\n{demisto.params()=}\n")
-    demisto.debug(f"{demisto.args()=}\n")
-    demisto.debug(f"{demisto.command()=}\n\n")
     api_key = params.get('apikey') or (params.get('creds_apikey') or {}).get('password', '')
     # to safeguard the visibility of the scan,
     # if the customer did not choose a visibility, we will set it to private by default.
