@@ -92,16 +92,13 @@ def main():
     Reads advisories from the pan-advisories-get-advisories command and compares them with the provided PAN-OS version to check
     for a match - if so, returns the matching advisories.
     """
-    try:
-        advisories_list: list = demisto.args().get("advisories")
 
-        advisories_objects: list[Advisory] = [Advisory(**advisory_dict) for advisory_dict in advisories_list]
-        panos_version: str = demisto.args().get("version")
-        matched_advisories = compare_version_with_advisories(panos_version, advisories_list=advisories_objects)
-        return_results(return_result_dataclass(matched_advisories))
+    advisories_list: list = demisto.args().get("advisories")
 
-    except Exception as err:
-        return_error(str(err))
+    advisories_objects: list[Advisory] = [Advisory(**advisory_dict) for advisory_dict in advisories_list]
+    panos_version: str = demisto.args().get("version")
+    matched_advisories = compare_version_with_advisories(panos_version, advisories_list=advisories_objects)
+    return_results(return_result_dataclass(matched_advisories))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
