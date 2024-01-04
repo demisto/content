@@ -51,7 +51,7 @@ jobs:
         files: "coverage_report/coverage.xml"
 
     - name: Pytest coverage comment
-      if: always() && steps.check_files.outputs.files_exists == 'true'
+      if: always() && steps.check_files.outputs.files_exists == 'true' && github.event.pull_request.head.repo.fork == false
       uses: MishaKav/pytest-coverage-comment@main
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
