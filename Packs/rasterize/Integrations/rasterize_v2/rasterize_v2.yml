@@ -280,10 +280,10 @@ script:
       name: EntryID
       required: true
     - defaultValue: 600px
-      description: The html page width, for example, 600px. Specify with or without the px suffix.
+      description: The HTML page width, for example, 600px. Specify with or without the px suffix.
       name: width
     - defaultValue: 800px
-      description: The html page height, for example, 800px. Specify with or without the px suffix.
+      description: The HTML page height, for example, 800px. Specify with or without the px suffix.
       name: height
     - description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
       name: type
