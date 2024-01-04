@@ -2050,7 +2050,7 @@ def run_script_execute_commands_command(client: CoreClient, args: Dict) -> Comma
     )
 
 
-def run_script_kill_process_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_kill_process_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
@@ -2074,7 +2074,7 @@ def run_script_kill_process_command(client: CoreClient, args: Dict) -> List[Comm
     return command_result
 
 
-def run_script_file_exists_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_file_exists_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
@@ -2096,7 +2096,7 @@ def run_script_file_exists_command(client: CoreClient, args: Dict) -> List[Comma
     return command_result
 
 
-def run_script_delete_file_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_delete_file_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
@@ -3071,7 +3071,7 @@ def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
     )
 
 
-def get_script_execution_status_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def get_script_execution_status_command(client: CoreClient, args: Dict) -> CommandResults:
     action_ids = argToList(args.get('action_id', ''))
     replies = []
     raw_responses = []
@@ -3119,7 +3119,7 @@ def parse_get_script_execution_results(results: List[Dict]) -> List[Dict]:
     return parsed_results
 
 
-def get_script_execution_results_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def get_script_execution_results_command(client: CoreClient, args: Dict) -> CommandResults:
     action_ids = argToList(args.get('action_id', ''))
     contexts = []
     raw_responses = []
@@ -3134,13 +3134,13 @@ def get_script_execution_results_command(client: CoreClient, args: Dict) -> List
         raw_responses.append(response)
 
     command_result = CommandResults(
-            readable_output=tableToMarkdown(f'Script Execution Results - {",".join(action_ids)}',
-                                            [c.get('results') for c in contexts]),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptResult',
-            outputs_key_field='action_id',
-            outputs=contexts,
-            raw_response=raw_responses,
-        )
+        readable_output=tableToMarkdown(f'Script Execution Results - {",".join(action_ids)}',
+                                        [c.get('results') for c in contexts]),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptResult',
+        outputs_key_field='action_id',
+        outputs=contexts,
+        raw_response=raw_responses,
+    )
     return command_result
 
 
