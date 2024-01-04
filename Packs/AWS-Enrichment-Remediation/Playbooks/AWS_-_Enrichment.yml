@@ -660,7 +660,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: AWS - EC2
+                        simple: AWS - Organizations
                 - - left:
                       iscontext: true
                       value:
