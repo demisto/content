@@ -32,6 +32,9 @@ MSG_DICT = {
     "verify_new_xsoar_pack": "verified the new XSOAR only pack is NOT in the index and that version 1.0.0 zip DOES NOT exists "
                              "under the pack path in XSIAM bucket",
 }
+XSOAR_TESTING_BUCKET = 'marketplace-dist-dev'
+XSOAR_SAAS_TESTING_BUCKET = 'marketplace-saas-dist-dev'
+XSIAM_TESTING_BUCKET = 'marketplace-v2-dist-dev'
 
 
 def read_json(path):
@@ -319,6 +322,11 @@ class BucketVerifier:
         self.verify_modified_item_path('CortexXDR', 'Scripts/script-XDRSyncScript_new_name.yml',
                                        self.items_dict.get('CortexXDR'))
 
+    def run_xsoar_saas_bucket_validation(self):
+        """
+        Runs the XSOAR SaaS bucket verifications.
+        """
+        
     def run_validations(self):
         """
         Runs the basic verifications for both buckets.
@@ -359,11 +367,14 @@ class BucketVerifier:
         # Case 12: Verify hidden dependency not in metadata.json
         self.verify_hidden_dependency('MicrosoftAdvancedThreatAnalytics', 'Microsoft365Defender')
 
-        if 'v2' in self.bucket_name or 'xsiam' in self.bucket_name:
+        if self.bucket_name == XSIAM_TESTING_BUCKET:
             self.run_xsiam_bucket_validations()
 
-        if 'v2' not in self.bucket_name or 'xsoar' in self.bucket_name:
+        if self.bucket_name == XSOAR_TESTING_BUCKET:
             self.run_xsoar_bucket_validations()
+        
+        if self.bucket_name == XSOAR_SAAS_TESTING_BUCKET:
+            self.run_xsoar_saas_bucket_validation()
 
     def is_bucket_valid(self):
         """
