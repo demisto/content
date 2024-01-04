@@ -1092,12 +1092,6 @@ inputs:
   required: false
   description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
   playbookInputQuery:
-- key: LOLBASFeedLimit
-  value:
-    simple: "100"
-  required: false
-  description: LOLBAS Feed results limit.
-  playbookInputQuery:
 - key: EndpointIDs
   value:
     complex:
