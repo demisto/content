@@ -165,7 +165,7 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
     return dataclass_to_command_results(advisory_object_list, raw_response=advisory_data)
 
 
-def advisory_to_indicator(advisory_dict: dict):
+def advisory_to_indicator(advisory_dict: dict) -> dict:
     """Convert the advisory dictionary into an indicator dictionary"""
 
     fields = {}
@@ -187,7 +187,7 @@ def advisory_to_indicator(advisory_dict: dict):
             fields['tags'] = tags
 
     if "references" in advisory_dict:
-        references: list = advisory_dict.get('references', {}).get('reference_data', [])
+        references: list[dict] = advisory_dict.get('references', {}).get('reference_data', [{}])
         fields['publications'] = [
             {
                 "link": x.get('url'),
@@ -204,22 +204,22 @@ def advisory_to_indicator(advisory_dict: dict):
     fields['sourceoriginalseverity'] = cvss.get("baseSeverity", "")
     # mirror data in these fields so default CVE layout does not need to be changed
     # cvedescription not in default cve layout
-    fields['cvedescription'] = advisory_dict.get("description", {}).get("description_data", [])[0].get("value", "")
+    advisory_description = advisory_dict.get("description", {}).get("description_data", [{}])[0].get("value", "")
+    fields['cvedescription'] = advisory_description
     # description in default cve layout
-    fields['description'] = advisory_dict.get("description", {}).get("description_data", [])[0].get("value", "")
+    fields['description'] = advisory_description
     fields['published'] = advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", "")
     fields['name'] = advisory_dict.get("CVE_data_meta", {}).get("TITLE", [])
 
-    if "impact" in advisory_dict and cvss.get("version", "") in ['3.1', '4.0']:
+    if impact and cvss.get("version") in ['3.1', '4.0']:
         fields['cvssversion'] = cvss.get("version", "")
 
-        base_metric = advisory_dict.get("impact", {})
+        advisory_dict.get("impact", {})
         # is this v3/v4 cvss?
-        cvss_v3 = base_metric.get('cvss')
 
         # fills out the cvsstable in default cve layout - different table column names
         cvss_data = []
-        for k, v in cvss_v3.items():
+        for k, v in cvss.items():
             cvss_data.append(
                 {
                     "metrics": camel_case_to_underscore(k).replace("_", " ").title(),
@@ -236,7 +236,7 @@ def advisory_to_indicator(advisory_dict: dict):
     }
 
 
-def fetch_indicators(client: Client, fetch_product_name="PAN-OS"):    # pylint: disable=W9014
+def fetch_indicators(client: Client, fetch_product_name="PAN-OS") -> list[dict]:
     """
     Fetch Advisories as CVE indicators.
     :param client: Client instance
