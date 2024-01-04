@@ -507,11 +507,7 @@
     - section_start "Validate Files and Yaml"
     - |
       ./Tests/scripts/linters_runner.sh
-      if [ $VALIDATE_SCRIPT == "old-validate-flow" ]; then
-        ./Tests/scripts/validate.sh
-      else
-        ./Tests/scripts/new_validate.sh
-      fi
+      ./Tests/scripts/validate.sh
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
@@ -536,16 +532,55 @@
     - section_end "Revoking GCP Auth"
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
-  parallel:
-      matrix:
-        - VALIDATE_SCRIPT: ['old-validate-flow','new-validate-flow']
-  rules:
-    - if: '$VALIDATE_SCRIPT == "new-validate-flow"'
-      when: on_success
-      allow_failure: true
-    - if: '$VALIDATE_SCRIPT == "old-validate-flow"'
-      when: on_success
-      allow_failure: false
+
+.run-validations-new-validate-flow:
+  stage: unittests-and-validations
+  extends:
+    - .default-job-settings
+  variables:
+    KUBERNETES_CPU_REQUEST: 1000m
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
+  script:
+    - section_start "Look For Secrets"
+    - demisto-sdk secrets --post-commit --ignore-entropy
+    - section_end "Look For Secrets"
+    - section_start "Copy conf.json To Server Type Artifacts Folder"
+    - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json"
+    - section_end "Copy conf.json To Server Type Artifacts Folder"
+    - section_start "Validate Files and Yaml"
+    - |
+      ./Tests/scripts/linters_runner.sh
+      ./Tests/scripts/new_validate.sh
+    - section_end "Validate Files and Yaml"
+    - section_start "Check Spelling"
+    - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
+    - section_end "Check Spelling"
+    - section_start "Validate landingPageSections.json"
+    - echo "Download index.zip"
+    - INDEX_PATH=$(mktemp)
+    - |
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+      echo "successfully activated google cloud service account"
+      gsutil cp "gs://marketplace-dist/content/packs/index.zip" $INDEX_PATH
+      echo "successfully downloaded index.zip"
+    - echo "successfully downloaded index.zip into $INDEX_PATH"
+
+    - UNZIP_PATH=$(mktemp -d)
+    - unzip $INDEX_PATH -d $UNZIP_PATH > "${ARTIFACTS_FOLDER}/logs/unzip_index.log"
+
+    - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
+    - section_end "Validate landingPageSections.json"
+    - section_start "Revoking GCP Auth"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - section_end "Revoking GCP Auth"
+    - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
+    - job-done
+
 .jobs-done-check:
   stage: are-jobs-really-done
   extends:
