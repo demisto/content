@@ -54,16 +54,11 @@ In a web browser, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 
 **Note**: The `Listen Port` parameter is required.
 
-1. For Cortex XSOAR  6.x only:
-   1. Navigate to **Settings > About > Troubleshooting**.
-   2. (For Cortex XSOAR 6.x only) In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-2.  In a web browser, go to:
-
-   - (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
-   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
-
-
-In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`
+1. Navigate to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3.  In a web browser, go to
+    `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
+     (In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`)
 
 </~XSOAR_ON_PREM>
 
