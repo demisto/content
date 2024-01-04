@@ -61,6 +61,7 @@ def main():
     thread_number = custom_fields.get('emailselectedthread', 0)
     incident_context = demisto.context()
     email_threads = incident_context.get('EmailThreads', {})
+    demisto.debug(f'DisplayEmailHtmlThread - {email_threads=}')
 
     if len(email_threads) == 0:
         return_results({
@@ -79,7 +80,6 @@ def main():
 
     for thread in email_threads:
         if str(thread['EmailCommsThreadNumber']) == str(thread_number):
-
             thread_exists = True
             thread_dict = {
                 'email_from': thread.get('EmailFrom', None),
@@ -90,6 +90,7 @@ def main():
                 'email_time': thread.get('MessageTime', None),
                 'email_attachments': thread.get('EmailAttachments', None),
             }
+            demisto.debug(f'DisplayEmailHtmlThread - {thread_dict.get("email_html")}')
             thread_items.append(thread_dict)
 
     if thread_exists:
@@ -99,9 +100,11 @@ def main():
                                           thread.get('email_cc', None), thread.get('email_subject', None),
                                           thread.get('email_html', None), thread.get('email_time', None),
                                           thread.get('email_attachments', None))
+            demisto.debug(f'DisplayEmailHtmlThread - {email_reply=}')
             full_thread_html += email_reply
 
         final_html_result = html_cleanup(full_thread_html)
+        demisto.debug(f'DisplayEmailHtmlThread - {final_html_result=}')
         return_results({
             'ContentsFormat': EntryFormat.HTML,
             'Type': EntryType.NOTE,

@@ -31,7 +31,7 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
-
+from bs4 import BeautifulSoup
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
 # overriding this function to remove minor version test and remove error throw.
@@ -1175,6 +1175,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
 def parse_incident_from_item(item, is_fetch):  # pragma: no cover
     incident = {}
     labels = []
+    demisto.debug(f'EWSv2 - {item=}')
 
     try:
         try:
@@ -1203,11 +1204,14 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
         email_format = ''
         try:
             if item.text_body:
+                demisto.debug(f'EWSv2 - {item.text_body=}')
                 labels.append({'type': 'Email/text', 'value': item.text_body})
                 email_format = 'text'
         except AttributeError:
             pass
         if item.body:
+            demisto.debug(f'EWSv2 - {item.body=}')
+            parsed_html_body = BeautifulSoup(item.body, 'html.parser')
             labels.append({'type': 'Email/html', 'value': item.body})
             email_format = 'HTML'
         labels.append({'type': 'Email/format', 'value': email_format})
