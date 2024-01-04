@@ -1,5 +1,5 @@
 name: pre-commit
-on: pull_request
+on: pull_request_target
 
 
 
@@ -9,7 +9,6 @@ jobs:
       checks: write
       pull-requests: write
       contents: write
-      repository-projects: write
 
     if: "!contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
     uses: ./.github/workflows/pre-commit-reuse.yml
