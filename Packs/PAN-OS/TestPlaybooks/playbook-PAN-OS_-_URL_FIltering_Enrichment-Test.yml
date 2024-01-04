@@ -126,7 +126,7 @@ tasks:
     task:
       id: 831976f0-615d-44c5-8e28-0e311bb397f2
       version: -1
-      name: Check reputation is 1
+      name: Check reputation is 0
       type: condition
       iscommand: false
       brand: ""
@@ -148,7 +148,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "0"
     view: |-
       {
         "position": {
