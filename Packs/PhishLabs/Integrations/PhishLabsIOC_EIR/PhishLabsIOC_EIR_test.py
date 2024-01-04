@@ -373,7 +373,7 @@ def test_fetch__last_run_not_none(mocker):
         subcategories=[]
     )
 
-    assert last_run == {'lastRun': '2023-09-20T03:44:55Z'}
+    assert last_run == {'lastRun': '2023-09-20T03:44:55Z', 'lastId': None}
 
 def test_fetch_merge_open_closed(mocker):
     """Tests the fetch-incidents command function.
@@ -418,7 +418,7 @@ def test_fetch_merge_open_closed(mocker):
         subcategories=['Test']
     )
 
-    assert last_run == {'lastRun': '2023-09-20T03:48:55Z'}
+    assert last_run == {'lastRun': '2023-09-20T03:48:55Z', 'lastId': '4'}
     assert len(incident_report) == 4
 
 
@@ -440,7 +440,7 @@ def test_get_incidents_with_offset(mocker):
         incidents = []
         if offset < total_res:
             for i in range(offset, total_res):
-                incidents.append({'id': i, 'created': 'test'})
+                incidents.append({'id': i, 'created': '2023-09-20T03:44:55Z'})
         return {'metadata': {'count': total_res - offset}, 'incidents': incidents}
 
     client = Client(
@@ -476,7 +476,7 @@ def test_get_incidents_with_subcategory(mocker):
                       limit = 25, offset = 0, period = None):
         total_res = 4
         incidents = []
-
+        
         for i in range(total_res):
             if i < total_res / 2:
                 incidents.append({'id': i, 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}})
@@ -502,3 +502,45 @@ def test_get_incidents_with_subcategory(mocker):
 
     assert len(incident_report) == 2
     assert new_last_run.get('lastRun') == '2023-09-20T03:45:55Z'
+    
+def test_duplicated_incident(mocker):
+    """
+
+    Given: incidents from Phislabs in 2 api calls.
+    When: running fetch command
+    Then: assert the correct amount of incidents is returned without dups
+
+    """
+    from PhishLabsIOC_EIR import Client, fetch_incidents_command
+
+    client = Client(
+        base_url="https://test.com/api/v1",
+        verify=False,
+        reliability='A'
+    )
+    incident = {'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}}
+    mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 1}, 'incidents': [incident]})
+                        
+                        
+    incident_report, new_last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='4',
+        subcategories=['No Threat Detected']
+    )
+
+    assert len(incident_report) == 1
+    assert new_last_run.get('lastId') == '1'
+    
+    incident_report, new_last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='4',
+        subcategories=['No Threat Detected'],
+        last_id=new_last_run.get('lastId')
+    )
+    
+    assert len(incident_report) == 0
+    assert new_last_run.get('lastId') == '1'

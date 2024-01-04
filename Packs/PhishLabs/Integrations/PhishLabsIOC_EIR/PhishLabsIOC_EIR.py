@@ -25,6 +25,7 @@ INTEGRATION_NAME = 'PhishLabs IOC - EIR'
 INTEGRATION_COMMAND_NAME = 'phishlabs-ioc-eir'
 INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
 
+
 class Client(BaseClient):
 
     def __init__(self, base_url, verify=True, proxy=False, auth=None, reliability=DBotScoreReliability.B):
@@ -305,11 +306,11 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
     raise DemistoException(f'Test module failed, {results}')
 
 
-def fetch_incidents_per_status(client:Client,
+def fetch_incidents_per_status(client: Client,
                                created_after: str,
-                               offset:int,
+                               offset: int,
                                limit_page: int,
-                               sort:str,
+                               sort: str,
                                direction: str,
                                limit_incidents: int,
                                status: str,
@@ -344,12 +345,14 @@ def fetch_incidents_per_status(client:Client,
                                             status=status)
     return raws, incidents_raw
 
+
 @logger
 def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         limit: str,
-        subcategories:list,
+        subcategories: list,
+        last_id: Optional[str] = None,
         last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
@@ -391,21 +394,19 @@ def fetch_incidents_command(
                                                      raws=raws,
                                                      incidents_raw=incidents_raw)
     # Fetch closed Phishlabs incidents
-    raw, incidents_raw = fetch_incidents_per_status(client=client,
+    raws, incidents_raw = fetch_incidents_per_status(client=client,
                                                      created_after=datetime_new_last_run,
                                                      offset=offset,
                                                      limit_page=limit_page,
-                                                    limit_incidents=limit_incidents,
+                                                     limit_incidents=limit_incidents,
                                                      sort='created_at',
                                                      direction='asc',
                                                      status='closed',
-                                                    raws=raws,
-                                                    incidents_raw=incidents_raw)
+                                                     raws=raws,
+                                                     incidents_raw=incidents_raw)
 
     # Sort incidents by created time
     incidents_raw = sorted(incidents_raw, key=lambda inc: datetime.strptime(inc.get('created'), '%Y-%m-%dT%H:%M:%SZ'))
-
-
 
     processed_incident_ids = set()
 
@@ -414,24 +415,37 @@ def fetch_incidents_command(
     demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
     if incidents_raw:
         demisto.debug(f" subcategories are {str(subcategories)}")
-        for incident_raw  in incidents_raw:
+        for incident_raw in incidents_raw:
             if len(incidents_report) >= limit_incidents:
                 break
 
-            #We need to remove duplicates
+            # We need to remove duplicates
             if incident_raw.get('id') in processed_incident_ids:
                 demisto.debug(f"Skipping duplicate incident with id {incident_raw.get('id')}")
+                continue
+
+            # We need to be sure we didnt fetch the last incident again
+            if incident_raw.get('id') == last_id:
+                demisto.debug(f"Skipping duplicate incident (from last run) with id {incident_raw.get('id')}")
                 continue
 
             # Mark the incident ID as processed
             processed_incident_ids.add(incident_raw.get('id'))
 
-            # Take the last touched incident time for last_run object
-            last_created = incident_raw.get('created')
+            # Take the last touched incident time and id for last_run object
+            datetime_new_last_run = incident_raw.get('created')
+            last_id = incident_raw.get('id')
 
-            incident_subcategory = incident_raw.get('details', {}).get('subClassification').replace(" ", "")
+            demisto.debug(incident_raw)
+
+            if 'subClassification' in incident_raw.get('details', {}) and incident_raw.get('details', {}).get('subClassification'):
+                incident_subcategory = incident_raw.get('details', {}).get('subClassification').replace(" ", "")
+            else:
+                incident_subcategory = None
             demisto.debug(f"Comparing incident with id {incident_raw.get('id')} with sub-category {incident_subcategory}")
-            if subcategories and incident_subcategory and incident_subcategory not in subcategories:
+
+            # When using subcategories we should validate that the incident subcategory is one of the user inputs.
+            if subcategories and (incident_subcategory is None or (incident_subcategory and incident_subcategory not in subcategories)):
                 demisto.debug(f"Couldnt find {incident_subcategory} in subcategories, skipping")
                 continue
 
@@ -443,11 +457,8 @@ def fetch_incidents_command(
                 'rawJSON': json.dumps(incident_raw)
             })
 
-        new_last_run = last_created
-    else:
-        new_last_run = datetime_new_last_run
     # Return results
-    return incidents_report, {'lastRun': new_last_run}
+    return incidents_report, {'lastRun': datetime_new_last_run, 'lastId': last_id}
 
 
 @logger
@@ -562,7 +573,8 @@ def main():
                                                               fetch_time=params.get('fetchTime'),
                                                               last_run=demisto.getLastRun().get('lastRun'),
                                                               limit=params.get('fetchLimit'),
-                                                              subcategories=argToList(params.get('subcategories')))
+                                                              subcategories=argToList(params.get('subcategories')),
+                                                              last_id=demisto.getLastRun().get('lastId'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         else:
