@@ -11,15 +11,15 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 
-* microsoft-atp-sc-indicator-create
+microsoft-atp-sc-indicator-create
 
 ## Playbook Inputs
 
@@ -30,8 +30,8 @@ This playbook does not use any sub-playbooks.
 | Severity  | The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all. |  | Optional |
 | IndicatorDescription | Brief description \(100 characters or less\) of the threat represented by the indicator. | Added by Cortex XSOAR | Required |
 | IndicatorTitle | The indicator alert title in Defender. | Added by Cortex XSOAR | Required |
-| GenerateAlert | Whether to generate alert or not \(the default is true\) | true | Optional |
-| Hash | In this input you can insert either MD5 or SHA256 that you wish to block. |  | Optional |
+| GenerateAlert | Whether to generate an alert or not. The default is true. | true | Optional |
+| Hash | In this input you can insert either MD5 or SHA256 to block. |  | Optional |
 
 ## Playbook Outputs
 

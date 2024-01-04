@@ -42,7 +42,7 @@ tasks:
       id: bef2902b-79cf-4462-8e1b-b9bf6dca1640
       version: -1
       name: 'Is CrowdStrike enabled? '
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -383,7 +383,7 @@ inputs:
 - key: Hash
   value: {}
   required: false
-  description: In this input you can insert either MD5 or SHA256 that you wish to block.
+  description: In this input you can insert either MD5 or SHA256 to block.
   playbookInputQuery:
 outputs: []
 tests:

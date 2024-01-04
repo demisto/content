@@ -11,15 +11,15 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
 
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 
-* cs-falcon-upload-custom-ioc
+cs-falcon-upload-custom-ioc
 
 ## Playbook Inputs
 
@@ -28,7 +28,7 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Severity  | The severity of the indicator \(informational, low, medium, high and critical\)  | medium | Required |
-| Hash | In this input you can insert either MD5 or SHA256 that you wish to block. |  | Optional |
+| Hash | In this input you can insert either MD5 or SHA256 to block. |  | Optional |
 
 ## Playbook Outputs
 
