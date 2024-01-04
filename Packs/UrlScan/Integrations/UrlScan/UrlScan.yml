@@ -294,6 +294,13 @@ script:
       - "false"
       - "true"
       defaultValue: "false"
+    - name: search_only
+      description: Whether to searching for existing scans only, and not submitting a new scan.
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      defaultValue: "false"
     description: Submits a URL to scan.
     name: url
     outputs:
@@ -461,7 +468,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.78623
+  dockerimage: demisto/python3:3.10.13.83255
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test
