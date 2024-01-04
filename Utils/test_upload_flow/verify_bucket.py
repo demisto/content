@@ -13,11 +13,11 @@ from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
-# Info log Messages 
+# Info log Messages
 VERIFY_NEW_PACK = "verified the new pack {} in the index and that version {} zip exists under the pack path {}"
 VERIFY_MODIFIED_PACK = "verified the packs new version is in the index and that all the new items are present in the pack"
-VERIFY_NEW_VERSION = "verified the new pack's version exists in the index and that the release notes is parsed correctly "
-"in the changelog"
+VERIFY_NEW_VERSION = ("verified the new pack's version exists in the index and that the release notes is parsed correctly "
+                      "in the changelog")
 VERIFY_RN = "verified the content of the release notes is in the changelog under the right version"
 VERIFY_HIDDEN = "verified the pack does not exist in index"
 VERIFY_README = "verified the readme content is parsed correctly and that there was no version bump if only readme was modified"
@@ -26,8 +26,8 @@ VERIFY_MODIFIED_ITEM_PATH = "verified the path of the pack item is modified"
 VERIFY_DEPENDENCY = "verified the new dependency is in the pack metadata"
 VERIFY_NEW_IMAGE = "verified the new image was uploaded"
 VERIFY_HIDDEN_DEPENDENCY = "verified the hidden dependency pack not in metadata.json"
-VERIFY_PACK_NOT_IN_MARKETPLACE = "verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT exists "
-"under the pack path in {} bucket"
+VERIFY_PACK_NOT_IN_MARKETPLACE = ("verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT "
+                                  "exists under the pack path in {} bucket")
 
 # dev buckets
 XSOAR_TESTING_BUCKET = 'marketplace-dist-dev'
@@ -39,6 +39,7 @@ TestUploadFlowXSOAR = 'TestUploadFlowXSOAR'
 TestUploadFlowXsoarSaaS = 'TestUploadFlowXsoarSaaS'
 
 BUCKET_LINK_PREFIX = "https://console.cloud.google.com/storage/browser/"
+
 
 def read_json(path):
     with open(path) as file:
@@ -353,7 +354,7 @@ class BucketVerifier:
                                        self.items_dict.get('CortexXDR'))
         self.verify_pack_not_in_marketplace(TestUploadFlowXsoarSaaS, XSOAR_TESTING_BUCKET)
         expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note xsoar"""
-        self.verify_new_pack(TestUploadFlowXSOAR, self.items_dict.get(TestUploadFlowXSOAR), 
+        self.verify_new_pack(TestUploadFlowXSOAR, self.items_dict.get(TestUploadFlowXSOAR),
                              XSOAR_TESTING_BUCKET, '1.0.0', expected_rn)
 
     def run_xsoar_saas_bucket_validation(self):
@@ -362,8 +363,8 @@ class BucketVerifier:
         - Checks that TestUploadFlowXsoarSaaS xsoar bucket pack is in xsoar_saas marketplace
         """
         expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note xsoar_saas"""
-        self.verify_new_pack(TestUploadFlowXsoarSaaS,self.items_dict.get(TestUploadFlowXsoarSaaS),
-                              XSOAR_SAAS_TESTING_BUCKET, '1.0.0', expected_rn)
+        self.verify_new_pack(TestUploadFlowXsoarSaaS, self.items_dict.get(TestUploadFlowXsoarSaaS),
+                             XSOAR_SAAS_TESTING_BUCKET, '1.0.0', expected_rn)
 
     def run_validations(self):
         """
