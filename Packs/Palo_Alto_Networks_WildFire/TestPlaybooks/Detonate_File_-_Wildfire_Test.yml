@@ -11,7 +11,7 @@ tasks:
   "0":
     id: "0"
     taskid: 5a8a5d68-7366-4752-83b7-6240bf9355a7
-    type: start
+    type: start 
     task:
       id: 5a8a5d68-7366-4752-83b7-6240bf9355a7
       version: -1
@@ -236,3 +236,4 @@ view: |-
   }
 inputs: []
 outputs: []
+
