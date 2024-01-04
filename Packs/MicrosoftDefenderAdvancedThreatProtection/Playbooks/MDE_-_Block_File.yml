@@ -42,7 +42,7 @@ tasks:
       id: 237b291c-f8aa-4623-8f96-99c0376eedb5
       version: -1
       name: Is Microsoft Defender for Endpoint is enable?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -405,12 +405,12 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Whether to generate alert or not (the default is true)
+  description: Whether to generate an alert or not. The default is true.
   playbookInputQuery:
 - key: Hash
   value: {}
   required: false
-  description: In this input you can insert either MD5 or SHA256 that you wish to block.
+  description: In this input you can insert either MD5 or SHA256 to block.
   playbookInputQuery:
 outputs: []
 tests:
