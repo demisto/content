@@ -1370,8 +1370,8 @@ Get parents of a Google Drive file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
-| user_id | The user's primary email address. | Optional | 
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Required | 
+| user_id | The user's primary email address. | Required | 
 | include_items_from_all_drives | Whether both My Drive and shared drive items should be included in the results. Possible values are: true, false. Default is false. | Optional | 
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: True, False. Default is False. | Optional | 
 

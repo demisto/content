@@ -3081,8 +3081,10 @@ script:
     arguments:
     - name: file_id
       description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
+      required: true
     - name: user_id
       description: The user's primary email address.
+      required: true
     - auto: PREDEFINED
       defaultValue: "false"
       description: 'Whether both My Drive and shared drive items should be included in the results.'
