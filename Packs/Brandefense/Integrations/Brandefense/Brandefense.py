@@ -294,7 +294,7 @@ def main():
             }
             test=requests.get(url,headers=headers)
             if test.status_code == 200:
-                return_results('Test Successful')
+                return_results('ok')
             
             
     except Exception as e:
