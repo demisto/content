@@ -1286,6 +1286,21 @@ def get_behaviors(behavior_ids: list[str]) -> dict:
         data=json.dumps({'ids': behavior_ids}),
     )
 
+def get_ioarules(rule_ids: list[str]) -> dict:
+    """
+        Sends ioa rules entities request
+        :param rule_ids: IDs of the requested ioa rule. Format should be "cid:rule_id" example : "123123fdasfa12fcafdasfadsfasdf:2300"
+        :return: Response json of the get ioa rule entities endpoint (ioa rule objects)
+    """
+    ids_json = {'ids': rule_ids}
+    if rule_ids:
+        response = http_request(
+            'POST',
+            '/ioarules/entities/rules/GET/v1',
+            data=json.dumps(ids_json)
+        )
+        return response
+    return rule_ids
 
 def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     """
@@ -6536,6 +6551,59 @@ def get_incident_behavior_command(args: dict) -> CommandResults:
     )
 
 
+def get_ioarules_command(args: dict) -> CommandResults:
+    rule_ids = argToList(args['rule_ids'])
+    ioarules_response_data = get_ioarules(rule_ids)
+
+    ioarules = ioarules_response_data.get('resources', [])
+
+    def table_headers_transformer(header: str) -> str:
+        mapping = {
+            "action_label": "Action Label",
+            "comment": "Comment",
+            "committed_on": "Committed on",
+            "created_by": "Created by",
+            "created_on": "Created on",
+            "customer_id": "Customer ID",
+            "deleted": "Deleted",
+            "description": "Description",
+            "disposition_id": "Disposition ID",
+            "enabled": "Enabled",
+            "field_values": "Field Values",
+            "instance_id": "Instance ID",
+            "instance_version": "Instance Version",
+            "magic_cookie": "Magic Cookie",
+            "modified_by": "Modified by",
+            "modified_on": "Modified on",
+            "name": "Name",
+            "pattern_id": "Pattern ID",
+            "pattern_severity": "Pattern Severity",
+            "rulegroup_id": "Rule Group ID",
+            "ruletype_id": "Rule Type ID",
+            "ruletype_name": "Rule Type Name",
+            "version_ids": "Version IDs",
+            }
+
+        return mapping.get(header, header)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOARules',
+        outputs_key_field='instance_id',
+        outputs=results,
+        readable_output=tableToMarkdown(
+            name='CrowdStrike IOA Rules',
+            t=results,
+            headers=['instance_id', 'customer_id', 'action_label', 'comment', 'committed_on', 'created_by', 'created_on', 'deleted',
+                     'description', 'disposition_id', 'enabled', 'field_values', 'instance_id','instance_version','magic_cookie',
+                     'modified_by','modified_on','name','pattern_id','pattern_severity','rulegroup_id','ruletype_id','ruletype_name','version_ids'],
+            headerTransform=table_headers_transformer,
+            removeNull=True,
+            sort_headers=False,
+        ),
+        raw_response=ioarules,
+    )
+
+
 def main():
     command = demisto.command()
     args = demisto.args()
@@ -6765,6 +6833,8 @@ def main():
             return_results(cs_falcon_list_users_command(args=args))
         elif command == 'cs-falcon-get-incident-behavior':
             return_results(get_incident_behavior_command(args=args))
+        elif command == 'cs-falcon-get-ioarules':
+            return_results(get_ioarules_command(args=args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
