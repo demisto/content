@@ -520,35 +520,37 @@ def fetch_incidents():
     return incidents
 
 
-def filter_results_by_fields(results, fields_to_view):
+def filter_results_by_fields(results, fields_to_view_string):
     """
     Filter a list of dictionaries by including only specified fields.
 
     Parameters:
         - results (list): A list of dictionaries representing rows of data.
-        - fields_to_view (list): A field names to include.
+        - fields_to_view_string (str): A comma-separated string containing field names to include.
 
     Returns:
         list: A new list of dictionaries with only the specified fields.
 
     Raises:
-        ValueError: If the fields_to_view contains invalid column names.
+        ValueError: If the fields_to_view_string contains invalid column names.
     """
-    if not fields_to_view or not results:
+    if not fields_to_view_string or not results:
         return results
 
-    # Check if all fields from fields_to_view are present in the first dictionary in results
+    fields_to_view_list = [field.strip() for field in fields_to_view_string.split(',')]
+
+    # Check if all fields from fields_to_view_list are present in the first dictionary in results
     first_dict = results[0]
-    missing_columns = set(fields_to_view) - set(first_dict)
+    missing_columns = set(fields_to_view_list) - set(first_dict)
     if missing_columns:
-        raise ValueError(f"Column names in fieldsToView: {missing_columns} not found in results")
+        raise ValueError(f"Fields {list(missing_columns)} not found in query result")
 
     filtered_results = []
 
     for result in results:
         filtered_result = {
-            column: tuple(result.get(column, None)) if isinstance(result.get(column, None), list) else result.get(column, None)
-            for column in fields_to_view
+            column: tuple(result.get(column)) if isinstance(result.get(column), list) else result.get(column)
+            for column in fields_to_view_list
         }
         filtered_results.append(filtered_result)
 
@@ -564,7 +566,7 @@ def run_query_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = f"{to_query} offset {offset} limit {items}"
-    fields_to_view = check_type(demisto.args().get("fields_to_view", []), list)
+    fields_to_view = demisto.args().get("fields_to_view", "")
     results = list(
         ds.Reader(
             oauth_token=READER_OAUTH_TOKEN,
@@ -637,7 +639,7 @@ def get_alerts_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
-    fields_to_view = check_type(demisto.args().get("fields_to_view", []), list)
+    fields_to_view = demisto.args().get("fields_to_view", "")
     user_alert_table = user_alert_table if user_alert_table else DEFAULT_ALERT_TABLE
     if user_prefix:
         user_prefix = f"{user_prefix}_"
@@ -750,7 +752,7 @@ def multi_table_query_command(offset, items):
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
     query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
-    fields_to_view = check_type(demisto.args().get("fields_to_view", []), list)
+    fields_to_view = demisto.args().get("fields_to_view", "")
     global COUNT_MULTI_TABLE
     time_range = get_time_range(timestamp_from, timestamp_to)
 
