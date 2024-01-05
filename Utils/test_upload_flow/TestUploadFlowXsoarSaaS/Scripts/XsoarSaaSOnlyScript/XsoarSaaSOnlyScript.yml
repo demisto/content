@@ -17,7 +17,7 @@ args:
   name: instance_name
 comment: Use this script to add a comment or work note to a ServiceNow ticket. To be run within the incident.
 commonfields:
-  id: ServiceNowAddComment
+  id: XsoarSaasCommand
   version: -1
 contentitemexportablefields:
   contentitemfields:
@@ -27,7 +27,7 @@ dependson:
   - '|||servicenow-add-comment'
 dockerimage: demisto/python3:3.10.12.63474
 enabled: true
-name: ServiceNowAddComment
+name: XsoarSaasCommand
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
