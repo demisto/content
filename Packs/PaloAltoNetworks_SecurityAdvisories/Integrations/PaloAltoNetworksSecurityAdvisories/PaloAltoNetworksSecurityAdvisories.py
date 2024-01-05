@@ -220,7 +220,6 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
     if impact and cvss.get("version") in ['3.1', '4.0']:
         fields['cvssversion'] = cvss.get("version", "")
 
-        advisory_dict.get("impact", {})
         # is this v3/v4 cvss?
 
         # fills out the cvsstable in default cve layout - different table column names
