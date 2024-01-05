@@ -541,7 +541,7 @@ def filter_results_by_fields(results, fields_to_view):
     first_dict = results[0]
     missing_columns = set(fields_to_view) - set(first_dict)
     if missing_columns:
-        raise ValueError(f"Column names in fieldsToView: {fields_to_view} not found in results")
+        raise ValueError(f"Column names in fieldsToView: {missing_columns} not found in results")
 
     filtered_results = []
 
@@ -564,7 +564,7 @@ def run_query_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = f"{to_query} offset {offset} limit {items}"
-    fields_to_view = check_type(demisto.args()["fields_to_view"], list)
+    fields_to_view = check_type(demisto.args().get("fields_to_view", []), list)
     results = list(
         ds.Reader(
             oauth_token=READER_OAUTH_TOKEN,
@@ -637,7 +637,7 @@ def get_alerts_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
-    fields_to_view = check_type(demisto.args()["fields_to_view"], list)
+    fields_to_view = check_type(demisto.args().get("fields_to_view", []), list)
     user_alert_table = user_alert_table if user_alert_table else DEFAULT_ALERT_TABLE
     if user_prefix:
         user_prefix = f"{user_prefix}_"
@@ -750,7 +750,7 @@ def multi_table_query_command(offset, items):
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
     query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
-    fields_to_view = check_type(demisto.args()["fields_to_view"], list)
+    fields_to_view = check_type(demisto.args().get("fields_to_view", []), list)
     global COUNT_MULTI_TABLE
     time_range = get_time_range(timestamp_from, timestamp_to)
 
