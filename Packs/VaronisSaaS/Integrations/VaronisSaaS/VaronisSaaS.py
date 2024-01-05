@@ -1871,7 +1871,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Varonis',
-        outputs_key_field='Varonis.Alert.ID',
+        outputs_key_field='Alert.ID',
         outputs=outputs
     )
 
@@ -1928,7 +1928,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Varonis',
-        outputs_key_field='Varonis.Event.ID',
+        outputs_key_field='Event.ID',
         outputs=outputs
     )
 
