@@ -100,12 +100,14 @@ MOCK_QUERY_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
+    "fields_to_view": ["alertId", "extraData", "context"]
 }
 MOCK_ALERT_ARGS = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
+    "fields_to_view": ["alertId", "extraData", "context"]
 }
 MOCK_MULTI_ARGS = {
     "tables": ["app", "charlie", "test"],
@@ -113,6 +115,7 @@ MOCK_MULTI_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
+    "fields_to_view": ["alertId", "extraData", "context"]
 }
 MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
@@ -319,7 +322,16 @@ def test_get_alerts(mock_query_results, mock_args_results):
     mock_args_results.return_value = MOCK_ALERT_ARGS
     results = get_alerts_command(OFFSET, ITEMS_PER_PAGE)
     assert len(results) == 2
-    assert results[0]["Contents"][0]["engine"] == "CPU_Usage_Alert"
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
+    # Check if all expected columns are present in the dictionary
+    expected_columns = MOCK_ALERT_ARGS['fields_to_view']
+    result = results[0]["Contents"][0]
+    # Calculate missing columns
+    missing_columns = [column for column in expected_columns if column not in result]
+    assert all(column in result for column in expected_columns), (
+        f"Not all columns present in the dictionary. Missing columns: "
+        f"{', '.join(missing_columns)}"
+    )
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
@@ -332,7 +344,15 @@ def test_run_query(mock_query_results, mock_args_results):
     results = run_query_command(OFFSET, ITEMS_PER_PAGE)
     assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
     assert len(results) == 2
-    assert results[0]["Contents"][0]["engine"] == "CPU_Usage_Alert"
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
+    expected_columns = MOCK_QUERY_ARGS['fields_to_view']
+    result = results[0]["Contents"][0]
+    # Calculate missing columns
+    missing_columns = [column for column in expected_columns if column not in result]
+    assert all(column in result for column in expected_columns), (
+        f"Not all columns present in the dictionary. Missing columns: "
+        f"{', '.join(missing_columns)}"
+    )
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)

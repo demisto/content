@@ -115,6 +115,8 @@ script:
       defaultValue: "true"
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
+    - name: fields_to_view
+      description: A field names to include in result.
     outputs:
     - contextPath: Devo.QueryResults
       description: List of dictionary alerts from the specified time range.
@@ -147,6 +149,8 @@ script:
       defaultValue: "true"
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
+    - name: fields_to_view
+      description: A field names to include in result.
     outputs:
     - contextPath: Devo.AlertsResults
       description: List of dictionary alerts from the specified time range.
@@ -179,6 +183,8 @@ script:
     - name: items_per_page
       description: Enter the per page value you want to set.
       defaultValue: "50"
+    - name: fields_to_view
+      description: A field names to include in result.
     outputs:
     - contextPath: Devo.MultiResults
       description: A list of dictionary results.
@@ -223,7 +229,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.78771
+  dockerimage: demisto/devo:1.0.0.83800
   isfetch: true
   subtype: python3
 tests:
