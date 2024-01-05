@@ -275,7 +275,7 @@ class Client(BaseClient):
                     .add_value({alert_attributes.Alert_TimeUTC: last_days, "displayValue": last_days})
             search_request.query.filter.add_filter(time_condition)
 
-        if threat_model_names and len(threat_model_names) > 0:
+        if threat_model_names:
             rule_condition = FilterCondition()\
                 .set_path(alert_attributes.Alert_Rule_Name)\
                 .set_operator("In")
@@ -283,7 +283,7 @@ class Client(BaseClient):
                 rule_condition.add_value({alert_attributes.Alert_Rule_Name: threat_model_name, "displayValue": "New"})
             search_request.query.filter.add_filter(rule_condition)
 
-        if alertIds and len(alertIds) > 0:
+        if alertIds:
             alert_condition = FilterCondition()\
                 .set_path(alert_attributes.Alert_ID)\
                 .set_operator("In")
@@ -291,7 +291,7 @@ class Client(BaseClient):
                 alert_condition.add_value({alert_attributes.Alert_ID: alertId, "displayValue": "New"})
             search_request.query.filter.add_filter(alert_condition)
 
-        if device_names and len(device_names) > 0:
+        if device_names:
             device_condition = FilterCondition()\
                 .set_path(alert_attributes.Alert_Device_HostName)\
                 .set_operator("In")
@@ -299,7 +299,7 @@ class Client(BaseClient):
                 device_condition.add_value({alert_attributes.Alert_Device_HostName: device_name, "displayValue": device_name})
             search_request.query.filter.add_filter(device_condition)
 
-        if user_names and len(user_names) > 0:
+        if user_names:
             user_condition = FilterCondition()\
                 .set_path(alert_attributes.Alert_User_Identity_Name)\
                 .set_operator("In")
@@ -307,7 +307,7 @@ class Client(BaseClient):
                 user_condition.add_value({alert_attributes.Alert_User_Identity_Name: user_name, "displayValue": user_name})
             search_request.query.filter.add_filter(user_condition)
 
-        if alert_statuses and len(alert_statuses) > 0:
+        if alert_statuses:
             status_condition = FilterCondition()\
                 .set_path(alert_attributes.Alert_Status_ID)\
                 .set_operator("In")
@@ -316,7 +316,7 @@ class Client(BaseClient):
                 status_condition.add_value({alert_attributes.Alert_Status_ID: status_id, "displayValue": status})
             search_request.query.filter.add_filter(status_condition)
 
-        if alert_severities and len(alert_severities) > 0:
+        if alert_severities:
             severity_condition = FilterCondition()\
                 .set_path(alert_attributes.Alert_Rule_Severity_ID)\
                 .set_operator("In")
@@ -1577,7 +1577,7 @@ def check_module_command(client: Client) -> CommandResults:
 
 
 def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Get threaat models from Varonis DA
+    """Get threat models from Varonis DA
 
     :type client: ``Client``
     :param client: Http client
@@ -1597,17 +1597,11 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     :rtype: ``CommandResults``
     """
 
-    id = args.get('id', None)
-    name = args.get('name', None)
-    category = args.get('category', None)
-    severity = args.get('severity', None)
-    source = args.get('source', None)
-
-    id = try_convert(id, lambda x: argToList(x))
-    name = try_convert(name, lambda x: argToList(x))
-    category = try_convert(category, lambda x: argToList(x))
-    severity = try_convert(severity, lambda x: argToList(x))
-    source = try_convert(source, lambda x: argToList(x))
+    id = argToList(args.get('id'))
+    name = argToList(args.get('name'))
+    category = argToList(args.get('category'))
+    severity = argToList(args.get('severity'))
+    source = argToList(args.get('source'))
 
     id_int = []
     if id:
@@ -1903,14 +1897,12 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
 
     :rtype: ``CommandResults``
     """
-    alertIds = args.get('alert_id', None)
     start_time = args.get('start_time', None)
     end_time = args.get('end_time', None)
     last_days = args.get('last_days', None)
-    extra_fields = args.get('extra_fields', None)
     descending_order = args.get('descending_order', True)
 
-    alertIds = try_convert(alertIds, lambda x: argToList(x))
+    alertIds = try_convert(args.get('alert_id'), lambda x: argToList(x))
     start_time = try_convert(
         start_time,
         lambda x: datetime.fromisoformat(x),
@@ -1919,9 +1911,9 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     end_time = try_convert(
         end_time,
         lambda x: datetime.fromisoformat(x),
-        ValueError(f'end_time should be in iso format, but it is {start_time}.')
+        ValueError(f'end_time should be in iso format, but it is {end_time}.')
     )
-    extra_fields = try_convert(extra_fields, lambda x: argToList(x))
+    extra_fields = try_convert(args.get('extra_fields'), lambda x: argToList(x))
 
     events = client.varonis_get_alerted_events(alertIds=alertIds, start_time=start_time, end_time=end_time,
                                                last_days=last_days,
@@ -2018,10 +2010,6 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')), note)
 
 
-def is_xsoar_env() -> bool:
-    return True  # not not demisto.params().get('url')
-
-
 '''' MAIN FUNCTION '''
 
 
@@ -2034,81 +2022,6 @@ def main() -> None:
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-
-    if not is_xsoar_env():
-        url = ''
-        apiKey = 'vkey1_17944a55aa824cfbb472ce2256bb9417_luHz5L/2ul2tGuiibpgSVDjcz/K8CC/HPyujFyieT18='
-        command = 'varonis-get-alerted-events'
-        # 'test-module'|
-        # 'varonis-get-threat-models'|
-        # 'varonis-get-alerts'|
-        # 'varonis-get-alerted-events'|
-        # 'varonis-alert-add-note'
-        # 'varonis-update-alert-status'|
-        # 'varonis-close-alert'|
-        # 'fetch-incidents'
-        params = {
-            'url': url,
-            'apiKey': apiKey,
-            'insecure': True,
-            'proxy': False,
-            'status': None,
-            'threat_model': None,
-            'severity': None,
-            'max_fetch': None,
-            'first_fetch': '1 week'
-        }
-
-        test_alert_id = '6769D061-A714-4C95-A8AE-121E5379BF3C'
-        if command == 'test-module':
-            pass
-
-        if command == 'varonis-get-threat-models':
-            args['id'] = "1,2,3"  # List of requested threat model ids
-            # "Abnormal service behavior: access to atypical folders,Abnormal service behavior: access to atypical files"
-            args['name'] = ""  # List of requested threat model names
-            args['category'] = ""  # "Exfiltration,Reconnaissance"  # List of requested threat model categories
-            args['severity'] = ""  # "3 - Error,4 - Warning"  # List of requested threat model severities
-            args['source'] = ""  # "Predefined"  # List of requested threat model sources
-
-        elif command == 'varonis-get-alerts':
-            args['threat_model_name'] = None  # List of requested threat models
-            args['ingest_time_from'] = None  # Start ingest time of the range of alerts
-            args['ingest_time_to'] = None  # End ingest time of the range of alerts
-            args['start_time'] = None  # Start time of the range of alerts
-            args['end_time'] = None  # End time of the range of alerts
-            args['alert_status'] = None  # List of required alerts status
-            args['alert_severity'] = None  # List of alerts severity
-            args['device_name'] = None  # List of device names
-            args['user_name'] = None  # List of device names
-            args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = ""  # extra fields
-            args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
-
-        elif command == 'varonis-get-alerted-events':
-            args['alert_id'] = test_alert_id  # Array of alert ids
-            args['start_time'] = None  # Start time of the range of events
-            args['end_time'] = None  # End time of the range of events
-            args['last_days'] = None  # Number of days you want the search to go back to
-            args['extra_fields'] = ""  # extra fields
-            args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
-
-        elif command == 'varonis-alert-add-note':
-            args['alert_id'] = test_alert_id  # Array of alert ids to be updated
-            args['note'] = "user note"  # Note for alert
-
-        elif command == 'varonis-update-alert-status':
-            args['status'] = 'under investigation'  # Alert's new status
-            args['alert_id'] = test_alert_id  # Array of alert ids to be updated
-            args['note'] = "user note"  # Note for alert
-
-        elif command == 'varonis-close-alert':
-            args['close_reason'] = 'resolved'  # Alert's close reason
-            args['alert_id'] = test_alert_id  # Array of alert ids to be closed
-            args['note'] = "user note"  # Note for alert
-
-        elif command == 'fetch-incidents':
-            pass
 
     base_url = params['url']
     apiKey = params['apiKey']
@@ -2189,4 +2102,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

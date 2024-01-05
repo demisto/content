@@ -235,4 +235,3 @@ def test_get_excluded_severitires():
     assert get_included_severitires('Low') == ['high', 'medium', 'low']
     assert get_included_severitires('Medium') == ['high', 'medium']
     assert get_included_severitires('High') == ['high']
-

@@ -134,6 +134,7 @@ script:
       secret: false
     - default: false
       description: Indicates whether alerts should be ordered in newest to oldest order.
+      defaultvalue: True
       isArray: false
       name: descending_order
       required: false
