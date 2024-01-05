@@ -1,73 +1,38 @@
-category: Vulnerability Management
-commonfields:
-  id: QualysV2
-  version: -1
-configuration:
-- defaultvalue: https://qualysguard.qg2.apps.qualys.com
-  display: Server URL
-  name: url
-  required: true
-  type: 0
-  additionalinfo: "When using asset-tag commands, the official documentation recommends that the SERVER URL parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`. For more details see the integration documentation."
-- display: Username
-  name: credentials
-  required: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
-display: Qualys v2
-name: QualysV2
-script:
-  commands:			
-  - name: qualys-update-vmware-record
-    arguments:
-    - name: ids
-      description: Record IDs to update
-    - name: add_ips
-      description: IP's specified will overwrite existing IPs in the record
-    description: Update Vmware records for authenticated scans of hosts running on
-      Vmware
-  - name: qualys-update-vcenter-record
-    arguments:
-    - name: ids
-      description: Record IDs to update
-    - name: add_ips
-      description: IP's specified will overwrite existing IPs in the record
-    description: Update vCenter records for authenticated scans of hosts running on
-      vCenter
-  - name: qualys-vcenter-esxi-mapped-record-list
-    arguments:
-    - name: network_id
-      description: Network support must be enabled to specify the network_id. If network support is enabled and you do not provide a network_id, then the Default Global Network is considered. You can specify only one network_id.
-      defaultValue: "0"
-    - name: esxi_ip
-      description: Specifies the IP address of the ESXi server.
-    - name: output_format
-      auto: PREDEFINED
-      predefined:
-      - xml
-      - csv
-      description: One output format may be specified.
-    description: List vCenter ESXi mapping records
-  - name: qualys-vcenter-esxi-mapped-record-import
-    arguments:
-    - name: csv_data
-    description: Import vCenter ESXi mapping records
-  - name: qualys-vcenter-esxi-mapped-record-purge
-    arguments:
-    - name: csv_data
-    description: Purge vCenter ESXi mapping records
-  dockerimage: demisto/python3:3.10.13.80014
-  script: ''
-  subtype: python3
-  type: python
-fromversion: 5.5.0
-tests:
-- QualysVulnerabilityManagement-Test
+- name: qualys-update-vmware-record
+  arguments:
+  - name: ids
+    description: Record IDs to update
+  - name: add_ips
+    description: IP's specified will overwrite existing IPs in the record
+  description: Update Vmware records for authenticated scans of hosts running on
+    Vmware
+- name: qualys-update-vcenter-record
+  arguments:
+  - name: ids
+    description: Record IDs to update
+  - name: add_ips
+    description: IP's specified will overwrite existing IPs in the record
+  description: Update vCenter records for authenticated scans of hosts running on
+    vCenter
+- name: qualys-vcenter-esxi-mapped-record-list
+  arguments:
+  - name: network_id
+    description: Network support must be enabled to specify the network_id. If network support is enabled and you do not provide a network_id, then the Default Global Network is considered. You can specify only one network_id.
+    defaultValue: "0"
+  - name: esxi_ip
+    description: Specifies the IP address of the ESXi server.
+  - name: output_format
+    auto: PREDEFINED
+    predefined:
+    - xml
+    - csv
+    description: One output format may be specified.
+  description: List vCenter ESXi mapping records
+- name: qualys-vcenter-esxi-mapped-record-import
+  arguments:
+  - name: csv_data
+  description: Import vCenter ESXi mapping records
+- name: qualys-vcenter-esxi-mapped-record-purge
+  arguments:
+  - name: csv_data
+  description: Purge vCenter ESXi mapping records
