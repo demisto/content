@@ -60,18 +60,6 @@
             "fieldCalcScript": "",
             "isReadOnly": false,
             "selectValues": null
-        },
-        {
-            "key": "department",
-            "displayName": "Department",
-            "type": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
         }
     ],
     "defaultRows": [
