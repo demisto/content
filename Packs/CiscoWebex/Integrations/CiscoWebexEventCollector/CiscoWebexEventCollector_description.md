@@ -34,10 +34,12 @@ Run [this](https://developer.webex.com/docs/api/v1/organizations/list-organizati
 
 ### Authentication flow (Oauth)
 
-Each application should be authenticated with the following 3 commands.
+Each application (admin and compliance officer) should be authenticated with the following 3 commands.
+Each command (of the following three commands) has an argument called **user**, which can be set to `admin` or `compliance officer`.
+In order to receive all events, You must run all three commands twice, once with `admin` as your **user** argument value and once with `compliance officer` as your **user** argument value.
 
-1. Run the ***cisco-webex-auth-start*** command - you will be prompted to open the page https://microsoft.com/devicelogin and enter the generated code.
-2. Run the ***cisco-webex-auth-complete*** command.
-3. Run the ***cisco-webex-test*** command to ensure connectivity to Microsoft. 
+1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sing in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). then you will be redirected to the `redirect URI` you defined in the application. the url will contain a query parameter called `code`. the value of this query parameter will be used in the next command. 
+2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). the **code** argument should be set to the value returned in the code query parameter from the previous command.
+3. Run the ***cisco-webex-oauth-test*** command with the **user** argument - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). to ensure connectivity to Cisco Webex. 
 
 

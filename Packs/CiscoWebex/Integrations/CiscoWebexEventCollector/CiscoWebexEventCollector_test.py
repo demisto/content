@@ -199,7 +199,7 @@ def test_oauth_complete(client):
         )
         results = oauth_complete(client, {'code': '123456'})
 
-    assert 'Logged in successfully.' in results.readable_output
+    assert 'Authorization completed successfully.' in results.readable_output
 
 
 @pytest.mark.parametrize('client', [mocked_admin_client(), mocked_compliance_officer_client()])
@@ -219,7 +219,7 @@ def test_oauth_test(client):
         m.get('https://url.com/events', text=util_load_text('test_data/events.json'))
         result = oauth_test(client)
 
-    assert result.readable_output == '### Test succeeded!'
+    assert result.readable_output == '```✅ Success!```'
 
 
 @pytest.mark.parametrize('command_function, args', [

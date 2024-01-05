@@ -157,7 +157,7 @@ class Client(BaseClient):
 
         return None
 
-    def oauth_start(self) -> str:
+    def oauth_start(self) -> tuple[str, str]:
         """returns a URL as a string to use in the oauth start command."""
         params = assign_params(
             response_type='code',
@@ -165,7 +165,7 @@ class Client(BaseClient):
             client_id=self.client_id,
             redirect_uri=self.redirect_uri,
         )
-        return f'{urljoin(URL, "authorize?")}{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}'
+        return f'{urljoin(URL, "authorize?")}{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}', self.user
 
     def oauth_complete(self, code: str | None):
         """
@@ -298,12 +298,13 @@ def oauth_start(client: Client) -> CommandResults:
     Returns:
         A CommandResult with a URL generated according to the client attributes to start the authentication.
     """
-    url = client.oauth_start()
+    url, user = client.oauth_start()
     return CommandResults(
-        readable_output=f'In order to retrieve the authorization code [click here]({url}).\n'
-                        'You will retrieve the authorization code provided as a query parameter called `code`, '
-                        'and insert it as an argument to the `!cisco-webex-oauth-complete` command.'
-    )
+        readable_output=f"""### Authorization instructions
+1. To sign in, use a web browser to open [this page]({url})
+and sign in with your username and password. (make sure you sign in with the {user} user).
+You will retrieve the authorization code provided as a query parameter called `code` use it as an argument in the next command.
+2. Run the **!cisco-webex-oauth-complete** command in the War Room.""")
 
 
 def oauth_complete(client: Client, args: dict) -> CommandResults:
@@ -320,10 +321,7 @@ def oauth_complete(client: Client, args: dict) -> CommandResults:
     code = args.get('code')
     client.oauth_complete(code)
     return CommandResults(
-        readable_output='### Logged in successfully.\n'
-                        'A refresh token was saved to the integration context. This token will be used to '
-                        'generate a new access token once the current one expires.\n'
-                        'In order to complete the test process please run the `!cisco-webex-oauth-test` command.'
+        readable_output='Authorization completed successfully.'
     )
 
 
@@ -337,9 +335,7 @@ def oauth_test(client: Client) -> CommandResults:
         A CommandResult with a message that the Test succeeded.
     """
     client.oauth_test()
-    return CommandResults(
-        readable_output='### Test succeeded!'
-    )
+    return CommandResults(readable_output='```✅ Success!```')
 
 
 def get_events_with_pagination(client_function: Callable, from_date: str, limit: int, next_url: str = '') -> tuple[list, str]:
