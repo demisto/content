@@ -100,14 +100,28 @@ MOCK_QUERY_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": ["alertId", "extraData", "context"]
+    "fields_to_view": "alertId,extraData,context"
+}
+MOCK_QUERY_ARGS_EMPTY_FIELDS_TO_VIEW_PRAM = {
+    "query": "from whatever",
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "fields_to_view": ""
 }
 MOCK_ALERT_ARGS = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": ["alertId", "extraData", "context"]
+    "fields_to_view": "alertId,extraData,context"
+}
+MOCK_ALERT_ARGS_EMPTY_FIELDS_TO_VIEW_PRAM = {
+    "filters": MOCK_FETCH_INCIDENTS_FILTER,
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "fields_to_view": " "
 }
 MOCK_MULTI_ARGS = {
     "tables": ["app", "charlie", "test"],
@@ -115,7 +129,7 @@ MOCK_MULTI_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": ["alertId", "extraData", "context"]
+    "fields_to_view": "alertId,extraData,context"
 }
 MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
@@ -324,14 +338,26 @@ def test_get_alerts(mock_query_results, mock_args_results):
     assert len(results) == 2
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
     # Check if all expected columns are present in the dictionary
-    expected_columns = MOCK_ALERT_ARGS['fields_to_view']
+    # Convert fields_to_view from a list to a comma-separated string
+    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS['fields_to_view'].split(','))
     result = results[0]["Contents"][0]
-    # Calculate missing columns
-    missing_columns = [column for column in expected_columns if column not in result]
-    assert all(column in result for column in expected_columns), (
+    assert all(column in result for column in expected_columns.split(',')), (
         f"Not all columns present in the dictionary. Missing columns: "
-        f"{', '.join(missing_columns)}"
+        f"{', '.join(column for column in expected_columns.split(',') if column not in result)}"
     )
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.ds.Reader.query")
+def test_get_alerts_with_empty_fields_to_view_param(mock_query_results, mock_args_results):
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
+    mock_args_results.return_value = MOCK_ALERT_ARGS_EMPTY_FIELDS_TO_VIEW_PRAM
+    try:
+        get_alerts_command(OFFSET, ITEMS_PER_PAGE)
+    except ValueError as e:
+        assert "Fields [''] not found in query result" in str(e), f"Unexpected exception message: {e}"
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
@@ -345,14 +371,25 @@ def test_run_query(mock_query_results, mock_args_results):
     assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
     assert len(results) == 2
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
-    expected_columns = MOCK_QUERY_ARGS['fields_to_view']
+    expected_columns = ','.join(field.strip() for field in MOCK_QUERY_ARGS['fields_to_view'].split(','))
     result = results[0]["Contents"][0]
-    # Calculate missing columns
-    missing_columns = [column for column in expected_columns if column not in result]
-    assert all(column in result for column in expected_columns), (
+    assert all(column in result for column in expected_columns.split(',')), (
         f"Not all columns present in the dictionary. Missing columns: "
-        f"{', '.join(missing_columns)}"
+        f"{', '.join(column for column in expected_columns.split(',') if column not in result)}"
     )
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.ds.Reader.query")
+def test_run_query_with_empty_fields_to_view_param(mock_query_results, mock_args_results):
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
+    mock_args_results.return_value = MOCK_QUERY_ARGS_EMPTY_FIELDS_TO_VIEW_PRAM
+    try:
+        run_query_command(OFFSET, ITEMS_PER_PAGE)
+    except ValueError as e:
+        assert "Fields [''] not found in query result" in str(e), f"Unexpected exception message: {e}"
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
