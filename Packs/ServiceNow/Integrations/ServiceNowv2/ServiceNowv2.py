@@ -2342,8 +2342,9 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
 
-    user_assigned = check_assigned_to_field(client, assigned_to)
-    ticket['assigned_to'] = user_assigned
+    if ticket:
+        user_assigned = check_assigned_to_field(client, assigned_to)
+        ticket['assigned_to'] = user_assigned
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'), no_record_found_res={'result': {}})
