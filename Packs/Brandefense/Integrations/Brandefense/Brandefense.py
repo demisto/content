@@ -186,30 +186,20 @@ def get_ioc(api_token, args):
 
 
 def get_cti_rules(api_token, args):
-    search = args.get("search")
-    created_at__range = args.get("created_at__range")
-    created_at__range = str(created_at__range)
-    tag = args.get("tag")
-    tag = str(tag)
-    source__ilike = args.get("source__ilike")
-    source__ilike = str(source__ilike)
     url = "https://api.brandefense.io/api/v1/threat-intelligence/rules"
-    querystring = {"tag": tag, "search": search}
+    search = args.get("search")
+    tag = args.get("tag")
+    source = args.get("source__ilike")
+    querystring = {"tag": tag, "search": search,'source__ilike':source}
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
         "authorization": "Bearer " + api_token,
     }
-    if (
-        len(search) > 2
-        or len(created_at__range) > 2
-        or len(search) > 2
-        or len(tag) > 2
-        or len(source__ilike) > 2
-    ):
-        response = requests.get(url, headers=headers, params=querystring)
-    else:
-        response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(url, headers=headers,params=querystring)
+    except:
+        response= requests.get(url,headers=headers)
     branddefense_cti_rules = {"branddefense_cti_rules": response.json()}
     result = CommandResults(
         outputs=branddefense_cti_rules, outputs_prefix="branddefense_cti_rules"
