@@ -34,8 +34,9 @@
   "list_drive_children": {
     "MsGraphFiles.ListChildren(val.ItemID == obj.ItemID)": {
       "ParentID": "123",
+      "NextToken": "test_next_token",
       "Children": {
-        "OdataContext": "test",
+                "OdataContext": "test",
         "Value": [
           {
             "CreatedDateTime": "2019-12-08T13:24:58Z",
@@ -146,6 +147,7 @@
   },
   "list_drives_in_a_site": {
     "MsGraphFiles.ListDrives(val.ID === obj.ID)":{
+    "NextToken": "test_next_token",
     "OdataContext": "test",
     "Value": [
     {

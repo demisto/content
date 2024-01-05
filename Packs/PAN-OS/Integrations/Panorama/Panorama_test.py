@@ -3247,6 +3247,20 @@ class TestPanoramaCommand:
         assert result[0].serial
         assert result[0].last_commit_all_state_tpl
 
+    @patch("Panorama.run_op_command")
+    def test_get_template_stacks_without_hostname(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show template-stacks without hostname, assert it is parsed into the dataclasses correctly."""
+        from Panorama import PanoramaCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file("test_data/show_template_stack_without_hostname.xml")
+        result = PanoramaCommand.get_template_stacks(mock_topology)
+        assert len(result) == 2
+        assert result[0].name
+        assert not result[0].hostname
+        assert result[0].hostid
+        assert result[0].connected
+        assert result[0].serial
+        assert result[0].last_commit_all_state_tpl
+
 
 class TestUniversalCommand:
     """Test all the commands relevant to both Panorama and Firewall devices"""

@@ -17,8 +17,8 @@ versions_dict = {}
 pack_items_dict = {}
 changed_packs = set()
 
-GITLAB_SERVER_HOST = get_env_var('CI_SERVER_HOST', 'code.pan.run')  # disable-secrets-detection
-GITLAB_PROJECT_NAMESPACE = get_env_var('CI_PROJECT_NAMESPACE', 'xsoar')  # disable-secrets-detection
+GITLAB_SERVER_HOST = get_env_var('CI_SERVER_HOST', 'gitlab.xdr.pan.local')  # disable-secrets-detection
+GITLAB_PROJECT_NAMESPACE = get_env_var('CI_PROJECT_NAMESPACE', 'xdr/cortex-content')  # disable-secrets-detection
 
 # HELPER FUNCTIONS
 
