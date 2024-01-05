@@ -198,7 +198,7 @@ def get_cti_rules(api_token, args):
     }
     try:
         response = requests.get(url, headers=headers,params=querystring)
-    except:
+    except Exception:
         response= requests.get(url,headers=headers)
     branddefense_cti_rules = {"branddefense_cti_rules": response.json()}
     result = CommandResults(
