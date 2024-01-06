@@ -1294,9 +1294,9 @@ def get_ioarules(rule_ids: list[str]) -> dict:
         :return: Response json of the get ioa rule entities endpoint (ioa rule objects)
     """
     return http_request(
-            'POST',
-            '/ioarules/entities/rules/GET/v1',
-            data=json.dumps({rule_ids}),
+        'POST',
+        '/ioarules/entities/rules/GET/v1',
+        data=json.dumps({rule_ids}),
     )
 
 
