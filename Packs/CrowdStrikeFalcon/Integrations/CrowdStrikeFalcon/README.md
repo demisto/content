@@ -6744,7 +6744,7 @@ Get IOA Rules for Custom IOA rule triggered detections
 | CrowdStrike.IOARules.created_by | String | The IOA Rule's creator. | 
 | CrowdStrike.IOARules.created_on | Number | The timestamp of the IOA Rule's creation. | 
 | CrowdStrike.IOARules.deleted | String | Whether the IOA Rule is in deleted status. | 
-| CrowdStrike.IOARules.description | Boolean | The IOA Rule's Description. | 
+| CrowdStrike.IOARules.description | String | The IOA Rule's Description. | 
 | CrowdStrike.IOARules.disposition_id | String | The Disposition ID used by the IOA Rule. | 
 | CrowdStrike.IOARules.enabled | Boolean | Whether the IOA Rule is enabled. | 
 | CrowdStrike.IOARules.field_values | String | The IOA Rule's field values. | 
