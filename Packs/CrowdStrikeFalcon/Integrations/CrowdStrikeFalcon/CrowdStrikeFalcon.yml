@@ -4934,9 +4934,6 @@ script:
       description: The IOA Rule's Magic Cookie
       type: String
     - contextPath: CrowdStrike.IOARules.modified_by
-      description: The IOA Rule's last modified user.
-      type: String
-    - contextPath: CrowdStrike.IOARules.modified_by
       description: The last user who modified the IOA Rule.
       type: String
     - contextPath: CrowdStrike.IOARules.modified_on
