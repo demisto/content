@@ -6593,9 +6593,9 @@ def get_ioarules_command(args: dict) -> CommandResults:
         readable_output=tableToMarkdown(
             name='CrowdStrike IOA Rules',
             t=results,
-            headers=['instance_id', 'customer_id', 'action_label', 'comment', 'committed_on', 'created_by', 'created_on', 'deleted',
-                     'description', 'disposition_id', 'enabled', 'field_values','instance_version','magic_cookie',
-                     'modified_by','modified_on','name','pattern_id','pattern_severity','rulegroup_id','ruletype_id','ruletype_name','version_ids'],
+            headers=['instance_id', 'customer_id', 'action_label', 'comment', 'committed_on', 'created_by', 'created_on', 'deleted', 
+                     'description', 'disposition_id', 'enabled', 'field_values','instance_version','magic_cookie', 
+                     'modified_by', 'modified_on', 'name', 'pattern_id', 'pattern_severity', 'rulegroup_id', 'ruletype_id', 'ruletype_name', 'version_ids'],
             headerTransform=table_headers_transformer,
             removeNull=True,
             sort_headers=False,
