@@ -4892,7 +4892,7 @@ script:
     name: cs-falcon-get-ioarules
     outputs:
     - contextPath: CrowdStrike.IOARules.instance_id
-      description: The IOA Rule's Instance ID
+      description: The IOA Rule's Instance ID.
       type: String
     - contextPath: CrowdStrike.IOARules.customer_id
       description: The customer ID.
@@ -4925,13 +4925,13 @@ script:
       description: Whether the IOA Rule is enabled.
       type: Boolean
     - contextPath: CrowdStrike.IOARules.field_values
-      description: The IOA Rule's field values
+      description: The IOA Rule's field values.
       type: String
     - contextPath: CrowdStrike.IOARules.instance_version
-      description: The IOA Rule's Instance Version
+      description: The IOA Rule's Instance Version.
       type: String
     - contextPath: CrowdStrike.IOARules.magic_cookie
-      description: The IOA Rule's Magic Cookie
+      description: The IOA Rule's Magic Cookie.
       type: String
     - contextPath: CrowdStrike.IOARules.modified_by
       description: The last user who modified the IOA Rule.
@@ -4943,24 +4943,24 @@ script:
       description: The IOA Rule Name.
       type: String
     - contextPath: CrowdStrike.IOARules.pattern_id
-      description: The IOA Rule's Pattern ID
+      description: The IOA Rule's Pattern ID.
       type: String
     - contextPath: CrowdStrike.IOARules.pattern_severity
-      description: The IOA Rule's Pattern Severity
+      description: The IOA Rule's Pattern Severity.
       type: String
     - contextPath: CrowdStrike.IOARules.rulegroup_id
-      description: The IOA Rule's Rule Group ID
+      description: The IOA Rule's Rule Group ID.
       type: String
     - contextPath: CrowdStrike.IOARules.ruletype_id
-      description: The IOA Rule's Rule Type ID
+      description: The IOA Rule's Rule Type ID.
       type: String
     - contextPath: CrowdStrike.IOARules.ruletype_name
-      description: The IOA Rule's Rule Type Name
+      description: The IOA Rule's Rule Type Name.
       type: String
     - contextPath: CrowdStrike.IOARules.version_ids
-      description: The IOA Rule's Version ID
+      description: The IOA Rule's Version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.84136
+  dockerimage: demisto/py3-tools:1.0.0.84236
   isfetch: true
   ismappable: true
   isremotesyncin: true
