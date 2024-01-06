@@ -1286,17 +1286,19 @@ def get_behaviors(behavior_ids: list[str]) -> dict:
         data=json.dumps({'ids': behavior_ids}),
     )
 
+
 def get_ioarules(rule_ids: list[str]) -> dict:
     """
         Sends ioa rules entities request
-        :param rule_ids: IDs of the requested ioa rule. Format should be "cid:rule_id" example : "123123fdasfa12fcafdasfadsfasdf:2300"
+        :param rule_ids: IDs of the requested ioa rule. Format should be "cid:rule_id" or "123123fdasfa12fcafdasfadsfasdf:2300"
         :return: Response json of the get ioa rule entities endpoint (ioa rule objects)
     """
     return http_request(
             'POST',
             '/ioarules/entities/rules/GET/v1',
-            data=json.dumps(rule_ids)
+            data=json.dumps({rule_ids}),
     )
+
 
 def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     """
@@ -6578,7 +6580,7 @@ def get_ioarules_command(args: dict) -> CommandResults:
             "ruletype_id": "Rule Type ID",
             "ruletype_name": "Rule Type Name",
             "version_ids": "Version IDs",
-            }
+        }
 
         return mapping.get(header, header)
 
@@ -6589,9 +6591,10 @@ def get_ioarules_command(args: dict) -> CommandResults:
         readable_output=tableToMarkdown(
             name='CrowdStrike IOA Rules',
             t=ioarules,
-            headers=['instance_id', 'customer_id', 'action_label', 'comment', 'committed_on', 'created_by', 'created_on', 'deleted', 
-                     'description', 'disposition_id', 'enabled', 'field_values','instance_version','magic_cookie', 
-                     'modified_by', 'modified_on', 'name', 'pattern_id', 'pattern_severity', 'rulegroup_id', 'ruletype_id', 'ruletype_name', 'version_ids'],
+            headers=['instance_id', 'customer_id', 'action_label', 'comment', 'committed_on', 'created_by', 'created_on',
+                     'deleted', 'description', 'disposition_id', 'enabled', 'field_values', 'instance_version', 'magic_cookie',
+                     'modified_by', 'modified_on', 'name', 'pattern_id', 'pattern_severity',
+                     'rulegroup_id', 'ruletype_id', 'ruletype_name', 'version_ids'],
             headerTransform=table_headers_transformer,
             removeNull=True,
             sort_headers=False,
