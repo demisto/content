@@ -80,8 +80,8 @@ tasks:
     task:
       id: ef5c1a9d-fed3-47cc-8546-6372a9d89684
       version: -1
-      name: Process Email - Generic for Rasterize
-      playbookName: Process Email - Generic for Rasterize
+      name: Process Email - Generic for Rasterize V2
+      playbookName: Process Email - Generic for Rasterize V2
       type: playbook
       iscommand: false
       brand: ''
@@ -219,8 +219,8 @@ tasks:
     task:
       id: e8f3356d-0b54-412a-89c9-2f15a835e801
       version: -1
-      name: Process Email - Generic for Rasterize
-      playbookName: Process Email - Generic for Rasterize
+      name: Process Email - Generic for Rasterize V2
+      playbookName: Process Email - Generic for Rasterize V2
       type: playbook
       iscommand: false
       brand: ''
@@ -290,8 +290,8 @@ tasks:
     task:
       id: bb717ef1-d378-41e7-821a-80ec7870339b
       version: -1
-      name: Process Email - Generic for Rasterize
-      playbookName: Process Email - Generic for Rasterize
+      name: Process Email - Generic for Rasterize V2
+      playbookName: Process Email - Generic for Rasterize V2
       type: playbook
       iscommand: false
       brand: ''
