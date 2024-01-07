@@ -1,0 +1,107 @@
+id: B-test-B
+inputs: []
+name: B-test-B
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d7d9f37d-d079-4b3a-8bb9-08607761b4b0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d7d9f37d-d079-4b3a-8bb9-08607761b4b0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c8a7c4d5-e508-4508-8395-a0ce0069a857
+      iscommand: false
+      name: C-test-C
+      playbookId: C-test-C
+      type: playbook
+      version: -1
+    taskid: c8a7c4d5-e508-4508-8395-a0ce0069a857
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ad9d15fa-09db-45ca-80ec-449a0d72e2a8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ad9d15fa-09db-45ca-80ec-449a0d72e2a8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
