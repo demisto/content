@@ -1408,7 +1408,18 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
 class SDKNightlyTestCollector(TestCollector):
 
     def _collect(self) -> CollectionResult | None:
-        return self.sanity_tests
+        return CollectionResult(
+            test="Sanity Test - Playbook with no integration",
+            modeling_rule_to_test=None,
+            pack="HelloWorld",  # None in most cases
+            reason=CollectionReason.SANITY_TESTS,
+            version_range=None,
+            reason_description='Demisto-SDK Sanity Tests for test-content command',
+            conf=self.conf,
+            id_set=self.id_set,
+            is_sanity=True,
+            only_to_install=True,
+        )
 
 
 def output(result: CollectionResult | None):
