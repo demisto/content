@@ -503,27 +503,33 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'cisco-webex-get-admin-audit-events':
             command_results, events = get_events_command(admin_client.get_admin_audits, args)
-            return_results(command_results)
             if argToBoolean(args.get('should_push_events', False)):
+                demisto.debug(f'Sending to XSIAM {len(events)} events of type admin_audits')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
 
         elif command == 'cisco-webex-get-security-audit-events':
             command_results, events = get_events_command(admin_client.get_security_audits, args)
-            return_results(command_results)
             if argToBoolean(args.get('should_push_events', False)):
+                demisto.debug(f'Sending to XSIAM {len(events)} events of type security_audits')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
 
         elif command == 'cisco-webex-get-compliance-officer-events':
             command_results, events = get_events_command(compliance_officer_client.get_compliance_officer_events, args)
-            return_results(command_results)
             if argToBoolean(args.get('should_push_events', False)):
+                demisto.debug(f'Sending to XSIAM {len(events)} events of type events')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(command_results)
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(admin_client, compliance_officer_client, last_run, max_fetch, fetch_security_audits)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
+
+        else:
+            raise NotImplementedError(f'Command "{command}" was not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
