@@ -20,7 +20,7 @@ Click [here](https://developer.webex.com/) to create and manage the users.
 1. Admin client (for `Admin Audit Events` and `Security Audit Events`) associated with the admin user defined and the `audit:events_read` scope.
 2. Compliance Officer client (for `Events`) associated with the compliance officer user defined and the `spark-compliance:events_read` scope.
 
-[click here to create and managed the applications](https://developer.webex.com/my-apps)
+Click [here](https://developer.webex.com/my-apps) to create and manage the applications.
 
 
 ### Each client needs three parameters:
