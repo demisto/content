@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import datetime as dt
-from typing import TYPE_CHECKING, Iterator, cast
+from typing import TYPE_CHECKING, cast
+from collections.abc import Iterator
 
 from AWSApiModule import *
 
@@ -107,7 +108,7 @@ def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = Non
 
         response = client.get_findings(**kwargs)
         result = response.get('Findings', [])
-        
+
         # Filter out events based on id_ignore_set
         result = [event for event in result if event.get('Id') not in id_ignore_set]
 
