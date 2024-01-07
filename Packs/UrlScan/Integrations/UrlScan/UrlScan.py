@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -24,6 +25,7 @@ BLACKLISTED_URL_ERROR_MESSAGES = [
 BRAND = 'urlscan.io'
 IS_SYNC_MODE = argToBoolean(demisto.args().get("syncMode", False))
 DEFAULT_LIMIT = 20
+MAX_WORKERS = 5
 
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
@@ -568,10 +570,12 @@ def urlscan_submit_command(client):
     rate_limit_reset_after: int = 60
 
     search_only = argToBoolean(demisto.args().get("search_only", False))
+    urls = argToList(demisto.args().get('url'))
     if search_only or IS_SYNC_MODE:
-        urlscan_search_only(client, command_results, execution_metrics)
+        args = ((client, url, command_results, execution_metrics) for url in urls)
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            executor.map(lambda p: urlscan_search_only(*p), args)
     else:
-        urls = argToList(demisto.args().get('url'))
         for url in urls:
             demisto.args()['url'] = url
             response, metrics, rate_limit_reset_after = urlscan_submit_url(client, url)
@@ -597,44 +601,43 @@ def urlscan_submit_command(client):
     return command_results
 
 
-def urlscan_search_only(client: Client, command_results: list, execution_metrics: ExecutionMetrics):
-    urls = argToList(demisto.args().get("url"))
-    for url in urls:
-        demisto.args()["url"] = url
-        response = urlscan_search(client, "page.url", quote(url, safe=""))
-        if response.get("is_error"):
-            execution_metrics.general_error += 1
-            error_message = f"The search for the url '{url}' returned an error:\n{response.get('error_string', '')}"
-            command_results.append(
-                CommandResults(
-                    entry_type=EntryType.ERROR,
-                    readable_output=error_message,
-                    raw_response=error_message,
-                )
+def urlscan_search_only(client: Client, url: str, command_results: list, execution_metrics: ExecutionMetrics):
+    demisto.args()["url"] = url
+    response = urlscan_search(client, "page.url", quote(url, safe=""))
+    if response.get("is_error"):
+        execution_metrics.general_error += 1
+        error_message = f"The search for the url '{url}' returned an error:\n{response.get('error_string', '')}"
+        command_results.append(
+            CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=error_message,
+                raw_response=error_message,
             )
-            continue
+        )
+        return
 
-        found_result = False
-        for result in response.get("results", []):
-            task = result.get("task", {})
-            if task.get("url").rstrip("/") == url.rstrip("/"):
-                format_results(
-                    client,
-                    task.get("uuid"),
-                    use_url_as_name=False,
-                    scan_lists_attempts=False,
-                )
-                execution_metrics.success += 1
-                found_result = True
-                break
-        if not found_result:
-            no_results_message = f"No results found for {url}"
-            demisto.debug(no_results_message)
-            command_results.append(
-                CommandResults(
-                    readable_output=no_results_message, raw_response=no_results_message
-                )
+    found_result = False
+    for result in response.get("results", []):
+        page = result.get("page", {})
+        if page.get("url").rstrip("/") == url.rstrip("/"):
+            format_results(
+                client,
+                result["task"]["uuid"],
+                use_url_as_name=False,
+                scan_lists_attempts=False,
             )
+            execution_metrics.success += 1
+            found_result = True
+            break
+    if not found_result:
+        no_results_message = f"No results found for {url}"
+        demisto.debug(no_results_message)
+        command_results.append(
+            CommandResults(
+                readable_output=no_results_message, raw_response=no_results_message
+            )
+        )
+    return
 
 
 def urlscan_search(client, search_type, query):
