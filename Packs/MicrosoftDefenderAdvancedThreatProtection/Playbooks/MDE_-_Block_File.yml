@@ -414,5 +414,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Microsoft Defender - ATP - Indicators SC Test
+- No tests
 fromversion: 6.10.0
