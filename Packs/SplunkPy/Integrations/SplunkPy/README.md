@@ -61,8 +61,10 @@ This integration was integrated and tested with Splunk v9.0.4.
     | Incidents Fetch Interval |  | False |
     | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
     | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
+    | Debug logging enabled | Test configuration | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
@@ -788,27 +790,34 @@ Lists all collections for the specified application.
 >|files|
 
 ### splunk-kv-store-collection-data-list
+
 ***
 Lists all data within a specific KV store collection or collections.
 
+#### Required Permissions
+
+**FILL IN REQUIRED PERMISSIONS HERE**
 
 #### Base Command
 
 `splunk-kv-store-collection-data-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store collection. Default is search. | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". Default is search. | Required | 
 | kv_store_collection_name | A comma-separated list of KV store collections. | Required | 
-| limit | Maximum number of records to return. The default is 50. | Optional | 
-
+| limit | Maximum number of records to return. Default is 100. | Optional | 
+| new_arg | New argument for testing. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection. | 
+| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection\). | 
+| Splunk.Test | string | Test output | 
+
 
 
 #### Command Example
@@ -895,29 +904,34 @@ There is no context output for this command.
 >The following KV store demisto_store were deleted successfully
 
 ### splunk-kv-store-collection-search-entry
-***
-Searches for specific objects in a store. Search can be a basic key-value pair or a full query.
 
+***
+Searches for specific objects in a store. The search can be a basic key-value pair or a full query.
+
+#### Required Permissions
+
+**FILL IN REQUIRED PERMISSIONS HERE**
 
 #### Base Command
 
 `splunk-kv-store-collection-search-entry`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". | Required | 
-| kv_store_collection_name | The name of the KV store collection | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". Default is search. | Required | 
+| kv_store_collection_name | The name of the KV store collection. | Required | 
 | key | The key name to search in the store. If the query argument is used, this argument will be ignored. | Optional | 
 | value | The value to search in the store. If the query argument is used, this argument will be ignored. | Optional | 
-| query | Complex query to search in the store with operators such as "and", "or", "not", etc. For more information see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore | Optional | 
-
+| query | Complex query to search in the store with operators such as "and", "or", "not", etc. For more information, see the Splunk documentation: https://docs.splunk.com/Documentation/Splunk/8.0.3/RESTREF/RESTkvstore. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection. | 
+| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection\). | 
+
 
 
 #### Command Example
@@ -1132,3 +1146,29 @@ The default port is 8088.
 ## Troubleshooting
 
 In case you encounter HTTP errors (e.g., IncompleteRead), we recommend using Python requests handler.
+### splunkt-test-cmd
+
+***
+A new test command
+
+#### Required Permissions
+
+**FILL IN REQUIRED PERMISSIONS HERE**
+
+#### Base Command
+
+`splunkt-test-cmd`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| some_arg | None Default is DEFAULT. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Test.Output | string | Some sample test output | 
+| Splunk.Test.Date | date | Some sample test output date | 
+
