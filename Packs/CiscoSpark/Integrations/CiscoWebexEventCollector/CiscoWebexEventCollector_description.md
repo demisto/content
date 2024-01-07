@@ -40,7 +40,7 @@ Each command (of the following three commands) has an argument called **user**, 
 In order to receive all events, You must run all three commands twice, once with `admin` as your **user** argument value and once with `compliance officer` as your **user** argument value.
 
 1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sign in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). You will then be redirected to the `redirect URI` you defined in the application. The URL will contain a query parameter called `code`. The value of this query parameter will be used in the next command. 
-2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). the **code** argument should be set to the value returned in the code query parameter from the previous command.
+2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`). The **code** argument should be set to the value returned in the code query parameter from the previous command.
 3. Run the ***cisco-webex-oauth-test*** command with the **user** argument - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). to ensure connectivity to Cisco Webex.
 
 ### Fetch security audits
