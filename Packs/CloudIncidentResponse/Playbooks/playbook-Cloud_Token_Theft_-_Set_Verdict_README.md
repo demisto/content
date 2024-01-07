@@ -1,3 +1,5 @@
+---
+
 ## Cloud Token Theft  - Set Verdict Playbook
 
 The playbook is built from a decision tree whose ultimate goal is to decide whether the observed activity is malicious.
@@ -19,6 +21,8 @@ The following tests are performed on the observed activity:
    - Possible cloud instance metadata service (IMDS) abuse.
    - Impossible Traveler by cloud identity.
 
+---
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -33,12 +37,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* getAlerts
 * Set
 
 ### Commands
 
-This playbook does not use any commands.
+* getAlerts
 
 ## Playbook Inputs
 
@@ -47,7 +50,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | sourceIP | The source IP to search by additional alerts. |  | Optional |
-| fromDate | The start date for the search additional alerts task.<br/><br/>Filter by from date \(e.g. "3 days ago" or 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |  | Optional |
+| fromDate | The start date for the search additional alerts task.<br/><br/>Filter by from date \(e.g., "3 days ago" or 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |  | Optional |
 
 ## Playbook Outputs
 

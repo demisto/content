@@ -18,24 +18,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - XCloud Cryptojacking - Set Verdict
 * Cortex XDR - Cloud Enrichment
 * Cloud Response - Generic
+* Cortex XDR - XCloud Cryptojacking - Set Verdict
+* Cloud Credentials Rotation - Generic
 
 ### Integrations
 
-* CortexXDRIR
+This playbook does not use any integrations.
 
 ### Scripts
 
 * IncreaseIncidentSeverity
-* LoadJSON
 
 ### Commands
 
+* closeInvestigation
 * xdr-get-incident-extra-data
 * setIncident
-* closeInvestigation
 * xdr-get-cloud-original-alerts
 * xdr-update-incident
 * send-mail
@@ -48,7 +48,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | incident_id | The incident ID. |  | Optional |
 | alert_id | The alert ID. |  | Optional |
-| SOCEmailAddress | The SOC email address to use for the alert status notification. | None | Optional |
+| SOCEmailAddress | The SOC email address to use for the alert status notification. |  | Optional |
 | requireAnalystReview | Whether to require an analyst review after the alert remediation. | True | Optional |
 | cloudProvider | The cloud service provider involved. | PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider | Optional |
 | autoResourceRemediation | Whether to execute the resource remediation flow automatically. | False | Optional |
@@ -65,6 +65,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | autoBlockIndicators | Whether to block the indicators automatically. | False | Optional |
 | InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. |  | Optional |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
+| credentialsRemediationType | The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/>Supports: AWS, MSGraph Users, GCP and GSuite Admin.<br/><br/>Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.<br/>Supports: GCP, GSuite Admin and MSGraph Users.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/>Supports: AWS.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP. | Reset | Optional |
+| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>Supports: AWS.<br/>True/False | False | Optional |
+| AWS-newRoleName | The new role name to assign in the clone service account flow. |  | Optional |
+| AWS-newInstanceProfileName | The new instance profile name to assign in the clone service account flow. |  | Optional |
+| AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
 
 ## Playbook Outputs
 
@@ -75,4 +80,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)
+![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_XCloud_Cryptojacking.png)

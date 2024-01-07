@@ -10,25 +10,26 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Cloud Credentials Rotation - Generic
 * Cloud IAM Enrichment - Generic
-* Handle False Positive Alerts
-* Enrichment for Verdict
 * Cloud Response - Generic
+* Handle False Positive Alerts
 * Ticket Management - Generic
+* Enrichment for Verdict
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
-* LoadJSON
+This playbook does not use any scripts.
 
 ### Commands
 
 * setParentIncidentFields
-* closeInvestigation
 * core-get-cloud-original-alerts
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -64,6 +65,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
 | addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
 | CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
+| AWS-newInstanceProfileName | The new instance profile name to assign in the clone service account flow. |  | Optional |
+| AWS-newRoleName | The new role name to assign in the clone service account flow. |  | Optional |
+| AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
+| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>Supports: AWS.<br/>True/False | False | Optional |
+| credentialsRemediationType | The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/>Supports: AWS, MSGraph Users, GCP and GSuite Admin.<br/><br/>Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.<br/>Supports: GCP, GSuite Admin and MSGraph Users.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/>Supports: AWS.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP. | Reset | Optional |
 
 ## Playbook Outputs
 
