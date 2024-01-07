@@ -214,6 +214,7 @@ tasks:
               by:
                 value:
                   simple: '60'
+          - operator: round
     reputationcalc: 1
     separatecontext: false
     view: |-
