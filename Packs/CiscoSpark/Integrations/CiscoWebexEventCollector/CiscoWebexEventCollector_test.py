@@ -283,7 +283,7 @@ def test_fetch_events():
             text=util_load_text('test_data/events.json'),
             headers={'Link': '<https://url.com/events?nexturl=true>; rel="next"'}
         )
-        events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), create_last_run(), max_fetch=1)
+        events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), create_last_run(), 1, True)
 
     assert len(events) > 0
     assert next_run == {'admin_audits': {'next_url': 'https://url.com/adminAudit/events?nexturl=true',
@@ -298,7 +298,7 @@ def test_fetch_events():
         m.get('https://url.com/securityAudit/events?nexturl=true', text=util_load_text('test_data/no_events.json'))
         m.get('https://url.com/events?nexturl=true', text=util_load_text('test_data/no_events.json'))
 
-        events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), next_run, max_fetch=1)
+        events, next_run = fetch_events(mocked_admin_client(), mocked_compliance_officer_client(), next_run, 1, True)
 
     assert len(events) == 0
     assert next_run == {
