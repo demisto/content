@@ -49,7 +49,7 @@ configuration:
   required: false
   section: Collect
 - display: Maximum number of audit logs per fetch
-  additionalinfo: Default 25,000.
+  additionalinfo: Default 25000.
   defaultvalue: '25000'
   name: max_audit_logs
   type: 0
