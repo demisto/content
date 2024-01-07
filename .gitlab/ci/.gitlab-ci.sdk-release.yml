@@ -16,7 +16,7 @@ trigger-nightlies:
   script:
 #    - ./Tests/sdk_release/create_release_branch.sh
     - echo "test"
-    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh.sh -ct $CI_TOKEN
+    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CI_TOKEN
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
     - echo "test2"
 #    - git clone https://github.com/demisto/demisto-sdk.git /demisto-sdk
