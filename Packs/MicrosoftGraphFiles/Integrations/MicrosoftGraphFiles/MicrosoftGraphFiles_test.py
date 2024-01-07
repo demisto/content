@@ -207,7 +207,6 @@ def test_download_file(
     When
         - Using download file command in Demisto
     Then
-        - return FileResult object
         - Ensure the `filename` is as sent in the command arguments when provided
           otherwise, the `filename` is `item_id`
     """
