@@ -104,22 +104,18 @@ def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: di
 
 
 def get_alerts_to_limit(client: Client, last_run: dict):
-    more_events_to_fetch = True
     alerts: list = []
-    events_loop_limit = MAX_FETCH_LOOP
     try:
-        while more_events_to_fetch and events_loop_limit > 0:
+        for _ in range(MAX_FETCH_LOOP):
             # Fetch next batch of alerts
             start_time = last_run.get(LAST_ALERT_TIME)
             max_rows = min(client.max_alerts - len(alerts), MAX_ALERTS_IN_PAGE)
             next_batch_alerts = client.get_alerts(start_time, 1, max_rows)  # type: ignore
             next_batch_alerts = prepare_alerts_result(next_batch_alerts, last_run)
-            if next_batch_alerts:
-                last_run = update_last_run(last_run, alerts=next_batch_alerts)
-                alerts.extend(next_batch_alerts)
-                events_loop_limit -= 1
-            else:
-                more_events_to_fetch = False
+            if not next_batch_alerts:
+                break
+            last_run = update_last_run(last_run, alerts=next_batch_alerts)
+            alerts.extend(next_batch_alerts)
     except Exception as e:
         demisto.error(f'Encountered error while fetching alerts - {e}')
     return alerts, last_run
@@ -127,15 +123,14 @@ def get_alerts_to_limit(client: Client, last_run: dict):
 
 def get_audit_logs_to_limit(client: Client):
     audit_logs: list[dict] = []
-    audit_loop_counter = MAX_FETCH_LOOP
-    while audit_loop_counter and len(audit_logs) < client.max_audit_logs:
+    for _ in range(MAX_FETCH_LOOP):
         next_batch_audit_logs = client.get_audit_logs()
         if not next_batch_audit_logs:
             break
         audit_logs.extend(next_batch_audit_logs)
-        audit_loop_counter = audit_loop_counter - 1
-
-    return audit_logs
+        if len(audit_logs) >= client.max_audit_logs:
+            break
+    return audit_logs[:client.max_audit_logs]
 
 
 def update_last_run(last_run, alerts=None, audit_logs=None):
