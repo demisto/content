@@ -741,13 +741,19 @@ inputs:
   required: false
   description: The alert ID.
   playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
 - key: autoBlockIndicators
   value:
     simple: "False"
   required: false
   description: Whether to block the indicators automatically.
   playbookInputQuery:
-- key: autoAccessKeyRemediation
+- key: autoUserRemediation
   value:
     simple: "False"
   required: false
@@ -763,23 +769,6 @@ inputs:
     AWS available types:
     Disable - for disabling the user's access key.
     Delete - for deleting the user's access key.
-  playbookInputQuery:
-- key: GCP-accessKeyRemediationType
-  value:
-    simple: Disable
-  required: false
-  description: |-
-    Choose the remediation type for the user's access key.
-
-    GCP available types:
-    Disable - For disabling the user's access key.
-    Delete - For deleting the user's access key.
-  playbookInputQuery:
-- key: autoUserRemediation
-  value:
-    simple: "False"
-  required: false
-  description: Whether to execute the user remediation flow automatically.
   playbookInputQuery:
 - key: AWS-userRemediationType
   value:
@@ -802,6 +791,17 @@ inputs:
     Azure available types:
     Disable - for disabling the user.
     Delete - for deleting the user.
+  playbookInputQuery:
+- key: GCP-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    GCP available types:
+    Disable - For disabling the user's access key.
+    Delete - For deleting the user's access key.
   playbookInputQuery:
 - key: GCP-userRemediationType
   value:

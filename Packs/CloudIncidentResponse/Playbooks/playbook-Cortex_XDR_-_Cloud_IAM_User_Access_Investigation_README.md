@@ -12,8 +12,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Response - Generic
 * Cloud IAM Enrichment - Generic
+* Cloud Response - Generic
 * Account Enrichment - Generic v2.1
 
 ### Integrations
@@ -26,9 +26,9 @@ This playbook does not use any integrations.
 
 ### Commands
 
+* ip
 * xdr-get-cloud-original-alerts
 * setIncident
-* ip
 
 ## Playbook Inputs
 
@@ -37,13 +37,13 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | alert_id | The alert ID. |  | Optional |
-| autoBlockIndicators | Whether to block the indicators automatically. | False | Optional |
 | autoAccessKeyRemediation | Whether to execute the user remediation flow automatically. | False | Optional |
-| AWS-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>AWS available types:<br/>Disable - for disabling the user's access key.<br/>Delete - for deleting the user's access key. | Disable | Optional |
-| GCP-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>GCP available types:<br/>Disable - For disabling the user's access key.<br/>Delete - For deleting the user's access key. | Disable | Optional |
+| autoBlockIndicators | Whether to block the indicators automatically. | False | Optional |
 | autoUserRemediation | Whether to execute the user remediation flow automatically. | False | Optional |
+| AWS-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>AWS available types:<br/>Disable - for disabling the user's access key.<br/>Delete - for deleting the user's access key. | Disable | Optional |
 | AWS-userRemediationType | Choose the remediation type for the user involved.<br/><br/>AWS available types:<br/>Delete - for the user deletion.<br/>Revoke - for revoking the user's credentials. | Revoke | Optional |
 | Azure-userRemediationType | Choose the remediation type for the user involved.<br/><br/>Azure available types:<br/>Disable - for disabling the user.<br/>Delete - for deleting the user. | Disable | Optional |
+| GCP-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>GCP available types:<br/>Disable - For disabling the user's access key.<br/>Delete - For deleting the user's access key. | Disable | Optional |
 | GCP-userRemediationType | Choose the remediation type for the user involved.<br/><br/>GCP available types:<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |
 
 ## Playbook Outputs

@@ -489,6 +489,11 @@ inputs:
   required: false
   description: The username to investigate.
   playbookInputQuery:
+- key: cloudProvider
+  value: {}
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
 - key: AzureSearchTime
   value:
     simple: ago(1d)
@@ -513,21 +518,16 @@ inputs:
   required: false
   description: "The Search Time for the `GetTime` task used by the Aws Cloud Trail search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
   playbookInputQuery:
-- key: GcpProjectName
-  value: {}
-  required: false
-  description: The GCP project name. This is a mandatory field for GCP queries.
-  playbookInputQuery:
 - key: GcpTimeSearchFrom
   value:
     simple: "1"
   required: false
   description: "The Search Time for the `GetTime` task used by the GCP Logging search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
   playbookInputQuery:
-- key: cloudProvider
+- key: GcpProjectName
   value: {}
   required: false
-  description: The cloud service provider involved.
+  description: The GCP project name. This is a mandatory field for GCP queries.
   playbookInputQuery:
 inputSections:
 - inputs:

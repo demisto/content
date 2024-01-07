@@ -1010,6 +1010,17 @@ view: |-
     }
   }
 inputs:
+- key: SOCEmailAddress
+  value: {}
+  required: false
+  description: The SOC email address to use for the alert status notification.
+  playbookInputQuery:
+- key: requireAnalystReview
+  value:
+    simple: "True"
+  required: false
+  description: Whether to require an analyst review after the alert remediation.
+  playbookInputQuery:
 - key: incident_id
   value: {}
   required: false
@@ -1020,18 +1031,6 @@ inputs:
   required: false
   description: The alert ID.
   playbookInputQuery:
-- key: SOCEmailAddress
-  value:
-    simple:
-  required: false
-  description: The SOC email address to use for the alert status notification.
-  playbookInputQuery:
-- key: requireAnalystReview
-  value:
-    simple: "True"
-  required: false
-  description: Whether to require an analyst review after the alert remediation.
-  playbookInputQuery:
 - key: cloudProvider
   value:
     complex:
@@ -1040,46 +1039,36 @@ inputs:
   required: false
   description: The cloud service provider involved.
   playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
 - key: autoResourceRemediation
   value:
     simple: "False"
   required: false
   description: Whether to execute the resource remediation flow automatically.
   playbookInputQuery:
-- key: AWS-resourceRemediationType
-  value:
-    simple: Stop
-  required: false
-  description: |-
-    Choose the remediation type for the instances created.
-
-    AWS available types:
-    Stop - for stopping the instances.
-    Terminate - for terminating the instances.
-  playbookInputQuery:
-- key: Azure-resourceRemediationType
-  value:
-    simple: Poweroff
-  required: false
-  description: |-
-    Choose the remediation type for the instances created.
-
-    Azure available types:
-    Poweroff - for shutting down the instances.
-    Delete - for deleting the instances.
-  playbookInputQuery:
-- key: GCP-resourceRemediationType
-  value:
-    simple: Stop
-  required: false
-  description: |-
-    Choose the remediation type for the instances created.
-
-    GCP available types:
-    Stop - For stopping the instances.
-    Delete - For deleting the instances.
-  playbookInputQuery:
-- key: autoAccessKeyRemediation
+- key: autoUserRemediation
   value:
     simple: "False"
   required: false
@@ -1096,22 +1085,16 @@ inputs:
     Disable - for disabling the user's access key.
     Delete - for the user's access key deletion.
   playbookInputQuery:
-- key: GCP-accessKeyRemediationType
+- key: AWS-resourceRemediationType
   value:
-    simple: Disable
+    simple: Stop
   required: false
   description: |-
-    Choose the remediation type for the user's access key.
+    Choose the remediation type for the instances created.
 
-    GCP available types:
-    Disable - For disabling the user's access key.
-    Delete - For the deleting user's access key.
-  playbookInputQuery:
-- key: autoUserRemediation
-  value:
-    simple: "False"
-  required: false
-  description: Whether to execute the user remediation flow automatically.
+    AWS available types:
+    Stop - for stopping the instances.
+    Terminate - for terminating the instances.
   playbookInputQuery:
 - key: AWS-userRemediationType
   value:
@@ -1124,6 +1107,17 @@ inputs:
     Delete - for the user deletion.
     Revoke - for revoking the user's credentials.
   playbookInputQuery:
+- key: Azure-resourceRemediationType
+  value:
+    simple: Poweroff
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    Azure available types:
+    Poweroff - for shutting down the instances.
+    Delete - for deleting the instances.
+  playbookInputQuery:
 - key: Azure-userRemediationType
   value:
     simple: Disable
@@ -1135,6 +1129,28 @@ inputs:
     Disable - for disabling the user.
     Delete - for deleting the user.
   playbookInputQuery:
+- key: GCP-accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+
+    GCP available types:
+    Disable - For disabling the user's access key.
+    Delete - For the deleting user's access key.
+  playbookInputQuery:
+- key: GCP-resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+
+    GCP available types:
+    Stop - For stopping the instances.
+    Delete - For deleting the instances.
+  playbookInputQuery:
 - key: GCP-userRemediationType
   value:
     simple: Disable
@@ -1145,23 +1161,6 @@ inputs:
     GCP available types:
     Delete - For deleting the user.
     Disable - For disabling the user.
-  playbookInputQuery:
-- key: autoBlockIndicators
-  value:
-    simple: "False"
-  required: false
-  description: Whether to block the indicators automatically.
-  playbookInputQuery:
-- key: InternalRange
-  value: {}
-  required: false
-  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
-  playbookInputQuery:
-- key: ResolveIP
-  value:
-    simple: "True"
-  required: false
-  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
 inputSections:
 - inputs:
