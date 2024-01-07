@@ -137,3 +137,20 @@ def test_aws_recreate_sg(mocker):
     readable_output = command_results.readable_output
     correct_output = "For interface eni-00000000000000000: \r\nreplaced SG sg-00000000000000000 with sg-00000000000000001 \r\n"
     assert readable_output == correct_output
+
+
+def test_get_context_path():
+    """
+    Given:
+        An output from demisto.excuteCommand('some-command')['Context']
+    When:
+        Calling demisto.excuteCommand.
+    Then:
+        Get the context output.
+    """
+    from AWSRecreateSG import get_context_path
+
+    outputs = {'path.to.data(dt_path)': [1, 2, 3, 4]}
+
+    assert get_context_path(outputs, 'path.to.data') == [1, 2, 3, 4]
+    assert get_context_path(outputs, 'wrong.path') is None
