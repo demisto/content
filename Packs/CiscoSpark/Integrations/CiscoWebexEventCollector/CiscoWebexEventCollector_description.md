@@ -16,7 +16,7 @@ In addition, each application should be defined with a specific scope as follows
 
 Click [here](https://developer.webex.com/) to create and manage the users.
 
-#### Crete two clients
+#### Create two clients
 1. Admin client (for `Admin Audit Events` and `Security Audit Events`) associated with the admin user defined and the `audit:events_read` scope.
 2. Compliance Officer client (for `Events`) associated with the compliance officer user defined and the `spark-compliance:events_read` scope.
 
