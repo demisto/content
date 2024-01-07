@@ -5,10 +5,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 06d234a6-8925-4e80-86c2-1df560ae66f6
+    taskid: 74728bab-1388-4155-82e6-5c9b0547b0df
     type: start
     task:
-      id: 06d234a6-8925-4e80-86c2-1df560ae66f6
+      id: 74728bab-1388-4155-82e6-5c9b0547b0df
       version: -1
       name: ''
       iscommand: false
@@ -32,12 +32,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '2':
     id: '2'
-    taskid: cdf5fd3c-e384-4351-8669-c057ab58e79b
+    taskid: 49bfa403-6d0a-4c21-8544-5b8a1e2acf0d
     type: regular
     task:
-      id: cdf5fd3c-e384-4351-8669-c057ab58e79b
+      id: 49bfa403-6d0a-4c21-8544-5b8a1e2acf0d
       version: -1
       name: Get indicators by ID
       description: Gets an indicator by its ID.
@@ -68,12 +69,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '6':
     id: '6'
-    taskid: edd37ec8-f32f-419d-8cd5-07fdf9475315
+    taskid: 7c23ecd0-20ab-44e0-86c5-4020a5695141
     type: regular
     task:
-      id: edd37ec8-f32f-419d-8cd5-07fdf9475315
+      id: 7c23ecd0-20ab-44e0-86c5-4020a5695141
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -102,12 +104,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '8':
     id: '8'
-    taskid: 8c61d36a-6caf-4023-896e-52e4da7c3577
+    taskid: 7782e271-502c-4686-891c-aca8097162ce
     type: regular
     task:
-      id: 8c61d36a-6caf-4023-896e-52e4da7c3577
+      id: 7782e271-502c-4686-891c-aca8097162ce
       version: -1
       name: List indicators
       description: Lists all indicators by the ID that the system creates when the indicator is ingested.
@@ -133,12 +136,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '9':
     id: '9'
-    taskid: e57063ff-ab06-4bf4-899a-5d55a944499c
+    taskid: 9fb19dbf-cfb3-480a-84c1-ac40f68c75f3
     type: condition
     task:
-      id: e57063ff-ab06-4bf4-899a-5d55a944499c
+      id: 9fb19dbf-cfb3-480a-84c1-ac40f68c75f3
       version: -1
       name: Check number of indicators
       type: condition
@@ -177,12 +181,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '12':
     id: '12'
-    taskid: 635c2b03-d3f1-46b1-8880-71e10bf5d7eb
+    taskid: c435a24b-1363-40a9-86ff-607feb780f64
     type: title
     task:
-      id: 635c2b03-d3f1-46b1-8880-71e10bf5d7eb
+      id: c435a24b-1363-40a9-86ff-607feb780f64
       version: -1
       name: Continue the test
       type: title
@@ -207,12 +212,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '13':
     id: '13'
-    taskid: b470b2cf-c18d-4585-87c8-8aacac9011e1
+    taskid: 6a4d0d6b-f9b1-46e9-8f30-9e6570fb7ddf
     type: regular
     task:
-      id: b470b2cf-c18d-4585-87c8-8aacac9011e1
+      id: 6a4d0d6b-f9b1-46e9-8f30-9e6570fb7ddf
       version: -1
       name: Update indicators description and severity
       description: Updates the specified indicator.
@@ -253,12 +259,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '17':
     id: '17'
-    taskid: 9e35dbaf-dd91-459e-8952-fc332b08c78c
+    taskid: 36e7df25-9d64-402e-8104-019a301bea73
     type: title
     task:
-      id: 9e35dbaf-dd91-459e-8952-fc332b08c78c
+      id: 36e7df25-9d64-402e-8104-019a301bea73
       version: -1
       name: Done
       type: title
@@ -270,7 +277,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2760
+          "y": 3635
         }
       }
     note: false
@@ -280,12 +287,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '19':
     id: '19'
-    taskid: 484528ff-01f6-4116-8c7a-c3924b2987c0
+    taskid: c74ad432-846a-4994-85d8-ee34e8c6e434
     type: regular
     task:
-      id: 484528ff-01f6-4116-8c7a-c3924b2987c0
+      id: c74ad432-846a-4994-85d8-ee34e8c6e434
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -314,12 +322,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '20':
     id: '20'
-    taskid: 3571585f-95e3-4fbf-858d-60d91f9ee263
+    taskid: 1563457f-9f74-4c01-86d7-e17c251c4724
     type: title
     task:
-      id: 3571585f-95e3-4fbf-858d-60d91f9ee263
+      id: 1563457f-9f74-4c01-86d7-e17c251c4724
       version: -1
       name: Setup
       type: title
@@ -344,12 +353,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '26':
     id: '26'
-    taskid: 68bf7d89-aff8-441b-860e-fa998d4c67b5
+    taskid: 5883b50c-d1d2-4b9c-8346-e90719e2dd0f
     type: regular
     task:
-      id: 68bf7d89-aff8-441b-860e-fa998d4c67b5
+      id: 5883b50c-d1d2-4b9c-8346-e90719e2dd0f
       version: -1
       name: microsoft-atp-sc-indicator-create
       description: Creates a new indicator.
@@ -390,12 +400,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '27':
     id: '27'
-    taskid: 3602d328-0d7e-476a-84dc-e27884ca5b57
+    taskid: f1158924-15e0-45db-81f2-f785d60ea072
     type: condition
     task:
-      id: 3602d328-0d7e-476a-84dc-e27884ca5b57
+      id: f1158924-15e0-45db-81f2-f785d60ea072
       version: -1
       name: Check the indicators returned with the High severity
       type: condition
@@ -475,12 +486,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '28':
     id: '28'
-    taskid: 65578675-2c1f-4a16-8478-eafda2abe4de
+    taskid: 291173f8-5980-4ab3-8665-45e7a632ccea
     type: regular
     task:
-      id: 65578675-2c1f-4a16-8478-eafda2abe4de
+      id: 291173f8-5980-4ab3-8665-45e7a632ccea
       version: -1
       name: Get indicators by ID
       description: Gets an indicator by its ID.
@@ -511,12 +523,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '29':
     id: '29'
-    taskid: b7772983-559c-4d30-84e1-43b777137c1a
+    taskid: ffa26205-c712-402e-8cd0-b40e92d0b95f
     type: condition
     task:
-      id: b7772983-559c-4d30-84e1-43b777137c1a
+      id: ffa26205-c712-402e-8cd0-b40e92d0b95f
       version: -1
       name: Check the indicators returned with the Low severity and updated fields
       type: condition
@@ -524,7 +537,7 @@ tasks:
       brand: ''
     nexttasks:
       yes:
-      - '30'
+      - "37"
     separatecontext: false
     conditions:
     - label: yes
@@ -596,12 +609,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '30':
     id: '30'
-    taskid: 566dbcba-e036-4f16-805a-1337df146a59
+    taskid: 3171a852-63fa-4881-8398-cc7c5604e7c1
     type: regular
     task:
-      id: 566dbcba-e036-4f16-805a-1337df146a59
+      id: 3171a852-63fa-4881-8398-cc7c5604e7c1
       version: -1
       name: Delete Indicator
       description: Deletes the specified indicator.
@@ -611,7 +625,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '17'
+      - "33"
     scriptarguments:
       indicator_id:
         simple: ${MicrosoftATP.Indicators.id}
@@ -620,7 +634,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2585
+          "y": 2760
         }
       }
     note: false
@@ -630,12 +644,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '31':
     id: '31'
-    taskid: 9074f485-4c3a-4500-8694-fe61773d29e2
+    taskid: 6508a62b-a764-43d5-8164-faa1a52814b1
     type: regular
     task:
-      id: 9074f485-4c3a-4500-8694-fe61773d29e2
+      id: 6508a62b-a764-43d5-8164-faa1a52814b1
       version: -1
       name: sleep
       description: Sleep for X seconds
@@ -664,12 +679,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '32':
     id: '32'
-    taskid: bfc29cbe-72f9-417d-8a4e-b0cf51b94753
+    taskid: b3be386c-abcf-426b-8813-9525d80214b6
     type: regular
     task:
-      id: bfc29cbe-72f9-417d-8a4e-b0cf51b94753
+      id: b3be386c-abcf-426b-8813-9525d80214b6
       version: -1
       name: sleep
       description: Sleep for X seconds
@@ -698,12 +714,200 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "33":
+    id: "33"
+    taskid: 953c4289-454d-498a-892f-cbcae5add4ea
+    type: regular
+    task:
+      id: 953c4289-454d-498a-892f-cbcae5add4ea
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: Indicators_id
+      value:
+        simple: ${MicrosoftATP.Indicators.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: ef714b52-677b-46ec-81cb-3fa95bad8768
+    type: regular
+    task:
+      id: ef714b52-677b-46ec-81cb-3fa95bad8768
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Indicators_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 96a48a61-33b2-42b1-8112-e403189f186e
+    type: regular
+    task:
+      id: 96a48a61-33b2-42b1-8112-e403189f186e
+      version: -1
+      name: Get indicators list
+      description: Lists all indicators by the ID that the system creates when the indicator is ingested.
+      script: '|||microsoft-atp-sc-indicator-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      indicator_value:
+        simple: 3.5.6.7
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f0ed0ed9-c80f-465a-8701-b494ff55c09f
+    type: condition
+    task:
+      id: f0ed0ed9-c80f-465a-8701-b494ff55c09f
+      version: -1
+      name: indicator not in the list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: MicrosoftATP.Indicators.value
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 293aa809-765b-43ff-88e1-1dab193773e4
+    type: regular
+    task:
+      id: 293aa809-765b-43ff-88e1-1dab193773e4
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2775,
+        "height": 3650,
         "width": 380,
         "x": 50,
         "y": 50
@@ -713,6 +917,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Test all the indicators command which use the security center api
-
-
+description: Test all the indicators command which use the security center api.
