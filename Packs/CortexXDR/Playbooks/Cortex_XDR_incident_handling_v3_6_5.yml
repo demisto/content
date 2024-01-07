@@ -2123,7 +2123,7 @@ inputSections:
   - InternalDomainName
   - InternalHostRegex
   name: Enrichment
-  description: Enrichment settings and data, including assets and indicators enrichment using third-side enrichers.
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
 - inputs:
   - Hunting
   - TimeStamp
