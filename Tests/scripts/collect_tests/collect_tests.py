@@ -1483,7 +1483,7 @@ if __name__ == '__main__':
 
     marketplace = MarketplaceVersions(args.marketplace)
 
-    nightly = True
+    nightly = args.nightly
     sdk_nightly = args.sdk_nightly
     service_account = args.service_account
     graph = args.graph
