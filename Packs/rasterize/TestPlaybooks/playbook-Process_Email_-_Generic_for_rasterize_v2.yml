@@ -174,7 +174,7 @@ tasks:
       name: Render HTML to an image
       tags:
       - email_html_image
-      script: Rasterize|||rasterize-email
+      script: Rasterize v2 Pre-Release|||rasterize-email
       type: regular
       iscommand: true
       brand: Rasterize
