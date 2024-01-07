@@ -14,15 +14,15 @@ HANDLE_SYSPARMS_PARAMS = [
 
 RECORDS_LIST_RESPONSE_WITH_RECORDS = {
     'result': [{
-                   'sys_id': '0ad329e3db27901026fca015ca9619fb',
-                   'name': 'Test record 1'
-               }, {
-                   'sys_id': '2a41eb4e1b739810042611b4bd4bcb9d',
-                   'name': 'Test record 2'
-               }, {
-                   'sys_id': '38b05eb1db7f581026fca015ca96198a',
-                   'name': 'Test record 3'
-               }]
+        'sys_id': '0ad329e3db27901026fca015ca9619fb',
+        'name': 'Test record 1'
+    }, {
+        'sys_id': '2a41eb4e1b739810042611b4bd4bcb9d',
+        'name': 'Test record 2'
+    }, {
+        'sys_id': '38b05eb1db7f581026fca015ca96198a',
+        'name': 'Test record 3'
+    }]
 }
 
 RECORDS_LIST_EMPTY_RESPONSE = {

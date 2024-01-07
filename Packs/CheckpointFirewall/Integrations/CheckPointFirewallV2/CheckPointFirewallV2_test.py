@@ -38,14 +38,14 @@ def test_checkpoint_login_and_get_session_id(requests_mock):
 
     command_result = client.login(**login_args)
     assert command_result.to_context() == \
-           {'Type': 1,
-            'ContentsFormat': 'json',
+        {'Type': 1,
+         'ContentsFormat': 'json',
             'Contents': {'sid': sid},
             'HumanReadable': f'### CheckPoint session data:\n|session-id|\n|---|\n| {sid} |\n',
             'EntryContext': {
                 'CheckPoint.Login(val.uid && val.uid == obj.uid)': {'session-id': sid}
             },
-            'IndicatorTimeline': [], 'IgnoreAutoExtract': False, 'Note': False, 'Relationships': []}
+         'IndicatorTimeline': [], 'IgnoreAutoExtract': False, 'Note': False, 'Relationships': []}
     assert client.headers == {'Content-Type': 'application/json', 'X-chkp-sid': sid}  # after login, sid is present
     assert client.has_performed_login
     assert client.sid == sid  # a non-None client.sid indicates that the client is logged in.

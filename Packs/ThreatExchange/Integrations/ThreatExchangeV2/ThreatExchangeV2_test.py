@@ -3,7 +3,7 @@ Tests module for ThreatExchangeV2 integration logic
 """
 from typing import Tuple, List, Dict, Optional
 
-from ThreatExchangeV2 import ThreatExchangeV2Status, calculate_dbot_score, calculate_engines,\
+from ThreatExchangeV2 import ThreatExchangeV2Status, calculate_dbot_score, calculate_engines, \
     get_reputation_data_statuses, convert_string_to_epoch_time, flatten_outputs_paging
 import pytest
 from CommonServerPython import Common

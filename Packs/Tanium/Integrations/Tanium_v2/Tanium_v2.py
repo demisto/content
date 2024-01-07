@@ -734,7 +734,7 @@ def get_question_result(client, data_args):
 
     if rows is None:
         context = {'QuestionID': id_, 'Status': 'Pending'}
-        return f'Question is still executing, Question id: {str(id_)}',\
+        return f'Question is still executing, Question id: {str(id_)}', \
             {f'Tanium.QuestionResult(val.QuestionID == {id_})': context}, res
 
     context = {'QuestionID': id_, 'Status': 'Completed', 'Results': rows}
@@ -790,7 +790,7 @@ def get_saved_question_result(client, data_args):
     rows = client.parse_question_results(res, completion_percentage)
     if rows is None:
         context = {'SavedQuestionID': id_, 'Status': 'Pending'}
-        return f'Question is still executing, Question id: {str(id_)}',\
+        return f'Question is still executing, Question id: {str(id_)}', \
             {f'Tanium.SavedQuestionResult(val.SavedQuestionID == {id_})': context}, res
 
     context = {'SavedQuestionID': id_, 'Status': 'Completed', 'Results': rows}

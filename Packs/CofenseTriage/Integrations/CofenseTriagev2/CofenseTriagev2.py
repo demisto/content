@@ -224,6 +224,7 @@ class TriageReport:
 
 class TriageInboxReports:
     """Represents a set of Triage reports from the `inbox` mailbox"""
+
     def __init__(
         self,
         triage_instance,
@@ -266,6 +267,7 @@ class TriageInboxReports:
 
 class TriageInboxReportFilter:
     """Performs filtering for Triage Reports"""
+
     def __init__(self, filter_params):
         self.subject = filter_params.get("subject")
         self.url = filter_params.get("url")
