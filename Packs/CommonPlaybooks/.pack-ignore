@@ -114,3 +114,6 @@ ignore=RM108
 
 [file:playbook-Get_File_Sample_By_Hash_-_Generic_v2_README.md]
 ignore=RM108
+
+[file:playbook-Endpoint_Investigation_Plan.yml]
+ignore=PB118
