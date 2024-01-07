@@ -1411,10 +1411,10 @@ class SDKNightlyTestCollector(TestCollector):
         return CollectionResult(
             test="Sanity Test - Playbook with no integration",
             modeling_rule_to_test=None,
-            pack="HelloWorld",  # None in most cases
+            pack="HelloWorld",
             reason=CollectionReason.SANITY_TESTS,
             version_range=None,
-            reason_description='Demisto-SDK Sanity Tests for test-content command',
+            reason_description='Demisto-SDK Sanity Test for test-content command',
             conf=self.conf,
             id_set=self.id_set,
             is_sanity=True,
