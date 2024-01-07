@@ -6,6 +6,9 @@ import demistomock as demisto
 
 client = Client('test', 'test', 'test', False)
 
+def load_mock_response(file_name: str) -> str:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
+        return mock_file.read()
 
 @freeze_time('2020-04-20')
 def test_create_header():
@@ -206,6 +209,14 @@ def test_set_victim_asset(is_update, asset_type, asset_value, address_type, netw
 
 
 def test_create_victim_command(mocker):
+    """
+    Given:
+        - Victim parameters
+    When:
+        - Creating victim
+    Then:
+        - The request is in the correct structure
+    """
     args = {
         'name': 'Test Victim',
         'nationality': 'Test Nationality',
@@ -230,6 +241,14 @@ def test_create_victim_command(mocker):
 
 
 def test_create_victim_asset_command(mocker):
+    """
+    Given:
+        - Victim asset parameters
+    When:
+        - Creating victim asset
+    Then:
+        - The request is in the correct structure
+    """
     args = {
         'victim_id': 'test_victim_id',
         'asset_type': AssetType.PHONE,
@@ -247,6 +266,14 @@ def test_create_victim_asset_command(mocker):
 
 
 def test_create_victim_attributes_command(mocker):
+    """
+    Given:
+        - Victim attribute parameters
+    When:
+        - Creating victim attriburte
+    Then:
+        - The request is in the correct structure
+    """
     args = {
         'victim_id': 'test_victim_id',
         'attribute_type': 'Test Attribute Type',
@@ -267,6 +294,14 @@ def test_create_victim_attributes_command(mocker):
 
 
 def test_update_victim_command(mocker):
+    """
+    Given:
+        - Victim parameters
+    When:
+        - Updating victim
+    Then:
+        - The request is in the correct structure
+    """
     args = {
         'mode': 'delete',
         'victim_id': 'test_victim_id',
@@ -306,6 +341,14 @@ def test_update_victim_command(mocker):
 
 
 def test_update_victim_asset_command(mocker):
+    """
+    Given:
+        - Victim asset parameters
+    When:
+        - Updating victim asset
+    Then:
+        - The request is in the correct structure
+    """
     args = {
         'victim_asset_id': 'test_victim_asset_id',
         'asset_value': 'Updated Asset Value',
@@ -330,6 +373,14 @@ def test_update_victim_asset_command(mocker):
 
 
 def test_update_victim_attributes_command(mocker):
+    """
+    Given:
+        - Victim attribute parameters
+    When:
+        - Updating victim attribute
+    Then:
+        - The request is in the correct structure
+    """
     args = {
         'victim_attribute_id': 'test_victim_attribute_id',
         'attribute_value': 'Updated Attribute Value',
@@ -346,3 +397,121 @@ def test_update_victim_attributes_command(mocker):
     assert payload_data['value'] == 'Updated Attribute Value'
     assert payload_data['source'] == 'Updated Source'
     assert 'securityLabels' in payload_data
+
+
+ARGS_INCLUDE_ASSETS_ATTRIBUTES = {
+        'include_assets': True,
+        'include_associated_groups': False,
+        'include_attributes': True,
+        'include_security_labels': False,
+        'filter': 'Test Filter',
+        'victim_id': 'test_victim_id',
+        'limit': 20,
+        'page': 1
+    }
+
+EXPECTED_URL_ASSETS_ATTRIBUTES = f'{VICTIM_API_PREFIX}/test_victim_id?'\
+                                 f'&resultStart=20&resultLimit=20&fields=attributes&fields=assets&tql=Test%20Filter'
+
+
+ARGS_INCLUDE_ALL = {
+        'include_all_metaData': True,
+        'filter': 'Test Filter',
+        'victim_id': 'test_victim_id',
+        'limit': 20,
+        'page': 1
+    }
+
+EXPECTED_URL_INCLUDE_ALL = (f'{VICTIM_API_PREFIX}/test_victim_id?'
+                            f'&resultStart=20&resultLimit=20&'
+                            f'fields=tags&fields=securityLabels&fields=attributes&fields=associatedGroups&fields=assets'
+                            f'&tql=Test%20Filter')
+
+
+@pytest.mark.parametrize('args, expected_url', [(ARGS_INCLUDE_ASSETS_ATTRIBUTES, EXPECTED_URL_ASSETS_ATTRIBUTES),
+                                                (ARGS_INCLUDE_ALL, EXPECTED_URL_INCLUDE_ALL)])
+def test_list_victims_command(mocker, args, expected_url):
+    """
+    Given:
+        - List victim parameters
+    When:
+        - Retrieving all victims
+    Then:
+        - The url request contains all given fields
+    """
+
+    res = mocker.patch.object(Client, 'make_request', return_value={})
+    tc_list_victims_command(client, args)
+
+    # Verifying if the client.make_request method was called with the expected arguments
+    actual_url = res.call_args[1]['url_suffix']
+    assert expected_url == actual_url
+
+
+
+def test_list_victim_assets_command(mocker):
+    """
+    Given:
+        - List victim assets parameters
+    When:
+        - Retrieving all victim assets
+    Then:
+        - The url request contains all given fields
+    """
+    args = {
+        'filter': 'Test Filter',
+        'victim_asset_id': 'test_victim_asset_id',
+        'limit': 20,
+        'page': 1
+    }
+
+    res = mocker.patch.object(Client, 'make_request', return_value={})
+    tc_list_victim_assets_command(client, args)
+    expected_url = f'{VICTIM_ASSET_API_PREFIX}/test_victim_asset_id?&resultStart=20&resultLimit=20&tql=Test%20Filter'
+    actual_url = res.call_args[1]['url_suffix']
+    assert expected_url == actual_url
+
+
+def test_list_victim_attributes_command(mocker):
+    """
+    Given:
+        - List victim attributes parameters
+    When:
+        - Retrieving all victim attributes
+    Then:
+        - The url request contains all given fields
+    """
+    args = {
+        'filter': 'Test Filter',
+        'victim_attribute_id': 'test_victim_attribute_id',
+        'limit': 20,
+        'page': 1
+    }
+
+    res = mocker.patch.object(Client, 'make_request', return_value={})
+    tc_list_victim_attributes_command(client, args)
+    expected_url = f'{VICTIM_ATTRIBUTE_API_PREFIX}/test_victim_attribute_id?&resultStart=20&resultLimit=20&tql=Test%20Filter'
+    actual_url = res.call_args[1]['url_suffix']
+    assert expected_url == actual_url
+
+
+def test_to_readable():
+    """
+    Given:
+        - Response victim assets
+    When:
+        - Converting the response data to readable outputs
+    Then:
+        - The readable outputs does not contain the asset value key in the readable data
+    """
+    response_outputs = json.loads(load_mock_response('assets.json'))
+    readable_outputs = to_readable(response_outputs)
+    assert 'phone' not in readable_outputs[0]
+    assert 'asset' in readable_outputs[0]
+    assert 'EmailAddress' not in readable_outputs[1]
+    assert 'asset' in readable_outputs[1]
+    assert 'SocialNetwork' not in readable_outputs[2]
+    assert 'asset' in readable_outputs[2]
+    assert 'NetworkAccount' not in readable_outputs[3]
+    assert 'asset' in readable_outputs[3]
+

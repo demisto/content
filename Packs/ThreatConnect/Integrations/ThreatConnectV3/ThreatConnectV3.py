@@ -634,9 +634,27 @@ def set_additional_data(labels: list, mode: str = '') -> dict:
     return data
 
 
+def to_readable(outputs: list) -> list:
+    """
+    Converts the response into a readable table where ass assets are under the same column
+    """
+    if isinstance(outputs, dict):
+        outputs = [outputs]
+    readable = []
+    for asset in outputs:
+        new_asset = {}
+        for key, value in asset.items():
+            if key not in ('phone', 'address', 'accountName', 'website'):
+                new_asset[key] = value
+            else:
+                new_asset['asset'] = asset[key]
+        readable.append(new_asset)
+    return readable
+
+
 def set_victim_asset(is_update: bool,
-                     asset_type: Optional[AssetType],
-                     asset_value: Optional[str],
+                     asset_type: AssetType,
+                     asset_value: str,
                      address_type: Optional[str],
                      network_type: Optional[str],
                      social_network: Optional[str]) -> dict:
@@ -1714,7 +1732,7 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
 
     # Create asset for the victim
     asset_type = args.get('asset_type')
-    asset_value = args.get('asset_value')
+    asset_value = args.get('asset_value', '')
     if asset_type and asset_value:
         asset_type = AssetType(asset_type)
         address_type = args.get('asset_address_type')
@@ -1776,7 +1794,7 @@ def tc_update_victim_command(client: Client, args: dict) -> None:
 
     # Create asset for the victim
     asset_type = args.get('asset_type')
-    asset_value = args.get('asset_value')
+    asset_value = args.get('asset_value', '')
     if asset_type and asset_value:
         asset_type = AssetType(asset_type)
         address_type = args.get('asset_address_type')
@@ -1855,14 +1873,15 @@ def tc_list_victims_command(client: Client, args: dict) -> None:
     victim_id = args.get('victim_id')
 
     limit = arg_to_number(args.get('limit')) or 50
-    page = (arg_to_number(args.get('page') or 0)) * limit
+    page = arg_to_number(args.get('page')) or 0
+    page *= limit
 
     url = VICTIM_API_PREFIX
     if victim_id:
         url += f'/{victim_id}'
     url += f'?&resultStart={page}&resultLimit={limit}'
     if fields:
-        url += f'&{fields}'
+        url += f'{fields}'
     if filter:
         filter = urllib.parse.quote(filter.encode('utf8'))
         url += f'&tql={filter}'
@@ -1887,7 +1906,7 @@ def tc_create_victim_asset_command(client: Client, args: dict) -> None:
     """
     victim_id = args.get('victim_id')
     asset_type = AssetType(args.get('asset_type'))
-    asset_value = args.get('asset_value')
+    asset_value = args.get('asset_value', '')
     address_type = args.get('asset_address_type')
     network_type = args.get('asset_network_type')
     social_network = args.get('asset_social_network')
@@ -1924,7 +1943,7 @@ def tc_update_victim_asset_command(client: Client, args: dict):
                                        url_suffix=f'{VICTIM_ASSET_API_PREFIX}/{victim_asset_id}').get('data', {})
     asset_type = AssetType(victim_asset.get('type'))
 
-    asset_value = args.get('asset_value')
+    asset_value = args.get('asset_value', '')
     address_type = args.get('asset_address_type')
     network_type = args.get('asset_network_type')
     social_network = args.get('asset_social_network')
@@ -1975,7 +1994,8 @@ def tc_list_victim_assets_command(client: Client, args: dict) -> None:
     filter = args.get('filter')
     victim_asset_id = args.get('victim_asset_id')
     limit = arg_to_number(args.get('limit')) or 50
-    page = (arg_to_number(args.get('page') or 0)) * limit
+    page = arg_to_number(args.get('page')) or 0
+    page *= limit
 
     url = VICTIM_ASSET_API_PREFIX
     if victim_asset_id:
@@ -1986,23 +2006,6 @@ def tc_list_victim_assets_command(client: Client, args: dict) -> None:
         url += f'&tql={filter}'
     response = client.make_request(method=Method.GET, url_suffix=url)
     outputs = response.get('data', {})
-
-    def to_readable(outputs: list) -> list:
-        """
-        Converts the response into a readable table where ass assets are under the same column
-        """
-        if isinstance(outputs, dict):
-            outputs = [outputs]
-        readable = []
-        for asset in outputs:
-            new_asset = {}
-            for key, value in asset.items():
-                if key not in ('phone', 'address', 'accountName', 'website'):
-                    new_asset[key] = value
-                else:
-                    new_asset['asset'] = asset[key]
-            readable.append(new_asset)
-        return readable
     readable_output = tableToMarkdown('Victim assets', to_readable(outputs),
                                       headers=['id', 'type', 'victimId', 'asset'])
 
@@ -2099,7 +2102,8 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
     victim_attribute_id = args.get('victim_attribute_id')
     victim_id = args.get('victim_id')
     limit = arg_to_number(args.get('limit')) or 50
-    page = (arg_to_number(args.get('page') or 0)) * limit
+    page = arg_to_number(args.get('page')) or 0
+    page *= limit
     if victim_id:
         url = f'{VICTIM_API_PREFIX}/{victim_id}?fields=attributes&resultStart={page}&resultLimit={limit}'
     else:
@@ -2125,7 +2129,8 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
 def tc_list_attribute_type_command(client: Client, args: dict) -> None:
     url = ATTRIBUTE_TYPE_API_PREFIX
     limit = arg_to_number(args.get('limit')) or 50
-    page = (arg_to_number(args.get('page') or 0)) * limit
+    page = arg_to_number(args.get('page')) or 0
+    page *= limit
     if attribute_type_id := args.get('attribute_type_id'):
         url = f'{ATTRIBUTE_TYPE_API_PREFIX}/{attribute_type_id}'
     url += f'?&resultStart={page}&resultLimit={limit}'
