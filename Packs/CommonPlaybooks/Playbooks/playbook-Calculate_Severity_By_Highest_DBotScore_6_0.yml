@@ -532,10 +532,10 @@ view: |-
     }
   }
 inputs:
-- key: DBotScore
+- key: DBotScoreIndicator
   value:
     complex:
-      root: DBotScore
+      root: DBotScore.Indicator
   required: false
   description: 'Array of all indicators associated with the incident. '
   playbookInputQuery:
