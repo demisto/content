@@ -14,6 +14,7 @@ if [ "$#" -lt "1" ]; then
   $0 -ct <token>
 
   [-ct, --ci-token]      The ci gitlab trigger token.
+  [-cgt, --content-internal-dist-ci-token]      The ci gitlab trigger token for content-internal-dist.
   [-rv, --release-version]      The release version.
   [-ch, --slack-channel] A Slack channel to send notifications to. Default is dmst-sdk-release.
   [-b, --branch]         The branch name. Default is master branch.
@@ -31,6 +32,10 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
 
   -ct|--ci-token) _ci_token="$2"
+    shift
+    shift;;
+
+  -cgt|--content-internal-dist-ci-token) _gold_ci_token="$2"
     shift
     shift;;
 
@@ -54,12 +59,17 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
+if [ -z "$_gold_ci_token" ]; then
+    echo "You must provide a ci token for content-internal-dist."
+    exit 1
+fi
+
 if [ -z "$_release_version" ]; then
     echo "You must provide a release version."
     exit 1
 fi
 
-
+echo "gold_ci_token=" $_gold_ci_token
 echo "ci_token=" $_ci_token
 echo "slack_channel=" $_slack_channel
 echo "branch=" $_branch
@@ -71,6 +81,7 @@ source "${SCRIPT_DIR}/trigger_build_url.sh"
 curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[SDK_RELEASE]=true" \
     --form "variables[BRANCH_NAME]=${_branch}" \
-    --form "variables[CI_TOKEN]=${_ci_token}" \
+    --form "variables[CONTENT_CI_TOKEN]=${_ci_token}" \
+    --form "variables[CONTENT_INTERNAL_DIST_CI_TOKEN]=${_gold_ci_token}" \
     --form "variables[RELEASE_VERSION]=${_release_version}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}"  | jq

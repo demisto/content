@@ -10,13 +10,14 @@ trigger-nightlies:
     - .default-job-settings
   variables:
     BRANCH_NAME: $BRANCH_NAME
-    CI_TOKEN: $CI_TOKEN
+    CONTENT_CI_TOKEN: $CONTENT_CI_TOKEN
+    CONTENT_INTERNAL_DIST_CI_TOKEN: $CONTENT_INTERNAL_DIST_CI_TOKEN
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
   script:
 #    - ./Tests/sdk_release/create_release_branch.sh
     - echo "test"
-    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CI_TOKEN
+    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_CI_TOKEN
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
     - echo "test2"
 #    - git clone https://github.com/demisto/demisto-sdk.git /demisto-sdk
