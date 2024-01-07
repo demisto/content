@@ -28,8 +28,10 @@ In version 6.x.x:
 
 ### URL
 In Cortex XSOAR 8.0.0 and above
-1. Go to Settings -> API Keys.
+1. Go to **Settings & Info** > **Settings** > **Integrations** > **API Keys**.
 2. Click the **Copy URL** button in the top right corner.
+
+In Corex XSOAR 6.x.x, enter the server URL.
 </~XSOAR>
 
 Provide API Key ID when using<~XSIAM> Cortex XSIAM </~XSIAM><~XSOAR> Cortex XSOAR 8.0.0 and above. If the version is 6.x.x, you can leave it empty </~XSOAR>.
