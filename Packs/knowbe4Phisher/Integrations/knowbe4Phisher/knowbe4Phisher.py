@@ -721,6 +721,7 @@ def main(params: dict, args: dict, command: str) -> None:
     if not params.get('apikey') or not (key := params.get('apikey', {}).get('password')):
         raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
     insecure = not params.get('insecure', False)
+
     proxy = params.get('proxy', False)
     first_fetch_time = arg_to_datetime(params.get('first_fetch')).isoformat()  # type: ignore
     fetch_limit = arg_to_number(params.get('max_fetch'))  # type: ignore
