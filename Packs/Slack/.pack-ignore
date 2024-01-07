@@ -18,6 +18,3 @@ ignore=MR108
 
 [file:SlackModelingRules.yml]
 ignore=MR108
-
-[file:SlackV3_test.py]
-ignore=RUF001
