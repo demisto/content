@@ -670,6 +670,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     # get all messages
     items = client.phisher_gql_request(req)
     messages = items.get('data', {}).get('phisherMessages', {}).get('nodes', [])
+
     # check if they need to be fetched
     message_index = 0
     for message in reversed(messages):
