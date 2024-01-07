@@ -1270,18 +1270,18 @@ Creates a victim attribute.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | TC.VictimAttribute.dateAdded | string | The date that the victim attribute was added. | 
-| TC.VictimAttribute.default | string | Whether the Attribute is the default Attribute of its type for the Victim to which it is added. | 
+| TC.VictimAttribute.default | string | Whether the attribute is the default attribute of its type for the victim to which it is added. | 
 | TC.VictimAttribute.id | string | The ID of the victim attribute. | 
 | TC.VictimAttribute.lastModified | string | The date that the victim attribute was last modified. | 
 | TC.VictimAttribute.pinned | string | Whether the victim attribute is pinned. | 
 | TC.VictimAttribute.type | string | The type of the victim attribute. | 
 | TC.VictimAttribute.value | string | The value of the victim attribute. | 
-| TC.VictimAttribute.createdBy.firstName | string | The first name of the user created the victim attribute. | 
+| TC.VictimAttribute.createdBy.firstName | string | The first name of the user who created the victim attribute. | 
 | TC.VictimAttribute.createdBy.id | string | The ID of the victim the attribute associated to. | 
-| TC.VictimAttribute.createdBy.lastName | string | The last name of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.owner | string | The owner of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.userName | string | The user name of the user created the victim attribute. | 
+| TC.VictimAttribute.createdBy.lastName | string | The last name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.owner | string | The owner of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
 
 #### Command example
 ```!tc-create-victim-attribute attribute_type="Takedown Requests" victim_id=668 attribute_value="test"```
@@ -1347,14 +1347,14 @@ Creates a victim.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | TC.Victim.Name | string | The name of the victim. | 
-| TC.Victim.ownerId | string | The ownerId of the victim. | 
+| TC.Victim.ownerId | string | The owner ID of the victim. | 
 | TC.Victim.id | string | The ID of the victim. | 
-| TC.Victim.ownerName | string | The ownerName of the victim. | 
-| TC.Victim.webLink | string | The webLink of the victim. | 
+| TC.Victim.ownerName | string | The owner name of the victim. | 
+| TC.Victim.webLink | string | The web link of the victim. | 
 | TC.Victim.description | string | The description of the victim. | 
 | TC.Victim.org | string | The organization of the victim. | 
-| TC.Victim.suborg | string | The sub organization of the victim. | 
-| TC.Victim.workLocation | string | The workLocation of the victim. | 
+| TC.Victim.suborg | string | The sub-organization of the victim. | 
+| TC.Victim.workLocation | string | The work location of the victim. | 
 | TC.Victim.nationality | string | The nationality of the victim. | 
 
 #### Command example
@@ -1406,7 +1406,7 @@ Creates a victim asset.
 | TC.VictimAsset.type | string | The type of the victim asset. | 
 | TC.VictimAsset.victimId | string | The ID of the victim. | 
 | TC.VictimAsset.webLink | string | The web link of the victim asset. | 
-| TC.VictimAsset.phone | string | The phone of the victim asset. | 
+| TC.VictimAsset.phone | string | The phone number of the victim asset. | 
 | TC.VictimAsset.address | string | The address of the victim asset. | 
 | TC.VictimAsset.accountName | string | The account name of the victim asset. | 
 | TC.VictimAsset.addressType | string | The address type of the victim asset. | 
@@ -1450,7 +1450,7 @@ Retrieves victim assets.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | victim_asset_id | The ID of a specific victim asset to retrieve. If not specified, all victim assets will be retrieved. | Optional | 
-| filter | TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
 | page | The page to take the results from. The first is 0. Default is 0. | Optional | 
 | limit | The maximum number of results that can be returned. Default is 50. | Optional | 
 
@@ -1462,7 +1462,7 @@ Retrieves victim assets.
 | TC.VictimAsset.type | string | The type of the victim asset. | 
 | TC.VictimAsset.victimId | string | The ID of the victim. | 
 | TC.VictimAsset.webLink | string | The web link of the victim asset. | 
-| TC.VictimAsset.phone | string | The phone of the victim asset. | 
+| TC.VictimAsset.phone | string | The phone number of the victim asset. | 
 | TC.VictimAsset.address | string | The address of the victim asset. | 
 | TC.VictimAsset.accountName | string | The account name of the victim asset. | 
 | TC.VictimAsset.addressType | string | The address type of the victim asset. | 
@@ -1509,7 +1509,7 @@ Retrieves victim attributes.
 | --- | --- | --- |
 | victim_attribute_id | The ID of a specific victim attribute to retrieve. If not specified, all victim attributes will be retrieved. | Optional | 
 | victim_id | The ID of a specific victim to retrieve its attributes. | Optional | 
-| filter | TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
 | page | The page to take the results from. The first is 0. Default is 0. | Optional | 
 | limit | The maximum number of results that can be returned. Default is 50. | Optional | 
 
@@ -1518,18 +1518,18 @@ Retrieves victim attributes.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | TC.VictimAttribute.dateAdded | string | The date that the victim attribute was added. | 
-| TC.VictimAttribute.default | string | Whether the Attribute is the default Attribute of its type for the Victim to which it is added. | 
+| TC.VictimAttribute.default | string | Whether the attribute is the default attribute of its type for the victim to which it is added. | 
 | TC.VictimAttribute.id | string | The ID of the victim attribute. | 
 | TC.VictimAttribute.lastModified | string | The date that the victim attribute was last modified. | 
 | TC.VictimAttribute.pinned | string | Whether the victim attribute is pinned. | 
 | TC.VictimAttribute.type | string | The type of the victim attribute. | 
 | TC.VictimAttribute.value | string | The value of the victim attribute. | 
-| TC.VictimAttribute.createdBy.firstName | string | The first name of the user created the victim attribute. | 
+| TC.VictimAttribute.createdBy.firstName | string | The first name of the user who created the victim attribute. | 
 | TC.VictimAttribute.createdBy.id | string | The ID of the victim the attribute associated to. | 
-| TC.VictimAttribute.createdBy.lastName | string | The last name of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.owner | string | The owner of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.userName | string | The user name of the user created the victim attribute. | 
+| TC.VictimAttribute.createdBy.lastName | string | The last name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.owner | string | The owner of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
 
 #### Command example
 ```!tc-list-victim-attributes limit=1```
@@ -1579,7 +1579,7 @@ Retrieves victims.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | victim_id | The ID of a specific victim to retrieve. If not specified, all victims will be retrieved. | Optional | 
-| filter | TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
 | include_assets | Whether to add victim's assets metadata to the result. Possible values are: true, false. Default is false. | Optional | 
 | include_associated_groups | Whether to add victim's associated groups metadata to the result. Possible values are: true, false. Default is false. | Optional | 
 | include_attributes | Whether to add victim's attributes metadata to the result. Possible values are: true, false. Default is false. | Optional | 
@@ -1608,13 +1608,13 @@ Retrieves victims.
 | TC.Victim.name | String | The victim's name. | 
 | TC.Victim.description | String | The victim's description. | 
 | TC.Victim.org | String | The victim's organization. | 
-| TC.Victim.workLocation | String | The victim's work location. | 
+| TC.Victim.work location | String | The victim's work location. | 
 | TC.Victim.nationality | String | The victim's nationality. | 
-| TC.Victim.suborg | String | The victim's sub organization. | 
+| TC.Victim.suborg | String | The victim's sub-organization. | 
 | TC.Victim.assets.data.id | Number | The victim asset ID. | 
 | TC.Victim.assets.data.type | String | The victim asset type. | 
 | TC.Victim.assets.data.victimId | Number | The victim asset victim ID. | 
-| TC.Victim.assets.data.phone | String | The victim asset phone. | 
+| TC.Victim.assets.data.phone | String | The victim asset phone number. | 
 | TC.Victim.assets.data.webLink | String | The victim asset web link. | 
 | TC.Victim.assets.data.website | String | The victim asset website. | 
 | TC.Victim.assets.data.accountName | String | The victim asset account name. | 
@@ -1691,21 +1691,21 @@ Updates a victim.
 | associated_groups_ids | A comma-separated list of group IDs to associate to the victim. | Optional | 
 | attribute_type | The attribute type to associate to the victim. Possible values are: Additional Analysis and Context, Description, External ID, Impact Description, Impact Score, Physical Address, Response Team &amp; Staff involved, Source, Takedown Requests, Targeted Industry Sector, Title. | Optional | 
 | attribute_value | The attribute value to associate to the victim. | Optional | 
-| mode | The mode of the update operation. Default is append. Possible values are: append, delete, replace. Default is append. | Optional | 
+| mode | The mode of the update operation. Possible values are: append, delete, replace. Default is append. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | TC.Victim.Name | string | The name of the victim. | 
-| TC.Victim.ownerId | string | The ownerId of the victim. | 
+| TC.Victim.ownerId | string | The owner ID of the victim. | 
 | TC.Victim.id | string | The ID of the victim. | 
-| TC.Victim.ownerName | string | The ownerName of the victim. | 
-| TC.Victim.webLink | string | The webLink of the victim. | 
+| TC.Victim.ownerName | string | The owner name of the victim. | 
+| TC.Victim.webLink | string | The web link of the victim. | 
 | TC.Victim.description | string | The description of the victim. | 
 | TC.Victim.org | string | The organization of the victim. | 
-| TC.Victim.suborg | string | The sub organization of the victim. | 
-| TC.Victim.workLocation | string | The workLocation of the victim. | 
+| TC.Victim.suborg | string | The sub-organization of the victim. | 
+| TC.Victim.workLocation | string | The work location of the victim. | 
 | TC.Victim.nationality | string | The nationality of the victim. | 
 
 #### Command example
@@ -1755,7 +1755,7 @@ Updates a victim asset.
 | TC.VictimAsset.type | string | The type of the victim asset. | 
 | TC.VictimAsset.victimId | string | The ID of the victim. | 
 | TC.VictimAsset.webLink | string | The web link of the victim asset. | 
-| TC.VictimAsset.phone | string | The phone of the victim asset. | 
+| TC.VictimAsset.phone | string | The phone number of the victim asset. | 
 | TC.VictimAsset.address | string | The address of the victim asset. | 
 | TC.VictimAsset.accountName | string | The account name of the victim asset. | 
 | TC.VictimAsset.addressType | string | The address type of the victim asset. | 
@@ -1812,12 +1812,12 @@ Updates a victim attribute.
 | TC.VictimAttribute.pinned | string | Whether the victim attribute is pinned. | 
 | TC.VictimAttribute.type | string | The type of the victim attribute. | 
 | TC.VictimAttribute.value | string | The value of the victim attribute. | 
-| TC.VictimAttribute.createdBy.firstName | string | The first name of the user created the victim attribute. | 
+| TC.VictimAttribute.createdBy.firstName | string | The first name of the user who created the victim attribute. | 
 | TC.VictimAttribute.createdBy.id | string | The ID of the victim the attribute associated to. | 
-| TC.VictimAttribute.createdBy.lastName | string | The last name of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.owner | string | The owner of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user created the victim attribute. | 
-| TC.VictimAttribute.createdBy.userName | string | The user name of the user created the victim attribute. | 
+| TC.VictimAttribute.createdBy.lastName | string | The last name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.owner | string | The owner of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
 
 #### Command example
 ```!tc-update-victim-attribute victim_attribute_id="132" attribute_value="test2"```

@@ -2215,16 +2215,16 @@ script:
         description: The name of the victim.
         type: string
       - contextPath: TC.Victim.ownerId
-        description: The ownerId of the victim.
+        description: The ID of the owner of the victim.
         type: string
       - contextPath: TC.Victim.id
         description: The ID of the victim.
         type: string
       - contextPath: TC.Victim.ownerName
-        description: The ownerName of the victim.
+        description: The owner name of the victim.
         type: string
       - contextPath: TC.Victim.webLink
-        description: The webLink of the victim.
+        description: The web link of the victim.
         type: string
       - contextPath: TC.Victim.description
         description: The description of the victim.
@@ -2233,10 +2233,10 @@ script:
         description: The organization of the victim.
         type: string
       - contextPath: TC.Victim.suborg
-        description: The sub organization of the victim.
+        description: The sub-organization of the victim.
         type: string
       - contextPath: TC.Victim.workLocation
-        description: The workLocation of the victim.
+        description: The work location of the victim.
         type: string
       - contextPath: TC.Victim.nationality
         description: The nationality of the victim.
@@ -2305,7 +2305,7 @@ script:
       - description: The attribute value to associate to the victim.
         name: attribute_value
       - auto: PREDEFINED
-        description: The mode of the update operation. Default is append.
+        description: The mode of the update operation.
         name: mode
         predefined:
           - append
@@ -2319,7 +2319,7 @@ script:
         description: The name of the victim.
         type: string
       - contextPath: TC.Victim.ownerId
-        description: The ownerId of the victim.
+        description: The ID of the owner of the victim.
         type: string
       - contextPath: TC.Victim.id
         description: The ID of the victim.
@@ -2328,7 +2328,7 @@ script:
         description: The ownerName of the victim.
         type: string
       - contextPath: TC.Victim.webLink
-        description: The webLink of the victim.
+        description: The web link of the victim.
         type: string
       - contextPath: TC.Victim.description
         description: The description of the victim.
@@ -2337,10 +2337,10 @@ script:
         description: The organization of the victim.
         type: string
       - contextPath: TC.Victim.suborg
-        description: The sub organization of the victim.
+        description: The sub-organization of the victim.
         type: string
       - contextPath: TC.Victim.workLocation
-        description: The workLocation of the victim.
+        description: The work location of the victim.
         type: string
       - contextPath: TC.Victim.nationality
         description: The nationality of the victim.
@@ -2355,7 +2355,7 @@ script:
   - arguments:
       - description: The ID of a specific victim to retrieve. If not specified, all victims will be retrieved.
         name: victim_id
-      - description: TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
+      - description: A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
         name: filter
       - auto: PREDEFINED
         description: Whether to add victim's assets metadata to the result.
@@ -2456,7 +2456,7 @@ script:
         description: The victim's nationality.
         type: String
       - contextPath: TC.Victim.suborg
-        description: The victim's sub organization.
+        description: The victim's sub-organization.
         type: String
       - contextPath: TC.Victim.assets.data.id
         description: The victim asset ID.
@@ -2468,7 +2468,7 @@ script:
         description: The victim asset victim ID.
         type: Number
       - contextPath: TC.Victim.assets.data.phone
-        description: The victim asset phone.
+        description: The victim asset phone number.
         type: String
       - contextPath: TC.Victim.assets.data.webLink
         description: The victim asset web link.
@@ -2576,7 +2576,7 @@ script:
         description: The web link of the victim asset.
         type: string
       - contextPath: TC.VictimAsset.phone
-        description: The phone of the victim asset.
+        description: The phone number of the victim asset.
         type: string
       - contextPath: TC.VictimAsset.address
         description: The address of the victim asset.
@@ -2626,7 +2626,7 @@ script:
         description: The web link of the victim asset.
         type: string
       - contextPath: TC.VictimAsset.phone
-        description: The phone of the victim asset.
+        description: The phone number of the victim asset.
         type: string
       - contextPath: TC.VictimAsset.address
         description: The address of the victim asset.
@@ -2656,7 +2656,7 @@ script:
   - arguments:
       - description: The ID of a specific victim asset to retrieve. If not specified, all victim assets will be retrieved.
         name: victim_asset_id
-      - description: TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
+      - description: A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
         name: filter
       - description: The page to take the results from. The first is 0.
         name: page
@@ -2680,7 +2680,7 @@ script:
         description: The web link of the victim asset.
         type: string
       - contextPath: TC.VictimAsset.phone
-        description: The phone of the victim asset.
+        description: The phone number of the victim asset.
         type: string
       - contextPath: TC.VictimAsset.address
         description: The address of the victim asset.
@@ -2761,22 +2761,22 @@ script:
         description: The value of the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.firstName
-        description: The first name of the user created the victim attribute.
+        description: The first name of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.id
         description: The ID of the victim the attribute associated to.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.lastName
-        description: The last name of the user created the victim attribute.
+        description: The last name of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.owner
-        description: The owner of the user created the victim attribute.
+        description: The owner of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.pseudonym
-        description: The pseudonym of the user created the victim attribute.
+        description: The pseudonym of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.userName
-        description: The user name of the user created the victim attribute.
+        description: The user name of the user who created the victim attribute.
         type: string
   - arguments:
       - default: true
@@ -2805,7 +2805,7 @@ script:
         description: The date that the victim attribute was added.
         type: string
       - contextPath: TC.VictimAttribute.default
-        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added.
+        description: Whether the attribute is the default attribute of its type for the victim to which it is added.
         type: string
       - contextPath: TC.VictimAttribute.id
         description: The ID of the victim attribute.
@@ -2823,22 +2823,22 @@ script:
         description: The value of the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.firstName
-        description: The first name of the user created the victim attribute.
+        description: The first name of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.id
         description: The ID of the victim the attribute associated to.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.lastName
-        description: The last name of the user created the victim attribute.
+        description: The last name of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.owner
-        description: The owner of the user created the victim attribute.
+        description: The owner of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.pseudonym
-        description: The pseudonym of the user created the victim attribute.
+        description: The pseudonym of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.userName
-        description: The user name of the user created the victim attribute.
+        description: The user name of the user who created the victim attribute.
         type: string
   - arguments:
       - default: true
@@ -2853,7 +2853,7 @@ script:
         name: victim_attribute_id
       - description: The ID of a specific victim to retrieve its attributes.
         name: victim_id
-      - description: TA free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
+      - description: A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide.
         name: filter
       - description: The page to take the results from. The first is 0.
         name: page
@@ -2868,7 +2868,7 @@ script:
         description: The date that the victim attribute was added.
         type: string
       - contextPath: TC.VictimAttribute.default
-        description: Whether the Attribute is the default Attribute of its type for the Victim to which it is added.
+        description: Whether the attribute is the default attribute of its type for the victim to which it is added.
         type: string
       - contextPath: TC.VictimAttribute.id
         description: The ID of the victim attribute.
@@ -2886,22 +2886,22 @@ script:
         description: The value of the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.firstName
-        description: The first name of the user created the victim attribute.
+        description: The first name of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.id
         description: The ID of the victim the attribute associated to.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.lastName
-        description: The last name of the user created the victim attribute.
+        description: The last name of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.owner
-        description: The owner of the user created the victim attribute.
+        description: The owner of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.pseudonym
-        description: The pseudonym of the user created the victim attribute.
+        description: The pseudonym of the user who created the victim attribute.
         type: string
       - contextPath: TC.VictimAttribute.createdBy.userName
-        description: The user name of the user created the victim attribute.
+        description: The user name of the user who created the victim attribute.
         type: string
   - arguments:
       - description: A specific attribute type to retrieve. If not specified, all attribute types will be retrieved.
