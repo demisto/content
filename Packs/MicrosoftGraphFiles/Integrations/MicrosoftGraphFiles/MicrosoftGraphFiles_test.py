@@ -212,9 +212,9 @@ def test_download_file(
           otherwise, the `filename` is `item_id`
     """
     mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
-    result: dict = command(CLIENT_MOCKER, args)
-    assert "Contents" in list(result.keys())
-    assert result["File"] == filename_expected
+    mock_file_result = mocker.patch("MicrosoftGraphFiles.fileResult")
+    command(CLIENT_MOCKER, args)
+    mock_file_result.assert_called_with(filename_expected, b'12345')
 
 
 @pytest.mark.parametrize(
