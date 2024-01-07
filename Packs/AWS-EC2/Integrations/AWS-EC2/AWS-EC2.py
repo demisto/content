@@ -1120,7 +1120,6 @@ def detach_volume_command(args: dict) -> CommandResults:
 
     if args.get('force') is not None:
         kwargs.update({'Force': argToBoolean(args.get('force'))})
-        kwargs.update({'Force': argToBoolean(args.get('force'))})
     if args.get('device') is not None:
         kwargs.update({'Device': arg_to_number(args.get('device'))})
     if args.get('instanceId') is not None:
@@ -1767,7 +1766,7 @@ def monitor_instances_command(args: dict) -> CommandResults:
         })
 
     return CommandResults(
-        outputs={'PasswordData': response['InstanceMonitorings']},
+        outputs=response['InstanceMonitorings'],
         outputs_prefix='AWS.EC2.Instances',
         outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
@@ -2280,14 +2279,14 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
         })
         if 'InstanceHealth' in item:
             data.append({'InstanceHealth': item['InstanceHealth']})
-        output.append(item)
+        output.append({'ActiveInstances': item})
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
     except ValueError as err_msg:
         raise DemistoException(f'Could not decode/encode the raw response - {err_msg}')
     return CommandResults(
-        outputs={'ActiveInstances': raw},
+        outputs=raw,
         outputs_prefix='AWS.EC2.Fleet',
         outputs_key_field='FleetId',
         readable_output=tableToMarkdown('AWS EC2 Fleets Instances', data)
