@@ -1,6 +1,6 @@
 from Tests.scripts.common import get_reviewer, person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name
 import pytest
-from unittest.mock import patch
+from requests_mock import MockerCore
 from Tests.scripts.infrastructure_tests import tests_data
 
 
@@ -86,7 +86,7 @@ def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     ([{"Jon": "test", "state": "APPROVED", "user": {"login": "Jon"}},
      {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jon")
 ])
-def test_get_reviewer(response, expected):
+def test_get_reviewer(response, expected, requests_mock: MockerCore):
     """
     Given:
         - A PR URL.
@@ -98,11 +98,9 @@ def test_get_reviewer(response, expected):
         scenario 2: One reviewer who approved -> "Jane Doe"
         scenario 3: Two reviewers who approved -> the first one - "Jon"
     """
-    with patch('Tests.scripts.common.requests.get') as mock_get:
-        mock_get.return_value.json.return_value = response
-        pr_url = 'https://github.com/owner/repo/pull/123'
-        result = get_reviewer(pr_url)
-
+    pr_url = 'https://github.com/owner/repo/pull/123'
+    requests_mock.get('https://api.github.com/repos/owner/repo/pulls/123/reviews', json=response)
+    result = get_reviewer(pr_url)
     assert result == expected
 
 
