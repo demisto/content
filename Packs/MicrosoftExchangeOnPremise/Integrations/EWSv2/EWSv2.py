@@ -2260,7 +2260,7 @@ def send_email(args):
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
     # Lowering case as list options provided as capitalized for the argument
-    body_type = args.get('bodyType','').lower() or args.get('body_type','').lower() or 'text'
+    body_type = args.get('bodyType', '').lower() or args.get('body_type', '').lower() or 'text'
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
