@@ -6740,7 +6740,7 @@ Get IOA Rules for Custom IOA rule triggered detections
 | CrowdStrike.IOARules.customer_id | String | The customer ID. | 
 | CrowdStrike.IOARules.action_label | String | The IOA Rule's Action Label. | 
 | CrowdStrike.IOARules.comment | String | The IOA Rule's Comment.. | 
-| CrowdStrike.IOARules.committed_on | String | The timestamp of the IOA Rule's commitment.. | 
+| CrowdStrike.IOARules.committed_on | String | The timestamp of the IOA Rule's commitment. | 
 | CrowdStrike.IOARules.created_by | String | The IOA Rule's creator. | 
 | CrowdStrike.IOARules.created_on | String | The timestamp of the IOA Rule's creation. | 
 | CrowdStrike.IOARules.deleted | Boolean | Whether the IOA Rule is in deleted status. | 
@@ -6748,8 +6748,8 @@ Get IOA Rules for Custom IOA rule triggered detections
 | CrowdStrike.IOARules.disposition_id | String | The Disposition ID used by the IOA Rule. | 
 | CrowdStrike.IOARules.enabled | Boolean | Whether the IOA Rule is enabled. | 
 | CrowdStrike.IOARules.field_values | String | The IOA Rule's field values. | 
-| CrowdStrike.IOARules.instance_version | String | The IOA Rule's Instance Version | 
-| CrowdStrike.IOARules.magic_cookie | String | The IOA Rule's Magic Cookie | 
+| CrowdStrike.IOARules.instance_version | String | The IOA Rule's Instance Version. | 
+| CrowdStrike.IOARules.magic_cookie | String | The IOA Rule's Magic Cookie. | 
 | CrowdStrike.IOARules.modified_by | String | The IOA Rule's last modified user.
 | CrowdStrike.IOARules.modified_on| String | The timestamp of the IOA Rule's last modification. | 
 | CrowdStrike.IOARules.name | String | The IOA Rule Name. | 
@@ -6758,4 +6758,4 @@ Get IOA Rules for Custom IOA rule triggered detections
 | CrowdStrike.IOARules.rulegroup_id | String | The IOA Rule's Rule Group ID. | 
 | CrowdStrike.IOARules.ruletype_id | String | The IOA Rule's Rule Type ID. | 
 | CrowdStrike.IOARules.ruletype_name | String | The IOA Rule's Rule Type Name. | 
-| CrowdStrike.IOARules.version_ids | String | The IOA Rule's Version ID | 
+| CrowdStrike.IOARules.version_ids | String | The IOA Rule's Version ID. | 
