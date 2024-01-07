@@ -6,9 +6,11 @@ import demistomock as demisto
 
 client = Client('test', 'test', 'test', False)
 
+
 def load_mock_response(file_name: str) -> str:
     with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
+
 
 @freeze_time('2020-04-20')
 def test_create_header():
@@ -400,27 +402,27 @@ def test_update_victim_attributes_command(mocker):
 
 
 ARGS_INCLUDE_ASSETS_ATTRIBUTES = {
-        'include_assets': True,
-        'include_associated_groups': False,
-        'include_attributes': True,
-        'include_security_labels': False,
-        'filter': 'Test Filter',
-        'victim_id': 'test_victim_id',
-        'limit': 20,
-        'page': 1
-    }
+    'include_assets': True,
+    'include_associated_groups': False,
+    'include_attributes': True,
+    'include_security_labels': False,
+    'filter': 'Test Filter',
+    'victim_id': 'test_victim_id',
+    'limit': 20,
+    'page': 1
+}
 
 EXPECTED_URL_ASSETS_ATTRIBUTES = f'{VICTIM_API_PREFIX}/test_victim_id?'\
                                  f'&resultStart=20&resultLimit=20&fields=attributes&fields=assets&tql=Test%20Filter'
 
 
 ARGS_INCLUDE_ALL = {
-        'include_all_metaData': True,
-        'filter': 'Test Filter',
-        'victim_id': 'test_victim_id',
-        'limit': 20,
-        'page': 1
-    }
+    'include_all_metaData': True,
+    'filter': 'Test Filter',
+    'victim_id': 'test_victim_id',
+    'limit': 20,
+    'page': 1
+}
 
 EXPECTED_URL_INCLUDE_ALL = (f'{VICTIM_API_PREFIX}/test_victim_id?'
                             f'&resultStart=20&resultLimit=20&'
@@ -446,7 +448,6 @@ def test_list_victims_command(mocker, args, expected_url):
     # Verifying if the client.make_request method was called with the expected arguments
     actual_url = res.call_args[1]['url_suffix']
     assert expected_url == actual_url
-
 
 
 def test_list_victim_assets_command(mocker):
@@ -514,4 +515,3 @@ def test_to_readable():
     assert 'asset' in readable_outputs[2]
     assert 'NetworkAccount' not in readable_outputs[3]
     assert 'asset' in readable_outputs[3]
-
