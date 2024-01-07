@@ -116,9 +116,11 @@ def get_alerts_to_limit(client: Client, last_run: dict):
                 break
             last_run = update_last_run(last_run, alerts=next_batch_alerts)
             alerts.extend(next_batch_alerts)
+            if len(alerts) >= client.max_alerts:
+                break
     except Exception as e:
         demisto.error(f'Encountered error while fetching alerts - {e}')
-    return alerts, last_run
+    return alerts[:client.max_alerts], last_run
 
 
 def get_audit_logs_to_limit(client: Client):
