@@ -14,11 +14,13 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 # Info log Messages
+
+
 class VerifyMessages(str):
     NEW_PACK = "verified the new pack {} in the index and that version {} zip exists for bucket {}"
     MODIFIED_PACK = "verified the packs new version is in the index and that all the new items are present in the pack"
     NEW_VERSION = ("verified the new pack's version exists in the index and that the release notes is parsed correctly "
-                        "in the changelog")
+                   "in the changelog")
     RN = "verified the content of the release notes is in the changelog under the right version"
     HIDDEN = "verified the pack does not exist in index"
     README = "verified the readme content is parsed correctly and that there was no version bump if only readme was modified"
@@ -28,7 +30,8 @@ class VerifyMessages(str):
     NEW_IMAGE = "verified the new image was uploaded"
     HIDDEN_DEPENDENCY = "verified the hidden dependency pack not in metadata.json"
     PACK_NOT_IN_MARKETPLACE = ("verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT "
-                                    "exists under the pack path in {} bucket")
+                               "exists under the pack path in {} bucket")
+
 
 # dev buckets
 XSOAR_TESTING_BUCKET = 'marketplace-dist-dev'
