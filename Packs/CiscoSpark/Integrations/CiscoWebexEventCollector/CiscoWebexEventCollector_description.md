@@ -45,4 +45,4 @@ In order to receive all events, You must run all three commands twice, once with
 
 ### Fetch security audits
 This API requires Full Admin Permission.
-In order to fetch security audit events pro pack need to be installed on webex instance.
+In order to fetch security audit events, pro pack needs to be installed on the Webex instance.
