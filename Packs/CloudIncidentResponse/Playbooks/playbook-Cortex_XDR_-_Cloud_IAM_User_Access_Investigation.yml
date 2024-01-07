@@ -832,7 +832,7 @@ inputSections:
   description: AWS Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
   - Azure-userRemediationType
-  name: ' Azure Remediation'
+  name: Azure Remediation
   description: Azure Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
   - GCP-accessKeyRemediationType
