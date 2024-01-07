@@ -14,7 +14,7 @@ In addition, each application should be defined with a specific scope as follows
 1. Admin user
 2. Compliance officer user
 
-[click here to create and managed the users](https://developer.webex.com/)
+Click [here](https://developer.webex.com/) to create and manage the users.
 
 #### Crete two clients
 1. Admin client (for `Admin Audit Events` and `Security Audit Events`) associated with the admin user defined and the `audit:events_read` scope.
