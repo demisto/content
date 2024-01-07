@@ -23,7 +23,7 @@ This integration was integrated and tested with version 1 of CiscoWebex API.
     | Maximum number of events per fetch |  | False |
 
 4. 
-    1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sing in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). then you will be redirected to the `redirect URI` you defined in the application. the url will contain a query parameter called `code`. the value of this query parameter will be used in the next command. 
+    1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sign in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). You will then be redirected to the `redirect URI` you defined in the application. The URL will contain a query parameter called `code`. The value of this query parameter will be used in the next command. 
     2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`). The **code** argument should be set to the value returned in the code query parameter from the previous command.
     3. Run the ***cisco-webex-oauth-test*** command with the **user** argument. The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`) to ensure connectivity to Cisco Webex.
 
