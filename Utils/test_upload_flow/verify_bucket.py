@@ -14,20 +14,21 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 # Info log Messages
-VERIFY_NEW_PACK = "verified the new pack {} in the index and that version {} zip exists under the pack path {}"
-VERIFY_MODIFIED_PACK = "verified the packs new version is in the index and that all the new items are present in the pack"
-VERIFY_NEW_VERSION = ("verified the new pack's version exists in the index and that the release notes is parsed correctly "
-                      "in the changelog")
-VERIFY_RN = "verified the content of the release notes is in the changelog under the right version"
-VERIFY_HIDDEN = "verified the pack does not exist in index"
-VERIFY_README = "verified the readme content is parsed correctly and that there was no version bump if only readme was modified"
-VERIFY_FAILED_PACK = "verified the commit hash is not updated in the pack metadata in the index.zip"
-VERIFY_MODIFIED_ITEM_PATH = "verified the path of the pack item is modified"
-VERIFY_DEPENDENCY = "verified the new dependency is in the pack metadata"
-VERIFY_NEW_IMAGE = "verified the new image was uploaded"
-VERIFY_HIDDEN_DEPENDENCY = "verified the hidden dependency pack not in metadata.json"
-VERIFY_PACK_NOT_IN_MARKETPLACE = ("verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT "
-                                  "exists under the pack path in {} bucket")
+class VerifyMessages(str):
+    NEW_PACK = "verified the new pack {} in the index and that version {} zip exists for bucket {}"
+    MODIFIED_PACK = "verified the packs new version is in the index and that all the new items are present in the pack"
+    NEW_VERSION = ("verified the new pack's version exists in the index and that the release notes is parsed correctly "
+                        "in the changelog")
+    RN = "verified the content of the release notes is in the changelog under the right version"
+    HIDDEN = "verified the pack does not exist in index"
+    README = "verified the readme content is parsed correctly and that there was no version bump if only readme was modified"
+    FAILED_PACK = "verified the commit hash is not updated in the pack metadata in the index.zip"
+    MODIFIED_ITEM_PATH = "verified the path of the pack item is modified"
+    DEPENDENCY = "verified the new dependency is in the pack metadata"
+    NEW_IMAGE = "verified the new image was uploaded"
+    HIDDEN_DEPENDENCY = "verified the hidden dependency pack not in metadata.json"
+    PACK_NOT_IN_MARKETPLACE = ("verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT "
+                                    "exists under the pack path in {} bucket")
 
 # dev buckets
 XSOAR_TESTING_BUCKET = 'marketplace-dist-dev'
@@ -209,7 +210,7 @@ class BucketVerifier:
         rn_as_expected = release_notes in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         return (pack_components_as_expected and rn_as_expected,
                 pack_id,
-                VERIFY_NEW_PACK.format(pack_id, marketplace))
+                VerifyMessages.NEW_PACK.format(pack_id, version, marketplace))
 
     @logger
     def verify_pack_not_in_marketplace(self, pack_id, marketplace):
@@ -219,7 +220,7 @@ class BucketVerifier:
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
         return (not any(version_exists),
                 pack_id,
-                VERIFY_PACK_NOT_IN_MARKETPLACE.format(pack_id, marketplace)
+                VerifyMessages.PACK_NOT_IN_MARKETPLACE.format(pack_id, marketplace)
                 )
 
     @logger
@@ -234,7 +235,7 @@ class BucketVerifier:
         changelog_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
-        return changelog_as_expected and all(items_exists), pack_id, VERIFY_MODIFIED_PACK
+        return changelog_as_expected and all(items_exists), pack_id, VerifyMessages.MODIFIED_PACK
 
     @logger
     def verify_new_version(self, pack_id, rn):
@@ -249,21 +250,21 @@ class BucketVerifier:
         return (all
                 ([new_version_exists, new_version_exists_in_changelog, new_version_exists_in_metadata]),
                 pack_id,
-                VERIFY_NEW_VERSION)
+                VerifyMessages.NEW_VERSION)
 
     @logger
     def verify_rn(self, pack_id, rn):
         """
         Verify the content of the RN is in the changelog under the right version
         """
-        return rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id]), pack_id, VERIFY_RN
+        return rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id]), pack_id, VerifyMessages.RN
 
     @logger
     def verify_hidden(self, pack_id):
         """
         Verify the pack does not exist in index
         """
-        return not self.gcp.is_in_index(pack_id), pack_id, VERIFY_HIDDEN
+        return not self.gcp.is_in_index(pack_id), pack_id, VerifyMessages.HIDDEN
 
     @logger
     def verify_readme(self, pack_id, readme):
@@ -275,7 +276,7 @@ class BucketVerifier:
             return False, pack_id
 
         return self.gcp.get_max_version(pack_id) == self.versions[pack_id] and \
-            readme in self.gcp.get_pack_readme(pack_id), pack_id, VERIFY_README
+            readme in self.gcp.get_pack_readme(pack_id), pack_id, VerifyMessages.README
 
     @logger
     def verify_failed_pack(self, pack_id):
@@ -284,7 +285,7 @@ class BucketVerifier:
         """
         return (self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'),
                 pack_id,
-                VERIFY_FAILED_PACK
+                VerifyMessages.FAILED_PACK
                 )
 
     @logger
@@ -299,7 +300,7 @@ class BucketVerifier:
         modified_item_exist = self.gcp.is_items_in_pack([modified_item_path], pack_id)
         items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
-        return modified_item_exist and all(items_exists), pack_id, VERIFY_MODIFIED_ITEM_PATH
+        return modified_item_exist and all(items_exists), pack_id, VerifyMessages.MODIFIED_ITEM_PATH
 
     @logger
     def verify_dependency(self, pack_id, dependency_id):
@@ -309,7 +310,7 @@ class BucketVerifier:
         # TODO: Should verify the dependency in the pack zip metadata as well - after CIAC-4686 is fixed
         return (dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}),
                 pack_id,
-                VERIFY_DEPENDENCY
+                VerifyMessages.DEPENDENCY
                 )
 
     @logger
@@ -320,7 +321,7 @@ class BucketVerifier:
         image_in_bucket_path = self.gcp.download_image(pack_id)
         return (open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read(),
                 pack_id,
-                VERIFY_NEW_IMAGE
+                VerifyMessages.NEW_IMAGE
                 )
 
     @logger
@@ -330,7 +331,7 @@ class BucketVerifier:
         """
         return (dependency_id not in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}).keys(),
                 pack_id,
-                VERIFY_HIDDEN_DEPENDENCY
+                VerifyMessages.HIDDEN_DEPENDENCY
                 )
 
     def run_xsiam_bucket_validations(self):
