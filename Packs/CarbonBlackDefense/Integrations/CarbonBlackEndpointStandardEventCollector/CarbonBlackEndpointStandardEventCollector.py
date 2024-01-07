@@ -255,6 +255,8 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)
             demisto.debug(f'Handled {len(events)} total events')
             demisto.setLastRun(new_last_run)
+        else:
+            raise NotImplementedError(f'{command} not implemented')
 
     # Log exceptions and return errors
     except Exception as e:
