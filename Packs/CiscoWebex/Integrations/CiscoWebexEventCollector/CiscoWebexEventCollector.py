@@ -8,7 +8,6 @@ from typing import Callable
 
 VENDOR = 'cisco'
 PRODUCT = 'webex'
-URL = 'https://webexapis.com/v1/'
 SCOPE = {
     'admin': 'audit:events_read spark:kms',
     'compliance_officer': 'spark-compliance:events_read spark:kms',
@@ -165,7 +164,7 @@ class Client(BaseClient):
             client_id=self.client_id,
             redirect_uri=self.redirect_uri,
         )
-        return f'{urljoin(URL, "authorize?")}{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}', self.user
+        return f'{urljoin(self._base_url, "authorize?")}{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}', self.user
 
     def oauth_complete(self, code: str | None):
         """
@@ -299,12 +298,15 @@ def oauth_start(client: Client) -> CommandResults:
         A CommandResult with a URL generated according to the client attributes to start the authentication.
     """
     url, user = client.oauth_start()
-    return CommandResults(
-        readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open [this page]({url})
-and sign in with your username and password. (make sure you sign in with the {user} user).
-You will retrieve the authorization code provided as a query parameter called `code` use it as an argument in the next command.
-2. Run the **!cisco-webex-oauth-complete** command in the War Room.""")
+    message = f"""
+>### Authorization instructions
+>1. Click on the [login URL]({url}) to sign in and grant Cortex XSOAR permissions for your Cisco Webex {user} application.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix)
+and use it in **!cisco-webex-oauth-complete** command as a value fot the **code** argument.
+"""
+    return CommandResults(readable_output=message)
 
 
 def oauth_complete(client: Client, args: dict) -> CommandResults:
@@ -388,7 +390,7 @@ def get_events_command(command_function: Callable, args: dict) -> tuple[CommandR
 
 
 def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient, last_run: dict,
-                 max_fetch: int) -> tuple[list, dict]:
+                 max_fetch: int, fetch_security_audits: bool = False) -> tuple[list, dict]:
     """
     Fetches three types of events (Admin Audits, Security Audits, Events),
     It fetches from the latest event `create` date or with a `next_url` returned form the previous fetch,
@@ -398,6 +400,7 @@ def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient, 
         co_client: An instance of the ComplianceOfficesClient.
         last_run: A dict with the latest fetch data.
         max_fetch: A number of how many events to return per fetch.
+        fetch_security_audits: A boolean that defines whether to return security_audits or not. (since it needs more permissions).
 
     Returns:
         A list of events and a dict with fetch info to use in the next fetch.
@@ -411,9 +414,10 @@ def fetch_events(admin_client: AdminClient, co_client: ComplianceOfficerClient, 
 
     event_type_to_client_function = {
         'admin_audits': admin_client.get_admin_audits,
-        'security_audits': admin_client.get_security_audits,
         'compliance_officer_events': co_client.get_compliance_officer_events,
     }
+    if fetch_security_audits:
+        event_type_to_client_function['security_audits'] = admin_client.get_security_audits
 
     for event_type, client_function in event_type_to_client_function.items():
         since_datetime = demisto.get(last_run, f'{event_type}.since_datetime')
@@ -440,6 +444,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     # parse parameters
+    base_url = urljoin(params.get('base_url', 'https://webexapis.com'), '/v1/')
     admin_client_id = demisto.get(params, 'admin_credentials.identifier', '')
     admin_client_secret = demisto.get(params, 'admin_credentials.password', '')
     admin_redirect_uri = params.get('admin_app_redirect_uri')
@@ -447,8 +452,9 @@ def main() -> None:  # pragma: no cover
     compliance_officer_client_id = demisto.get(params, 'compliance_officer_credentials.identifier', '')
     compliance_officer_client_secret = demisto.get(params, 'compliance_officer_credentials.password', '')
     compliance_officer_redirect_uri = params.get('compliance_officer_redirect_uri')
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    fetch_security_audits = argToBoolean(params.get("fetch_security_audit_events", False))
+    verify_certificate = argToBoolean(not params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
     max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     if not 0 < max_fetch <= 2000:
         max_fetch = DEFAULT_MAX_FETCH
@@ -457,7 +463,7 @@ def main() -> None:  # pragma: no cover
 
     try:
         admin_client = AdminClient(
-            url=URL,
+            url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             client_id=admin_client_id,
@@ -468,7 +474,7 @@ def main() -> None:  # pragma: no cover
         )
 
         compliance_officer_client = ComplianceOfficerClient(
-            url=URL,
+            url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             client_id=compliance_officer_client_id,
@@ -515,7 +521,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
-            events, next_run = fetch_events(admin_client, compliance_officer_client, last_run, max_fetch)
+            events, next_run = fetch_events(admin_client, compliance_officer_client, last_run, max_fetch, fetch_security_audits)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 

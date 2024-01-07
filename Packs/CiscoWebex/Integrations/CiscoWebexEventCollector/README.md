@@ -9,6 +9,7 @@ This integration was integrated and tested with version 1 of CiscoWebex API.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
+    | URL |  | True |
     | Admin APP Client ID | Admin APP Client ID and Secret. | True |
     | Admin APP Client Secret |  | True |
     | Admin APP Redirect URI |  | True |
@@ -18,9 +19,10 @@ This integration was integrated and tested with version 1 of CiscoWebex API.
     | Compliance Officer Redirect URI |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Fetch security audit events | In order to fetch security audit events pro pack need to be installed on webex instance. | False |
     | Maximum number of events per fetch |  | False |
 
-4.    
+4. 
     1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sing in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). then you will be redirected to the `redirect URI` you defined in the application. the url will contain a query parameter called `code`. the value of this query parameter will be used in the next command. 
     2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). the **code** argument should be set to the value returned in the code query parameter from the previous command.
     3. Run the ***cisco-webex-oauth-test*** command with the **user** argument - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). to ensure connectivity to Cisco Webex. 

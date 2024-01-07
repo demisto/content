@@ -6,6 +6,12 @@ commonfields:
   id: CiscoWebexEventCollector
   version: -1
 configuration:
+- display: URL
+  name: base_url
+  defaultvalue: 'https://webexapis.com'
+  required: true
+  type: 0
+  section: Connect
 - name: admin_credentials
   display: Admin APP Client ID
   required: true
@@ -45,6 +51,12 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- display: Fetch security audit events
+  additionalinfo: In order to fetch security audit events pro pack need to be installed on webex instance.
+  name: fetch_security_audit_events
+  required: false
+  type: 8
+  section: Collect
 - defaultvalue: 200
   display: Maximum number of events per fetch
   name: max_fetch

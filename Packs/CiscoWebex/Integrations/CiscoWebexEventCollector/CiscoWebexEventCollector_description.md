@@ -3,7 +3,7 @@
 
 ### Cisco Webex Event Collector collects three types of events.
 * Admin Audit Events.
-* Security Audit Events (user sign-in and sign-out data).
+* Security Audit Events (user sign-in and sign-out data). See [bellow](#Fetch-security-audit) more info about these events.
 * Events.
 
 ### Users and Clients
@@ -14,13 +14,13 @@ In addition, each application should be defined with a specific scope as follows
 1. Admin user
 2. Compliance officer user
 
-[click here to create and managed your users](https://developer.webex.com/?????)
+[click here to create and managed the users](https://developer.webex.com/)
 
 #### Crete two clients
-1. Admin client (for `Admin Audit Events` and `Security Audit Events`) associated with the admin user defined with teh `audit:events_read` scope.
-2. Compliance Officer client (for `Events`) associated with the compliance officer user defined with teh `spark-compliance:events_read` scope.
+1. Admin client (for `Admin Audit Events` and `Security Audit Events`) associated with the admin user defined and the `audit:events_read` scope.
+2. Compliance Officer client (for `Events`) associated with the compliance officer user defined and the `spark-compliance:events_read` scope.
 
-[click here to create and managed your applications](https://developer.webex.com/my-apps)
+[click here to create and managed the applications](https://developer.webex.com/my-apps)
 
 
 ### Each client needs three parameters:
@@ -30,6 +30,7 @@ In addition, each application should be defined with a specific scope as follows
 
 _Note:  The Admin client needs a fourth parameter: `organization ID`._\
 Run [this](https://developer.webex.com/docs/api/v1/organizations/list-organizations) HTTP request (login with admin credentials) to get the organization ID.
+
 ![get_organization_id](../../doc_files/get_organization_id.png)
 
 ### Authentication flow (Oauth)
@@ -40,6 +41,8 @@ In order to receive all events, You must run all three commands twice, once with
 
 1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sing in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). then you will be redirected to the `redirect URI` you defined in the application. the url will contain a query parameter called `code`. the value of this query parameter will be used in the next command. 
 2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). the **code** argument should be set to the value returned in the code query parameter from the previous command.
-3. Run the ***cisco-webex-oauth-test*** command with the **user** argument - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). to ensure connectivity to Cisco Webex. 
+3. Run the ***cisco-webex-oauth-test*** command with the **user** argument - the **user** argument should be set to the same as the previous command (`admin` or `compliance officer`). to ensure connectivity to Cisco Webex.
 
-
+### Fetch security audits
+This API requires Full Admin Permission.
+In order to fetch security audit events pro pack need to be installed on webex instance.
