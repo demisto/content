@@ -1408,6 +1408,8 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
 class SDKNightlyTestCollector(TestCollector):
 
     def _collect(self) -> CollectionResult | None:
+        if self.marketplace == MarketplaceVersions.XPANSE:
+            return None
         return CollectionResult(
             test="Sanity Test - Playbook with no integration",
             modeling_rule_to_test=None,
