@@ -82,6 +82,5 @@ curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[SDK_RELEASE]=true" \
     --form "variables[BRANCH_NAME]=${_branch}" \
     --form "variables[CONTENT_CI_TOKEN]=${_ci_token}" \
-    --form "variables[CONTENT_INTERNAL_DIST_CI_TOKEN]=${_gold_ci_token}" \
     --form "variables[RELEASE_VERSION]=${_release_version}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}"  | jq
