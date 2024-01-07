@@ -19,7 +19,7 @@ This integration was integrated and tested with version 1 of CiscoWebex API.
     | Compliance Officer Redirect URI |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Fetch security audit events | In order to fetch security audit events pro pack need to be installed on webex instance. | False |
+    | Fetch security audit events | In order to fetch security audit events, pro pack needs to be installed on the Webex instance. | False |
     | Maximum number of events per fetch |  | False |
 
 4. 
