@@ -52,7 +52,7 @@ configuration:
   section: Connect
   advanced: true
 - display: Fetch security audit events
-  additionalinfo: In order to fetch security audit events pro pack need to be installed on webex instance.
+  additionalinfo: In order to fetch security audit events, pro pack needs to be installed on the Webex instance.
   name: fetch_security_audit_events
   required: false
   type: 8
