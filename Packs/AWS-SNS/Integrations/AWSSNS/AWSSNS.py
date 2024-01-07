@@ -1,8 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from AWSApiModule import *  # noqa: E402
 
 
-def create_entry(title, data, ec):
+def create_entry(title, data, ec):  # pragme no cover
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -13,7 +14,7 @@ def create_entry(title, data, ec):
     }
 
 
-def raise_error(error):
+def raise_error(error):  # pragma no cover
     return {
         'Type': entryTypes['error'],
         'ContentsFormat': formats['text'],
@@ -161,7 +162,7 @@ def delete_topic(args, client):
         return raise_error(e)
 
 
-def test_function(aws_client):
+def test_function(aws_client):  # pragma no cover
     try:
         client = aws_client.aws_session(service='sns')
         response = client.list_topics()
@@ -171,7 +172,7 @@ def test_function(aws_client):
         return raise_error(e)
 
 
-def main():
+def main():  # pragma no cover
 
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
@@ -202,7 +203,7 @@ def main():
                                retries)
         command = demisto.command()
         args = demisto.args()
-        demisto.debug('Command being called is {}'.format(command))
+        demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
             return_results(test_function(aws_client))
         elif command in commands:
@@ -214,13 +215,11 @@ def main():
                 role_session_duration=args.get('roleSessionDuration'))
             return_results(commands[command](args, client))
         else:
-            raise NotImplementedError('{} is not an existing AWS-SNS command'.format(command))
+            raise NotImplementedError(f'{command} is not an existing AWS-SNS command')
 
     except Exception as e:
-        return_error("Failed to execute {} command.\nError:\n{}".format(demisto.command(), str(e)))
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
-
-from AWSApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

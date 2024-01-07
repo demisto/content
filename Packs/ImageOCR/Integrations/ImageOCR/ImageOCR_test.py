@@ -120,8 +120,9 @@ def test_extract_text_command_corrupted_image(mocker, skip_corrupted: bool):
     """
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": "test_data/corrupted.png"})
     results, errors = extract_text_command(
-        {'entryid': 'test', 'skip_corrupted': skip_corrupted},
+        args={'entryid': 'test'},
         instance_languages=['eng'],
+        skip_corrupted=skip_corrupted,
     )
     assert len(results + errors) == 1
     if skip_corrupted:
