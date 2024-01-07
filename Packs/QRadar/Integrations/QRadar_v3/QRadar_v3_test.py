@@ -128,6 +128,7 @@ def test_connection_errors_recovers(mocker):
      - Ensure that success message is printed and recovery for http request happens.
     """
     mocker.patch.object(demisto, "error")
+    mocker.patch("QRadar_v3.time.sleep")
     mocker.patch.object(
         client,
         "_http_request",

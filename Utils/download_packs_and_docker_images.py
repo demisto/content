@@ -14,9 +14,8 @@ from pathlib import Path
 
 import requests
 
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
-ID_SET_URL = f"https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-dist/content/id_set.json"
-BUCKET_PACKS_URL = f"https://{TEST_XDR_PREFIX}marketplace-dist.storage.googleapis.com/content/packs"
+ID_SET_URL = "https://storage.googleapis.com/marketplace-dist/content/id_set.json"
+BUCKET_PACKS_URL = "https://marketplace-dist.storage.googleapis.com/content/packs"
 
 
 def load_bucket_id_set(verify_ssl: bool) -> dict:
