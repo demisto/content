@@ -1,5 +1,4 @@
 Endpoint Standard (formerly called Carbon Black Defense), a Next-Generation Anti-Virus + EDR. Collect Anti-Virus & EDR alerts and Audit Log Events.
-This integration was integrated and tested with version xx of CarbonBlackEndpointStandardEventCollector.
 
 ## Configure Carbon Black Endpoint Standard Event Collector on Cortex XSOAR
 
