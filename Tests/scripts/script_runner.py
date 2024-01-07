@@ -31,9 +31,11 @@ def run_command(args, directory):
         if sys.version_info[0] < 3:
             return subprocess.call(args, cwd=directory)
         return subprocess.run(args, cwd=directory).returncode
+    cwd = os.getcwd()
     os.chdir(directory)
-    return coverage_main(args[1:])
-
+    status = coverage_main(args[1:])
+    os.chdir(cwd)
+    return status
 
 def main():
     args = sys.argv[1:]
