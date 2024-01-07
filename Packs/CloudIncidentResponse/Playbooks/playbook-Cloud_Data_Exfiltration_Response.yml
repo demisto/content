@@ -1408,7 +1408,7 @@ inputs:
     Supports: AWS.
     True/False
   playbookInputQuery:
-- key: newInstanceProfileName
+- key: AWS-newInstanceProfileName
   value: {}
   required: false
   description: The new instance profile name to assign in the clone service account flow.
