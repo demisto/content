@@ -1407,10 +1407,9 @@ def run_polling_command(client: CoreClient,
     if command_decision_field not in args:
         # create new command run
         command_results = command_function(client, args)
-        if isinstance(command_results, CommandResults):
-            outputs = [command_results.raw_response] if command_results.raw_response else []
-        else:
-            outputs = [c.raw_response for c in command_results]
+        outputs = command_results.raw_response
+        if outputs and not isinstance(outputs, list):
+            outputs = [outputs]
         command_decision_values = [o.get(command_decision_field) for o in outputs] if outputs else []  # type: ignore
         if outputs and command_decision_values:
             polling_args = {
@@ -3119,10 +3118,9 @@ def parse_get_script_execution_results(results: List[Dict]) -> List[Dict]:
     return parsed_results
 
 
-def get_script_execution_results_command(client: CoreClient, args: Dict) -> CommandResults:
+def get_script_execution_results_command(client: CoreClient, args: Dict) -> List[CommandResults]:
     action_ids = argToList(args.get('action_id', ''))
-    contexts = []
-    raw_responses = []
+    command_results = []
     for action_id in action_ids:
         response = client.get_script_execution_results(action_id)
         results = response.get('reply', {}).get('results')
@@ -3130,18 +3128,14 @@ def get_script_execution_results_command(client: CoreClient, args: Dict) -> Comm
             'action_id': int(action_id),
             'results': parse_get_script_execution_results(results),
         }
-        contexts.append(context)
-        raw_responses.append(response)
-
-    command_result = CommandResults(
-        readable_output=tableToMarkdown(f'Script Execution Results - {",".join(action_ids)}',
-                                        [c.get('results') for c in contexts]),
-        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptResult',
-        outputs_key_field='action_id',
-        outputs=contexts,
-        raw_response=raw_responses,
-    )
-    return command_result
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
+            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptResult',
+            outputs_key_field='action_id',
+            outputs=context,
+            raw_response=response,
+        ))
+    return command_results
 
 
 def get_script_execution_result_files_command(client: CoreClient, args: Dict) -> Dict:
