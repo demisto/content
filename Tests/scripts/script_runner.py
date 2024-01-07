@@ -6,6 +6,7 @@ import subprocess
 import os
 import sys
 from multiprocessing.pool import ThreadPool
+from coverage.cmdline import main as coverage_main
 
 
 def run_script(args, files):
@@ -27,9 +28,12 @@ def run_script(args, files):
 
 def run_command(args_dir):
     args, directory = args_dir
-    if sys.version_info[0] < 3:
-        return subprocess.call(args, cwd=directory)
-    return subprocess.run(args, cwd=directory).returncode
+    if args[0] != "coverage":
+        if sys.version_info[0] < 3:
+            return subprocess.call(args, cwd=directory)
+        return subprocess.run(args, cwd=directory).returncode
+    os.chdir(directory)
+    return coverage_main(args[1:])
 
 
 def main():
