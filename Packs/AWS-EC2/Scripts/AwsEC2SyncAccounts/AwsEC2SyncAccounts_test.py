@@ -104,7 +104,10 @@ def test_update_ec2_instance(mocker):
     result = AwsEC2SyncAccounts.update_ec2_instance(["1234", "5678"], "AWS - EC2")
 
     assert internal_request.mock_calls[0].args == ('post', '/settings/integration/search')
-    assert internal_request.mock_calls[1].args == ('put', '/settings/integration', {
+    assert internal_request.mock_calls[1].args == (
+        'put',
+        '/settings/integration',
+        {
             "id": "2fa1071e-af66-4668-8f79-8c57a3e4851d",
             "name": "AWS - EC2",
             "configvalues": {
