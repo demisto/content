@@ -124,16 +124,16 @@ def test_urlscan_search_only_found(mocker: MockerFixture):
     client = Client()
     command_results = []
     execution_metrics = ExecutionMetrics()
-    mocker.patch.object(demisto, "args", return_value={"url": "http://example.com"})
+    url = "http://example.com"
     mocker.patch(
         "UrlScan.urlscan_search",
         return_value={
-            "results": [{"task": {"url": "http://example.com", "uuid": "123"}}]
+            "results": [{"task": {"uuid": "123"}, "page": {"url": "http://example.com"}}]
         },
     )
     mocker.patch("UrlScan.format_results")
 
-    urlscan_search_only(client, command_results, execution_metrics)
+    urlscan_search_only(client, url, command_results, execution_metrics)
 
     assert execution_metrics.success == 1
     assert len(command_results) == 0
@@ -154,10 +154,10 @@ def test_urlscan_search_only_not_found(mocker: MockerFixture):
     client = Client()
     command_results = []
     execution_metrics = ExecutionMetrics()
-    mocker.patch.object(demisto, "args", return_value={"url": "http://example.com"})
+    url = "http://example.com"
     mocker.patch("UrlScan.urlscan_search", return_value={"results": []})
 
-    urlscan_search_only(client, command_results, execution_metrics)
+    urlscan_search_only(client, url, command_results, execution_metrics)
 
     assert execution_metrics.success == 0
     assert len(command_results) == 1
@@ -179,14 +179,14 @@ def test_urlscan_search_only_error(mocker: MockerFixture):
     client = Client()
     command_results = []
     execution_metrics = ExecutionMetrics()
-    mocker.patch.object(demisto, "args", return_value={"url": "http://example.com"})
+    url = "http://example.com"
 
     mocker.patch(
         "UrlScan.urlscan_search",
         return_value={"is_error": True, "error_string": "Test error"},
     )
 
-    urlscan_search_only(client, command_results, execution_metrics)
+    urlscan_search_only(client, url, command_results, execution_metrics)
 
     assert execution_metrics.general_error == 1
     assert "Test error" in command_results[0].readable_output
