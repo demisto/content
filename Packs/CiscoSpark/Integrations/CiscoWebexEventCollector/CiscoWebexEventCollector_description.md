@@ -3,7 +3,7 @@
 
 ### Cisco Webex Event Collector collects three types of events.
 * Admin Audit Events.
-* Security Audit Events (user sign-in and sign-out data). See [bellow](#Fetch-security-audit) more info about these events.
+* Security Audit Events (user sign-in and sign-out data). See [Fetch security audits](#Fetch-security-audit) more information about these events.
 * Events.
 
 ### Users and Clients
