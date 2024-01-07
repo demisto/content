@@ -20,7 +20,7 @@ def get_context_path(context: dict, path: str):
         (Any): The context data under the prefix.
 
     Example:
-        >>> output = demisto.executeCommand('get-data')
+        >>> output = demisto.executeCommand('aws-ec2-describe-addresses')
         >>> output
         {'Contents': {'path.to.data(val.Id && val.Id == obj.Id)': [1, 2, 3, 4]}}
         >>> get_context_path(output, 'path.to.data')
