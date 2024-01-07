@@ -595,7 +595,7 @@ def reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = 'true'
-    set_to_integration_context_with_retries(ctx)
+    set_integration_context(ctx)
     return 'fetch-incidents was reset successfully.'
 
 

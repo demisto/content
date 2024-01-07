@@ -193,6 +193,7 @@ def test_get_dlp_incidents(requests_mock):
 
 def test_fetch_notifications(requests_mock, mocker):
     requests_mock.get(f'{DLP_URL}/public/incident-notifications?regions=us', json={'us': []})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"access_token": "abc"})
     incident_mock = mocker.patch.object(demisto, 'createIncidents')
 
     client = Client(DLP_URL, CREDENTIALS, False, None)
