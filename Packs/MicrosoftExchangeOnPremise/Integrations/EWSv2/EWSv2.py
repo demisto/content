@@ -1,6 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import email
 import hashlib
 import subprocess
@@ -9,7 +6,7 @@ from multiprocessing import Process
 
 import dateparser  # type: ignore
 import exchangelib
-
+from CommonServerPython import *
 from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
@@ -1040,10 +1037,10 @@ def keys_to_camel_case(value):
 
     if value is None:
         return None
-    if isinstance(value, (list, set)):
+    if isinstance(value, list | set):
         return [keys_to_camel_case(v) for v in value]
     if isinstance(value, dict):
-        return {keys_to_camel_case(k): keys_to_camel_case(v) if isinstance(v, (list, dict)) else v
+        return {keys_to_camel_case(k): keys_to_camel_case(v) if isinstance(v, list | dict) else v
                 for (k, v) in list(value.items())}
 
     return str_to_camel_case(value)
@@ -2263,7 +2260,7 @@ def send_email(args):
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
     # Lowering case as list options provided as capitalized for the argument
-    body_type = args.get('bodyType').lower() or args.get('body_type').lower() or 'text'
+    body_type = args.get('bodyType','').lower() or args.get('body_type','').lower() or 'text'
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
