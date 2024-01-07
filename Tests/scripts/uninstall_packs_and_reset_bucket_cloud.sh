@@ -15,11 +15,7 @@ else
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
-    cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-  else
-    echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-  fi
+  cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
 fi
 
 if [[ -z "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then

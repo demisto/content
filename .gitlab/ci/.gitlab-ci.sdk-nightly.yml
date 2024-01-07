@@ -129,7 +129,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - echo "successfully activated google cloud service account"
     - section_end "Activate GCloud Service Account"
     - section_start "Download private ID set" --collapsed
-    - gsutil cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/private_id_set.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/unified_id_set.json"
+    - gsutil cp "gs://marketplace-dist/content/private_id_set.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/unified_id_set.json"
     - echo "successfully downloaded private ID set"
     - section_end "Download private ID set"
     - section_start "Revoking GCP Auth"
@@ -143,7 +143,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - ./Documentation/commonServerDocs.sh
     - section_end "Common Server Documentation"
     - section_start "Collect Test List and Content Packs" --collapsed
-    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n "${IS_NIGHTLY}"
+    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n "${IS_NIGHTLY}" --sdk-nightly "${DEMISTO_SDK_NIGHTLY}"
     - section_end "Collect Test List and Content Packs"
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp "${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json" --output-path "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --all-packs-dependencies
@@ -402,12 +402,11 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
       ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_${INSTANCE_ROLE}"
       GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
       GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-      GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+      GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
       SERVER_TYPE: "XSIAM"
       MARKETPLACE_NAME: "marketplacev2"
       NON_REMOVABLE_PACKS: "Base"
       EXTRACT_PRIVATE_TESTDATA: "true"
-      NIGHTLY: "true"
       FAIL_ON_ERROR: "true"
       E2E_TEST_FOLDER: "xsiam"
       PRODUCT_TYPE: "XSIAM"
@@ -465,10 +464,9 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
-    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
-    NIGHTLY: "true"
     FAIL_ON_ERROR: "true"
     E2E_TEST_FOLDER: "xsoar-saas"
     PRODUCT_TYPE: "XSOAR"
