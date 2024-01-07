@@ -111,4 +111,4 @@ There are no outputs for this playbook.
 
 ---
 
-![XCloud Cryptojacking](../doc_files/XCloud_Cryptojacking.png)
+![XCloud Cryptojacking](../doc_files/XCloud_Cryptomining.png)
