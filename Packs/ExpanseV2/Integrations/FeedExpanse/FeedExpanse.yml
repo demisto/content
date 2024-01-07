@@ -113,21 +113,21 @@ script:
   - name: feedexpanse-get-indicators
     arguments:
     - defaultValue: '10'
-      description: The maximum number of results to return per type
+      description: The maximum number of results to return per type.
       name: max_indicators
     - defaultValue: yes
-      description: Retrieve discovered IPs
+      description: Retrieve discovered IPs.
       name: ip
     - defaultValue: yes
-      description: Retrieve discovered Domains
+      description: Retrieve discovered Domains.
       name: domain
     - defaultValue: yes
-      description: Retrieve discovered certificates
+      description: Retrieve discovered certificates.
       name: certificate
     - defaultValue: yes
-      description: Retrieve IP Ranges
+      description: Retrieve IP Ranges.
       name: iprange
-    description: Retrieve discovered IPs/IP Ranges/Domains/Certificates
+    description: Retrieve discovered IPs/IP Ranges/Domains/Certificates.
     execution: true
   feed: true
   script: '-'
