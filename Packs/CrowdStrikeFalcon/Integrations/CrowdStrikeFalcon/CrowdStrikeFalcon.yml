@@ -4885,9 +4885,10 @@ script:
       description: The compound TTO.
       type: String
   - arguments:
-    - description: The rule ID to get IOA rules for. This can be acquired by combining cid and rule_instance_id from Crowdstrike.Detections context for Custom IOA Rules detections. Example format is "12312312312asdfasdfasd12312:2004".
+    - description: The rule ID to get IOA rules for. This can be acquired by combining cid and rule_instance_id from Crowdstrike.Detections context for Custom IOA Rules detections.
       name: rule_id
       isArray: true
+      required: true
     description: Get IOA Rules.
     name: cs-falcon-get-ioarules
     outputs:
