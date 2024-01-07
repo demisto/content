@@ -1,3 +1,5 @@
 [known_words]
 PCI
 DSS
+[file:1_0_3.md]
+ignore=RN113,RN114
