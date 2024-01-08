@@ -70,9 +70,13 @@ def test_edl_returns_indicators(request: SubRequest, xsoar_saas_client: XsoarSaa
                     )
                 except Exception as error:
                     logging.error(f"test_edl_returns_indicators - time {i} - error\n{error}")
-                assert edl_response.text, f'could not get indicators from url={edl_response.request.url} from ' \
-                    f'instance {instance_name} with available indicators={available_indicators},' \
-                    f' status code={edl_response.status_code}, response={edl_response.text}'
+
+                assert edl_response.status_code == 200, f"status code is {edl_response.status_code} " \
+                                                        f"from EDL in URL {edl_response.request.url}"
+                text = edl_response.text
+                assert "1.1.1.1" in text, f"1.1.1.1 indicator from URL {edl_response.request.url} is not in {text}"
+                assert "2.2.2.2" in text, f"2.2.2.2 indicator from URL {edl_response.request.url} is not in {text}"
+                assert "3.3.3.3" in text, f"3.3.3.3 indicator from URL {edl_response.request.url} is not in {text}"
                 break
 
 
