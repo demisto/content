@@ -624,7 +624,7 @@ def fetch_credentials():  # pragma: no cover
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
-
+    demisto.debug(f'Final results - a list with len: {len(credentials)}')
     demisto.credentials(credentials)
 
 
@@ -645,7 +645,8 @@ def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):  # pragma:
         secret_data = get_kv1_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).items():
             if concat_username_to_cred_name:
-                name = '{0}_{1}'.format(secret, k)
+                name = '{0}_{1}_{2}'.format(secret, k, path)
+                demisto.debug(f'KV1 Concat username to cred name: {name}')
             else:
                 name = secret
             secrets.append({
@@ -678,7 +679,8 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
         secret_info = secret_data.get('data', {}).get('data', {})
         for k in secret_data.get('data', {}).get('data', {}):
             if concat_username_to_cred_name:
-                name = '{0}_{1}'.format(secret, k)
+                name = '{0}_{1}_{2}'.format(secret, k, engine_path)
+                demisto.debug(f'KV2 Concat username to cred name: {name}')
             else:
                 name = secret
             secrets.append({
@@ -717,7 +719,8 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):  # pragma: 
         secret_data = get_ch_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).items():
             if concat_username_to_cred_name:
-                name = '{0}_{1}'.format(secret, k)
+                name = '{0}_{1}_{2}'.format(secret, k, path)
+                demisto.debug(f'CH Concat username to cred name: {name}')
             else:
                 name = secret
             secrets.append({
