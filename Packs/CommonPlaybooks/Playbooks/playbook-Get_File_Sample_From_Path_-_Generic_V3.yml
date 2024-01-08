@@ -3,10 +3,13 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Get File Sample From Path - Generic V3
-description: |
+description: |-
   This playbook returns a file sample from a specified path and host that you input in the following playbooks:
-  1) PS Remote Get File Sample From Path.
-  2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
+  1. PS Remote Get File Sample From Path.
+  2. Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
+  3. CrowdStrike Falcon - Retrieve File
+  4. MDE - Retrieve File
+  5. Cortex XDR - Retrieve File V2.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,7 +27,11 @@ tasks:
       '#none#':
       - "11"
       - "14"
+      - "15"
+      - "16"
+      - "17"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -37,7 +44,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -53,6 +59,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -65,7 +72,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -84,10 +90,11 @@ tasks:
       '#none#':
       - "12"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 195
         }
       }
@@ -96,7 +103,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
@@ -123,6 +129,7 @@ tasks:
       Sensor_ID:
         simple: ${inputs.Agent_ID}
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -131,7 +138,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 340
         }
       }
@@ -140,7 +147,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -169,6 +175,7 @@ tasks:
       ZipFile:
         simple: "true"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -186,7 +193,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -205,6 +211,7 @@ tasks:
       '#none#':
       - "13"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -217,7 +224,248 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: c12382b6-414b-4613-8ba2-3a686f22ba19
+    type: title
+    task:
+      id: c12382b6-414b-4613-8ba2-3a686f22ba19
+      version: -1
+      name: Use Microsoft Defender for Endpoint
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
     continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: dd5f9bca-f2d6-4d83-8188-372acf9aafc5
+    type: title
+    task:
+      id: dd5f9bca-f2d6-4d83-8188-372acf9aafc5
+      version: -1
+      name: Use CrowdStrike Falcon
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 9abf10fa-2f9e-4714-83ce-94f1e9388e92
+    type: title
+    task:
+      id: 9abf10fa-2f9e-4714-83ce-94f1e9388e92
+      version: -1
+      name: Use Cortex XDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 291977e7-1951-462c-8875-7a8f13ad4636
+    type: playbook
+    task:
+      id: 291977e7-1951-462c-8875-7a8f13ad4636
+      version: -1
+      name: Cortex XDR - Retrieve File v2
+      description: |-
+        This playbook retrieves files from selected endpoints. You can retrieve up to 20 files, from 10 endpoints.
+        Inputs for this playbook are:
+        - A comma-separated list of endpoint IDs.
+        - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
+      playbookName: Cortex XDR - Retrieve File v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.Agent_ID
+          transformers:
+          - operator: uniq
+      file_path:
+        complex:
+          root: inputs.Path
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 093a8aa7-07c9-45e3-85de-b08c39983dce
+    type: playbook
+    task:
+      id: 093a8aa7-07c9-45e3-85de-b08c39983dce
+      version: -1
+      name: CrowdStrike Falcon - Retrieve File
+      description: |-
+        This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
+      playbookName: CrowdStrike Falcon - Retrieve File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      HostId:
+        complex:
+          root: inputs.Agent_ID
+          transformers:
+          - operator: uniq
+      PathsToGet:
+        complex:
+          root: inputs.Path
+          transformers:
+          - operator: uniq
+      ZipPassword:
+        simple: infected
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8232fa6d-94a4-4d02-8ea4-dd0d3144fcaa
+    type: playbook
+    task:
+      id: 8232fa6d-94a4-4d02-8ea4-dd0d3144fcaa
+      version: -1
+      name: MDE - Retrieve File
+      description: |-
+        This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field "DeviceID".
+      playbookName: MDE - Retrieve File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      paths:
+        complex:
+          root: inputs.Path
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
@@ -226,8 +474,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 530,
-        "width": 810,
-        "x": 50,
+        "width": 2050,
+        "x": -360,
         "y": 50
       }
     }
