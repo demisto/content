@@ -14,21 +14,15 @@ trigger-nightlies:
     CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY: $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
+    GITHUB_TOKEN: $GITHUB_TOKEN
   script:
 #    - ./Tests/sdk_release/create_release_branch.sh
+    - echo $RELEASE_VERSION
+    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
     - echo "test"
 #    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
 #    - echo "test2"
-    - git config --global user.email "bot@demisto.com"
-    - git config --global user.name "Content Bot"
-    - git clone https://github.com/demisto/demisto-sdk.git /demisto-sdk
-    - cd /demisto-sdk
-    - git pull
-    - git checkout -b $RELEASE_VERSION
-    - git push origin $RELEASE_VERSION
-    - echo "test"
-#    - python3 ./Tests/sdk_release/trigger_nightlies.py
 #    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
 #    - ./Tests/sdk_release/create_release_branch.sh --release-branch $RELEASE_VERSION
 
