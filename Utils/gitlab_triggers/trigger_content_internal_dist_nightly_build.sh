@@ -22,10 +22,12 @@ if [ -z "$_ci_token" ]; then
 fi
 
 export BUILD_TRIGGER_URL="https://gitlab.xdr.pan.local/api/v4/projects/1738/trigger/pipeline"
-echo $BUILD_TRIGGER_URL
 
-curl "$BUILD_TRIGGER_URL" --form "ref=master" \
-    --form "token=${_ci_token}" \
-    --form "variables[SDK_REF]=${_sdk_ref}" \
-    --form "variables[NIGHTLY]=true" \
-    --form "variables[SLACK_CHANNEL]=C05FPQR3WHK"  | jq
+
+curl --request POST \
+  --form "ref=master" \
+  --form "token=${_ci_token}" \
+  --form "variables[SDK_REF]=${_sdk_ref}" \
+  --form "variables[NIGHTLY]=true" \
+  --form "variables[SLACK_CHANNEL]=C05FPQR3WHK" \
+  "$BUILD_TRIGGER_URL"
