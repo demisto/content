@@ -953,7 +953,10 @@ def modify_volume_command(args: dict) -> CommandResults:
     raw.update({'Region': obj['_user_provided_options']['region_name']})
 
     return CommandResults(
-        outputs={'Modification': raw},
+        outputs={
+            'Modification': raw,
+            'VolumeId': raw['VolumeId']
+        },
         outputs_prefix='AWS.EC2.Volumes',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Modification', data)
@@ -1105,7 +1108,10 @@ def attach_volume_command(args: dict) -> CommandResults:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
     return CommandResults(
-        outputs={'Attachments': data},
+        outputs={
+            'Attachments': data,
+            'VolumeId': data['VolumeId'],
+        },
         outputs_prefix='AWS.EC2.Volumes',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
@@ -1141,7 +1147,10 @@ def detach_volume_command(args: dict) -> CommandResults:
         data.update({'DeleteOnTermination': response['DeleteOnTermination']})
 
     return CommandResults(
-        outputs={'Attachments': data},
+        outputs={
+            'Attachments': data,
+            'VolumeId': data['VolumeId'],
+        },
         outputs_prefix='AWS.EC2.Volumes',
         outputs_key_field='VolumeId',
         readable_output=tableToMarkdown('AWS EC2 Volume Attachments', data)
@@ -1818,7 +1827,10 @@ def get_password_data_command(args: dict) -> CommandResults:
     }
 
     return CommandResults(
-        outputs={'PasswordData': data},
+        outputs={
+            'PasswordData': data,
+            'InstanceId': data['InstanceId'],
+        },
         outputs_prefix='AWS.EC2.Instances',
         outputs_key_field='InstanceId',
         readable_output=tableToMarkdown('AWS EC2 Instances', data)
