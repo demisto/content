@@ -1408,7 +1408,7 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
 class SDKNightlyTestCollector(TestCollector):
 
     @property
-    def sanity_tests(self) -> CollectionResult | None:
+    def sanity_tests(self) -> CollectionResult:
         return CollectionResult(
             test="Sanity Test - Playbook with no integration",
             modeling_rule_to_test=None,
