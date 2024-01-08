@@ -1,6 +1,6 @@
 {
-    "name": "C",
-    "description": "C",
+    "name": "D",
+    "description": "D",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -12,12 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "D": {
-            "mandatory": true,
-            "display_name": "D"
-        }
-    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
