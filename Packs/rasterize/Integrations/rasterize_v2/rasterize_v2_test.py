@@ -173,6 +173,7 @@ def test_rasterize_image_to_pdf(mocker):
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(rasterize_v2, 'support_multithreading')
     rasterize_image_command()
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
