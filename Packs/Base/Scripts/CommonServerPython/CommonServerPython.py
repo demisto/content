@@ -49,6 +49,8 @@ ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 
+SECRET_REPLACEMENT_STRING = '<XX_REPLACED>'
+
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
@@ -1591,7 +1593,7 @@ class IntegrationLogger(object):
             else:
                 res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
-            res = res.replace(s, '<XX_REPLACED>')
+            res = res.replace(s, SECRET_REPLACEMENT_STRING)
         return res
 
     def __call__(self, message):
@@ -1670,6 +1672,7 @@ class IntegrationLogger(object):
             url = ''
             headers = []
             headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            headers_to_sanitize = ['Authorization', 'Cookie']
             request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
             for line, part in enumerate(request_parts):
                 if line == 0:
@@ -1680,6 +1683,9 @@ class IntegrationLogger(object):
                         url = 'https://{}{}'.format(host, url)
                     else:
                         if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        if any(header_to_sanitize in part for header_to_sanitize in headers_to_sanitize):
+                            headers.append(part.split(' ')[0] + " " + SECRET_REPLACEMENT_STRING)
                             continue
                         headers.append(part)
             curl_headers = ''
