@@ -74,22 +74,30 @@ token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 @app.post('/')
 async def handle_post(request: Request):
     data = ''
+    demisto.error(f'DANF in request: {Request}')
     try:
-        headers = request.headers
+        headers = dict(request.headers)
         type = headers['x-amz-sns-message-type']
         payload = await request.json()
         dump = json.dumps(payload)
     except Exception as e:
         demisto.error(f'Failed to extract request {e}')
-        return
+        return "error"
     # if not valid_sns_message(payload):
     #     demisto.error('Validation of SNS message failed.')
     #     return
     if type == 'SubscriptionConfirmation':
-        demisto.debug('SubscriptionConfirmation request')
+        demisto.error('SubscriptionConfirmation request')
         subscribe_url = payload['SubscribeURL']
-        response = requests.get(subscribe_url)
+        demisto.error(f'DANF SubscribeURL: {payload["SubscribeURL"]}')
+        try:
+            response = requests.get(subscribe_url)
+        except Exception as e:
+            demisto.error(f'DANF error is SubscribeURL: {e}')
+            return f"fail to send sub url {e}"
+
         demisto.debug(f'Response from subscribe url: {response}')
+        return response
     elif type == 'Notification':
         message = payload['Message']
         demisto.debug(f'Notification request msg: {message}')
@@ -115,11 +123,15 @@ async def handle_post(request: Request):
         data = demisto.createIncidents(incidents=[incident])
         if not data:
             demisto.error('Failed creating incident')
+            data = 'Failed creating incident'
+        return data
     elif type == 'UnsubscribeConfirmation':
         message = payload['Message']
         demisto.debug(f'UnsubscribeConfirmation request msg: {message}')
+        return f'UnsubscribeConfirmation request msg: {message}'
     else:
-        demisto.error(f"Failed handling AWS SNS request, unknown type: {payload['Type']}")
+        demisto.error(f'Failed handling AWS SNS request, unknown type: {payload["Type"]}')
+        return f'Failed handling AWS SNS request, unknown type: {payload["Type"]}'
 
 ''' MAIN FUNCTION '''
 
