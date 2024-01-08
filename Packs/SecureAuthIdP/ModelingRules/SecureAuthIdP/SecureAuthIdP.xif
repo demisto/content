@@ -32,14 +32,14 @@ alter // Extract the RFC 5424 Syslog Components
     // iana_pen = arrayindex(regextract(syslog_structured_data, "PEN=\"(\S[^\"]+)"), 0),
     product_type = arrayindex(regextract(syslog_structured_data, "ProductType=\"(\S[^\"]+)"), 0),
     realm = arrayindex(regextract(syslog_structured_data, "Realm=\"(\S[^\"]+)"), 0),
-    request_duration = arrayindex(regextract(syslog_structured_data, "RequestDuration=\"(\S[^\"]+)"), 0),
-    request_id = arrayindex(regextract(syslog_structured_data, "RequestID=\"(\S[^\"]+)"), 0),
+    request_duration = arrayindex(regextract(syslog_structured_data, "RequestDuration=\"(\S[^\"]+)"), 0), // Displays the response time of an application request. Applicable only to log entries with event ID9004x; also logged in the message element.
+    request_id = arrayindex(regextract(syslog_structured_data, "RequestID=\"(\S[^\"]+)"), 0), // Displays a unique identifier that shows the workflow for a specific request. An "Application End" log entry marks the end of a request and its corresponding RequestID.
     saml_consumer_site_url = arrayindex(regextract(syslog_structured_data, "SAMLConsumerSiteUrl=\"(\S[^\"]+)"), 0),
     saml_target_url = arrayindex(regextract(syslog_structured_data, "SAMLTargetUrl=\"(\S[^\"]+)"), 0),
     state_machine_id = arrayindex(regextract(syslog_structured_data, "StateMachineID=\"(\S[^\"]+)"), 0),
     is_successful = arrayindex(regextract(syslog_structured_data, "Succeed=\"(\S[^\"]+)"), 0),
     target_url = arrayindex(regextract(syslog_structured_data, "TargetUrl=\"(\S[^\"]+)"), 0),
-    trx_result = arrayindex(regextract(syslog_structured_data, "TrxResult=\"(\S[^\"]+)"), 0),
+    trx_result = arrayindex(regextract(syslog_structured_data, "TrxResult=\"(\S[^\"]+)"), 0), // Displays result of an authentication attempt
     user_agent = arrayindex(regextract(syslog_structured_data, "UserAgent=\"(\S[^\"]+)"), 0),
     user_host_address = arrayindex(regextract(syslog_structured_data, "UserHostAddress=\"(\S[^\"]+)"), 0),
     user_id = arrayindex(regextract(syslog_structured_data, "UserID=\"(\S[^\"]+)"), 0),
