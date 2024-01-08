@@ -221,7 +221,6 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
         fields['cvssversion'] = cvss.get("version", "")
 
         # is this v3/v4 cvss?
-
         # fills out the cvsstable in default cve layout - different table column names
         cvss_data = []
         for k, v in cvss.items():
