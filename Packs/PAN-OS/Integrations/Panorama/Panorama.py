@@ -14786,7 +14786,7 @@ def main():  # pragma: no cover
                 return_results(export_tsf_command(args))
             case _:
                 raise NotImplementedError(f'Command {command} is not implemented.')
-        
+
     except Exception as err:
         return_error(str(err), error=traceback.format_exc())
 
