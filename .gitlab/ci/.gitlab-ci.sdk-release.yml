@@ -29,7 +29,7 @@ trigger-nightlies:
 
 
 wait-for-build-to-finish:
-  stage: wait
+  stage: wait-for-build-to-finish
   extends:
     - .release-sdk
     - .default-job-settings
