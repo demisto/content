@@ -94,7 +94,7 @@ repos:
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     split_by_object: true
-    run_in_cwd: true
+    change_working_directory: true
     args:
     - run
     - -p
@@ -126,6 +126,8 @@ repos:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
     split_by_object: true
+    change_working_directory: true
+
   - id: pwsh-analyze-in-docker
     name: pwsh-analyze-in-docker
     description: Run powershell analyze
