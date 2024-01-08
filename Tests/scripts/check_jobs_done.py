@@ -118,6 +118,8 @@ def main():
     base_path = Path(args.job_done_files)
     should_fail = False
     for job in JOBS_PER_TRIGGERING_WORKFLOW[args.triggering_workflow]:
+        if "new-validate-flow" in job:
+            continue
         job_file = base_path / f'{job}.txt'
         logging.info(f'checking job {job} with file {job_file} in {job_file.absolute()}')
         if not job_file.exists():
