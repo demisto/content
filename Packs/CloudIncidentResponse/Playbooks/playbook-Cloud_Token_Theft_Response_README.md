@@ -51,15 +51,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Response - Generic
-* IP Enrichment - Generic v2
-* Entity Enrichment - Generic v3
-* Cloud Enrichment - Generic
-* Cloud Token Theft - Set Verdict
-* TIM - Indicator Relationships Analysis
-* Handle False Positive Alerts
 * Cloud Threat Hunting - Persistence
+* IP Enrichment - Generic v2
+* Handle False Positive Alerts
+* Cloud Response - Generic
 * Cloud Credentials Rotation - Generic
+* Cloud Token Theft - Set Verdict
+* Entity Enrichment - Generic v3
+* TIM - Indicator Relationships Analysis
+* Cloud Enrichment - Generic
 
 ### Integrations
 
@@ -72,8 +72,8 @@ This playbook does not use any integrations.
 ### Commands
 
 * closeInvestigation
-* setAlert
 * core-get-cloud-original-alerts
+* setAlert
 
 ## Playbook Inputs
 
