@@ -179,10 +179,7 @@ def test_rasterize_image_to_pdf(mocker):
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    print(f"results=")
-    print(f"results[0]=")
-    assert results[0]['file_type'] == entryTypes['entryInfoFile']
-    assert results[0]['Type'] == entryTypes['entryInfoFile']
+    assert results[0][0]['Type'] == entryTypes['entryInfoFile']
 
 
 TEST_DATA = [
