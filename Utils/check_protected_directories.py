@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 from pathlib import Path
 
 CONTENT_ROOT = Path(__file__).parents[1]
