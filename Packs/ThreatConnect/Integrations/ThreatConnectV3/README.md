@@ -1914,7 +1914,21 @@ Retrieved all attribute types
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.AttributeType.allowMarkdown | string | Whether the attribute type markdown allowed. | 
+| TC.AttributeType.description | string | The attribute type description. | 
+| TC.AttributeType.name | string | The attribute type name. | 
+| TC.AttributeType.errorMessage | string | The attribute type error message. | 
+| TC.AttributeType.id | string | The attribute type ID. | 
+| TC.AttributeType.maxSize | string | The attribute type maximum size. | 
+| TC.AttributeType.TC.AttributeType.validationRule.description | string | The attribute type validation rule description. | 
+| TC.AttributeType.TC.AttributeType.validationRule.id | string | The attribute type validation rule ID. | 
+| TC.AttributeType.TC.AttributeType.validationRule.name | string | The attribute type validation rule name. | 
+| TC.AttributeType.TC.AttributeType.validationRule.text | string | The attribute type validation rule text. | 
+| TC.AttributeType.TC.AttributeType.validationRule.type | string | The attribute type validation rule type. | 
+| TC.AttributeType.TC.AttributeType.validationRule.version | string | The attribute type validation rule version. | 
+
 #### Command example
 ```!tc-list-attribute-type limit=1```
 #### Context Example
@@ -1939,6 +1953,7 @@ There is no context output for this command.
 >|id|name|description|
 >|---|---|---|
 >| 1 | Course of Action Taken | Describe the Course of Action Taken. |
+
 
 ### tc-delete-victim
 
