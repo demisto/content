@@ -773,7 +773,8 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name, aws_roles_list, a
         if aws_credentials['data'].get('security_token'):
             secret_key = secret_key + '@@@' + aws_credentials["data"].get("security_token")
         if concat_username_to_cred_name:
-            role = '{0}_{1}'.format(role, access_key)
+            role = '{0}_{1}_{3}'.format(role, access_key, engine_path)
+            demisto.debug(f'AWS Concat username to cred name: {role}')
         secrets.append({
             'user': access_key,
             'password': secret_key,
