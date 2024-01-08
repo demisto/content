@@ -2922,6 +2922,43 @@ script:
         defaultValue: '50'
     description: Retrieved all attribute types
     name: tc-list-attribute-type
+    outputs:
+      - contextPath: TC.AttributeType.allowMarkdown
+        description: Whether the attribute type markdown allowed.
+        type: string
+      - contextPath: TC.AttributeType.description
+        description: The attribute type description.
+        type: string
+      - contextPath: TC.AttributeType.name
+        description: The attribute type name.
+        type: string
+      - contextPath: TC.AttributeType.errorMessage
+        description: The attribute type error message.
+        type: string
+      - contextPath: TC.AttributeType.id
+        description: The attribute type ID.
+        type: string
+      - contextPath: TC.AttributeType.maxSize
+        description: The attribute type maximum size.
+        type: string
+      - contextPath: TC.AttributeType.TC.AttributeType.validationRule.description
+        description: The attribute type validation rule description.
+        type: string
+      - contextPath: TC.AttributeType.TC.AttributeType.validationRule.id
+        description: The attribute type validation rule ID.
+        type: string
+      - contextPath: TC.AttributeType.TC.AttributeType.validationRule.name
+        description: The attribute type validation rule name.
+        type: string
+      - contextPath: TC.AttributeType.TC.AttributeType.validationRule.text
+        description: The attribute type validation rule text.
+        type: string
+      - contextPath: TC.AttributeType.TC.AttributeType.validationRule.type
+        description: The attribute type validation rule type.
+        type: string
+      - contextPath: TC.AttributeType.TC.AttributeType.validationRule.version
+        description: The attribute type validation rule version.
+        type: string
   dockerimage: demisto/python3:3.10.13.83255
   isfetch: true
   script: ''
