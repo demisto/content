@@ -6,15 +6,14 @@ import subprocess
 import os
 import sys
 from coverage.cmdline import main as coverage_main
-
+from multiprocessing.pool import Pool
 
 def run_script(args, files):
     try:
         # can't use with in python2
-        results = []
-        for file in files:
-            result = run_command(args + [os.path.abspath(file)], os.path.abspath(os.path.dirname(file)))
-            results.append(result)
+        pool = Pool()
+        results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.dirname(file)) for file in files])
+        pool.close()
         if any(result != 0 for result in results):
             sys.exit(1)
     except subprocess.CalledProcessError as e:
@@ -26,7 +25,8 @@ def run_script(args, files):
     return 0
 
 
-def run_command(args, directory):
+def run_command(args_dir):
+    args, directory = args_dir
     if args[0] != "coverage":
         if sys.version_info[0] < 3:
             return subprocess.call(args, cwd=directory)
