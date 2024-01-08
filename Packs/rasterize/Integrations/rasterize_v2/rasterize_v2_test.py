@@ -98,16 +98,16 @@ def test_rasterize_large_html(capfd, mocker):
         assert res
 
 
-# def test_rasterize_html(mocker, capfd):
-#     with capfd.disabled():
-#         path = os.path.realpath('test_data/file.html')
-#         mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
-#         mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
-#         mocker.patch.object(os, 'rename')
-#         mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
-#         mocker_output = mocker.patch('rasterize.return_results')
-#         rasterize_html_command()
-#         assert mocker_output.call_args.args[0]['File'] == 'email.png'
+def test_rasterize_html(mocker, capfd):
+    with capfd.disabled():
+        path = os.path.realpath('test_data/file.html')
+        mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
+        mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
+        mocker.patch.object(os, 'rename')
+        mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
+        mocker_output = mocker.patch('rasterize.return_results')
+        rasterize_html_command()
+        assert mocker_output.call_args.args[0]['File'] == 'email.png'
 
 
 @pytest.fixture
@@ -293,7 +293,6 @@ class TestRasterizeIncludeUrl:
             Then:
                 - Verify that it runs as expected.
         """
-        # mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
 
         with capfd.disabled(), NamedTemporaryFile('w+') as f:
