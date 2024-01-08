@@ -14,6 +14,7 @@ alter // Extract the RFC 5424 Syslog Components
     syslog_msg_id = arrayindex(syslog_headers, 3) // Identifies the type of message. SecureAuth IdP uses the Event ID here.
 
 | alter // Extract Syslog Structured Data Fields
+    allowed_tokens = arrayindex(regextract(syslog_structured_data, "AllowedTokens=\"(\S[^\"]+)"), 0), // For some authentication methods, this property may tell which method of 2FA was used.
     appliance_id = arrayindex(regextract(syslog_structured_data, "ApplianceID=\"(\S[^\"]+)"), 0),
     appliance_machine_name = arrayindex(regextract(syslog_structured_data, "ApplianceMachineName=\"(\S[^\"]+)"), 0),
     appliance_name = arrayindex(regextract(syslog_structured_data, "Appliance=\"(\S[^\"]+)"), 0),
@@ -83,12 +84,12 @@ alter // Extract the RFC 5424 Syslog Components
     xdm.alert.severity = syslog_severity,
     xdm.auth.auth_method = auth_reg_method,
     xdm.auth.mfa.client_details = auth_reg_method_info,
-    xdm.auth.mfa.method = auth_reg_method,
+    xdm.auth.mfa.method = coalesce(auth_reg_method, allowed_tokens), 
     xdm.event.description = if(syslog_msg != null and comment != null, concat(syslog_msg, ". ", comment, coalesce(syslog_msg, comment))),
     xdm.event.duration = coalesce(to_integer(total_request_duration_ms), to_integer(response_time)),
     xdm.event.id = event_id,
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
-    xdm.event.outcome = if(is_successful = "True" or trx_result ~= "success" or syslog_msg ~= "Success|validation passed" or is_status_code_successful = "true", XDM_CONST.OUTCOME_SUCCESS, is_successful = "False" or is_status_code_successful = "false", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome = if(is_successful = "True" or trx_result ~= "(?i)success" or syslog_msg ~= "Success|validation passed" or is_status_code_successful = "true", XDM_CONST.OUTCOME_SUCCESS, is_successful = "False" or is_status_code_successful = "false" or trx_result ~= "Incorrect|SecurityViolation", XDM_CONST.OUTCOME_FAILED),
     xdm.intermediate.agent.version = version,
     xdm.intermediate.host.hostname = hostname, 
     xdm.intermediate.host.device_id = appliance_id,
