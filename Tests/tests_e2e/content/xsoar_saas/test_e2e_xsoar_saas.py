@@ -186,7 +186,6 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
             playbook_id=playbook_id_name,
             playbook_name=playbook_id_name
         ):
-
             for i in range(1, 6):
                 try:
                     with save_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
@@ -201,6 +200,10 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
                         break
                 except Exception as error:
                     logging.error(f"test_slack_ask - time {i} - error\n{error}")
+                    # print incident raw response to get info about it in case of failures
+                    logging.debug(
+                        f'test_slack_ask incident metadata:\n{xsoar_saas_client.search_incidents(incident_response.id)}'
+                    )
                     if i == 5:
                         raise error
 
