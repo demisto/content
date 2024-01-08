@@ -3082,7 +3082,7 @@ def get_script_execution_status_command(client: CoreClient, args: Dict) -> Comma
         raw_responses.append(response)
 
     command_result = CommandResults(
-        readable_output=tableToMarkdown(f'Script Execution Status - {",".join(action_ids)}', replies),
+        readable_output=tableToMarkdown(f'Script Execution Status - {",".join(str(i) for i in action_ids)}', replies),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptStatus',
         outputs_key_field='action_id',
         outputs=replies,
