@@ -55,7 +55,7 @@ Searches for vulnerabilities in Kenna.
 | Kenna.Vulnerabilities.Score | Number | The vulnerability score. | 
 | Kenna.Vulnerabilities.ServiceTicket.DueDate | Date | The service ticket due date. | 
 | Kenna.Vulnerabilities.ServiceTicket.ExternalIdentifier | String | The service ticket external identifier. | 
-| Kenna.Vulnerabilities.ServiceTicket.Status | String | The service ticket status. | 
+| Kenna.Vulnerabilities.ServiceTicket.Status | String | The segit rvice ticket status. | 
 | Kenna.Vulnerabilities.ServiceTicket.TicketType | String | The service ticket type. | 
 | Kenna.Vulnerabilities.Severity | Number | The vulnerability severity. | 
 | Kenna.Vulnerabilities.Status | String | The vulnerability status. | 
@@ -868,3 +868,40 @@ Returns JSON data on all the runs of a given connector.
 >|AssetsWithTagsReset|AutoclosedScannerVulnerabilities|AutoclosedVulnerabilities|ClosedScannerVulnerabilities|ClosedVulnerabilities|CreatedScannerVulnerabilities|EndTime|FailedPayload|ID|ProcessedAssets|ProcessedPayload|ProcessedScannerVulnerabilities|ReopenedScannerVulnerabilities|ReopenedVulnerabilities|StartTime|Success|TotalPayload|UpdatedScannerVulnerabilities|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 0 | 0 | 0 | 0 | 10 | 2019-10-24T19:13:36.000Z | 0 | 111111 | 10 | 10 | 10 | 0 | 0 | 2019-10-24T19:02:02.000Z | true | 10 | 0 |
+### kenna-inactivate-asset
+
+***
+Inactivates a single asset.
+
+#### Base Command
+
+`kenna-inactivate-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the asset to inactivate. | Required | 
+| notes | Notes about the asset. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### kenna-search-assets-by-external-id
+
+***
+Search assets by external id.
+
+#### Base Command
+
+`kenna-search-assets-by-external-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| external_id | The external_id of the asset. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
