@@ -200,22 +200,22 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
 
 
 def inactivate_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
-        args_id = str(args.get('id'))
-        url_suffix = f'/assets/{args_id}'
-        asset = {
-            'asset': {
-                'inactive': True,
-                'notes': args.get('notes')
-            }
+    args_id = str(args.get('id'))
+    url_suffix = f'/assets/{args_id}'
+    asset = {
+        'asset': {
+            'inactive': True,
+            'notes': args.get('notes')
         }
-        result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
-        time.sleep(0.5)
-        try:
-            if result.get('status') != "success":
-                return 'Could not inactivate asset.', {}, []
-            return f'Asset {args_id} was updated', {}, []
-        except DemistoException as err:
-            return f'Error occurred while preforming inactivate-asset command {err}', {}, []
+    }
+    result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
+    time.sleep(0.5)
+    try:
+        if result.get('status') != "success":
+            return 'Could not inactivate asset.', {}, []
+        return f'Asset {args_id} was updated', {}, []
+    except DemistoException as err:
+        return f'Error occurred while preforming inactivate-asset command {err}', {}, []
 
 
 def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -578,7 +578,6 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
 
 
 def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
-
         args_id = str(args.get('external_id'))
         url_suffix = f'/assets/search?&q=external_id%3A{args_id}/'
         human_readable = []
@@ -589,13 +588,13 @@ def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[
             tags = argToList(args.get('tags'))
         else:
             tags = args.get('tags')
-        params = {
+        '''params = {
             'id[]': argToList(args.get('id')),
             'hostname[]': argToList(args.get('hostname')),
             'min_risk_meter_score': args.get('min-score'),
             'tags[]': tags,
             'external_id': args.get('external_id')
-        }
+        }'''
         response = client.http_request(message='GET', suffix=url_suffix).get(
             'assets')
         time.sleep(0.5)
