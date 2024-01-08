@@ -1,20 +1,15 @@
-import re
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Dict, List
 
 import demistomock as demisto
 import urllib3
-from bs4 import BeautifulSoup
 from CommonServerPython import *
 
-# disable insecure warnings
 urllib3.disable_warnings()
-
-INTEGRATION_NAME = "Microsoft Intune Feed"
 
 
 class Client(BaseClient):
     """
-    Client to use in the Microsoft Intune Feed integration. Overrides BaseClient.
+    Client to use in the Cyberint Feed integration.
     """
 
     def __init__(
@@ -27,15 +22,15 @@ class Client(BaseClient):
         self._cookies = {"access_token": access_token}
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-    def build_iterator(self, date_time: str = None) -> List:
-        """Retrieves all entries from the feed.
+    def build_iterator(self) -> List:
+        """
+        Retrieves all entries from the feed.
 
         Returns:
             A list of objects, containing the indicators.
         """
-        result = []
+        date_time = str((datetime.now().strftime("%Y-%m-%d")))
 
-        date_time = "2023-11-23"
         response = self._http_request(
             method="GET",
             url_suffix=date_time,
@@ -43,6 +38,8 @@ class Client(BaseClient):
             resp_type="text",
             timeout=70,
         )
+
+        result = []
         feeds = response.strip().split("\n")
         ioc_feeds = [json.loads(feed) for feed in feeds]
 
@@ -61,8 +58,10 @@ class Client(BaseClient):
         return result
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-    """Builds the iterator to check that the feed is accessible.
+def test_module(client: Client) -> str:
+    """
+    Builds the iterator to check that the feed is accessible.
+
     Args:
         client: Client object.
 
@@ -76,10 +75,15 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
 def fetch_indicators(
     client: Client,
     tlp_color: str,
+    feed_names: list[str],
+    indicator_types: list[str],
+    confidence_from: int,
+    severity_from: int,
     feed_tags: List = [],
     limit: int = -1,
 ) -> List[Dict]:
-    """Retrieves indicators from the feed
+    """
+    Retrieves indicators from the feed.
 
     Args:
         client (Client): Client object with request
@@ -91,50 +95,75 @@ def fetch_indicators(
     """
     iterator = client.build_iterator()
     indicators = []
-    if limit > 0:
-        iterator = iterator[:limit]
 
     for item in iterator:
-        value_ = item.get("value")
-        type_ = item.get("type")
+        ioc_value = item.get("value")
+        ioc_type = item.get("type")
         raw_data = item.get("rawJSON")
+        if (
+            ("All" in indicator_types or ioc_type in indicator_types)
+            and ("All" in feed_names or raw_data.get("detected_activity") in feed_names)
+            and (raw_data.get("confidence") >= confidence_from)
+            and (raw_data.get("severity_score") >= severity_from)
+        ):
+            indicator_obj = {
+                "value": ioc_value,
+                "type": ioc_type,
+                "service": "Cyberint",
+                "rawJSON": raw_data,
+                "fields": {
+                    "reportedby": "Cyberint",
+                    "Description": raw_data.get("description"),
+                    "FirstSeenBySource": raw_data.get("observation_date"),
+                },
+            }
 
-        indicator_obj = {
-            "value": value_,
-            "type": type_,
-            "service": "Cyberint",
-            "rawJSON": raw_data,
-            "fields": {
-                "reportedby": "Cyberint",
-                "Description": raw_data.get("description"),
-                "FirstSeenBySource": raw_data.get("observation_date"),
-            },
-        }
+            if feed_tags:
+                indicator_obj["fields"]["tags"] = feed_tags
 
-        if feed_tags:
-            indicator_obj["fields"]["tags"] = feed_tags
+            if tlp_color:
+                indicator_obj["fields"]["trafficlightprotocol"] = tlp_color
 
-        if tlp_color:
-            indicator_obj["fields"]["trafficlightprotocol"] = tlp_color
+            indicators.append(indicator_obj)
 
-        indicators.append(indicator_obj)
+        if len(indicators) >= limit:
+            break
 
     return indicators
 
 
 def get_indicators_command(client: Client, params: Dict[str, str], args: Dict[str, str]) -> CommandResults:
-    """Wrapper for retrieving indicators from the feed to the war-room.
+    """
+    Wrapper for retrieving indicators from the feed to the war-room.
+
     Args:
-        client: Client object with request
-        params: demisto.params()
-        args: demisto.args()
+        client: Cyberint API Client.
+        params: Integration parameters.
+        args: Command arguments.
+
     Returns:
         Outputs.
     """
+
     limit = int(args.get("limit", "10"))
     tlp_color = params.get("tlp_color")
+    severity_from = arg_to_number(params.get("severity_from"))
+    confidence_from = arg_to_number(params.get("confidence_from"))
     feed_tags = argToList(params.get("feedTags", ""))
-    indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
+    feed_names = argToList(params.get("feed_name"))
+    indicator_types = argToList(params.get("indicator_type"))
+
+    indicators = fetch_indicators(
+        client=client,
+        tlp_color=tlp_color,
+        feed_tags=feed_tags,
+        limit=limit,
+        feed_names=feed_names,
+        indicator_types=indicator_types,
+        severity_from=severity_from,
+        confidence_from=confidence_from,
+    )
+
     human_readable = tableToMarkdown(
         "Indicators from Cyberint Feed:",
         indicators,
@@ -142,6 +171,7 @@ def get_indicators_command(client: Client, params: Dict[str, str], args: Dict[st
         headerTransform=string_to_table_header,
         removeNull=True,
     )
+
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix="Cyberint",
@@ -152,18 +182,32 @@ def get_indicators_command(client: Client, params: Dict[str, str], args: Dict[st
 
 
 def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
-    """Wrapper for fetching indicators from the feed to the Indicators tab.
+    """
+    Wrapper for fetching indicators from the feed to the Indicators tab.
+
     Args:
-        client: Client object with request
-        params: demisto.params()
+        client: Cyberint API Client.
+        params: Integration parameters.
+
     Returns:
         Indicators.
     """
-    feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get("tlp_color")
+    feed_tags = argToList(params.get("feedTags", ""))
+    severity_from = arg_to_number(params.get("severity_from"))
+    confidence_from = arg_to_number(params.get("confidence_from"))
+    feed_names = argToList(params.get("feed_name"))
+    indicator_types = argToList(params.get("indicator_type"))
 
-    indicators = fetch_indicators(client, tlp_color, feed_tags)
-    return indicators
+    return fetch_indicators(
+        client=client,
+        tlp_color=tlp_color,
+        feed_tags=feed_tags,
+        feed_names=feed_names,
+        indicator_types=indicator_types,
+        severity_from=severity_from,
+        confidence_from=confidence_from,
+    )
 
 
 def main():
@@ -172,6 +216,7 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
+
     base_url = params.get("url")
     access_token = params.get("access_token").get("password")
     insecure = not params.get("insecure", False)

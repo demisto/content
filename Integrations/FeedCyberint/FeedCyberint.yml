@@ -84,16 +84,21 @@ configuration:
   - anonymization
   required: true
   type: 16
-- additionalinfo: Confidence about the indicator details. The value of confidence to fetch indicators from. The value between 0-100
+- additionalinfo: Confidence about the indicator details. The value of confidence to fetch indicators from. The value between 0-100.
   display: Confidence
   name: confidence_from
   type: 0
   required: false
-- additionalinfo: The date or number of days from when to start fetching indicators.
-  display: First fetch
-  name: first_fetch
+- additionalinfo: Severity about the indicator details. The value of severity to fetch indicators from. The value between 0-100.
+  display: Severity
+  name: severity_from
   type: 0
   required: false
+# - additionalinfo: The date or number of days from when to start fetching indicators.
+#   display: First fetch
+#   name: first_fetch
+#   type: 0
+#   required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -168,6 +173,6 @@ script:
       description: The feed confidence.
       type: String
     description: Gets indicators from the feed.
-  dockerimage: demisto/btfl-soup:1.0.1.45563
+  dockerimage: demisto/python3:3.10.13.83255
   feed: true
   subtype: python3
