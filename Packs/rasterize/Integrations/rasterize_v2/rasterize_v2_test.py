@@ -19,42 +19,46 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize_v2.return_error'
 
 
-def test_rasterize_email_image(caplog, capfd):
+def test_rasterize_email_image(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
+        mocker.patch.object(rasterize_v2, 'support_multithreading')
         rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         caplog.clear()
 
 
-def test_rasterize_email_pdf(caplog, capfd):
+def test_rasterize_email_pdf(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
+        mocker.patch.object(rasterize_v2, 'support_multithreading')
         rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         caplog.clear()
 
 
-def test_rasterize_email_pdf_offline(caplog, capfd):
+def test_rasterize_email_pdf_offline(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
+        mocker.patch.object(rasterize_v2, 'support_multithreading')
         rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         caplog.clear()
 
 
-def test_rasterize_no_defunct_processes(caplog, capfd):
+def test_rasterize_no_defunct_processes(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
+        mocker.patch.object(rasterize_v2, 'support_multithreading')
         rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    universal_newlines=True)
@@ -87,9 +91,10 @@ def test_get_chrome_options():
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
 
-def test_rasterize_large_html(capfd):
+def test_rasterize_large_html(capfd, mocker):
     with capfd.disabled():
         path = os.path.realpath('test_data/large.html')
+        mocker.patch.object(rasterize_v2, 'support_multithreading')
         res = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         assert res
 
@@ -150,6 +155,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
     with capfd.disabled():
+        mocker.patch.object(rasterize_v2, 'support_multithreading')
         rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG, navigation_timeout=5)
         assert return_error_mock.call_count == 1
         # call_args last call with a tuple of args list and kwargs
@@ -295,6 +301,7 @@ class TestRasterizeIncludeUrl:
             path = os.path.realpath(f.name)
             f.flush()
 
+            mocker.patch.object(rasterize_v2, 'support_multithreading')
             image = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG,
                               include_url=include_url)
             assert image
