@@ -2291,7 +2291,10 @@ def describe_fleet_instances_command(args: dict) -> CommandResults:
         })
         if 'InstanceHealth' in item:
             data.append({'InstanceHealth': item['InstanceHealth']})
-        output.append({'ActiveInstances': item})
+        output.append({
+            'ActiveInstances': item,
+            'FleetId': response['FleetId'],
+        })
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
