@@ -293,7 +293,7 @@ class TestRasterizeIncludeUrl:
             Then:
                 - Verify that it runs as expected.
         """
-        mocker.patch('builtins.open', mock_open(read_data='image_sha'))
+        # mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
 
         with capfd.disabled(), NamedTemporaryFile('w+') as f:
