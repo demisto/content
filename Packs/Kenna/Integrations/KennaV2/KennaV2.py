@@ -610,7 +610,12 @@ def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[
 
             for lst in assets_list:
                 human_readable.append({
-                    'id': lst.get('id')
+                    'id': lst.get('id'),
+                    'Hostname': lst.get('hostname'),
+                    'IP-address': lst.get('ip_address'),
+                    'Vulnerabilities Count': args.get('vulnerabilities_count'),
+                    'Operating System': lst.get('operating_system'),
+                    'Score': lst.get('risk_meter_score')
                 })
             context = {
                 'Kenna.Assets(val.ID === obj.ID)': context_list

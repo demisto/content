@@ -318,7 +318,7 @@ script:
       description: Notes of current asset.
       type: String
     - contextPath: Kenna.Assets.OperatingSystem
-      description: Operating system of asset
+      description: Operating system of asset.
       type: String
   - arguments:
     - description: The asset ID for which to get vulnerabilities.
@@ -345,7 +345,7 @@ script:
       description: 'The CVE ID of the vulnerability associated with the asset. '
       type: String
     - contextPath: Kenna.VulnerabilitiesOfAsset.ID
-      description: 'The ID of the vulnerability associated withe the asset '
+      description: 'The ID of the vulnerability associated withe the asset.'
       type: Number
     - contextPath: Kenna.VulnerabilitiesOfAsset.Patch
       description: 'Whether there is a patch for the vulnerability associated with the asset. '
@@ -454,10 +454,12 @@ script:
     - name: external_id
       description: The external_id of the asset.
     name: kenna-search-assets-by-external-id
-    description: Search assets by external id
-  dockerimage: demisto/python3:3.10.12.68714
+    description: Search assets by external id.
+  dockerimage: demisto/python3:3.10.13.83255
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
