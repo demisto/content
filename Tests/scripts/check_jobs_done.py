@@ -10,7 +10,6 @@ CONTENT_NIGHTLY_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'run-validations',
-    'run-validations-new-validate-flow',
     'trigger-private-build',
     'mpv2-prepare-testing-bucket',
     'xpanse-prepare-testing-bucket',
