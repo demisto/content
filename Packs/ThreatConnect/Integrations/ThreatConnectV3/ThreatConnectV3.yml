@@ -2161,6 +2161,7 @@ script:
       - auto: PREDEFINED
         description: A comma-separated list of the security labels to apply to the victim.
         name: security_labels
+        isArray: true
         predefined:
           - TLP:RED
           - TLP:GREEN
@@ -2170,6 +2171,7 @@ script:
           - TLP:CLEAR
       - description: A comma-separated list of tags.
         name: tags
+        isArray: true
       - description: The work location of the victim.
         name: work_location
       - auto: PREDEFINED
@@ -2191,6 +2193,7 @@ script:
         name: asset_social_network
       - description: A comma-separated list of group IDs to associate to the victim.
         name: associated_groups_ids
+        isArray: true
       - auto: PREDEFINED
         description: The attribute type to associate to the victim.
         name: attribute_type
@@ -2257,6 +2260,7 @@ script:
       - auto: PREDEFINED
         description: A comma-separated list of the security labels to apply to the victim.
         name: security_labels
+        isArray: true
         predefined:
           - TLP:RED
           - TLP:GREEN
@@ -2266,6 +2270,7 @@ script:
           - TLP:CLEAR
       - description: A comma-separated list of tags.
         name: tags
+        isArray: true
       - description: The work location of the victim.
         name: work_location
       - auto: PREDEFINED
@@ -2287,6 +2292,7 @@ script:
         name: asset_social_network
       - description: A comma-separated list of group IDs to associate to the victim.
         name: associated_groups_ids
+        isArray: true
       - auto: PREDEFINED
         description: The attribute type to associate to the victim.
         name: attribute_type
@@ -2708,6 +2714,7 @@ script:
       - auto: PREDEFINED
         description: A comma-separated list of the security labels to apply to the victim attribute.
         name: security_labels
+        isArray: true
         predefined:
           - TLP:RED
           - TLP:GREEN
@@ -2786,6 +2793,7 @@ script:
       - auto: PREDEFINED
         description: A comma-separated list of the security labels to apply to the victim attribute.
         name: security_labels
+        isArray: true
         predefined:
           - TLP:RED
           - TLP:GREEN

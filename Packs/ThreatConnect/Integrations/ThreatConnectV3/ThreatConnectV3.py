@@ -661,7 +661,7 @@ def set_victim_asset(is_update: bool,
     """
     Builds a victim asset object
     Args:
-        is_update: Whether the command id an update command (in this case, no need for the asset_type in the request body)
+        is_update: Whether the command is an update command (in this case, no need for the asset_type in the request body)
         asset_type: The asset type
         asset_value: The asset value
         address_type: The asset address type
@@ -677,12 +677,11 @@ def set_victim_asset(is_update: bool,
         raise DemistoException(f'asset_social_network argument is required when asset_type is {asset_type}')
     if not is_update:
         body['type'] = asset_type
-    if address_type:
-        body['addressType'] = address_type
-    if network_type:
-        body['networkType'] = network_type
-    if social_network:
-        body['socialNetwork'] = social_network
+    body |= assign_params(
+        addressType=address_type,
+        networkType=network_type,
+        socialNetwork=social_network
+    )
     return body
 
 
@@ -1717,18 +1716,15 @@ def tc_create_victim_command(client: Client, args: dict) -> None:
     """
     name = args.get('name')
     body = {'name': name}
-    if nationality := args.get('nationality'):
-        body['nationality'] = nationality
-    if org := args.get('org'):
-        body['org'] = org
-    if sub_org := args.get('sub_org'):
-        body['suborg'] = sub_org
-    if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = set_additional_data(labels=security_labels)
-    if tags := argToList(args.get('tags')):
-        body['tags'] = set_additional_data(labels=tags)
-    if work_location := args.get('work_location'):
-        body['workLocation'] = work_location
+
+    body |= assign_params(
+        nationality=args.get('nationality'),
+        org=args.get('org'),
+        suborg=args.get('sub_org'),
+        workLocation=args.get('work_location'),
+        securityLabels=set_additional_data(labels=argToList(args.get('security_labels'))),
+        tags=set_additional_data(labels=argToList(args.get('tags')))
+    )
 
     # Create asset for the victim
     asset_type = args.get('asset_type')
@@ -1776,21 +1772,15 @@ def tc_update_victim_command(client: Client, args: dict) -> None:
     """
     mode = args.get('mode') or 'append'
     victim_id = args.get('victim_id')
-    body = {}
-    if name := args.get('name'):
-        body['name'] = name
-    if nationality := args.get('nationality'):
-        body['nationality'] = nationality
-    if org := args.get('org'):
-        body['org'] = org
-    if sub_org := args.get('sub_org'):
-        body['suborg'] = sub_org
-    if security_labels := argToList(args.get('security_labels')):
-        body['securityLabels'] = set_additional_data(labels=security_labels, mode=mode)
-    if tags := argToList(args.get('tags')):
-        body['tags'] = set_additional_data(labels=tags, mode=mode)
-    if work_location := args.get('work_location'):
-        body['workLocation'] = work_location
+    body = assign_params(
+        name=args.get('name'),
+        nationality=args.get('nationality'),
+        org=args.get('org'),
+        suborg=args.get('sub_org'),
+        workLocation=args.get('work_location'),
+        securityLabels=set_additional_data(labels=argToList(args.get('security_labels')), mode=mode),
+        tags=set_additional_data(labels=argToList(args.get('tags')), mode=mode)
+    )
 
     # Create asset for the victim
     asset_type = args.get('asset_type')
@@ -1916,7 +1906,7 @@ def tc_create_victim_asset_command(client: Client, args: dict) -> None:
                             address_type=address_type,
                             network_type=network_type,
                             social_network=social_network)
-    body |= {'victimId': victim_id, 'type': asset_type}
+    body |= {'victimId': victim_id}
 
     response = client.make_request(method=Method.POST, url_suffix=VICTIM_ASSET_API_PREFIX, payload=json.dumps(body))
     outputs = response.get('data', {})
@@ -2115,7 +2105,7 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
         filter = urllib.parse.quote(filter.encode('utf8'))
         url += f'&tql={filter}'
     response = client.make_request(method=Method.GET, url_suffix=url)
-    outputs = response.get('data', {}).get('attributes', {}).get('data') if victim_id else response.get('data', {})
+    outputs = demisto.get(response, 'data.attributes.data', defaultParam={}) if victim_id else response.get('data', {})
     readable_output = tableToMarkdown('Victim attributes', outputs, headers=['id', 'type', 'value', 'dateAdded'])
     return_results(CommandResults(
         outputs_prefix='TC.VictimAttribute',

@@ -1608,7 +1608,7 @@ Retrieves victims.
 | TC.Victim.name | String | The victim's name. | 
 | TC.Victim.description | String | The victim's description. | 
 | TC.Victim.org | String | The victim's organization. | 
-| TC.Victim.work location | String | The victim's work location. | 
+| TC.Victim.workLocation | String | The victim's work location. | 
 | TC.Victim.nationality | String | The victim's nationality. | 
 | TC.Victim.suborg | String | The victim's sub-organization. | 
 | TC.Victim.assets.data.id | Number | The victim asset ID. | 
