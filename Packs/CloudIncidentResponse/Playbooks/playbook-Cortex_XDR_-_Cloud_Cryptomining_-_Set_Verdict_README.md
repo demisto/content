@@ -1,27 +1,11 @@
----
+This playbook sets the alert's verdict as malicious if one of the following conditions is true:
+1. If the source IP address is malicious
+2. If the incident includes both "Unusual allocation of multiple cloud compute resources" AND "Cloud identity reached a throttling API rate" (medium/high severity)
+3. If the incident includes both "Unusual allocation of multiple cloud compute resources" AND "Suspicious heavy allocation of compute resources - possible mining activity" 
+4. If the incident includes "Unusual allocation of multiple cloud compute resources" with medium/high severity, the source ASN isn't known, and the source IP isn't known as well.
+5. If the incident includes both "Unusual allocation of multiple cloud compute resources" AND "A cloud compute instance was created in a dormant region"
 
-## Cloud Token Theft  - Set Verdict Playbook
-
-The playbook is built from a decision tree whose ultimate goal is to decide whether the observed activity is malicious.
-
-### Event Search
-
-The playbook searches for events based on the attacker's IP address within the last two hours.
-
-### Tests Performed
-
-The following tests are performed on the observed activity:
-
-1. **Malicious IP Check**: Determines if the IP address is malicious.
-2. **CSP ASN Check**: Checks if the activity was performed from an Autonomous System Number (ASN) belonging to one of the Cloud Service Providers (CSPs).
-3. **IP and ASN History Check**: Verifies if the IP address and ASN have been previously observed.
-4. **Region Check**: Determines if the API call was made from outside the recognized region.
-5. **Anomalous State Check**: Checks if the API call was made from an anomalous state.
-6. **Alert Check**: Looks for any related alerts around the event, including:
-   - Possible cloud instance metadata service (IMDS) abuse.
-   - Impossible Traveler by cloud identity.
-
----
+If none of the conditions is true, the playbook will wait for an analyst's decision.
 
 ## Dependencies
 
@@ -41,7 +25,7 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* xdr-get-incident-extra-data
+This playbook does not use any commands.
 
 ## Playbook Inputs
 
@@ -54,11 +38,10 @@ There are no inputs for this playbook.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| alertVerdict | The alert verdict. | unknown |
-| PaloAltoNetworksXDR.Alert | The additional alerts found. | unknown |
+| alertVerdict | The alert verdict | string |
 
 ## Playbook Image
 
 ---
 
-![Cortex XDR - XCloud Token Theft - Set Verdict](../doc_files/Cortex_XDR_-_XCloud_Token_Theft_-_Set_Verdict.png)
+![Cortex XDR - XCloud Cryptojacking - Set Verdict](../doc_files/Cortex_XDR_-_Cryptomining_-_Set_Verdict.png)
