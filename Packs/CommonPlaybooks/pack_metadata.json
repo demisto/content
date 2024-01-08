@@ -3,6 +3,7 @@
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "currentVersion": "2.5.9",
 =======
 <<<<<<< HEAD
@@ -11,6 +12,9 @@
     "currentVersion": "2.5.7",
 >>>>>>> 5a7e6a99af (Release notes added)
 >>>>>>> d348242da1 (Release notes added)
+=======
+    "currentVersion": "2.5.7",
+>>>>>>> ff73102eed (Bump pack from version CommonPlaybooks to 2.5.8.)
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
