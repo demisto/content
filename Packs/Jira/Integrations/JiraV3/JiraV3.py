@@ -1978,6 +1978,7 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
             "Please provide only status or transition, but not both."
         )
 
+    # Arrangement of the issue fields
     action = args.get("action", "rewrite")
     issue_fields = {}
     if action == "rewrite":
