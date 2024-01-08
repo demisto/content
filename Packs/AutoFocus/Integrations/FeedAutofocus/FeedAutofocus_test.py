@@ -19,7 +19,7 @@ INDICATORS = [
 TYPES = [
     "File",
     "IP",
-    "URL",
+    "IP",
     "Domain",
     "URL",
     "CIDR",
