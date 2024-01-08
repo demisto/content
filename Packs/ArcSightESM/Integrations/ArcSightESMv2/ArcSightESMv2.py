@@ -113,17 +113,22 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
 
                 elif key in IP_FIELDS:
                     key = 'decodedAddress' if key == 'addressAsBytes' else key
+                    demisto.debug(f'decoding ip {value=}')
                     d[key] = decode_ip(value)
                 elif key in TIMESTAMP_FIELDS:
                     key = key.replace('Time', 'Date').replace('stamp', '')
+                    demisto.debug(f'decoding timestamp {value=}')
                     d[key] = parse_timestamp_to_datestring(value)
                 elif key in ['eventId', 'baseEventIds']:
+                    demisto.debug(f'decoding event {value=}')
                     d[key] = str(value)
                 elif isinstance(value, int) and value > 10000000000000000:
                     # the platform rounds number larger than 10000000000000000
                     # so we cast them to string to keep as is
+                    demisto.debug(f'decoding int {value=}')
                     d[key] = str(value)
                 elif isinstance(value, bytes):
+                    demisto.debug(f'decoding bytes {value=}')
                     d[key] = value.decode()
     return d
 
@@ -511,10 +516,13 @@ def get_security_events_command():
     ids = demisto.args().get('ids')
     last_date_range = demisto.args().get('lastDateRange')
     ids = argToList(str(ids) if isinstance(ids, int) else ids)
+    demisto.debug(f'calling get_security_events with {ids=}, {last_date_range=}')
     raw_events = get_security_events(ids, last_date_range)
     if raw_events:
         events = []
+        demisto.debug(f'calling decode_arcsight_output with {raw_events=}')
         contents = decode_arcsight_output(raw_events)
+        demisto.debug(f'done decoding, {contents=}')
         for raw_event in contents:
             event = {
                 'Event ID': raw_event.get('eventId'),
@@ -526,6 +534,7 @@ def get_security_events_command():
                 'Base Event IDs': raw_event.get('baseEventIds')
             }
             events.append(event)
+        demisto.debug(f'{len(events)=} ')
 
         human_readable = tableToMarkdown('Security Event: {}'.format(','.join(map(str, ids))), events, removeNull=True)
         outputs = {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': contents}
@@ -569,6 +578,7 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
         return events if isinstance(events, list) else [events]
 
     demisto.debug(res.text)
+    demisto.debug(f'{res=}')
     if not ignore_empty:
         demisto.results('No events were found')
         return None
