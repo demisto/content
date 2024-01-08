@@ -534,7 +534,10 @@ def filter_results_by_fields(results, fields_to_view_string):
     Raises:
         ValueError: If the fields_to_view_string contains invalid column names.
     """
-    if not fields_to_view_string or not results:
+    if not fields_to_view_string:
+        return results
+
+    if not results:
         return results
 
     fields_to_view_list = [field.strip() for field in fields_to_view_string.split(',')]
@@ -566,7 +569,9 @@ def run_query_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = f"{to_query} offset {offset} limit {items}"
-    fields_to_view = demisto.args().get("fields_to_view", "")
+    fields_to_view = demisto.args().get("fields_to_view", None)
+    if fields_to_view == "":
+        raise ValueError("fields_to_view cannot be an empty string!")
     results = list(
         ds.Reader(
             oauth_token=READER_OAUTH_TOKEN,
@@ -639,7 +644,9 @@ def get_alerts_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
-    fields_to_view = demisto.args().get("fields_to_view", "")
+    fields_to_view = demisto.args().get("fields_to_view", None)
+    if fields_to_view == "":
+        raise ValueError("fields_to_view cannot be an empty string!")
     user_alert_table = user_alert_table if user_alert_table else DEFAULT_ALERT_TABLE
     if user_prefix:
         user_prefix = f"{user_prefix}_"
@@ -752,7 +759,9 @@ def multi_table_query_command(offset, items):
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
     query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
-    fields_to_view = demisto.args().get("fields_to_view", "")
+    fields_to_view = demisto.args().get("fields_to_view", None)
+    if fields_to_view == "":
+        raise ValueError("fields_to_view cannot be an empty string!")
     global COUNT_MULTI_TABLE
     time_range = get_time_range(timestamp_from, timestamp_to)
 

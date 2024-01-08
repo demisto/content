@@ -121,7 +121,7 @@ MOCK_ALERT_ARGS_EMPTY_FIELDS_TO_VIEW_PRAM = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": " "
+    "fields_to_view": ""
 }
 MOCK_MULTI_ARGS = {
     "tables": ["app", "charlie", "test"],
@@ -357,7 +357,7 @@ def test_get_alerts_with_empty_fields_to_view_param(mock_query_results, mock_arg
     try:
         get_alerts_command(OFFSET, ITEMS_PER_PAGE)
     except ValueError as e:
-        assert "Fields [''] not found in query result" in str(e), f"Unexpected exception message: {e}"
+        assert "fields_to_view cannot be an empty string!" in str(e), f"Unexpected exception message: {e}"
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
@@ -389,7 +389,7 @@ def test_run_query_with_empty_fields_to_view_param(mock_query_results, mock_args
     try:
         run_query_command(OFFSET, ITEMS_PER_PAGE)
     except ValueError as e:
-        assert "Fields [''] not found in query result" in str(e), f"Unexpected exception message: {e}"
+        assert "fields_to_view cannot be an empty string!" in str(e), f"Unexpected exception message: {e}"
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
