@@ -12,6 +12,12 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "dependencies": {
+        "C": {
+            "mandatory": true,
+            "display_name": "C"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
