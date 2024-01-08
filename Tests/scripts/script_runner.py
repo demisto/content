@@ -7,12 +7,13 @@ import os
 import sys
 from coverage.cmdline import main as coverage_main
 from multiprocessing.pool import ThreadPool
-
+import typer
 def run_script(args, files):
     try:
         # can't use with in python2
-        pool = ThreadPool()
-        results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.dirname(file)) for file in files])
+        with 
+        pool = ()
+        results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.abspath(os.path.dirname(file))) for file in files])
         pool.close()
         if any(result != 0 for result in results):
             sys.exit(1)
@@ -39,7 +40,7 @@ def run_command(args_dir):
 
 def main():
     args = sys.argv[1:]
-    files_index = args.index("--files") if "--files" in args else -1
+    files_index = args.index("--image") if "--image" in args else -1
     script_args = args[:files_index]
     files = None
     if files_index != -1:

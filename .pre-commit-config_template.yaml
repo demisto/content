@@ -87,15 +87,15 @@ repos:
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
-    entry: python
+    entry: coverage
     language: docker
     files: Packs\/.*_test\.py$
     exclude: test_data
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+    split_by_object: true
+    run_in_cwd: true
     args:
-    - /src/Tests/scripts/script_runner.py
-    - coverage
     - run
     - -p
     - --source=.
@@ -106,10 +106,10 @@ repos:
     - --rootdir=/src
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
-    - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
+
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
