@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from typing import Tuple, Callable
 
 import urllib3
+import time
 
 
 # Disable insecure warnings
@@ -196,6 +197,25 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
         human_readable_markdown = "no connectors in get response."
 
     return human_readable_markdown, context, connectors
+
+
+def inactivate_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+        args_id = str(args.get('id'))
+        url_suffix = f'/assets/{args_id}'
+        asset = {
+            'asset': {
+                'inactive': True,
+                'notes': args.get('notes')
+            }
+        }
+        result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
+        time.sleep(0.5)
+        try:
+            if result.get('status') != "success":
+                return 'Could not inactivate asset.', {}, []
+            return f'Asset {args_id} was updated', {}, []
+        except DemistoException as err:
+            return f'Error occurred while preforming inactivate-asset command {err}', {}, []
 
 
 def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -557,6 +577,52 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
         return f'Error occurred while preforming delete-tags command {err}', {}, []
 
 
+def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+
+        args_id = str(args.get('external_id'))
+        url_suffix = f'/assets/search?&q=external_id%3A{args_id}/'
+        human_readable = []
+        limit: int = int(args.get('limit', 500))
+        to_context = args.get('to_context')
+        context: Dict[str, Any] = {}
+        if args.get('tags'):
+            tags = argToList(args.get('tags'))
+        else:
+            tags = args.get('tags')
+        params = {
+            'id[]': argToList(args.get('id')),
+            'hostname[]': argToList(args.get('hostname')),
+            'min_risk_meter_score': args.get('min-score'),
+            'tags[]': tags,
+            'external_id': args.get('external_id')
+        }
+        response = client.http_request(message='GET', suffix=url_suffix).get(
+            'assets')
+        time.sleep(0.5)
+        if response:
+            assets_list = response[:limit]
+            wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
+                           'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
+            actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
+                           'operating_system',
+                           'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
+            context_list: List[Dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
+
+            for lst in assets_list:
+                human_readable.append({
+                    'id': lst.get('id')
+                })
+            context = {
+                'Kenna.Assets(val.ID === obj.ID)': context_list
+            }
+            human_readable_markdown = tableToMarkdown('Kenna Assets', human_readable, removeNull=True)
+        else:
+            human_readable_markdown = "no assets in response"
+        if to_context == "False":
+            return human_readable_markdown, {}, response
+        return human_readable_markdown, context, response
+
+
 def main():
     params = demisto.params()
     api = params.get('credentials_key', {}).get('password') or params.get('key')
@@ -585,7 +651,9 @@ def main():
         'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
         'kenna-add-tag': add_tags,
         'kenna-delete-tag': delete_tags,
-        'kenna-get-connector-runs': get_connector_runs
+        'kenna-inactivate-asset': inactivate_asset,
+        'kenna-get-connector-runs': get_connector_runs,
+        'kenna-search-assets-by-external-id': search_assets_by_external_id
     }
 
     try:

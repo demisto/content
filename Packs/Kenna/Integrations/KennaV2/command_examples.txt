@@ -9,3 +9,5 @@
 !kenna-add-tag tag="comma,seperated,tags" id=123
 !kenna-delete-tag id=123 tag="sometag"
 !kenna-get-connector-runs connector_id=123
+!kenna-inactivate-asset id=123 notes="test"
+!kenna-inactivate-asset external_id=123

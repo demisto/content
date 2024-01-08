@@ -441,6 +441,20 @@ script:
     - contextPath: Kenna.ConnectorRunsList.ReopenedVulnerabilities
       description: Amount of re-opened vulnerabilities.
       type: Number
+  - arguments:
+    - name: id
+      required: true
+      description: The ID of the asset to inactivate.
+    - name: notes
+      required: true
+      description: Notes about the asset.
+    description: Inactivates a single asset.
+    name: kenna-inactivate-asset
+  - arguments:
+    - name: external_id
+      description: The external_id of the asset.
+    name: kenna-search-assets-by-external-id
+    description: Search assets by external id
   dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: '-'
