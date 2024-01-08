@@ -3,9 +3,10 @@ version: -1
 name: Get File Sample By Hash - Generic v3
 description: |-
   This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:
-  - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
-  - Get the threat (file) associated with a specific SHA256 hash - Cylance Protect v2.
-  - Get the file associated with a specific MD5 or SHA256 hash - Code42.
+  1. Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
+  2. Get the threat (file) associated with a specific SHA256 hash - Cylance Protect v2.
+  3. Get the file associated with a specific MD5 or SHA256 hash - Code42.
+  4. Cortex XDR - Retrieve File by sha256.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,7 +25,9 @@ tasks:
       - "5"
       - "6"
       - "7"
+      - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -35,9 +38,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -53,6 +55,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -63,9 +66,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -91,6 +93,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -108,7 +111,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -134,6 +136,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -142,7 +145,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -185,
+          "x": -145,
           "y": 195
         }
       }
@@ -151,7 +154,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -185,6 +187,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -193,7 +196,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 675,
           "y": 195
         }
       }
@@ -202,7 +205,49 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a9dd368b-4676-40e3-85a6-e027c062b6c6
+    type: playbook
+    task:
+      id: a9dd368b-4676-40e3-85a6-e027c062b6c6
+      version: -1
+      name: Cortex XDR - Retrieve File by sha256
+      playbookName: Cortex XDR - Retrieve File by sha256
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Sha256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
@@ -211,8 +256,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 1270,
-        "x": -185,
+        "width": 1605,
+        "x": -145,
         "y": 50
       }
     }
