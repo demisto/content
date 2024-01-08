@@ -1,0 +1,45 @@
+{
+  "assignment": {
+    "id": 1,
+    "assigned_by": {
+      "id": 65,
+      "username": "api_client"
+    },
+    "date_assigned": "2023-07-21T12:44:10Z",
+    "date_resolved": null,
+    "events": [
+      {
+        "assignment_id": 1,
+        "actor": 65,
+        "event_type": "reassigned",
+        "datetime": "2023-07-25T06:26:10Z",
+        "context": {
+          "from": 1,
+          "to": 2,
+          "entity_t_score": 68,
+          "entity_c_score": 90
+        }
+      },
+      {
+        "assignment_id": 1,
+        "actor": 65,
+        "event_type": "created",
+        "datetime": "2023-07-21T12:44:10Z",
+        "context": {
+          "to": 1,
+          "entity_t_score": 68,
+          "entity_c_score": 90
+        }
+      }
+    ],
+    "outcome": null,
+    "resolved_by": null,
+    "triaged_detections": {},
+    "host_id": 97,
+    "account_id": null,
+    "assigned_to": {
+      "id": 2,
+      "username": "test_user_2"
+    }
+  }
+}

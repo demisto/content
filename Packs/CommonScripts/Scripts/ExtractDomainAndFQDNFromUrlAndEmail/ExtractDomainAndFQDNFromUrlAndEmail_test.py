@@ -1,3 +1,4 @@
+from pytest_mock import MockFixture
 import demistomock as demisto
 from ExtractDomainAndFQDNFromUrlAndEmail import extract_fqdn, main
 import pytest
@@ -72,3 +73,21 @@ def test_extract_fqdn_or_domain_empty_indicators(mocker):
     results = demisto.results.call_args[0]
 
     assert results[0] == [{'Contents': [], 'ContentsFormat': 'json', 'Type': 1, 'EntryContext': {'Domain': '1Ab.Vt'}}]
+
+
+def test_main_raise_error(mocker: MockFixture):
+    """
+    Given:
+        - Exception during the automation
+    When:
+        - Running the automation
+    Then:
+        - Ensure the return_error is called with the correct error message.
+    """
+    return_error_mock = mocker.patch('ExtractDomainAndFQDNFromUrlAndEmail.return_error')
+    mocker.patch('ExtractDomainAndFQDNFromUrlAndEmail.argToList', side_effect=Exception('Test Exception'))
+
+    main()
+
+    assert return_error_mock.call_count == 1
+    assert 'Error: \nTest Exception' in return_error_mock.call_args[0][0]

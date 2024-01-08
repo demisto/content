@@ -94,7 +94,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "8"
     scriptarguments:
       key:
         simple: RemediationGuidance
@@ -105,8 +105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 520
+          "x": 870,
+          "y": 490
         }
       }
     note: false
@@ -131,13 +131,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "8"
     scriptarguments:
       key:
         simple: RemediationGuidance
       value:
         complex:
           root: ASM.AttackSurfaceRule
+          accessor: remediation_guidance
           transformers:
           - operator: concat
             args:
@@ -150,14 +151,13 @@ tasks:
 
 
                     Get in touch with your Infosec team to define proper remediation access.
-          accessor: remediation_guidance
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 520
+          "y": 490
         }
       }
     note: false
@@ -185,7 +185,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 730
+          "y": 870
         }
       }
     note: false
@@ -231,13 +231,54 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d689ef6d-071c-4105-8c81-49840217f8ae
+    type: regular
+    task:
+      id: d689ef6d-071c-4105-8c81-49840217f8ae
+      version: -1
+      name: Set attack surface rule fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      asmattacksurfacerulecategory:
+        simple: ${ASM.AttackSurfaceRule.category}
+      asmattacksurfaceruledescription:
+        simple: ${ASM.AttackSurfaceRule.description}
+      asmattacksurfacerulepriority:
+        simple: ${ASM.AttackSurfaceRule.priority}
+      asmattacksurfaceruleremediationguidance:
+        simple: ${ASM.AttackSurfaceRule.remediation_guidance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 925,
-        "width": 860,
+        "height": 1065,
+        "width": 800,
         "x": 450,
         "y": -130
       }

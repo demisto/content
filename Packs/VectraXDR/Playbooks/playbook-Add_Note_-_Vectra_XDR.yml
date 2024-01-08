@@ -1,0 +1,343 @@
+id: Add Note - Vectra XDR
+version: -1
+name: Add Note - Vectra XDR
+description: This playbook will add a note in Vectra for an entity based on its type.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98ff3efe-b3f1-4d1c-8738-ba7a2d9a7592
+    type: start
+    task:
+      id: 98ff3efe-b3f1-4d1c-8738-ba7a2d9a7592
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6512960c-b15f-49e2-80ea-0f0628f0482d
+    type: condition
+    task:
+      id: 6512960c-b15f-49e2-80ea-0f0628f0482d
+      version: -1
+      name: Is entity Account or Host?
+      description: Check if the entity is a host or account.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Account:
+      - "2"
+      Host:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Host
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident.vectraxdrentitytype
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: host
+    - label: Account
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident.vectraxdrentitytype
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: account
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 39a51436-f43d-4b4a-844e-1b991df495e5
+    type: regular
+    task:
+      id: 39a51436-f43d-4b4a-844e-1b991df495e5
+      version: -1
+      name: Add note for an Account.
+      description: Add a note to an Account.
+      script: '|||vectra-entity-note-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: incident.vectraxdrentityid
+      entity_type:
+        complex:
+          root: incident
+          accessor: vectraxdrentitytype
+          transformers:
+          - operator: toLowerCase
+      note:
+        complex:
+          root: incident
+          accessor: vectraxdrentityname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'This entity_name is '
+              suffix:
+                value:
+                  simple: ' and the entity_id is '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.vectraxdrentityid
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: . The entity_type is an account.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a07c4554-5e8c-4b62-81cd-4913e3a7e887
+    type: regular
+    task:
+      id: a07c4554-5e8c-4b62-81cd-4913e3a7e887
+      version: -1
+      name: Add a note for a Host.
+      description: Add a note to a Host.
+      script: '|||vectra-entity-note-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: incident.vectraxdrentityid
+      entity_type:
+        complex:
+          root: incident
+          accessor: vectraxdrentitytype
+          transformers:
+          - operator: toLowerCase
+      note:
+        complex:
+          root: incident
+          accessor: vectraxdrentityname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'This entity_name is '
+              suffix:
+                value:
+                  simple: ' and the entity_id is '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.vectraxdrentityid
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: . The entity_type is a host.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 54a9de5a-eb70-42ba-8d2d-20ee78ce33fa
+    type: title
+    task:
+      id: 54a9de5a-eb70-42ba-8d2d-20ee78ce33fa
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5aea5b5d-9102-4197-893c-0a4c9a912816
+    type: condition
+    task:
+      id: 5aea5b5d-9102-4197-893c-0a4c9a912816
+      version: -1
+      name: Is VectraXDR Integration Enabled?
+      description: Check VectraXDR integration is active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VectraXDR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 865,
+        "width": 810,
+        "x": 50,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

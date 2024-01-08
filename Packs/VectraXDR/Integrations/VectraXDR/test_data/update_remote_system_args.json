@@ -1,0 +1,20 @@
+{
+  "remoteId": "123",
+  "delta": {
+      "tags": ["tag1", "tag2"]
+  },
+  "data": {
+      "id": "456",
+      "vectraxdrentitytype": "account"
+  },
+  "entries": [
+      {
+          "id": "note_id",
+          "type": "note",
+          "contents": "Test note contents",
+          "user": "user1"
+      }
+  ],
+  "incidentChanged": true,
+  "status": 2
+}

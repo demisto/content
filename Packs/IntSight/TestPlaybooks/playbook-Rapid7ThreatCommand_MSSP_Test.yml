@@ -149,7 +149,7 @@ tasks:
     conditions:
     - label: true
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: ThreatCommand.Mentions.author
@@ -184,7 +184,7 @@ tasks:
             value:
               simple: ThreatCommand.Mentions.short_content
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: ThreatCommand.Mentions.title
@@ -356,8 +356,6 @@ tasks:
     scriptarguments:
       limit:
         simple: '1'
-      user_type:
-        simple: 'Analyst'
     separatecontext: false
     view: '{"position":{"x":50,"y":2000}}'
     note: false
@@ -616,7 +614,7 @@ tasks:
       - '19'
     scriptarguments:
       limit:
-        simple: '1'
+        simple: '10'
     separatecontext: false
     view: '{"position":{"x":50,"y":3600}}'
     note: false
@@ -747,7 +745,7 @@ tasks:
       cyber_term_id:
         simple: ${ThreatCommand.CyberTerm.id}
       limit:
-        simple: '1'
+        simple: '10'
     separatecontext: false
     view: '{"position":{"x":50,"y":4000}}'
     note: false
@@ -1087,6 +1085,8 @@ tasks:
       '#none#':
       - '30'
     scriptarguments:
+      ioc_value:
+        simple: 8.8.8.8
       last_updated_from:
         simple: '2022-12-25T08:38:06Z'
       type_list:
@@ -2279,7 +2279,7 @@ tasks:
       - '66'
     scriptarguments:
       limit:
-        simple: '1'
+        simple: '10'
     separatecontext: false
     view: '{"position":{"x":50,"y":13000}}'
     note: false
@@ -2308,112 +2308,210 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ThreatCommand.CVE.[1].id
+              complex:
+                root: ThreatCommand.CVE
+                accessor: id
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
+          right:
+            value: { }
       - - operator: isExists
           left:
             value:
-              simple: ThreatCommand.CVE.[1].cpe
+              complex:
+                root: ThreatCommand.CVE
+                accessor: cpe
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ThreatCommand.CVE.[1].published_date
+              complex:
+                root: ThreatCommand.CVE
+                accessor: published_date
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value: { }
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: update_date
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value: { }
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: severity
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value: { }
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: intsights_score
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: cvss_score
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: paste_site_mentions
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: hacking_forum_mentions
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: instant_message_mentions
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: dark_web_mentions
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: clear_web_cyber_blogs_mentions
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: code_repositories_mentions
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: exploit_mentions
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: social_media_mentions
+                transformers:
+                  - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ThreatCommand.CVE
+                accessor: first_mention_date
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ThreatCommand.CVE.[1].update_date
+              complex:
+                root: ThreatCommand.CVE
+                accessor: last_mention_date
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
-      - - operator: isNotEmpty
+          right:
+            value: { }
+      - - operator: isExists
           left:
             value:
-              simple: ThreatCommand.CVE.[1].severity
+              complex:
+                root: ThreatCommand.CVE
+                accessor: exploit_availability
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: ThreatCommand.CVE.[1].intsights_score
+              complex:
+                root: ThreatCommand.CVE
+                accessor: vulnerability_origin
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: ThreatCommand.CVE.[1].cvss_score
+              complex:
+                root: ThreatCommand.CVE
+                accessor: related_threat_actors
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: ThreatCommand.CVE.[1].paste_site_mentions
+              complex:
+                root: ThreatCommand.CVE
+                accessor: related_malware
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: ThreatCommand.CVE.[1].hacking_forum_mentions
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].instant_message_mentions
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].dark_web_mentions
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].clear_web_cyber_blogs_mentions
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].code_repositories_mentions
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].exploit_mentions
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].social_media_mentions
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].first_mention_date
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].last_mention_date
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].exploit_availability
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].vulnerability_origin
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].related_threat_actors
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].related_malware
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: ThreatCommand.CVE.[1].related_campaigns
+              complex:
+                root: ThreatCommand.CVE
+                accessor: related_campaigns
+                transformers:
+                  - operator: FirstArrayElement
             iscontext: true
     view: '{"position":{"x":50,"y":13200}}'
     note: false

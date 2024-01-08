@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-from typing import Dict, Any, Tuple
+from typing import Any
 import json
 
 import urllib3
@@ -42,7 +42,7 @@ class Client(BaseClient):
         self.headers = {'X-Auth-Token': f'{api_secret_key}/{api_key}', 'Content-Type': 'application/json'}
         self.policy_headers = {'X-Auth-Token': f'{policy_api_secret_key}/{policy_api_key}',
                                'Content-Type': 'application/json'}
-        super(Client, self).__init__(base_url, verify, proxies)
+        super().__init__(base_url, verify, proxies)
 
     def test_module_request(self) -> dict:
         """ Tests connectivity with the application, for some API's.
@@ -62,7 +62,7 @@ class Client(BaseClient):
         suffix_url = 'integrationServices/v3/policy'
         return self._http_request('GET', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def search_alerts_request(self, suffix_url_path: str = None, minimum_severity: int = None, create_time: Dict = None,
+    def search_alerts_request(self, suffix_url_path: str = None, minimum_severity: int = None, create_time: dict = None,
                               policy_id: List = None, device_username: List = None, device_id: List = None,
                               query: str = None, alert_category: List = None, sort_field: str = "create_time",
                               sort_order: str = "ASC", limit: int = 50) -> dict:
@@ -822,8 +822,8 @@ class Client(BaseClient):
 
     # Devices API
     def get_devices(self, device_id: List = None, status: List = None, device_os: List = None,
-                    last_contact_time: Dict[str, Optional[Any]] = None, target_priority: List = None, query: str = None,
-                    rows: int = None) -> Dict:
+                    last_contact_time: dict[str, Optional[Any]] = None, target_priority: List = None, query: str = None,
+                    rows: int = None) -> dict:
         """Searches for Carbon Black devices
             using the 'appservices/v6/orgs/{org_key}/devices/_search' API endpoint
 
@@ -866,7 +866,7 @@ class Client(BaseClient):
                 target_priority=target_priority
             ),
             query=query,
-            rows=rows
+            rows=arg_to_number(rows)
         )
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
@@ -1021,7 +1021,7 @@ def convert_to_demisto_severity(severity: int) -> int:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run: dict, filters: dict) -> \
-        Tuple[List[dict], Dict[str, int]]:
+        tuple[List[dict], dict[str, int]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     This function has to implement the logic of making sure that incidents are
@@ -1479,10 +1479,18 @@ def device_search_command(client: Client, args: dict):
     device_id = argToList(args.get('device_id'))
     device_os = argToList(args.get('os'))
     device_status = argToList(args.get('status'))
-    last_location = {
-        'start': args.get('start_time'),
-        'end': args.get('end_time')
-    }
+    start_time, end_time = args.get("start_time"), args.get("end_time")
+
+    if start_time and end_time:
+        last_location = {
+            'start': start_time,
+            'end': end_time
+        }
+    elif (not start_time and end_time) or (start_time and not end_time):
+        raise ValueError("both start_time and end_time must be set")
+    else:
+        last_location = None
+
     target_priority = argToList(args.get('target_priority'))
     query = args.get('query')
     rows = args.get('rows')

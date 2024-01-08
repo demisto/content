@@ -7,8 +7,11 @@ def main():
     values: list[str] = argToList(demisto.args().get("value", None))
     unique_values: set[str] = {v.lower() for v in values}  # search query is case insensitive
 
+    query = f"""value:({' '.join([f'"{value}"' for value in unique_values])})"""
+    demisto.debug(f'{query=}')
+
     res = demisto.searchIndicators(
-        query=f'value:({" ".join(unique_values)})',
+        query=query,
         populateFields='name,score,aggregatedReliability,type,expirationStatus',
     )
 
@@ -67,5 +70,5 @@ def main():
         return_results(not_found_values_entry)
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":  # pragma: no cover
+if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()

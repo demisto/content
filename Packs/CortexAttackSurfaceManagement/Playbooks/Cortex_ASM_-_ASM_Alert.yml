@@ -3303,8 +3303,7 @@ inputs:
   description: Comma-separated list of other items that are considered an accepted risk and that should be closed. For example, a list of folders numbers in GCP and subscription IDs in Azure.
   playbookInputQuery:
 - key: JiraProjectKey
-  value:
-    simple: XPANSE
+  value: {}
   required: true
   description: The Jira project key to associate with the issue.
   playbookInputQuery:

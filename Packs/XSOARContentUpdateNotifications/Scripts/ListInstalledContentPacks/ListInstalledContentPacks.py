@@ -2,9 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 args = demisto.args()
-updated = True if args.get('updates') == 'true' else False
+updated = args.get('updates') == 'true'
 
-packs = demisto.executeCommand("demisto-api-get", {"uri": "/contentpacks/installed-expired"})[0]['Contents'].get('response')
+packs = demisto.executeCommand("core-api-get", {"uri": "/contentpacks/installed-expired"})[0]['Contents'].get('response')
 parsed_packs = [{
     "name": x.get('name'),
     "version": x.get('currentVersion'),

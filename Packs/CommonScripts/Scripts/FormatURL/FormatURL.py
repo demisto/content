@@ -742,35 +742,41 @@ def main():
 
     formatted_urls: List[str] = []
 
-    for url in raw_urls:
-        formatted_url = ''
+    try:
+        for url in raw_urls:
+            formatted_url = ''
 
-        if _is_valid_cidr(url):
-            # If input is a valid CIDR formatter will ignore it to let it become a CIDR
-            formatted_urls.append('')
-            continue
+            if _is_valid_cidr(url):
+                # If input is a valid CIDR formatter will ignore it to let it become a CIDR
+                formatted_urls.append('')
+                continue
 
-        try:
-            formatted_url = URLFormatter(url).output
+            try:
+                formatted_url = URLFormatter(url).output
 
-        except URLError:
-            demisto.debug(traceback.format_exc())
+            except URLError:
+                demisto.debug(traceback.format_exc())
 
-        except Exception:
-            demisto.debug(traceback.format_exc())
+            except Exception:
+                demisto.debug(traceback.format_exc())
 
-        finally:
-            formatted_urls.append(formatted_url)
+            finally:
+                formatted_urls.append(formatted_url)
 
-    output = [{
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': [urls],
-        'EntryContext': {'URL': urls},
-    } for urls in formatted_urls]
+        output = [{
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': [urls],
+            'EntryContext': {'URL': urls},
+        } for urls in formatted_urls]
 
-    for url in output:
-        demisto.results(url)
+        for url in output:
+            demisto.results(url)
+
+    except Exception as e:
+        return_error(
+            f'Failed to execute the automation. Error: \n{str(e)}'
+        )
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

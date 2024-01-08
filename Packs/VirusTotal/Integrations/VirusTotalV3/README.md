@@ -16,18 +16,23 @@ The integration was integrated and tested with version v3 API of VirusTotal.
     | Trust any certificate (not secure) |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data |  |
     | Premium Subscription | Whether to use premium subscription. (For advanced reputation analyze. See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold)) | False |
-    | File Threshold. Minimum number of positive results from VT scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | IP Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | File Malicious Threshold. Minimum number of positive results from VT scanners to consider the file malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | File Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the file suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | IP Malicious Threshold. Minimum number of positive results from VT scanners to consider the IP malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | IP Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the IP suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | Disable reputation lookups for private IP addresses | To reduce the number of lookups made to the VT API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks. | False |
-    | URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
-    | Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | URL Malicious Threshold. Minimum number of positive results from VT scanners to consider the URL malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | URL Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the URL suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | Domain Malicious Threshold. Minimum number of positive results from VT scanners to consider the domain malicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
+    | Domain Suspicious Threshold. Minimum number of positive and suspicious results from VT scanners to consider the domain suspicious. | See [Indicator Thresholds](#indicator-thresholds). | False |
     | Preferred Vendors List. CSV list of vendors who are considered more trustworthy. | See [Indicator Thresholds](#indicator-thresholds).  | False |
     | Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  | See [Indicator Thresholds](#indicator-thresholds). | False |
     | Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS | See [Rules Threshold](#rules-threshold). | False |
     | Crowdsourced Yara Rules Threshold | See [Rules Threshold](#rules-threshold). | False |
     | Sigma and Intrusion Detection Rules Threshold |  See [Rules Threshold](#rules-threshold). | False |
     | Domain Popularity Ranking Threshold | See [Rules Threshold](#rules-threshold). | False |
-    | Premium Subscription Only: Relationship Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
+    | Premium Subscription Only: Relationship Malicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
+    | Premium Subscription Only: Relationship Suspicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
 
 1. Click **Test** to validate the URLs, token, and connection.
 
@@ -47,8 +52,8 @@ Configure the default threshold for each indicator type in the instance settings
 You can also specify the threshold as an argument when running relevant commands.
 
 - Indicators with positive results from preferred vendors equal to or higher than the threshold will be considered malicious.
-- Indicators with positive results equal to or higher than the threshold will be considered malicious.
-- Indicators with positive results equal to or higher than half of the threshold value, and lower than the threshold, will be considered suspicious.
+- Indicators with positive results equal to or higher than the malicious threshold will be considered malicious.
+- Indicators with positive results equal to or higher than the suspicious threshold value will be considered suspicious.
 - Domain popularity ranks: VirusTotal is returning a popularity ranks for each vendor. The integration will calculate its average and will compare it to the threshold.
 
 ### Rules Threshold

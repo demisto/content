@@ -32,6 +32,7 @@
   },
   "list_drive_children": {
     "@odata.context": "test",
+    "@odata.nextLink": "test_next_token",
     "value": [
       {
         "createdDateTime": "2019-12-08T13:24:58Z",
@@ -147,6 +148,7 @@
     }
   },
   "list_drives_in_a_site": {
+    "@odata.nextLink": "test_next_token",
     "@odata.context": "test",
     "value": [
       {

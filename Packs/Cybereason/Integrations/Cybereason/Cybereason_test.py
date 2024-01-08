@@ -72,7 +72,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -80,7 +80,7 @@ def test_one_query_file(mocker):
     from Cybereason import Client, query_file_command
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -98,7 +98,7 @@ def test_two_query_file(mocker):
     from Cybereason import Client, query_file_command
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -124,7 +124,7 @@ def test_malop_processes_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -149,7 +149,7 @@ def test_is_probe_connected_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -166,7 +166,7 @@ def test_query_processes_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -185,7 +185,7 @@ def test_query_connections_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -216,7 +216,7 @@ def test_isolate_machine_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -235,7 +235,7 @@ def test_unisolate_machine_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -254,7 +254,7 @@ def test_get_non_edr_malop_data(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -272,7 +272,7 @@ def test_query_malops_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -288,7 +288,7 @@ def test_update_malop_status_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -320,7 +320,7 @@ def test_prevent_file_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -345,7 +345,7 @@ def test_unprevent_file_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -369,7 +369,7 @@ def test_query_domain_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -396,7 +396,7 @@ def test_query_user_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -423,7 +423,7 @@ def test_available_remediation_actions_command(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -439,7 +439,7 @@ def test_start_fetchfile_command(mocker):
     from Cybereason import start_fetchfile_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -456,7 +456,7 @@ def test_fetchfile_progress_command(mocker):
     from Cybereason import fetchfile_progress_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -474,7 +474,7 @@ def test_quarantine_file_command(mocker):
     from Cybereason import quarantine_file_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -499,7 +499,7 @@ def test_unquarantine_file_command(mocker):
     from Cybereason import unquarantine_file_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -524,7 +524,7 @@ def test_block_file_command(mocker):
     from Cybereason import block_file_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -549,7 +549,7 @@ def test_kill_process_command(mocker):
     from Cybereason import kill_process_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -573,7 +573,7 @@ def test_get_sensor_id_command(mocker):
     from Cybereason import get_sensor_id_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -594,7 +594,7 @@ def test_number_one_fetch_scan_status_command(mocker):
     from Cybereason import fetch_scan_status_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -609,7 +609,7 @@ def test_malware_query_command(mocker):
     from Cybereason import malware_query_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -636,7 +636,7 @@ def test_unsuspend_process_command(mocker):
     from Cybereason import unsuspend_process_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -660,7 +660,7 @@ def test_kill_prevent_unsuspend_command(mocker):
     from Cybereason import kill_prevent_unsuspend_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -685,7 +685,7 @@ def test_delete_registry_key_command(mocker):
     from Cybereason import delete_registry_key_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -710,7 +710,7 @@ def test_add_comment_command(mocker):
     from Cybereason import add_comment_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -728,7 +728,7 @@ def test_fetch_incidents(mocker):
     from Cybereason import Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -750,7 +750,7 @@ def test_archive_sensor_command(mocker):
     from Cybereason import archive_sensor_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -776,7 +776,7 @@ def test_unarchive_sensor_command(mocker):
     from Cybereason import unarchive_sensor_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -802,7 +802,7 @@ def test_delete_sensor_command(mocker):
     from Cybereason import delete_sensor_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -835,7 +835,7 @@ def test_start_host_scan_command(mocker):
     from Cybereason import start_host_scan_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -860,7 +860,7 @@ def test_number_two_fetch_scan_status_command(mocker):
     from Cybereason import fetch_scan_status_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -893,7 +893,7 @@ def test_download_fetchfile_command(mocker):
     from Cybereason import download_fetchfile_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -915,7 +915,7 @@ def test_close_fetchfile_command(mocker):
     from Cybereason import close_fetchfile_command, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -946,7 +946,7 @@ def test_get_pylum_id(mocker):
     from Cybereason import get_pylum_id, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -982,7 +982,7 @@ def test_get_machine_guid(mocker):
     from Cybereason import get_machine_guid, Client
     HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
     client = Client(
-        base_url="https://integration.cybereason.net:8443",
+        base_url="https://test.server.com:8888",
         verify=False,
         headers=HEADERS,
         proxy=True)
@@ -990,3 +990,20 @@ def test_get_machine_guid(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = get_machine_guid(client, "test_machine")
     assert command_output == "-1826875736.1198775089551518743"
+
+
+def test_get_machine_details_command(mocker):
+    from Cybereason import get_machine_details_command
+    from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://test.server.com:8888",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {"machineName": "empow_2"}
+    raw_response = json.loads(load_mock_response('fetch_machine_details_raw_response.json'))
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
+    command_output = get_machine_details_command(client, args)
+    assert command_output.outputs[0]['GroupName'] == "Test"
+    assert command_output.outputs[0]['MachineName'] == "empow_2"

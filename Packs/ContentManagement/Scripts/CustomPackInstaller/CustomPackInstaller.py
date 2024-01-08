@@ -12,7 +12,7 @@ def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, 
         pack_id (str): The ID of the pack to install.
         skip_verify (bool): If true will skip pack signature validation.
         skip_validation (bool) if true will skip all pack validations.
-        instance_name (str) Demisto REST API instance name.
+        instance_name (str) Core REST API instance name.
 
     Returns:
         - bool. Whether the installation of the pack was successful or not.

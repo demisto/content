@@ -70,7 +70,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: A search engine used for searching Internet-connected devices
+description: A search engine used for searching Internet-connected devices.
 display: Shodan v2
 name: Shodan_v2
 script:
@@ -135,9 +135,10 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The IP address of the host.
+      description: The IP addresses of the host.
       name: ip
       required: true
+      isArray: true
     description: Returns all services that have been found on the IP address of the searched host.
     name: ip
     outputs:
@@ -347,7 +348,7 @@ script:
       required: true
     description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
     name: shodan-network-alert-remove-service-from-whitelist
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.80593
   runonce: false
   script: '-'
   subtype: python3

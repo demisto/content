@@ -69,9 +69,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: PaloAltoNetworksXDR.quarantineFiles.status(val.fileHash === '${inputs.file_hash}'
-          && val.endpointId === '${inputs.endpoint_id}' && val.filePath === '${inputs.file_path}'
-          && val.status === false)
+        simple: PaloAltoNetworksXDR.quarantineFiles.status(val.fileHash === '${inputs.file_hash}' && val.endpointId === '${inputs.endpoint_id}' && val.filePath === '${inputs.file_path}' && val.status === false)
     separatecontext: true
     loop:
       iscommand: false
@@ -98,8 +96,7 @@ tasks:
       id: b8e66e18-fc70-48ce-8cb4-859bd1ce7de6
       version: -1
       name: Quarantine file
-      description: Quarantine a file on selected endpoints. You can select up to 1000
-        endpoints.
+      description: Quarantine a file on selected endpoints. You can select up to 1000 endpoints.
       script: '|||xdr-file-quarantine'
       type: regular
       iscommand: true
@@ -218,6 +215,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
-description: ''
+description: 'Deprecated. Use Cortex XDR - quarantine file v2 instead.'
 tests:
-  - Test XDR Playbook
+- No tests (deprecated)
+deprecated: true

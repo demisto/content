@@ -113,7 +113,7 @@ tasks:
         complex:
           root: IP.Geo
           accessor: Country
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false

@@ -96,7 +96,7 @@ else:
     EVAL = False
 
 try:
-    config_json = demisto.executeCommand("demisto-api-get", {"uri": "/system/config"})[0]["Contents"]["response"]
+    config_json = demisto.executeCommand("core-api-get", {"uri": "/system/config"})[0]["Contents"]["response"]
     new_json = []
     res = []
     checkKeyValue(config_json)

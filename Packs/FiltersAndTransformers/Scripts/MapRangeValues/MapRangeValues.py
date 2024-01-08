@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from typing import Union, List, Text
 
 
-VALUE_TYPE = Union[Text, int]
+VALUE_TYPE = Union[Text, float]
 
 
 class Replace(object):
@@ -18,7 +18,7 @@ class Replace(object):
     @staticmethod
     def get_typed_value(value: Text) -> VALUE_TYPE:
         try:
-            return int(value)
+            return float(value)
         except ValueError:
             return str(value)
 

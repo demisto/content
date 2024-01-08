@@ -1,6 +1,6 @@
 {
     "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identityProtection/riskyUsers",
-    "@odata.nextLink": null,
+    "@odata.nextLink": "https://graph.microsoft.com/v1.0/identityProtection/riskyUsers",
     "value": [
         {
             "id": "111",

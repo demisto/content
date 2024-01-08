@@ -65,12 +65,14 @@ class CollectionReason(str, Enum):
     XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
+    PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
     # these may be used without an id_set or conf.json object, see _validate_collection.
     CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
-    CollectionReason.ALWAYS_INSTALLED_PACKS
+    CollectionReason.ALWAYS_INSTALLED_PACKS,
+    CollectionReason.PACK_TEST_E2E
 }
 
 
@@ -354,6 +356,7 @@ class TestCollector(ABC):
         """
 
     def collect(self) -> CollectionResult | None:
+        logger.info(f'Collecting using class {self}')
         result: CollectionResult | None = self._collect()
 
         if not result:
@@ -626,6 +629,12 @@ class TestCollector(ABC):
             elif file_type == FileType.MODELING_RULE_TEST_DATA:
                 reason = CollectionReason.MODELING_RULE_TEST_DATA_CHANGED
             elif file_type == FileType.MODELING_RULE_XIF:
+                reason = CollectionReason.MODELING_RULE_XIF_CHANGED
+            elif file_type == FileType.ASSETS_MODELING_RULE:
+                reason = CollectionReason.MODELING_RULE_CHANGED
+            elif file_type == FileType.ASSETS_MODELING_RULE_SCHEMA:
+                reason = CollectionReason.MODELING_RULE_SCHEMA_CHANGED
+            elif file_type == FileType.ASSETS_MODELING_RULE_XIF:
                 reason = CollectionReason.MODELING_RULE_XIF_CHANGED
             else:  # pragma: no cover
                 raise RuntimeError(f'Unexpected file type {file_type} for changed file {changed_file_path}')
@@ -1361,6 +1370,47 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         ))
 
 
+class E2ETestCollector(TestCollector, ABC):
+
+    @abstractmethod
+    def get_e2e_packs(self) -> set[str]:
+        """
+        Implement this abstract method to collect relevant packs for xsoar/xsoar-saas/xsiam,
+        in the future when there will be a nightly for xsoar-saas, we will install all nightly packs including e2e tests
+        so this logic will be removed
+        """
+        raise NotImplementedError
+
+    def _collect(self) -> CollectionResult | None:
+        return CollectionResult.union(
+            [
+                CollectionResult(
+                    test=None,
+                    modeling_rule_to_test=None,
+                    pack=pack,
+                    reason=CollectionReason.PACK_TEST_E2E,
+                    version_range=None,
+                    reason_description="e2e tests",
+                    conf=None,
+                    id_set=None,
+                    only_to_install=True
+                ) for pack in self.get_e2e_packs()
+            ]
+        )
+
+
+class XsoarSaasE2ETestCollector(E2ETestCollector):
+
+    def get_e2e_packs(self) -> set[str]:
+        return {"TAXIIServer", "EDL", "QRadar", "Slack"}
+
+
+class SDKNightlyTestCollector(TestCollector):
+
+    def _collect(self) -> CollectionResult | None:
+        return self.sanity_tests
+
+
 def output(result: CollectionResult | None):
     """
     writes to both log and files
@@ -1412,6 +1462,7 @@ if __name__ == '__main__':
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
+    parser.add_argument('-sn', '--sdk-nightly', type=str2bool, help='Is SDK nightly')
     parser.add_argument('-p', '--changed_pack_path', type=str,
                         help='Path to a changed pack. Used for private content')
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
@@ -1433,6 +1484,7 @@ if __name__ == '__main__':
     marketplace = MarketplaceVersions(args.marketplace)
 
     nightly = args.nightly
+    sdk_nightly = args.sdk_nightly
     service_account = args.service_account
     graph = args.graph
     pack_to_upload = args.pack_names
@@ -1449,18 +1501,21 @@ if __name__ == '__main__':
         else:
             collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
 
-    else:
-        match (nightly, marketplace):
-            case False, _:  # not nightly
-                collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
-            case (True, (MarketplaceVersions.XSOAR | MarketplaceVersions.XSOAR_SAAS)):
+    elif sdk_nightly:
+        collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
+
+    elif nightly:
+        match marketplace:
+            case MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
-            case True, MarketplaceVersions.MarketplaceV2:
+            case MarketplaceVersions.XSOAR_SAAS:
+                collector = XsoarSaasE2ETestCollector(marketplace=marketplace, graph=graph)
+            case MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
-            case True, MarketplaceVersions.XPANSE:
+            case MarketplaceVersions.XPANSE:
                 collector = XPANSENightlyTestCollector(graph=graph)
-            case _:
-                raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
+    else:
+        collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
 
     collected = collector.collect()
     output(collected)  # logs and writes to output files

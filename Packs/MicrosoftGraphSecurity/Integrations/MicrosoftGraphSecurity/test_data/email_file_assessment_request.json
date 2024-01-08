@@ -1,0 +1,26 @@
+{
+
+    "id": "email_file_id",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "mail",
+    "expectedAssessment": "unblock",
+    "category": "phishing",
+    "status": "completed",
+    "requestSource": "administrator",
+    "recipientEmail": "test_email",
+    "destinationRoutingReason": "notJunk",
+    "createdBy": {
+      "user": {
+        "id": "id",
+        "displayName": "Test Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "id",
+            "createdDateTime": "2019-11-27T05:50:33.243Z",
+            "resultType": "rescan",
+            "message": "Not Spam"
+        }
+    ]
+}

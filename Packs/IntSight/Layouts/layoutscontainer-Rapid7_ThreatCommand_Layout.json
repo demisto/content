@@ -337,7 +337,7 @@
             {
                 "hidden": false,
                 "id": "gelmysfzqr",
-                "name": "ThreatCommand Layout",
+                "name": "Threat Command Alert Info",
                 "sections": [
                     {
                         "displayType": "CARD",
@@ -502,41 +502,6 @@
                     {
                         "displayType": "CARD",
                         "h": 2,
-                        "hideItemTitleOnlyOne": true,
-                        "i": "caseinfoid-7bbcfb00-a21c-11ed-aa4f-ad3f78bee3be",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "rapid7threatcommandimages",
-                                "height": 53,
-                                "id": "8929b7b0-a21c-11ed-aa4f-ad3f78bee3be",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "attachment",
-                                "height": 53,
-                                "id": "e692b630-cbe4-11ed-9d6c-bd7dac954ea6",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Attachments",
-                        "static": false,
-                        "type": "",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-9d8ab290-a21c-11ed-aa4f-ad3f78bee3be",
                         "items": [
@@ -586,20 +551,11 @@
                         "i": "caseinfoid-c1d2e000-a21c-11ed-aa4f-ad3f78bee3be",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "rapid7threatcommandcsv2",
-                                "height": 106,
-                                "id": "cb7a2150-d2d1-11ed-9f3d-77738f524bff",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "rapid7threatcommandcsv",
                                 "height": 106,
                                 "id": "293988c0-a23b-11ed-b725-61f99d3d4b27",
-                                "index": 1,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -609,9 +565,9 @@
                         "moved": false,
                         "name": "Alert CSV",
                         "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -639,43 +595,6 @@
                         "y": 5
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": false,
-                        "i": "caseinfoid-3fb2eab0-bcc6-11ed-b4c0-33de1db24664",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "rapid7threatcommandattachment",
-                                "height": 53,
-                                "id": "80928b20-cc9e-11ed-aa8f-9da700f82537",
-                                "index": 0,
-                                "listId": "caseinfoid-3fb2eab0-bcc6-11ed-b4c0-33de1db24664",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "rapid7threatcommandattachments",
-                                "height": 106,
-                                "id": "ed09fc30-cbe4-11ed-9d6c-bd7dac954ea6",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Attachments",
-                        "static": false,
-                        "type": "",
-                        "w": 1,
-                        "x": 2,
-                        "y": 2
-                    },
-                    {
                         "h": 2,
                         "i": "caseinfoid-69f41b80-bcc8-11ed-b4c0-33de1db24664",
                         "items": [],
@@ -689,7 +608,32 @@
                         "type": "indicators",
                         "w": 3,
                         "x": 0,
-                        "y": 6
+                        "y": 8
+                    },
+                    {
+                        "description": "",
+                        "h": 6,
+                        "i": "caseinfoid-ee070d20-351c-11ee-9792-7b786b521d06",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Files",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "fromTime": "0001-01-01T00:00:00Z",
+                            "pageSize": 0,
+                            "tagsAndOperator": false,
+                            "usersAndOperator": false
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
                     }
                 ],
                 "type": "custom"

@@ -119,6 +119,10 @@ script:
     - default: true
       description: Name of the bucket in which to list objects. If not specified, operation will be performed on the default bucket parameter.
       name: bucket_name
+    - description: Specify to limit blobs within a "folder" i.e., "folder-1/" if blob is "folder-1/file.txt".
+      name: prefix
+    - description: Use a delimiter if you want to limit results within a specific "folder" and without any nested blobs i.e., "/".
+      name: delimiter
     description: Retrieves the list of objects in a bucket.
     name: gcs-list-bucket-objects
     outputs:
@@ -384,7 +388,7 @@ script:
       required: true
     description: Removes an entity from an object's Access Control List.
     name: gcs-delete-bucket-object-policy
-  dockerimage: demisto/google-cloud-storage:1.0.0.68936
+  dockerimage: demisto/google-cloud-storage:1.0.0.83364
   runonce: false
   script: '-'
   type: python

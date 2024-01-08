@@ -7,12 +7,13 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The LDAP vendor to authenticate with.
-  defaultvalue: OpenLDAP
+  defaultvalue: Auto
   display: LDAP Server Vendor
   name: ldap_server_vendor
   options:
   - OpenLDAP
   - Active Directory
+  - Auto
   required: true
   type: 15
   section: Connect
@@ -193,7 +194,7 @@ script:
       - 'false'
     description: Performs a simple bind operation on the LDAP server and returns the authenticated user's groups.
     name: ad-authenticate-and-roles
-  dockerimage: demisto/py3-tools:1.0.0.49159
+  dockerimage: demisto/py3-tools:1.0.0.82746
   runonce: false
   script: '-'
   subtype: python3

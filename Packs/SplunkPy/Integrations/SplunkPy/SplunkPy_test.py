@@ -10,7 +10,7 @@ from splunklib.binding import AuthenticationError
 from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
-
+from pytest_mock import MockerFixture
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -344,6 +344,19 @@ def test_parse_time_to_minutes_invalid_time_integer(mocker):
                       "e.g '2 months, 4 days'."
 
 
+def test_splunk_submit_event_hec_command(mocker):
+    text = "a msg with a failure."
+
+    class MockRes:
+        def __init__(self, text):
+            self.text = text
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=MockRes(text))
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={})
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == f"Could not send event to Splunk {text}"
+
+
 def test_parse_time_to_minutes_invalid_time_unit(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
@@ -559,6 +572,114 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     output = splunk.get_kv_store_config(Name())
     expected_output = f'{START_OUTPUT}{expected_output}'
     assert output == expected_output
+
+
+class TestFetchForLateIndexedEvents:
+    notable1 = {'status': '5', 'event_id': 'id_1'}
+    notable2 = {'status': '6', 'event_id': 'id_2'}
+
+    # In order to mock the service.jobs.oneshot() call in the fetch_notables function, we need to create
+    # the following two classes
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.notable1
+
+    class Service:
+        def __init__(self):
+            self.jobs = TestFetchForLateIndexedEvents.Jobs()
+
+    # If late_indexed_pagination is True, then we exclude the last fetched ids (check by using fetch query),
+    # and kwargs_oneshot['offset'] == 0
+    def test_fetch_query_and_oneshot_args(self, mocker: MockerFixture):
+        """
+        Given
+        - Mocked incidents api response
+        - The key "late_indexed_pagination" in the last run object is set to True
+        - Some incident IDs that were fetched in the last fetch round
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that last fetched incident IDs are specified to be excluded from the fetch query
+        - Make sure that the offset of the fetch query is set to 0
+        """
+        from SplunkPy import UserMappingObject
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2018-10-24T14:13:20', 'late_indexed_pagination': True,
+                         'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
+        mock_params = {'fetchQuery': 'something'}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1])
+        service = self.Service()
+        oneshot_mocker = mocker.patch.object(service.jobs, 'oneshot', side_effect=service.jobs.oneshot)
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        assert oneshot_mocker.call_args_list[0][0][0] == 'something | where not event_id in ("1234","5678")'
+        assert oneshot_mocker.call_args_list[0][1]['offset'] == 0
+
+    # If (num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query), then late_indexed_pagination should be set to True
+    def test_first_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+        - Mocked incidents api response, that have IDs as the last fetched IDs (which means that num_of_dropped == FETCH_LIMIT)
+        - `notable` is in the fetch query
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the key "late_indexed_pagination" in last run object is set to True
+        """
+        from SplunkPy import UserMappingObject
+        # MonkeyPatch can be used to patch global variables
+        monkeypatch.setattr(splunk, 'FETCH_LIMIT', 2)
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2018-10-24T14:13:20',
+                         'found_incidents_ids': {'id_1': 1700497516, 'id_2': 1700497516}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        service = self.Service()
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] is True
+
+    # If (len(incidents) == FETCH_LIMIT and late_indexed_pagination), then late_indexed_pagination should be set to True
+    def test_second_condition_for_late_indexed_pagination(self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+        - Mocked incidents api response, where only new incidents are fetched (which means that len(incidents) == FETCH_LIMIT)
+        - The key "late_indexed_pagination" in the last run object is set to True
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the key "late_indexed_pagination" in last run object is set to True
+        """
+        from SplunkPy import UserMappingObject
+        # MonkeyPatch can be used to patch global variables
+        monkeypatch.setattr(splunk, 'FETCH_LIMIT', 2)
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2018-10-24T14:13:20', 'late_indexed_pagination': True,
+                         'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        service = self.Service()
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        assert set_last_run_mocker.call_args_list[0][0][0]['late_indexed_pagination'] is True
 
 
 def test_fetch_incidents(mocker):

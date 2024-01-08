@@ -25,11 +25,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Get endpoint details - Generic
 * Endpoint Investigation Plan
 * Containment Plan
 * Account Enrichment - Generic v2.1
 * Ticket Management - Generic
+* Endpoint Enrichment - Generic v2.1
 
 ### Integrations
 
@@ -41,8 +41,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* closeInvestigation
 * setParentIncidentFields
+* closeInvestigation
 
 ## Playbook Inputs
 

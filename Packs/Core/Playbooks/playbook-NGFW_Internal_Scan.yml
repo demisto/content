@@ -52,6 +52,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 87c1a8ec-c2f2-4b91-8721-f44652f1634c
@@ -98,48 +99,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 3b1f62bc-537c-469a-89a7-ee93d9235e5b
-    type: playbook
-    task:
-      id: 3b1f62bc-537c-469a-89a7-ee93d9235e5b
-      version: -1
-      name: Get endpoint details - Generic
-      description: "This playbook uses the generic command !endpoint to retrieve details on a specific endpoint.\nThis command currently supports the following integrations:\n- Palo Alto Networks Cortex XDR - Investigation and Response.\n- CrowdStrike Falcon. "
-      playbookName: Get endpoint details - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Endpoint_ip:
-        complex:
-          root: inputs.scannerIP
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 8ed375b2-b63e-47b1-8f39-6d90c4bb0dcc
@@ -155,7 +115,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-      - "6"
+      - "28"
     separatecontext: false
     view: |-
       {
@@ -171,6 +131,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: f17016e4-9d9f-4d47-8621-87f10e27c144
@@ -201,6 +162,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: f84429f7-dd8d-4b8f-8746-e4f0e34f46e9
@@ -231,6 +193,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
     taskid: 7dfb9c5d-5ad6-4bdd-881f-bfce33da263c
@@ -241,7 +204,7 @@ tasks:
       name: Containment Plan
       description: |-
         This playbook handles all the containment actions available with Cortex XSIAM.
-        The playbook allows to contain the incident with one of the following tasks:
+        The playbook allows to contain the alert with one of the following tasks:
         * Isolate endpoint
         * Disable account
         * Quarantine file
@@ -326,6 +289,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
     taskid: adea3df5-fc34-4ca3-83f5-ca3a7e60cec4
@@ -369,6 +333,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 6a4c1876-1b2f-426e-841e-7fa1a9a22df8
@@ -399,6 +364,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: 9c06759e-9696-45cd-8a45-78d3e3e552f3
@@ -429,6 +395,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
     taskid: 14a8536b-2d4e-4124-8712-39d147e4c6d0
@@ -474,6 +441,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: cdde9f89-b5ae-4db0-85e0-bbcebbb4fd1a
@@ -505,6 +473,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
     taskid: 8bb3b16b-4a01-4e95-81c3-95dafe8c3231
@@ -532,6 +501,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
     taskid: 2c8a152f-e2e3-4c40-89a7-0eb0be8bc68d
@@ -563,6 +533,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
     taskid: 9f808ed4-3737-4536-8bb2-276ed2c9e330
@@ -640,6 +611,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
     taskid: 6dbec345-05c5-4203-8c12-1b2ab81410d8
@@ -647,8 +619,8 @@ tasks:
     task:
       id: 6dbec345-05c5-4203-8c12-1b2ab81410d8
       version: -1
-      name: Set Incident Severity to High
-      description: commands.local.cmd.set.parent.incident.field
+      name: Set Alert Severity to High
+      description: commands.local.cmd.set.parent.alert.field
       script: Builtin|||setParentIncidentFields
       type: regular
       iscommand: true
@@ -813,6 +785,61 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 42116819-eaab-4919-830d-3d86bcfb2bb5
+    type: playbook
+    task:
+      id: 42116819-eaab-4919-830d-3d86bcfb2bb5
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      description: |-
+        Enrich an endpoint by hostname using one or more integrations.
+        Supported integrations:
+        - Active Directory Query v2
+        - McAfee ePO v2
+        - VMware Carbon Black EDR v2
+        - Cylance Protect v2
+        - CrowdStrike Falcon
+        - ExtraHop Reveal(x)
+        - Cortex XDR / Core (endpoint enrichment, reputation and risk)
+        - Endpoint reputation using !endpoint command
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.scannerIP
+          transformers:
+          - operator: uniq
+      UseReputationCommand:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -822,7 +849,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2695,
-        "width": 1250,
+        "width": 1260,
         "x": -200,
         "y": -140
       }

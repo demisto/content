@@ -33,7 +33,7 @@ def get_audit_logs(timeframe: int) -> Dict:
             }
         }
 
-    results = demisto.executeCommand('demisto-api-post', {"uri": uri, "body": body})
+    results = demisto.executeCommand('core-api-post', {"uri": uri, "body": body})
     return results[0]['Contents']['response']
 
 
