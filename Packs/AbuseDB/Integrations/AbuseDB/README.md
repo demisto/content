@@ -98,9 +98,9 @@
 <td style="width: 414px;">The number of times this address has been reported</td>
 </tr>
 <tr>
-<td style="width: 268px;">AbuseIPDB.IP.Geo.CountryName</td>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.Country</td>
 <td style="width: 58px;">String</td>
-<td style="width: 414px;">Country name associated with this IP Address</td>
+<td style="width: 414px;">Country associated with this IP Address</td>
 </tr>
 <tr>
 <td style="width: 268px;">AbuseIPDB.IP.Geo.CountryCode</td>
@@ -254,9 +254,9 @@
 <td style="width: 414px;">Confidence score fetched from AbuseIPDB</td>
 </tr>
 <tr>
-<td style="width: 268px;">AbuseIPDB.IP.Geo.CountryName</td>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.Country</td>
 <td style="width: 58px;">String</td>
-<td style="width: 414px;">Country name associated with this IP Address</td>
+<td style="width: 414px;">Country associated with this IP Address</td>
 </tr>
 <tr>
 <td style="width: 268px;">AbuseIPDB.IP.Geo.CountryCode</td>

@@ -113,8 +113,8 @@ script:
     - contextPath: IP.Address
       description: The address of the IP.
       type: String
-    - contextPath: IP.Geo.CountryName
-      description: The country name in which the IP address is located.
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
       type: String
     - contextPath: IP.Geo.CountryCode
       description: The country code in which the IP address is located.
@@ -134,8 +134,8 @@ script:
     - contextPath: AbuseIPDB.IP.TotalReports
       description: The number of times the address has been reported.
       type: Number
-    - contextPath: AbuseIPDB.IP.Geo.CountryName
-      description: The country name associated with the IP Address.
+    - contextPath: AbuseIPDB.IP.Geo.Country
+      description: The country associated with the IP Address.
       type: String
     - contextPath: AbuseIPDB.IP.Geo.CountryCode
       description: The country code associated with the IP Address.
@@ -216,8 +216,8 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
-    - contextPath: IP.Geo.CountryName
-      description: The country name in which the IP address is located.
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
       type: String
     - contextPath: IP.Geo.CountryCode
       description: The country code in which the IP address is located.
@@ -240,8 +240,8 @@ script:
     - contextPath: AbuseIPDB.IP.TotalReports
       description: The number of times this address has been reported.
       type: Unknown
-    - contextPath: AbuseIPDB.IP.Geo.CountryName
-      description: The country name associated with the IP Address.
+    - contextPath: AbuseIPDB.IP.Geo.Country
+      description: The country associated with the IP Address.
       type: String
     - contextPath: AbuseIPDB.IP.Geo.CountryCode
       description: The country code associated with the IP Address.
