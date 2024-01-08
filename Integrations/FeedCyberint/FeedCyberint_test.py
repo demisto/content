@@ -40,6 +40,20 @@ def test_build_iterator(
     requests_mock,
     mock_client: FeedCyberint.Client,
 ):
+    """
+    Scenario:
+    - Test retrieving a list IOCs from Cyberint feed.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the build_iterator request (this request called by all integration commands).
+
+    Then:
+    - Ensure that the IP values is correct.
+    - Ensure that the URL values is correct.
+    """
     response = load_mock_response()
 
     requests_mock.get(REQUEST_URL, text=response)
@@ -60,6 +74,20 @@ def test_get_indicators_command(
     requests_mock,
     mock_client: FeedCyberint.Client,
 ):
+    """
+    Scenario:
+    - Test retrieving indicators by filters from feed.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the get_indicators_command.
+
+    Then:
+    - Ensure that the IP values is correct.
+    - Ensure that the URL values is correct.
+    """
     response = load_mock_response()
 
     requests_mock.get(REQUEST_URL, text=response)
