@@ -19,6 +19,7 @@ trigger-nightlies:
 #    - ./Tests/sdk_release/create_release_branch.sh
     - echo $RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION
     - echo "test"
 #    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"

@@ -9,6 +9,10 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -sdk|--sdk-ref) _sdk_ref="$2"
+    shift
+    shift;;
+
   esac
 done
 
@@ -22,5 +26,6 @@ echo $BUILD_TRIGGER_URL
 
 curl "$BUILD_TRIGGER_URL" --form "ref=master" \
     --form "token=${_ci_token}" \
+    --form "variables[SDK_REF]=${_sdk_ref}" \
     --form "variables[NIGHTLY]=true" \
     --form "variables[SLACK_CHANNEL]=C05FPQR3WHK"  | jq
