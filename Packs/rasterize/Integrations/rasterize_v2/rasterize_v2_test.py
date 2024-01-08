@@ -156,7 +156,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
     with capfd.disabled():
         mocker.patch.object(rasterize_v2, 'support_multithreading')
         rasterize('http://localhost:10888', width=250, height=250,
-                               rasterize_type=RasterizeType.PNG, navigation_timeout=5)
+                  rasterize_type=RasterizeType.PNG, navigation_timeout=5)
         assert return_error_mock.call_count == 1
         # call_args last call with a tuple of args list and kwargs
         # err_msg = return_error_mock.call_args[0][0]
@@ -179,6 +179,9 @@ def test_rasterize_image_to_pdf(mocker):
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
+    print(f"results=")
+    print(f"results[0]=")
+    assert results[0]['file_type'] == entryTypes['entryInfoFile']
     assert results[0]['Type'] == entryTypes['entryInfoFile']
 
 
@@ -303,6 +306,6 @@ class TestRasterizeIncludeUrl:
             f.flush()
 
             mocker.patch.object(rasterize_v2, 'support_multithreading')
-            image = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.RasterizeType.PNG,
-                                           include_url=include_url)
+            image = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG,
+                              include_url=include_url)
             assert image
