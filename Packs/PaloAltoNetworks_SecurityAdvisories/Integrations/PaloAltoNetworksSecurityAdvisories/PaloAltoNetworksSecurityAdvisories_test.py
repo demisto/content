@@ -77,7 +77,7 @@ def test_get_advisories4_command(patched_get_advisories):
 
 @patch("PaloAltoNetworksSecurityAdvisories.Client.get_advisories")
 def test_fetch_indicators4_command(patched_get_advisories):
-    patched_get_advisories.return_value = json.load(open("test_data" + os.sep + "advisories4.json"))
+    patched_get_advisories.return_value = json.load(open("test_data/advisories4.json"))
     from PaloAltoNetworksSecurityAdvisories import Client, fetch_indicators
     test_client = Client(base_url=BASE_URL)
     result = fetch_indicators(test_client, "PANOS")
