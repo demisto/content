@@ -77,6 +77,7 @@ DEFAULT_WIDTH, DEFAULT_HEIGHT = 600, 800
 # Local Chrome
 LOCAL_CHROME_HOST = "127.0.0.1"
 
+CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 PORT_FILE_PATH = '/var/port.txt'
 RASTERIZATIONS_COUNTER_FILE_PATH = '/var/rasterizations_counter.txt'
 
@@ -292,7 +293,7 @@ def get_chrome_options(default_options, user_options):
 def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""):
     global CHROME_PROCESS
     try:
-        logfile = open("/var/chrome_headless.log", 'ab')
+        logfile = open(CHROME_LOG_FILE_PATH, 'ab')
 
         default_chrome_options = CHROME_OPTIONS
         default_chrome_options.append(f"--remote-debugging-port={chrome_port}")
