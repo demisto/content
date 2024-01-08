@@ -619,7 +619,7 @@ script:
       required: true
     - name: file_name
       description: |-
-        The MS Graph file name.
+        The file name to download.
         To get the file name of the file you want to download, use the msgraph-list-drive-content command,
         if not provided, the file name will be item_id.
       required: false
