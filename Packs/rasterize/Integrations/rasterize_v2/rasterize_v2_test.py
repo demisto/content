@@ -16,7 +16,7 @@ from unittest.mock import mock_open
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
 
-RETURN_ERROR_TARGET = 'rasterize.return_error'
+RETURN_ERROR_TARGET = 'rasterize_v2.return_error'
 
 
 def test_rasterize_email_image(caplog, capfd):
@@ -205,7 +205,6 @@ TEST_DATA = [
 
 @pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
 def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
-    from rasterize import convert_pdf_to_jpeg
     res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
     assert type(res) == list
@@ -231,7 +230,6 @@ def test_get_width_height(width, height, expected_width, expected_height):
             2. The resulted height is the safeguard limit (8000px) and the width remains as it was.
             3. Both width and height remain as they were.
     """
-    from rasterize import get_width_height
     args = {
         'width': str(width),
         'height': str(height)
