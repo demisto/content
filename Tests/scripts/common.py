@@ -15,6 +15,7 @@ from gitlab.v4.objects.commits import ProjectCommit
 from datetime import datetime, timedelta
 from dateutil import parser
 
+
 CONTENT_NIGHTLY = 'Content Nightly'
 CONTENT_PR = 'Content PR'
 CONTENT_MERGE = 'Content Merge'
@@ -62,6 +63,9 @@ FAILED_TO_MSG = {
     True: "failed",
     False: "succeeded",
 }
+
+# This is the github username of the bot that pushes contributions and docker updates to the content repo.
+CONTENT_BOT = 'content-bot'
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -252,7 +256,7 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
     return pipelines, commits
 
 
-def person_in_charge(commit):
+def get_person_in_charge(commit):
     """
     Returns the name, email, and PR link for the author of the provided commit.
 
@@ -261,7 +265,6 @@ def person_in_charge(commit):
 
     Returns:
         name: The name of the commit author.
-        email: The email of the commit author.
         pr: The GitHub PR link for the Gitlab commit.
     """
     name = commit.author_name
@@ -270,13 +273,33 @@ def person_in_charge(commit):
     return name, pr
 
 
-def are_pipelines_in_order(current_pipeline, previous_pipeline):
+def are_pipelines_in_order(current_pipeline:ProjectPipeline, previous_pipeline: ProjectPipeline)-> bool:
+    """
+    This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions 
+    that pipelines are not in the same order as the commits.
+    Args:
+        current_pipeline: The current pipeline object.
+        previous_pipeline: The previous pipeline object.
+    Returns:
+        bool
+    """
+    
     previous_pipeline_timestamp = parser.parse(previous_pipeline.created_at)
     current_pipeline_timestamp = parser.parse(current_pipeline.created_at)
     return current_pipeline_timestamp > previous_pipeline_timestamp
 
 
-def is_pivot(current_pipeline, previous_pipeline):
+def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline)-> bool | None:
+    """
+    Is the current pipeline status a pivot from the previous pipeline status.
+    Args:
+        current_pipeline: The current pipeline object.
+        previous_pipeline: The previous pipeline object.   
+    Returns:
+        True status changed from success to failed
+        False if the status changed from failed to success
+        None if the status didn't change or the pipelines are not in order of commits
+    """
 
     in_order = are_pipelines_in_order(current_pipeline, previous_pipeline)
     if in_order:
@@ -291,10 +314,7 @@ def get_reviewer(pr_url: str) -> str | None:
     approved_reviewer = None
     try:
         # Extract the owner, repo, and pull request number from the URL
-        parts = pr_url.split("/")
-        repo_owner = parts[-4]
-        repo_name = parts[-3]
-        pr_number = parts[-1]
+        _1, _2,_3, repo_owner, repo_name,_4, pr_number = pr_url.split("/")  
 
         # Get reviewers
         reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
@@ -327,3 +347,22 @@ def get_commit_by_sha(commit_sha: str, list_of_commits: list) -> ProjectCommit |
 
 def get_pipeline_by_commit(commit, list_of_pipelines):
     return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)
+
+def create_shame_message(current_commit: ProjectCommit, pipeline_changed_status: bool, name_mapping_path: str)-> tuple[str, str, str]:
+    """
+    Create a shame message for the person in charge of the commit.
+    """
+    name, pr = get_person_in_charge(current_commit)
+    if name == CONTENT_BOT:
+        name = get_reviewer(pr)
+    name = get_slack_user_name(name, name_mapping_path)
+    msg = "broke" if pipeline_changed_status else "fixed"
+    color = "danger" if pipeline_changed_status else "good"
+    emoji = ":cry:" if pipeline_changed_status else ":muscle:"
+    shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
+                        f" That was done in this {slack_link(pr,'PR.')}", color)
+    return shame_message
+
+
+def slack_link(url: str, text: str) -> str:
+    return f"<{url}|{text}>"

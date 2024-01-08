@@ -1,12 +1,12 @@
-from Tests.scripts.common import get_reviewer, person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name
+from Tests.scripts.common import get_reviewer, get_person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name
 import pytest
 from requests_mock import MockerCore
 
 
-def test_person_in_charge(mocker):
+def test_get_person_in_charge(mocker):
     """
     Given a commit object
-    When person_in_charge is called on it
+    When get_person_in_charge is called on it
     Then it should return the expected name and PR link
     """
     commit = mocker.Mock()
@@ -16,7 +16,7 @@ def test_person_in_charge(mocker):
 
     expected = ('John Doe', 'https://github.com/demisto/content/pull/123')
 
-    result = person_in_charge(commit)
+    result = get_person_in_charge(commit)
 
     assert result == expected
 
@@ -59,7 +59,7 @@ def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     Given:
         - Two pipelines with their statuses.
     When:
-        - is_pivot is called on them.
+        - Checking on status change. 
     Then:
         - It should return the expected result.
           scenario 1: pipeline1.status =='success' and pipeline2.status == 'failed' -> True
