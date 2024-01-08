@@ -588,12 +588,8 @@ view: |-
       }
     }
   }
-inputs:
-- key: sourceIP
-  value: {}
-  required: false
-  description: The source IP to search by additional alerts.
-  playbookInputQuery:
+inputs: []
+outputs:
 - contextPath: alertVerdict
   description: The alert verdict.
   type: unknown

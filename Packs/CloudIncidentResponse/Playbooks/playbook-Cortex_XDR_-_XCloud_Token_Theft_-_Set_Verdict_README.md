@@ -46,10 +46,7 @@ This playbook does not use any integrations.
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| sourceIP | The source IP to search by additional alerts. |  | Optional |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
