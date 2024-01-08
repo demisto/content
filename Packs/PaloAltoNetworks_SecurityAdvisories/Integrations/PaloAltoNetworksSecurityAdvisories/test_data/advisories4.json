@@ -10,7 +10,7 @@
             },
             "CVE_data_meta": {
                 "ID": "CVE-2023-38802",
-                "ASSIGNER": "psirt@paloaltonetworks.com",
+                "ASSIGNER": "psirt@dummy.com",
                 "DATE_PUBLIC": "2023-09-13T16:00:00.000Z",
                 "TITLE": " PAN-OS: Denial-of-Service (DoS) Vulnerability in BGP Software",
                 "STATE": "PUBLIC"
@@ -163,13 +163,13 @@
                 "reference_data": [
                     {
                         "refsource": "CONFIRM",
-                        "url": "https://security.paloaltonetworks.com/CVE-2023-38802",
-                        "name": "https://security.paloaltonetworks.com/CVE-2023-38802"
+                        "url": "https://dummy.com/CVE-2023-38802",
+                        "name": "https://dummy.com/CVE-2023-38802"
                     },
                     {
                         "refsource": "CONFIRM",
-                        "url": "https://blog.benjojo.co.uk/post/bgp-path-attributes-grave-error-handling",
-                        "name": "https://blog.benjojo.co.uk/post/bgp-path-attributes-grave-error-handling"
+                        "url": "https://dummy.com/post/bgp-path-attributes-grave-error-handling",
+                        "name": "https://dummy.com/post/bgp-path-attributes-grave-error-handling"
                     }
                 ]
             },
