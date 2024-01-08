@@ -1,6 +1,5 @@
-# from rasterize import (rasterize, find_zombie_processes, get_chrome_options, CHROME_OPTIONS, rasterize_image_command,
-#                        RasterizeMode, RasterizeType, rasterize_html_command)
 import rasterize_v2
+from rasterize_v2 import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -26,7 +25,7 @@ def test_rasterize_email_image(caplog, capfd, mocker):
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize_v2, 'support_multithreading')
-        rasterize_v2.rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
+        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         caplog.clear()
 
 
@@ -37,7 +36,7 @@ def test_rasterize_email_pdf(caplog, capfd, mocker):
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize_v2, 'support_multithreading')
-        rasterize_v2.rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
+        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         caplog.clear()
 
 
@@ -48,7 +47,7 @@ def test_rasterize_email_pdf_offline(caplog, capfd, mocker):
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize_v2, 'support_multithreading')
-        rasterize_v2.rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
+        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         caplog.clear()
 
 
@@ -59,7 +58,7 @@ def test_rasterize_no_defunct_processes(caplog, capfd, mocker):
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize_v2, 'support_multithreading')
-        rasterize_v2.rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
+        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    universal_newlines=True)
         processes_str, _ = process.communicate()
@@ -74,20 +73,20 @@ def test_rasterize_no_defunct_processes(caplog, capfd, mocker):
 
 
 def test_get_chrome_options():
-    res = rasterize_v2.get_chrome_options(CHROME_OPTIONS, '')
+    res = get_chrome_options(CHROME_OPTIONS, '')
     assert res == CHROME_OPTIONS
 
-    res = rasterize_v2.get_chrome_options(CHROME_OPTIONS, '[--disable-dev-shm-usage],--disable-auto-reload, --headless')
+    res = get_chrome_options(CHROME_OPTIONS, '[--disable-dev-shm-usage],--disable-auto-reload, --headless')
     assert '--disable-dev-shm-usage' not in res
     assert '--no-sandbox' in res  # part of default options
     assert '--disable-auto-reload' in res
     assert len([x for x in res if x == '--headless']) == 1  # should have only one headless option
 
-    res = rasterize_v2.get_chrome_options(CHROME_OPTIONS, r'--user-agent=test\,comma')
+    res = get_chrome_options(CHROME_OPTIONS, r'--user-agent=test\,comma')
     assert len([x for x in res if x.startswith('--user-agent')]) == 1
     assert '--user-agent=test,comma' in res
 
-    res = rasterize_v2.get_chrome_options(CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
+    res = get_chrome_options(CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
 
@@ -95,7 +94,7 @@ def test_rasterize_large_html(capfd, mocker):
     with capfd.disabled():
         path = os.path.realpath('test_data/large.html')
         mocker.patch.object(rasterize_v2, 'support_multithreading')
-        res = rasterize_v2.rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
+        res = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         assert res
 
 
@@ -156,14 +155,15 @@ def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
     time.sleep(1)  # give time to the servrer to start
     with capfd.disabled():
         mocker.patch.object(rasterize_v2, 'support_multithreading')
-        rasterize_v2.rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG, navigation_timeout=5)
+        rasterize('http://localhost:10888', width=250, height=250,
+                               rasterize_type=RasterizeType.PNG, navigation_timeout=5)
         assert return_error_mock.call_count == 1
         # call_args last call with a tuple of args list and kwargs
         # err_msg = return_error_mock.call_args[0][0]
         # assert 'Timeout exception' in err_msg
         return_error_mock.reset_mock()
         # test that with a higher value we get a response
-        assert rasterize_v2.rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG)
+        assert rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG)
         assert not return_error_mock.called
 
 
@@ -174,7 +174,7 @@ def test_rasterize_image_to_pdf(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(rasterize_v2, 'support_multithreading')
-    rasterize_v2.rasterize_image_command()
+    rasterize_image_command()
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
@@ -212,7 +212,7 @@ TEST_DATA = [
 
 @pytest.mark.parametrize('file_path, max_pages, expected_length, pw', TEST_DATA)
 def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length, pw):
-    res = rasterize_v2.convert_pdf_to_jpeg(file_path, max_pages, pw)
+    res = convert_pdf_to_jpeg(file_path, max_pages, pw)
 
     assert type(res) == list
     assert len(res) == expected_length
@@ -303,6 +303,6 @@ class TestRasterizeIncludeUrl:
             f.flush()
 
             mocker.patch.object(rasterize_v2, 'support_multithreading')
-            image = rasterize_v2.rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG,
-                              include_url=include_url)
+            image = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.RasterizeType.PNG,
+                                           include_url=include_url)
             assert image
