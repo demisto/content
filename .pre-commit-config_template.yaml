@@ -26,7 +26,7 @@ repos:
   - id: poetry-export
     args:
     - --with
-    - dev,typing
+    - dev,typing,ci
     - --without-hashes
     - -o
     - requirements.txt

@@ -6,12 +6,12 @@ import subprocess
 import os
 import sys
 from coverage.cmdline import main as coverage_main
-from multiprocessing.pool import Pool
+from multiprocessing.pool import ThreadPool
 
 def run_script(args, files):
     try:
         # can't use with in python2
-        pool = Pool()
+        pool = ThreadPool()
         results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.dirname(file)) for file in files])
         pool.close()
         if any(result != 0 for result in results):
