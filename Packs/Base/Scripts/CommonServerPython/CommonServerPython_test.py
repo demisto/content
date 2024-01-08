@@ -1452,7 +1452,7 @@ def test_build_curl_post_noproxy():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"data": "value"}\''
     ]
 
@@ -1479,7 +1479,7 @@ def test_build_curl_post_xml():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'<?xml version=\"1.0\" encoding=\"utf-8\"?>'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'<?xml version="1.0" encoding="utf-8"?>\''
     ]
 
@@ -1511,7 +1511,7 @@ def test_build_curl_get_withproxy(mocker):
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--proxy http://proxy -k -d \'{"data": "value"}\''
     ]
 
@@ -1548,9 +1548,9 @@ def test_build_curl_multiple_queries():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api/post -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"postdata": "value"}\'',
-        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api/get -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"getdata": "value"}\''
     ]
 
