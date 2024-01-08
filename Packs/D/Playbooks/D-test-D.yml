@@ -13,7 +13,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     note: false
     quietmode: 0
     separatecontext: false
@@ -32,41 +32,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 50
-        }
-      }
-  "1":
-    continueonerrortype: ""
-    id: "1"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "2"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      value:
-        simple: C
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 07a9152b-7e94-4de8-8833-07b4d7342b07
-      iscommand: false
-      name: Print
-      script: Print
-      type: regular
-      version: -1
-    taskid: 07a9152b-7e94-4de8-8833-07b4d7342b07
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
         }
       }
   "2":
