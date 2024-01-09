@@ -67,8 +67,8 @@ def main():
 
     while pipeline_status not in ['failed', 'success', 'canceled'] and elapsed < TIMEOUT:
         logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
-        time.sleep(300)
         pipeline_status = get_pipeline_status(pipeline_id, project_id, token)
+        time.sleep(300)
 
         elapsed = time.time() - start
 
