@@ -1082,7 +1082,8 @@ def get_incidents_data(
         parsed_last_alert_timestamp + timedelta(milliseconds=1)
     ).strftime(DATE_FORMAT)
 
-    processed_alerts_ids: list[int] = list(map(lambda alert: alert.get("id"), processed_alerts))
+    get_alert_ids: Callable[[dict[str, Any]], int] = lambda alert: alert.get("id") or 0
+    processed_alerts_ids: list[int] = list(map(get_alert_ids, processed_alerts))
 
     return incidents, next_offset, max_update_time, processed_alerts_ids
 
@@ -1116,7 +1117,7 @@ def fetch_incidents(
     client: ZFClient,
     last_run: dict[str, str],
     first_fetch_time: str
-) -> tuple[dict[str, str], list[dict[str, Any]]]:
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     # Last fetched date
     last_fetched_str = last_run.get("last_fetched", "")
     last_fetched = parse_last_fetched_date(last_fetched_str, first_fetch_time)
@@ -1140,7 +1141,10 @@ def fetch_incidents(
     last_modified_offset = int(last_modified_offset_str)
 
     # ZeroFox Alert IDs previously created
-    zf_ids: list[int] = last_run.get("zf-ids", [])
+    zf_ids: list[int] = []
+    stored_zf_ids = last_run.get("zf-ids")
+    if isinstance(stored_zf_ids, list):
+        zf_ids = list(stored_zf_ids)
 
     next_run = {
         "last_fetched": last_fetched_str,
@@ -1162,7 +1166,7 @@ def fetch_incidents(
         params=params,
     )
     if len(incidents) > 0:
-        ingested_alert_ids = alert_ids + next_run["zf-ids"]
+        ingested_alert_ids = alert_ids + zf_ids
         next_run["zf-ids"] = ingested_alert_ids[:MAX_ALERT_IDS_STORED]
         next_run["last_offset"] = next_offset
         if next_offset == "0" and oldest_timestamp:
@@ -1185,7 +1189,7 @@ def fetch_incidents(
         timestamp_field="last_modified",
     )
     if len(incidents) > 0:
-        ingested_alert_ids = alert_ids + next_run["zf-ids"]
+        ingested_alert_ids = alert_ids + zf_ids
         next_run["zf-ids"] = ingested_alert_ids[:MAX_ALERT_IDS_STORED]
         next_run["last_modified_offset"] = next_offset
         if next_offset == "0" and oldest_timestamp:
