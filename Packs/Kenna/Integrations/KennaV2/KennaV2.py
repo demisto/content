@@ -574,33 +574,33 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
 
 
 def search_assets_by_external_id(client: Client, args: dict) -> CommandResults:
-        external_id = args.get('external_id')
-        url_suffix = f'/assets/search?&q=external_id%3A{external_id}/'
-        human_readable = []
-        limit: int = arg_to_number(args.get('limit')) or 500
-        to_context = args.get('to_context')
-        context: Dict[str, Any] = {}
-        response = client.http_request(message='GET', suffix=url_suffix).get(
-            'assets')
-        if response:
-            assets_list = response[:limit]
-            wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
-                           'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
-            actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
-                           'operating_system',
-                           'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
-            context_list: List[Dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
+    external_id = args.get('external_id')
+    url_suffix = f'/assets/search?&q=external_id%3A{external_id}/'
+    human_readable = []
+    limit: int = arg_to_number(args.get('limit')) or 500
+    to_context = args.get('to_context')
+    context: dict[str, Any] = {}
+    response = client.http_request(message='GET', suffix=url_suffix).get(
+        'assets')
+    if response:
+        assets_list = response[:limit]
+        wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
+                        'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
+        actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
+                        'operating_system',
+                        'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
+        context_list: list[dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
 
-            for lst in assets_list:
-                human_readable.append({
-                    'id': lst.get('id'),
-                    'Hostname': lst.get('hostname'),
-                    'IP-address': lst.get('ip_address'),
-                    'Vulnerabilities Count': args.get('vulnerabilities_count'),
-                    'Operating System': lst.get('operating_system'),
-                    'Score': lst.get('risk_meter_score')
-                })
-         human_readable_markdown = "no assets in response"
+        for lst in assets_list:
+            human_readable.append({
+                'id': lst.get('id'),
+                'Hostname': lst.get('hostname'),
+                'IP-address': lst.get('ip_address'),
+                'Vulnerabilities Count': args.get('vulnerabilities_count'),
+                'Operating System': lst.get('operating_system'),
+                'Score': lst.get('risk_meter_score')
+            })
+        human_readable_markdown = "no assets in response"
     if argToBoolean(to_context):
         return CommandResults(
             outputs_prefix="Kenna.Assets",
