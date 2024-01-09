@@ -575,23 +575,12 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
 
 
 def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
-        args_id = str(args.get('external_id'))
-        url_suffix = f'/assets/search?&q=external_id%3A{args_id}/'
+        asset_id = str(args.get('external_id'))
+        url_suffix = f'/assets/search?&q=external_id%3A{asset_id}/'
         human_readable = []
         limit: int = arg_to_number(args.get('limit')) or 500
         to_context = args.get('to_context')
         context: Dict[str, Any] = {}
-        if args.get('tags'):
-            tags = argToList(args.get('tags'))
-        else:
-            tags = args.get('tags')
-        '''params = {
-            'id[]': argToList(args.get('id')),
-            'hostname[]': argToList(args.get('hostname')),
-            'min_risk_meter_score': args.get('min-score'),
-            'tags[]': tags,
-            'external_id': args.get('external_id')
-        }'''
         response = client.http_request(message='GET', suffix=url_suffix).get(
             'assets')
         if response:
@@ -657,14 +646,16 @@ def main():
         'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
         'kenna-add-tag': add_tags,
         'kenna-delete-tag': delete_tags,
-        'kenna-inactivate-asset': inactivate_asset,
-        'kenna-get-connector-runs': get_connector_runs,
-        'kenna-search-assets-by-external-id': search_assets_by_external_id
+        'kenna-get-connector-runs': get_connector_runs
     }
-
+    args = demisto.args()
     try:
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client, args))
+        elif command == "kenna-inactivate-asset":
+            return_results(inactivate_asset(client, args))
+        elif command == "kenna-search-assets-by-external-id":
+            return_results(search_assets_by_external_id(client, args))
         else:
             raise NotImplementedError(f'{command} is not an existing Kenna v2 command')
 

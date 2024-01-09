@@ -453,6 +453,9 @@ script:
   - arguments:
     - name: external_id
       description: The external_id of the asset.
+    - name: to_context
+      description: Posibility of get data in context
+      type: Boolean
     name: kenna-search-assets-by-external-id
     description: Search assets by external id.
   dockerimage: demisto/python3:3.10.13.83255
