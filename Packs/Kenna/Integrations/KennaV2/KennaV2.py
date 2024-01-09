@@ -209,10 +209,9 @@ def inactivate_asset(client: Client, args: dict) -> CommandResults:
         }
     }
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
-    try:
-        if result.get('status') != "success":
-            return CommandResults(readable_output='Could not inactivate asset.')
-        return CommandResults(readable_output=f'Asset {asset_id} was updated')
+    if result.get('status') != "success":
+        return CommandResults(readable_output='Could not inactivate asset.')
+    return CommandResults(readable_output=f'Asset {asset_id} was updated')
 
 
 def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
