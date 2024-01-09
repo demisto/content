@@ -10,7 +10,7 @@ This section describes the configuration that needs to be done on your on-prem d
 1. In the Identity Platform administrative web interface, go to the **Advanced Settings**. 
 2. From the advanced settings home page, click **Admin Realm**. 
 3. Navigate to the **Logs** tab of the admin (SecureAuth0) realm.
-4. Go to the **Log Options** section, and select the **Syslog** check box of the **Audit Logs** configuration for enabling syslog forwarding of audit log events. 
+4. Go to the **Log Options** section, and select the **Syslog** checkbox of the **Audit Logs** configuration for enabling syslog forwarding of audit log events. 
 5. Go to the **Syslog** section and set the following configurations  -              
    - **`Syslog Server`** - Enter the IP address of the target [Cortex XSIAM Syslog Broker VM](#broker-vm). 
    - **`Syslog Port`** - Enter the syslog service port that the target Cortex XSIAM Broker VM is listening on for receiving forwarded events from SecureAuth Identity Platform. 
