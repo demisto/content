@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 
 
 ## Configuration on Server Side
-This section describes the configuration that needs to be done on your on-prem deployment SecureAuth Web Admin interface in order to forward SecureAuth Identity Platform audit logs to Cortex XSIAM Broker VM via syslog. For configuring audit log syslog forwarding for cloud deployments, contact [SecureAuth Support](https://www.secureauth.com/support/).
+This section describes the configuration that needs to be done on your on-prem deployment SecureAuth Web Admin interface in order to forward SecureAuth Identity Platform audit logs to Cortex XSIAM Broker VM via syslog. For cloud deployments syslog configuration, contact [SecureAuth Support](https://www.secureauth.com/support/).
 
 Follow the steps below:
 1. In the Identity Platform administrative web interface, go to the **Advanced Settings**. 
