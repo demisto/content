@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Tuple, Callable
 
 import urllib3
-import time
 
 
 # Disable insecure warnings
@@ -594,17 +593,12 @@ def search_assets_by_external_id(client: Client, args: dict) -> CommandResults:
     limit: int = arg_to_number(args.get('limit')) or 500
     to_context = args.get('to_context')
     context: dict[str, Any] = {}
-    response = client.http_request(message='GET', suffix=url_suffix).get(
-        'assets')
+    response = client.http_request(message='GET', suffix=url_suffix).get('assets')
     if response:
         assets_list = response[:limit]
-        wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
-                        'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
-        actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
-                        'operating_system',
-                        'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
+        wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags', 'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
+        actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count', 'operating_system', 'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
         context_list: list[dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
-
         for lst in assets_list:
             human_readable.append({
                 'id': lst.get('id'),
@@ -624,11 +618,11 @@ def search_assets_by_external_id(client: Client, args: dict) -> CommandResults:
             raw_response=response
         )
     return CommandResults(
-            outputs_prefix="Kenna.Assets",
-            outputs_key_field="ID",
-            readable_output=human_readable_markdown,
-            raw_response=response
-        )
+        outputs_prefix="Kenna.Assets",
+        outputs_key_field="ID",
+        readable_output=human_readable_markdown,
+        raw_response=response
+    )
 
 
 def main():
