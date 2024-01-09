@@ -11,11 +11,11 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: '70'
-  display: High-Risk Threshold
+- display: High-Risk Threshold
   name: risk_threshold
   required: true
   type: 0
+  defaultvalue: '70'
 - defaultvalue: '7'
   display: Young Domain Timeframe (within Days)
   name: young_domain_timeframe
@@ -23,16 +23,18 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
+- display: Source Reliability
   name: integrationReliability
+  type: 15
+  required: false
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -41,11 +43,9 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
-  required: false
 - defaultvalue: indicatorType
-  name: feedExpirationPolicy
   display: ''
+  name: feedExpirationPolicy
   options:
   - never
   - interval
@@ -58,12 +58,12 @@ configuration:
   display: ''
   type: 1
   required: false
-- display: Guided Pivot Threshold
+- defaultvalue: 500
   name: pivot_threshold
-  required: true
-  defaultvalue: 500
-  additionalinfo: When a small set of domains share an attribute (e.g. registrar), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold.
+  display: 'Guided Pivot Threshold'
   type: 1
+  required: true
+  additionalinfo: When a small set of domains share an attribute (e.g. registrar), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold.
 - display: 'Enabled on Monitoring Domains by Iris Search Hash'
   name: monitor_iris_search_hash
   defaultvalue: Import Indicators Only
@@ -2403,7 +2403,7 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  dockerimage: demisto/vendors-sdk:1.0.0.83426
+  dockerimage: demisto/vendors-sdk:1.0.0.84320
   runonce: false
   script: '-'
   type: python
