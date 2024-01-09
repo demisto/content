@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
+from bs4 import BeautifulSoup
 
 
 no_entries_message = """<!DOCTYPE html>
@@ -55,6 +56,24 @@ def html_cleanup(full_thread_html):
     return final_html_result
 
 
+def remove_style_and_color(html_message):
+    demisto.debug(f'DisplayEmailHtmlThread - {html_message=}')
+    parsed_html_body = BeautifulSoup(html_message, 'html.parser')
+
+    # Remove all style tags
+    for style_tag in parsed_html_body.find_all('style'):
+        style_tag.decompose()
+
+    # Remove all style attributes from other tags
+    for tag in parsed_html_body.find_all(True):
+        if 'style' in tag.attrs:
+            del tag.attrs['style']
+        if 'color' in tag.attrs:
+            del tag.attrs['color']
+    demisto.debug(f'DisplayEmailHtmlThread - after removing the style and color from the html {str(parsed_html_body)=}')
+    return str(parsed_html_body)
+
+
 def main():
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields')
@@ -86,11 +105,12 @@ def main():
                 'email_cc': thread.get('EmailCC', None),
                 'email_to': thread.get('EmailTo', None),
                 'email_subject': thread.get('EmailSubject', None),
-                'email_html': thread.get('EmailHTML', None),
+                'email_html': thread.get('EmailHTML'),
                 'email_time': thread.get('MessageTime', None),
                 'email_attachments': thread.get('EmailAttachments', None),
             }
-            demisto.debug(f'DisplayEmailHtmlThread - {thread_dict.get("email_html")}')
+            # remove_style_and_color(thread.get('EmailHTML')) if thread.get('EmailHTML') else None
+            demisto.debug(f'DisplayEmailHtmlThread - {thread_dict.get("email_html")=}')
             thread_items.append(thread_dict)
 
     if thread_exists:

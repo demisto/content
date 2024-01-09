@@ -119,3 +119,33 @@ def test_main(emailselectedthread, email_threads, expected_result_type, mocker):
     elif expected_result_type == 'error_result':
         expected_result = 'An email thread of 5 was not found. Please make sure this thread number is correct.'
         assert error_call_args.args[0] == expected_result
+
+
+def test_remove_style_and_color():
+    from DisplayEmailHtmlThread import remove_style_and_color
+
+    html_message = ('<html>\r\n<head>\r\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\r\n'
+                    '<meta name="Generator" content="Microsoft Exchange Server">\r\n<!-- converted from text --><style>'
+                    '<!-- .EmailQuote { margin-left: 1pt; padding-left: 4pt; border-left: #800000 2px solid; } --></style>\r\n'
+                    '</head>\r\n<body>\r\n<meta content="text/html; charset=UTF-8">\r\n<style type="text/css" style="">\r\n'
+                    '<!--\r\np\r\n\t{margin-top:0;\r\n\tmargin-bottom:0}\r\n-->\r\n</style>\r\n<div dir="ltr">\r\n'
+                    '<div id="x_divtagdefaultwrapper" dir="ltr" style="font-size:12pt; color:#000000; font-family:Calibri,'
+                    'Helvetica,sans-serif">\r\nreply to a threat from outlook</div>\r\n<hr tabindex="-1" '
+                    'style="display:inline-block; width:98%">\r\n<div id="x_divRplyFwdMsg" dir="ltr"><font face="Calibri, '
+                    'sans-serif" color="#000000" style="font-size:11pt"><b>From:</b> Administrator<br>\r\n<b>Sent:</b> Tuesday, '
+                    'January 9, 2024 3:01:34 PM<br>\r\n<b>To:</b> Administrator<br>\r\n<b>Subject:</b> &lt;04352911&gt; '
+                    'test 9.1 15:00</font>\r\n<div>&nbsp;</div>\r\n</div>\r\n</div>\r\n<font size="2">'
+                    '<span style="font-size:10pt;">\r\n<div class="PlainText">testing again from xsoar</div>\r\n</span></font>'
+                    '\r\n</body>\r\n</html>\r\n')
+    expected_html_message = ('<html>\n<head>\n<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>\n'
+                             '<meta content="Microsoft Exchange Server" name="Generator"/>\n<!-- converted from text -->'
+                             '\n</head>\n<body>\n<meta content="text/html; charset=UTF-8"/>\n\n<div dir="ltr">\n'
+                             '<div dir="ltr" id="x_divtagdefaultwrapper">\r\nreply to a threat from outlook</div>\n'
+                             '<hr tabindex="-1"/>\n<div dir="ltr" id="x_divRplyFwdMsg"><font face="Calibri, sans-serif">'
+                             '<b>From:</b> Administrator<br/>\n<b>Sent:</b> Tuesday, January 9, 2024 3:01:34 PM<br/>\n'
+                             '<b>To:</b> Administrator<br/>\n<b>Subject:</b> &lt;04352911&gt; test 9.1 15:00</font>\n<div>\xa0'
+                             '</div>\n</div>\n</div>\n<font size="2"><span>\n<div class="PlainText">testing again from xsoar'
+                             '</div>\n</span></font>\n</body>\n</html>\n')
+
+    result = remove_style_and_color(html_message)
+    assert result == expected_html_message
