@@ -8,7 +8,7 @@ alter // Extract the RFC 5424 Syslog Components
 | alter syslog_severity = to_string(subtract(syslog_priority, multiply(facility_code, 8)))
 
 | alter // Extract Syslog Header Fields 
-    syslog_client = arrayindex(syslog_headers, 0), // Machine that originally sent the syslog message.
+    syslog_client_machine = arrayindex(syslog_headers, 0), // Machine that originally sent the syslog message.
     syslog_app_name = arrayindex(syslog_headers, 1), // Device or application that originated the message. SecureAuth IdP uses the realm name here.
     syslog_process_id = arrayindex(syslog_headers, 2), // Indicates any discontinuity/disruption in syslog reporting when this value changes. Typically, the process name or ID of the syslog system is used.
     syslog_msg_id = arrayindex(syslog_headers, 3) // Identifies the type of message. SecureAuth IdP uses the Event ID here.
@@ -66,8 +66,6 @@ alter // Extract the RFC 5424 Syslog Components
     auth_reg_method = if(auth_reg_method != "NONE", auth_reg_method),
     duration_components = if(request_duration != null, split(request_duration, ".")),
     event_id = coalesce(event_id, ltrim(syslog_msg_id, "ID")),
-    syslog_client_ipv4 = if(syslog_client ~= "(?:\d{1,3}\.){3}\d{1,3}", syslog_client),
-    syslog_client_ipv6 = if(syslog_client ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", syslog_client),
     user_domain = arrayindex(regextract(user_id, "[\w\-]+\@(\S+)") , 0)
 
 // Event Type 
@@ -94,18 +92,16 @@ alter // Extract the RFC 5424 Syslog Components
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
     xdm.event.outcome = if(is_successful = "True" or trx_result ~= "(?i)success" or syslog_msg ~= "Success|validation passed" or is_status_code_successful = "true", XDM_CONST.OUTCOME_SUCCESS, is_successful = "False" or is_status_code_successful = "false" or trx_result ~= "Incorrect|SecurityViolation", XDM_CONST.OUTCOME_FAILED),
     xdm.event.outcome_reason = comment,
-    // xdm.intermediate.agent.version = version,
-    // xdm.intermediate.host.hostname = hostname, 
-    // xdm.intermediate.host.device_id = appliance_id,
-    // xdm.intermediate.ipv4 = syslog_client_ipv4,
-    // xdm.intermediate.ipv6 = syslog_client_ipv6,
-    // xdm.intermediate.process.pid = to_integer(syslog_process_id),
+    xdm.event.type = event_type,
+    xdm.intermediate.agent.version = version,
+    xdm.intermediate.host.hostname = if(appliance_name != null and appliance_machine_name != null, concat(appliance_name, " (", appliance_machine_name, ")"), coalesce(appliance_name, appliance_machine_name)),
+    xdm.intermediate.host.device_id = appliance_id,
+    xdm.intermediate.process.pid = to_integer(syslog_process_id),
     xdm.network.http.http_header.header = if(x_ms_client_application != null, "X-MS-Client-Application"),
     xdm.network.http.http_header.value = x_ms_client_application,
     xdm.network.http.response_code = coalesce(api_response_http_status_code, status_code),
     xdm.network.session_id = browser_session_id,
-    xdm.observer.name = if(appliance_name != null and appliance_machine_name != null, concat(appliance_name, " (", appliance_machine_name, ")"), coalesce(appliance_name, appliance_machine_name)),
-    xdm.observer.unique_identifier = appliance_id,
+    xdm.observer.name = coalesce(hostname, syslog_client_machine),
     xdm.observer.version = version,
     xdm.session_context_id = request_id,
     xdm.source.application.name = x_ms_client_application,
