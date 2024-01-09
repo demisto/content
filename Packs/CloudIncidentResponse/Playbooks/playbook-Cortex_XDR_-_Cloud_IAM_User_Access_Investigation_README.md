@@ -16,6 +16,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Account Enrichment - Generic v2.1
 * Cloud Credentials Rotation - Generic
 * Cloud Response - Generic
+* Account Enrichment - Generic v2.1
 
 ### Integrations
 

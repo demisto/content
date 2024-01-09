@@ -18,10 +18,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Cloud Enrichment
 * Cortex XDR - XCloud Cryptojacking - Set Verdict
 * Cloud Response - Generic
-* Cloud Credentials Rotation - Generic
+* Cortex XDR - Cloud Enrichment
 
 ### Integrations
 
@@ -30,15 +29,16 @@ This playbook does not use any integrations.
 ### Scripts
 
 * IncreaseIncidentSeverity
+* LoadJSON
 
 ### Commands
 
-* xdr-get-cloud-original-alerts
-* send-mail
 * xdr-update-incident
-* setIncident
-* xdr-get-incident-extra-data
 * closeInvestigation
+* xdr-get-incident-extra-data
+* send-mail
+* xdr-get-cloud-original-alerts
+* setIncident
 
 ## Playbook Inputs
 
@@ -75,4 +75,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_XCloud_Cryptojacking.png)
+![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)
