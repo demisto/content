@@ -902,6 +902,7 @@ Search assets by external id.
 | --- | --- | --- |
 | external_id | The external_id of the asset. | Required | 
 | to_context | Posibility of get data in context. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of assets to return. The default value is 500. Default is 500. | Optional | 
 
 #### Context Output
 
@@ -909,3 +910,8 @@ Search assets by external id.
 | --- | --- | --- |
 | Kenna.Assets.ID | Number | The asset ID. | 
 | Kenna.Assets.Notes | String | Notes of current asset. | 
+| Kenna.Assets.VulnerabilitiesCount | unknown | Count of Vulnerabilities of current asset. | 
+| Kenna.Assets.Hostname | unknown | Hostname of current asset. | 
+| Kenna.Assets.Score | unknown | Score of current asset. | 
+| Kenna.Assets.IpAddress | unknown | Ip of current asset. | 
+| Kenna.Assets.OperatingSystem | unknown | Operating system of current asset. | 

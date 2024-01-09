@@ -441,7 +441,8 @@ script:
     - contextPath: Kenna.ConnectorRunsList.ReopenedVulnerabilities
       description: Amount of re-opened vulnerabilities.
       type: Number
-  - arguments:
+  - name: kenna-inactivate-asset
+    arguments:
     - name: asset_id
       required: true
       description: The ID of the asset to inactivate.
@@ -449,20 +450,21 @@ script:
       required: true
       description: Notes about the asset.
     description: Inactivates a single asset.
-    name: kenna-inactivate-asset
-  - arguments:
+  - name: kenna-search-assets-by-external-id
+    arguments:
     - name: external_id
-      description: The external_id of the asset.
       required: true
-    - auto: PREDEFINED 
-      name: to_context
-      description: Posibility of get data in context.
+      description: The external_id of the asset.
+    - name: to_context
+      auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      defaultValue: 'false'
-    description: Search assets by external id.
-    name: kenna-search-assets-by-external-id
+      - "true"
+      - "false"
+      description: Posibility of get data in context.
+      defaultValue: "false"
+    - name: limit
+      description: The maximum number of assets to return. The default value is 500.
+      defaultValue: "500"
     outputs:
     - contextPath: Kenna.Assets.ID
       description: The asset ID.
@@ -470,7 +472,18 @@ script:
     - contextPath: Kenna.Assets.Notes
       description: Notes of current asset.
       type: String
-  dockerimage: demisto/python3:3.10.13.83255
+    - contextPath: Kenna.Assets.VulnerabilitiesCount
+      description: Count of Vulnerabilities of current asset.
+    - contextPath: Kenna.Assets.Hostname
+      description: Hostname of current asset.
+    - contextPath: Kenna.Assets.Score
+      description: Score of current asset.
+    - contextPath: Kenna.Assets.IpAddress
+      description: Ip of current asset.
+    - contextPath: Kenna.Assets.OperatingSystem
+      description: Operating system of current asset.
+    description: Search assets by external id.
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3
