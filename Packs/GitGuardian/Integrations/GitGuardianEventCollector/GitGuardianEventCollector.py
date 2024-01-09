@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 VENDOR = "gitguardian"
 PRODUCT = "enterprise"
 DEFAULT_PAGE_SIZE = 1000
@@ -46,9 +46,6 @@ class Client(BaseClient):
             List: A list of events that were fetched
             str: The time to start the next incident fetch.
         """
-        incidents = []
-        next_run_incidents = ""
-        next_run_audit_logs = ""
         incidents, next_run_incidents = self.search_incidents(
             last_run.get("incident_from_fetch_time", ""), max_events_per_fetch
         )
@@ -165,7 +162,7 @@ class Client(BaseClient):
             demisto.debug("GG: No audit_logs were fetched")
             next_run_audit_logs_from_fetch = from_fetch_time
         else:
-            next_run_audit_logs_from_fetch = audit_logs[-1].get("gg_created_at")
+            next_run_audit_logs_from_fetch = self.alter_next_fetch_time(audit_logs[-1].get("gg_created_at"))
             demisto.debug(
                 f"GG: {len(audit_logs)} audit_logs were fetched,last audit_logs time is {next_run_audit_logs_from_fetch}"
             )
@@ -185,6 +182,15 @@ class Client(BaseClient):
         number_of_last_page = math.ceil(total_num_of_results / DEFAULT_PAGE_SIZE) or 1
         return number_of_last_page
 
+    @staticmethod
+    def alter_next_fetch_time(time_str_to_alter, num_of_microseconds_to_add : int = 1) -> str:
+        """Adds the requested amount of microseconds to a time str
+        """
+        event_time = datetime.strptime(time_str_to_alter, DATE_FORMAT)
+        altered_event_time = event_time + timedelta(microseconds=num_of_microseconds_to_add)
+
+        return altered_event_time.strftime(DATE_FORMAT)
+    
     @staticmethod
     def add_time_to_events(events: List[Dict] | None, event_type: str):
         """
