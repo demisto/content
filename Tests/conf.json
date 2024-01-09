@@ -3093,7 +3093,6 @@
         },
         {
             "integrations": "Rasterize v2 Pre-Release",
-            "instance_names": "Rasterize_v2_Pre-Release_instance_1",
             "playbookID": "Rasterize Test V2",
             "fromversion": "5.0.0",
             "memory_threshold": 300,
