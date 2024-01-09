@@ -84,7 +84,7 @@ outputs:
   type: number
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/rakyll-hey:1.0.0.49364
+dockerimage: demisto/rakyll-hey:1.0.0.62791
 runas: DBotWeakRole
 tests:
 - No test
