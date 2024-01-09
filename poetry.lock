@@ -1453,8 +1453,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "e4393b5c1231d52f5bf9d6276cb41bd2d31de5fe"
-resolved_reference = "e4393b5c1231d52f5bf9d6276cb41bd2d31de5fe"
+reference = "ac72ac214332c7e84a35afec0317a53d98421189"
+resolved_reference = "ac72ac214332c7e84a35afec0317a53d98421189"
 
 [[package]]
 name = "deprecated"
@@ -7143,4 +7143,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "d43a9dfec0f925a71d8962755a3aed6eb21e4c4d2fd7cd323bb9e80cc7953cd5"
+content-hash = "0265765facb2065eb466c120984c7f161c8730f1ec2d173527a9d797acdcdb8b"
