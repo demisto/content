@@ -1,0 +1,159 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: CiscoWebexEventCollector
+  version: -1
+configuration:
+- display: URL
+  name: base_url
+  defaultvalue: 'https://webexapis.com'
+  required: true
+  type: 0
+  section: Connect
+- name: admin_credentials
+  display: Admin APP Client ID
+  required: true
+  type: 9
+  additionalinfo: Admin APP Client ID and Secret.
+  displaypassword: Admin APP Client Secret
+- display: Admin APP Redirect URI
+  name: admin_app_redirect_uri
+  required: true
+  type: 0
+  section: Connect
+- display: Admin Org Id
+  name: admin_org_id
+  required: true
+  type: 0
+  section: Connect
+- name: compliance_officer_credentials
+  display: Compliance Officer Client ID
+  required: true
+  type: 9
+  additionalinfo: Compliance Officer Client ID and Secret.
+  displaypassword: Compliance Officer Client Secret
+- display: Compliance Officer Redirect URI
+  name: compliance_officer_redirect_uri
+  required: true
+  type: 0
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Fetch security audit events
+  additionalinfo: In order to fetch security audit events, pro pack needs to be installed on the Webex instance.
+  name: fetch_security_audit_events
+  required: false
+  type: 8
+  section: Collect
+- defaultvalue: 200
+  display: Maximum number of events per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
+description: Cisco Webex Event Collector fetches Events and Admin Audit Events and Security Audit Events.
+display: Cisco Webex Event Collector
+name: CiscoWebexEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: The user to start authorization.
+      name: user
+      predefined:
+      - 'admin'
+      - 'compliance_officer'
+      required: true
+    description: Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!cisco-webex-oauth-complete` as an argument to finish the process.
+    name: cisco-webex-oauth-start
+  - arguments:
+    - auto: PREDEFINED
+      description: The user to complete authorization.
+      name: user
+      predefined:
+      - 'admin'
+      - 'compliance_officer'
+      required: true
+    - description: The authorization code retrieved from the callback URL according to the documentation.
+      name: code
+      required: true
+    description: Use this command to complete the authorization process. After copying the authorization code found in the query parameter `code` of the callback URL, paste the value in the command as an argument to finish the process.
+    name: cisco-webex-oauth-complete
+  - arguments:
+    - auto: PREDEFINED
+      description: The user to complete authorization.
+      name: user
+      predefined:
+      - 'admin'
+      - 'compliance_officer'
+      required: true
+    description: Use this command to complete the authorization process. After copying the authorization code found in the query parameter `code` of the callback URL, paste the value in the command as an argument to finish the process.
+    name: cisco-webex-oauth-test
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of events to return.
+      name: limit
+    - description: Date in ISO format (2023-10-01T20:33:22.123Z) to return events from.
+      name: since_datetime
+    description: Gets admin audit events from Cisco Webex.
+    name: cisco-webex-get-admin-audit-events
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of events to return.
+      name: limit
+    - description: Date in ISO format (2023-10-01T20:33:22.123Z) to return events from.
+      name: since_datetime
+    description: Gets security audit events from Cisco Webex.
+    name: cisco-webex-get-security-audit-events
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of events to return.
+      name: limit
+    - description: Date in ISO format (2023-10-01T20:33:22.123Z) to return events from.
+      name: since_datetime
+    description: Gets events from Cisco Webex.
+    name: cisco-webex-get-compliance-officer-events
+  dockerimage: demisto/python3:3.10.13.83255
+  isfetchevents: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+"marketplaces": ["marketplacev2"]
+fromversion: 6.12.0
+tests:
+- No tests (auto formatted)
