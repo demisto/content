@@ -4,6 +4,21 @@ from unittest.mock import MagicMock
 import pytest
 
 
+def test_internal_request(mocker):
+    from AwsEC2SyncAccounts import internal_request
+
+    mock_execute_command = mocker.patch.object(
+        demisto, "executeCommand", return_value=[{'Contents': {'response': 'result'}}]
+    )
+
+    result = internal_request('POST', '/path/', {'body': 'data'})
+
+    assert result == 'result'
+    mock_execute_command.assert_called_with(
+        'core-api-post', {'uri': '/path/', 'body': '{"body": "data"}'}
+    )
+
+
 def test_get_account_ids(mocker):
     from AwsEC2SyncAccounts import get_account_ids
 
