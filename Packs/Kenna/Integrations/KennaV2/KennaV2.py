@@ -596,7 +596,6 @@ def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[
         }'''
         response = client.http_request(message='GET', suffix=url_suffix).get(
             'assets')
-        time.sleep(0.5)
         if response:
             assets_list = response[:limit]
             wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
