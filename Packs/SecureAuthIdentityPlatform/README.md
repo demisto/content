@@ -16,6 +16,7 @@ Follow the steps below:
    - **`Syslog Server`** - Enter the IP address of the target [Cortex XSIAM Syslog Broker VM](#broker-vm). 
    - **`Syslog Port`** - Enter the syslog service port that the target Cortex XSIAM Broker VM is listening on for receiving forwarded events from SecureAuth Identity Platform. 
    - **`Syslog RFC Spec`** - Select [**RFC5424**](https://datatracker.ietf.org/doc/html/rfc5424). Then provide a Private Enterprise Number ([PEN](https://www.iana.org/assignments/enterprise-numbers/)).
+6. Save your changes.
 
 See [SecureAuth Identity Platform Logs Configuration](https://docs.secureauth.com/2307/en/configure-the-admin-realm--secureauth0-.html#logs-tab) for additional details.
 
