@@ -1,8 +1,8 @@
 args:
-- description: A1000 classification report
+- description: A1000 classification report.
   name: a1000_classification_report
   required: true
-- description: A1000 full report
+- description: A1000 full report.
   name: a1000_full_report
   required: true
 comment: Calculates A1000 final classification based on A1000 classification and A1000 full reports.

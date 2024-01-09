@@ -112,7 +112,7 @@ outputs:
   description: Whether the threat is trending.
   type: boolean
 - contextPath: Date.CurrentDate
-  description: The current date
+  description: The current date.
   type: String
 - contextPath: Date.WeekAgoDate
   description: The date that was 7 days ago starting from current date.

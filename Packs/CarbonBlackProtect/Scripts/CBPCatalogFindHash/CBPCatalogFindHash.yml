@@ -15,7 +15,7 @@ args:
 - name: md5
   required: true
   default: true
-  description: md5 hash to find
+  description: md5 hash to find.
 scripttarget: 0
 dependson:
   must:

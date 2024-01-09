@@ -9,7 +9,7 @@ comment: Returns the current datetime as an epoch value for use in timestamp com
 enabled: true
 outputs:
 - contextPath: DateTimeNowEpoch
-  description: The current date/time epoch as an integer value
+  description: The current date/time epoch as an integer value.
   type: number
 scripttarget: 0
 subtype: python3

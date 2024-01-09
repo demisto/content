@@ -35,14 +35,14 @@ args:
   name: contextKeys
 - auto: PREDEFINED
   defaultValue: 'false'
-  description: Remove incident labels
+  description: Remove incident labels.
   name: removeLabels
   predefined:
   - 'true'
   - 'false'
 - description: A comma-separated list of fields in the object to un-poplulate.
   name: unPopulateFields
-- description: Random salt to the hash function
+- description: Random salt to the hash function.
   name: addRandomSalt
 comment: |-
   Hash fields from the incident list.
