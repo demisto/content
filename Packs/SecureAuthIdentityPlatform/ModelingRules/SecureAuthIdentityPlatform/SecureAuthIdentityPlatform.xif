@@ -22,15 +22,13 @@ alter // Extract the RFC 5424 Syslog Components
     auth_reg_method = arrayindex(regextract(syslog_structured_data, "AuthRegMethod=\"(\S[^\"]+)"), 0),
     auth_reg_method_info = arrayindex(regextract(syslog_structured_data, "AuthRegMethodInfo=\"(\S[^\"]+)"), 0),
     browser_session_id = arrayindex(regextract(syslog_structured_data, "BrowserSession=\"(\S[^\"]+)"), 0),
-    comment = arrayindex(regextract(syslog_structured_data, "Comment=\"(\S[^\"]+)"), 0),
-    company_id = arrayindex(regextract(syslog_structured_data, "CompanyID=\"(\S[^\"]+)"), 0),
-    company_name = arrayindex(regextract(syslog_structured_data, "Company=\"(\S[^\"]+)"), 0),
+    comment = arrayindex(regextract(syslog_structured_data, "Comment=\"(\S[^\"]+)"), 0), // The comment includes an entry for each type of end-user failed login event, and includes the count and decimal percentage for each instance
     destination_site_url = arrayindex(regextract(syslog_structured_data, "DestinationSiteUrl=\"(\S[^\"]+)"), 0),
     event_id = arrayindex(regextract(syslog_structured_data, "EventID=\"(\S[^\"]+)"), 0),
     hashed_user_id = arrayindex(regextract(syslog_structured_data, "HashedUserID=\"(\S[^\"]+)"), 0),
     hashed_unique_user_id = arrayindex(regextract(syslog_structured_data, "HashedUniqueUserID=\"(\S[^\"]+)"), 0),
     hostname = arrayindex(regextract(syslog_structured_data, "HostName=\"(\S[^\"]+)"), 0),
-    product_type = arrayindex(regextract(syslog_structured_data, "ProductType=\"(\S[^\"]+)"), 0),
+    product_type = arrayindex(regextract(syslog_structured_data, "ProductType=\"(\S[^\"]+)"), 0), // The value corresponds to the Integration Method configured in the Device Recognition Method section on the Workflow tab
     realm = arrayindex(regextract(syslog_structured_data, "Realm=\"(\S[^\"]+)"), 0),
     request_duration = arrayindex(regextract(syslog_structured_data, "RequestDuration=\"(\S[^\"]+)"), 0), // Displays the response time of an application request. Applicable only to log entries with event ID9004x; also logged in the message element.
     request_id = arrayindex(regextract(syslog_structured_data, "RequestID=\"(\S[^\"]+)"), 0), // Displays a unique identifier that shows the workflow for a specific request. An "Application End" log entry marks the end of a request and its corresponding RequestID.
@@ -53,7 +51,9 @@ alter // Extract the RFC 5424 Syslog Components
     reported_ip = arrayindex(regextract(syslog_msg, "Reported IP (\S+) to"), 0),
     response_time = arrayindex(regextract(syslog_msg, "ResponseTime=\'(\d+)"), 0),
     status_code = arrayindex(regextract(syslog_msg, "StatusCode:\s*(\w+)"), 0),
-    xff_ip = arrayindex(regextract(syslog_msg, "X-Forwarded-For:\s*([\d\.\:a-fA-F]+)"), 0),
+    xff_ip = coalesce(
+        arrayindex(regextract(syslog_msg, "X-Forwarded-For:\s*([\d\.\:a-fA-F]+)"), 0),
+        arrayindex(regextract(syslog_msg, "X-Forwarded-For\.? With value\s*([\d\.\:a-fA-F]+)"), 0)),
     xff_port = arrayindex(regextract(syslog_msg, "X-Forwarded-Port:\s*(\d+)"), 0),
     x_real_ip = arrayindex(regextract(syslog_msg, "X-Real-IP:\s*([\d\.\:a-fA-F]+)"), 0)
 
@@ -83,7 +83,7 @@ alter // Extract the RFC 5424 Syslog Components
 
 | alter // XDM Mapping
     xdm.alert.severity = syslog_severity,
-    xdm.auth.auth_method = auth_reg_method,
+    xdm.auth.auth_method = if(product_type = "1", "Certificate Enrollment and Validation", product_type = "2", "Certificate Enrollment Only", product_type = "3", "Mobile Enrollment and Validation", product_type),
     xdm.auth.mfa.client_details = auth_reg_method_info,
     xdm.auth.mfa.method = coalesce(auth_reg_method, allowed_tokens), 
     xdm.event.description = syslog_msg,
@@ -97,8 +97,8 @@ alter // Extract the RFC 5424 Syslog Components
     xdm.intermediate.host.hostname = if(appliance_name != null and appliance_machine_name != null, concat(appliance_name, " (", appliance_machine_name, ")"), coalesce(appliance_name, appliance_machine_name)),
     xdm.intermediate.host.device_id = appliance_id,
     xdm.intermediate.process.pid = to_integer(syslog_process_id),
-    xdm.network.http.http_header.header = if(x_ms_client_application != null, "X-MS-Client-Application"),
-    xdm.network.http.http_header.value = x_ms_client_application,
+    xdm.network.http.http_header.header = if(x_ms_client_application != null, "X-MS-Client-Application", xff_ip != null, "X-Forwarded-For", x_real_ip != null, "X-Real-IP"),
+    xdm.network.http.http_header.value = coalesce(x_ms_client_application, xff_ip, x_real_ip),
     xdm.network.http.response_code = coalesce(api_response_http_status_code, status_code),
     xdm.network.session_id = browser_session_id,
     xdm.observer.name = coalesce(hostname, syslog_client_machine),
@@ -113,10 +113,6 @@ alter // Extract the RFC 5424 Syslog Components
     xdm.source.user.domain = user_domain,
     xdm.source.user.identifier = coalesce(hashed_unique_user_id, hashed_user_id, user_id, ws_trust_username),
     xdm.source.user.username = coalesce(user_id, ws_trust_username),
-    xdm.source.zone = if(company_id != null and company_name != null, concat(company_id, " (", company_name, ")"), coalesce(company_id, company_name)),
     xdm.target.domain = if(realm != null, realm, syslog_app_name != "-", syslog_app_name),
     xdm.target.port = to_integer(xff_port),
-    xdm.target.resource.id = state_machine_id,
-    xdm.target.resource.name = destination_site_url,
-    xdm.target.resource.type = product_type,
     xdm.target.url = coalesce(target_url, saml_target_url, saml_consumer_site_url, destination_site_url);
