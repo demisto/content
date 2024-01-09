@@ -1,0 +1,37 @@
+[
+    {
+        "AllowRouting": "disable",
+        "Category": "default",
+        "Comment": "",
+        "Exclude": "disable",
+        "FabricObject": "disable",
+        "Member": {
+            "Name": [
+                "a"
+            ]
+        },
+        "Name": "Charizard",
+        "Type": "folder",
+        "UUID": "00000000-0000-0000-0000-000000000000",
+        "VDOM": "root"
+    },
+    {
+        "AllowRouting": "disable",
+        "Category": "default",
+        "Comment": "Hello",
+        "Exclude": "enable",
+        "ExcludeMember": [
+            "c"
+        ],
+        "FabricObject": "disable",
+        "Member": {
+            "Name": [
+                "b"
+            ]
+        },
+        "Name": "Blastoise",
+        "Type": "default",
+        "UUID": "00000000-0000-0000-0000-000000000000",
+        "VDOM": "root"
+    }
+]

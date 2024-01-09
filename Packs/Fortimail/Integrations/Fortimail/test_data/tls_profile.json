@@ -1,0 +1,21 @@
+{
+    "objectID": "ProfTls:dsdfds",
+    "reqAction": 1,
+    "nodePermission": 3,
+    "mkey": "dsdfds",
+    "level": 1,
+    "check_ssl_version": false,
+    "min_ssl_version": 4,
+    "check_ca_name": false,
+    "check_ca_type": 0,
+    "ca_name": "",
+    "check_cert_subject": false,
+    "check_cert_type": 0,
+    "cert_subject": "",
+    "check_encryption_strength": false,
+    "encryption_strength": 256,
+    "dane_status": 0,
+    "mtasts_status": 0,
+    "action": false,
+    "comment": "dsfsdf"
+}
