@@ -41,7 +41,6 @@ wait-for-build-to-finish:
   variables:
     PIPELINE_ID: $PIPELINE_ID
   script:
-    - while IFS= read -r line; do
-    -   echo "PIPELINE_ID: $line"
-    - done < PIPELINE_ID.txt
+    - line=$(head -n 1 PIPELINE_ID.txt)
+    - echo $line
 #    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${PIPELINE_ID}" -p $PIPELINE_ID -pid 1738
