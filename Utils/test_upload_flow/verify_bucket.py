@@ -57,7 +57,7 @@ def logger(func):
         except Exception as e:
             logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
             self.is_valid = False
-            
+
     return wrapper
 
 
