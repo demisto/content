@@ -30,7 +30,6 @@ alter // Extract the RFC 5424 Syslog Components
     hashed_user_id = arrayindex(regextract(syslog_structured_data, "HashedUserID=\"(\S[^\"]+)"), 0),
     hashed_unique_user_id = arrayindex(regextract(syslog_structured_data, "HashedUniqueUserID=\"(\S[^\"]+)"), 0),
     hostname = arrayindex(regextract(syslog_structured_data, "HostName=\"(\S[^\"]+)"), 0),
-    // iana_pen = arrayindex(regextract(syslog_structured_data, "PEN=\"(\S[^\"]+)"), 0),
     product_type = arrayindex(regextract(syslog_structured_data, "ProductType=\"(\S[^\"]+)"), 0),
     realm = arrayindex(regextract(syslog_structured_data, "Realm=\"(\S[^\"]+)"), 0),
     request_duration = arrayindex(regextract(syslog_structured_data, "RequestDuration=\"(\S[^\"]+)"), 0), // Displays the response time of an application request. Applicable only to log entries with event ID9004x; also logged in the message element.
@@ -39,7 +38,7 @@ alter // Extract the RFC 5424 Syslog Components
     saml_target_url = arrayindex(regextract(syslog_structured_data, "SAMLTargetUrl=\"(\S[^\"]+)"), 0),
     state_machine_id = arrayindex(regextract(syslog_structured_data, "StateMachineID=\"(\S[^\"]+)"), 0),
     is_successful = arrayindex(regextract(syslog_structured_data, "Succeed=\"(\S[^\"]+)"), 0),
-    target_url = arrayindex(regextract(syslog_structured_data, "TargetUrl=\"(\S[^\"]+)"), 0),
+    target_url = arrayindex(regextract(syslog_structured_data, "TargetUrl=\"(\S[^\"]+)"), 0), // Authentication request target URL
     trx_result = arrayindex(regextract(syslog_structured_data, "TrxResult=\"(\S[^\"]+)"), 0), // Displays result of an authentication attempt
     user_agent = arrayindex(regextract(syslog_structured_data, "UserAgent=\"(\S[^\"]+)"), 0),
     user_host_address = arrayindex(regextract(syslog_structured_data, "UserHostAddress=\"(\S[^\"]+)"), 0),
@@ -71,6 +70,10 @@ alter // Extract the RFC 5424 Syslog Components
     syslog_client_ipv6 = if(syslog_client ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", syslog_client),
     user_domain = arrayindex(regextract(user_id, "[\w\-]+\@(\S+)") , 0)
 
+// Event Type 
+| alter event_type = if(event_id ~= "^11\d{3}", "Workflow", event_id ~= "^12\d{3}", "Data", event_id ~= "^13\d{3}", "RegCode", event_id ~= "^14\d{3}", "IPsec", event_id ~= "^15\d{3}", "Access", event_id ~= "^16\d{3}", "Password", event_id ~= "^17\d{3}", "License", event_id ~= "^18\d{3}", "Postauth", event_id ~= "^19\d{3}", "Other", event_id ~= "^24\d{3}", "YubiKey MFA", event_id = "20990", "Transaction Log", event_id ~= "^2\d{4}", "Workflow Page State Process", event_id ~= "^333\d{2}", "Password Throttling Multi-Factor Authentication", event_id ~= "^3\d{4}", "Pre-Authentication", event_id ~= "^406\d{2}", "Adaptive Authentication with Office 365", event_id ~= "^4\d{4}", "Post-Authentication", event_id ~= "^514\d{2}", "SQL Membership Provider", event_id ~= "^524\d{2}", "SQL Profile Provider", event_id ~= "^51\d{3}", "Membership Provider", event_id ~= "^52\d{3}", "Profile Provider", event_id ~= "^53\d{3}", "OTP Provider", event_id ~= "^54\d{3}", "Certificate Provider", event_id ~= "^55\d{3}", "Link-to-Accept Provider", event_id ~= "^5\d{4}", "Provider", event_id ~= "^606\d{2}", "Device Recognition", event_id ~= "^60\d{3}", "DFP Controller", event_id = "6000", "API Layer", event_id ~= "^9\d{4}", "System")
+| alter event_type = if(event_id ~= "^1\d{4}", concat("Web Admin Page UI: ", event_type), event_type)
+
 | alter // Duration Calculation (Foramt HH:MM:SS.sssssss)
     ms = if(request_duration != null,to_integer(arrayindex(regextract(arrayindex(duration_components, 1), "(\d{3})"), 0))), 
     hours_minutes_seconds = if(request_duration != null, split(arrayindex(duration_components, 0), ":"))
@@ -85,17 +88,18 @@ alter // Extract the RFC 5424 Syslog Components
     xdm.auth.auth_method = auth_reg_method,
     xdm.auth.mfa.client_details = auth_reg_method_info,
     xdm.auth.mfa.method = coalesce(auth_reg_method, allowed_tokens), 
-    xdm.event.description = if(syslog_msg != null and comment != null, concat(syslog_msg, ". ", comment, coalesce(syslog_msg, comment))),
+    xdm.event.description = syslog_msg,
     xdm.event.duration = coalesce(to_integer(total_request_duration_ms), to_integer(response_time)),
     xdm.event.id = event_id,
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
     xdm.event.outcome = if(is_successful = "True" or trx_result ~= "(?i)success" or syslog_msg ~= "Success|validation passed" or is_status_code_successful = "true", XDM_CONST.OUTCOME_SUCCESS, is_successful = "False" or is_status_code_successful = "false" or trx_result ~= "Incorrect|SecurityViolation", XDM_CONST.OUTCOME_FAILED),
-    xdm.intermediate.agent.version = version,
-    xdm.intermediate.host.hostname = hostname, 
-    xdm.intermediate.host.device_id = appliance_id,
-    xdm.intermediate.ipv4 = syslog_client_ipv4,
-    xdm.intermediate.ipv6 = syslog_client_ipv6,
-    xdm.intermediate.process.pid = to_integer(syslog_process_id),
+    xdm.event.outcome_reason = comment,
+    // xdm.intermediate.agent.version = version,
+    // xdm.intermediate.host.hostname = hostname, 
+    // xdm.intermediate.host.device_id = appliance_id,
+    // xdm.intermediate.ipv4 = syslog_client_ipv4,
+    // xdm.intermediate.ipv6 = syslog_client_ipv6,
+    // xdm.intermediate.process.pid = to_integer(syslog_process_id),
     xdm.network.http.http_header.header = if(x_ms_client_application != null, "X-MS-Client-Application"),
     xdm.network.http.http_header.value = x_ms_client_application,
     xdm.network.http.response_code = coalesce(api_response_http_status_code, status_code),
