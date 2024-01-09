@@ -210,7 +210,8 @@ class Client(BaseClient):
                             chunk_to_decode = decompressed_chunk[:len(decompressed_chunk) - bytes_to_cut]
                             decoded_counter += 1
                             decoded_str = self.decode_bytes(chunk_to_decode)
-                            f.write(decoded_str)
+                            # To avoid having a NULL byte
+                            f.write(decoded_str.replace('\0', '').replace('\x00', ''))
                             break
                         except UnicodeDecodeError:
                             demisto.debug(f'Decoding chunk number {chunks_counter} with {bytes_to_cut} bytes cut off using UTF-8'
