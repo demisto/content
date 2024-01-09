@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import json
 from collections import deque
 from copy import copy
@@ -9,13 +11,12 @@ from traceback import format_exc
 from typing import Dict
 
 import uvicorn
-from fastapi import Depends, FastAPI, Request, Response, status
+from fastapi import Depends, FastAPI, Request, Response, status, Form
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from pydantic import BaseModel
 from uvicorn.logging import AccessFormatter
 
-from CommonServerUserPython import *
 
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
@@ -52,11 +53,20 @@ class GenericWebhookAccessFormatter(AccessFormatter):
 
 @app.post('/')
 async def handle_post(
-        incident: Incident,
         request: Request,
         credentials: HTTPBasicCredentials = Depends(basic_auth),
-        token: APIKey = Depends(token_auth)
+        token: APIKey = Depends(token_auth),
+        name: Optional[str] = Form(None),
+        type: Optional[str] = Form(None),
+        occurred: Optional[str] = Form(None),
+        raw_json: Optional[str] = Form(None)
 ):
+
+    try:
+        raw_json = json.loads(raw_json)
+    except json.JSONDecodeError:
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Invalid JSON data.')
+
     header_name = None
     request_headers = dict(request.headers)
 
@@ -83,13 +93,13 @@ async def handle_post(
     secret_header = (header_name or 'Authorization').lower()
     request_headers.pop(secret_header, None)
 
-    raw_json = incident.raw_json or await request.json()
+    raw_json = raw_json or await request.json()
     raw_json['headers'] = request_headers
 
     incident = {
-        'name': incident.name or 'Generic webhook triggered incident',
-        'type': incident.type or demisto.params().get('incidentType'),
-        'occurred': incident.occurred,
+        'name': name or 'Generic webhook triggered incident',
+        'type': type or demisto.params().get('incidentType'),
+        'occurred': occurred,
         'rawJSON': json.dumps(raw_json)
     }
 

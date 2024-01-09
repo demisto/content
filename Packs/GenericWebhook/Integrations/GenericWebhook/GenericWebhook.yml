@@ -1,7 +1,4 @@
 category: Utilities
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Generic Webhook
   version: -1
@@ -51,18 +48,18 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
+description: The Generic Webhook (Form Data) integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook
 script:
-  commands: []
-  dockerimage: demisto/fastapi:1.0.0.76036
+  dockerimage: demisto/webhookimage
   longRunning: true
   longRunningPort: true
-  script: '-'
+  script: ''
   subtype: python3
   type: python
   isFetchSamples: true
+  runonce: false
 fromversion: 5.5.0
 tests:
 - Generic Webhook - Test
