@@ -205,20 +205,24 @@ def get_object_id_by_ip(client, list_type, object_ip):
     demisto.debug("debug-log: get_object_id_by_ip function called")
     page = 1
     url_suffix = f"{list_type}/ip_objects"
+    demisto.debug(f"debug-log: {url_suffix=}")
     response = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params={})
     demisto.debug(f"debug-log: first response {response=}")
     all_objects: list = response.get("data")
+    demisto.debug(f"debug-log: in {page=}, current len of all_objects is: {len(all_objects)}")
     try:
-        while next_page := response.get("links", {}).get("next", {}):
+        while next_page := response.get("links", {}).get("links", {}).get("next", {}):
             page += 1
-            demisto.debug(f"debug-log: next page found in response {next_page}, performing pagination for {page=}")
+            demisto.debug(f"debug-log: next page found in response: {next_page=}, performing pagination for {page=}")
             response = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params={'page': page})
-            demisto.debug(f"debug-log: response from page {page} is {response=}")
+            if response:
+                demisto.debug(f"debug-log: response from {page=} has {len(response.get('data')) objects}")
             all_objects.extend(response.get('data'))
+            demisto.debug(f"debug-log: finished {page=}, current length of all_objects is: {len(all_objects)}")
     except Exception:
         demisto.debug("debug-log: exception raised while trying to paginate")
 
-    demisto.debug(f"debug-log: found {len(all_objects)} objects. {all_objects=}")
+    demisto.debug(f"debug-log: found total of {len(all_objects)} objects.")
 
     all_match_ids = []
     for obj in all_objects:
