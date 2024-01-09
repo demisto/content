@@ -20,6 +20,7 @@ trigger-nightlies:
 #    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
     - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION | jq .id)
     - echo $PIPELINE_ID
+    - echo $PIPELINE_ID > PIPELINE_ID.txt
     - echo "test"
 #    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
@@ -40,4 +41,7 @@ wait-for-build-to-finish:
   variables:
     PIPELINE_ID: $PIPELINE_ID
   script:
-    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${PIPELINE_ID}" -p $PIPELINE_ID -pid 1738
+    - while IFS= read -r line; do
+    -   echo "PIPELINE_ID: $line"
+    - done < PIPELINE_ID.txt
+#    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${PIPELINE_ID}" -p $PIPELINE_ID -pid 1738
