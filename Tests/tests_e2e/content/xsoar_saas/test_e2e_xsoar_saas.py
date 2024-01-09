@@ -2,7 +2,6 @@ from datetime import timedelta
 from datetime import datetime
 
 import pytest
-import requests.exceptions
 from _pytest.fixtures import SubRequest
 from requests.exceptions import RequestException
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
@@ -126,7 +125,7 @@ def test_taxii2_server_returns_indicators(
 
                     # get the collections available
                     collections = get_json_response(response).get("collections")
-                    assert collections, f'could not get collections from url={response.request.url}, ' \
+                    assert collections, f'Could not get collections from url={response.request.url}, ' \
                         f'status_code={response.status_code}, response={collections}'
 
                     collection_id = collections[0]["id"]
