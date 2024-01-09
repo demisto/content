@@ -226,7 +226,7 @@ select = [
     "RUF007", # pairwise-over-zipped
     "RUF008", # mutable-dataclass-default
     "RUF009", # function-call-in-dataclass-default-argument
-    "RUF016", # 
+    "RUF016", # invalid-index-type
 
     "S102", # exec-builtin
     "S103", # bad-file-permissions
