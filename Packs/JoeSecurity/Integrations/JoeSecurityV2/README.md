@@ -9,9 +9,9 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Joe Security v2.
 3. Click **Add instance** to create and configure a new integration instance.
-
+ 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
+    | --- | ---  | --- |
     | Server URL |  | True |
     | API Key |  | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |

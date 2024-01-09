@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT% H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 API_ERRORS = {1: 'Quota', 2: 'MissingParameterError', 3: 'InvalidParameterError', 4: 'InvalidApiKeyError',
               5: 'ServerOfflineError', 6: 'InternalServerError', 7: 'PermissionError', 8: 'UnknownEndpointError'}
 

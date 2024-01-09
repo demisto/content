@@ -9,7 +9,7 @@ configuration:
   defaultvalue: https://jbxcloud.joesecurity.org/api
   type: 0
 - name: credentials
-  displaypassword: API Key
+  displaypassword: API  Key
   type: 9
   required: true
   hiddenusername: true
