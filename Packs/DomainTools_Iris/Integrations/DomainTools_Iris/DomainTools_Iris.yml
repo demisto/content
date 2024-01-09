@@ -3,12 +3,6 @@ commonfields:
   id: DomainTools Iris
   version: -1
 configuration:
-- display: DomainTools API URL
-  name: base_url
-  required: true
-  defaultvalue: http://api.domaintools.com
-  additionalinfo: Change to https://api.domaintools.com in order to use DomainTool's https endpoint.
-  type: 0
 - display: API Username
   name: username
   required: true
