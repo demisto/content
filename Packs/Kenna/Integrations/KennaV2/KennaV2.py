@@ -200,6 +200,13 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
 
 
 def inactivate_asset(client: Client, args: dict) -> CommandResults:
+    """Inactivate asset command.
+    Args:
+        client:  Client which connects to api
+        args: arguments for the request
+    Returns:
+        CommandResults
+    """
     asset_id = args['asset_id']
     url_suffix = f'/assets/{asset_id}'
     asset = {
@@ -574,6 +581,13 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
 
 
 def search_assets_by_external_id(client: Client, args: dict) -> CommandResults:
+    """Search assets by external id command.
+    Args:
+        client:  Client which connects to api
+        args: arguments for the request
+    Returns:
+        CommandResults
+    """
     external_id = args.get('external_id')
     url_suffix = f'/assets/search?&q=external_id%3A{external_id}/'
     human_readable = []
