@@ -7,9 +7,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* AWS - User Investigation
 * Azure - User Investigation
 * GCP - User Investigation
+* AWS - User Investigation
 
 ### Integrations
 
@@ -30,13 +30,13 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Username | The username to investigate. |  | Optional |
+| cloudProvider | The cloud service provider involved. |  | Optional |
 | AzureSearchTime | The Search Time for the Azure Log Analytics search query. Default value: ago\(1d\) | ago(1d) | Optional |
 | failedLogonThreshold | The threshold number of failed logons by the user. Required to determine how many failed logon events count as suspicious events. | 20 | Optional |
 | MfaAttemptThreshold | The threshold number of MFA failed logon by the user. Required to determine how many MFA failed logon events count as suspicious events. | 10 | Optional |
 | AwsTimeSearchFrom | The Search Time for the \`GetTime\` task used by the Aws Cloud Trail search query. <br/>This value represents the number of days to include in the search.<br/>Default value: 1.  \(1 Day\) | 1 | Optional |
-| GcpProjectName | The GCP project name. This is a mandatory field for GCP queries. |  | Optional |
 | GcpTimeSearchFrom | The Search Time for the \`GetTime\` task used by the GCP Logging search query. <br/>This value represents the number of days to include in the search.<br/>Default value: 1.  \(1 Day\) | 1 | Optional |
-| cloudProvider | The cloud service provider involved. |  | Optional |
+| GcpProjectName | The GCP project name. This is a mandatory field for GCP queries. |  | Optional |
 
 ## Playbook Outputs
 
