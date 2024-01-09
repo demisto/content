@@ -2236,7 +2236,7 @@ inputs:
   playbookInputQuery:
 - key: ShouldOpenTicket
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
   playbookInputQuery:
