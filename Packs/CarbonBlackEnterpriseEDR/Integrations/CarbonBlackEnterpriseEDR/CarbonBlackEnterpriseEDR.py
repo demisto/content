@@ -1,12 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
+
 from typing import Union, Dict, Optional, Any, Tuple, List
 
 import dateparser
 
 import requests
 import urllib3
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -411,6 +414,40 @@ class Client(BaseClient):
 
         response = self._http_request('POST', suffix_url, json_data=body)
         return response
+
+    def update_threat_tags(self, threat_id: str = None, tags: list = None) -> Dict:
+
+        suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
+
+        body = {
+            "tags": tags
+        }
+
+        return self._http_request('POST', suffix_url, json_data=body)
+
+    def create_threat_notes(self, threat_id: str = None, notes: str = None) -> Dict:
+
+        suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/notes'
+        body = {
+            "note": notes
+        }
+        return self._http_request('POST', suffix_url, json_data=body)
+
+    def update_alert_notes(self, alert_id: str = None, notes: str = None) -> Dict:
+
+        suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/alerts/{alert_id}/notes'
+
+        body = {
+            "note": notes
+        }
+
+        return self._http_request('POST', suffix_url, json_data=body)
+
+    def get_threat_tags(self, threat_id: str = None) -> Dict:
+
+        suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
+
+        return self._http_request('GET', suffix_url)
 
 
 def test_module(client):
@@ -1290,6 +1327,88 @@ def process_search_get_command(client: Client, args: Dict) -> List[CommandResult
                                               readable_output=human_readable))
     return job_result_list
 
+def add_threat_tags_command(client: Client, args: Dict) -> CommandResults:
+    tags = argToList(args.get("tags"))
+    threat_id = args.get("threat_id")
+    result = client.update_threat_tags(threat_id, tags)
+
+    readable_output = tableToMarkdown(f'Successfully updated threat: "{threat_id}"', result, removeNull=True)
+    outputs = {
+        'ThreatID': threat_id,
+        'Tags': result.get('tags')
+    }
+
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Threat',
+        outputs_key_field='tags',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def add_threat_notes_command(client: Client, args: Dict) -> CommandResults:
+    notes = args.get("notes")
+    threat_id = args.get("threat_id")
+    result = client.create_threat_notes(threat_id, notes)
+
+    readable_output = tableToMarkdown(f'Successfully added notes to threat: "{threat_id}"', result, removeNull=True)
+    outputs = {
+        'ThreatID': threat_id,
+        'Notes': notes
+    }
+
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Threat',
+        outputs_key_field='ThreatID',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def add_alert_notes_command(client: Client, args: Dict) -> CommandResults:
+    notes = args.get("notes")
+    alert_id = args.get("alert_id")
+    result = client.update_alert_notes(alert_id, notes)
+
+    readable_output = tableToMarkdown(f'Successfully added notes to alert: "{alert_id}"', result, removeNull=True)
+    outputs = {
+        'AlertID': alert_id,
+        'Notes': notes
+    }
+
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Threat',
+        outputs_key_field='AlertID',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def get_threat_tags_command(client: Client, args: Dict) -> CommandResults:
+    threat_id = args.get("threat_id")
+    result = client.get_threat_tags(threat_id)
+
+    readable_output = tableToMarkdown(f'Successfully sent for threat: "{threat_id}"', result, removeNull=True)
+    outputs = {
+        'ThreatID': threat_id,
+        'Tags': result.get('list')
+    }
+
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Threat',
+        outputs_key_field='ThreatID',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
 
 def main():
     """
@@ -1435,6 +1554,18 @@ def main():
         elif demisto.command() == 'cb-eedr-events-by-process-get':
             return_results(event_by_process_search_command(client, demisto.args()))
 
+        elif demisto.command() == 'cb-eedr-add-threat-tags':
+            return_results(add_threat_tags_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-add-threat-notes':
+            return_results(add_threat_notes_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-add-alert-notes':
+            return_results(add_alert_notes_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-get-threat-tags':
+            return_results(get_threat_tags_command(client, demisto.args()))
+
     # Log exceptions
     except Exception as e:
         err_msg = str(e)
@@ -1451,3 +1582,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+

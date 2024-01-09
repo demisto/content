@@ -171,3 +171,32 @@ def test_event_by_process_failing(mocker, requests_mock, demisto_args, expected_
     with pytest.raises(Exception) as e:
         client.create_search_event_by_process_request(**demisto_args)
     assert str(e.value) == expected_error_msg
+
+
+# Mock response from the API for testing
+MOCK_THREAT_TAGS_RESPONSE = {
+    'list': [
+        {'tag': 'malware'},
+        {'tag': 'suspicious'}
+    ]
+}
+
+
+def test_get_threat_tags(mocker):
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+
+    # Mock the _http_request method to return the mock response
+    mocker.patch.object(client, '_http_request', return_value=MOCK_THREAT_TAGS_RESPONSE)
+    threat_id = '123456'
+    result = client.get_threat_tags(threat_id)
+
+    # Assert that _http_request was called with the correct parameters
+    client._http_request.assert_called_with('GET', f'api/alerts/v7/orgs/{client.cb_org_key}/threats/{threat_id}/tags')
+
+    # Assert the result
+    assert result == MOCK_THREAT_TAGS_RESPONSE

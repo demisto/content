@@ -1,7 +1,4 @@
 category: Endpoint
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Carbon Black Enterprise EDR
   version: -1
@@ -9,67 +6,72 @@ configuration:
 - display: Server URL (e.g. https://defense.conferdeploy.net)
   name: url
   required: true
-  type: 0
   section: Connect
+  type: 0
 - display: Organization Key
   name: organization_key
   required: true
-  type: 0
   section: Connect
+  type: 0
 - display: Custom Key
+  hidden: true
   name: custom_key
+  required: false
+  section: Connect
   type: 4
-  section: Connect
-  hidden: true
-  required: false
 - display: Custom ID
+  hidden: true
   name: custom_id
+  required: false
+  section: Connect
   type: 0
-  section: Connect
-  hidden: true
-  required: false
 - display: Custom ID
-  name: credentials_custom
-  type: 9
   displaypassword: Custom Key
-  section: Connect
+  name: credentials_custom
   required: false
+  section: Connect
+  type: 9
 - display: Fetch incidents
   name: isFetch
-  type: 8
-  section: Collect
   required: false
+  section: Collect
+  type: 8
 - display: Incident type
   name: incidentType
+  required: false
+  section: Connect
   type: 13
-  section: Connect
-  required: false
-- display: Trust any certificate (not secure)
+- advanced: true
+  display: Trust any certificate (not secure)
   name: insecure
-  type: 8
-  section: Connect
-  advanced: true
   required: false
-- display: Use system proxy settings
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
   name: proxy
-  type: 8
-  section: Connect
-  advanced: true
   required: false
-- defaultvalue: '3 days'
+  section: Connect
+  type: 8
+- defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  type: 0
-  section: Collect
   required: false
-- defaultvalue: '50'
+  section: Collect
+  type: 0
+- defaultvalue: "50"
   display: Fetch limit
   name: fetch_limit
-  type: 0
-  section: Collect
   required: false
+  section: Collect
+  type: 0
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
-display: VMware Carbon Black Enterprise EDR
+display: Carbon Black Enterprise EDR
 name: Carbon Black Enterprise EDR
 script:
   commands:
@@ -193,7 +195,7 @@ script:
       - MEDIUM
       - HIGH
       - MISSION_CRITICAL
-    - defaultValue: '20'
+    - defaultValue: "20"
       description: Maximum number of rows to return.
       name: limit
     - auto: PREDEFINED
@@ -370,12 +372,12 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      defaultValue: 'true'
+      defaultValue: "true"
       description: Whether to group results.
       name: group_results
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - description: Alert minimum severity (In range of 1-10).
       name: minimum_severity
     - description: Device OS version. Supports comma-separated values.
@@ -422,7 +424,7 @@ script:
       predefined:
       - ASC
       - DESC
-    - defaultValue: '10'
+    - defaultValue: "10"
       description: The maximum number of results to return.
       name: limit
     - description: Alert start time.
@@ -570,7 +572,8 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.workflow.state
       description: Alert workflow - state
       type: String
-  - description: Retrieves all watchlists.
+  - arguments: []
+    description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
     outputs:
     - contextPath: CarbonBlackEEDR.Watchlist.classifier
@@ -659,14 +662,14 @@ script:
       description: Whether to enable watchlist tags. Can be "true" or "false".
       name: tags_enabled
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
       description: Enable watchlist alerts
       name: alerts_enabled
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - description: The report IDs for creating the watchlist. Supports comma-separated values.
       name: report_ids
     - description: The classifier key for creating the watchlist.
@@ -722,14 +725,14 @@ script:
       description: Whether to enable watchlist tags. Can be "true" or "false".
       name: tags_enabled
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
       description: Enable watchlist alerts.
       name: alerts_enabled
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - description: Watchlist report ID. Supports comma-separated values.
       name: report_ids
     - description: The classifier key to update.
@@ -1060,16 +1063,16 @@ script:
     - description: An array of SHA256 hashes (limit 100). Supports comma-separated values.
       name: sha256
       required: true
-    - defaultValue: '300'
+    - defaultValue: "300"
       description: The number of seconds to make the download URLs available for.
       name: expiration_seconds
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Download the file to XSOAR.
       name: download_to_xsoar
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     description: The files are able to be downloaded via AWS S3 pre-signed URLs.
     name: cb-eedr-files-download-link-get
     outputs:
@@ -1168,7 +1171,7 @@ script:
       description: A globally unique identifier for this event document.
       type: String
     - contextPath: CarbonBlackEEDR.SearchEvent.event_hash
-      description: ''
+      description: ""
       type: String
     - contextPath: CarbonBlackEEDR.SearchEvent.event_timestamp
       description: The timestamp of the event on the device.
@@ -1183,7 +1186,7 @@ script:
       description: 'Action associated with the modload operation. The only possible value is: ACTION_LOAD_MODULE.'
       type: String
     - contextPath: CarbonBlackEEDR.SearchEvent.modload_effective_reputation
-      description: ''
+      description: ""
       type: String
     - contextPath: CarbonBlackEEDR.SearchEvent.modload_md5
       description: The MD5 hash for the modules loaded.
@@ -1301,12 +1304,64 @@ script:
     - contextPath: CarbonBlackEEDR.SearchProcess.results.scriptload_count
       description: The cumulative count of loaded scripts since process tracking started.
       type: Number
+  - arguments:
+    - description: Threat ID to add the tags to.
+      isArray: true
+      name: threat_id
+      required: true
+    - description: The tags to be added to the threat.
+      name: tags
+      required: true
+    description: Update threat ID tags.
+    name: cb-eedr-add-threat-tags
+    outputs:
+    - contextPath: CarbonBlackEEDR.Threat.ThreatID
+      description: Threat ID.
+    - contextPath: CarbonBlackEEDR.Threat.Tags
+      description: Threat ID tags.
+  - arguments:
+    - description: Threat ID.
+      name: threat_id
+      required: true
+    - description: Notes to be added to the provided threat ID.
+      name: notes
+      required: true
+    description: Update threat ID notes.
+    name: cb-eedr-add-threat-notes
+    outputs:
+    - contextPath: CarbonBlackEEDR.Threat.ThreatID
+      description: Threat ID.
+    - contextPath: CarbonBlackEEDR.Threat.Notes
+      description: Threat ID notes.
+  - arguments:
+    - description: Alert ID.
+      name: alert_id
+      required: true
+    - description: Notes to be added to the provided alert ID.
+      name: notes
+      required: true
+    description: Update alert ID notes.
+    name: cb-eedr-add-alert-notes
+    outputs:
+    - contextPath: CarbonBlackEEDR.Alert.AlertID
+      description: Alert ID to add the notes to.
+    - contextPath: CarbonBlackEEDR.Alert.Notes
+      description: Alert notes.
+  - arguments:
+    - description: Provide threat ID
+      name: threat_id
+      required: true
+    description: Output a list of tags for the provided threat ID.
+    name: cb-eedr-get-threat-tags
+    outputs:
+    - contextPath: CarbonBlackEEDR.Threat.ThreatID
+      description: Threat ID.
+    - contextPath: CarbonBlackEEDR.Threat.Tags
+      description: Threat tags.
   dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-tests:
-- Carbon Black Enterprise EDR Test
-fromversion: 5.0.0
+sourcemoduleid: Carbon Black Enterprise EDR
