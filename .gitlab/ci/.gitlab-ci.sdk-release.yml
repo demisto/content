@@ -33,6 +33,8 @@ wait-for-build-to-finish:
   extends:
     - .release-sdk
     - .default-job-settings
+  dependencies:
+    - trigger-nightlies
   variables:
     PIPELINE_ID: $PIPELINE_ID
   script:
