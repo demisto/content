@@ -25,7 +25,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit,\
-    create_shame_message, slack_link
+    create_shame_message, slack_link, was_message_already_sent
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -537,7 +537,8 @@ def main():
                 logging.info(
                     f"""Checking pipeline {pipeline_id},
                     the commit is {current_commit} and the pipeline change status is: {pipeline_changed_status}""")
-                if pipeline_changed_status is not None:
+                if pipeline_changed_status is not None and not was_message_already_sent(current_commit_index,
+                                                                                        list_of_commits, list_of_pipelines):
                     shame_message=create_shame_message(current_commit, pipeline_changed_status, options.name_mapping_path)
                     computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
