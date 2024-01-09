@@ -1,0 +1,451 @@
+id: Prisma Cloud - Get Owner By Namespace
+version: -1
+name: Prisma Cloud - Get Owner By Namespace
+description: |-
+  This playbook will retrieve the potential owners of a runtime audit alert.
+  This is done using the "Namespace" value of the incident in order to query associated resource lists and user roles with associated users.
+  Eventually the playbook returns a list of user objects (if found).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 34655dca-4c3d-431c-8b9b-f7f8857b134e
+    type: start
+    task:
+      id: 34655dca-4c3d-431c-8b9b-f7f8857b134e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a0dbdde4-545d-4b54-8de9-31d52261a562
+    type: condition
+    task:
+      id: a0dbdde4-545d-4b54-8de9-31d52261a562
+      version: -1
+      name: Is Prisma Cloud v2 Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: PrismaCloud v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 13abf983-8b26-4053-8b56-d899a32e0aef
+    type: title
+    task:
+      id: 13abf983-8b26-4053-8b56-d899a32e0aef
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 800e4f5b-64b0-43e7-8b23-7645c1db81ab
+    type: condition
+    task:
+      id: 800e4f5b-64b0-43e7-8b23-7645c1db81ab
+      description: ""
+      version: -1
+      name: Namespace input exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Namespace
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 59e576de-9313-49aa-8903-dc648ffd0b10
+    type: regular
+    task:
+      id: 59e576de-9313-49aa-8903-dc648ffd0b10
+      version: -1
+      name: Get associated resource lists
+      description: Returns all the resource lists. Maps to the Resource Lists under Settings > Resource Lists in the Console UI.
+      script: '|||prisma-cloud-resource-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      namespace:
+        complex:
+          root: inputs.Namespace
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c59db337-686e-43dc-8f82-c9db2522ad79
+    type: regular
+    task:
+      id: c59db337-686e-43dc-8f82-c9db2522ad79
+      version: -1
+      name: Get associated user roles
+      description: Retrieves user roles. Maps to Settings > Access Control > Roles in the Console UI.
+      script: '|||prisma-cloud-user-roles-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      resource_list_name:
+        complex:
+          root: PrismaCloud.ResourceList
+          accessor: name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b49e309a-75d2-4c86-886c-717120b5f75c
+    type: condition
+    task:
+      id: b49e309a-75d2-4c86-886c-717120b5f75c
+      description: ""
+      version: -1
+      name: Any resource lists were found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.ResourceList
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b2fc4d02-c658-4e2f-8f11-79ab7d7aef94
+    type: regular
+    task:
+      id: b2fc4d02-c658-4e2f-8f11-79ab7d7aef94
+      version: -1
+      name: Get user details
+      description: Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
+      script: '|||prisma-cloud-users-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      usernames:
+        complex:
+          root: PrismaCloud.UserRoles
+          accessor: associatedUsers
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f39edc2d-ba70-493e-84f2-c8cead5fdab2
+    type: condition
+    task:
+      id: f39edc2d-ba70-493e-84f2-c8cead5fdab2
+      description: ""
+      version: -1
+      name: Any associated users were found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.UserRoles
+                accessor: associatedUsers
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3542e395-7dab-438f-83a1-1f44a224290d
+    type: condition
+    task:
+      id: 3542e395-7dab-438f-83a1-1f44a224290d
+      description: ""
+      version: -1
+      name: Enrich Users?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EnrichUsers
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_no": 0.2,
+      "1_3_yes": 0.47,
+      "3_2_#default#": 0.11,
+      "3_4_yes": 0.43,
+      "6_2_#default#": 0.17,
+      "8_2_#default#": 0.28,
+      "9_7_yes": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2025,
+        "width": 890,
+        "x": -90,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Namespace
+  value: {}
+  required: false
+  description: The namespace that the playbook would search associated users with.
+  playbookInputQuery:
+- key: EnrichUsers
+  value:
+    simple: "False"
+  required: false
+  description: Whether to enrich found users or not.
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaCloud.Users
+  description: The users which were found by this playbook.
+- contextPath: PrismaCloud.Users.email
+  description: Prisma Cloud user email.
+- contextPath: PrismaCloud.Users.firstName
+  description: User first name.
+- contextPath: PrismaCloud.Users.lastName
+  description: User last name.
+- contextPath: PrismaCloud.Users.enabled
+  description: User enabled.
+- contextPath: PrismaCloud.Users.username
+  description: User username.
+- contextPath: PrismaCloud.Users.type
+  description: User type.
+- contextPath: PrismaCloud.Users.displayName
+  description: User display name.
+- contextPath: PrismaCloud.UserRoles.associatedUsers
+  description: User roles associated users.
+tests:
+- Prisma Cloud V2 Test
+fromversion: 6.10.0

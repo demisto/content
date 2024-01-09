@@ -630,6 +630,12 @@ class TestCollector(ABC):
                 reason = CollectionReason.MODELING_RULE_TEST_DATA_CHANGED
             elif file_type == FileType.MODELING_RULE_XIF:
                 reason = CollectionReason.MODELING_RULE_XIF_CHANGED
+            elif file_type == FileType.ASSETS_MODELING_RULE:
+                reason = CollectionReason.MODELING_RULE_CHANGED
+            elif file_type == FileType.ASSETS_MODELING_RULE_SCHEMA:
+                reason = CollectionReason.MODELING_RULE_SCHEMA_CHANGED
+            elif file_type == FileType.ASSETS_MODELING_RULE_XIF:
+                reason = CollectionReason.MODELING_RULE_XIF_CHANGED
             else:  # pragma: no cover
                 raise RuntimeError(f'Unexpected file type {file_type} for changed file {changed_file_path}')
         # the modeling rule to test will be the containing directory of the modeling rule's component files
@@ -1401,7 +1407,24 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
 
 class SDKNightlyTestCollector(TestCollector):
 
+    @property
+    def sanity_tests(self) -> CollectionResult:
+        return CollectionResult(
+            test="Sanity Test - Playbook with no integration",
+            modeling_rule_to_test=None,
+            pack="HelloWorld",
+            reason=CollectionReason.SANITY_TESTS,
+            version_range=None,
+            reason_description='Demisto-SDK Sanity Test for test-content command',
+            conf=self.conf,
+            id_set=self.id_set,
+            is_sanity=True,
+            only_to_install=True,
+        )
+
     def _collect(self) -> CollectionResult | None:
+        if self.marketplace == MarketplaceVersions.XPANSE:
+            return None
         return self.sanity_tests
 
 

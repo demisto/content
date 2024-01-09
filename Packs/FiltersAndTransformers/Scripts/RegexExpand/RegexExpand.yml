@@ -40,11 +40,11 @@ args:
 - name: flags
   description: The comma separated flags for pattern matching in regex. "dotall" (s), "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
 - name: search_limit
-  description: The maximum limit for scanning patterns. (0 means unlimited)
+  description: The maximum limit for scanning patterns. (0 means unlimited).
   defaultValue: "0"
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

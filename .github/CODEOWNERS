@@ -121,3 +121,20 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryako
 /Packs/FeedMitreAttackv2/* @MLainer1
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @MLainer1
 /Packs/ApiModules/Scripts/NGINXApiModule/* @MLainer1
+
+# ML scripts
+/Packs/ML/ @jlevypaloalto
+/Packs/PhishingURL/Scripts/DBotPredictURLPhishing/ @jlevypaloalto
+/Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
+/Packs/CommonScripts/Scripts/DBotUpdateLogoURLPhishing/ @jlevypaloalto
+/Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
+/Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
+/Packs/Base/Scripts/DBotPredictPhishingWords/ @jlevypaloalto
+/Packs/Base/Scripts/DBotFindSimilarIncidents/ @jlevypaloalto
+/Packs/Base/Scripts/DBotTrainClustering/ @jlevypaloalto
+/Packs/Base/Scripts/DBotBuildPhishingClassifier/ @jlevypaloalto
+/Packs/Base/Scripts/DBotPreprocessTextData/ @jlevypaloalto
+/Packs/Base/Scripts/DBotFindSimilarIncidentsByIndicators/ @jlevypaloalto
+/Packs/Base/Scripts/DBotSuggestClassifierMapping/ @jlevypaloalto
+/Packs/Base/Scripts/GetMLModelEvaluation/ @jlevypaloalto
+/Packs/Base/Scripts/DBotMLFetchData/ @jlevypaloalto

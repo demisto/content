@@ -134,6 +134,7 @@ def test_taxii2_server_returns_indicators(
                     indicators = get_json_response(response).get("objects")
                     assert indicators, f'could not get indicators from url={response.request.url} with available ' \
                         f'indicators={available_indicators}, status code={response.status_code}, response={indicators}'
+                    break
         except (ApiException, RequestException) as error:
             if isinstance(error, ApiException):
                 logging.error(f'Got error when running test_taxii2_server_returns_indicators with {port=}, error:\n{error}')
@@ -208,7 +209,6 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
         integration_id="QRadar v3",
         is_long_running=True,
         instance_name=instance_name,
-        should_run_test_module=False
     ):
         incidents_type = integration_params["incident_type"]
         with get_fetched_incident(
@@ -225,12 +225,18 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
             investigation_id = qradar_incident_response.get("investigationId")
             assert investigation_id, f'investigation ID is empty in {qradar_incident_response}'
 
+            close_offense_command = f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED"
+
             # close the qradar offense
-            _, context = xsoar_saas_client.run_cli_command(
-                f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
+            war_room_entries, context = xsoar_saas_client.run_cli_command(
+                close_offense_command,
                 investigation_id=investigation_id
             )
-            assert context.get("QRadar", {}).get("Offense", {}).get("Status") == "CLOSED"
+            assert context.get("QRadar", {}).get("Offense", {}).get(
+                "Status") == "CLOSED", f"Error validating context when running " \
+                                       f"{close_offense_command} command, context: {context}, " \
+                                       f"war-rooom error entries: " \
+                                       f"{xsoar_saas_client.get_formatted_error_entries(war_room_entries)}"
 
             # make sure the incident gets closed after closing it in Qradar
             assert xsoar_saas_client.poll_incident_state(incident_id, expected_states=(IncidentState.CLOSED,), timeout=300)
