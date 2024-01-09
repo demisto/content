@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from unittest.mock import MagicMock
+import pytest
 
 
 def test_get_account_ids(mocker):
@@ -128,3 +129,15 @@ def test_update_ec2_instance(mocker):
         }
     )
     assert result == "Successfully updated ***AWS - EC2*** with accounts:"
+
+
+def test_errors(mocker):
+    import AwsEC2SyncAccounts as sync
+
+    with pytest.raises(DemistoException, match='Unexpected error while configuring AWS - EC2 instance with accounts'):
+        sync.get_instance = lambda _: 1 / 0
+        sync.update_ec2_instance([], '')
+
+    with pytest.raises(DemistoException, match="Unexpected output from 'aws-org-account-list':\nNone"):
+        sync.demisto.executeCommand = lambda *_: {}['key']
+        sync.get_account_ids('')
