@@ -881,7 +881,7 @@ Inactivates a single asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the asset to inactivate. | Required | 
+| asset_id | The ID of the asset to inactivate. | Required | 
 | notes | Notes about the asset. | Required | 
 
 #### Context Output
@@ -900,8 +900,12 @@ Search assets by external id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| external_id | The external_id of the asset. | Optional | 
+| external_id | The external_id of the asset. | Required | 
+| to_context | Posibility of get data in context. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Kenna.Assets.ID | Number | The asset ID. | 
+| Kenna.Assets.Notes | String | Notes of current asset. | 
