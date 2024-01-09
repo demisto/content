@@ -88,14 +88,14 @@ def main():
             'Type': EntryType.NOTE,
             'Contents': no_entries_message
         })
-        return None
+        return
 
     if isinstance(email_threads, dict):
         email_threads = [email_threads]
 
     thread_exists = False
     thread_items = []
-    full_thread_html = str()
+    full_thread_html = ""
 
     for thread in email_threads:
         if str(thread['EmailCommsThreadNumber']) == str(thread_number):
