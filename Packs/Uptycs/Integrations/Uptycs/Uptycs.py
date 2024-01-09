@@ -9,6 +9,7 @@ import os
 import ast
 import json
 import jwt
+import time
 from datetime import datetime, timedelta
 import requests
 from urllib.parse import unquote
@@ -79,6 +80,10 @@ def restcall(method, api, **kwargs):
         return_error("Error Connecting to server. Details: {0}".format(str(e)))
 
     return response.json()
+
+
+def get_href_link(link_text, url):
+    return f'[{link_text}]({url})'
 
 
 def severity_to_int(level_string):
@@ -189,6 +194,28 @@ CAST('%s' AS TIMESTAMP)"
     return query
 
 
+def apply_upt_day_cuts(query, name, start, finish):
+    if start is None and finish is None:
+        return query
+
+    if "WHERE" not in query:
+        query = ("%s WHERE" % query)
+    else:
+        query = ("%s AND" % query)
+
+    if finish is None:
+        query = ("%s %s >= CAST('%s' AS INT)" % (query, name, start))
+
+    if start is None:
+        query = ("%s %s <= CAST('%s' AS INT)" % (query, name, finish))
+
+    if start is not None and finish is not None:
+        query = ("%s %s >= CAST('%s' AS INT) " % (query, name, start))
+        query = ("%s AND %s <= CAST('%s' AS INT)" % (query, name, finish))
+
+    return query
+
+
 def uptycs_parse_date_range(timeago, start_time, end_time):
 
     if timeago is None:
@@ -221,14 +248,58 @@ def uptycs_parse_date_range(timeago, start_time, end_time):
         temp_time_ago, now = parse_date_range(timeago,
                                               date_format="%Y-%m-%d \
 %H:%M:%S.000")
-
     end = (end_time if end_time is not None else now)
     begin = (start_time if start_time is not None else temp_time_ago)
 
     return begin, end
 
 
+def uptycs_get_upt_day(start_time):
+    original_datetime = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S.%f")
+    return original_datetime.strftime("%Y%m%d")
+
+
 """COMMAND FUNCTIONS"""
+
+
+def uptycs_poll_queryjob_status(job_id, query):
+    api_call = ("/queryjobs/%s" % job_id)
+    elapsed = 0
+    while elapsed < 120:
+        status = restcall('get', api_call).get('status')
+        if status in ['FINISHED']:
+            break
+        elif status in ['ERROR']:
+            return_error("Invalid query: %s , status %s" % (query, status))
+        elif status in ['QUEUED', 'RUNNING']:
+            time.sleep(10)
+            elapsed += 10
+        else:
+            # unknown status
+            return_error("Invalid query job status: {0}".format(status))
+        if elapsed >= 120:
+            return_error("Query timeout elapsed")
+    return
+
+
+def uptycs_get_queryjob_results(job_id):
+    limit = 10000
+    offset = 0
+    complete = False
+    final_output = []
+    while not complete:
+        api_call = ("/queryjobs/%s/results?limit=%s&offset=%s" % (job_id, limit, offset))
+        output = restcall('get', api_call)
+        offset += limit
+        if output.get('items'):
+            rows = output.get('items')
+            final_output.extend(remove_context_entries(rows, ['rowData']))
+            if len(rows) < limit:
+                return [entry['rowData'] for entry in final_output]
+        else:
+            # unknown or empty output
+            return_error("Invalid/Empty query job output")
+    return
 
 
 def uptycs_run_query():
@@ -238,10 +309,18 @@ def uptycs_run_query():
     http_method = 'post'
     query = demisto.args().get('query')
     if demisto.args().get('query_type') == 'global':
-        api_call = '/query'
+        api_call = '/queryjobs'
         post_data = {
+            'type': 'global',
             'query': query
         }
+        response = restcall(http_method, api_call, json=post_data)
+        demisto.info('created queryjob')
+        if response.get('id'):
+            # poll query job status
+            uptycs_poll_queryjob_status(response.get('id'), query)
+            return uptycs_get_queryjob_results(response.get('id'))
+        return_error('unable to create uptycs query job')
     else:
         api_call = '/assets/query'
         if demisto.args().get('asset_id') is not None:
@@ -278,35 +357,45 @@ def uptycs_run_query():
                 "filters": _id
             }
         }
-
-    return restcall(http_method, api_call, json=post_data)
+        return restcall(http_method, api_call, json=post_data)
 
 
 def uptycs_run_query_command():
     query_results = uptycs_run_query()
     human_readable = tableToMarkdown('Uptycs Query Result',
-                                     query_results.get('items'))
-    context = query_results.get('items')
-
+                                     query_results)
     entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': query_results,
         'HumanReadable': human_readable,
         'EntryContext': {
-            'Uptycs.QueryResults': context
+            'Uptycs.QueryResults': query_results
         }
     }
 
     return entry
 
 
+def uptycs_get_query_results(query_type, query):
+    http_method = 'post'
+    api_call = '/queryjobs'
+    post_data = {
+        'type': query_type,
+        'query': query
+    }
+    response = restcall(http_method, api_call, json=post_data)
+    if response.get('id'):
+        # poll query job status
+        uptycs_poll_queryjob_status(response.get('id'), query)
+        return uptycs_get_queryjob_results(response.get('id'))
+    return_error('unable to create uptycs query job')
+
+
 def uptycs_get_assets():
     """
     return list of assets enrolled in Uptycs
     """
-    http_method = 'post'
-    api_call = "/query"
     query = 'SELECT * FROM upt_assets'
     limit = demisto.args().get('limit')
 
@@ -331,21 +420,16 @@ def uptycs_get_assets():
         query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        "query": query,
-        "queryType": query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_assets_command():
     query_results = uptycs_get_assets()
     human_readable = tableToMarkdown('Uptycs Assets',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['id', 'host_name', 'os', 'os_version',
                                       'osquery_version', 'last_activity_at'])
-    context = query_results.get('items')
+    context = query_results.copy()
     context_entries_to_keep = ['id', 'location', 'latitude', 'longitude',
                                'os_flavor', 'os', 'last_enrolled_at',
                                'status', 'host_name', 'os_version',
@@ -357,10 +441,166 @@ def uptycs_get_assets_command():
     entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': query_results.get('items'),
+        'Contents': query_results,
         'HumanReadable': human_readable,
         'EntryContext': {
             'Uptycs.Assets(val.id == obj.id)': context
+        }
+    }
+
+    return entry
+
+
+def uptycs_get_detections():
+    """
+    return list of detections
+    """
+    http_method = 'get'
+    api_call = "/detections"
+
+    query_parameters = []
+    limit = demisto.args().get('limit')
+    if limit != -1 and limit is not None:
+        query_parameters.append("limit=%s" % limit)
+
+    offset = demisto.args().get('offset')
+    if offset != -1 and offset is not None:
+        query_parameters.append("offset=%s" % offset)
+
+    filters = []
+    severity = demisto.args().get('severity')
+    if severity != -1 and severity is not None:
+        filters.append('"severity":{"in":["%s"]}' % severity)
+
+    status = demisto.args().get('status')
+    if status != -1 and status is not None:
+        filters.append('"status":{"in":["%s"]}' % status)
+
+    asset_type = demisto.args().get('asset_type')
+    if asset_type != -1 and asset_type is not None:
+        filters.append('"agentType":{"in":["%s"]}' % asset_type)
+
+    time_ago = demisto.args().get('time_ago')
+    start_window = demisto.args().get('start_window')
+    end_window = demisto.args().get('end_window')
+
+    if time_ago is not None or (start_window is not None or end_window is not None):
+        begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
+        filters.append('"createdAt":{"between":["%s","%s"]}' % (begin, end))
+
+    if len(filters) > 0:
+        query_parameters.append("filters={%s}" % ','.join(filters))
+
+    if len(query_parameters) > 0:
+        api_call = ("%s?%s" % (api_call, '&'.join(query_parameters)))
+
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_detections_command():
+    query_results = uptycs_get_detections()
+    context = query_results.get('items')
+    context_entries_to_keep = ['id', 'displayName', 'severity', 'signals',
+                               'status', 'tacticCount', 'tactics',
+                               'assetHostName', 'assetId', 'agentType',
+                               'assetLive', 'assetLocation', 'assetOs',
+                               'assetOsFlavor', 'assetOsVersion', 'assetOsqueryVersion',
+                               'assetStatus', 'assignedTo', 'assignedUserName',
+                               'createdAt', 'lastOccurredAt']
+
+    if context is not None:
+        remove_context_entries(context, context_entries_to_keep)
+
+    human_readable = tableToMarkdown('Uptycs Detections: ',
+                                     context,
+                                     context_entries_to_keep)
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Uptycs.Detections(val.id == obj.id)': context
+        }
+    }
+
+    return entry
+
+
+def uptycs_get_detection_details():
+    """
+    return detection details
+    """
+    http_method = 'get'
+    api_call = "/detections/"
+    detection_id = demisto.args().get('detection_id')
+
+    if detection_id != -1 and detection_id is not None:
+        api_call = ("%s%s" % (api_call, detection_id))
+
+    return restcall(http_method, api_call)
+
+
+def uptycs_get_detection_details_command():
+    query_results = uptycs_get_detection_details()
+    detection = query_results.get('detection')
+    final_alerts = []
+    detection_url = 'https://' + DOMAIN + '/ui/detections/' + demisto.args().get('id')
+    display_name = get_href_link(detection["displayName"], detection_url)
+
+    for alert in query_results.get('alerts').get('items'):
+        alert_text = alert['alertTime'] + '<br>Alert - ' + alert['alertRuleName']
+        alert_text += '<br>\tscore - ' + alert['score'] + '<br>\t'
+        alert_text += alert['key'] + ' : ' + alert['value'] + '<br>\t'
+        alert_text += get_href_link('Go to Alert details', 'https://' + DOMAIN + '/ui/alerts/' + alert['id'])
+        final_alerts.append(alert_text + '<br>')
+
+    for event in query_results.get('events').get('items'):
+        event_text = event['event_time'] + '\nEvent - '
+        if 'eventRule' in event:
+            event_text += event['eventRule']['name']
+        elif 'event_name' in event:
+            event_text += event['event_name']
+        if 'score' in event:
+            event_text += '\n\tscore - ' + str(event['score'])
+        elif 'severity' in event:
+            event_text += '\n\severity - ' + event['severity']
+        if event.get('key') and event.get('value'):
+            event_text += '\n\t' + event['key'] + ' : ' + event['value']
+        final_alerts.append(event_text + '\n')
+
+    context = {'id': detection['id'],
+               'displayName': display_name,
+               'score': detection['score'],
+               'severity': detection['severity'],
+               'createdAt': detection['createdAt'],
+               'signals': detection['signals'],
+               'tacticCount': detection['tacticCount'],
+               'tactics': str(detection['tactics']),
+               'assetHostName': detection['assetHostName'],
+               'Alerts and Events': '<br>'.join(sorted(final_alerts)),
+               'assignedUserName': detection['assignedUserName'],
+               'status': detection['status'],
+               'note': detection['note'],
+               'assetId': detection['assetId'],
+               'agentType': detection['agentType'],
+               'resourceType': detection['resourceType']
+               }
+
+    if detection.get('assetId') is not None:
+        asset_url = 'https://' + DOMAIN + '/ui/assets/' + detection['assetId']
+        context['assetHostName'] = get_href_link(context['assetHostName'], asset_url)
+
+    vertical_table = """| Field | Value |\n|-------|-------|\n{}""".\
+        format("".join(["| {} | {} |\n".format(key, value) for key, value in context.items()]))
+
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': query_results,
+        'HumanReadable': f"### Uptycs Detection\n\n{vertical_table}",
+        'EntryContext': {
+            'Uptycs.Detection': context
         }
     }
 
@@ -371,8 +611,6 @@ def uptycs_get_alerts():
     """
     return list of alerts
     """
-    http_method = 'post'
-    api_call = "/query"
     query = 'SELECT a.*, u.host_name FROM upt_alerts a JOIN upt_assets u ON \
 a.upt_asset_id=u.id'
     limit = demisto.args().get('limit')
@@ -415,17 +653,12 @@ a.upt_asset_id=u.id'
             query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        "query": query,
-        "queryType": query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_alerts_command():
     query_results = uptycs_get_alerts()
-    context = query_results.get('items')
+    context = query_results.copy()
     context_entries_to_keep = ['id', 'host_name', 'grouping', 'code',
                                'assigned_to', 'alert_time', 'updated_at',
                                'metadata', 'asset', 'status', 'upt_asset_id',
@@ -482,8 +715,6 @@ def uptycs_get_events():
     """
     return list of events
     """
-    http_method = 'post'
-    api_call = "/query"
     query = 'SELECT a.*, u.host_name FROM upt_events a JOIN upt_assets u ON \
 a.upt_asset_id=u.id'
     limit = demisto.args().get('limit')
@@ -510,6 +741,9 @@ a.upt_asset_id=u.id'
         begin, end = uptycs_parse_date_range(time_ago,
                                              start_window, end_window)
         query = apply_datetime_cuts(query, "event_time", begin, end)
+        upt_day_start = uptycs_get_upt_day(begin)
+        upt_day_end = uptycs_get_upt_day(end)
+        query = apply_upt_day_cuts(query, "upt_day", upt_day_start, upt_day_end)
 
     query = ("%s ORDER BY a.event_time DESC" % query)
 
@@ -517,17 +751,12 @@ a.upt_asset_id=u.id'
         query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        "query": query,
-        "queryType": query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_events_command():
     query_results = uptycs_get_events()
-    context = query_results.get('items')
+    context = query_results.copy()
     context_entries_to_keep = ['upt_asset_id', 'host_name', 'grouping',
                                'code', 'assigned_to', 'event_time',
                                'updated_at', 'metadata', 'asset', 'status',
@@ -538,7 +767,7 @@ def uptycs_get_events_command():
         remove_context_entries(context, context_entries_to_keep)
 
     human_readable = tableToMarkdown('Uptycs Events',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['host_name', 'grouping', 'event_time',
                                       'description', 'value', 'severity'])
     entry = {
@@ -547,7 +776,7 @@ def uptycs_get_events_command():
         'Contents': query_results,
         'HumanReadable': human_readable,
         'EntryContext': {
-            'Uptycs.Events(val.id == obj.id)': query_results.get('items')
+            'Uptycs.Events(val.id == obj.id)': query_results
         }
     }
 
@@ -620,8 +849,6 @@ def uptycs_get_process_open_files():
     """
     return information for processes which opened a file
     """
-    http_method = 'post'
-    api_call = '/query'
     query = "select * from process_open_files"
     limit = demisto.args().get('limit')
 
@@ -669,21 +896,16 @@ def uptycs_get_process_open_files():
         query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_process_open_files_command():
     query_results = uptycs_get_process_open_files()
     human_readable = tableToMarkdown('Process which has opened a file',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'pid', 'path', 'fd',
                                       'upt_time'])
-    context = query_results.get('items')
+    context = query_results.copy()
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid',
                                'path', 'fd', 'upt_time']
     if context is not None:
@@ -706,8 +928,6 @@ def uptycs_get_process_open_sockets():
     """
     return information for processes which opened a socket
     """
-    http_method = 'post'
-    api_call = '/query'
     time = demisto.args().get('time')
     query = "select * from process_open_sockets"
     limit = demisto.args().get('limit')
@@ -755,22 +975,17 @@ def uptycs_get_process_open_sockets():
         query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_process_open_sockets_command():
     query_results = uptycs_get_process_open_sockets()
     human_readable = tableToMarkdown('process_open_sockets',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'pid', 'local_address',
                                       'remote_address', 'upt_time',
                                       'local_port', 'remote_port', 'socket'])
-    context = query_results.get('items')
+    context = query_results.copy()
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid',
                                'local_address', 'remote_address', 'upt_time',
                                'local_port', 'remote_port', 'socket', 'family',
@@ -796,8 +1011,6 @@ def uptycs_get_socket_events():
     """
     return information for processes which opened a socket
     """
-    http_method = 'post'
-    api_call = '/query'
     time = demisto.args().get('time')
     query = "select * from socket_events"
     limit = demisto.args().get('limit')
@@ -845,22 +1058,17 @@ def uptycs_get_socket_events():
         query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_socket_events_command():
     query_results = uptycs_get_socket_events()
     human_readable = tableToMarkdown('Socket events',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'pid', 'local_address',
                                       'remote_address', 'upt_time',
                                       'local_port', 'action'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid',
                                'local_address', 'remote_address', 'upt_time',
@@ -887,8 +1095,6 @@ def uptycs_get_socket_event_information():
     """
     return process event information
     """
-    http_method = 'post'
-    api_call = '/query'
     time = demisto.args().get('time')
 
     if time is not None:
@@ -916,22 +1122,17 @@ ORDER BY upt_time DESC LIMIT 1" %
     query = apply_equals_cuts(query, equal_cuts)
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_socket_event_information_command():
     query_results = uptycs_get_socket_event_information()
     human_readable = tableToMarkdown('Socket event information',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'pid', 'local_address',
                                       'remote_address', 'upt_time',
                                       'local_port', 'action'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid',
                                'local_address', 'remote_address', 'upt_time',
@@ -958,8 +1159,6 @@ def uptycs_get_processes():
     """
     return process which are running or have run on a registered Uptycs asset
     """
-    http_method = 'post'
-    api_call = '/query'
     time = demisto.args().get('time')
     query = "select * from processes"
     limit = demisto.args().get('limit')
@@ -1006,21 +1205,16 @@ def uptycs_get_processes():
         query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_processes_command():
     query_results = uptycs_get_processes()
     human_readable = tableToMarkdown('Processes',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'pid', 'name', 'path',
                                       'upt_time', 'parent', 'cmdline'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'name',
                                'path', 'upt_time', 'parent', 'cmdline',
@@ -1045,8 +1239,6 @@ def uptycs_get_processes_command():
 def uptycs_get_process_events():
     """return process events which have executed on a \
         registered Uptycs asset"""
-    http_method = 'post'
-    api_call = '/query'
     time = demisto.args().get('time')
     query = "select * from process_events"
     limit = demisto.args().get('limit')
@@ -1093,21 +1285,16 @@ def uptycs_get_process_events():
         query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_process_events_command():
     query_results = uptycs_get_process_events()
     human_readable = tableToMarkdown('Process events',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'pid', 'path',
                                       'upt_time', 'parent', 'cmdline'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'path',
                                'upt_time', 'parent', 'cmdline', 'cwd']
@@ -1130,8 +1317,6 @@ def uptycs_get_process_events_command():
 
 def uptycs_get_process_information():
     """return process information"""
-    http_method = 'post'
-    api_call = '/query'
     time = demisto.args().get('time')
     if time is not None:
         day = time.replace(" ", "-")
@@ -1145,9 +1330,11 @@ def uptycs_get_process_information():
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
-    query = ("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
+    query = ("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True \
+AND upt_day = %s), \
 remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
-upt_added=False), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
+upt_added=False and upt_day = %s \
+), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
 aa.name, aa.path, aa.cmdline, aa.cwd, aa.parent, aa.pgroup, \
 aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time, \
 rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN \
@@ -1157,7 +1344,7 @@ pgroup, upt_hostname, upt_day, upt_add_time, \
 coalesce(temp_remove_time, current_timestamp) AS upt_remove_time \
 FROM temp_proc) SELECT * FROM new_proc WHERE pid=%s AND \
 CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time"
-             % (demisto.args().get('pid'), time))
+             % (uptday, uptday, demisto.args().get('pid'), time))
 
     equal_cuts = {
         "upt_day": uptday,
@@ -1170,21 +1357,16 @@ CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time"
     query = ("%s ORDER BY upt_add_time DESC LIMIT 1" % query)
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_process_information_command():
     query_results = uptycs_get_process_information()
     human_readable = tableToMarkdown('Process information',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'parent', 'pid',
                                       'name', 'path', 'cmdline'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -1201,8 +1383,6 @@ def uptycs_get_process_information_command():
 
 def uptycs_get_process_event_information():
     """return process event information"""
-    http_method = 'post'
-    api_call = '/query'
     time = demisto.args().get('time')
 
     if time is not None:
@@ -1231,21 +1411,16 @@ upt_time<=CAST('%s' AS TIMESTAMP)" %
     query = ("%s ORDER BY upt_time DESC LIMIT 1" % query)
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_process_event_information_command():
     query_results = uptycs_get_process_event_information()
     human_readable = tableToMarkdown('Process event information',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'parent', 'pid',
                                       'path', 'cmdline', 'ancestor_list'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'path',
                                'upt_time', 'parent', 'cmdline', 'cwd', 'ancestor_list']
@@ -1268,8 +1443,6 @@ def uptycs_get_process_event_information_command():
 
 def uptycs_get_parent_information():
     """return parent process information"""
-    http_method = 'post'
-    api_call = '/query'
     child_add_time = demisto.args().get('child_add_time')
     if child_add_time is not None:
         day = child_add_time.replace(" ", "-")
@@ -1308,21 +1481,16 @@ upt_day <= %s"
     query = ("%s ORDER BY upt_add_time DESC LIMIT 1" % query)
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_parent_information_command():
     query_results = uptycs_get_parent_information()
     human_readable = tableToMarkdown('Parent process information',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'parent', 'pid',
                                       'name', 'path', 'cmdline'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -1339,8 +1507,6 @@ def uptycs_get_parent_information_command():
 
 def uptycs_get_parent_event_information():
     """return process event information"""
-    http_method = 'post'
-    api_call = '/query'
     child_add_time = demisto.args().get('child_add_time')
     child_ancestor_list = demisto.args().get('child_ancestor_list')
     parent = demisto.args().get('parent')
@@ -1382,21 +1548,16 @@ AND upt_time<=CAST('{2}' AS TIMESTAMP)".format(uptday, parent, child_add_time)
     query = ("%s ORDER BY upt_time DESC LIMIT 1" % query)
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_parent_event_information_command():
     query_results = uptycs_get_parent_event_information()
     human_readable = tableToMarkdown('Parent process event information',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'parent', 'pid',
                                       'path', 'cmdline'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'path',
                                'upt_time', 'parent', 'cmdline', 'cwd']
@@ -1419,8 +1580,6 @@ def uptycs_get_parent_event_information_command():
 
 def uptycs_get_process_child_processes():
     """return child processes for a given parent process"""
-    http_method = 'post'
-    api_call = '/query'
     parent = demisto.args().get('parent')
     limit = demisto.args().get('limit')
     asset_id = demisto.args().get('asset_id')
@@ -1441,23 +1600,18 @@ def uptycs_get_process_child_processes():
     if parent_end is None:
         query = ("SELECT upt_time FROM process_events WHERE pid = %s AND \
 upt_asset_id = '%s' AND upt_time > CAST('%s' AS TIMESTAMP) \
-ORDER BY upt_time ASC limit 1" %
-                 (parent, asset_id, parent_start))
+AND upt_day >= %s ORDER BY upt_time ASC limit 1" %
+                 (parent, asset_id, parent_start, uptday))
         query_type = 'global'
-
-        post_data = {
-            'query': query,
-            'queryType': query_type
-        }
-        temp_results = restcall(http_method, api_call, json=post_data)
-        if len(temp_results.get('items')) > 0:
-            parent_end = temp_results.get('items')[0].get('upt_time')
+        temp_results = uptycs_get_query_results(query_type, query)
+        if len(temp_results) > 0:
+            parent_end = temp_results[0].get('upt_time')
         else:
             parent_end = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
-    query = ("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
-remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
-upt_added=False), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
+    query = ("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True \
+AND upt_day >= %s),remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
+upt_added=False AND upt_day >= %s), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
 aa.name, aa.path, aa.cmdline, aa.cwd, aa.parent, aa.pgroup, \
 aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time, \
 rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN \
@@ -1469,27 +1623,22 @@ FROM temp_proc) SELECT * FROM new_proc WHERE upt_day>=%s AND \
 parent = %s AND upt_asset_id = '%s' AND upt_add_time BETWEEN \
 CAST('%s' AS TIMESTAMP) AND CAST('%s' AS TIMESTAMP) ORDER BY \
 upt_add_time DESC"
-             % (uptday, parent, asset_id, parent_start, parent_end))
+             % (uptday, uptday, uptday, parent, asset_id, parent_start, parent_end))
 
     if limit != -1 and limit is not None:
         query = ("%s LIMIT %s" % (query, limit))
 
     query_type = 'global'
-    post_data = {
-        'query': query,
-        'queryType': query_type
-    }
-
-    return restcall(http_method, api_call, json=post_data)
+    return uptycs_get_query_results(query_type, query)
 
 
 def uptycs_get_process_child_processes_command():
     query_results = uptycs_get_process_child_processes()
     human_readable = tableToMarkdown('Child processes of a specified pid',
-                                     query_results.get('items'),
+                                     query_results,
                                      ['upt_hostname', 'pid', 'name',
                                       'path', 'cmdline', 'upt_add_time'])
-    context = query_results.get('items')
+    context = query_results.copy()
 
     entry = {
         'ContentsFormat': formats['json'],
@@ -2851,6 +3000,12 @@ def main():
 
         if demisto.command() == 'uptycs-get-asset-with-id':
             demisto.results(uptycs_get_asset_id_command())
+
+        if demisto.command() == 'uptycs-get-detections':
+            demisto.results(uptycs_get_detections_command())
+
+        if demisto.command() == 'uptycs-get-detection-details':
+            demisto.results(uptycs_get_detection_details_command())
 
         if demisto.command() == 'uptycs-get-alerts':
             demisto.results(uptycs_get_alerts_command())

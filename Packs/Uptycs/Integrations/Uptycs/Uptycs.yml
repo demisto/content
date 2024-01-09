@@ -414,6 +414,7 @@ script:
   - arguments:
     - description: Only return assets with this asset_id.  Do not use arguments "asset_id" and "host_name_is" at the same time.
       name: asset_id
+      required: true
     - description: hostname for the asset which executed these processes.
       name: host_name_is
     - defaultValue: '10'
@@ -1518,7 +1519,170 @@ script:
     - name: filename
       required: true
       description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
-  dockerimage: demisto/auth-utils:1.0.0.79567
+  - name: uptycs-get-detections
+    description: Get list of detections from Uptycs
+    arguments:
+    - name: limit
+      description: Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out).
+      defaultValue: "10"
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The severity of the detection.
+      type: textArea
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - assigned
+      - closed
+      description: The status of the detection.
+      type: textArea
+    - name: asset_type
+      auto: PREDEFINED
+      predefined:
+      - asset
+      - cloud
+      - kubernetes
+      description: Asset Type of the detection
+      type: textArea
+    - name: time_ago
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours, 4 minutes, 6 month, 1 day, etc.'
+      defaultValue: 1 day
+    - name: start_window
+      description: Beginning of window to search for detections.
+        Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am
+        would be written as "2019-03-15 01:52:36.000".
+    - name: end_window
+      description: End of window to search for detections.
+        Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am
+        would be written as "2019-03-15 01:52:36.000".
+    outputs:
+    - contextPath: Uptycs.Detections.id
+      description: Uptycs id of detection
+      type: string
+    - contextPath: Uptycs.Detections.displayName
+      description: Uptycs detection name
+      type: string
+    - contextPath: Uptycs.Detections.severity
+      description: Uptycs detection severity
+      type: string
+    - contextPath: Uptycs.Detections.signals
+      description: Number of signals associated with the detection
+      type: number
+    - contextPath: Uptycs.Detections.status
+      description: Status of the detection
+      type: string
+    - contextPath: Uptycs.Detections.tacticCount
+      description: Number of tactics associated with the detection
+      type: number
+    - contextPath: Uptycs.Detections.tactics
+      description: Tactics associated with detection
+      type: string
+    - contextPath: Uptycs.Detections.assetHostName
+      description: Hostname of the asset associated with the detection
+      type: string
+    - contextPath: Uptycs.Detections.assetId
+      description: Id of the asset associated with the detection
+      type: string
+    - contextPath: Uptycs.Detections.agentType
+      description: Agent type of the detection
+      type: string
+    - contextPath: Uptycs.Detections.assetLive
+      description: Live status of the asset
+      type: boolean
+    - contextPath: Uptycs.Detections.assetLocation
+      description: Location of the asset
+      type: string
+    - contextPath: Uptycs.Detections.assetOs
+      description: OS of the asset
+      type: string
+    - contextPath: Uptycs.Detections.assetOsFlavor
+      description: OS flavor of the asset
+      type: string
+    - contextPath: Uptycs.Detections.assetOsVersion
+      description: OS version of the asset
+      type: string
+    - contextPath: Uptycs.Detections.assetOsqueryVersion
+      description: Osquery version of the asset
+      type: string
+    - contextPath: Uptycs.Detections.assetStatus
+      description: Status of the asset
+      type: string
+    - contextPath: Uptycs.Detections.assignedTo
+      description: Id of the user that the detection was assigned to
+      type: string
+    - contextPath: Uptycs.Detections.assignedUserName
+      description: Username of the user that the detection was assigned to
+      type: string
+    - contextPath: Uptycs.Detections.createdAt
+      description: Created at time of the detection
+      type: date
+    - contextPath: Uptycs.Detections.lastOccurredAt
+      description: Last occurred time of the detection
+      type: date
+  - name: uptycs-get-detection-details
+    arguments:
+    - name: detection_id
+      required: true
+      description: Uptycs id of detection
+    outputs:
+    - contextPath: Uptycs.Detection.id
+      description: Uptycs id of detection
+      type: string
+    - contextPath: Uptycs.Detection.displayName
+      description: Uptycs detection name
+      type: string
+    - contextPath: Uptycs.Detection.score
+      description: Uptycs detection score
+      type: number
+    - contextPath: Uptycs.Detection.severity
+      description: Uptycs detection severity
+      type: string
+    - contextPath: Uptycs.Detection.signals
+      description: Number of signals associated with the detection
+      type: number
+    - contextPath: Uptycs.Detection.tacticCount
+      description: Number of tactics associated with the detection
+      type: number
+    - contextPath: Uptycs.Detection.tactics
+      description: Tactics associated with detection
+      type: string
+    - contextPath: Uptycs.Detection.assetId
+      description: Id of the asset associated with the detection
+      type: string
+    - contextPath: Uptycs.Detection.assetHostName
+      description: Hostname of the asset associated with the detection
+      type: string
+    - contextPath: Uptycs.Detection.assignedTo
+      description: Id of the user that the detection was assigned to
+      type: string
+    - contextPath: Uptycs.Detection.assignedUserName
+      description: Username of the user that the detection was assigned to
+      type: string
+    - contextPath: Uptycs.Detection.status
+      description: Status of the detection
+      type: string
+    - contextPath: Uptycs.Detection.note
+      description: Note created for the detection
+      type: string
+    - contextPath: Uptycs.Detection.createdAt
+      description: Created at time of the detection
+      type: date
+    - contextPath: Uptycs.Detection.agentType
+      description: Agent type of the detection
+      type: string
+    - contextPath: Uptycs.Detection.resourceType
+      description: Resource type of the detection
+      type: string
+    - contextPath: Uptycs.Detection.alerts_and_events
+      description: Details of alerts and events assocated for the detection
+      type: string
+    description: Get details of a detection from Uptycs
+  dockerimage: demisto/auth-utils:1.0.0.83934
   isfetch: true
   runonce: true
   script: '-'

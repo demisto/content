@@ -165,32 +165,51 @@ def test_uptycs_get_assets(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    mock_response = {
+    asset = {"status": "active",
+             "last_enrolled_at": "2019-07-19 14:47:27.485",
+             "os_version": "10.14.5",
+             "osquery_version": "3.2.6.51-Uptycs",
+             "created_at": "2018-09-25 16:38:16.440",
+             "longitude": -97.822,
+             "os_flavor": "darwin",
+             "host_name": "kyle-mbp-work",
+             "latitude": 37.751,
+             "last_activity_at": "2019-07-19 17:02:41.704",
+             "os": "Mac OS X",
+             "id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+             "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+             "location": "United States"
+             }
+
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
         'items': [
             {
-                "status": "active",
-                "last_enrolled_at": "2019-07-19 14:47:27.485",
-                "os_version": "10.14.5",
-                "osquery_version": "3.2.6.51-Uptycs",
-                "created_at": "2018-09-25 16:38:16.440",
-                "longitude": -97.822,
-                "os_flavor": "darwin",
-                "host_name": "kyle-mbp-work",
-                "latitude": 37.751,
-                "last_activity_at": "2019-07-19 17:02:41.704",
-                "os": "Mac OS X",
-                "id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "location": "United States"
+                "rawData": asset
             }
         ]
     }
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%sresults?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_assets_command()
 
-    assert response['Contents'] == mock_response['items']
+    assert response['Contents'][0] == asset
 
 
 def test_uptycs_get_asset_with_id(mocker, requests_mock):
@@ -1034,38 +1053,51 @@ def test_uptycs_get_alerts(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    mock_response = {
+    alert = {"status": "open",
+             "code": "OSX_CRASHES",
+             "description": "Crash",
+             "severity": "medium",
+             "created_at": "2019-07-02 11:41:25.915",
+             "updated_at": "2019-07-02 11:41:25.915",
+             "value": "Amazon Music Helper",
+             "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+             "alert_time": "2019-07-02 11:41:22.000",
+             "host_name": "kyle-mbp-work",
+             "key": "identifier",
+             "assigned_to": "testuser",
+             "metadata": "{\"type\":\"application\",\"pid\":\"437\"}",
+             "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+             "grouping": "OS X Crashes"
+             }
+
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
         "items": [
             {
-                "status": "open",
-                "code": "OSX_CRASHES",
-                "description": "Crash",
-                "severity": "medium",
-                "created_at": "2019-07-02 11:41:25.915",
-                "updated_at": "2019-07-02 11:41:25.915",
-                "value": "Amazon Music Helper",
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "alert_time": "2019-07-02 11:41:22.000",
-                "host_name": "kyle-mbp-work",
-                "key": "identifier",
-                "assigned_to": "testuser",
-                "metadata": "{\"type\":\"application\",\"pid\":\"437\"}",
-                "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
-                "grouping": "OS X Crashes"
+                "rawData": alert
             }
         ]
     }
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%sresults?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_alerts_command()
 
-    mock_response['items'][0]["threat_source_name"] = 'No threat source for this alert'
-    mock_response['items'][0]["pid"] = '437'
-    mock_response['items'][0]["threat_indicator_id"] = 'No threat indicator for this alert'
-
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == alert
 
 
 def test_uptycs_get_events(mocker, requests_mock):
@@ -2429,4 +2461,167 @@ def test_uptycs_create_lookuptable(mocker, requests_mock):
 
     response = uptycs_post_lookuptable_data_source_command()
 
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_get_detections(mocker, requests_mock):
+    """
+    Tests uptycs-get-detections command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate detections API
+              response when the correct uptycs-get-detections API request is performed.
+
+        When:
+            - Running the 'uptycs-get-detections'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_detections_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+    mocker.patch.object(demisto, 'args', return_value={
+        "limit": '1',
+        "time_ago": "1 day",
+        "severity": 'high'
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    mock_response = {
+        "items": [
+            {
+                "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+                "displayName": "Uptycs test detection",
+                "severity": "medium",
+                "signals": 5,
+                "status": "open",
+                "tacticCount": 5,
+                "tactics": "credential access",
+                "assetHostName": "kyle-mbp-work",
+                "assetId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                "agentType": "asset",
+                "assetLive": True,
+                "assetLocation": "New York",
+                "assetOs": "Ubuntu",
+                "assetOsFlavor": "linux",
+                "assetOsVersion": "22.10",
+                "assetOsqueryVersion": "1.x.x",
+                "assetStatus": "active",
+                "assignedTo": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+                "assignedUserName": "uptycs_user",
+                "createdAt": "2019-07-02 11:41:25.915",
+                "lastOccurredAt": "2019-07-02 11:41:25.915"
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/detections' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.get(test_url, json=mock_response)
+
+    response = uptycs_get_detections_command()
+    assert response['Contents'] == mock_response
+
+
+def test_uptycs_get_detection_details(mocker, requests_mock):
+    """
+    Tests uptycs-get-detection-details command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate detections API
+              response when the correct uptycs-get-detection-details API request is performed.
+
+        When:
+            - Running the 'uptycs-get-detection-details'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
+    """
+    from Uptycs import uptycs_get_detection_details_command
+
+    mocker.patch.object(demisto, 'params', return_value={
+        "key": KEY,
+        "secret": SECRET,
+        "domain": DOMAIN,
+        "customer_id": CUSTOMER_ID,
+        "proxy": "false",
+        "fetch_time": "7 days"
+    })
+
+    detection_id = "0049641c-1645-4b98-830f-7f1ce783bfcc"
+    mocker.patch.object(demisto, 'args', return_value={
+        "detection_id": detection_id
+    })
+
+    mocker.patch("Uptycs.KEY", new=KEY)
+    mocker.patch("Uptycs.SECRET", new=SECRET)
+    mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
+    mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
+
+    mock_response = {
+        "detection": {
+            "id": detection_id,
+            "displayName": "Uptycs test detection",
+            "severity": "medium",
+            "signals": 5,
+            "status": "open",
+            "tacticCount": 5,
+            "tactics": "credential access",
+            "assetHostName": "kyle-mbp-work",
+            "assetId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "agentType": "asset",
+            "assetLive": True,
+            "assetLocation": "New York",
+            "assetOs": "Ubuntu",
+            "assetOsFlavor": "linux",
+            "assetOsVersion": "22.10",
+            "assetOsqueryVersion": "1.x.x",
+            "assetStatus": "active",
+            "assignedTo": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+            "assignedUserName": "uptycs_user",
+            "createdAt": "2019-07-02 11:41:25.915",
+            "lastOccurredAt": "2019-07-02 11:41:25.915",
+        },
+        "alerts": {
+            "items": [
+                {
+                    "alertTime": "2019-07-02 11:41:25.915",
+                    "alertRuleName": "testrule",
+                    "score": "1",
+                    "key": "path",
+                    "value": "/home/"
+                }
+            ]
+        },
+        "events": {
+            "items": [
+                {
+                    "event_time": "2019-07-02 11:41:25.915",
+                    "eventRule": {"name": "testrule"},
+                    "event_name": "testevent",
+                    "score": "1",
+                    "key": "path",
+                    "value": "/home/"
+                }
+            ]
+        }
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/detections/%s' % (DOMAIN, CUSTOMER_ID, detection_id)
+    requests_mock.get(test_url, json=mock_response)
+
+    response = uptycs_get_detection_details_command()
     assert response['Contents'] == mock_response

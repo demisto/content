@@ -103,6 +103,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 45. uptycs-get-lookuptables
 46. uptycs-delete-lookuptable
 47. uptycs-delete-assets-tag
+48. uptycs-get-detections
+49. uptycs-get-detection-details
 ### 1. uptycs-get-assets
 ---
 return assets enrolled with Uptycs
@@ -970,7 +972,7 @@ get all the child processes for a given parent process
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Only return assets with this asset_id.  Do not use arguments "asset_id" and "host_name_is" at the same time. | Optional | 
+| asset_id | Only return assets with this asset_id.  Do not use arguments "asset_id" and "host_name_is" at the same time. | Required | 
 | host_name_is | hostname for the asset which executed these processes. | Optional | 
 | limit | Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out). | Optional | 
 | parent | The pid for which all child processes will be found | Required | 
@@ -3311,6 +3313,163 @@ There is no context output for this command.
 ##### Human Readable Output
 ### Uptycs delete assets tag
 Uptycs disassociated assets tags
+
+
+### 48. uptycs-get-detections
+---
+Get List of Uptycs detections
+##### Base Command
+
+`uptycs-get-detections`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out). | Optional |
+| severity | The severity of the detection. | Optional |
+| status | The status of the detection. | Optional |
+| asset_type | Asset Type of the detection | Optional |
+| time_ago | Specifies how far back you want to look. Format examples: 2 hours, 4 minutes, 6 month, 1 day, etc. | Optional |
+| start_window | Beginning of window to search for detections.  Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written as "2019-03-15 01:52:36.000". | Optional |
+| end_window | End of window to search for detections. Format is "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written as "2019-03-15 01:52:36.000". | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.Detections.id | string | Uptycs id of detection |
+| Uptycs.Detections.displayName | string | Uptycs detection name |
+| Uptycs.Detections.severity | string | Uptycs detection severity |
+| Uptycs.Detections.signals | number | Number of signals associated with the detection |
+| Uptycs.Detections.status | string | Status of the detection |
+| Uptycs.Detections.tacticCount | number | Number of tactics associated with the detection |
+| Uptycs.Detections.tactics | string | Tactics associated with detection |
+| Uptycs.Detections.assetHostName | string | Hostname of the asset associated with the detection |
+| Uptycs.Detections.assetId | string | Id of the asset associated with the detection |
+| Uptycs.Detections.agentType | string | Agent type of the detection |
+| Uptycs.Detections.assetLive | boolean | Live status of the asset |
+| Uptycs.Detections.assetLocation | string | Location of the asset |
+| Uptycs.Detections.assetOs | string | OS of the asset |
+| Uptycs.Detections.assetOsFlavor | string | OS flavor of the asset |
+| Uptycs.Detections.assetOsVersion | string | OS version of the asset |
+| Uptycs.Detections.assetOsqueryVersion | string | Osquery version of the asset |
+| Uptycs.Detections.assetStatus | string | Status of the asset |
+| Uptycs.Detections.assignedTo | string | Id of the user that the detection was assigned to |
+| Uptycs.Detections.assignedUserName | string | Username of the user that the detection was assigned to |
+| Uptycs.Detections.createdAt | date | Created at time of the detection |
+| Uptycs.Detections.lastOccurredAt | date | Last occurred time of the detection |
+
+##### Command Example
+`uptycs-get-detections limit=1 time_ago="30 days"`
+
+##### Context Example
+```
+{
+    "Uptycs.detections": [
+        {
+            "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+            "displayName": "Uptycs test detection",
+            "severity": "medium",
+            "signals": 5,
+            "status": "open",
+            "tacticCount": 5,
+            "tactics": "credential access",
+            "assetHostName": "kyle-mbp-work",
+            "assetId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "agentType": "asset",
+            "assetLive": True,
+            "assetLocation": "New York",
+            "assetOs": "Ubuntu",
+            "assetOsFlavor": "linux",
+            "assetOsVersion": "22.10",
+            "assetOsqueryVersion": "1.x.x",
+            "assetStatus": "active",
+            "assignedTo": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+            "assignedUserName": "uptycs_user",
+            "createdAt": "2019-07-02 11:41:25.915",
+            "lastOccurredAt": "2019-07-02 11:41:25.915"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs detections
+|id|displayName|severity|signals|status|tacticCount|tactics|assetHostName|assetId|agentType|assetLive|assetLocation|assetOs|assetOsFlavor|assetOsVersion|assetOsqueryVersion|assetStatus|assignedTo|assignedUserName|createdAt|lastOccurredAt|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|0049641c-1645-4b98-830f-7f1ce783bfcc|Uptycs test detection|medium|5|open|5|credential access|kyle-mbp-work|984d4a7a-9f3a-580a-a3ef-2841a561669b|asset|True|New York|Ubuntu|linux|22.10|1.x.x|active|0049641c-1645-4b98-830f-7f1ce783bfcc|uptycs_user|2019-07-02 11:41:25.915|2019-07-02 11:41:25.915|
+
+
+### 49. uptycs-get-detection-details
+---
+Get details of an Uptycs detection
+##### Base Command
+
+`uptycs-get-detection-details`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_id | Id of the Uptycs detection | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Uptycs.Detection.id | string | Uptycs id of detection |
+| Uptycs.Detection.displayName | string | Uptycs detection name |
+| Uptycs.Detection.score | number | Uptycs detection score |
+| Uptycs.Detection.severity | string | Uptycs detection severity |
+| Uptycs.Detection.signals | number | Number of signals associated with the detection |
+| Uptycs.Detection.status | string | Status of the detection |
+| Uptycs.Detection.tacticCount | number | Number of tactics associated with the detection |
+| Uptycs.Detection.tactics | string | Tactics associated with detection |
+| Uptycs.Detection.assetHostName | string | Hostname of the asset associated with the detection |
+| Uptycs.Detection.assetId | string | Id of the asset associated with the detection |
+| Uptycs.Detection.agentType | string | Agent type of the detection |
+| Uptycs.Detection.resourceType | string | Resource type of the detection |
+| Uptycs.Detection.note | string | Note created for the detection |
+| Uptycs.Detection.assignedTo | string | Id of the user that the detection was assigned to |
+| Uptycs.Detection.assignedUserName | string | Username of the user that the detection was assigned to |
+| Uptycs.Detection.createdAt | date | Created at time of the detection |
+| Uptycs.Detection.alerts_and_events | string | Details of alerts and events assocated for the detection |
+
+##### Command Example
+`uptycs-get-detection-details detection_id="0049641c-1645-4b98-830f-7f1ce783bfcc"`
+
+##### Context Example
+```
+{
+    "Uptycs.detections": [
+        {
+            "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+            "displayName": "Uptycs test detection",
+            "score": 5,
+            "severity": "medium",
+            "signals": 5,
+            "status": "open",
+            "tacticCount": 5,
+            "tactics": "credential access",
+            "assetHostName": "kyle-mbp-work",
+            "assetId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+            "agentType": "asset",
+            "resourceType": "asset",
+            "note": "test note",
+            "assignedTo": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+            "assignedUserName": "uptycs_user",
+            "createdAt": "2019-07-02 11:41:25.915",
+            "alerts_and_events": "Event 1, Alert 1, Event 2, Alert 2"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+### Uptycs detections
+|id|displayName|score|severity|signals|status|tacticCount|tactics|assetHostName|assetId|agentType|resourceType|note|assignedTo|assignedUserName|createdAt|alerts_and_events|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|0049641c-1645-4b98-830f-7f1ce783bfcc|Uptycs test detection|5|medium|5|open|5|credential access|kyle-mbp-work|984d4a7a-9f3a-580a-a3ef-2841a561669b|asset|asset|test note|0049641c-1645-4b98-830f-7f1ce783bfcc|uptycs_user|2019-07-02 11:41:25.915|Event 1, Alert 1, Event 2, Alert 2|
+
 
 
 ## Additional Information
