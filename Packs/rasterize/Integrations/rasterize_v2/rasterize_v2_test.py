@@ -104,7 +104,7 @@ def test_rasterize_html(mocker, capfd):
         mocker.patch.object(demisto, 'getFilePath', return_value={"path": path})
         mocker.patch.object(os, 'rename')
         mocker.patch.object(os.path, 'realpath', return_value=f'{os.getcwd()}/test_data/file.html')
-        mocker_output = mocker.patch('rasterize.return_results')
+        mocker_output = mocker.patch('rasterize_v2.return_results')
         rasterize_html_command()
         assert mocker_output.call_args.args[0]['File'] == 'email.png'
 
