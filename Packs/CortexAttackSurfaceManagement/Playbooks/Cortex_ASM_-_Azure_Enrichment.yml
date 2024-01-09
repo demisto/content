@@ -210,17 +210,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d9c4bd7b-ef1e-4f4f-8b1a-a385dd06bd5c
+    taskid: d4404283-acdd-4acf-89af-da03742b990e
     type: regular
     task:
-      id: d9c4bd7b-ef1e-4f4f-8b1a-a385dd06bd5c
+      id: d4404283-acdd-4acf-89af-da03742b990e
       version: -1
       name: Set service owner grid field
       description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "39"
@@ -267,10 +267,7 @@ tasks:
       val3:
         simple: Azure
       val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
+        simple: TIMESTAMP
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -358,10 +355,10 @@ tasks:
       version: -1
       name: Set system IDs grid field (NSG)
       description: Sets Azure NSG information to the grid field for the ASM system IDs object.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "13"
@@ -409,10 +406,10 @@ tasks:
       version: -1
       name: Set system IDs grid field (Resource Group)
       description: Sets Azure resource group information to the grid field for the ASM system IDs object. The variable name "CLOUD-RG" is chosen because multiple CSPs have a concept of a resource group including Alibaba, IBM Cloud, and Azure.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "15"
@@ -454,10 +451,10 @@ tasks:
       version: -1
       name: Set system IDs grid field (NIC)
       description: Sets Azure NIC information to the grid field for the ASM system IDs object. The variable name "ASSET-NIC" is chosen because it can used for more than just compute resources in all cloud providers.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "16"
@@ -505,10 +502,10 @@ tasks:
       version: -1
       name: Set system IDs grid field (ID)
       description: Sets the Azure Compute instance ID to the grid field for the ASM system IDs object.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "23"
@@ -550,10 +547,10 @@ tasks:
       version: -1
       name: Set private IP grid field
       description: Sets the private IP to the grid field for the ASM private IP object.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "30"
@@ -655,10 +652,10 @@ tasks:
       version: -1
       name: Set cloud grid field
       description: Sets Azure subscription, resource group, and location information to the grid field for the ASM cloud object.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "31"
@@ -717,10 +714,10 @@ tasks:
       version: -1
       name: Set system IDs grid field (Compute Name)
       description: Sets the Azure Compute instance name to the grid field for the ASM system IDs object.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "38"
@@ -813,11 +810,11 @@ tasks:
       id: d6c63bb2-4ecf-4774-8d6b-753900f93014
       version: -1
       name: Azure - Enrichment
-      playbookName: Azure - Enrichment
       type: playbook
       iscommand: false
       brand: ""
       description: ''
+      playbookId: Azure - Enrichment
     nexttasks:
       '#none#':
       - "2"
@@ -850,10 +847,10 @@ tasks:
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "33"
@@ -889,10 +886,10 @@ tasks:
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "34"
@@ -1021,10 +1018,10 @@ tasks:
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "32"
@@ -1060,10 +1057,10 @@ tasks:
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "40"
@@ -1130,10 +1127,10 @@ tasks:
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "32"
@@ -1170,10 +1167,10 @@ tasks:
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "34"
@@ -1271,10 +1268,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "45"
@@ -1361,10 +1358,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "45"
@@ -1404,10 +1401,10 @@ tasks:
       version: -1
       name: Set system IDs grid field (type)
       description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "12"
@@ -1452,3 +1449,5 @@ outputs: []
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
