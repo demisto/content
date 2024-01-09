@@ -38,4 +38,4 @@ wait-for-build-to-finish:
   variables:
     PIPELINE_ID: $PIPELINE_ID
   script:
-    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
+    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${PIPELINE_ID}" -p $PIPELINE_ID -pid 1738
