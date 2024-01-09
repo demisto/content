@@ -200,8 +200,8 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
 
 
 def inactivate_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
-    args_id = str(args.get('id'))
-    url_suffix = f'/assets/{args_id}'
+    asset_id = args.get('asset_id'))
+    url_suffix = f'/assets/{asset_id}'
     asset = {
         'asset': {
             'inactive': True,
