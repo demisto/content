@@ -131,11 +131,12 @@ def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict
     return modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions
 
 
-def write_test_modeling_rule_to_jira_mapping(artifacts_path: Path, jira_tickets_for_modeling_rule: dict[str, Issue]):
+def write_test_modeling_rule_to_jira_mapping(server_url: str, artifacts_path: Path,
+                                             jira_tickets_for_modeling_rule: dict[str, Issue]):
     test_modeling_rule_to_jira_mapping_file = artifacts_path / TEST_MODELING_RULES_TO_JIRA_MAPPING
     logging.info(f"Writing test_modeling_rules_to_jira_mapping to {test_modeling_rule_to_jira_mapping_file}")
     with open(test_modeling_rule_to_jira_mapping_file, "w") as test_modeling_rule_to_jira_mapping_fp:
-        test_modeling_rule_to_jira_mapping = {modeling_rule: jira_ticket_to_json_data(jira_ticket)
+        test_modeling_rule_to_jira_mapping = {modeling_rule: jira_ticket_to_json_data(server_url, jira_ticket)
                                               for modeling_rule, jira_ticket in jira_tickets_for_modeling_rule.items()}
         test_modeling_rule_to_jira_mapping_fp.write(json.dumps(test_modeling_rule_to_jira_mapping, indent=4, sort_keys=True,
                                                                default=str))

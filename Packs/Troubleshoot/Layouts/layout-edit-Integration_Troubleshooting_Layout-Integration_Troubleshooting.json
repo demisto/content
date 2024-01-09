@@ -67,7 +67,7 @@
     "type": ""
    },
    {
-    "description": "To use the Troubleshooting Incident, you must have a configured [Demisto REST API integration](https://xsoar.pan.dev/docs/reference/articles/integrations-and-incident-health-check#1-demisto-rest-api-integration)",
+    "description": "To use the Troubleshooting Incident, you must have a configured [Core REST API integration](https://xsoar.pan.dev/docs/reference/articles/integrations-and-incident-health-check#1-core-rest-api-integration)",
     "fields": [
      {
       "fieldId": "incident_troubleshoottype",

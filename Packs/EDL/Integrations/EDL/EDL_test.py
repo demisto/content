@@ -251,6 +251,42 @@ class TestHelperFunctions:
         edl_v, _ = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}
 
+    def test_create_new_edl_with_offset(self, mocker, requests_mock):
+        """
+        Test create_new_edl with and without offset
+        Given:
+            - A list of indicators
+        When:
+            - calling create_new_edl
+        Then:
+            - Ensure that the list is the same as is should with no offset and with offset=2
+        """
+
+        import EDL as edl
+        tlds = 'com\nco.uk'
+        requests_mock.get('https://publicsuffix.org/list/public_suffix_list.dat', text=tlds)
+        requests_mock.get('https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat', text=tlds)
+        indicators = [{'value': '1.1.1.1/7', 'indicator_type': 'CIDR'},  # prefix=7
+                      {"value": "1.1.1.1/12", "indicator_type": "CIDR"},  # prefix=12
+                      {"value": "*.com", "indicator_type": "Domain"},  # tld
+                      {"value": "*.co.uk", "indicator_type": "Domain"},  # tld
+                      {"value": "*.google.com", "indicator_type": "Domain"},  # no tld
+                      {"value": "aא.com", "indicator_type": "URL"}]  # no ascii
+        f = '\n'.join((json.dumps(indicator) for indicator in indicators))
+
+        # create_new_edl with no offset
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
+        edl_v, _ = edl.create_new_edl(request_args)
+        assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
+                                          "co.uk", "*.google.com", "google.com", "aא.com"}
+
+        # create_new_edl with offset=2
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8, offset=2)
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
+        edl_v, _ = edl.create_new_edl(request_args)
+        assert set(edl_v.split('\n')) == {"google.com", "co.uk", "*.co.uk", "*.google.com", "*.com", "aא.com"}
+
     def test_create_json_out_format(self):
         """
         Given:

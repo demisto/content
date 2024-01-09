@@ -9,7 +9,7 @@ if not dataFromCtx:
     accountName = f"acc_{accountName}" if accountName != "" else ""
 
     stats = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": f"{accountName}/statistics/widgets/query",
             "body": {

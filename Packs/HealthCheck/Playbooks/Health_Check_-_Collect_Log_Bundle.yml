@@ -213,7 +213,7 @@ tasks:
       id: 16fe15f9-6a82-4a6b-8e12-c0ab7a1e5eec
       iscommand: true
       name: Download log bundle
-      script: '|||demisto-api-download'
+      script: '|||core-api-download'
       type: regular
       version: -1
     taskid: 16fe15f9-6a82-4a6b-8e12-c0ab7a1e5eec
@@ -249,7 +249,7 @@ tasks:
       id: b9fa721a-5789-47b3-8a3d-f5d283071012
       iscommand: true
       name: Download account log bundle
-      script: '|||demisto-api-download'
+      script: '|||core-api-download'
       type: regular
       version: -1
     taskid: b9fa721a-5789-47b3-8a3d-f5d283071012

@@ -2,9 +2,20 @@
 // Support only date time of format: MMM dd YYYY hh:mm:ss.nnn UTC or format: MMM dd hh:mm:ss.nnn UTC. For example: "Jan 01 10:00:00.123 UTC" or "Jan 01 2021 10:00:00.123 UTC"
 filter _raw_log ~= "\:[\s|\s\*]+\w+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3}\sUTC" or _raw_log ~= "\:[\s|\s\*]+(\w+\s\d+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"
 | alter
-        tmp_time1 = arrayindex(regextract(_raw_log, "\:[\s|\s\*]+(\w+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"),0),
-        tmp_Year = format_timestamp("%Y",_insert_time),
-        tmp_time2 = to_string(arrayindex(regextract(_raw_log, "\:[\s|\s\*]+(\w+\s\d+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"),0))
-| alter tmp_time_concat = to_string(concat(tmp_Year, " ",tmp_time1))
-| alter _time = if(tmp_time2 != null, parse_timestamp("%b %d %Y %H:%M:%E3S",tmp_time2), tmp_time_concat != null, parse_timestamp("%Y %b %d %H:%M:%E3S", tmp_time_concat), _insert_time)
-| fields -tmp_time1, tmp_time_concat, tmp_Year, tmp_time2;
+        tmp_time_without_year = arrayindex(regextract(_raw_log, "\:[\s|\s\*]+(\w+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"),0),
+        tmp_year = format_timestamp("%Y",_insert_time),
+        tmp_time_with_year = to_string(arrayindex(regextract(_raw_log, "\:[\s|\s\*]+(\w+\s\d+\s\d+\s\d{2}\:\d{2}\:\d{2}\.\d{3})\sUTC"),0))
+| alter tmp_time_with_year = parse_timestamp("%b %d %Y %H:%M:%E3S",tmp_time_with_year)
+| alter
+        tmp_time_format2 = if(tmp_time_without_year != null and tmp_time_without_year != "", concat(tmp_year, " ", tmp_time_without_year), null)
+| alter
+        tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%E*S", tmp_time_format2)
+| alter tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "DAY")
+// Check if the date is a future date
+| alter tmp_year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_year),1)), null)
+// Create timestamp minus 1 year if the timestamp is a future one
+| alter tmp_time1_2 = if(tmp_year2 != null, concat(tmp_year2, " ", tmp_time_without_year), null)
+| alter tmp_time1_2 = if(tmp_time1_2 != null, parse_timestamp("%Y %b %e %H:%M:%E*S", tmp_time1_2 ), null)
+| alter tmp_time_without_year = coalesce(tmp_time1_2, tmp_time1_1)
+| alter _time = coalesce(tmp_time_with_year, tmp_time_without_year)
+| fields -tmp_time_without_year, tmp_year, tmp_time_with_year, tmp_time_format2, tmp_time1_1, tmp_timeDiff, tmp_year2, tmp_time1_2;

@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Azure-DevOps-Pipeline-Run
-description: This playbook runs a pipeline on the Azure DevOps Environment.
+description: Deprecated. Use azure-devops-pipeline-run command instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -35,6 +35,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: c8c1d796-08f6-428d-8c85-71634d0db775
@@ -76,6 +77,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 30368ad5-36da-4472-8a60-527a45685005
@@ -103,6 +105,12 @@ tasks:
         complex:
           root: AzureDevOps.PipelineRun
           accessor: run_id
+      interval:
+        complex:
+          root: inputs.interval
+      timeout:
+        complex:
+          root: inputs.Timeout
     separatecontext: false
     view: |-
       {
@@ -118,70 +126,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: c2ca1354-c0f9-43be-8316-a97e90103594
-    type: playbook
-    task:
-      id: c2ca1354-c0f9-43be-8316-a97e90103594
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      AdditionalPollingCommandArgNames:
-        simple: project,pipeline_id
-      AdditionalPollingCommandArgValues:
-        simple: ${inputs.Project Name},${inputs.Pipeline ID}
-      Ids:
-        complex:
-          root: AzureDevOps.PipelineRun
-          accessor: run_id
-      Interval:
-        complex:
-          root: inputs.interval
-      PollingCommandArgName:
-        simple: run_id
-      PollingCommandName:
-        simple: azure-devops-pipeline-run-get
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: AzureDevOps.PipelineRun(val.state!=='completed').run_id
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 28edb4ce-1718-4e2f-80fa-0fbac12fec8d
@@ -214,7 +159,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 895
+          "y": 790
         }
       }
     note: false
@@ -224,6 +169,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 172877e1-d636-4b2a-8b3e-70dddf7ea585
@@ -241,7 +187,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 990
         }
       }
     note: false
@@ -251,6 +197,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: df1cb9bf-f569-40c6-8bda-fc4ec11ebe26
@@ -265,7 +212,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "5"
       "yes":
       - "4"
     separatecontext: false
@@ -297,14 +244,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 492.5,
-        "x": 50,
+        "height": 1005,
+        "width": 380,
+        "x": 162.5,
         "y": 50
       }
     }
@@ -338,19 +286,18 @@ inputs:
   value:
     simple: "60"
   required: true
-  description: The amount of time until the playbook stops waiting for the process
-    to finish. After this time has passed, the playbook finishes its run, even if
-    it didn't receive confirmation that the remote process completed.
+  description: The amount of time until the playbook stops waiting for the process to finish. After this time has passed, the playbook finishes its run, even if it didn't receive confirmation that the remote process completed.
   playbookInputQuery:
 outputs:
 - contextPath: AzureDevOps.Project
-  description: The result of the search
+  description: The result of the search.
 - contextPath: AzureDevOps.Project.Pipeline
-  description: AzureDevOps Pipeline Object
+  description: AzureDevOps Pipeline Object.
   type: unknown
 - contextPath: AzureDevOps.Project.Pipeline.Run
-  description: AzureDevOps Pipeling Run
+  description: AzureDevOps Pipeling Run.
   type: unknown
 tests:
-- playbook-AzureDevOps-Test
+- No tests (deprecated)
 fromversion: 6.0.0
+deprecated: true

@@ -3283,6 +3283,7 @@ def get_last_run(args: dict[str, Any], ticket_type: str) -> tuple:
         Tuple: Updated last run arguments.
     """
     last_run = demisto.getLastRun()
+    demisto.debug(f'get_last_run {last_run=}')
     ticket_last_run = last_run.get(ticket_type)
     last_run_id = None
 
@@ -3368,7 +3369,6 @@ def fetch_relevant_tickets_by_ticket_type(
             if all((alert_property := alert.get(key)) is None
                    or properties == ['All'] or alert_property in properties
                    for key, properties in alert_properties):
-
                 # fetch task for each ticket if true
                 if fetch_ticket_task:
                     freshservice_request = get_command_request(
@@ -3386,6 +3386,10 @@ def fetch_relevant_tickets_by_ticket_type(
                 # insert only limited number of tickets according max_fetch_per_ticket_type.
                 if len(alerts) == max_fetch_per_ticket_type:
                     break
+            else:
+                demisto.debug(f'filtering out alert {alert_id} due to properties arent according to defined properties')
+        else:
+            demisto.debug(f'filtering out alert {alert_id} due to time')
 
     return alerts, incidents
 
@@ -3443,19 +3447,23 @@ def fetch_incidents(client: Client, params: dict):
 
     ticket_types, alert_properties = get_alert_properties(params)
     fetch_ticket_task = argToBoolean(params['fetch_ticket_task'])
+    demisto.debug(f'fetch_incidents {ticket_types=} {alert_properties=} {fetch_ticket_task=}')
 
     # use condition statement to avoid mypy error
     if (max_fetch := arg_to_number(params['max_fetch'])) is not None:
         max_fetch_per_ticket_type = max_fetch // len(ticket_types)
+        demisto.debug(f'fetch-incidents {max_fetch_per_ticket_type=}')
 
     incidents = []
     last_run = {}
 
     for alert_type in ticket_types:
+        demisto.debug(f'fetching {alert_type=}')
         ticket_type = FETCH_TICKET_TYPE[alert_type]
 
         last_run_id, last_run_datetime, last_run_datetime_str = get_last_run(
             params, ticket_type)
+        demisto.debug(f'last run info {last_run_id=} {last_run_datetime_str=}')
 
         freshservice_request = get_command_request(client, ticket_type)
         request_args = {
@@ -3499,8 +3507,9 @@ def fetch_incidents(client: Client, params: dict):
                 'id': last_run_id,
                 'time': last_run_datetime_str
             }
-
+    demisto.debug(f'setting last run {last_run=}')
     demisto.setLastRun(last_run)
+    demisto.debug(f'{len(incidents)=}')
     demisto.incidents(incidents)
 
 

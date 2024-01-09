@@ -1,7 +1,6 @@
 from CommonServerPython import *
 from RecordedFutureEventCollector import BASE_URL, DATE_FORMAT
 from freezegun import freeze_time
-import io
 import requests_mock
 import pytest
 
@@ -9,7 +8,7 @@ import pytest
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -30,7 +29,7 @@ def test_module_succeed(mocker):
     mock_results = mocker.patch('RecordedFutureEventCollector.return_results')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{BASE_URL}/info/whoami', status_code=200, text='{"name": "admin"}')
+        m.get(f'{BASE_URL}/config/info', status_code=200, text='{"name": "admin"}')
         test_module(client)
 
     assert mock_results.call_args[0][0] == 'ok'
@@ -41,7 +40,7 @@ def test_module_failed():
     client = Client(BASE_URL)
 
     with requests_mock.Mocker() as m:
-        m.get(f'{BASE_URL}/info/whoami', status_code=401, text='{"error":{"status":401}}')
+        m.get(f'{BASE_URL}/config/info', status_code=401, text='{"error":{"status":401}}')
         with pytest.raises(DemistoException) as e:
             test_module(client)
 
@@ -60,7 +59,7 @@ def test_get_events():
     assert len(mock_events) == 2
 
 
-@freeze_time('2023-02-21T00:00:00.000Z')
+@freeze_time('2023-12-24T01:02:03.000Z')
 def test_fetch_events(mocker):
     from RecordedFutureEventCollector import Client, fetch_events, demisto
     client = Client(BASE_URL)
@@ -71,8 +70,8 @@ def test_fetch_events(mocker):
         mock_events, next_last_run = fetch_events(client, limit=2, last_run=arg_to_datetime('3 days').strftime(DATE_FORMAT))
 
     assert len(mock_events) == 2
-    assert next_last_run == {'last_run_ids': ['333333'], 'last_run_time': '2023-02-20T05:04:19'}
-    assert first_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-18T00:00:00.000000Z,]'
+    assert next_last_run == {'last_run_ids': ['a12b-5'], 'last_run_time': '2023-12-23T00:00:10'}
+    assert first_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-12-21T01:02:03.000000Z,]'
 
     mocker.patch.object(demisto, 'getLastRun', return_value=next_last_run)
     last_run_time = next_last_run.get('last_run_time')
@@ -83,8 +82,8 @@ def test_fetch_events(mocker):
         mock_events, next_last_run = fetch_events(client, limit=2, last_run=last_run_time)
 
     assert len(mock_events) == 1
-    assert next_last_run == {'last_run_ids': ['555555'], 'last_run_time': '2023-02-20T05:04:24'}
-    assert second_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-02-20T05:04:19,]'
+    assert next_last_run == {'last_run_ids': ['a12b-8'], 'last_run_time': '2023-12-23T00:10:20'}
+    assert second_mock_request.last_request.qs.get('triggered')[0].upper() == '[2023-12-23T00:00:10,]'
 
 
 def test_main(mocker):
@@ -99,7 +98,8 @@ def test_main(mocker):
         main()
 
     assert len(events.call_args[0][0]) == 2
-    assert events.call_args[0][0][0].get('_time') == events.call_args[0][0][0].get('triggered')
+    event = events.call_args[0][0][0]
+    assert event.get('_time') == event.get('log', {}).get('triggered')
     assert events.call_args[1].get('vendor') == VENDOR
     assert events.call_args[1].get('product') == PRODUCT
     assert mock_request.last_request.query == 'limit=2'

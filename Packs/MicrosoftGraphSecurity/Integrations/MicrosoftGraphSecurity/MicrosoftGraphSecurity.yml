@@ -790,6 +790,7 @@ script:
       predefined:
       - 'ediscovery'
       - 'alerts'
+      - 'threat assessment'
       - 'all'
     description: Tests connectivity to Microsoft Graph Security.
     execution: false
@@ -1623,7 +1624,421 @@ script:
       Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
     execution: false
     name: msg-purge-ediscovery-data
-  dockerimage: demisto/crypto:1.0.0.68914
+  - arguments:
+    - description: The email address of the user who received the email.
+      isArray: false
+      name: recipient_email
+      required: true
+    - description: The expected assessment.
+      isArray: false
+      name: expected_assessment
+      auto: PREDEFINED
+      predefined:
+      - 'block'
+      - 'unblock'
+      required: true
+    - description: The category of the threat.
+      isArray: false
+      name: category
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'spam'
+      - 'phishing'
+      - 'malware'
+      required: true
+    - description: Message user. Could be the user's ID or the user's email.
+      isArray: false
+      name: message_user
+      required: true
+    - description: "Message ID. Message has to contain the 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. Use the msgraph-mail-list-emails command from the Microsoft Graph Mail pack  with the proper user_id in order to get all available messages."
+      isArray: false
+      name: message_id
+      required: true
+    - description: The ID of the request (generated in the polling command).
+      name: request_id
+      deprecated: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      deprecated: true
+      defaultValue: '720'
+    description: Create and retrieve a mail threat assessment.
+    execution: false
+    name: msg-create-mail-assessment-request
+    polling: true
+    outputs:
+    - contextPath: MSGraphMail.MailAssessment.ID
+      description: Mail assessment ID.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.CreatedDateTime
+      description: The datetime the mail assessment was created.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.ContentType
+      description: The content type.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.ExpectedAssessment
+      description: The expected assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.Category
+      description: The category of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.Status
+      description: The status of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.RequestSource
+      description: The request source of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.RecipientEmail
+      description: The email recipient of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.DestinationRoutingReason
+      description: The destination routing reason for the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.MessageID
+      description: The message ID of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.CreatedUserID
+      description: The user ID that was created for the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.CreatedUsername
+      description: The user name that was created for the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.ResultType
+      description: The result type of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.MailAssessment.ResultMessage
+      description: The result message of the mail assessment.
+      type: String
+  - arguments:
+    - description: The email of the user who recieved the mail.
+      isArray: false
+      name: recipient_email
+      required: true
+    - description: The expected assessment.
+      isArray: false
+      name: expected_assessment
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'block'
+      - 'unblock'
+      required: true
+    - description: The category of the threat.
+      isArray: false
+      name: category
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'spam'
+      - 'phishing'
+      - 'malware'
+      required: true
+    - description: Base 64 encoded eml file.
+      isArray: false
+      name: content_data
+      required: false
+    - description: Entry ID.
+      isArray: false
+      name: entry_id
+      required: false
+    - description: The ID of the request (generated in the polling command).
+      name: request_id
+      deprecated: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      deprecated: true
+      defaultValue: '720'
+    description: Create email file assessment request.
+    execution: false
+    name: msg-create-email-file-assessment-request
+    polling: true
+    outputs:
+    - contextPath: MSGraphMail.EmailAssessment.ID
+      description: The mail assessment ID.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.CreatedDateTime
+      description: The datetime the mail assessment was created.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.ContentType
+      description: The content type.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.ExpectedAssessment
+      description: The expected assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.Category
+      description: The category of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.Status
+      description: The status of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.RequestSource
+      description: The request source of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.RecipientEmail
+      description: The email recipient of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.DestinationRoutingReason
+      description: The destination routing reason for the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.CreatedUserID
+      description: The user ID that was created for the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.CreatedUsername
+      description: The user name that was created for the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.ResultType
+      description: The result type of the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.EmailAssessment.ResultMessage
+      description: The result message of the mail assessment.
+      type: String
+  - arguments:
+    - description: The expected assessment.
+      isArray: false
+      name: expected_assessment
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'block'
+      - 'unblock'
+      required: true
+    - description: The category of the threat.
+      isArray: false
+      name: category
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'phishing'
+      - 'malware'
+      required: true
+    - description: The file name.
+      isArray: false
+      name: file_name
+      required: true
+    - description: Base 64 encoded text file.
+      isArray: false
+      name: content_data
+      required: false
+    - description: Entry ID.
+      isArray: false
+      name: entry_id
+      required: false
+    - description: Whether to hide the polling result (automatically filled by polling).
+      name: hide_polling_output
+      deprecated: true
+    - description: The ID of the request (generated in the polling command).
+      name: request_id
+      deprecated: true
+    description: Create file assessment request.
+    execution: false
+    name: msg-create-file-assessment-request
+    polling: true
+    outputs:
+    - contextPath: MSGraphMail.FileAssessment.ID
+      description: The mail assessment ID.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.CreatedDateTime
+      description: The datetime the file assessment was created.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.ContentType
+      description: The content type.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.ExpectedAssessment
+      description: The expected assessment.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.Category
+      description: The category of the file assessment.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.Status
+      description: The status of the file assessment.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.RequestSource
+      description: The request source of the file assessment.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.FileName
+      description: The file name of the file assessment.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.CreatedUserID
+      description: The user ID that was created for the file assessment.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.CreatedUsername
+      description: The user name that was created for the mail assessment.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.ResultType
+      description: The result type of the file assessment.
+      type: String
+    - contextPath: MSGraphMail.FileAssessment.ResultMessage
+      description: The result message of the file assessment.
+      type: String
+  - arguments:
+    - description: The expected assessment.
+      isArray: false
+      name: expected_assessment
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'block'
+      - 'unblock'
+      required: true
+    - description: The category of the threat.
+      isArray: false
+      name: category
+      defaultValue: all
+      auto: PREDEFINED
+      predefined:
+      - 'phishing'
+      - 'malware'
+      required: true
+    - description: The URL of the threat.
+      isArray: false
+      name: url
+      required: true
+    - description: The request_id (generated in the polling command).
+      name: request_id
+      deprecated: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      deprecated: true
+      defaultValue: '720'
+    description: Create the URL assessment request.
+    execution: false
+    name: msg-create-url-assessment-request
+    polling: true
+    outputs:
+    - contextPath: MSGraphMail.UrlAssessment.ID
+      description: The mail assessment ID.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.Url
+      description: The URL of the URL assessment.
+      type: string
+    - contextPath: MSGraphMail.UrlAssessment.CreatedDateTime
+      description: The datetime the URL assessment was created.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.ContentType
+      description: The content type of the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.ExpectedAssessment
+      description: The expected assessment of the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.Category
+      description: The category of the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.Status
+      description: The status of the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.RequestSource
+      description: The request source for the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.RecipientEmail
+      description: The recipient email for the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.DestinationRoutingReason
+      description: The destination routing reason for the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.CreatedUserID
+      description: The user ID created for the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.CreatedUsername
+      description: The user name created for the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.ResultType
+      description: The result type of the URL assessment.
+      type: String
+    - contextPath: MSGraphMail.UrlAssessment.ResultMessage
+      description: The result message of the URL assessment.
+      type: String
+  - arguments:
+    - description: The request ID.
+      isArray: false
+      name: request_id
+      required: false
+    - description: The filter for the request. Example category eq 'malware’ and ContentType eq 'file'. Available fields are expectedAssessment, ContentType, status, requestSource.
+      isArray: false
+      name: filter
+      required: false
+    - description: The order by which to retrieve the results.
+      isArray: false
+      name: order_by
+      auto: PREDEFINED
+      predefined:
+      - 'id'
+      - 'createdDateTime'
+      - 'ContentType'
+      - 'expectedAssessment'
+      - 'category'
+      - 'status'
+      - 'requestSource'
+      required: false
+    - description: The sort order.
+      isArray: false
+      name: sort_order
+      auto: PREDEFINED
+      predefined:
+      - 'asc'
+      - 'desc'
+      required: false
+    - description: The maximum number of results to retrieve.
+      isArray: false
+      name: limt
+      required: false
+    - description: The next token.
+      isArray: false
+      name: next_token
+      required: false
+    description: Create URL assessment request.
+    execution: false
+    name: msg-list-threat-assessment-requests
+    polling: true
+    outputs:
+    - contextPath: MsGraph.AssessmentRequestNextToken.next_token
+      description: The next token for the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.ID
+      description: The assessment request ID.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.CreatedDateTime
+      description: The datetime the assessment request was created.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.ContentType
+      description: The content type of the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.ExpectedAssessment
+      description: The expected assessment of the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.Category
+      description: The category of the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.Status
+      description: The status of the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.URL
+      description: The URL of the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.RequestSource
+      description: The request source for the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.RecipientEmail
+      description: The email recipient for the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.FileName
+      description: The file name of the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.DestinationRoutingReason
+      description: The destination routing reason for the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.CreatedUserID
+      description: The user ID create for the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.CreatedUsername
+      description: The user name created for the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.ResultType
+      description: The result type of the assessment request.
+      type: String
+    - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
+      description: The result message of the assessment request.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.82826
   isfetch: true
   runonce: false
   script: '-'
@@ -1638,4 +2053,5 @@ tests:
 - Microsoft Graph Security Test prod v2
 - Microsoft Graph Security Test self deployed v2
 - MSG-ediscovery-tpb
+- MSG-Threat-Assessment-test
 fromversion: 5.0.0

@@ -1,7 +1,7 @@
 id: Cortex XDR Alerts Handling
 version: -1
 name: Cortex XDR Alerts Handling
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation.\n- Remote PsExec with LOLBIN command execution alert."
+description: "Deprecated. Use Cortex XDR - Alerts Handling v2 instead. When using the v2 version, enabling globally shared context for that playbook is required because outputs are no longer declared."
 starttaskid: "0"
 tasks:
   "0":
@@ -342,6 +342,9 @@ tasks:
       xdr_alert_id:
         complex:
           root: inputs.alert_id
+      InternalIPRanges:
+        complex:
+          root: inputs.InternalIPRanges
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1459,6 +1462,25 @@ inputs:
   required: false
   description: Alert ID.
   playbookInputQuery:
+- key: InternalIPRanges
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexReplace
+        args:
+          action_dt: {}
+          ignore_case: {}
+          multi_line: {}
+          output_format: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: IANA_Private_Address
+  required: false
+  description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.incident_id
   description: Unique ID assigned to each returned incident.
@@ -1545,7 +1567,8 @@ outputs:
   description: Files hashes which are not present and were marked as "not retrieve" by the user.
   type: unknown
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
 fromversion: 5.0.0
 marketplaces:
 - xsoar
+deprecated: true
