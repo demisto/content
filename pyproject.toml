@@ -19,7 +19,7 @@ dateparser = "^1.1.8"
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
 flake8 = "^4.0.1"
-ruff = "^0.0.264"
+ruff = "^0.1.11"
 
 [tool.poetry.group.testing.dependencies]
 pytest = "^7.1.2"
@@ -183,6 +183,7 @@ select = [
     "B030", # except-with-non-exception-classes
     "B031", # reuse-of-groupby-generator
     "B032", # unintentional-type-annotation
+    "B034", # re-sub-positional-args
 
     "C400", # unnecessary-generator-list
     "C401", # unnecessary-generator-set
@@ -277,6 +278,7 @@ select = [
     "N999", # invalid-module-name
 
     "NPY001", # numpy-deprecated-type-alias
+    "NPY003", # numpy-deprecated-function
 
     "PD002", # pandas-use-of-inplace-argument
     "PD007", # pandas-use-of-dot-ix
@@ -286,7 +288,11 @@ select = [
     "PD012", # pandas-use-of-dot-read-table
     "PD013", # pandas-use-of-dot-stack
     "PD015", # pandas-use-of-pd-merge
+    "PD101", # pandas-nunique-constant-series-check
 
+    "PERF101", # unnecessary-list-cast
+    "PERF102", # incorrect-dict-iterator
+    
     "PGH001", # eval
     "PGH002", # deprecated-log-warn
 
@@ -294,8 +300,11 @@ select = [
     "PIE794", # duplicate-class-field-definition
     "PIE796", # non-unique-enums
     "PIE807", # reimplemented-list-builtin
+    "PIE808", # unnecessary-range-start
     "PIE810", # multiple-starts-ends-with
 
+    "PLC0205", # single-string-slots
+    "PLC0208", # iteration-over-set
     "PLC0414", # useless-import-alias
     "PLC3002", # unnecessary-direct-lambda-call
 
@@ -310,6 +319,7 @@ select = [
     "PLE1142", # await-outside-async
     "PLE1205", # logging-too-many-args
     "PLE1206", # logging-too-few-args
+    "PLE1300", # bad-string-format-character
     "PLE1307", # bad-string-format-type
     "PLE1310", # bad-str-strip-call
     "PLE1507", # invalid-envvar-value
@@ -322,25 +332,30 @@ select = [
 
     "PLR0133", # comparison-of-constant
     "PLR0206", # property-with-parameters
+    "PLR0124", # comparison-with-itself
     "PLR0402", # manual-from-import
     "PLR1701", # repeated-isinstance-calls
     "PLR1711", # useless-return
     "PLR1722", # sys-exit-alias
 
     "PLW0120", # useless-else-on-loop
+    "PLW0127", # self-assigning-variable
     "PLW0129", # assert-on-string-literal
     "PLW0711", # binary-op-exception
     "PLW1508", # invalid-envvar-default
+    "PLW1509", # subprocess-popen-preexec-fn
 
     "PT009", # pytest-unittest-assertion
     "PT010", # pytest-raises-without-exception
     "PT013", # pytest-incorrect-pytest-import
+    "PT014", # pytest-duplicate-parametrize-test-cases
     "PT015", # pytest-assert-always-false
     "PT018", # pytest-composite-assertion
     "PT022", # pytest-useless-yield-fixture
     "PT024", # pytest-unnecessary-asyncio-mark-on-fixture
     "PT025", # pytest-erroneous-use-fixtures-on-fixture
     "PT026", # pytest-use-fixtures-without-parameters
+    "PT027", # pytest-unittest-raises-assertion
 
     "PTH102", # os-mkdir
     "PTH105", # pathlib-replace
@@ -351,6 +366,11 @@ select = [
     "PTH117", # os-path-isabs
     "PTH121", # os-path-samefile
     "PTH124", # py-path
+    "PTH202", # os-path-getsize
+    "PTH203", # os-path-getatime
+    "PTH204", # os-path-getmtime
+    "PTH205", # os-path-getctime
+    "PTH207", # use-glob
 
     "RET501", # unnecessary-return-none
     "RET502", # implicit-return-value
@@ -364,6 +384,7 @@ select = [
     "RUF007", # pairwise-over-zipped
     "RUF008", # mutable-dataclass-default
     "RUF009", # function-call-in-dataclass-default-argument
+    "RUF016", # 
 
     "S102", # exec-builtin
     "S103", # bad-file-permissions
@@ -410,6 +431,10 @@ select = [
     "SIM401", # if-else-block-instead-of-dict-get
     "SIM910", # dict-get-with-none-default
 
+    "SLOT000", # no-slots-in-str-subclass
+    "SLOT001", # no-slots-in-tuple-subclass
+    "SLOT002", # no-slots-in-namedtuple-subclass
+
     "T201", # print
     "T203", # p-print
 
@@ -451,6 +476,8 @@ select = [
     "UP036", # outdated-version-block
     "UP037", # quoted-annotation
     "UP038", # non-pep604-isinstance
+    "UP039", # unnecessary-class-pars
+    "UP040", # non-pep695-type-alias
 
     "YTT101", # sys-version-slice3
     "YTT102", # sys-version2

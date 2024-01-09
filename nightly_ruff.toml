@@ -1,23 +1,50 @@
 # This file contains the ruff hook rules when pre-commit is run with the --all flag
 
 select = [
-    "B002", # unary-prefix-increment
+     "B002", # unary-prefix-increment
     "B003", # assignment-to-os-environ
     "B004", # unreliable-callable-check
+    "B005", # strip-with-multi-characters
+    "B007", # unused-loop-control-variable
+    "B009", # get-attr-with-constant
+    "B010", # set-attr-with-constant
+    "B011", # assert-false
     "B013", # redundant-tuple-in-exception-handler
     "B014", # duplicate-handler-exception
+    "B015", # useless-comparison
     "B016", # cannot-raise-literal
+    "B018", # useless-expression
+    "B020", # loop-variable-overrides-iterator
     "B021", # f-string-docstring
     "B022", # useless-contextlib-suppress
+    "B023", # function-uses-loop-variable
     "B025", # duplicate-try-block-exception
+    "B027", # empty-method-without-abstract-decorator
     "B028", # no-explicit-stacklevel
     "B029", # except-with-empty-tuple
     "B030", # except-with-non-exception-classes
     "B031", # reuse-of-groupby-generator
+    "B032", # unintentional-type-annotation
+    "B034", # re-sub-positional-args
 
+    "C400", # unnecessary-generator-list
+    "C401", # unnecessary-generator-set
+    "C402", # unnecessary-generator-dict
+    "C403", # unnecessary-list-comprehension-set
+    "C404", # unnecessary-list-comprehension-dict
+    "C405", # unnecessary-literal-set
     "C406", # unnecessary-literal-dict
+    "C408", # unnecessary-collection-call
+    "C409", # unnecessary-literal-within-tuple-call
     "C410", # unnecessary-literal-within-list-call
+    "C411", # unnecessary-list-call
+    "C413", # unnecessary-call-around-sorted
+    "C414", # unnecessary-double-cast-or-process
     "C415", # unnecessary-subscript-reversal
+    "C416", # unnecessary-comprehension
+    "C417", # unnecessary-map
+    "C418", # unnecessary-literal-within-dict-call
+    "C419", # unnecessary-comprehension-any-all
 
     "E101", # mixed-spaces-and-tabs
     "E401", # multiple-imports-on-one-line
@@ -27,6 +54,8 @@ select = [
     "E703", # useless-semicolon
     "E711", # none-comparison
     "E712", # true-false-comparison
+    "E713", # not-in-test
+    "E714", # not-is-test
     "E721", # type-comparison
     "E722", # bare-except
     "E731", # lambda-assignment
@@ -36,6 +65,7 @@ select = [
     "E902", # io-error
     "E999", # syntax-error
 
+    "F401", # unused-import
     "F402", # import-shadowed-by-loop-var
     "F404", # late-future-import
     "F406", # undefined-local-with-nested-import-star-usage
@@ -82,9 +112,17 @@ select = [
     "G201", # logging-exc-info
     "G202", # logging-redundant-exc-info
 
-    "N804", # invalid-first-argument-name-for-class-method
-    "N807", # dunder-function-name
+    "ISC001", # single-line-implicit-string-concatenation
 
+    "N804", # invalid-first-argument-name-for-class-method
+    "N805", # invalid-first-argument-name-for-method
+    "N807", # dunder-function-name
+    "N999", # invalid-module-name
+
+    "NPY001", # numpy-deprecated-type-alias
+    "NPY003", # numpy-deprecated-function
+
+    "PD002", # pandas-use-of-inplace-argument
     "PD007", # pandas-use-of-dot-ix
     "PD008", # pandas-use-of-dot-at
     "PD009", # pandas-use-of-dot-iat
@@ -92,9 +130,26 @@ select = [
     "PD012", # pandas-use-of-dot-read-table
     "PD013", # pandas-use-of-dot-stack
     "PD015", # pandas-use-of-pd-merge
+    "PD101", # pandas-nunique-constant-series-check
+
+    "PERF101", # unnecessary-list-cast
+    "PERF102", # incorrect-dict-iterator
+    
+    "PGH001", # eval
     "PGH002", # deprecated-log-warn
+
+    "PIE790", # unnecessary-pass
+    "PIE794", # duplicate-class-field-definition
+    "PIE796", # non-unique-enums
     "PIE807", # reimplemented-list-builtin
+    "PIE808", # unnecessary-range-start
+    "PIE810", # multiple-starts-ends-with
+
+    "PLC0205", # single-string-slots
+    "PLC0208", # iteration-over-set
+    "PLC0414", # useless-import-alias
     "PLC3002", # unnecessary-direct-lambda-call
+
     "PLE0100", # yield-in-init
     "PLE0101", # return-in-init
     "PLE0116", # continue-in-finally
@@ -106,6 +161,7 @@ select = [
     "PLE1142", # await-outside-async
     "PLE1205", # logging-too-many-args
     "PLE1206", # logging-too-few-args
+    "PLE1300", # bad-string-format-character
     "PLE1307", # bad-string-format-type
     "PLE1310", # bad-str-strip-call
     "PLE1507", # invalid-envvar-value
@@ -115,14 +171,35 @@ select = [
     "PLE2513", # invalid-character-esc
     "PLE2514", # invalid-character-nul
     "PLE2515", # invalid-character-zero-width-space
+
+    "PLR0133", # comparison-of-constant
     "PLR0206", # property-with-parameters
+    "PLR0124", # comparison-with-itself
+    "PLR0402", # manual-from-import
+    "PLR1701", # repeated-isinstance-calls
+    "PLR1711", # useless-return
     "PLR1722", # sys-exit-alias
+
+    "PLW0120", # useless-else-on-loop
+    "PLW0127", # self-assigning-variable
+    "PLW0129", # assert-on-string-literal
     "PLW0711", # binary-op-exception
     "PLW1508", # invalid-envvar-default
+    "PLW1509", # subprocess-popen-preexec-fn
+
+    "PT009", # pytest-unittest-assertion
     "PT010", # pytest-raises-without-exception
+    "PT013", # pytest-incorrect-pytest-import
+    "PT014", # pytest-duplicate-parametrize-test-cases
+    "PT015", # pytest-assert-always-false
+    "PT018", # pytest-composite-assertion
+    "PT022", # pytest-useless-yield-fixture
     "PT024", # pytest-unnecessary-asyncio-mark-on-fixture
     "PT025", # pytest-erroneous-use-fixtures-on-fixture
     "PT026", # pytest-use-fixtures-without-parameters
+    "PT027", # pytest-unittest-raises-assertion
+
+    "PTH102", # os-mkdir
     "PTH105", # pathlib-replace
     "PTH106", # os-rmdir
     "PTH114", # os-path-islink
@@ -131,12 +208,27 @@ select = [
     "PTH117", # os-path-isabs
     "PTH121", # os-path-samefile
     "PTH124", # py-path
+    "PTH202", # os-path-getsize
+    "PTH203", # os-path-getatime
+    "PTH204", # os-path-getmtime
+    "PTH205", # os-path-getctime
+    "PTH207", # use-glob
 
+    "RET501", # unnecessary-return-none
+    "RET502", # implicit-return-value
+    "RET503", # implicit-return
+    "RET508", # superfluous-else-break
+
+    "RSE102", # unnecessary-paren-on-raise-exception
+
+    "RUF001", # ambiguous-unicode-character-string
     "RUF006", # asyncio-dangling-task
     "RUF007", # pairwise-over-zipped
     "RUF008", # mutable-dataclass-default
     "RUF009", # function-call-in-dataclass-default-argument
+    "RUF016", # 
 
+    "S102", # exec-builtin
     "S103", # bad-file-permissions
     "S302", # suspicious-marshal-usage
     "S306", # suspicious-mktemp-usage
@@ -159,25 +251,75 @@ select = [
     "S612", # logging-config-insecure-listen
     "S701", # jinja2-autoescape-false
 
+    "SIM101", # duplicate-isinstance-call
+    "SIM102", # collapsible-if
+    "SIM103", # needless-bool
+    "SIM107", # return-in-try-except-finally
+    "SIM109", # compare-with-tuple
+    "SIM110", # reimplemented-builtin
+    "SIM117", # multiple-with-statements
+    "SIM118", # in-dict-keys
+    "SIM201", # negate-equal-op
     "SIM202", # negate-not-equal-op
     "SIM208", # double-negation
+    "SIM210", # if-expr-with-true-false
+    "SIM211", # if-expr-with-false-true
+    "SIM212", # if-expr-with-twisted-arms
     "SIM220", # expr-and-not-expr
     "SIM221", # expr-or-not-expr
+    "SIM222", # expr-or-true
     "SIM223", # expr-and-false
+    "SIM300", # yoda-conditions
+    "SIM401", # if-else-block-instead-of-dict-get
     "SIM910", # dict-get-with-none-default
 
+    "SLOT000", # no-slots-in-str-subclass
+    "SLOT001", # no-slots-in-tuple-subclass
+    "SLOT002", # no-slots-in-namedtuple-subclass
+
+    "T201", # print
     "T203", # p-print
+
+    "TID252", # relative-imports
 
     "UP001", # useless-metaclass-type
     "UP003", # type-of-primitive
+    "UP004", # useless-object-inheritance
     "UP005", # deprecated-unittest-alias
+    "UP006", # non-pep585-annotation
+    "UP007", # non-pep604-annotation
+    "UP008", # super-call-with-parameters
+    "UP009", # utf8-encoding-declaration
+    "UP010", # unnecessary-future-import
+    "UP011", # lru-cache-without-parameters
+    "UP012", # unnecessary-encode-utf8
     "UP013", # convert-typed-dict-functional-to-class
+    "UP014", # convert-named-tuple-functional-to-class
+    "UP015", # redundant-open-modes
     "UP017", # datetime-timezone-utc
+    "UP018", # native-literals
+    "UP019", # typing-text-str-alias
+    "UP020", # open-alias
     "UP021", # replace-universal-newlines
+    "UP022", # replace-stdout-stderr
+    "UP023", # deprecated-c-element-tree
+    "UP024", # os-error-alias
+    "UP025", # unicode-kind-prefix
+    "UP026", # deprecated-mock-import
     "UP027", # unpacked-list-comprehension
+    "UP028", # yield-in-for-loop
     "UP029", # unnecessary-builtin-import
+    "UP030", # format-literals
+    "UP031", # printf-string-formatting
+    "UP032", # f-string
     "UP033", # lru-cache-with-maxsize-none
+    "UP034", # extraneous-parentheses
+    "UP035", # deprecated-import
+    "UP036", # outdated-version-block
     "UP037", # quoted-annotation
+    "UP038", # non-pep604-isinstance
+    "UP039", # unnecessary-class-pars
+    "UP040", # non-pep695-type-alias
 
     "YTT101", # sys-version-slice3
     "YTT102", # sys-version2
@@ -188,9 +330,8 @@ select = [
     "YTT204", # sys-version-info-minor-cmp-int
     "YTT301", # sys-version0
     "YTT302", # sys-version-cmp-str10
-    "YTT303", # sys-version-slice1
+    "YTT303", # sys-version-slice
 
-    "TID252", # relative-imports
 ]
 
 line-length = 130
