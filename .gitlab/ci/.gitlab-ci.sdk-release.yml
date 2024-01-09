@@ -35,6 +35,8 @@ wait-for-build-to-finish:
     - .default-job-settings
   dependencies:
     - trigger-nightlies
+  needs:
+    - trigger-nightlies
   variables:
     PIPELINE_ID: $PIPELINE_ID
   script:
