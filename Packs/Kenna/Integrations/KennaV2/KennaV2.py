@@ -211,8 +211,8 @@ def inactivate_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], L
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     try:
         if result.get('status') != "success":
-            return 'Could not inactivate asset.', {}, []
-        return f'Asset {args_id} was updated', {}, []
+            return CommandResults(readable_output='Could not inactivate asset.')
+        return CommandResults(readable_output=f'Asset {asset_id} was updated')
     except DemistoException as err:
         return f'Error occurred while preforming inactivate-asset command {err}', {}, []
 
