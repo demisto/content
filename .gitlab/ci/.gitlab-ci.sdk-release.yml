@@ -2,9 +2,6 @@
   rules:
     - if: '$SDK_RELEASE == "true"'
 
-stages:
-  - trigger-nightlies
-  - wait-for-build-to-finish
 
 trigger-nightlies:
   stage: trigger-nightlies

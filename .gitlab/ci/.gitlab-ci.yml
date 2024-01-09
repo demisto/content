@@ -17,6 +17,7 @@ stages:
   - results
   - upload-to-marketplace
   - trigger-nightlies
+  - wait-for-build-to-finish
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
