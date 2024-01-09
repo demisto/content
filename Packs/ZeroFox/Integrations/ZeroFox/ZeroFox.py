@@ -1082,7 +1082,8 @@ def get_incidents_data(
         parsed_last_alert_timestamp + timedelta(milliseconds=1)
     ).strftime(DATE_FORMAT)
 
-    get_alert_ids: Callable[[dict[str, Any]], int] = lambda alert: alert.get("id") or 0
+    def get_alert_ids(alert: dict[str, Any]) -> int:
+        return alert.get("id") or 0
     processed_alerts_ids: list[int] = list(map(get_alert_ids, processed_alerts))
 
     return incidents, next_offset, max_update_time, processed_alerts_ids
