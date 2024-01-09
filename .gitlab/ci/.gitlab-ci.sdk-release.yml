@@ -8,6 +8,12 @@ trigger-nightlies:
   extends:
     - .release-sdk
     - .default-job-settings
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - ${CI_PROJECT_DIR}/artifacts/*
+    when: always
   variables:
     BRANCH_NAME: $BRANCH_NAME
     CONTENT_CI_TOKEN: $CONTENT_CI_TOKEN
@@ -15,12 +21,13 @@ trigger-nightlies:
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   script:
     - echo $RELEASE_VERSION
 #    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
     - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION | jq .id)
     - echo $PIPELINE_ID
-    - echo $PIPELINE_ID > PIPELINE_ID.txt
+    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER_XSOAR}/PIPELINE_ID.txt
     - echo "test"
 #    - ./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
@@ -38,9 +45,15 @@ wait-for-build-to-finish:
     - trigger-nightlies
   needs:
     - trigger-nightlies
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+      - ${CI_PROJECT_DIR}/artifacts/*
   variables:
     PIPELINE_ID: $PIPELINE_ID
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   script:
-    - line=$(head -n 1 PIPELINE_ID.txt)
+    - line=$(head -n 1 ${ARTIFACTS_FOLDER_XSOAR}/PIPELINE_ID.txt)
     - echo $line
 #    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${PIPELINE_ID}" -p $PIPELINE_ID -pid 1738
