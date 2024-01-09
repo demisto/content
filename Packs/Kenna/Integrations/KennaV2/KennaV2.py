@@ -574,8 +574,8 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
 
 
 def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
-        asset_id = str(args.get('external_id'))
-        url_suffix = f'/assets/search?&q=external_id%3A{asset_id}/'
+        external_id = args.get('external_id')
+        url_suffix = f'/assets/search?&q=external_id%3A{external_id}/'
         human_readable = []
         limit: int = arg_to_number(args.get('limit')) or 500
         to_context = args.get('to_context')
