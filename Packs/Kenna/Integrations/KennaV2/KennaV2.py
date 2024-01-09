@@ -580,7 +580,7 @@ def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[
         args_id = str(args.get('external_id'))
         url_suffix = f'/assets/search?&q=external_id%3A{args_id}/'
         human_readable = []
-        limit: int = int(args.get('limit', 500))
+        limit: int = arg_to_number(args.get('limit')) or 500
         to_context = args.get('to_context')
         context: Dict[str, Any] = {}
         if args.get('tags'):
