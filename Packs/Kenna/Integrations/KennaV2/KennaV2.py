@@ -209,7 +209,6 @@ def inactivate_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], L
         }
     }
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
-    time.sleep(0.5)
     try:
         if result.get('status') != "success":
             return 'Could not inactivate asset.', {}, []
