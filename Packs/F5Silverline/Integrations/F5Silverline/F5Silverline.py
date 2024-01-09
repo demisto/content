@@ -216,7 +216,7 @@ def get_object_id_by_ip(client, list_type, object_ip):
             demisto.debug(f"debug-log: next page found in response: {next_page=}, performing pagination for {page=}")
             response = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params={'page': page})
             if response:
-                demisto.debug(f"debug-log: response from {page=} has {len(response.get('data')) objects}")
+                demisto.debug(f"debug-log: response from {page=} has {len(response.get('data'))} objects")
             all_objects.extend(response.get('data'))
             demisto.debug(f"debug-log: finished {page=}, current length of all_objects is: {len(all_objects)}")
     except Exception:
