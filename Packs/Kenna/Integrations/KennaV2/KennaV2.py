@@ -614,15 +614,21 @@ def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[
                     'Operating System': lst.get('operating_system'),
                     'Score': lst.get('risk_meter_score')
                 })
-            context = {
-                'Kenna.Assets(val.ID === obj.ID)': context_list
-            }
-            human_readable_markdown = tableToMarkdown('Kenna Assets', human_readable, removeNull=True)
-        else:
-            human_readable_markdown = "no assets in response"
-        if to_context == "False":
-            return human_readable_markdown, {}, response
-        return human_readable_markdown, context, response
+         human_readable_markdown = "no assets in response"
+    if argToBoolean(to_context):
+        return CommandResults(
+            outputs_prefix="Kenna.Assets",
+            outputs_key_field="ID",
+            readable_output=human_readable_markdown,
+            outputs=context,
+            raw_response=response
+        )
+    return CommandResults(
+            outputs_prefix="Kenna.Assets",
+            outputs_key_field="ID",
+            readable_output=human_readable_markdown,
+            raw_response=response
+        )
 
 
 def main():
