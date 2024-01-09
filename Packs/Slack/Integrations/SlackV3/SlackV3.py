@@ -946,16 +946,13 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
     """
     slack_users = []
     for user in users:
-        slack_user: dict = {}
-        # Try to invite by XSOAR email
         user_email = user.get('email', '')
         user_name = user.get('username', '')
-        if user_email:
-            slack_user = get_user_by_name(user_email, False)
-        if not slack_user:
-            # Try to invite by XSOAR user name
-            if user_name:
-                slack_user = get_user_by_name(user_name, False)
+
+        # Try to invite by XSOAR email, if not found then by XSOAR user name
+        slack_user = get_user_by_name(user_email, False) if user_email else None
+        if not slack_user and user_name:
+            slack_user = get_user_by_name(user_name, False)
         if slack_user:
             slack_users.append(slack_user)
         else:
