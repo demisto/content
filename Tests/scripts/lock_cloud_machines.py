@@ -8,6 +8,7 @@ import requests
 from google.cloud import storage  # noqa
 import argparse
 from Utils.github_workflow_scripts.utils import get_env_var
+from slack_sdk import WebClient
 
 GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
 LOCKS_BUCKET = 'xsoar-ci-artifacts'
@@ -16,6 +17,17 @@ MACHINES_LOCKS_REPO = 'machines_locks'
 JOB_STATUS_URL = '{}/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
 CONTENT_GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '1061')
 
+
+SLACK_TOKEN = get_env_var('SLACK_TOKEN')  # Replace with your Slack Bot token
+SLACK_CHANNEL = "dmst-test-wait-in-line"  # Replace with your Slack channel ID
+text = []
+
+def send_slack_notification(text):
+    client = WebClient(token=SLACK_TOKEN)
+    client.chat_postMessage(
+            channel=SLACK_CHANNEL,
+            text=text
+        )
 
 def options_handler() -> argparse.Namespace:
     """
@@ -182,6 +194,9 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
     previous_build_in_queue = ''
     if my_place_in_the_queue > 0:
         previous_build_in_queue = sorted_builds_in_queue[my_place_in_the_queue - 1].get('name')  # type: ignore[assignment]
+
+    send_slack_notification(f"Job ID: {job_id}, Number of builds_in_queue = {len(builds_in_queue)}, My place in queue = {my_place_in_the_queue}")
+
     return my_place_in_the_queue, previous_build_in_queue
 
 
@@ -342,6 +357,7 @@ def wait_for_build_to_be_first_in_queue(storage_client: storage.Client,
 
 
 def main():
+    start_time = time.time()
     install_logging('lock_cloud_machines.log', logger=logging)
     logging.info('Starting to search for a CLOUD machine/s to lock')
     options = options_handler()
@@ -369,6 +385,10 @@ def main():
 
     with open(options.response_machine, "w") as f:
         f.write(f"export CLOUD_CHOSEN_MACHINE_IDS={','.join(lock_machine_list)}")
+
+    end_time = time.time()
+    duration = end_time - start_time
+    send_slack_notification(f"Job ID: {options.ci_job_id}, Duration in minutes = {duration/60}")
 
 
 if __name__ == '__main__':
