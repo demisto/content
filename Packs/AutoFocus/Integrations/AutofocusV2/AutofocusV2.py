@@ -2,16 +2,9 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 
-import re
-import json
-import requests
 import socket
 import traceback
-import urllib3
-from typing import Callable, Tuple
-
-# Disable insecure warnings
-urllib3.disable_warnings()
+from typing import Callable
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
@@ -883,13 +876,8 @@ def build_session_search_query(used_indicator, indicators_batch, from_time, to_t
 
 
 def build_logic_query(logic_operator, condition_list):
-    operator = None
-    if logic_operator == 'AND':
-        operator = 'all'
-    elif logic_operator == 'OR':
-        operator = 'any'
     return {
-        'operator': operator,
+        'operator': {'AND': 'all', 'OR': 'any'}.get(logic_operator),
         'children': condition_list
     }
 
@@ -923,11 +911,11 @@ def children_list_generator(field_name, operator, val_list):
 
 
 def validate_no_query_and_indicators(query, arg_list):
-    if query:
-        for arg in arg_list:
-            if arg:
-                return_error('The search command can either run a search using a custom query '
-                             'or use the builtin arguments, but not both')
+    if query and any(arg_list):
+        return_error(
+            'The search command can either run a search using a custom query '
+            'or use the builtin arguments, but not both'
+        )
 
 
 def validate_no_multiple_indicators_for_search(arg_dict):
@@ -944,8 +932,7 @@ def validate_no_multiple_indicators_for_search(arg_dict):
 
 
 def search_indicator(indicator_type, indicator_value):
-    headers = HEADERS
-    headers['apiKey'] = API_KEY
+    headers = HEADERS | {'apiKey': API_KEY}
 
     params = {
         'indicatorType': indicator_type,
@@ -1284,12 +1271,13 @@ def samples_search_result_hr(result: dict, status: str) -> str:
         # Filter on returned indicator types, as we do not support Mutex and User Agent.
         if 'Mutex' not in indicator.get('indicator_type') and 'User Agent' not in indicator.get('indicator_type'):
             updated_artifact.append(indicator)
-    rest = result
-    hr = tableToMarkdown(f'Search Samples Result is {status}', rest)
-    hr += '\n\n'
-    hr += tableToMarkdown(
-        'Artifacts for Sample: ', updated_artifact,
-        headers=["b", "g", "m", "indicator_type", "confidence", "indicator"])
+    hr = '\n\n'.join((
+        tableToMarkdown(f'Search Samples Result is {status}', result),
+        tableToMarkdown(
+            'Artifacts for Sample: ', updated_artifact,
+            headers=["b", "g", "m", "indicator_type", "confidence", "indicator"]
+        )
+    ))
     return hr
 
 
@@ -1378,7 +1366,7 @@ def top_tags_search_command(args):
     )
 
 
-def top_tags_results_command(args) -> Tuple[CommandResults, str]:
+def top_tags_results_command(args) -> tuple[CommandResults, str]:
     af_cookie = args.get('af_cookie')
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
