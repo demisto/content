@@ -199,7 +199,7 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
     return human_readable_markdown, context, connectors
 
 
-def inactivate_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def inactivate_asset(client: Client, args: dict) -> CommandResults:
     asset_id = args.get('asset_id')
     url_suffix = f'/assets/{asset_id}'
     asset = {
