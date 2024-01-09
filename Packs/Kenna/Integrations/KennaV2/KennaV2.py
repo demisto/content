@@ -213,8 +213,6 @@ def inactivate_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], L
         if result.get('status') != "success":
             return CommandResults(readable_output='Could not inactivate asset.')
         return CommandResults(readable_output=f'Asset {asset_id} was updated')
-    except DemistoException as err:
-        return f'Error occurred while preforming inactivate-asset command {err}', {}, []
 
 
 def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
