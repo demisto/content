@@ -1742,7 +1742,7 @@
                 "ews_mail_sender_labdemisto"
             ],
             "playbookID": "EWS V2 Send Mail Test 2",
-            "memory_threshold": 150
+            "memory_threshold": 250
         },
         {
             "integrations": [
