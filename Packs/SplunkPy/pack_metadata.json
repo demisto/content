@@ -1,6 +1,6 @@
 {
     "name": "Splunk",
-    "description": "Run queries on Splunk servers description.",
+    "description": "Run queries on Splunk servers.",
     "support": "xsoar",
     "currentVersion": "3.1.15",
     "author": "Cortex XSOAR",
