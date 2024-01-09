@@ -2,6 +2,9 @@
   rules:
     - if: '$SDK_RELEASE == "true"'
 
+stages:
+  - trigger-nightlies
+  - wait-for-build-to-finish
 
 trigger-nightlies:
   stage: trigger-nightlies
@@ -35,9 +38,5 @@ wait-for-build-to-finish:
     - .default-job-settings
   variables:
     PIPELINE_ID: $PIPELINE_ID
-  needs:
-    - job: trigger-nightlies
-  dependencies:
-    - trigger-nightlies
   script:
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
