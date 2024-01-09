@@ -442,7 +442,7 @@ script:
       description: Amount of re-opened vulnerabilities.
       type: Number
   - arguments:
-    - name: id
+    - name: asset_id
       required: true
       description: The ID of the asset to inactivate.
     - name: notes
