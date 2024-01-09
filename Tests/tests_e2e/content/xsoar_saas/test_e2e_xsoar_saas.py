@@ -134,6 +134,7 @@ def test_taxii2_server_returns_indicators(
                     indicators = get_json_response(response).get("objects")
                     assert indicators, f'could not get indicators from url={response.request.url} with available ' \
                         f'indicators={available_indicators}, status code={response.status_code}, response={indicators}'
+                    break
         except (ApiException, RequestException) as error:
             if isinstance(error, ApiException):
                 logging.error(f'Got error when running test_taxii2_server_returns_indicators with {port=}, error:\n{error}')
