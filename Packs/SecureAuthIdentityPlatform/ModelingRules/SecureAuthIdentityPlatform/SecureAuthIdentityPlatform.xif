@@ -68,7 +68,7 @@ alter // Extract the RFC 5424 Syslog Components: https://docs.secureauth.com/090
     http_response_code = uppercase(coalesce(api_response_http_status_code, status_code)),
     user_domain = arrayindex(regextract(user_id, "[\w\-]+\@(\S+)") , 0)
 
-// Set Event Type 
+// Set Event Type: https://docs.secureauth.com/2202/en/secureauth-idp---identity-platform-appliance-audit-trail-event-id-list.html
 | alter event_type = if(event_id ~= "^11\d{3}", "Workflow", event_id ~= "^12\d{3}", "Data", event_id ~= "^13\d{3}", "RegCode", event_id ~= "^14\d{3}", "IPsec", event_id ~= "^15\d{3}", "Access", event_id ~= "^16\d{3}", "Password", event_id ~= "^17\d{3}", "License", event_id ~= "^18\d{3}", "Postauth", event_id ~= "^19\d{3}", "Other", event_id ~= "^24\d{3}", "YubiKey MFA", event_id = "20990", "Transaction Log", event_id ~= "^2\d{4}", "Workflow Page State Process", event_id ~= "^333\d{2}", "Password Throttling Multi-Factor Authentication", event_id ~= "^3\d{4}", "Pre-Authentication", event_id ~= "^406\d{2}", "Adaptive Authentication with Office 365", event_id ~= "^4\d{4}", "Post-Authentication", event_id ~= "^514\d{2}", "SQL Membership Provider", event_id ~= "^524\d{2}", "SQL Profile Provider", event_id ~= "^51\d{3}", "Membership Provider", event_id ~= "^52\d{3}", "Profile Provider", event_id ~= "^53\d{3}", "OTP Provider", event_id ~= "^54\d{3}", "Certificate Provider", event_id ~= "^55\d{3}", "Link-to-Accept Provider", event_id ~= "^5\d{4}", "Provider", event_id ~= "^606\d{2}", "Device Recognition", event_id ~= "^60\d{3}", "DFP Controller", event_id = "6000", "API Layer", event_id ~= "^9\d{4}", "System")
 | alter event_type = if(event_id ~= "^1\d{4}", concat("Web Admin Page UI: ", event_type), event_type)
 
