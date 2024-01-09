@@ -573,7 +573,7 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
         return f'Error occurred while preforming delete-tags command {err}', {}, []
 
 
-def search_assets_by_external_id(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def search_assets_by_external_id(client: Client, args: dict) -> CommandResults:
         external_id = args.get('external_id')
         url_suffix = f'/assets/search?&q=external_id%3A{external_id}/'
         human_readable = []
