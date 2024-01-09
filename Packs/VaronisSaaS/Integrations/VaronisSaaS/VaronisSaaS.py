@@ -325,8 +325,10 @@ class Client(BaseClient):
                 severity_condition.add_value({alert_attributes.Alert_Rule_Severity_ID: severity_id, "displayValue": severity})
             search_request.query.filter.add_filter(severity_condition)
 
-        if descending_order:
-            search_request.rows.add_ordering({"path": "Alert.Time", "sortOrder": "Desc"})
+        if descending_order == 'True':
+            search_request.rows.add_ordering({"path": "Alert.TimeUTC", "sortOrder": "Desc"})
+        else:
+            search_request.rows.add_ordering({"path": "Alert.TimeUTC", "sortOrder": "Asc"})
 
         dataJSON = search_request.to_json()
 
@@ -421,8 +423,10 @@ class Client(BaseClient):
                 .add_value({event_attributes.Event_TimeUTC: last_days, "displayValue": last_days})
         search_request.query.filter.add_filter(time_condition)
 
-        if descending_order:
-            search_request.rows.add_ordering({"path": event_attributes.Event_Time, "sortOrder": "Desc"})
+        if descending_order == 'True':
+            search_request.rows.add_ordering({"path": event_attributes.Event_TimeUTC, "sortOrder": "Desc"})
+        else:
+            search_request.rows.add_ordering({"path": event_attributes.Event_TimeUTC, "sortOrder": "Asc"})
 
         dataJSON = search_request.to_json()
 
@@ -1227,7 +1231,7 @@ class ThreatModelAttributes:
 
 class ThreatModelItem:
     def __init__(self):
-        self.Id: Optional[str] = None
+        self.ID: Optional[str] = None
         self.Name: Optional[List[str]] = None
         self.Category: Optional[str] = None
         self.Severity: Optional[str] = None
@@ -1254,7 +1258,7 @@ class ThreatModelObjectMapper(BaseMapper):
 
     def map_item(self, row: dict) -> ThreatModelItem:
         threat_model_item = ThreatModelItem()
-        threat_model_item.Id = row[ThreatModelAttributes.Id]
+        threat_model_item.ID = row[ThreatModelAttributes.Id]
         threat_model_item.Name = row[ThreatModelAttributes.Name]
         threat_model_item.Category = row[ThreatModelAttributes.Category]
         threat_model_item.Source = row[ThreatModelAttributes.Source]
@@ -1800,7 +1804,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     user_names = args.get('user_name', None)
     last_days = args.get('last_days', None)
     extra_fields = args.get('extra_fields', None)
-    descending_order = args.get('descending_order', True)
+    descending_order = args.get('descending_order', 'True')
 
     if last_days:
         last_days = try_convert(
@@ -1900,7 +1904,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     start_time = args.get('start_time', None)
     end_time = args.get('end_time', None)
     last_days = args.get('last_days', None)
-    descending_order = args.get('descending_order', True)
+    descending_order = args.get('descending_order', 'True')
 
     alertIds = try_convert(args.get('alert_id'), lambda x: argToList(x))
     start_time = try_convert(
