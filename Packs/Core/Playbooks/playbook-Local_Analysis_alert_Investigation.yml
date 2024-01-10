@@ -2217,7 +2217,7 @@ inputs:
           conditionInBetween: {}
           else:
             value:
-              simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+              simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
           equals: {}
           lhs:
             value:
@@ -2230,13 +2230,13 @@ inputs:
           rhsB: {}
           then:
             value:
-              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
   required: false
   description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
   playbookInputQuery:
 - key: ShouldOpenTicket
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
   playbookInputQuery:
