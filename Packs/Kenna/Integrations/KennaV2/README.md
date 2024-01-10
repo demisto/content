@@ -890,7 +890,7 @@ There is no context output for this command.
 ### kenna-search-assets-by-external-id
 
 ***
-Search assets by external id.
+Search assets by external ID.
 
 #### Base Command
 
