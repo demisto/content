@@ -4961,7 +4961,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's Version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.84236
+  dockerimage: demisto/py3-tools:1.0.0.84811
   isfetch: true
   ismappable: true
   isremotesyncin: true
