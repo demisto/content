@@ -1569,14 +1569,6 @@ view: |-
     }
   }
 inputs:
-- key: AutoRemediation
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Whether to execute the remediation flow automatically.
-    Possible values are: "True" and "False".
-  playbookInputQuery:
 - key: RelatedAlertsThreshold
   value:
     simple: "5"
@@ -1610,18 +1602,13 @@ inputs:
   required: false
   description: This is the minimum threshold for MFA failed logins by the user in the last 1 day. Required to determine how many MFA failed logon events count as malicious events.
   playbookInputQuery:
-- key: IAMRemediationType
+- key: AutoRemediation
   value:
-    simple: Revoke
+    simple: "False"
   required: false
   description: |-
-    The response on 'Cloud Credentials Rotation - Azure' sub-playbook provides the following remediation actions using MSGraph Users:
-
-    Reset: By entering "Reset" in the input, the playbook will execute password reset.
-
-    Revoke: By entering "Revoke" in the input, the playbook will revoke the user's session.
-
-    ALL: By entering "ALL" in the input, the playbook will execute the reset password and revoke session tasks.
+    Whether to execute the remediation flow automatically.
+    Possible values are: "True" and "False".
   playbookInputQuery:
 - key: AutoContainment
   value:
@@ -1647,6 +1634,39 @@ inputs:
     Whether to clear the user's active Okta sessions using the 'Containment Plan' su-playbook.
     Possible values are: "True" and "False".
   playbookInputQuery:
+- key: IAMRemediationType
+  value:
+    simple: Revoke
+  required: false
+  description: |-
+    The response on 'Cloud Credentials Rotation - Azure' sub-playbook provides the following remediation actions using MSGraph Users:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+
+    Revoke: By entering "Revoke" in the input, the playbook will revoke the user's session.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the reset password and revoke session tasks.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - RelatedAlertsThreshold
+  - FailedLogonThreshold
+  - OktaSuspiciousEventsThreshold
+  - AzureMfaFailedLogonThreshold
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - AutoRemediation
+  - AutoContainment
+  - UserContainment
+  - ClearUserSessions
+  - IAMRemediationType
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)
