@@ -765,7 +765,7 @@ tasks:
       version: -1
       name: kenna-search-assets-by-external-id
       description: Search assets by external id.
-      script: Kennav2_copy|||kenna-search-assets-by-external-id
+      script: '|||kenna-search-assets-by-external-id'
       type: regular
       iscommand: true
       brand: Kennav2_copy
