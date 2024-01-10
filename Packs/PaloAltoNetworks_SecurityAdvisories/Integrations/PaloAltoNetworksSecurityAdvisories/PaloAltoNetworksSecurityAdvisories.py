@@ -174,20 +174,18 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
         indicator dictionary
     """
 
-    fields = {}
+    fields: dict = {}
 
     if problem_type := advisory_dict.get("problemtype"):
         tags = []  # holds cwe information as tags
         # the dict that holds the advisory information fo CWE data
-        cwe_str = problem_type.get('problemtype_data', [{}])[0].get('description', [{}])[0].get('value', "")
+        cwe_str: str = problem_type.get('problemtype_data', [{}])[0].get('description', [{}])[0].get('value', "")
 
         if cwe_str and cwe_str.startswith('CWE-'):
             # split this string after the CWE-\d* first space
             # CWE-754 Improper Check for Unusual or Exceptional Conditions
             cwe = cwe_str.split(" ", 1)
-            if cwe[0].endswith(':'):
-                # some formating changes in CWE use : instead of space
-                cwe[0] = cwe[0].strip(':')
+            cwe[0] = cwe[0].rstrip(':')
 
             tags.append(cwe[0])
             fields['tags'] = tags
@@ -201,8 +199,8 @@ def advisory_to_indicator(advisory_dict: dict) -> dict:
                 "source": x.get('refsource')
             } for x in references_list]
 
-    impact = advisory_dict.get("impact", {})
-    cvss = impact.get("cvss", {})
+    impact: dict = advisory_dict.get("impact", {})
+    cvss: dict = impact.get("cvss", {})
     # score mirrored to both fields so that default cve layout displays with full data
     fields['cvss'] = cvss.get("baseScore", "")
     fields['cvssscore'] = cvss.get("baseScore", "")
