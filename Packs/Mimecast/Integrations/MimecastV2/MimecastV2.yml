@@ -2045,7 +2045,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.82980
+  dockerimage: demisto/python3:3.10.13.84405
 tests:
 - Mimecast test
 fromversion: 5.0.0
