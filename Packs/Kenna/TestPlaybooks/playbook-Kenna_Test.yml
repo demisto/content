@@ -768,7 +768,7 @@ tasks:
       script: '|||kenna-search-assets-by-external-id'
       type: regular
       iscommand: true
-      brand: Kennav2_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
