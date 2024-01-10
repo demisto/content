@@ -61,6 +61,11 @@
             "instance_names": "active_directory_80k"
         },
         {
+            "integrations": "ThreatConnect v3",
+            "playbookID": "test-threatConnectv3",
+            "is_mockable": false
+        },
+        {
             "playbookID": "Enrichment for Verdict - Test",
             "timeout": 500,
             "integrations": [
@@ -5637,9 +5642,14 @@
         {
             "integrations": "Netcraft V2",
             "playbookID": "Test - Netcraft"
+        },
+        {
+            "integrations": "Fortimail",
+            "playbookID": "playbook-Fortimail_Test"
         }
     ],
     "skipped_tests": {
+        "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
@@ -5952,7 +5962,8 @@
         "CheckPhish": "Issue CRTX-86562",
         "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
-        "PhishLabs IOC EIR": "No instance, CRTX-91214"
+        "PhishLabs IOC EIR": "No instance, CRTX-91214",
+        "Fortimail": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
