@@ -61,6 +61,11 @@
             "instance_names": "active_directory_80k"
         },
         {
+            "integrations": "ThreatConnect v3",
+            "playbookID": "test-threatConnectv3",
+            "is_mockable": false
+        },
+        {
             "playbookID": "Enrichment for Verdict - Test",
             "timeout": 500,
             "integrations": [
@@ -5643,6 +5648,7 @@
         }
     ],
     "skipped_tests": {
+        "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
