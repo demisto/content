@@ -436,8 +436,6 @@ def fetch_incidents_command(
             datetime_new_last_run = incident_raw.get('created')
             last_id = incident_raw.get('id')
 
-            demisto.debug(incident_raw)
-
             if 'subClassification' in incident_raw.get('details', {}) and incident_raw.get('details', {}).get('subClassification'):
                 incident_subcategory = incident_raw.get('details', {}).get('subClassification').replace(" ", "")
             else:
