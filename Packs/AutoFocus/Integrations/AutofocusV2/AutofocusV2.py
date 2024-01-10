@@ -4,7 +4,8 @@ from CommonServerPython import *
 
 import socket
 import traceback
-from typing import Callable
+from typing import Literal
+from collections.abc import Callable
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
@@ -259,7 +260,18 @@ if PARAMS.get('mark_as_malicious'):
     for verdict in verdicts:
         VERDICTS_TO_DBOTSCORE[verdict] = 3
 
+METRIC = Literal[
+    'success', 'quota_error', 'general_error',
+    'auth_error', 'service_error', 'connection_error',
+    'proxy_error', 'ssl_error', 'timeout_error'
+]
+
+
 ''' HELPER FUNCTIONS '''
+
+
+def return_metric(metric: METRIC):
+    return_results(ExecutionMetrics(**{metric: 1}).metrics)
 
 
 def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):
@@ -312,6 +324,7 @@ def parse_response(resp, err_operation):
     try:
         # Handle error responses gracefully
         if demisto.params().get('handle_error', True) and resp.status_code == 409:
+            return_metric('service_error')
             raise Exception("Response status code: 409 \nRequested sample not found")
         res_json = resp.json()
         resp.raise_for_status()
@@ -320,9 +333,11 @@ def parse_response(resp, err_operation):
             # this debug log was request by autofocus team for debugging on their end purposes
             demisto.debug(f'x-trace-id: {resp.headers["x-trace-id"]}')
 
+        return_metric('success')
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
+        return_metric('general_error')
         err_msg = f'{err_operation}: {res_json.get("message")}'
         if res_json.get("message").find('Requested sample not found') != -1:
             demisto.results(err_msg)
@@ -338,6 +353,7 @@ def parse_response(resp, err_operation):
             return return_error(err_msg)
     # Unexpected errors (where no json object was received)
     except Exception as err:
+        return_metric('general_error')
         demisto.results(f'{err_operation}: {err}')
         sys.exit(0)
 
@@ -355,8 +371,8 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
         )
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
-        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
-        return_error(err_message)
+        return_metric('connection_error')
+        raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
     return parse_response(res, err_operation)
 
 
@@ -380,9 +396,7 @@ def validate_sort_and_order_and_artifact(sort: Optional[str] = None, order: Opti
         raise Exception('Please specify the order of sorting (Ascending or Descending).')
     elif order and not sort:
         raise Exception('Please specify a field to sort by.')
-    elif sort and order:
-        return True
-    return False
+    return bool(sort and order)
 
 
 def do_search(search_object: str, query: dict, scope: Optional[str], size: Optional[str] = None,
@@ -953,13 +967,16 @@ def search_indicator(indicator_type, indicator_value):
         result.raise_for_status()
         result_json = result.json()
 
+        return_metric('success')
+
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
-        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
-        return_error(err_message)
+        return_metric('connection_error')
+        return_error(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
 
     # Unexpected errors (where no json object was received)
     except Exception as err:
+        return_metric('general_error')
         try:
             if demisto.params().get('handle_error', True) and result.status_code == 404:
                 return {
@@ -975,7 +992,7 @@ def search_indicator(indicator_type, indicator_value):
         error_message = text_error.get('message')
         if error_message:
             return_error(f'Request Failed with status: {result.status_code}.\n'
-                         f'Reason is: {str(error_message)}.')
+                         f'Reason is: {error_message}.')
         elif str(result.status_code) in ERROR_DICT:
             return_error(f'Request Failed with status: {result.status_code}.\n'
                          f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
@@ -1705,7 +1722,7 @@ def get_tags_for_generic_context(tags: Optional[list]):
 
 
 def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware_family=False):
-    """get specific tags for the tgas and malware_family fields
+    """get specific tags for the tags and malware_family fields
     Args
         tags (Optional[list]): tags from the response
         is_malware_family (bool): indicating whether it is for the malware_family field
@@ -1778,8 +1795,7 @@ def get_export_list_command(args):
     context_file = []
     for indicator_value in results.get('export_list'):
         indicator_type = find_indicator_type(indicator_value)
-        if indicator_type in [FeedIndicatorType.IP,
-                              FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]:
+        if indicator_type in [FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]:
             if '-' in indicator_value:
                 context_ip.append({
                     'Address': indicator_value.split('-')[0]
@@ -1798,17 +1814,17 @@ def get_export_list_command(args):
                     'Address': indicator_value
                 })
 
-        elif indicator_type in [FeedIndicatorType.Domain]:
+        elif indicator_type == FeedIndicatorType.Domain:
             context_domain.append({
                 'Name': indicator_value
             })
 
-        elif indicator_type in [FeedIndicatorType.File]:
+        elif indicator_type == FeedIndicatorType.File:
             context_file.append({
                 'SHA256': indicator_value
             })
 
-        elif indicator_type in [FeedIndicatorType.URL]:
+        elif indicator_type == FeedIndicatorType.URL:
             if ":" in indicator_value:
                 resolved_address = resolve_ip_address(indicator_value.split(":", 1)[0])
                 semicolon_suffix = indicator_value.split(":", 1)[1]
@@ -1846,7 +1862,8 @@ def get_export_list_command(args):
 
 
 def main():
-    demisto.debug('Command being called is %s' % (demisto.command()))
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
     create_relationships = PARAMS.get('create_relationships', True)
     if DBotScoreReliability.is_valid_type(reliability):
@@ -1857,54 +1874,53 @@ def main():
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
-        active_command = demisto.command()
         args = {k: v for (k, v) in demisto.args().items() if v}
         args['reliability'] = reliability
         args['create_relationships'] = create_relationships
-        if active_command == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_module()
-            demisto.results('ok')
-        elif active_command == 'autofocus-search-samples':
-            if args.get('polling') == 'true':
-                cmd_res = search_samples_with_polling_command(args)
-                if cmd_res is not None:
-                    return_results(cmd_res)
-            else:
-                return_results(search_samples_command(args))
-        elif active_command == 'autofocus-search-sessions':
-            if args.get('polling') == 'true':
-                return_results(search_sessions_with_polling_command(args))
-            else:
-                return_results(search_sessions_command(args))
-        elif active_command == 'autofocus-samples-search-results':
-            samples_search_results_command(args)
-        elif active_command == 'autofocus-sessions-search-results':
-            return_results(sessions_search_results_command(args)[0])  # first result is CommandResults
-        elif active_command == 'autofocus-get-session-details':
-            get_session_details_command()
-        elif active_command == 'autofocus-sample-analysis':
-            sample_analysis_command()
-        elif active_command == 'autofocus-tag-details':
-            tag_details_command()
-        elif active_command == 'autofocus-top-tags-search':
-            if args.get('polling') == 'true':
-                return_results(top_tags_with_polling_command(args))
-            else:
-                return_results(top_tags_search_command(args))
-        elif active_command == 'autofocus-top-tags-results':
-            return_results(top_tags_results_command(args)[0])
-        elif active_command == 'autofocus-get-export-list-indicators':
-            get_export_list_command(args)
-        elif active_command == 'ip':
-            return_results(search_ip_command(**args))
-        elif active_command == 'domain':
-            return_results(search_domain_command(**args))
-        elif active_command == 'url':
-            return_results(search_url_command(**args))
-        elif active_command == 'file':
-            return_results(search_file_command(**args))
-
+        match command:
+            case 'test-module':
+                # This is the call made when pressing the integration test button.
+                test_module()
+                demisto.results('ok')
+            case 'autofocus-search-samples':
+                if args.get('polling') == 'true':
+                    cmd_res = search_samples_with_polling_command(args)
+                    if cmd_res is not None:
+                        return_results(cmd_res)
+                else:
+                    return_results(search_samples_command(args))
+            case 'autofocus-search-sessions':
+                if args.get('polling') == 'true':
+                    return_results(search_sessions_with_polling_command(args))
+                else:
+                    return_results(search_sessions_command(args))
+            case 'autofocus-samples-search-results':
+                samples_search_results_command(args)
+            case 'autofocus-sessions-search-results':
+                return_results(sessions_search_results_command(args)[0])  # first result is CommandResults
+            case 'autofocus-get-session-details':
+                get_session_details_command()
+            case 'autofocus-sample-analysis':
+                sample_analysis_command()
+            case 'autofocus-tag-details':
+                tag_details_command()
+            case 'autofocus-top-tags-search':
+                if args.get('polling') == 'true':
+                    return_results(top_tags_with_polling_command(args))
+                else:
+                    return_results(top_tags_search_command(args))
+            case 'autofocus-top-tags-results':
+                return_results(top_tags_results_command(args)[0])
+            case 'autofocus-get-export-list-indicators':
+                get_export_list_command(args)
+            case 'ip':
+                return_results(search_ip_command(**args))
+            case 'domain':
+                return_results(search_domain_command(**args))
+            case 'url':
+                return_results(search_url_command(**args))
+            case 'file':
+                return_results(search_file_command(**args))
     except Exception as e:
         return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
 
