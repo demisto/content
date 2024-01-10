@@ -806,7 +806,7 @@ tasks:
       version: -1
       name: kenna-inactivate-asset
       description: Inactivates a single asset.
-      script: Kennav2_copy|||kenna-inactivate-asset
+      script: '|||kenna-inactivate-asset'
       type: regular
       iscommand: true
       brand: Kennav2_copy
