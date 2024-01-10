@@ -162,7 +162,7 @@ def main():
         else:
             trigger_build_url = TRIGGER_BUILD_URL_ON_CUSTOM_BRANCH
             payload = {
-                'ref': 'add-sdk-ref',
+                'ref': private_branch_name,
                 'inputs': {
                     'commit_sha1': branch_name,
                     'is_infra_build': 'True'
@@ -185,7 +185,7 @@ def main():
         pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, private_branch_name, True)
 
         payload = {
-            'ref': 'master',
+            'ref': 'add-sdk-ref',
             'inputs': {
                 'slack_channel': slack_channel
             }
