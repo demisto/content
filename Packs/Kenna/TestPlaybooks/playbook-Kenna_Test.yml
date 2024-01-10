@@ -765,10 +765,10 @@ tasks:
       version: -1
       name: kenna-search-assets-by-external-id
       description: Search assets by external id.
-      script: Kennav2_copy|||kenna-search-assets-by-external-id
+      script: '|||kenna-search-assets-by-external-id'
       type: regular
       iscommand: true
-      brand: Kennav2_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
@@ -781,8 +781,6 @@ tasks:
           - operator: FirstArrayElement
       to_context:
         simple: "true"
-      using:
-        simple: Kennav2_copy_instance_1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -808,10 +806,10 @@ tasks:
       version: -1
       name: kenna-inactivate-asset
       description: Inactivates a single asset.
-      script: Kennav2_copy|||kenna-inactivate-asset
+      script: '|||kenna-inactivate-asset'
       type: regular
       iscommand: true
-      brand: Kennav2_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
