@@ -157,7 +157,6 @@ def main() -> None:
 
     client = ReilaQuestClient(url, account_id=account_id, username=username, password=password, verify_ssl=verify_ssl, proxy=proxy)
 
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
