@@ -178,9 +178,12 @@ class Client(BaseClient):
         )
 
         url = create_search[0]["location"]
+        url_suffix = f'/app/dataquery/api/search/{url}'
+        if max_fetch:
+            url_suffix += f'?from=0&to={max_fetch - 1}'
         json_data = self._http_request(
             method='GET',
-            url_suffix=f'/app/dataquery/api/search/{url}?from=0&to={max_fetch - 1}',
+            url_suffix=url_suffix,
             headers=self.headers,
             status_list_to_retry=[304, 405, 206],
             retries=10
@@ -1954,7 +1957,7 @@ def varonis_alert_add_note_command(client: Client, args: Dict[str, Any]) -> bool
     :rtype: ``bool``
 
     """
-    note = args.get('note')
+    note = str(args.get('note'))
 
     return varonis_update_alert(client, CLOSE_REASONS['none'], status_id=None, alert_ids=argToList(args.get('alert_id')),
                                 note=note)
@@ -1977,13 +1980,13 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
     :rtype: ``bool``
 
     """
-    status = args.get('status')
+    status = str(args.get('status'))
     statuses = list(filter(lambda name: name != 'closed', ALERT_STATUSES.keys()))
     if status.lower() not in statuses:
         raise ValueError(f'status must be one of {statuses}.')
 
     status_id = ALERT_STATUSES[status.lower()]
-    note = args.get('note')
+    note = str(args.get('note'))
 
     return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')), note)
 
@@ -2005,13 +2008,13 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     :rtype: ``bool``
 
     """
-    close_reason = args.get('close_reason')
+    close_reason = str(args.get('close_reason'))
     close_reasons = list(filter(lambda name: not strEqual(name, 'none'), CLOSE_REASONS.keys()))
     if close_reason.lower() not in close_reasons:
         raise ValueError(f'close reason must be one of {close_reasons}')
 
     close_reason_id = CLOSE_REASONS[close_reason.lower()]
-    note = args.get('note')
+    note = str(args.get('note'))
     return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')), note)
 
 
