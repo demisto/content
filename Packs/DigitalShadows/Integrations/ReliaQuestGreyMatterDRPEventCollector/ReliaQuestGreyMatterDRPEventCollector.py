@@ -26,7 +26,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO8601 format
 
 ''' CLIENT CLASS '''
 
@@ -52,30 +52,36 @@ class ReilaQuestClient(BaseClient):
     def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None):
         return self._http_request(method, url_suffix=url_suffix, headers=headers or {"searchlight-account-id": self.account_id}, params=params)
 
-    def list_triage_item_events(self, event_num_after: int, event_created_before: str, event_created_after, limit: int):
+    def list_triage_item_events(self, event_created_before: str | None, event_created_after: str | None, limit: int = 1000, events_num_after: int | None = None):
         """
         Args:
-            event_num_after (int): used for pagination, can be retrieved from the "event-num" value from previous responses.
                 api docs:
                     Return events with an event-num greater than this value
                     Must be greater than or equal to 0.
             event_created_before (str): retrieve events occurred before a specific time, format:  YYYY-MM-DDThh:mm:ssTZD.
             event_created_after (str): retrieve events occurred after a specific time, format:  YYYY-MM-DDThh:mm:ssTZD.
             limit (int): the maximum number of events to retrieve
+            events_num_after (int): used for pagination, can be retrieved from the "event-num" value from previous responses.
         """
-        pass
+        params: dict = {"limit": limit}
+        if event_created_before:
+            params["event-created-before"] = event_created_before
+        if event_created_after:
+            params["event-created-after"] = event_created_after
+        if events_num_after:
+            params["events-num-after"] = events_num_after
+
+        return self.http_request("/triage-item-events", params=params)
 
     def triage_items(self, triage_item_ids: list[str]):
         """
-
-
         Args:
             triage_item_ids: a list of triage item IDs.
             from api:
                 One or more triage item identifiers to resolve
                 Must provide between 1 and 100 items.
         """
-        pass
+        return self.http_request("/triage-items", params={"id": triage_item_ids})
 
     def get_alerts_by_ids(self, alert_ids: list[str]):
         """
@@ -87,7 +93,7 @@ class ReilaQuestClient(BaseClient):
                 One or more alert identifiers to resolve
                 Must provide between 1 and 100 items.
         """
-        pass
+        return self.http_request("/alerts", params={"id": alert_ids})
 
     def get_incident_ids(self, incident_ids: list[str]):
         """
@@ -96,7 +102,7 @@ class ReilaQuestClient(BaseClient):
         Args:
             incident_ids: a list of incident-IDs.
         """
-        pass
+        return self.http_request("/incidents", params={"id": incident_ids})
 
     def get_asset_ids(self, asset_ids: list[str]):
         """
@@ -105,10 +111,10 @@ class ReilaQuestClient(BaseClient):
         Args:
             asset_ids: a list of asset-IDs.
         """
-        pass
+        return self.http_request("/assets", params={"id": asset_ids})
 
 
-def test_module(client: Client) -> str:
+def test_module(client: ReilaQuestClient) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -121,7 +127,6 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
     message: str = ''
     try:
         # TODO: ADD HERE some code to test connectivity and authentication to your service.
@@ -149,40 +154,30 @@ def main() -> None:
     url = params.get("url")
     account_id = params.get("account_id")
     max_fetch_events = arg_to_number(params.get("max_fetch_events")) or 200
+    events_first_fetch = dateparser.parse(params.get("first_fetch_events"), settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
     credentials = params.get("credentials") or {}
     username = credentials.get("identifier")
     password = credentials.get("password")
     verify_ssl = not argToBoolean(password.get("insecure", True))
     proxy = argToBoolean(params.get("proxy", False))
 
-    client = ReilaQuestClient(url, account_id=account_id, username=username, password=password, verify_ssl=verify_ssl, proxy=proxy)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.info(f'Command being called is {command}')
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        client = ReilaQuestClient(url, account_id=account_id, username=username, password=password, verify_ssl=verify_ssl, proxy=proxy)
+        if command == 'test-module':
+            return_results(test_module(client))
+        elif command == "fetch-events":
+            pass
+        elif command == "fetch-assets":
+            pass
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
