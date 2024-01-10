@@ -687,7 +687,7 @@ tasks:
     note: false
     quietmode: 0
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: Determines if the AWS - Organizations integration instance is configured to pull hierarchy info.
@@ -725,7 +725,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: True
     task:
       brand: ""
       description: Determine AWS account hierarchy by looking up parent objects until the organization level is reached.
