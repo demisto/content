@@ -14,7 +14,7 @@ def _version_header():
     demisto_version = get_demisto_version()
     return f"Palo Alto XSOAR/{demisto_version.get('version')}." \
            f"{demisto_version.get('buildNumber')} " \
-           f"Hatching Triage Pack/{get_pack_version()}"
+           f"Hatching Triage Pack/1.0.16"
 
 
 class Client(BaseClient):
