@@ -15,7 +15,6 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
-
 from CommonServerUserPython import *  # noqa
 
 import urllib3
@@ -50,30 +49,63 @@ class ReilaQuestClient(BaseClient):
         self.verify_ssl = verify_ssl
         super().__init__(base_url=url, verify=verify_ssl, proxy=proxy, auth=(username, password))
 
-    
+    def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None):
+        return self._http_request(method, url_suffix=url_suffix, headers=headers or {"searchlight-account-id": self.account_id}, params=params)
 
+    def list_triage_item_events(self, event_num_after: int, event_created_before: str, event_created_after, limit: int):
+        """
+        Args:
+            event_num_after (int): used for pagination, can be retrieved from the "event-num" value from previous responses.
+                api docs:
+                    Return events with an event-num greater than this value
+                    Must be greater than or equal to 0.
+            event_created_before (str): retrieve events occurred before a specific time, format:  YYYY-MM-DDThh:mm:ssTZD.
+            event_created_after (str): retrieve events occurred after a specific time, format:  YYYY-MM-DDThh:mm:ssTZD.
+            limit (int): the maximum number of events to retrieve
+        """
+        pass
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
+    def triage_items(self, triage_item_ids: list[str]):
         """
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
+        Args:
+            triage_item_ids: a list of triage item IDs.
+            from api:
+                One or more triage item identifiers to resolve
+                Must provide between 1 and 100 items.
+        """
+        pass
 
-''' HELPER FUNCTIONS '''
+    def get_alerts_by_ids(self, alert_ids: list[str]):
+        """
+        List of alerts was created from alert_id fields of /triage-items  response
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+        Args:
+            alert_ids: List of alerts was created from alert_id fields of /triage-items  response
+            from api:
+                One or more alert identifiers to resolve
+                Must provide between 1 and 100 items.
+        """
+        pass
 
-''' COMMAND FUNCTIONS '''
+    def get_incident_ids(self, incident_ids: list[str]):
+        """
+        List of alerts was created from incident-id fields of /triage-items response
+
+        Args:
+            incident_ids: a list of incident-IDs.
+        """
+        pass
+
+    def get_asset_ids(self, asset_ids: list[str]):
+        """
+        Retrieve the Asset Information for the Alert or Incident
+
+        Args:
+            asset_ids: a list of asset-IDs.
+        """
+        pass
 
 
 def test_module(client: Client) -> str:
@@ -104,24 +136,6 @@ def test_module(client: Client) -> str:
     return message
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -139,22 +153,10 @@ def main() -> None:
     username = credentials.get("identifier")
     password = credentials.get("password")
     verify_ssl = not argToBoolean(password.get("insecure", True))
+    proxy = argToBoolean(params.get("proxy", False))
 
+    client = ReilaQuestClient(url, account_id=account_id, username=username, password=password, verify_ssl=verify_ssl, proxy=proxy)
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
