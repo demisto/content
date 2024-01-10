@@ -178,4 +178,3 @@ def test_main_styled_html(mocker):
     main()
     results_call_args = return_results_mocker.call_args
     assert 'color' not in results_call_args.args[0]['Contents']
-
