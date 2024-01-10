@@ -410,7 +410,7 @@ def main():
     end_time = time.time()
     duration = end_time - start_time
     try:
-        send_slack_notification(["Duration",
+        send_slack_notification(["Lock Duration:",
                                  f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
                                  f"{options.gcs_locks_path}",
                                  f"Job ID: {options.ci_job_id}",
