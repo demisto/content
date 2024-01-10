@@ -719,7 +719,7 @@ test-upload-flow:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
-    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV,$GCS_MARKET_XSOAR_SAAS_BUCKET_DEV"
   stage: unittests-and-validations
   script:
     - section_start "Checks Whether to Trigger a Test Upload"
