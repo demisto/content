@@ -195,7 +195,7 @@ def test_uptycs_get_assets(mocker, requests_mock):
     mock_response_final = {
         'items': [
             {
-                "rawData": asset
+                "rowData": asset
             }
         ]
     }
@@ -1083,7 +1083,7 @@ def test_uptycs_get_alerts(mocker, requests_mock):
     mock_response_final = {
         "items": [
             {
-                "rawData": alert
+                "rowData": alert
             }
         ]
     }
@@ -1165,7 +1165,7 @@ def test_uptycs_get_events(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": event
+                "rowData": event
             }
         ]
     }
@@ -1732,7 +1732,7 @@ def test_uptycs_get_process_open_sockets(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -1807,7 +1807,7 @@ def test_uptycs_get_process_information(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -1886,7 +1886,7 @@ def test_uptycs_get_process_child_processes(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -1964,7 +1964,7 @@ def test_uptycs_processes(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -2039,7 +2039,7 @@ def test_uptycs_process_open_files(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -2116,7 +2116,7 @@ def test_uptycs_process_event_information(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -2193,7 +2193,7 @@ def test_uptycs_process_events(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -2275,7 +2275,7 @@ def test_uptycs_socket_events(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -2352,7 +2352,7 @@ def test_uptycs_parent_event_information(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
@@ -2434,7 +2434,7 @@ def test_uptycs_socket_event_information(mocker, requests_mock):
     mock_response_final = {
         "items": [ 
             {
-                "rawData": result_item
+                "rowData": result_item
             }
         ]
     }
