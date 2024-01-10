@@ -24,7 +24,7 @@ configuration:
   name: fetch_incidents_events_type
   type: 15
   required: true
-  defaultvalue: incidentsincidents
+  defaultvalue: incidents
   options:
   - incidents
   - events
@@ -1418,7 +1418,7 @@ script:
       description: SHA256 hash of the file submitted for analysis.
       type: String
     polling: true
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'
