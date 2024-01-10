@@ -2063,7 +2063,7 @@ def run_script_kill_process_command(client: CoreClient, args: Dict) -> CommandRe
         replies.append(reply)
 
     command_result = CommandResults(
-        readable_output=tableToMarkdown(f'Run Script Kill Process on {",".join(processes_names)}', replies),
+        readable_output=tableToMarkdown("Run Script Kill Process Results", replies),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
         outputs_key_field='action_id',
         outputs=replies,
