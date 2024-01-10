@@ -132,8 +132,12 @@ script:
       name: extra_fields
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether alerts should be ordered in newest to oldest order.
+      predefined:
+      - True
+      - False
       isArray: false
       name: descending_order
       required: false
@@ -357,8 +361,12 @@ script:
       name: extra_fields
       required: false
       secret: false
-    - default: false
-      description: Indicates whether events should be ordered in newest to oldest order.
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether events should be ordered in newest to oldest order.      
+      predefined:
+      - True
+      - False
       isArray: false
       name: descending_order
       required: false

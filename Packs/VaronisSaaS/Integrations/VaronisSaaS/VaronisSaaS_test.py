@@ -140,6 +140,7 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     )
     mocker.patch.object(demisto, 'debug', return_value=None)
 
+    max_fetch = 1000
     last_run = {'last_fetched_id': datetime.now() - timedelta(days=1)}
     first_fetch_time = datetime.now() - timedelta(weeks=1)
 
@@ -149,7 +150,8 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         severity=None,
         threat_model=None,
         last_run=last_run,
-        first_fetch_time=first_fetch_time
+        first_fetch_time=first_fetch_time,
+        max_fetch=max_fetch
     )
 
     expected_alerts = util_load_json('test_data/fetch_incidents_output.json')

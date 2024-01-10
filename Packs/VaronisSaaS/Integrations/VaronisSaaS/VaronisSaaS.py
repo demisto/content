@@ -169,6 +169,24 @@ class Client(BaseClient):
         self.headers["authorization"] = f'{token_type} {token}'
         return response
 
+    def varonis_search(self, search_query: str, max_fetch: Optional[int] = 1000):
+        create_search = self._http_request(
+            'POST',
+            '/app/dataquery/api/search/v2/search',
+            data=search_query,
+            headers=self.headers
+        )
+
+        url = create_search[0]["location"]
+        json_data = self._http_request(
+            method='GET',
+            url_suffix=f'/app/dataquery/api/search/{url}?from=0&to={max_fetch - 1}',
+            headers=self.headers,
+            status_list_to_retry=[304, 405, 206],
+            retries=10
+        )
+        return json_data
+
     def varonis_get_alerts(self, threat_model_names: Optional[List[str]],
                            alertIds: Optional[List[str]], start_time: Optional[datetime],
                            end_time: Optional[datetime], ingest_time_from: Optional[datetime],
@@ -178,7 +196,8 @@ class Client(BaseClient):
                            alert_statuses: Optional[List[str]],
                            alert_severities: Optional[List[str]],
                            extra_fields: Optional[List[str]],
-                           descending_order: bool) -> List[Dict[str, Any]]:
+                           descending_order: bool,
+                           max_fetch: Optional[int] = 1000) -> List[Dict[str, Any]]:
         """Get alerts
 
         :type threat_model_names: ``Optional[List[str]]``
@@ -219,6 +238,9 @@ class Client(BaseClient):
 
         :type descendingOrder: ``bool``
         :param descendingOrder: Indicates whether alerts should be ordered in newest to oldest order
+
+        :type max_fetch: ``Optional[int]``
+        :param max_fetch: Maximum number of items
 
         :return: Alerts
         :rtype: ``List[Dict[str, Any]]``
@@ -331,31 +353,15 @@ class Client(BaseClient):
             search_request.rows.add_ordering({"path": "Alert.TimeUTC", "sortOrder": "Asc"})
 
         dataJSON = search_request.to_json()
-
-        create_search = None
-        create_search = self._http_request(
-            'POST',
-            '/app/dataquery/api/search/v2/search',
-            data=dataJSON,
-            headers=self.headers
-        )
-
-        url = create_search[0]["location"]
-        json_data = self._http_request(
-            method='GET',
-            url_suffix=f'/app/dataquery/api/search/{url}',
-            headers=self.headers,
-            status_list_to_retry=[304, 405, 206],
-            retries=10
-        )
-
+        json_data = self.varonis_search(dataJSON, max_fetch)
         mapper = SearchAlertObjectMapper()
         alerts = mapper.map(json_data)
         return alerts
 
     def varonis_get_alerted_events(self, alertIds: List[str], start_time: Optional[datetime], end_time: Optional[datetime],
                                    last_days: Optional[int], extra_fields: Optional[List[str]],
-                                   descending_order: bool) -> List[Dict[str, Any]]:
+                                   descending_order: bool,
+                                   max_fetch: Optional[int] = 1000) -> List[Dict[str, Any]]:
         """Get alerted events
 
         :type alertIds: ``List[str]``
@@ -370,11 +376,17 @@ class Client(BaseClient):
         :type count: ``int``
         :param count: Alerted events count
 
-        :type descendingOrder: ``bool``
-        :param descendingOrder: Indicates whether events should be ordered in newest to oldest order
+        :type extra_fields: ``Optional[List[str]]``
+        :param extra_fields: List of extra fields to include in the response
 
         :type extra_fields: ``Optional[List[str]]``
         :param extra_fields: List of extra fields to include in the response
+
+        :type descending_order: ``bool``
+        :param descending_order: Indicates whether events should be ordered in newest to oldest order
+
+        :type max_fetch: ``Optional[int]``
+        :param max_fetch: Maximum number of items
 
         :return: Alerted events
         :rtype: ``List[Dict[str, Any]]``
@@ -429,23 +441,7 @@ class Client(BaseClient):
             search_request.rows.add_ordering({"path": event_attributes.Event_TimeUTC, "sortOrder": "Asc"})
 
         dataJSON = search_request.to_json()
-
-        create_search = self._http_request(
-            'POST',
-            '/app/dataquery/api/search/v2/search',
-            data=dataJSON,
-            headers=self.headers
-        )
-
-        url = create_search[0]["location"]
-        json_data = self._http_request(
-            method='GET',
-            url_suffix=f'/app/dataquery/api/search/{url}',
-            headers=self.headers,
-            status_list_to_retry=[304, 405, 206],
-            retries=10
-        )
-
+        json_data = self.varonis_search(dataJSON, max_fetch)
         mapper = SearchEventObjectMapper()
         events = mapper.map(json_data)
         return events
@@ -1666,7 +1662,8 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first_fetch_time: Optional[datetime],
-                            alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str]
+                            alert_status: Optional[str], threat_model: Optional[str], severity: Optional[str],
+                            max_fetch: Optional[int] = 1000
                             ) -> Tuple[Dict[str, Optional[datetime]], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
@@ -1691,6 +1688,9 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
 
     :type severity: ``Optional[str]``
     :param severity: severity of the alert to search for. Options are 'High', 'Medium' or 'Low'
+
+    :type max_fetch: ``Optional[int]``
+    :param max_fetch: Maximum number of incidents per fetch
 
     :return:
         A tuple containing two elements:
@@ -1729,7 +1729,8 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
                                        ingest_time_to=ingest_time_to,
                                        alert_statuses=statuses, alert_severities=severities,
                                        extra_fields=None,
-                                       descending_order=True)
+                                       descending_order=True,
+                                       max_fetch=max_fetch)
 
     demisto.debug(f'varonis_get_alerts returned: {len(alerts)} alerts')
 
@@ -1745,7 +1746,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
             last_fetched_ingest_time = ingestTime + timedelta(minutes=1)
         guid = alert[AlertAttributes.Alert_ID]
         name = alert[AlertAttributes.Alert_Rule_Name]
-        alert_time = alert[AlertAttributes.Alert_Time]
+        alert_time = alert[AlertAttributes.Alert_TimeUTC]
         enrich_with_url(alert, client._base_url, guid)
 
         alert_converted = convert_incident_alert_to_onprem_format(alert)
@@ -1792,19 +1793,19 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     :rtype: ``CommandResults``
     """
-    threat_model_names = args.get('threat_model_name', None)
-    alert_ids = args.get('alert_ids', None)
-    start_time = args.get('start_time', None)
-    end_time = args.get('end_time', None)
-    ingest_time_from = args.get('ingest_time_from', None)
-    ingest_time_to = args.get('ingest_time_to', None)
-    alert_statuses = args.get('alert_status', None)
-    alert_severities = args.get('alert_severity', None)
-    device_names = args.get('device_name', None)
-    user_names = args.get('user_name', None)
-    last_days = args.get('last_days', None)
-    extra_fields = args.get('extra_fields', None)
-    descending_order = args.get('descending_order', 'True')
+    threat_model_names = args.get('threat_model_name')
+    alert_ids = args.get('alert_ids')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    ingest_time_from = args.get('ingest_time_from')
+    ingest_time_to = args.get('ingest_time_to')
+    alert_statuses = args.get('alert_status')
+    alert_severities = args.get('alert_severity')
+    device_names = args.get('device_name')
+    user_names = args.get('user_name')
+    last_days = args.get('last_days')
+    extra_fields = args.get('extra_fields')
+    descending_order = argToBoolean(args.get('descending_order', 'True'))
 
     if last_days:
         last_days = try_convert(
@@ -1901,10 +1902,10 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
 
     :rtype: ``CommandResults``
     """
-    start_time = args.get('start_time', None)
-    end_time = args.get('end_time', None)
-    last_days = args.get('last_days', None)
-    descending_order = args.get('descending_order', 'True')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    last_days = args.get('last_days')
+    descending_order = argToBoolean(args.get('descending_order', 'True'))
 
     alertIds = try_convert(args.get('alert_id'), lambda x: argToList(x))
     start_time = try_convert(
@@ -1953,7 +1954,7 @@ def varonis_alert_add_note_command(client: Client, args: Dict[str, Any]) -> bool
     :rtype: ``bool``
 
     """
-    note = args.get('note', None)
+    note = args.get('note')
 
     return varonis_update_alert(client, CLOSE_REASONS['none'], status_id=None, alert_ids=argToList(args.get('alert_id')),
                                 note=note)
@@ -1976,13 +1977,13 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
     :rtype: ``bool``
 
     """
-    status = args.get('status', None)
+    status = args.get('status')
     statuses = list(filter(lambda name: name != 'closed', ALERT_STATUSES.keys()))
     if status.lower() not in statuses:
         raise ValueError(f'status must be one of {statuses}.')
 
     status_id = ALERT_STATUSES[status.lower()]
-    note = args.get('note', None)
+    note = args.get('note')
 
     return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')), note)
 
@@ -2004,13 +2005,13 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     :rtype: ``bool``
 
     """
-    close_reason = args.get('close_reason', None)
+    close_reason = args.get('close_reason')
     close_reasons = list(filter(lambda name: not strEqual(name, 'none'), CLOSE_REASONS.keys()))
     if close_reason.lower() not in close_reasons:
         raise ValueError(f'close reason must be one of {close_reasons}')
 
     close_reason_id = CLOSE_REASONS[close_reason.lower()]
-    note = args.get('note', None)
+    note = args.get('note')
     return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')), note)
 
 
@@ -2051,7 +2052,6 @@ def main() -> None:
         client.varonis_authenticate(apiKey)
 
         if command == 'varonis-get-threat-models':
-            # This is the call made when pressing the integration Test button.
             result = varonis_get_threat_models_command(client, args)
             return_results(result)
 
@@ -2076,10 +2076,10 @@ def main() -> None:
             return_results(varonis_close_alert_command(client, args))
 
         elif command == 'fetch-incidents':
-            alert_status = params.get('status', None)
-            threat_model = params.get('threat_model', None)
-            severity = params.get('severity', None)
-
+            alert_status = params.get('status')
+            threat_model = params.get('threat_model')
+            severity = params.get('severity')
+            max_fetch = arg_to_number(params.get('max_fetch'))
             first_fetch_time = arg_to_datetime(
                 arg=params.get('first_fetch', '1 week'),
                 arg_name='First fetch time',
@@ -2091,7 +2091,8 @@ def main() -> None:
                                                           first_fetch_time=first_fetch_time,
                                                           alert_status=alert_status,
                                                           threat_model=threat_model,
-                                                          severity=severity)
+                                                          severity=severity,
+                                                          max_fetch=max_fetch)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
