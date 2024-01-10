@@ -136,6 +136,8 @@
 .get_contribution_pack: &get_contribution_pack
   - section_start "getting contrib packs" --collapsed
   - |
+    echo "CONTRIB_REPO:"
+    echo $CONTRIB_REPO
     if [[ -n "${CONTRIB_BRANCH}" ]]; then
       REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
       BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
