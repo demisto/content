@@ -3,10 +3,11 @@
     key:
       files:
         - "poetry.lock"
-        - "package-lock.json"
+        - ".pre-commit-config_template.yaml"
       prefix: dev-content
     paths:
       - $PIP_CACHE_DIR
+      - /root/.cache/pre-commit
       - .venv/
       - node_modules/
       - .npm/

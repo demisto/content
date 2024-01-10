@@ -80,6 +80,7 @@ repos:
       arg_name: --rcfile
       file_name: .pylintrc
     skip:commit: true
+    
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
@@ -87,15 +88,15 @@ repos:
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
-    entry: coverage
+    entry: python
     language: docker
     files: Packs\/.*_test\.py$
     exclude: test_data
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
-    split_by_object: true
-    change_working_directory: true
     args:
+    - /src/Tests/scripts/script_runner.py
+    - coverage
     - run
     - -p
     - --source=.
@@ -106,6 +107,7 @@ repos:
     - --rootdir=/src
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
+    - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
