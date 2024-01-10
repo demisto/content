@@ -205,7 +205,8 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
         previous_build_in_queue = sorted_builds_in_queue[my_place_in_the_queue - 1].get('name')  # type: ignore[assignment]
 
     if my_place_in_the_queue != my_places[-1]:
-        send_slack_notification([f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
+        send_slack_notification([f"{gcs_locks_path}",
+                                 f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
                                  f"Job ID: {job_id}",
                                  f"{len(builds_in_queue)}",
                                  f"{my_place_in_the_queue}"])
@@ -403,7 +404,7 @@ def main():
 
     end_time = time.time()
     duration = end_time - start_time
-    send_slack_notification([f"Job ID: {options.ci_job_id}", f"duration: {duration/60}"])
+    send_slack_notification([f"{options.gcs_locks_path}", f"Job ID: {options.ci_job_id}", f"duration: {duration/60}"])
 
 
 if __name__ == '__main__':
