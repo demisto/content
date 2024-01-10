@@ -2968,4 +2968,4 @@ fromversion: 5.0.0
 defaultmapperin: Threatconnect Mapper (incoming)
 defaultclassifier: Threatconnect classifier
 tests:
-- No tests
+- test-threatConnectv3
