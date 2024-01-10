@@ -2774,6 +2774,7 @@ def test_uptycs_get_detection_details(mocker, requests_mock):
             "assetHostName": "kyle-mbp-work",
             "assetId": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
             "agentType": "asset",
+            "resourceType": "asset",
             "assetLive": True,
             "assetLocation": "New York",
             "assetOs": "Ubuntu",
@@ -2785,6 +2786,7 @@ def test_uptycs_get_detection_details(mocker, requests_mock):
             "assignedUserName": "uptycs_user",
             "createdAt": "2019-07-02 11:41:25.915",
             "lastOccurredAt": "2019-07-02 11:41:25.915",
+            "note": "testnote"
         },
         "alerts": {
             "items": [
