@@ -1,9 +1,9 @@
 This playbook returns a file sample from a specified path and host that you input in the following playbooks:
-1. PS Remote Get File Sample From Path.
-2. Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
-3. CrowdStrike Falcon - Retrieve File
-4. MDE - Retrieve File
-5. Cortex XDR - Retrieve File V2.
+- PS Remote Get File Sample From Path.
+- Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
+- CrowdStrike Falcon - Retrieve File
+- MDE - Retrieve File
+- Cortex XDR - Retrieve File V2.
 
 ## Dependencies
 
@@ -13,9 +13,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * Get File Sample From Path - VMware Carbon Black EDR - Live Response API
 * Cortex XDR - Retrieve File v2
+* PS Remote Get File Sample From Path
 * CrowdStrike Falcon - Retrieve File
 * MDE - Retrieve File
-* PS Remote Get File Sample From Path
 
 ### Integrations
 

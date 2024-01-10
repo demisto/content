@@ -1,8 +1,8 @@
 This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:
-1. Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
-2. Get the threat (file) associated with a specific SHA256 hash - Cylance Protect v2.
-3. Get the file associated with a specific MD5 or SHA256 hash - Code42.
-4. Cortex XDR - Retrieve File by sha256.
+- Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
+- Get the threat (file) associated with a specific SHA256 hash - Cylance Protect v2.
+- Get the file associated with a specific MD5 or SHA256 hash - Code42.
+- Cortex XDR - Retrieve File by sha256.
 
 ## Dependencies
 
@@ -10,10 +10,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Code42 File Download
-* Cortex XDR - Retrieve File by sha256
-* Get File Sample By Hash - Cylance Protect v2
 * Get the binary file from Carbon Black by its MD5 hash
+* Cortex XDR - Retrieve File by sha256
+* Code42 File Download
+* Get File Sample By Hash - Cylance Protect v2
 
 ### Integrations
 
