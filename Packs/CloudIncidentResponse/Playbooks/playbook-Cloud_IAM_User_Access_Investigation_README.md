@@ -10,15 +10,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud IAM Enrichment - Generic
-* Handle False Positive Alerts
-* Enrichment for Verdict
-* Cloud Response - Generic
 * Ticket Management - Generic
+* Cloud IAM Enrichment - Generic
+* Cloud Response - Generic
+* Enrichment for Verdict
+* Handle False Positive Alerts
 
 ### Integrations
 
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -26,9 +26,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setParentIncidentFields
-* closeInvestigation
 * core-get-cloud-original-alerts
+* closeInvestigation
+* setParentIncidentFields
 
 ## Playbook Inputs
 
@@ -36,6 +36,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
+| ShouldCloseAutomatically | Whether to close alerts automatically as a false positive. \(True/False\). | False | Optional |
 | autoAccessKeyRemediation | Whether to execute the user remediation flow automatically. | False | Optional |
 | autoBlockIndicators | Whether to block the indicators automatically. | True | Optional |
 | autoUserRemediation | Whether to execute the user remediation flow automatically. | False | Optional |
@@ -44,8 +45,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Azure-userRemediationType | Choose the remediation type for the user involved.<br/><br/>Azure available types:<br/>Disable - for disabling the user.<br/>Delete - for deleting the user. | Disable | Optional |
 | GCP-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>GCP available types:<br/>Disable - For disabling the user's access key.<br/>Delete - For deleting the user's access key. | Disable | Optional |
 | GCP-userRemediationType | Choose the remediation type for the user involved.<br/><br/>GCP available types:<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |
-| ShouldCloseAutomatically | Whether to close alerts automatically as a false positive. \(True/False\). | False | Optional |
 | ShouldOpenTicket | Whether to open a ticket automatically in a ticketing system. \(True/False\). | False | Optional |
+| description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
 | serviceNowShortDescription | A short description of the ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
 | serviceNowImpact | The impact for the new ticket. Leave empty for ServiceNow default impact. |  | Optional |
 | serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
@@ -61,9 +64,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ZendeskType | The type of this ticket. Allowed values are "problem", "incident", "question", or "task". |  | Optional |
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
-| description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
-| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
-| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 
