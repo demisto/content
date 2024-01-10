@@ -6555,34 +6555,7 @@ def get_ioarules_command(args: dict) -> CommandResults:
 
     ioarules = ioarules_response_data.get('resources', [])
 
-    def table_headers_transformer(header: str) -> str:
-        mapping = {
-            "action_label": "Action Label",
-            "comment": "Comment",
-            "committed_on": "Committed on",
-            "created_by": "Created by",
-            "created_on": "Created on",
-            "customer_id": "Customer ID",
-            "deleted": "Deleted",
-            "description": "Description",
-            "disposition_id": "Disposition ID",
-            "enabled": "Enabled",
-            "field_values": "Field Values",
-            "instance_id": "Instance ID",
-            "instance_version": "Instance Version",
-            "magic_cookie": "Magic Cookie",
-            "modified_by": "Modified by",
-            "modified_on": "Modified on",
-            "name": "Name",
-            "pattern_id": "Pattern ID",
-            "pattern_severity": "Pattern Severity",
-            "rulegroup_id": "Rule Group ID",
-            "ruletype_id": "Rule Type ID",
-            "ruletype_name": "Rule Type Name",
-            "version_ids": "Version IDs",
-        }
-
-        return mapping.get(header, header)
+  
 
     return CommandResults(
         outputs_prefix='CrowdStrike.IOARules',
