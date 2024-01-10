@@ -124,7 +124,10 @@ configuration:
   name: close_xsoar_incident
   type: 8
   required: false
-description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
+description: |-
+  Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
+
+  1/10/24 changes: support removing hashes from scoped blocklists
 display: SentinelOne v2
 name: SentinelOne V2
 script:
@@ -2329,7 +2332,6 @@ script:
   - arguments:
     - description: Can filter on one account ID. Otherwise, it returns information from all accounts.
       name: account_id
-      required: false
     description: Returns details of accounts.
     name: sentinelone-get-accounts
     outputs:
@@ -2385,7 +2387,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -2393,10 +2395,8 @@ script:
   script: ""
   type: python
   subtype: python3
+  runonce: false
 tests:
 - SentinelOne V2.1 - Test
 - SentinelOne V2.0 - Test
 fromversion: 5.0.0
-defaultclassifier: SentinelOne Classifier
-defaultmapperin: SentinelOne Incoming Mapper
-defaultmapperout: SentinelOne - Outgoing Mapper
