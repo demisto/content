@@ -910,8 +910,8 @@ Search assets by external ID.
 | --- | --- | --- |
 | Kenna.Assets.ID | Number | The asset ID. | 
 | Kenna.Assets.Notes | String | Notes of current asset. | 
-| Kenna.Assets.VulnerabilitiesCount | unknown | Count of vulnerabilities of current asset. | 
-| Kenna.Assets.Hostname | unknown | Hostname of current asset. | 
-| Kenna.Assets.Score | unknown | Score of current asset. | 
-| Kenna.Assets.IpAddress | unknown | IP of current asset. | 
-| Kenna.Assets.OperatingSystem | unknown | Operating system of current asset. | 
+| Kenna.Assets.VulnerabilitiesCount | Number | Count of vulnerabilities of current asset. | 
+| Kenna.Assets.Hostname | String | Hostname of current asset. | 
+| Kenna.Assets.Score | Number | Score of current asset. | 
+| Kenna.Assets.IpAddress | String | IP of current asset. | 
+| Kenna.Assets.OperatingSystem | String | Operating system of current asset. | 

@@ -474,14 +474,19 @@ script:
       type: String
     - contextPath: Kenna.Assets.VulnerabilitiesCount
       description: Count of vulnerabilities of current asset.
+      type: Number
     - contextPath: Kenna.Assets.Hostname
       description: Hostname of current asset.
+      type: String
     - contextPath: Kenna.Assets.Score
       description: Score of current asset.
+      type: Number
     - contextPath: Kenna.Assets.IpAddress
       description: IP of current asset.
+      type: String
     - contextPath: Kenna.Assets.OperatingSystem
       description: Operating system of current asset.
+      type: String
     description: Search assets by external ID.
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
