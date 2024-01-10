@@ -460,7 +460,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Posibility of get data in context.
+      description: Whether to put data in context.
       defaultValue: "false"
     - name: limit
       description: The maximum number of assets to return. The default value is 500.
