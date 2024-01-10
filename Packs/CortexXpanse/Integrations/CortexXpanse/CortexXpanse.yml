@@ -836,7 +836,7 @@ script:
       description: User-provided notes related to the incident.
       type: string
     description: Returns additional details about a specific incident.
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.10.13.83255
   isFetchSamples: true
   isfetch: true
   script: ''
