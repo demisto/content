@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Crowdstrike Falcon Intel Feed
+  id: Crowdstrike Falcon Intel Feed Test
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com/
@@ -129,8 +129,8 @@ configuration:
   type: 0
   required: false
 description: The CrowdStrike intelligence team tracks the activities of threat actor groups and advanced persistent threats (APTs) to understand as much as possible about their known aliases, targets, methods, and more. This integration retrieves indicators from the CrowdStrike Falcon Intel Feed.
-display: CrowdStrike Falcon Intel Feed Actors
-name: Crowdstrike Falcon Intel Feed
+display: CrowdStrike Falcon Intel Feed Actors Test
+name: Crowdstrike Falcon Intel Feed Test
 script:
   commands:
   - arguments:
