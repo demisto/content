@@ -6,65 +6,65 @@ configuration:
 - display: Server URL (e.g. https://defense.conferdeploy.net)
   name: url
   required: true
-  section: Connect
   type: 0
+  section: Connect
 - display: Organization Key
   name: organization_key
   required: true
-  section: Connect
   type: 0
+  section: Connect
 - display: Custom Key
-  hidden: true
   name: custom_key
-  required: false
-  section: Connect
   type: 4
-- display: Custom ID
+  section: Connect
   hidden: true
-  name: custom_id
   required: false
-  section: Connect
-  type: 0
 - display: Custom ID
-  displaypassword: Custom Key
-  name: credentials_custom
-  required: false
+  name: custom_id
+  type: 0
   section: Connect
+  hidden: true
+  required: false
+- display: Custom ID
+  name: credentials_custom
   type: 9
+  displaypassword: Custom Key
+  section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
-  section: Collect
   type: 8
+  section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
-  section: Connect
   type: 13
-- advanced: true
-  display: Trust any certificate (not secure)
+  section: Connect
+  required: false
+- display: Trust any certificate (not secure)
   name: insecure
-  required: false
-  section: Connect
   type: 8
-- advanced: true
-  display: Use system proxy settings
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
   name: proxy
-  required: false
-  section: Connect
   type: 8
-- defaultvalue: 3 days
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  required: false
-  section: Collect
   type: 0
-- defaultvalue: "50"
+  section: Collect
+  required: false
+- defaultvalue: '50'
   display: Fetch limit
   name: fetch_limit
-  required: false
-  section: Collect
   type: 0
+  section: Collect
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -195,7 +195,7 @@ script:
       - MEDIUM
       - HIGH
       - MISSION_CRITICAL
-    - defaultValue: "20"
+    - defaultValue: '20'
       description: Maximum number of rows to return.
       name: limit
     - auto: PREDEFINED
@@ -372,12 +372,12 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      defaultValue: "true"
+      defaultValue: 'true'
       description: Whether to group results.
       name: group_results
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: Alert minimum severity (In range of 1-10).
       name: minimum_severity
     - description: Device OS version. Supports comma-separated values.
@@ -424,7 +424,7 @@ script:
       predefined:
       - ASC
       - DESC
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The maximum number of results to return.
       name: limit
     - description: Alert start time.
@@ -572,8 +572,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.workflow.state
       description: Alert workflow - state
       type: String
-  - arguments: []
-    description: Retrieves all watchlists.
+  - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
     outputs:
     - contextPath: CarbonBlackEEDR.Watchlist.classifier
@@ -600,6 +599,7 @@ script:
     - contextPath: CarbonBlackEEDR.Watchlist.description
       description: Watchlist description.
       type: String
+    arguments: []
   - arguments:
     - description: The watchlist ID. Get the ID from the watchlist-list command.
       name: watchlist_id
@@ -662,14 +662,14 @@ script:
       description: Whether to enable watchlist tags. Can be "true" or "false".
       name: tags_enabled
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Enable watchlist alerts
       name: alerts_enabled
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: The report IDs for creating the watchlist. Supports comma-separated values.
       name: report_ids
     - description: The classifier key for creating the watchlist.
@@ -725,14 +725,14 @@ script:
       description: Whether to enable watchlist tags. Can be "true" or "false".
       name: tags_enabled
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Enable watchlist alerts.
       name: alerts_enabled
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: Watchlist report ID. Supports comma-separated values.
       name: report_ids
     - description: The classifier key to update.
@@ -1063,16 +1063,16 @@ script:
     - description: An array of SHA256 hashes (limit 100). Supports comma-separated values.
       name: sha256
       required: true
-    - defaultValue: "300"
+    - defaultValue: '300'
       description: The number of seconds to make the download URLs available for.
       name: expiration_seconds
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultValue: 'false'
       description: Download the file to XSOAR.
       name: download_to_xsoar
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     description: The files are able to be downloaded via AWS S3 pre-signed URLs.
     name: cb-eedr-files-download-link-get
     outputs:
@@ -1171,7 +1171,7 @@ script:
       description: A globally unique identifier for this event document.
       type: String
     - contextPath: CarbonBlackEEDR.SearchEvent.event_hash
-      description: ""
+      description: ''
       type: String
     - contextPath: CarbonBlackEEDR.SearchEvent.event_timestamp
       description: The timestamp of the event on the device.
@@ -1186,7 +1186,7 @@ script:
       description: 'Action associated with the modload operation. The only possible value is: ACTION_LOAD_MODULE.'
       type: String
     - contextPath: CarbonBlackEEDR.SearchEvent.modload_effective_reputation
-      description: ""
+      description: ''
       type: String
     - contextPath: CarbonBlackEEDR.SearchEvent.modload_md5
       description: The MD5 hash for the modules loaded.
@@ -1358,10 +1358,12 @@ script:
       description: Threat ID.
     - contextPath: CarbonBlackEEDR.Threat.Tags
       description: Threat tags.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Carbon Black Enterprise EDR
+tests:
+- Carbon Black Enterprise EDR Test
+fromversion: 5.0.0

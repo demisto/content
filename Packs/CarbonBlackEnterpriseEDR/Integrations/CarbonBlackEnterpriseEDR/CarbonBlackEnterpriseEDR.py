@@ -1,12 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-
 from typing import Union, Dict, Optional, Any, Tuple, List
-
 import dateparser
-
 import requests
 import urllib3
 
@@ -1327,6 +1323,7 @@ def process_search_get_command(client: Client, args: Dict) -> List[CommandResult
                                               readable_output=human_readable))
     return job_result_list
 
+
 def add_threat_tags_command(client: Client, args: Dict) -> CommandResults:
     tags = argToList(args.get("tags"))
     threat_id = args.get("threat_id")
@@ -1582,4 +1579,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

@@ -1,5 +1,5 @@
 VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
-This integration was integrated and tested with version xx of Carbon Black Enterprise EDR
+This integration was integrated and tested with version 1.21 of Carbon Black Enterprise EDR
 
 ## Configure Carbon Black Enterprise EDR on Cortex XSOAR
 
