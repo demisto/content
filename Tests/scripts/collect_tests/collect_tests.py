@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    DEFAULT_MARKETPLACE_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
+    DEFAULT_MARKETPLACES_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
     ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES,
@@ -751,8 +751,8 @@ class TestCollector(ABC):
         # intended to only be called from __validate_compatibility
         if not content_item_marketplaces:
             logger.debug(f'{content_item_path} has no marketplaces set, '
-                         f'using default={DEFAULT_MARKETPLACE_WHEN_MISSING}')
-            content_item_marketplaces = to_tuple(DEFAULT_MARKETPLACE_WHEN_MISSING)
+                         f'using default={DEFAULT_MARKETPLACES_WHEN_MISSING}')
+            content_item_marketplaces = DEFAULT_MARKETPLACES_WHEN_MISSING
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
@@ -1508,7 +1508,7 @@ if __name__ == '__main__':
 
     marketplace = MarketplaceVersions(args.marketplace)
 
-    nightly = True
+    nightly = args.nightly
     sdk_nightly = args.sdk_nightly
     service_account = args.service_account
     graph = args.graph

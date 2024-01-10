@@ -4,6 +4,7 @@ from typing import Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
+from Tests.scripts.collect_tests.constants import DEFAULT_MARKETPLACES_WHEN_MISSING
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
@@ -51,8 +52,7 @@ class TestConf(DictFileBased):
         self.tests_to_marketplace_set: dict[str, set[str]] = defaultdict(set)
         for test in self.tests:
             tests_to_integration_set[test.playbook_id].update(test.integrations)
-            if test.marketplaces:
-                self.tests_to_marketplace_set[test.playbook_id].update(test.marketplaces)
+            self.tests_to_marketplace_set[test.playbook_id].update(test.marketplaces or DEFAULT_MARKETPLACES_WHEN_MISSING)
         self.tests_to_integrations: dict[str, tuple[str, ...]] = {
             test: tuple(sorted(test_integrations)) for test, test_integrations in tests_to_integration_set.items()
         }
