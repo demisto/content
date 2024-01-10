@@ -545,7 +545,7 @@ def uptycs_get_detection_details_command():
     query_results = uptycs_get_detection_details()
     detection = query_results.get('detection')
     final_alerts = []
-    detection_url = 'https://' + DOMAIN + '/ui/detections/' + demisto.args().get('id')
+    detection_url = 'https://' + DOMAIN + '/ui/detections/' + demisto.args().get('detection_id')
     display_name = get_href_link(detection["displayName"], detection_url)
 
     for alert in query_results.get('alerts').get('items'):

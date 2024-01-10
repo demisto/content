@@ -204,7 +204,7 @@ def test_uptycs_get_assets(mocker, requests_mock):
     requests_mock.post(test_url, json=mock_response_job)
     test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
     requests_mock.get(test_url, json=mock_response_status)
-    test_url = 'https://%s/public/api/customers/%s/queryJobs/%sresults?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
     requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_assets_command()
@@ -1092,7 +1092,7 @@ def test_uptycs_get_alerts(mocker, requests_mock):
     requests_mock.post(test_url, json=mock_response_job)
     test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
     requests_mock.get(test_url, json=mock_response_status)
-    test_url = 'https://%s/public/api/customers/%s/queryJobs/%sresults?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
     requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_alerts_command()
@@ -1137,32 +1137,49 @@ def test_uptycs_get_events(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    mock_response = {
-        "items": [
+    event = {"status": "open",
+             "code": "OSX_CRASHES",
+             "description": "Crash",
+             "severity": "medium",
+             "created_at": "2019-07-02 11:41:25.915",
+             "value": "Amazon Music Helper",
+             "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+             "event_time": "2019-07-02 11:41:22.000",
+             "host_name": "kyle-mbp-work",
+             "key": "identifier",
+             "assigned_to": "testuser",
+             "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
+             "grouping": "OS X Crashes"
+             }
+
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
             {
-                "status": "open",
-                "code": "OSX_CRASHES",
-                "description": "Crash",
-                "severity": "medium",
-                "created_at": "2019-07-02 11:41:25.915",
-                "value": "Amazon Music Helper",
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "event_time": "2019-07-02 11:41:22.000",
-                "host_name": "kyle-mbp-work",
-                "key": "identifier",
-                "assigned_to": "testuser",
-                "id": "0049641c-1645-4b98-830f-7f1ce783bfcc",
-                "grouping": "OS X Crashes"
+                "rawData": event
             }
         ]
     }
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_events_command()
 
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == event
 
 
 def test_uptycs_get_alert_rules(mocker, requests_mock):
@@ -1675,25 +1692,20 @@ def test_uptycs_get_process_open_sockets(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "protocol": 6,
-                "socket": 0,
-                "family": 2,
-                "local_port": 54755,
-                "remote_port": 443,
-                "pid": 704,
-                "remote_address": "69.147.92.12",
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "upt_time": "2019-07-19 17:03:31.000",
-                "state": "ESTABLISHED",
-                "upt_hostname": "kyle-mbp-work",
-                "path": "",
-                "local_address": "192.168.86.61"
-            }
-        ]
-    }
+    result_item = {"protocol": 6,
+                   "socket": 0,
+                   "family": 2,
+                   "local_port": 54755,
+                   "remote_port": 443,
+                   "pid": 704,
+                   "remote_address": "69.147.92.12",
+                   "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                   "upt_time": "2019-07-19 17:03:31.000",
+                   "state": "ESTABLISHED",
+                   "upt_hostname": "kyle-mbp-work",
+                   "path": "",
+                   "local_address": "192.168.86.61"
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "limit": '1',
@@ -1707,11 +1719,33 @@ def test_uptycs_get_process_open_sockets(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_process_open_sockets_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'] == result_item
 
 
 def test_uptycs_get_process_information(mocker, requests_mock):
@@ -1740,18 +1774,13 @@ def test_uptycs_get_process_information(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "pid": 5119,
-                "parent": 484,
-                "upt_hostname": "kyle-mbp-work",
-                "path": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
-                "cmdline": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
-                "name": "VBoxHeadless"
-            }
-        ]
-    }
+    result_item = {"pid": 5119,
+                   "parent": 484,
+                   "upt_hostname": "kyle-mbp-work",
+                   "path": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
+                   "cmdline": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
+                   "name": "VBoxHeadless"
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "pid": '5119',
@@ -1765,11 +1794,33 @@ def test_uptycs_get_process_information(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_process_information_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_get_process_child_processes(mocker, requests_mock):
@@ -1798,19 +1849,14 @@ def test_uptycs_get_process_child_processes(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "upt_time": "2019-01-29 16:14:27.000",
-                "upt_add_time": "2019-01-29 16:14:27.000",
-                "pid": 5119,
-                "upt_hostname": "kyle-mbp-work",
-                "path": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
-                "cmdline": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
-                "name": "VBoxHeadless"
-            }
-        ]
-    }
+    result_item = {"upt_time": "2019-01-29 16:14:27.000",
+                   "upt_add_time": "2019-01-29 16:14:27.000",
+                   "pid": 5119,
+                   "upt_hostname": "kyle-mbp-work",
+                   "path": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
+                   "cmdline": "/Applications/VirtualBox.app/Contents/MacOS/VBoxHeadless",
+                   "name": "VBoxHeadless"
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "parent": '5119',
@@ -1826,11 +1872,34 @@ def test_uptycs_get_process_child_processes(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_process_child_processes_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_processes(mocker, requests_mock):
@@ -1859,22 +1928,16 @@ def test_uptycs_processes(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "name": "SCHelper",
-                "parent": 1,
-                "upt_time": "2019-07-19 07:29:32.000",
-                "pid": 60051,
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "cmdline": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "upt_hostname": "kyle-mbp-work",
-                "pgroup": 60051,
-                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "cwd": "/"
-            }
-        ]
-    }
+    result_item = {"name": "SCHelper",
+                   "parent": 1,
+                   "upt_time": "2019-07-19 07:29:32.000",
+                   "pid": 60051,
+                   "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                   "cmdline": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "upt_hostname": "kyle-mbp-work",
+                   "pgroup": 60051,
+                   "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "cwd": "/"}
 
     mocker.patch.object(demisto, 'args', return_value={
         "limit": '1',
@@ -1888,11 +1951,33 @@ def test_uptycs_processes(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_processes_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_process_open_files(mocker, requests_mock):
@@ -1921,18 +2006,13 @@ def test_uptycs_process_open_files(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "upt_time": "2019-07-19 07:29:32.000",
-                "pid": 60051,
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "upt_hostname": "kyle-mbp-work",
-                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "fd": 35
-            }
-        ]
-    }
+    result_item = {"upt_time": "2019-07-19 07:29:32.000",
+                   "pid": 60051,
+                   "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                   "upt_hostname": "kyle-mbp-work",
+                   "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "fd": 35
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "limit": '1',
@@ -1946,11 +2026,33 @@ def test_uptycs_process_open_files(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_process_open_files_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_process_event_information(mocker, requests_mock):
@@ -1979,20 +2081,15 @@ def test_uptycs_process_event_information(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "upt_time": "2019-07-19 07:29:32.000",
-                "parent": 5001,
-                "pid": 60051,
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "upt_hostname": "kyle-mbp-work",
-                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "cmdline": "xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266",
-                "cwd": "/"
-            }
-        ]
-    }
+    result_item = {"upt_time": "2019-07-19 07:29:32.000",
+                   "parent": 5001,
+                   "pid": 60051,
+                   "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                   "upt_hostname": "kyle-mbp-work",
+                   "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "cmdline": "xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266",
+                   "cwd": "/"
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "limit": '1',
@@ -2006,11 +2103,33 @@ def test_uptycs_process_event_information(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_process_event_information_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_process_events(mocker, requests_mock):
@@ -2039,20 +2158,15 @@ def test_uptycs_process_events(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "upt_time": "2019-07-19 07:29:32.000",
-                "parent": 5001,
-                "pid": 60051,
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "upt_hostname": "kyle-mbp-work",
-                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "cmdline": "xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266",
-                "cwd": "/"
-            }
-        ]
-    }
+    result_item = {"upt_time": "2019-07-19 07:29:32.000",
+                   "parent": 5001,
+                   "pid": 60051,
+                   "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                   "upt_hostname": "kyle-mbp-work",
+                   "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "cmdline": "xpcproxy com.apple.WebKit.WebContent.024FB342-0ECE-4E09-82E1-B9C9CF5F9CDF 3266",
+                   "cwd": "/"
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "limit": '1',
@@ -2066,11 +2180,33 @@ def test_uptycs_process_events(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_process_events_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_socket_events(mocker, requests_mock):
@@ -2099,25 +2235,20 @@ def test_uptycs_socket_events(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "upt_time": "2019-07-19 07:29:32.000",
-                "family": 2,
-                "pid": 60051,
-                "local_port": 47873,
-                "remote_port": "",
-                "protocol": "",
-                "socket": "",
-                "remote_address": "17.142.171.8",
-                "local_address": "0.0.0.0",
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "upt_hostname": "kyle-mbp-work",
-                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "action": "connect"
-            }
-        ]
-    }
+    result_item = {"upt_time": "2019-07-19 07:29:32.000",
+                   "family": 2,
+                   "pid": 60051,
+                   "local_port": 47873,
+                   "remote_port": "",
+                   "protocol": "",
+                   "socket": "",
+                   "remote_address": "17.142.171.8",
+                   "local_address": "0.0.0.0",
+                   "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                   "upt_hostname": "kyle-mbp-work",
+                   "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "action": "connect"
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "limit": '1',
@@ -2131,11 +2262,33 @@ def test_uptycs_socket_events(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_socket_events_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_parent_event_information(mocker, requests_mock):
@@ -2164,20 +2317,15 @@ def test_uptycs_parent_event_information(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "upt_time": "2019-07-19 07:29:32.000",
-                "parent": 5005,
-                "pid": 60051,
-                "upt_hostname": "kyle-mbp-work",
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "cmdline": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "cwd": ""
-            }
-        ]
-    }
+    result_item = {"upt_time": "2019-07-19 07:29:32.000",
+                   "parent": 5005,
+                   "pid": 60051,
+                   "upt_hostname": "kyle-mbp-work",
+                   "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                   "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "cmdline": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "cwd": ""
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "limit": '1',
@@ -2191,11 +2339,33 @@ def test_uptycs_parent_event_information(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_parent_event_information_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_socket_event_information(mocker, requests_mock):
@@ -2224,25 +2394,20 @@ def test_uptycs_socket_event_information(mocker, requests_mock):
         "fetch_time": "7 days"
     })
 
-    mock_response = {
-        "items": [
-            {
-                "upt_time": "2019-07-19 07:29:32.000",
-                "family": 2,
-                "pid": 60051,
-                "local_port": 47873,
-                "remote_port": "",
-                "protocol": "",
-                "socket": "",
-                "remote_address": "17.142.171.8",
-                "local_address": "0.0.0.0",
-                "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
-                "upt_hostname": "kyle-mbp-work",
-                "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
-                "action": "connect"
-            }
-        ]
-    }
+    result_item = {"upt_time": "2019-07-19 07:29:32.000",
+                   "family": 2,
+                   "pid": 60051,
+                   "local_port": 47873,
+                   "remote_port": "",
+                   "protocol": "",
+                   "socket": "",
+                   "remote_address": "17.142.171.8",
+                   "local_address": "0.0.0.0",
+                   "upt_asset_id": "984d4a7a-9f3a-580a-a3ef-2841a561669b",
+                   "upt_hostname": "kyle-mbp-work",
+                   "path": "/System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Helpers/SCHelper",
+                   "action": "connect"
+                   }
 
     mocker.patch.object(demisto, 'args', return_value={
         "limit": '1',
@@ -2256,11 +2421,33 @@ def test_uptycs_socket_event_information(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-    test_url = 'https://%s/public/api/customers/%s/query' % (DOMAIN, CUSTOMER_ID)
-    requests_mock.post(test_url, json=mock_response)
+    job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
+    mock_response_job = {
+        "id": job_id,
+        "status": "QUEUED"
+    }
+
+    mock_response_status = {
+        "status": "FINISHED"
+    }
+
+    mock_response_final = {
+        "items": [ 
+            {
+                "rawData": result_item
+            }
+        ]
+    }
+
+    test_url = 'https://%s/public/api/customers/%s/queryJobs' % (DOMAIN, CUSTOMER_ID)
+    requests_mock.post(test_url, json=mock_response_job)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_status)
+    test_url = 'https://%s/public/api/customers/%s/queryJobs/%s/results?limit=10000&offset=0' % (DOMAIN, CUSTOMER_ID, job_id)
+    requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_socket_event_information_command()
-    assert response['Contents'] == mock_response
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_get_asset_tags(mocker, requests_mock):
