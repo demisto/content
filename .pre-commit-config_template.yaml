@@ -91,7 +91,7 @@ repos:
     entry: python
     language: docker
     files: Packs\/.*_test\.py$
-    exclude: test_data|Packs/CommonScripts/Scripts/ConvertFile/ConvertFile_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py
+    exclude: test_data
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
