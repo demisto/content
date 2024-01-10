@@ -133,11 +133,11 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: True
+      default: 'True'
       description: Indicates whether alerts should be ordered in newest to oldest order.
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
       isArray: false
       name: descending_order
       required: false
@@ -362,11 +362,11 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: True
+      default: 'True'
       description: Indicates whether events should be ordered in newest to oldest order.      
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
       isArray: false
       name: descending_order
       required: false
