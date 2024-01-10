@@ -81,8 +81,9 @@ class Client(BaseClient):
                     },
                     'fields': fields
                 }
-
+                demisto.debug(f'Got the following fields: {fields} for actor id {fields.get("stixid")}')
                 indicator['rawJSON'].update(actor)
+                demisto.debug(f'rawJson for actor id {actor.get("id")}: {actor}')
             parsed_indicators.append(indicator)
 
         return parsed_indicators
@@ -248,7 +249,7 @@ def fetch_indicators(client: Client, feed_tags: list, tlp_color: str | None, lim
         custom_filter, time_filter=time_filter,
         sort='last_modified_date'
     )
-
+    demisto.debug(f'Fetched {len(indicators)} indicators')
     if len(indicators) >= limit:
         # we need to store the offset and the same last modified time for the next run
         last_run = {
@@ -264,7 +265,7 @@ def fetch_indicators(client: Client, feed_tags: list, tlp_color: str | None, lim
         # we get 0 new indicators - store the current time
         current_timestamp = datetime.timestamp(datetime.now())
         last_run = {'last_modified_time': int(current_timestamp)}
-
+    demisto.debug(f'Set last run object to {last_run}')
     return indicators, last_run
 
 
@@ -279,7 +280,7 @@ def main():
     client = Client(params)
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     # Switch case
     commands = {
         'test-module': test_module,
