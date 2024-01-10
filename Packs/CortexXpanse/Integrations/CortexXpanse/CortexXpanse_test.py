@@ -760,18 +760,18 @@ def test_fetch_incidents(requests_mock, mocker):
     assert next_run == {'last_fetch': 1659452809020}
 
 
-def test_get_external_websites_command(requests_mock):
-    """Tests get_external_websites_command command function.
+def test_list_external_websites_command(requests_mock):
+    """Tests list_external_websites_command command function.
 
         Given:
-            - requests_mock instance to generate the appropriate get_external_websites_command API response,
+            - requests_mock instance to generate the appropriate list_external_websites_command API response,
               loaded from a local JSON file.
         When:
-            - Running the 'get_external_websites_command'.
+            - Running the 'list_external_websites_command'.
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexXpanse import Client, get_external_websites_command
+    from CortexXpanse import Client, list_external_websites_command
 
     from test_data.raw_response import EXTERNAL_WEBSITES_RESPONSE
     from test_data.expected_results import EXTERNAL_WEBSITES_RESULTS
@@ -792,8 +792,8 @@ def test_get_external_websites_command(requests_mock):
         'limit': 2
     }
 
-    response = get_external_websites_command(client, args)
+    response = list_external_websites_command(client, args)
 
-    assert response.outputs == EXTERNAL_WEBSITES_RESULTS.get('ExternalWebsites')
-    assert response.outputs_prefix == 'ASM.ExternalWebsites'
+    assert response.outputs == EXTERNAL_WEBSITES_RESULTS.get('ExternalWebsite')
+    assert response.outputs_prefix == 'ASM.ExternalWebsite'
     # assert response.outputs_key_field == ''

@@ -1,5 +1,5 @@
 Integration to pull assets and other ASM related information.
-This integration was integrated and tested with version 6.12 of Cortex Xpanse.
+This integration was integrated and tested with version xx of Cortex Xpanse.
 
 ## Configure Cortex Xpanse on Cortex XSOAR
 
@@ -590,24 +590,24 @@ Returns additional details about a specific incident.
 | ASM.Incident.description | string | A brief description of the incident. | 
 | ASM.Incident.notes | string | User-provided notes related to the incident. | 
 
-### asm-get-external-websites
+### asm-list-external-websites
 
 ***
 Get external websites assets.
 
 #### Base Command
 
-`asm-get-external-websites`
+`asm-list-external-websites`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | search filter - can be used to get all login pages. Default is ALL. | Optional | 
+| authentication | string of text to filter by authentication type. | Optional | 
 | limit | Maximum number of assets to return. The default and maximum is 100. Default is 100. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.ExternalWebsites | unknown | A list of the websites results assets. | 
+| ASM.ExternalWebsite | unknown | A list of the websites results assets. | 

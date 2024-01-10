@@ -1377,7 +1377,7 @@ IP_RESULTS = [{
 }]
 
 EXTERNAL_WEBSITES_RESULTS = {
-    "ExternalWebsites": [
+    "ExternalWebsite": [
         {
             "total_count": 32747,
             "result_count": 500,
