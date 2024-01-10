@@ -7,8 +7,10 @@ from CommonServerUserPython import *  # noqa
 from VaronisSaaS import *
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+def util_load_json(file):
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    full_path = os.path.join(__location__, file)
+    with io.open(full_path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 

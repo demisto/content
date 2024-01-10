@@ -133,7 +133,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: 'True'
+      default: True
       description: Indicates whether alerts should be ordered in newest to oldest order.
       predefined:
       - 'True'
@@ -362,7 +362,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: 'True'
+      default: True
       description: Indicates whether events should be ordered in newest to oldest order.      
       predefined:
       - 'True'

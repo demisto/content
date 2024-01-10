@@ -1421,7 +1421,7 @@ def get_rule_ids(client: Client, values: List[str]) -> List[int]:
     return ruleIds
 
 
-def varonis_update_alert(client: Client, close_reason_id: int, status_id: Optional[int], alert_ids: list, note: str) -> bool:
+def varonis_update_alert(client: Client, close_reason_id: int, status_id: Optional[int], alert_ids: list, note) -> bool:
     """Update Varonis alert. It creates request and pass it to http client
 
     :type client: ``Client``
@@ -1980,13 +1980,16 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
     :rtype: ``bool``
 
     """
-    status = str(args.get('status'))
+    status_id = None
+    status = args.get('status')
     statuses = list(filter(lambda name: name != 'closed', ALERT_STATUSES.keys()))
-    if status.lower() not in statuses:
-        raise ValueError(f'status must be one of {statuses}.')
+    if status:
+        if status.lower() not in statuses:
+            raise ValueError(f'status must be one of {statuses}.')
+        else:
+            status_id = ALERT_STATUSES[status.lower()]
 
-    status_id = ALERT_STATUSES[status.lower()]
-    note = str(args.get('note'))
+    note = args.get('note')
 
     return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')), note)
 
@@ -2014,7 +2017,7 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
         raise ValueError(f'close reason must be one of {close_reasons}')
 
     close_reason_id = CLOSE_REASONS[close_reason.lower()]
-    note = str(args.get('note'))
+    note = args.get('note')
     return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')), note)
 
 
