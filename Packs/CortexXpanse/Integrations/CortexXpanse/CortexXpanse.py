@@ -983,9 +983,9 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
     return command_results
 
 
-def get_external_websites_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_websites_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-get_external_websites command: Get external websites .
+    list_external_websites command: Get external websites .
 
     Args:
         client (Client): CortexXpanse client to use.
@@ -1016,9 +1016,9 @@ def get_external_websites_command(client: Client, args: Dict[str, Any]) -> Comma
     human_readable = (f"Total results: {len(hosts)}\n \
         {tableToMarkdown('External Websites', hosts, ['Host', 'Authentication type'])}" if hosts else "No Results")
     command_results = CommandResults(
-        outputs_prefix='ASM.ExternalWebsites',
+        outputs_prefix='ASM.ExternalWebsite',
         outputs_key_field='',
-        outputs=[response.get('reply', {})],
+        outputs=[response.get('reply')],
         raw_response=response,
         readable_output=human_readable
     )
@@ -1430,7 +1430,7 @@ def main() -> None:
             'asm-get-incident': get_incident_command,
             'asm-update-incident': update_incident_command,
             'asm-update-alerts': update_alert_command,
-            'asm-get-external-websites': get_external_websites_command,
+            'asm-list-external-websites': list_external_websites_command,
             'ip': ip_command,
             'domain': domain_command
         }
