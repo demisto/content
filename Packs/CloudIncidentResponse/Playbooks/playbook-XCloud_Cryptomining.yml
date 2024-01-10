@@ -1131,11 +1131,6 @@ view: |-
     }
   }
 inputs:
-- key: alert_id
-  value: {}
-  required: false
-  description: The alert ID.
-  playbookInputQuery:
 - key: SOCEmailAddress
   value: {}
   required: false
@@ -1158,6 +1153,30 @@ inputs:
     simple: "False"
   required: false
   description: Should we automatically handle false positive alerts? Specify true/false.
+  playbookInputQuery:
+- key: cloudProvider
+  value:
+    complex:
+      root: alert
+      accessor: cloudprovider
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
+- key: alert_id
+  value: {}
+  required: false
+  description: The alert ID.
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
   playbookInputQuery:
 - key: autoAccessKeyRemediation
   value:
@@ -1238,14 +1257,6 @@ inputs:
     Disable - for disabling the user.
     Delete - for deleting the user.
   playbookInputQuery:
-- key: cloudProvider
-  value:
-    complex:
-      root: alert
-      accessor: cloudprovider
-  required: false
-  description: The cloud service provider involved.
-  playbookInputQuery:
 - key: GCP-accessKeyRemediationType
   value:
     simple: Disable
@@ -1279,18 +1290,6 @@ inputs:
     Delete - For deleting the user.
     Disable - For disabling the user.
   playbookInputQuery:
-- key: ResolveIP
-  value:
-    simple: "True"
-  required: false
-  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
-  playbookInputQuery:
-- key: InternalRange
-  value: {}
-  required: false
-  description: "A list of internal IP ranges to check IP addresses against. \nFor
-    IP Enrichment - Generic v2 playbook."
-  playbookInputQuery: null
 - key: ShouldOpenTicket
   value:
     simple: "False"
@@ -1392,48 +1391,71 @@ inputs:
   required: false
   description: Comment for the ticket.
   playbookInputQuery:
-- key: credentialsRemediationType
-  value:
-    simple: Reset
-  required: false
-  description: |-
-    The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
-
-    Reset: By entering "Reset" in the input, the playbook will execute password reset.
-    Supports: AWS, MSGraph Users, GCP and GSuite Admin.
-
-    Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.
-    Supports: GCP, GSuite Admin and MSGraph Users.
-
-    Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.
-    Supports: AWS.
-
-    ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
-  playbookInputQuery:
-- key: AWS-newInstanceProfileName
-  value: {}
-  required: false
-  description: The new instance profile name to assign in the clone service account flow.
-  playbookInputQuery:
-- key: AWS-newRoleName
-  value: {}
-  required: false
-  description: The new role name to assign in the clone service account flow.
-  playbookInputQuery:
-- key: AWS-roleNameToRestrict
-  value: {}
-  required: false
-  description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
-  playbookInputQuery:
-- key: shouldCloneSA
-  value:
-    simple: "False"
-  required: false
-  description: |-
-    Whether to clone the compromised SA before putting a deny policy to it.
-    Supports: AWS.
-    True/False
-  playbookInputQuery:
+inputSections:
+- inputs:
+  - SOCEmailAddress
+  - requireAnalystReview
+  - ShouldCloseAutomatically
+  - ShouldHandleFPautomatically
+  - cloudProvider
+  - alert_id
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, user engagements, and ticketing methods.
+- inputs:
+  - ResolveIP
+  - InternalRange
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - autoAccessKeyRemediation
+  - autoBlockIndicators
+  - autoResourceRemediation
+  - autoUserRemediation
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - AWS-accessKeyRemediationType
+  - AWS-resourceRemediationType
+  - AWS-userRemediationType
+  name: AWS Remediation
+  description: AWS Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - Azure-resourceRemediationType
+  - Azure-userRemediationType
+  name: Azure Remediation
+  description: Azure Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - GCP-accessKeyRemediationType
+  - GCP-resourceRemediationType
+  - GCP-userRemediationType
+  name: GCP Remediation
+  description: GCP Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - ShouldOpenTicket
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  - description
+  - addCommentPerEndpoint
+  - CommentToAdd
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)
