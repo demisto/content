@@ -76,6 +76,8 @@ def test_edl_returns_indicators(request: SubRequest, xsoar_saas_client: XsoarSaa
                     break
                 except Exception as error:
                     logging.error(f"test_edl_returns_indicators - time {i} - error\n{error}")
+                    if i == 5:
+                        raise
 
 
 def test_taxii2_server_returns_indicators(
