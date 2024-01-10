@@ -124,10 +124,7 @@ configuration:
   name: close_xsoar_incident
   type: 8
   required: false
-description: |-
-  Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
-
-  1/10/24 changes: support removing hashes from scoped blocklists
+description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
 script:
