@@ -913,5 +913,5 @@ Search assets by external id.
 | Kenna.Assets.VulnerabilitiesCount | unknown | Count of vulnerabilities of current asset. | 
 | Kenna.Assets.Hostname | unknown | Hostname of current asset. | 
 | Kenna.Assets.Score | unknown | Score of current asset. | 
-| Kenna.Assets.IpAddress | unknown | Ip of current asset. | 
+| Kenna.Assets.IpAddress | unknown | IP of current asset. | 
 | Kenna.Assets.OperatingSystem | unknown | Operating system of current asset. | 
