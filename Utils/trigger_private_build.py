@@ -162,7 +162,7 @@ def main():
         else:
             trigger_build_url = TRIGGER_BUILD_URL_ON_CUSTOM_BRANCH
             payload = {
-                'ref': private_branch_name,
+                'ref': 'add-sdk-ref',
                 'inputs': {
                     'commit_sha1': branch_name,
                     'is_infra_build': 'True'
