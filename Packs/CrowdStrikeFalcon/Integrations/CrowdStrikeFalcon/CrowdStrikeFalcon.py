@@ -6555,8 +6555,6 @@ def get_ioarules_command(args: dict) -> CommandResults:
 
     ioarules = ioarules_response_data.get('resources', [])
 
-  
-
     return CommandResults(
         outputs_prefix='CrowdStrike.IOARules',
         outputs_key_field='instance_id',
@@ -6564,8 +6562,7 @@ def get_ioarules_command(args: dict) -> CommandResults:
         readable_output=tableToMarkdown(
             name='CrowdStrike IOA Rules',
             t=ioarules,
-            headers=['instance_id', 'description', 
-            'enabled', 'name', 'pattern_id'],
+            headers=['instance_id', 'description', 'enabled', 'name', 'pattern_id'],
             headerTransform=string_to_table_header,
             removeNull=True,
             sort_headers=False,
