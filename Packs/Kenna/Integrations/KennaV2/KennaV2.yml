@@ -482,7 +482,7 @@ script:
       description: Ip of current asset.
     - contextPath: Kenna.Assets.OperatingSystem
       description: Operating system of current asset.
-    description: Search assets by external id.
+    description: Search assets by external ID.
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
