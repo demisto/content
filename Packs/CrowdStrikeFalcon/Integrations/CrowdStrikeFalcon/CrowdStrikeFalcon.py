@@ -6566,7 +6566,7 @@ def get_ioarules_command(args: dict) -> CommandResults:
             t=ioarules,
             headers=['instance_id', 'description', 
             'enabled', 'name', 'pattern_id'],
-            headerTransform=table_headers_transformer,
+            headerTransform=string_to_table_header,
             removeNull=True,
             sort_headers=False,
         ),
