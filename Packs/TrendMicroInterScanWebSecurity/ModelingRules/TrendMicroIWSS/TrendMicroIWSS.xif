@@ -8,7 +8,7 @@ alter // Extract message header fields & message payload
 | alter syslog_facility = floor(divide(syslog_priority, 8))
 | alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility, 8)))
 | alter // Extract event payload fields. supported events: EVT_URL_ACCESS_TRACKING, EVT_URL_BLOCKING, EVT_SYSEVENT_AU_SUCC, EVT_SYSEVENT_AU_FAIL, EVT_PERFORMANCE
-    event_name = arrayindex(regextract(msg_payload, "(.+?)\w+\="), 0),
+    event_name = arrayindex(regextract(msg_payload, "(.+?)\s+\w+\="), 0),
     action = arrayindex(regextract(msg_payload, "tk_action=([^\,]+)"), 0),
     category = arrayindex(regextract(msg_payload, "tk_category=([^\,]+)"), 0),
     client_ip = arrayindex(regextract(msg_payload, "tk_client_ip=([^\,]+)"), 0),
@@ -44,6 +44,9 @@ alter // Extract message header fields & message payload
 	target_ipv4 = arrayindex(regextract(server_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	target_ipv6 = arrayindex(regextract(server_ip, "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"), 0),
     target_file_extension = arrayindex(regextract(file_name, "\.(\w+)") , 0)
+| alter 
+    url_target_ipv4 = if(url_target_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", url_target_ip),
+    url_target_ipv6 = if(url_target_ip ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", url_target_ip)
 | alter // XDM Mapping
     xdm.alert.severity = syslog_severity,
     xdm.event.description = description,
@@ -70,8 +73,9 @@ alter // Extract message header fields & message payload
     xdm.target.domain = domain,
     xdm.target.file.extension = target_file_extension,
     xdm.target.file.filename = file_name,
-    xdm.target.ipv4 = target_ipv4,
-    xdm.target.ipv6 = target_ipv6,
+    xdm.target.ipv4 = coalesce(target_ipv4, url_target_ipv4), 
+    xdm.target.ipv6 = coalesce(target_ipv6, url_target_ipv6),
+    xdm.target.port = to_integer(url_target_port),
     xdm.target.resource.id = if(event_type = "EVT_PERFORMANCE", metric_id),
     xdm.target.resource.name = if(event_type = "EVT_URL_BLOCKING", entity_name, path),
     xdm.target.resource.value = if(event_type = "EVT_URL_BLOCKING", malicious_entity, event_type = "EVT_PERFORMANCE", metric_value),
