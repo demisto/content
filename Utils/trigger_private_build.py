@@ -228,6 +228,7 @@ def main():
         # write the workflow id to text file to use it in get_private_build_status.py
         with open(PRIVATE_REPO_WORKFLOW_ID_FILE, "w") as f:
             f.write(str(workflow_id))
+        print(workflow_id)
         sys.exit(0)
 
     else:
