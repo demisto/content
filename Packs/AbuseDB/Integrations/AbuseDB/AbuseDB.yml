@@ -116,6 +116,9 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
+    - contextPath: IP.Geo.CountryCode
+      description: The country code in which the IP address is located.
+      type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
       type: String
@@ -133,6 +136,30 @@ script:
       type: Number
     - contextPath: AbuseIPDB.IP.Geo.Country
       description: The country associated with the IP Address.
+      type: String
+    - contextPath: AbuseIPDB.IP.Geo.CountryCode
+      description: The country code associated with the IP Address.
+      type: String
+    - contextPath: AbuseIPDB.IP.Hostnames
+      description: The hostame(s) of the IP address.
+      type: String
+    - contextPath: AbuseIPDB.IP.IpVersion
+      description: The version of the IP address.
+      type: String
+    - contextPath: AbuseIPDB.IP.IsPublic
+      description: Is the IP address public.
+      type: String
+    - contextPath: AbuseIPDB.IP.IsTor
+      description: Is the IP address a Tor IP.
+      type: String¨
+    - contextPath: AbuseIPDB.IP.IsWhitelisted
+      description: Is the IP address whitelisted.
+      type: String
+    - contextPath: AbuseIPDB.IP.LastReportedAt
+      description: When the IP address was last reported.
+      type: String
+    - contextPath: AbuseIPDB.IP.NumDistinctUsers
+      description: The distinct number of users.
       type: String
     - contextPath: AbuseIPDB.IP.Reports
       description: The reports summary (for "verbose" reports).
@@ -192,6 +219,9 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
+    - contextPath: IP.Geo.CountryCode
+      description: The country code in which the IP address is located.
+      type: String
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
       type: String
@@ -211,8 +241,32 @@ script:
       description: The number of times this address has been reported.
       type: Unknown
     - contextPath: AbuseIPDB.IP.Geo.Country
-      description: The country associated with this IP Address.
-      type: Unknown
+      description: The country associated with the IP Address.
+      type: String
+    - contextPath: AbuseIPDB.IP.Geo.CountryCode
+      description: The country code associated with the IP Address.
+      type: String
+    - contextPath: AbuseIPDB.IP.Hostnames
+      description: The hostame(s) of the IP address.
+      type: String
+    - contextPath: AbuseIPDB.IP.IpVersion
+      description: The version of the IP address.
+      type: String
+    - contextPath: AbuseIPDB.IP.IsPublic
+      description: Is the IP address public.
+      type: String
+    - contextPath: AbuseIPDB.IP.IsTor
+      description: Is the IP address a Tor IP.
+      type: String¨
+    - contextPath: AbuseIPDB.IP.IsWhitelisted
+      description: Is the IP address whitelisted.
+      type: String
+    - contextPath: AbuseIPDB.IP.LastReportedAt
+      description: When the IP address was last reported.
+      type: String
+    - contextPath: AbuseIPDB.IP.NumDistinctUsers
+      description: The distinct number of users.
+      type: String
     - contextPath: AbuseIPDB.IP.Reports
       description: Reports summary (for "verbose" reports).
       type: Unknown
@@ -285,7 +339,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.80014
+  dockerimage: demisto/python3:3.10.13.83255
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test
