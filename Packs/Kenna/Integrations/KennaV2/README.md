@@ -55,7 +55,7 @@ Searches for vulnerabilities in Kenna.
 | Kenna.Vulnerabilities.Score | Number | The vulnerability score. | 
 | Kenna.Vulnerabilities.ServiceTicket.DueDate | Date | The service ticket due date. | 
 | Kenna.Vulnerabilities.ServiceTicket.ExternalIdentifier | String | The service ticket external identifier. | 
-| Kenna.Vulnerabilities.ServiceTicket.Status | String | The segit rvice ticket status. | 
+| Kenna.Vulnerabilities.ServiceTicket.Status | String | The service ticket status. | 
 | Kenna.Vulnerabilities.ServiceTicket.TicketType | String | The service ticket type. | 
 | Kenna.Vulnerabilities.Severity | Number | The vulnerability severity. | 
 | Kenna.Vulnerabilities.Status | String | The vulnerability status. | 
