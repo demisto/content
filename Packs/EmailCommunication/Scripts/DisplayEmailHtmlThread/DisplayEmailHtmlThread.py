@@ -104,11 +104,10 @@ def main():
                 'email_cc': thread.get('EmailCC', None),
                 'email_to': thread.get('EmailTo', None),
                 'email_subject': thread.get('EmailSubject', None),
-                'email_html': thread.get('EmailHTML'),
+                'email_html': remove_style_and_color(thread.get('EmailHTML')) if thread.get('EmailHTML') else None,
                 'email_time': thread.get('MessageTime', None),
                 'email_attachments': thread.get('EmailAttachments', None),
             }
-            # remove_style_and_color(thread.get('EmailHTML')) if thread.get('EmailHTML') else None
             demisto.debug(f'DisplayEmailHtmlThread - {thread_dict.get("email_html")=}')
             thread_items.append(thread_dict)
 
