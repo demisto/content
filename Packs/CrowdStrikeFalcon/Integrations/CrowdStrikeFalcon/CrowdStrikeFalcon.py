@@ -1296,7 +1296,7 @@ def get_ioarules(rule_ids: list[str]) -> dict:
     return http_request(
         'GET',
         '/ioarules/entities/rules/v1',
-        data=json.dumps({rule_ids}),
+        data=json.dumps({'ids': rule_ids}),
     )
 
 
