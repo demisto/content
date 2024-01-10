@@ -127,6 +127,7 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
     arg_parser.add_argument('--nightly', help='Is nightly build', action=argparse.BooleanOptionalAction)
+    arg_parser.add_argument('--sdk-ref', help='Whether to override the sdk branch')
     arg_parser.add_argument('--slack-channel', help='The slack channel in which to send the notification', default='C04CHML16P8')
     arg_parser.add_argument(
         '--private-branch-name',
@@ -138,6 +139,7 @@ def main():
     private_branch_name = args.private_branch_name
     github_token = args.github_token
     is_nightly = args.nightly
+    sdk_ref = args.sdk_ref
     slack_channel = args.slack_channel
 
     # get branch name
@@ -188,6 +190,8 @@ def main():
                 'slack_channel': slack_channel
             }
         }
+        if sdk_ref:
+            payload['inputs']['sdk_ref'] = sdk_ref
         logging.info(f'Triggering nightly build for content-private repo.')
         res = requests.post(TRIGGER_NIGHTLY_URL,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',
