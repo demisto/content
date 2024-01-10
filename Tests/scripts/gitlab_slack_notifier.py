@@ -537,10 +537,20 @@ def main():
                 logging.info(
                     f"""Checking pipeline {pipeline_id},
                     the commit is {current_commit} and the pipeline change status is: {pipeline_changed_status}""")
-                if pipeline_changed_status is not None and not was_message_already_sent(current_commit_index,
-                                                                                        list_of_commits, list_of_pipelines):
-                    shame_message=create_shame_message(current_commit, pipeline_changed_status, options.name_mapping_path)
-                    computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+                # If we already sent a message for newer commits, we don't want to send another one.
+                if not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines):
+                    if pipeline_changed_status is not None:
+                        shame_message=create_shame_message(current_commit, pipeline_changed_status, options.name_mapping_path)
+                    else:
+                        # if the current commit is not a pivot, we check if the next commit is a pivot, if his pipeline ended.
+                        # This is needed because sometimes the pipeline of the current commit is not finished while the next commit is.
+                        next_commit = list_of_commits[current_commit_index - 1]
+                        next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
+                        if next_pipeline:
+                            pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, previous_pipeline=current_pipeline)
+                            if pipeline_changed_status is not None:
+                                shame_message=create_shame_message(next_commit, pipeline_changed_status, options.name_mapping_path)
+                computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
             computed_slack_channel = "dmst-build-test"
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request, shame_message)
