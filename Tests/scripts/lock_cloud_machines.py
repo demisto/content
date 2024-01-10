@@ -22,6 +22,7 @@ CONTENT_GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '1061')
 SLACK_TOKEN = get_env_var('SLACK_TOKEN')
 SLACK_CHANNEL = "dmst-test-wait-in-line"
 
+
 def send_slack_notification(text: list[str]):
     """
     Sends a Slack notification with a list of items.
@@ -33,9 +34,10 @@ def send_slack_notification(text: list[str]):
     text = "\n".join(text)
     client = WebClient(token=SLACK_TOKEN)
     client.chat_postMessage(
-            channel=SLACK_CHANNEL,
-            text=text
-        )
+        channel=SLACK_CHANNEL,
+        text=text
+    )
+
 
 def options_handler() -> argparse.Namespace:
     """
@@ -204,13 +206,16 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
     if my_place_in_the_queue > 0:
         previous_build_in_queue = sorted_builds_in_queue[my_place_in_the_queue - 1].get('name')  # type: ignore[assignment]
 
-    if my_place_in_the_queue != my_places[-1]:
-        send_slack_notification([f"{gcs_locks_path}",
-                                 f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
-                                 f"Job ID: {job_id}",
-                                 f"{len(builds_in_queue)}",
-                                 f"{my_place_in_the_queue}"])
-    my_places.append(my_place_in_the_queue)
+    try:
+        if my_place_in_the_queue != my_places[-1]:
+            send_slack_notification([f"{gcs_locks_path}",
+                                     f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
+                                     f"Job ID: {job_id}",
+                                     f"{len(builds_in_queue)}",
+                                     f"{my_place_in_the_queue}"])
+        my_places.append(my_place_in_the_queue)
+    except Exception as e:
+        logging.info(f"Failed to send Slack notification. Reason: {str(e)}")
 
     return my_place_in_the_queue, previous_build_in_queue
 
@@ -404,7 +409,14 @@ def main():
 
     end_time = time.time()
     duration = end_time - start_time
-    send_slack_notification([f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}", f"{options.gcs_locks_path}", f"Job ID: {options.ci_job_id}", f"{duration/60}"])
+    try:
+        send_slack_notification(["Duration",
+                                 f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
+                                 f"{options.gcs_locks_path}",
+                                 f"Job ID: {options.ci_job_id}",
+                                 f"{duration/60}"])
+    except Exception as e:
+        logging.info(f"Failed to send Slack notification. Reason: {str(e)}")
 
 
 if __name__ == '__main__':
