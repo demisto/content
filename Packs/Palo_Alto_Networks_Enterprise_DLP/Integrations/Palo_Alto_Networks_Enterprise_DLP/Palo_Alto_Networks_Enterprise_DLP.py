@@ -368,7 +368,7 @@ def test(client: Client, params: dict):
         if "error" in report_json:
             message += f"Error message: \"{report_json.get('error')}\""
         else:
-            message += f"The DLP Regions \"{dlp_regions}\" might be invalid, please check them again."
+            message += "Could not determine the error reason. Make sure the DLP Regions parameter is configured correctly."
         raise DemistoException(message)
 
 
