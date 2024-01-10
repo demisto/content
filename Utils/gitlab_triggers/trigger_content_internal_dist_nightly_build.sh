@@ -29,5 +29,5 @@ curl --request POST \
   --form "token=${_ci_token}" \
   --form "variables[SDK_REF]=${_sdk_ref}" \
   --form "variables[NIGHTLY]=true" \
-  --form "variables[SLACK_CHANNEL]=C05FPQR3WHK" \
+  --form "variables[SLACK_CHANNEL]=C04CHML16P8" \
   "$BUILD_TRIGGER_URL"
