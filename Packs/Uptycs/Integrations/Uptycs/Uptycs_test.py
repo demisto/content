@@ -1096,6 +1096,9 @@ def test_uptycs_get_alerts(mocker, requests_mock):
     requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_alerts_command()
+    alert["pid"] = '437'
+    alert["threat_source_name"] = 'No threat source for this alert'
+    alert["threat_indicator_id"] = 'No threat indicator for this alert'
 
     assert response['Contents'][0] == alert
 
@@ -1745,7 +1748,7 @@ def test_uptycs_get_process_open_sockets(mocker, requests_mock):
     requests_mock.get(test_url, json=mock_response_final)
 
     response = uptycs_get_process_open_sockets_command()
-    assert response['Contents'] == result_item
+    assert response['Contents'][0] == result_item
 
 
 def test_uptycs_get_process_information(mocker, requests_mock):
@@ -2787,6 +2790,7 @@ def test_uptycs_get_detection_details(mocker, requests_mock):
                 {
                     "alertTime": "2019-07-02 11:41:25.915",
                     "alertRuleName": "testrule",
+                    "id": "testalertid",
                     "score": "1",
                     "key": "path",
                     "value": "/home/"
