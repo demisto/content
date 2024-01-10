@@ -2766,6 +2766,7 @@ def test_uptycs_get_detection_details(mocker, requests_mock):
             "id": detection_id,
             "displayName": "Uptycs test detection",
             "severity": "medium",
+            "score": 5,
             "signals": 5,
             "status": "open",
             "tacticCount": 5,
