@@ -479,7 +479,7 @@ script:
     - contextPath: Kenna.Assets.Score
       description: Score of current asset.
     - contextPath: Kenna.Assets.IpAddress
-      description: Ip of current asset.
+      description: IP of current asset.
     - contextPath: Kenna.Assets.OperatingSystem
       description: Operating system of current asset.
     description: Search assets by external ID.
