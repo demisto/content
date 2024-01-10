@@ -473,7 +473,7 @@ script:
       description: Notes of current asset.
       type: String
     - contextPath: Kenna.Assets.VulnerabilitiesCount
-      description: Count of Vulnerabilities of current asset.
+      description: Count of vulnerabilities of current asset.
     - contextPath: Kenna.Assets.Hostname
       description: Hostname of current asset.
     - contextPath: Kenna.Assets.Score
