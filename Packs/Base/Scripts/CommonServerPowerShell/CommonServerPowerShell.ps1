@@ -35,6 +35,32 @@ enum EntryFormats {
     markdown
 }
 
+<#
+.DESCRIPTION
+Analyze a PS dict-like object recursively and return any paths that reference to a parent object.
+
+This function employs recursion to traverse through the object hierarchy, keeping track of visited objects to detect
+circular references. The function stops recursion when a specified maximum depth or the end of the hierarchy is reached.
+If a circular reference is found, it returns the path leading to it.
+
+.PARAMETER obj
+The object to analyze.
+
+.PARAMETER visited
+A dict containing the parent objects to check against. Should be left empty outside the recursion.
+
+.PARAMETER path
+The path to the object being analyzed. Should be left empty outside the recursion.
+
+.PARAMETER depth
+The amount of recursive calls to the function up to the current call. Should be 1 outside the recursion.
+
+.PARAMETER maxDepth
+The maximum amount of recursive function calls, defaults to 20.
+
+.OUTPUTS
+A list of strings of the self referencing paths inside the provided object.
+#>
 function Get-SelfReferencingPaths($obj, $visited = @{}, $path = @(), $depth = 1, $maxDepth = 20) {
     if ($depth -gt $maxDepth) {
         # Stop recursion when max depth is reached
@@ -77,6 +103,21 @@ function Get-SelfReferencingPaths($obj, $visited = @{}, $path = @(), $depth = 1,
     return $selfReferencingPaths
 }
 
+<#
+.DESCRIPTION
+Remove any circular references from a PS dict-like object.
+
+This function gets the circular referencing paths  of the object using Get-SelfReferencingPaths,
+It then transverses through the object properties until the circular referencing parent node is reached.
+It removes the circular referencing node from the parent node and transverses back to update each parent node with the
+change.
+
+.PARAMETER obj
+The object to remove self references from.
+
+.OUTPUTS
+The updated object, containing no self references.
+#>
 function Remove-SelfReferences($obj) {
 
     try {
