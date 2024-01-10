@@ -293,7 +293,7 @@ def get_resources_fetch(client: Client, ini_date, page, limit, status):
 
 
 def fetch_incidents(client: Client, last_run, first_fetch_time, fetch_limit, fetch_status):
-    search_offset = demisto.getLastRun().get('offset', 0)
+    search_offset = demisto.getLastRun().get('offset', 1)
 
     last_fetch = last_run.get('last_fetch', None)
     if last_fetch is None:
