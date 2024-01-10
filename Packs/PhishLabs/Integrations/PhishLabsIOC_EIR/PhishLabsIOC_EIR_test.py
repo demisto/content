@@ -375,6 +375,7 @@ def test_fetch__last_run_not_none(mocker):
 
     assert last_run == {'lastRun': '2023-09-20T03:44:55Z', 'lastId': None}
 
+
 def test_fetch_merge_open_closed(mocker):
     """Tests the fetch-incidents command function.
 
@@ -432,10 +433,10 @@ def test_get_incidents_with_offset(mocker):
     """
     from PhishLabsIOC_EIR import Client, fetch_incidents_command
 
-    def mock_get_incident(status = None, created_after = None,
-                      created_before = None, closed_before = None,
-                      closed_after = None, sort = None, direction = None,
-                      limit = 25, offset = 0, period = None):
+    def mock_get_incident(status=None, created_after=None,
+                          created_before=None, closed_before=None,
+                          closed_after=None, sort=None, direction=None,
+                          limit=25, offset=0, period=None):
         total_res = 4
         incidents = []
         if offset < total_res:
@@ -460,6 +461,7 @@ def test_get_incidents_with_offset(mocker):
 
     assert len(incident_report) == 4
 
+
 def test_get_incidents_with_subcategory(mocker):
     """
 
@@ -470,16 +472,17 @@ def test_get_incidents_with_subcategory(mocker):
     """
     from PhishLabsIOC_EIR import Client, fetch_incidents_command
 
-    def mock_get_incident(status = None, created_after = None,
-                      created_before = None, closed_before = None,
-                      closed_after = None, sort = None, direction = None,
-                      limit = 25, offset = 0, period = None):
+    def mock_get_incident(status=None, created_after=None,
+                          created_before=None, closed_before=None,
+                          closed_after=None, sort=None, direction=None,
+                          limit=25, offset=0, period=None):
         total_res = 4
         incidents = []
-        
+
         for i in range(total_res):
             if i < total_res / 2:
-                incidents.append({'id': i, 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}})
+                incidents.append({'id': i, 'created': '2023-09-20T03:44:55Z',
+                                 'details': {'subClassification': "No Threat Detected"}})
             else:
                 incidents.append({'id': i, 'created': '2023-09-20T03:45:55Z', 'details': {'subClassification': "Test"}})
 
@@ -502,7 +505,8 @@ def test_get_incidents_with_subcategory(mocker):
 
     assert len(incident_report) == 2
     assert new_last_run.get('lastRun') == '2023-09-20T03:45:55Z'
-    
+
+
 def test_duplicated_incident(mocker):
     """
 
@@ -520,8 +524,7 @@ def test_duplicated_incident(mocker):
     )
     incident = {'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}}
     mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 1}, 'incidents': [incident]})
-                        
-                        
+
     incident_report, new_last_run = fetch_incidents_command(
         client=client,
         last_run='2023-09-20T03:44:55Z',
@@ -532,7 +535,7 @@ def test_duplicated_incident(mocker):
 
     assert len(incident_report) == 1
     assert new_last_run.get('lastId') == '1'
-    
+
     incident_report, new_last_run = fetch_incidents_command(
         client=client,
         last_run='2023-09-20T03:44:55Z',
@@ -541,6 +544,6 @@ def test_duplicated_incident(mocker):
         subcategories=['No Threat Detected'],
         last_id=new_last_run.get('lastId')
     )
-    
+
     assert len(incident_report) == 0
     assert new_last_run.get('lastId') == '1'

@@ -318,7 +318,7 @@ def fetch_incidents_per_status(client: Client,
                                incidents_raw: List):
     """
 
-    Getting both closed and open incidents from Phishlabs for the given timeframe.
+    Gets both closed and open incidents from Phishlabs for the given timeframe.
 
     """
     total: int = 0
@@ -378,7 +378,6 @@ def fetch_incidents_command(
     else:
         datetime_new_last_run = last_run
     # Query incidents by limit and creation time
-    total = 0
     offset = 0
     limit_incidents = int(limit)
     limit_page = min(50, limit_incidents)
