@@ -19,6 +19,8 @@ CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an ht
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
+# TEST
+
 
 class ScanStatus(Enum):
     """An Enum of possible scan status values."""
