@@ -242,6 +242,21 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
             "LastAccessedTime": "2020-02-14T05:59:27Z", 
             "Artifact": "anx.tb.ask.com", 
             "IocIngestTime": "2020-02-06T22:00:00Z"
+        },
+        {
+            "Artifact": "0.0.0.1",
+            "IocIngestTime": "2023-11-30T19:26:41.266555Z",
+            "FirstAccessedTime": "2023-01-17T09:54:19Z",
+            "LastAccessedTime": "2023-01-17T09:54:19Z",
+            "Sources": [
+                {
+                    "Category": "Unwanted",
+                    "IntRawConfidenceScore": 0,
+                    "NormalizedConfidenceScore": "Medium",
+                    "RawSeverity": "Medium",
+                    "Source": "Threat Intelligence"
+                }
+            ]
         }
     ], 
     "Domain": [
@@ -255,9 +270,10 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ##### Human Readable Output
 
 >### IOC Domain Matches
->|Domain|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
+>|Artifact|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
 >|---|---|---|---|---|---|---|---|
 >| anx.tb.ask.com | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
+>| [0.0.0.1](https://demo.backstory.chronicle.security/destinationIpResults?ip=0.0.0.1) | Unwanted | Threat Intelligence | Medium | Medium | 3 days ago | 10 months ago | 10 months ago |
 
 
 ### 2. gcb-assets

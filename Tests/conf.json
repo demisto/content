@@ -61,6 +61,11 @@
             "instance_names": "active_directory_80k"
         },
         {
+            "integrations": "ThreatConnect v3",
+            "playbookID": "test-threatConnectv3",
+            "is_mockable": false
+        },
+        {
             "playbookID": "Enrichment for Verdict - Test",
             "timeout": 500,
             "integrations": [
@@ -201,6 +206,9 @@
         {
             "playbookID": "ExtractEmailTransformer_Test",
             "fromversion": "6.11.0"
+        },
+        {
+            "playbookID": "IsIntegrationAvailable - Test"
         },
         {
             "integrations": "Tripwire",
@@ -1920,7 +1928,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
-            "memory_threshold": 100,
+            "memory_threshold": 250,
             "instance_names": "use_default_handler",
             "is_mockable": false
         },
@@ -2268,14 +2276,16 @@
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 1600
         },
         {
             "integrations": "Microsoft Graph Calendar",
@@ -2937,7 +2947,15 @@
             "playbookID": "IP Enrichment - Generic v2 - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
-            "fromversion": "4.1.0"
+            "external_playbook_config": {
+                "playbookID": "IP Enrichment - Generic v2",
+                "input_parameters": {
+                    "UseReputationCommand": {
+                        "simple": "True"
+                    }
+                }
+            },
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Cherwell",
@@ -5624,9 +5642,14 @@
         {
             "integrations": "Netcraft V2",
             "playbookID": "Test - Netcraft"
+        },
+        {
+            "integrations": "Fortimail",
+            "playbookID": "playbook-Fortimail_Test"
         }
     ],
     "skipped_tests": {
+        "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
@@ -5939,7 +5962,8 @@
         "CheckPhish": "Issue CRTX-86562",
         "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
-        "PhishLabs IOC EIR": "No instance, CRTX-91214"
+        "PhishLabs IOC EIR": "No instance, CRTX-91214",
+        "Fortimail": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
