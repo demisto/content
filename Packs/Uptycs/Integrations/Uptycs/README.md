@@ -972,7 +972,7 @@ get all the child processes for a given parent process
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | Only return assets with this asset_id.  Do not use arguments "asset_id" and "host_name_is" at the same time. | Required | 
+| asset_id | Only return assets with this asset_id.  Do not use arguments "asset_id" and "host_name_is" at the same time. | Optional |
 | host_name_is | hostname for the asset which executed these processes. | Optional | 
 | limit | Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out). | Optional | 
 | parent | The pid for which all child processes will be found | Required | 
