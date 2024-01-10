@@ -31,8 +31,7 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
                    f'<b>Subject:</b> {email_subject}<br><b>Email Time:</b> {email_time}<br>' \
                    f'<b>Attachments:</b> {attachment_names}</body></html>'
 
-    single_reply += f'\n{html_body}\n<hr style="width:98%;text-align:center;height:3px;border-width:0;' \
-                    f'background-color:#cccccc">\n\n'
+    single_reply += f'\n{html_body}\n<hr style="width:98%;text-align:center;height:3px;border-width:0;">\n\n'
 
     return single_reply
 

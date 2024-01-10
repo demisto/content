@@ -130,7 +130,7 @@ def test_remove_style_and_color():
                     '</head>\r\n<body>\r\n<meta content="text/html; charset=UTF-8">\r\n<style type="text/css" style="">\r\n'
                     '<!--\r\np\r\n\t{margin-top:0;\r\n\tmargin-bottom:0}\r\n-->\r\n</style>\r\n<div dir="ltr">\r\n'
                     '<div id="x_divtagdefaultwrapper" dir="ltr" style="font-size:12pt; color:#000000; font-family:Calibri,'
-                    'Helvetica,sans-serif">\r\nreply to a threat from outlook</div>\r\n<hr tabindex="-1" '
+                    'Helvetica,sans-serif">\r\nreply to a thread from outlook</div>\r\n<hr tabindex="-1" '
                     'style="display:inline-block; width:98%">\r\n<div id="x_divRplyFwdMsg" dir="ltr"><font face="Calibri, '
                     'sans-serif" color="#000000" style="font-size:11pt"><b>From:</b> Administrator<br>\r\n<b>Sent:</b> Tuesday, '
                     'January 9, 2024 3:01:34 PM<br>\r\n<b>To:</b> Administrator<br>\r\n<b>Subject:</b> &lt;04352911&gt; '
@@ -140,7 +140,7 @@ def test_remove_style_and_color():
     expected_html_message = ('<html>\n<head>\n<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>\n'
                              '<meta content="Microsoft Exchange Server" name="Generator"/>\n<!-- converted from text -->'
                              '\n</head>\n<body>\n<meta content="text/html; charset=UTF-8"/>\n\n<div dir="ltr">\n'
-                             '<div dir="ltr" id="x_divtagdefaultwrapper">\r\nreply to a threat from outlook</div>\n'
+                             '<div dir="ltr" id="x_divtagdefaultwrapper">\r\nreply to a thread from outlook</div>\n'
                              '<hr tabindex="-1"/>\n<div dir="ltr" id="x_divRplyFwdMsg"><font face="Calibri, sans-serif">'
                              '<b>From:</b> Administrator<br/>\n<b>Sent:</b> Tuesday, January 9, 2024 3:01:34 PM<br/>\n'
                              '<b>To:</b> Administrator<br/>\n<b>Subject:</b> &lt;04352911&gt; test 9.1 15:00</font>\n<div>\xa0'
@@ -149,3 +149,33 @@ def test_remove_style_and_color():
 
     result = remove_style_and_color(html_message)
     assert result == expected_html_message
+
+
+def test_main_styled_html(mocker):
+    """
+    Given
+    - Script is called to render an HTML thread. The html contains styling attributes such as color.
+    When
+    - The incident where the script is being run contains email threads
+    Then
+    - Validate that the script returns an appropriate html, after the removal of the styling.
+    """
+    from DisplayEmailHtmlThread import main
+    import DisplayEmailHtmlThread
+
+    email_threads = {
+        'EmailThreads': util_load_json('test_data/email_thread_with_html_styling.json')
+    }
+
+    mock_incident = {
+        'CustomFields': {
+            'emailselectedthread': 0
+        }
+    }
+    mocker.patch.object(demisto, "incident", return_value=mock_incident)
+    mocker.patch.object(demisto, "context", return_value=email_threads)
+    return_results_mocker = mocker.patch.object(DisplayEmailHtmlThread, "return_results", return_value=True)
+    main()
+    results_call_args = return_results_mocker.call_args
+    assert 'color' not in results_call_args.args[0]['Contents']
+
