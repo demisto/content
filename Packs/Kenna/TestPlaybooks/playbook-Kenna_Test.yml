@@ -781,8 +781,6 @@ tasks:
           - operator: FirstArrayElement
       to_context:
         simple: "true"
-      using:
-        simple: Kennav2_copy_instance_1
     separatecontext: false
     continueonerrortype: ""
     view: |-
