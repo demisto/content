@@ -52,6 +52,8 @@ configuration:
   section: Collect
   required: false
   options:
+  - incidentAssigned
+  - assign
   - incidentOpened
   - incidentChanged
   - investigationClosed
