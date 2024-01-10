@@ -4886,7 +4886,7 @@ script:
       type: String
   - arguments:
     - description: The rule ID to get IOA rules for. This can be acquired by combining cid and rule_instance_id from Crowdstrike.Detections context for Custom IOA Rules detections.
-      name: rule_id
+      name: rule_ids
       isArray: true
       required: true
     description: Get IOA Rules.
