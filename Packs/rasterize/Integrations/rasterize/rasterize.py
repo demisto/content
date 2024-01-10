@@ -196,8 +196,14 @@ def find_zombie_processes():
     Returns:
         ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
     """
-    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
-                                     stderr=subprocess.STDOUT, universal_newlines=True)
+    try:
+        demisto.debug('find_zombie_processes, running ps')
+        ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
+                                         stderr=subprocess.STDOUT, universal_newlines=True)
+        demisto.debug('find_zombie_processes, ran ps')
+    except subprocess.CalledProcessError as exc:
+        demisto.info(f"Failed to find zombie proecesses, {exc.returncode=}, {exc.output=}")
+        return None, None
     lines = ps_out.splitlines()
     pid = str(os.getpid())
     zombies = []
@@ -206,6 +212,7 @@ def find_zombie_processes():
             pinfo = line.split()
             if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
                 zombies.append(pinfo[0])
+    demisto.debug(f'find_zombie_processes, found {len(zombies)} zombie processes')
     return zombies, ps_out
 
 
@@ -347,6 +354,9 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
         else:
             output = get_image(driver, width, height, full_screen, include_url)
         return output
+    except Exception as e:
+        demisto.error(f'Failed to rasterize page. Exception: {e}')
+        raise
     finally:
         quit_driver_and_display_and_reap_children(driver, display)
 
@@ -417,27 +427,31 @@ def get_image(driver, width: int, height: int, full_screen: bool, include_url=Fa
     """
     demisto.debug('Capturing screenshot')
 
-    # Set windows size to the given width and height:
-    driver.set_window_size(width, height)
+    try:
+        # Set windows size to the given width and height:
+        driver.set_window_size(width, height)
 
-    if full_screen:
-        # Convention: the calculated values are always larger then the given width and height and smaller than the
-        # safeguard limits
+        if full_screen:
+            # Convention: the calculated values are always larger then the given width and height and smaller than the
+            # safeguard limits
 
-        # Calculates the width and height using the scrollbar of the window:
-        calc_width = driver.execute_script('return document.body.parentNode.scrollWidth')
-        calc_height = driver.execute_script('return document.body.parentNode.scrollHeight')
+            # Calculates the width and height using the scrollbar of the window:
+            calc_width = driver.execute_script('return document.body.parentNode.scrollWidth')
+            calc_height = driver.execute_script('return document.body.parentNode.scrollHeight')
 
-        # Check that the width and height meet the safeguard limit:
-        calc_width, calc_height = check_width_and_height(calc_width, calc_height)
-        demisto.info(f'Calculated snapshot width is {calc_width}, calculated snapshot height is {calc_height}.')
+            # Check that the width and height meet the safeguard limit:
+            calc_width, calc_height = check_width_and_height(calc_width, calc_height)
+            demisto.info(f'Calculated snapshot width is {calc_width}, calculated snapshot height is {calc_height}.')
 
-        # Reset window size
-        driver.set_window_size(calc_width, calc_height)
+            # Reset window size
+            driver.set_window_size(calc_width, calc_height)
 
-    image = get_image_screenshot(driver=driver, include_url=include_url)
-
-    driver.quit()
+        image = get_image_screenshot(driver=driver, include_url=include_url)
+    except Exception as e:
+        demisto.error(f'Failed to capture screenshot.png image. Exception: {e}')
+        raise
+    finally:
+        quit_driver_and_display_and_reap_children(driver, None)
 
     demisto.debug('Capturing screenshot - COMPLETED')
 
