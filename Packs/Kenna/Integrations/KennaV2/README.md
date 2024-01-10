@@ -900,9 +900,9 @@ Search assets by external ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| external_id | The external_id of the asset. | Required | 
-| to_context | Posibility of get data in context. Possible values are: true, false. Default is false. | Optional | 
-| limit | The maximum number of assets to return. The default value is 500. Default is 500. | Optional | 
+| external_id | The external ID of the asset. | Required | 
+| to_context | Whether to put data in context. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of assets to return. Default is 500. | Optional | 
 
 #### Context Output
 
