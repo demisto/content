@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Panorama
+  id: Panorama fix
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -221,8 +221,8 @@ configuration:
   section: Connect
   required: false
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS - fix
+name: Panorama fix
 script:
   commands:
   - arguments:
@@ -4355,6 +4355,12 @@ script:
     - description: The tags for the new service.
       isArray: true
       name: tags
+    - description: Whether to disable overriding the tag (Panorama instances).
+      name: disable_override
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Creates a service.
     name: pan-os-create-service
     outputs:

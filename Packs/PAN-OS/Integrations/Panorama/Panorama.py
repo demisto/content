@@ -2361,7 +2361,12 @@ def panorama_get_service_command(service_name: str):
 
 @logger
 def panorama_create_service(service_name: str, protocol: str, destination_port: str,
-                            source_port: str | None = None, description: str | None = None, tags: list | None = None):
+                            source_port: str | None = None, description: str | None = None, tags: list | None = None, disable_override: bool | None = None):
+    disable_override_arg = ''
+    if DEVICE_GROUP:
+        if api_disable_override := 'yes' if disable_override else 'no':
+            disable_override_arg = f'<disable-override>{api_disable_override}</disable-override>'
+
     params = {
         'action': 'set',
         'type': 'config',
@@ -2372,6 +2377,7 @@ def panorama_create_service(service_name: str, protocol: str, destination_port: 
                    + add_argument(source_port, 'source-port', False)
                    + '</' + protocol + '>' + '</protocol>'
                    + add_argument(description, 'description', False)
+                   + disable_override_arg
                    + add_argument_list(tags, 'tag', True)
     }
 
@@ -2393,9 +2399,10 @@ def panorama_create_service_command(args: dict):
     destination_port = args['destination_port']
     source_port = args.get('source_port')
     description = args.get('description')
+    disable_override = args.get('disable_override')
     tags = argToList(args['tags']) if 'tags' in args else None
 
-    service = panorama_create_service(service_name, protocol, destination_port, source_port, description, tags)
+    service = panorama_create_service(service_name, protocol, destination_port, source_port, description, tags, disable_override)
 
     service_output = {
         'Name': service_name,
