@@ -80,7 +80,7 @@ repos:
       arg_name: --rcfile
       file_name: .pylintrc
     skip:commit: true
-    
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
@@ -91,7 +91,7 @@ repos:
     entry: python
     language: docker
     files: Packs\/.*_test\.py$
-    exclude: test_data
+    exclude: test_data|Packs/CommonScripts/Scripts/ConvertFile/ConvertFile_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
@@ -110,6 +110,8 @@ repos:
     - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
+    split_by_network: true # split by tests that use network
+    split_by_isolated: true
     skip:commit: true
 
   - id: pwsh-test-in-docker
@@ -128,6 +130,7 @@ repos:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
     split_by_object: true
+    split_by_network: true
     change_working_directory: true
     skip:commit: true
 

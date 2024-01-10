@@ -253,6 +253,9 @@ GetDockerImageLatestTag
 GetDuplicatesMlv2
 DockerHardeningCheck
 
+[tests_require_isolated]
+ConvertFile
+
 [file:CloseInvestigationAsDuplicate.yml]
 ignore=BA124
 

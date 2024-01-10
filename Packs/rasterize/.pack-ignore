@@ -4,3 +4,6 @@ rasterization
 
 [tests_require_network]
 Rasterize
+
+[tests_require_isolated]
+Rasterize
