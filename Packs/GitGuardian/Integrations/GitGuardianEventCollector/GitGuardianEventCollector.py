@@ -162,7 +162,9 @@ class Client(BaseClient):
             demisto.debug("GG: No audit_logs were fetched")
             next_run_audit_logs_from_fetch = from_fetch_time
         else:
-            next_run_audit_logs_from_fetch = self.alter_next_fetch_time(audit_logs[-1].get("gg_created_at"))
+            next_run_audit_logs_from_fetch = self.alter_next_fetch_time(
+                audit_logs[-1].get("gg_created_at")
+            )
             demisto.debug(
                 f"GG: {len(audit_logs)} audit_logs were fetched,last audit_logs time is {next_run_audit_logs_from_fetch}"
             )
@@ -183,14 +185,17 @@ class Client(BaseClient):
         return number_of_last_page
 
     @staticmethod
-    def alter_next_fetch_time(time_str_to_alter, num_of_microseconds_to_add : int = 1) -> str:
-        """Adds the requested amount of microseconds to a time str
-        """
+    def alter_next_fetch_time(
+        time_str_to_alter, num_of_microseconds_to_add: int = 1
+    ) -> str:
+        """Adds the requested amount of microseconds to a time str"""
         event_time = datetime.strptime(time_str_to_alter, DATE_FORMAT)
-        altered_event_time = event_time + timedelta(microseconds=num_of_microseconds_to_add)
+        altered_event_time = event_time + timedelta(
+            microseconds=num_of_microseconds_to_add
+        )
 
         return altered_event_time.strftime(DATE_FORMAT)
-    
+
     @staticmethod
     def add_time_to_events(events: List[Dict] | None, event_type: str):
         """
@@ -207,7 +212,7 @@ class Client(BaseClient):
                 event["_time"] = (
                     create_time.strftime(DATE_FORMAT) if create_time else None
                 )
-                event['source_log_type'] = event_type
+                event["source_log_type"] = event_type
 
 
 def test_module(
