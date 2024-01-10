@@ -92,6 +92,28 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: AWS organization accounts
+  name: accounts_to_access
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature.
+- display: Role name for cross-organization account access
+  name: access_role_name
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided.
+- display: Max concurrent command calls
+  name: max_workers
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: 5
+  additionalinfo: The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts to access".
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -371,6 +393,9 @@ script:
     - contextPath: AWS.EC2.Instances.VirtualizationType
       description: The virtualization type of the instance.
       type: string
+    - contextPath: AWS.EC2.Instances.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
@@ -405,6 +430,9 @@ script:
       type: string
     - contextPath: AWS.EC2.IamInstanceProfileAssociations.AssociationId
       description: The ID of the association.
+      type: string
+    - contextPath: AWS.EC2.IamInstanceProfileAssociations.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
@@ -534,6 +562,9 @@ script:
     - contextPath: AWS.EC2.Images.VirtualizationType
       description: The type of virtualization of the AMI.
       type: string
+    - contextPath: AWS.EC2.Images.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The name of the region (for example, us-east-1 ).
       name: regionNames
@@ -553,6 +584,9 @@ script:
       type: string
     - contextPath: AWS.Regions.RegionName
       description: The name of the region.
+      type: string
+    - contextPath: AWS.Regions.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
@@ -604,6 +638,9 @@ script:
       type: string
     - contextPath: AWS.EC2.ElasticIPs.Tags.Value
       description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
@@ -673,12 +710,15 @@ script:
     - contextPath: AWS.EC2.Snapshots.Tags.Value
       description: The value of the tag.
       type: string
+    - contextPath: AWS.EC2.Snapshots.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: Filters
-    - description: One or more launch template names. Sepereted by comma.
+    - description: A comma-separated list of launch template names.
       name: LaunchTemplateNames
-    - description: One or more launch template IDs. Sepereted by comma.
+    - description: A comma-separated list of launch template IDs.
       name: LaunchTemplateIds
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -718,10 +758,13 @@ script:
     - contextPath: AWS.EC2.LaunchTemplates.Region
       description: The aws region where the template is located.
       type: string
+    - contextPath: AWS.EC2.LaunchTemplates.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more key pair names. Sepereted by comma.
+    - description: A comma-separated list of key pair names.
       name: keyNames
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -743,10 +786,13 @@ script:
     - contextPath: AWS.EC2.KeyPairs.Region
       description: The aws region where the key pair is located.
       type: Unknown
+    - contextPath: AWS.EC2.KeyPairs.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more volume IDs. Sepereted by comma.
+    - description: A comma-separated list of volume IDs.
       name: volumeIds
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -810,10 +856,13 @@ script:
     - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
+    - contextPath: AWS.EC2.Volumes.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more VPC IDs. Sepereted by comma.
+    - description: A comma-separated list of VPC IDs.
       name: vpcIds
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -874,10 +923,13 @@ script:
     - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage
       description: A message about the status of the CIDR block, if applicable.
       type: string
+    - contextPath: AWS.EC2.Vpcs.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more subnet IDs. Sepereted by comma.
+    - description: A comma-separated list of subnet IDs.
       name: subnetIds
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -935,12 +987,15 @@ script:
     - contextPath: AWS.EC2.Subnets.Tags.Value
       description: The value of the tag.
       type: string
+    - contextPath: AWS.EC2.Subnets.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
       name: filters
-    - description: One or more security group IDs. Required for security groups in a nondefault VPC. Sepereted by comma.
+    - description: A comma-separated list of security group IDs. Required for security groups in a non-default VPC.
       name: groupIds
-    - description: One or more security group names. Sepereted by comma.
+    - description: A comma-separated list of security group names.
       name: groupNames
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -1070,6 +1125,9 @@ script:
     - contextPath: AWS.EC2.SecurityGroups.Tags.Value
       description: The value of the tag.
       type: string
+    - contextPath: AWS.EC2.SecurityGroups.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -1095,6 +1153,9 @@ script:
     - contextPath: AWS.EC2.ElasticIPs.Region
       description: The aws region where the elastic IP is located.
       type: Unknown
+    - contextPath: AWS.EC2.ElasticIPs.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The allocation ID.
       name: allocationId
@@ -1126,6 +1187,9 @@ script:
     outputs:
     - contextPath: AWS.EC2.ElasticIPs.AssociationId
       description: The ID that represents the association of the Elastic IP address with an instance.
+      type: string
+    - contextPath: AWS.EC2.ElasticIPs.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
   - arguments:
     - description: The ID of the EBS volume.
@@ -1192,6 +1256,9 @@ script:
     - contextPath: AWS.EC2.Snapshots.Tags.Value
       description: The value of the tag.
       type: string
+    - contextPath: AWS.EC2.Snapshots.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The ID of the EBS snapshot.
       name: snapshotId
@@ -1245,6 +1312,9 @@ script:
       type: string
     - contextPath: AWS.EC2.Images.Region
       description: The aws region where the image is located.
+      type: string
+    - contextPath: AWS.EC2.Images.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
   - arguments:
     - description: The ID of the AMI.
@@ -1318,6 +1388,9 @@ script:
     - contextPath: AWS.EC2.Volumes.Modification.EndTime
       description: Modification completion or failure time.
       type: date
+    - contextPath: AWS.EC2.Volumes.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The IDs of one or more resources to tag. For example, ami-1a2b3c4d.
       name: resources
@@ -1367,7 +1440,7 @@ script:
     execution: true
     name: aws-ec2-release-address
   - arguments:
-    - description: One or more instance IDs. Sepereted by comma.
+    - description: A comma-separated list of instance IDs.
       name: instanceIds
       required: true
     - description: The AWS Region, if not specified the default region will be used.
@@ -1488,6 +1561,9 @@ script:
     - contextPath: AWS.EC2.Volumes.Tags.Value
       description: The value of the tag.
       type: string
+    - contextPath: AWS.EC2.Volumes.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The device name (for example, /dev/sdh or xvdh).
       name: device
@@ -1528,6 +1604,9 @@ script:
     - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
+    - contextPath: AWS.EC2.Volumes.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The ID of the volume.
       name: volumeId
@@ -1568,6 +1647,9 @@ script:
     - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
+    - contextPath: AWS.EC2.Volumes.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The ID of the volume.
       name: volumeId
@@ -1592,7 +1674,7 @@ script:
       name: imageId
     - description: 'The instance type. for example: t2.large'
       name: instanceType
-    - description: One or more security group IDs. Sepereted by comma.
+    - description: One or more security group IDs.
       name: securityGroupIds
     - description: One or more security group names. For a nondefault VPC, you must use security group IDs instead.
       name: securityGroups
@@ -1913,6 +1995,9 @@ script:
     - contextPath: AWS.EC2.Instances.VirtualizationType
       description: The virtualization type of the instance.
       type: string
+    - contextPath: AWS.EC2.Instances.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more filters. See documentation for details & filter options.
       name: filter
@@ -2161,6 +2246,9 @@ script:
     - contextPath: AWS.EC2.Images.VirtualizationType
       description: The type of virtualization of the AMI.
       type: string
+    - contextPath: AWS.EC2.Images.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The name of the security group.
       name: groupName
@@ -2194,6 +2282,9 @@ script:
       type: string
     - contextPath: AWS.EC2.SecurityGroups.GroupId
       description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
   - arguments:
     - description: The ID of the security group. Required for a nondefault VPC.
@@ -2302,29 +2393,17 @@ script:
       name: IpPermissionsToPort
     - description: The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length.
       name: IpRangesCidrIp
-    - description: |-
-        A description for the security group rule that references this IPv4 address range.
-
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
+    - description: 'A description for the security group rule that references this IPv4 address range. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: IpRangesDesc
     - description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
       name: Ipv6RangesCidrIp
-    - description: |-
-        A description for the security group rule that references this IPv6 address range.
-
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
+    - description: 'A description for the security group rule that references this IPv6 address range. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: Ipv6RangesDesc
     - description: The ID of the prefix.
       name: PrefixListId
-    - description: |-
-        A description for the security group rule that references this prefix list ID.
-
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
+    - description: 'A description for the security group rule that references this prefix list ID. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: PrefixListIdDesc
-    - description: |-
-        A description for the security group rule that references this user ID group pair.
-
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
+    - description: 'A description for the security group rule that references this user ID group pair. Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
@@ -2412,6 +2491,9 @@ script:
     - contextPath: AWS.EC2.Images.Region
       description: The Region where the image is located.
       type: string
+    - contextPath: AWS.EC2.Images.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The ID of the EBS snapshot to copy.
       name: sourceSnapshotId
@@ -2442,6 +2524,9 @@ script:
       type: string
     - contextPath: AWS.EC2.Snapshots.Region
       description: The Region where the snapshot is located.
+      type: string
+    - contextPath: AWS.EC2.Snapshots.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
   - arguments:
     - description: One or more filters Separated by ';'. See AWS documentation for details & filter options.
@@ -2528,6 +2613,9 @@ script:
     - contextPath: AWS.EC2.ReservedInstances.Region
       description: The AWS region where the reserved instance is located.
       type: string
+    - contextPath: AWS.EC2.ReservedInstances.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more instance IDs. Separated by comma.
       name: instancesIds
@@ -2549,6 +2637,9 @@ script:
       type: string
     - contextPath: AWS.EC2.Instances.Monitoring.State
       description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
+      type: string
+    - contextPath: AWS.EC2.Instances.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
   - arguments:
     - description: One or more instance IDs. Separated by comma.
@@ -2572,6 +2663,9 @@ script:
     - contextPath: AWS.EC2.Instances.Monitoring.State
       description: Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled.
       type: Unknown
+    - contextPath: AWS.EC2.Instances.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: One or more instance IDs. Separated by comma.
       name: instanceIds
@@ -2609,6 +2703,9 @@ script:
     - contextPath: AWS.EC2.Instances.PasswordData.Timestamp
       description: The time the data was last updated.
       type: date
+    - contextPath: AWS.EC2.Instances.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The ID of the network interface.
       name: networkInterfaceId
@@ -2766,6 +2863,9 @@ script:
     - contextPath: AWS.EC2.VpcId.NetworkAcl.OwnerId
       description: The ID of the AWS account that owns the network ACL.
       type: String
+    - contextPath: AWS.EC2.VpcId.NetworkAcl.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The IPv4 network range to allow or deny, in CIDR notation (for example 172.16.0.0/24 ).
       name: CidrBlock
@@ -2988,6 +3088,9 @@ script:
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.Platform
       description: The value is Windows for Windows instances; otherwise blank.
       type: String
+    - contextPath: AWS.EC2.Fleet.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -3026,6 +3129,9 @@ script:
     - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId
       description: The ID of the EC2 Fleet.
       type: String
+    - contextPath: AWS.EC2.DeletedFleets.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -3247,6 +3353,9 @@ script:
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.Platform
       description: The value is Windows for Windows instances; otherwise blank.
       type: string
+    - contextPath: AWS.EC2.Fleet.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -3286,6 +3395,9 @@ script:
     - contextPath: AWS.EC2.Fleet.FleetId
       description: The ID of the EC2 Fleet.
       type: String
+    - contextPath: AWS.EC2.Fleet.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -3478,6 +3590,9 @@ script:
     - contextPath: AWS.EC2.LaunchTemplates.Tags.Value
       description: The value of the tag.
       type: String
+    - contextPath: AWS.EC2.LaunchTemplates.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -3512,6 +3627,9 @@ script:
     - contextPath: AWS.EC2.DeletedLaunchTemplates.LatestVersionNumber
       description: The version number of the latest version of the launch template.
       type: Number
+    - contextPath: AWS.EC2.DeletedLaunchTemplates.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -3621,6 +3739,9 @@ script:
     - contextPath: AWS.EC2.InternetGateways.Attachments.VpcId
       description: The ID of the VPC.
       type: string
+    - contextPath: AWS.EC2.InternetGateways.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -3702,6 +3823,9 @@ script:
     - contextPath: AWS.EC2.TrafficMirrorSession.ClientToken
       description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
       type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: The ID of the security group.
       name: groupId
@@ -3790,6 +3914,9 @@ script:
     - contextPath: AWS.EC2.Host.HostId
       description: The ID of the allocated Dedicated Host. This is used to launch an instance onto a specific host.
       type: String
+    - contextPath: AWS.EC2.Host.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - arguments:
     - description: A comma-separated list of IDs of the Dedicated Hosts to release.
       isArray: true
@@ -3835,86 +3962,95 @@ script:
     description: Adds or removes permission settings for the specified snapshot.
     name: aws-ec2-modify-snapshot-permission
   - arguments:
-      - description: A comma-separated list of the IPAM resource discovery IDs.
-        name: IpamResourceDiscoveryIds
-      - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
-        name: Filters
-      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-        name: MaxResults
-      - description: The token for the next set of results.
-        name: NextToken
-      - description: The Amazon Web Services region for the IP address.
-        name: AddressRegion
+    - description: A comma-separated list of the IPAM resource discovery IDs.
+      name: IpamResourceDiscoveryIds
+    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: Filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+      name: MaxResults
+    - description: The token for the next set of results.
+      name: NextToken
+    - description: The Amazon Web Services region for the IP address.
+      name: AddressRegion
     outputs:
-      - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
-        description: The resource discovery ID.
-        type: String
-      - contextPath: AWS.EC2.IpamResourceDiscoveries.OwnerId
-        description: The ID of the owner.
-        type: String
-      - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion
-        description: The resource discovery region.
-        type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
+      description: The resource discovery ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.OwnerId
+      description: The ID of the owner.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion
+      description: The resource discovery region.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
     description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
     name: aws-ec2-describe-ipam-resource-discoveries
   - arguments:
-      - description: A comma-separated list of the resource discovery association IDs.
-        name: IpamResourceDiscoveryAssociationIds
-      - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
-        name: Filters
-      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-        name: MaxResults
-      - description: The token for the next set of results.
-        name: NextToken
-      - description: The Amazon Web Services region for the IP address.
-        name: AddressRegion
+    - description: A comma-separated list of the resource discovery association IDs.
+      name: IpamResourceDiscoveryAssociationIds
+    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: Filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+      name: MaxResults
+    - description: The token for the next set of results.
+      name: NextToken
+    - description: The Amazon Web Services region for the IP address.
+      name: AddressRegion
     outputs:
-      - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
-        description: The resource discovery association ID.
-        type: String
-      - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId
-        description: The resource discovery ID.
-        type: String
-      - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion
-        description: The IPAM home region.
-        type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
+      description: The resource discovery association ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId
+      description: The resource discovery ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion
+      description: The IPAM home region.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
     description: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
     name: aws-ec2-describe-ipam-resource-discovery-associations
   - arguments:
-      - description: An IPAM resource discovery ID.
-        name: IpamResourceDiscoveryId
-        required: true
-      - description: The Amazon Web Services region for the IP address.
-        name: AddressRegion
-        required: true
-      - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
-        name: Filters
-      - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
-        name: MaxResults
-      - description: The token for the next set of results.
-        name: NextToken
+    - description: An IPAM resource discovery ID.
+      name: IpamResourceDiscoveryId
+      required: true
+    - description: The Amazon Web Services region for the IP address.
+      name: AddressRegion
+      required: true
+    - description: One or more filters separated by ';'. See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: Filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+      name: MaxResults
+    - description: The token for the next set of results.
+      name: NextToken
     outputs:
-      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Address
-        description: IPAM discovered public addresses.
-        type: String
-      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressOwnerId
-        description: The ID of the owner of the resource the IP address is assigned to.
-        type: String
-      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressType
-        description: The IP address type.
-        type: String
-      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus
-        description: The association status.
-        type: String
-      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId
-        description: The instance ID of the instance the assigned IP address is assigned to.
-        type: String
-      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Tags
-        description: Tags associated with the IP address.
-        type: Unknown
+    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Address
+      description: IPAM discovered public addresses.
+      type: String
+    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressOwnerId
+      description: The ID of the owner of the resource the IP address is assigned to.
+      type: String
+    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressType
+      description: The IP address type.
+      type: String
+    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus
+      description: The association status.
+      type: String
+    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId
+      description: The instance ID of the instance the assigned IP address is assigned to.
+      type: String
+    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Tags
+      description: Tags associated with the IP address.
+      type: Unknown
+    - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
     description: Gets the public IP addresses that have been discovered by IPAM.
     name: aws-ec2-get-ipam-discovered-public-addresses
-  dockerimage: demisto/boto3py3:1.0.0.83986
+  dockerimage: demisto/boto3py3:1.0.0.84358
   runonce: false
   script: '-'
   subtype: python3
