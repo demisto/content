@@ -11,11 +11,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PS Remote Get File Sample From Path
-* CrowdStrike Falcon - Retrieve File
-* MDE - Retrieve File
 * Get File Sample From Path - VMware Carbon Black EDR - Live Response API
 * Cortex XDR - Retrieve File v2
+* CrowdStrike Falcon - Retrieve File
+* MDE - Retrieve File
+* PS Remote Get File Sample From Path
 
 ### Integrations
 
@@ -57,6 +57,8 @@ This playbook does not use any commands.
 | File.Name | The file name. | string |
 | File.SSDeep | File SSDeep. | string |
 | AcquiredFile | The acquired file details. | Unknown |
+| ExtractedFiles | A list of file names that were extracted from the ZIP file. | string |
+| NonRetrievedFiles | A list of files that were not retrieved. | string |
 
 ## Playbook Image
 

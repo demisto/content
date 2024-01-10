@@ -536,6 +536,12 @@ outputs:
 - contextPath: AcquiredFile
   description: The acquired file details.
   type: Unknown
+- contextPath: ExtractedFiles
+  description: A list of file names that were extracted from the ZIP file.
+  type: string
+- contextPath: NonRetrievedFiles
+  description: A list of files that were not retrieved.
+  type: string
 tests:
 - No tests.
 fromversion: 6.0.0
