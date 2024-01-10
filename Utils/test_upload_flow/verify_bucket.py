@@ -65,12 +65,10 @@ def logger(func):
 
             logging.info(f"[{pack_id}] Successfully {message}")
 
-        except FileNotFoundError as e:
+        except Exception as e:
             logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
             self.is_valid = False
 
-        except Exception as e:
-            logging.error(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
     return wrapper
 
 
@@ -237,7 +235,7 @@ class BucketVerifier:
             return False, pack_id
         changelog_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
-                        in pack_items.values()]
+                        in pack_items.values() if pack_items]
         return changelog_as_expected and all(items_exists), pack_id, VerifyMessages.MODIFIED_PACK
 
     @logger
