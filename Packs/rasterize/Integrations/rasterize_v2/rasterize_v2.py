@@ -311,7 +311,10 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = is_chrome_running_locally(chrome_port)
-            write_info_file(PORT_FILE_PATH, chrome_port)
+            if browser:
+                write_info_file(PORT_FILE_PATH, chrome_port)
+            else:
+                process.kill()
             return browser, chrome_port
         else:
             demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
@@ -329,7 +332,8 @@ def terminate_chrome(browser):
     tab.start()
     tab.Browser.close()
 
-    os.remove(PORT_FILE_PATH)
+    # Keep the file
+    write_info_file(PORT_FILE_PATH, "")
 
     if CHROME_PROCESS:
         CHROME_PROCESS.kill()
