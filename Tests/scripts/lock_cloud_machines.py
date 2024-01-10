@@ -20,7 +20,7 @@ CONTENT_GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '1061')
 
 
 SLACK_TOKEN = get_env_var('SLACK_TOKEN')
-SLACK_CHANNEL = "dmst-test-wait-in-line"
+SLACK_CHANNEL = get_env_var('WAIT_SLACK_CHANNEL', "dmst-test-wait-in-line")
 
 
 def send_slack_notification(text: list[str]):
