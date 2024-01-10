@@ -186,12 +186,14 @@ def test_parse_dlp_report(mocker):
 def test_get_dlp_incidents(requests_mock):
     requests_mock.get(f'{DLP_URL}/public/incident-notifications?regions=us', json={'us': []})
     client = Client(DLP_URL, CREDENTIALS, False, None)
-    result = client.get_dlp_incidents(regions='us')
+    result, status_code = client.get_dlp_incidents(regions='us')
     assert result == {'us': []}
+    assert status_code == 200
 
 
 def test_fetch_notifications(requests_mock, mocker):
     requests_mock.get(f'{DLP_URL}/public/incident-notifications?regions=us', json={'us': []})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"access_token": "abc"})
     incident_mock = mocker.patch.object(demisto, 'createIncidents')
 
     client = Client(DLP_URL, CREDENTIALS, False, None)
@@ -243,7 +245,7 @@ def test_refresh_token_with_access_token(requests_mock, mocker):
     assert client.access_token == 'abc'
 
 
-def test_refresh_token_with_client_credentials(requests_mock, mocker):
+def test_refresh_token_with_client_credentials(requests_mock):
     credentials = {
         'credential': 'test credentials',
         'credentials': {
@@ -263,9 +265,8 @@ def test_refresh_token_with_client_credentials(requests_mock, mocker):
         'password': 'test-pass',
         'passwordChanged': False
     }
-    client = Client(DLP_URL, credentials, False, None)
     requests_mock.post(PAN_AUTH_URL, json={'access_token': 'abc'})
-    client._refresh_token_with_client_credentials()
+    client = Client(DLP_URL, credentials, False, None)
     assert client.access_token == 'abc'
 
 
@@ -289,12 +290,12 @@ def test_handle_403(requests_mock, mocker):
         'password': 'test-pass',
         'passwordChanged': False
     }
+    requests_mock.post(PAN_AUTH_URL, json={'access_token': 'abc'})
     client = Client(DLP_URL, credentials, False, None)
-    credentials_mocker = mocker.patch.object(client, '_refresh_token_with_client_credentials')
     response_mock = mocker.MagicMock()
     type(response_mock).status_code = mocker.PropertyMock(return_value=403)
     client._handle_403_errors(response_mock)
-    credentials_mocker.assert_called_with()
+    assert client.access_token == 'abc'
 
     client = Client(DLP_URL, CREDENTIALS, False, None)
     tokens_mocker = mocker.patch.object(client, '_refresh_token')
