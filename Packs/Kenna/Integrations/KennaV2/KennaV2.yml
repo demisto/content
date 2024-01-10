@@ -454,7 +454,7 @@ script:
     arguments:
     - name: external_id
       required: true
-      description: The external_id of the asset.
+      description: The external ID of the asset.
     - name: to_context
       auto: PREDEFINED
       predefined:
