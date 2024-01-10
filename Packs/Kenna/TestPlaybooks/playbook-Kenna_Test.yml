@@ -809,7 +809,7 @@ tasks:
       script: '|||kenna-inactivate-asset'
       type: regular
       iscommand: true
-      brand: Kennav2_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
