@@ -31,7 +31,7 @@ def available_indicators(xsoar_saas_client: XsoarSaasClient) -> list[str]:
     return [indicator.get("value") for indicator in xsoar_saas_client.list_indicators().get("iocObjects")]
 
 
-def test_edl_returns_indicators(request: SubRequest, xsoar_saas_client: XsoarSaasClient, available_indicators: list[str]):
+def test_edl_returns_indicators(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
     """
     Given:
         - indicators in xsoar-saas
@@ -54,21 +54,30 @@ def test_edl_returns_indicators(request: SubRequest, xsoar_saas_client: XsoarSaa
         username = integration_params["credentials"]["identifier"]
         password = integration_params["credentials"]["password"]
 
-        with save_integration_instance(
-            xsoar_saas_client,
-            integration_params=integration_params,
-            integration_id="EDL",
-            is_long_running=True,
-            instance_name=get_integration_instance_name(integration_params, default="EDL")
-        ) as edl_instance_response:
-            instance_name = edl_instance_response.get("name")
-
-            edl_response = xsoar_saas_client.do_long_running_instance_request(
-                instance_name, username=username, password=password
-            )
-            assert edl_response.text, f'could not get indicators from url={edl_response.request.url} from ' \
-                f'instance {instance_name} with available indicators={available_indicators},' \
-                f' status code={edl_response.status_code}, response={edl_response.text}'
+        for i in range(1, 6):
+            with save_integration_instance(
+                xsoar_saas_client,
+                integration_params=integration_params,
+                integration_id="EDL",
+                is_long_running=True,
+                instance_name=get_integration_instance_name(integration_params, default="EDL")
+            ) as edl_instance_response:
+                instance_name = edl_instance_response.get("name")
+                try:
+                    edl_response = xsoar_saas_client.do_long_running_instance_request(
+                        instance_name, username=username, password=password
+                    )
+                    assert edl_response.status_code == 200, f"status code is {edl_response.status_code} " \
+                        f"from EDL in URL {edl_response.request.url}"
+                    text = edl_response.text
+                    assert "1.1.1.1" in text, f"1.1.1.1 indicator from URL {edl_response.request.url} is not in {text}"
+                    assert "2.2.2.2" in text, f"2.2.2.2 indicator from URL {edl_response.request.url} is not in {text}"
+                    assert "3.3.3.3" in text, f"3.3.3.3 indicator from URL {edl_response.request.url} is not in {text}"
+                    break
+                except Exception as error:
+                    logging.error(f"test_edl_returns_indicators - time {i} - error\n{error}")
+                    if i == 5:
+                        raise
 
 
 def test_taxii2_server_returns_indicators(
@@ -93,6 +102,8 @@ def test_taxii2_server_returns_indicators(
             request.config.option.integration_secrets_path, instance_name="taxii2server-e2e"
         )
         # there are cases where the port can be taken in the machine, trying in a few other ports
+        username = integration_params["credentials"]["identifier"]
+        password = integration_params["credentials"]["password"]
         try:
             for port in ("8000", "8001", "8002", "8003", "8004"):
                 integration_params["longRunningPort"] = port
@@ -104,8 +115,6 @@ def test_taxii2_server_returns_indicators(
                     instance_name=get_integration_instance_name(integration_params, default="TAXII2-Server")
                 ) as taxii2_instance_response:
                     instance_name = taxii2_instance_response.get("name")
-                    username = integration_params["credentials"]["identifier"]
-                    password = integration_params["credentials"]["password"]
                     headers = {"Accept": "application/taxii+json;version=2.1"}
                     response = xsoar_saas_client.do_long_running_instance_request(
                         instance_name,
@@ -117,7 +126,7 @@ def test_taxii2_server_returns_indicators(
 
                     # get the collections available
                     collections = get_json_response(response).get("collections")
-                    assert collections, f'could not get collections from url={response.request.url}, ' \
+                    assert collections, f'Could not get collections from url={response.request.url}, ' \
                         f'status_code={response.status_code}, response={collections}'
 
                     collection_id = collections[0]["id"]
@@ -137,10 +146,10 @@ def test_taxii2_server_returns_indicators(
                     break
         except (ApiException, RequestException) as error:
             if isinstance(error, ApiException):
-                logging.error(f'Got error when running test_taxii2_server_returns_indicators with {port=}, error:\n{error}')
+                logging.error(f'Error when running test_taxii2_server_returns_indicators with {port=}, error:\n{error}')
             else:
                 logging.error(
-                    f'Got error response {error.response} when running '
+                    f'Error response {error.response} when running '
                     f'test_taxii2_server_returns_indicators with {port=} when sending request {error.request}'
                 )
             if port == "8004":
@@ -176,15 +185,27 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
             playbook_path="Tests/tests_e2e/content/xsoar_saas/TestSlackAskE2E.yml",
             playbook_id=playbook_id_name,
             playbook_name=playbook_id_name
-        ), save_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
-            # make sure the playbook finished successfully
-            assert xsoar_saas_client.poll_playbook_state(
-                incident_response.id, expected_states=(InvestigationPlaybookState.COMPLETED,)
-            )
+        ):
+            for i in range(1, 6):
+                try:
+                    with save_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
+                        # make sure the playbook finished successfully
+                        assert xsoar_saas_client.poll_playbook_state(
+                            incident_response.id, expected_states=(InvestigationPlaybookState.COMPLETED,)
+                        )
 
-            context = xsoar_saas_client.get_investigation_context(incident_response.investigation_id)
-            # make sure the context is populated with thread id(s) from slack ask
-            assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
+                        context = xsoar_saas_client.get_investigation_context(incident_response.investigation_id)
+                        # make sure the context is populated with thread id(s) from slack ask
+                        assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
+                        break
+                except Exception as error:
+                    logging.error(f"test_slack_ask - time {i} - error\n{error}")
+                    # print incident raw response to get info about it in case of failures
+                    logging.debug(
+                        f'test_slack_ask incident metadata:\n{xsoar_saas_client.search_incidents(incident_response.id)}'
+                    )
+                    if i == 5:
+                        raise error
 
 
 def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
