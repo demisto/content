@@ -1691,7 +1691,7 @@ Updates a victim.
 | associated_groups_ids | A comma-separated list of group IDs to associate to the victim. | Optional | 
 | attribute_type | The attribute type to associate to the victim. Possible values are: Additional Analysis and Context, Description, External ID, Impact Description, Impact Score, Physical Address, Response Team &amp; Staff involved, Source, Takedown Requests, Targeted Industry Sector, Title. | Optional | 
 | attribute_value | The attribute value to associate to the victim. | Optional | 
-| mode | The mode of the update operation. Possible values are: append, delete, replace. Default is append. | Optional | 
+| mode | The mode of the update operation. Relevant for associated groups, attributes, security labels and tags. Possible values are: append, delete, replace. Default is append. | Optional | 
 
 #### Context Output
 

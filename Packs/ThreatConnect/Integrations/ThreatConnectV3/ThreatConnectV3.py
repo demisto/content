@@ -682,6 +682,7 @@ def set_victim_asset(is_update: bool,
         networkType=network_type,
         socialNetwork=social_network
     )
+    demisto.debug(f'setting asset {body}')
     return body
 
 
@@ -1875,6 +1876,7 @@ def tc_list_victims_command(client: Client, args: dict) -> None:
     if filter:
         filter = urllib.parse.quote(filter.encode('utf8'))
         url += f'&tql={filter}'
+    demisto.debug(f'sending list request with url: {url}')
     response = client.make_request(method=Method.GET, url_suffix=url)
     outputs = response.get('data', {})
     readable_output = tableToMarkdown('Victims', outputs, headers=['id', 'name', 'ownerName', 'description', 'org'])
@@ -1994,6 +1996,7 @@ def tc_list_victim_assets_command(client: Client, args: dict) -> None:
     if filter:
         filter = urllib.parse.quote(filter.encode('utf8'))
         url += f'&tql={filter}'
+    demisto.debug(f'sending list request with url: {url}')
     response = client.make_request(method=Method.GET, url_suffix=url)
     outputs = response.get('data', {})
     readable_output = tableToMarkdown('Victim assets', to_readable(outputs),
@@ -2104,6 +2107,7 @@ def tc_list_victim_attributes_command(client: Client, args: dict) -> None:
     if filter:
         filter = urllib.parse.quote(filter.encode('utf8'))
         url += f'&tql={filter}'
+    demisto.debug(f'sending list request with url: {url}')
     response = client.make_request(method=Method.GET, url_suffix=url)
     outputs = demisto.get(response, 'data.attributes.data', defaultParam={}) if victim_id else response.get('data', {})
     readable_output = tableToMarkdown('Victim attributes', outputs, headers=['id', 'type', 'value', 'dateAdded'])

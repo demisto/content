@@ -2311,7 +2311,7 @@ script:
       - description: The attribute value to associate to the victim.
         name: attribute_value
       - auto: PREDEFINED
-        description: The mode of the update operation.
+        description: The mode of the update operation. Relevant for associated groups, attributes, security labels and tags.
         name: mode
         predefined:
           - append
