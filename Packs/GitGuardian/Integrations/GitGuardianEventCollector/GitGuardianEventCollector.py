@@ -104,7 +104,7 @@ class Client(BaseClient):
             demisto.debug("GG: No incidents were fetched")
             next_run_incidents_from_fetch = from_fetch_time
         else:
-            next_run_incidents_from_fetch = incidents[-1].get("first_occurrence_date")
+            next_run_incidents_from_fetch = incidents[-1].get("created_at")
             demisto.debug(
                 f"GG: {len(incidents)} incidents were fetched, last incident time is {next_run_incidents_from_fetch}"
             )
@@ -207,6 +207,7 @@ class Client(BaseClient):
                 event["_time"] = (
                     create_time.strftime(DATE_FORMAT) if create_time else None
                 )
+                event['source_log_type'] = event_type
 
 
 def test_module(
@@ -259,13 +260,13 @@ def get_events(
         t=incidents,
         headers=["display_name", "id", "created_at", "type", "_time"],
         removeNull=True,
-    )  # noqa: E501
+    )
     hr += tableToMarkdown(
         name="Test Event - audit_logs",
         t=audit_logs,
         headers=["id", "type", "gg_created_at", "actor_ip", "actor_email", "_time"],
         removeNull=True,
-    )  # noqa: E501
+    )
 
     return incidents, audit_logs, CommandResults(readable_output=hr)
 
