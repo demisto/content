@@ -404,7 +404,7 @@ def main():
 
     end_time = time.time()
     duration = end_time - start_time
-    send_slack_notification([f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}", f"{options.gcs_locks_path}", f"Job ID: {options.ci_job_id}", f"duration: {duration/60}"])
+    send_slack_notification([f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}", f"{options.gcs_locks_path}", f"Job ID: {options.ci_job_id}", f"{duration/60}"])
 
 
 if __name__ == '__main__':
