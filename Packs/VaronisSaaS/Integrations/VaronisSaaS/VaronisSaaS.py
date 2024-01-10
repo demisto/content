@@ -347,7 +347,7 @@ class Client(BaseClient):
                 severity_condition.add_value({alert_attributes.Alert_Rule_Severity_ID: severity_id, "displayValue": severity})
             search_request.query.filter.add_filter(severity_condition)
 
-        if descending_order == 'True':
+        if descending_order:
             search_request.rows.add_ordering({"path": "Alert.TimeUTC", "sortOrder": "Desc"})
         else:
             search_request.rows.add_ordering({"path": "Alert.TimeUTC", "sortOrder": "Asc"})
@@ -435,7 +435,7 @@ class Client(BaseClient):
                 .add_value({event_attributes.Event_TimeUTC: last_days, "displayValue": last_days})
         search_request.query.filter.add_filter(time_condition)
 
-        if descending_order == 'True':
+        if descending_order:
             search_request.rows.add_ordering({"path": event_attributes.Event_TimeUTC, "sortOrder": "Desc"})
         else:
             search_request.rows.add_ordering({"path": event_attributes.Event_TimeUTC, "sortOrder": "Asc"})
