@@ -241,7 +241,27 @@ def get_incidents(api_token, args):
     )
     return_results(result)
     return result
+def test_module(api_token,args,params):
 
+    url = params.get("url","https://api.brandefense.io/api/v1/incidents")
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": "Bearer "+api_token,
+    }
+    try:
+        test=requests.get(url,headers=headers)
+        if test.status_code==200:
+            return_results('ok')
+        elif test.status_code==401 or test.status_code==403:
+            return_results("Authorization Error: make sure API Key is correctly set")
+        else:
+            return_results(f"Unexpected error status code: {test.status_code}")
+    except Exception as e:
+        if "Forbidden" in str(e):
+            return_results("Authorization Error: make sure API Key is correctly set")
+        else:
+            raise e
 
 def main():
     args = demisto.args()
@@ -276,17 +296,7 @@ def main():
         elif command == "branddefense-get-incidents":
             get_incidents(api_token, args)
         elif command == "test-module":
-            url = params.get("url","https://api.brandefense.io/api/v1/incidents")
-            headers = {
-                "accept": "application/json",
-                "content-type": "application/json",
-                "authorization": "Bearer "+api_token,
-            }
-            test=requests.get(url,headers=headers)
-            if test.status_code == 200:
-                return_results('ok')
-            
-            
+               test_module(api_token,args,params)       
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
