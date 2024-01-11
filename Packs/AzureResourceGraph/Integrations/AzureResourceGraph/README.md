@@ -69,8 +69,7 @@ None
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureLogAnalytics.Query.Query | String | The executed query. | 
-| AzureLogAnalytics.Query.TableName | String | The name of the query table. | 
+|  AzureResourceGraph.Operations | String | A list of available Azure Resource Graph operations permissions and descriptions.| 
 
 #### Command Example
 
@@ -129,7 +128,7 @@ None
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureResourceGraph.Query | String | The executed query. | 
+| AzureResourceGraph.Query | String | Data returned from query. | 
 
 #### Command Example
 
