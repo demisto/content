@@ -190,16 +190,16 @@ def get_cti_rules(api_token, args):
     search = args.get("search")
     tag = args.get("tag")
     source = args.get("source__ilike")
-    querystring = {"tag": tag, "search": search,'source__ilike':source}
+    querystring = {"tag": tag, "search": search, "source__ilike": source}
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
         "authorization": "Bearer " + api_token,
     }
     try:
-        response = requests.get(url, headers=headers,params=querystring)
+        response = requests.get(url, headers=headers, params=querystring)
     except Exception:
-        response= requests.get(url,headers=headers)
+        response = requests.get(url, headers=headers)
     branddefense_cti_rules = {"branddefense_cti_rules": response.json()}
     result = CommandResults(
         outputs=branddefense_cti_rules, outputs_prefix="branddefense_cti_rules"
@@ -241,19 +241,20 @@ def get_incidents(api_token, args):
     )
     return_results(result)
     return result
-def test_module(api_token,args,params):
 
-    url = params.get("url","https://api.brandefense.io/api/v1/incidents")
+
+def test_module(api_token, args, params):
+    url = params.get("url", "https://api.brandefense.io/api/v1/incidents")
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
-        "authorization": "Bearer "+api_token,
+        "authorization": "Bearer " + api_token,
     }
     try:
-        test=requests.get(url,headers=headers)
-        if test.status_code==200:
-            return_results('ok')
-        elif test.status_code==401 or test.status_code==403:
+        test = requests.get(url, headers=headers)
+        if test.status_code == 200:
+            return_results("ok")
+        elif test.status_code == 401 or test.status_code == 403:
             return_results("Authorization Error: make sure API Key is correctly set")
         else:
             return_results(f"Unexpected error status code: {test.status_code}")
@@ -262,6 +263,7 @@ def test_module(api_token,args,params):
             return_results("Authorization Error: make sure API Key is correctly set")
         else:
             raise e
+
 
 def main():
     args = demisto.args()
@@ -296,7 +298,7 @@ def main():
         elif command == "branddefense-get-incidents":
             get_incidents(api_token, args)
         elif command == "test-module":
-               test_module(api_token,args,params)       
+            test_module(api_token, args, params)
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
