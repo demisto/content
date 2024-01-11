@@ -3,7 +3,7 @@
     - if: '$SDK_RELEASE == "true"'
 
 
-trigger-nightlies:
+trigger-content-private-nightly:
   stage: trigger-nightlies
   extends:
     - .release-sdk
@@ -25,24 +25,41 @@ trigger-nightlies:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
 #    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
     - python3 ./Utils/trigger_private_build.py --nightly --github-token "${GITHUB_TOKEN}" --slack-channel "${SLACK_CHANNEL}" --sdk-ref $RELEASE_VERSION --artifacts-folder ${ARTIFACTS_FOLDER}
-#    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION | jq .id)
-#    - echo "PIPELINE_ID = " $PIPELINE_ID
-#    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt
-    - echo "test"
+
+trigger-content-internal-dist-nightly:
+  stage: trigger-nightlies
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+    when: always
+  variables:
+    BRANCH_NAME: $BRANCH_NAME
+    CONTENT_CI_TOKEN: $CONTENT_CI_TOKEN
+    CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY: $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    RELEASE_VERSION: $RELEASE_VERSION
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - echo "RELEASE_VERSION="$RELEASE_VERSION
+#    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION | jq .id)
+    - echo "PIPELINE_ID = " $PIPELINE_ID
+    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
 #    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
 
 
-
-wait-for-build-to-finish:
+wait-for-private-nightly:
   stage: wait-for-build-to-finish
   extends:
     - .release-sdk
     - .default-job-settings
-  dependencies:
-    - trigger-nightlies
   needs:
-    - trigger-nightlies
+    - trigger-content-private-nightly
   artifacts:
     expire_in: 48 hrs
     paths:
@@ -52,4 +69,20 @@ wait-for-build-to-finish:
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
     - python3 ./Utils/get_private_build_status.py --github-token $GITHUB_TOKEN --artifacts-folder ${ARTIFACTS_FOLDER}
-#    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
+
+
+wait-for-content-internal-dist-nightly:
+  stage: wait-for-build-to-finish
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - trigger-content-internal-dist-nightly
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+  variables:
+    PIPELINE_ID: $PIPELINE_ID
+  script:
+    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
