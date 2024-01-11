@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import List, Optional, Tuple
 import urllib3
+
 from pycti import OpenCTIApiClient
 
 # Disable insecure warnings
