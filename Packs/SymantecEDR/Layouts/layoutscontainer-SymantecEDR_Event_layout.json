@@ -1,5 +1,5 @@
 {
-    "description": "Layout for Symantec EDR incident",
+    "description": "Layout for Symantec EDR event",
     "detailsV2": {
         "tabs": [
             {
@@ -187,7 +187,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "symanticedrlogname",
+                                "fieldId": "symantecedrlogname",
                                 "height": 22,
                                 "id": "36506d60-9427-11ee-bc0b-f5cc44fa5a62",
                                 "index": 8,
