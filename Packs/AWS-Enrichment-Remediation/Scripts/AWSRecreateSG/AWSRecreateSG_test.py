@@ -1,5 +1,11 @@
 import demistomock as demisto  # noqa: F401
 import pytest
+import json
+from pathlib import Path
+
+
+def util_load_json(path: str) -> dict:
+    return json.loads(Path(path).read_text())
 
 
 @pytest.mark.parametrize(
@@ -54,8 +60,8 @@ def test_instance_info(mocker):
             - Checks the output of the helper function with the expected output.
     """
     from AWSRecreateSG import instance_info
-    from test_data.sample import INSTANCE_INFO
-    mocker.patch.object(demisto, "executeCommand", return_value=INSTANCE_INFO)
+
+    mocker.patch.object(demisto, "executeCommand", return_value=util_load_json("test_data/sample.json")["INSTANCE_INFO"])
     args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "assume_role": "test_role", "region": "us-east-1"}
     result = instance_info(**args)
     assert result == ({'eni-00000000000000000': ['sg-00000000000000000']}, 'AWS - EC2')
@@ -72,7 +78,7 @@ def test_sg_fix(mocker):
             - Checks the output of the helper function with the expected output.
     """
     from AWSRecreateSG import sg_fix
-    from test_data.sample import SG_INFO
+    SG_INFO = util_load_json("test_data/sample.json")["SG_INFO"]
     new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
     mocker.patch.object(demisto, "executeCommand", return_value=new_sg)
     args = {"sg_info": SG_INFO, "port": 22, "protocol": "tcp", "assume_role": "test_role", "instance_to_use": "AWS - EC2",
@@ -92,7 +98,8 @@ def test_determine_excessive_access(mocker):
             - Checks the output of the helper function with the expected output.
     """
     from AWSRecreateSG import determine_excessive_access
-    from test_data.sample import SG_INFO
+
+    SG_INFO = util_load_json("test_data/sample.json")["SG_INFO"]
     new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
 
     def executeCommand(name, args):
@@ -120,16 +127,17 @@ def test_aws_recreate_sg(mocker):
             - Checks the output of the function with the expected output.
     """
     from AWSRecreateSG import aws_recreate_sg
-    from test_data.sample import SG_INFO, INSTANCE_INFO
+    mock_data = util_load_json("test_data/sample.json")
+
     new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
 
     def executeCommand(name, args):
         if name == "aws-ec2-describe-security-groups":
-            return SG_INFO
+            return mock_data["SG_INFO"]
         elif name == "aws-ec2-create-security-group":
             return new_sg
         elif name == "aws-ec2-describe-instances":
-            return INSTANCE_INFO
+            return mock_data["INSTANCE_INFO"]
         return None
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
