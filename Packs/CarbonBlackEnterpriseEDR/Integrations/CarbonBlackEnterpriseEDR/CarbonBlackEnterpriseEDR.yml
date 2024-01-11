@@ -1305,11 +1305,11 @@ script:
       description: The cumulative count of loaded scripts since process tracking started.
       type: Number
   - arguments:
-    - description: Comma-separated list of threat IDs to add the tags to.
-      isArray: true
+    - description: Threat ID.
       name: threat_id
       required: true
-    - description: The tags to be added to the threat.
+    - description: Comma-separated list of tags.
+      isArray: true
       name: tags
       required: true
     description: Update threat ID tags.

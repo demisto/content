@@ -1,5 +1,5 @@
-VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
-This integration was integrated and tested with version 1.21 of Carbon Black Enterprise EDR
+VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter).
+This integration was integrated and tested with version xx of Carbon Black Enterprise EDR
 
 ## Configure Carbon Black Enterprise EDR on Cortex XSOAR
 
@@ -241,7 +241,7 @@ List devices based on the search query.
 | CarbonBlackEEDR.Device.target_priority | String | Target priority. | 
 | CarbonBlackEEDR.Device.status | String | Device status. | 
 | CarbonBlackEEDR.Device.sensor_version | String | Sensor version. | 
-| CarbonBlackEEDR.Device.virtual_machine | Boolean | Is the device virtual machine | 
+| CarbonBlackEEDR.Device.virtual_machine | Boolean | Is the device virtual machine. | 
 | CarbonBlackEEDR.Device.last_name | String | Last name. | 
 | CarbonBlackEEDR.Device.scan_status | String | Scan status. | 
 | CarbonBlackEEDR.Device.last_internal_ip_address | String | Last internal IP address. | 
@@ -352,7 +352,7 @@ Returns a list of alerts.
 | CarbonBlackEEDR.Alert.workflow.comment | String | Alert workflow - comment. | 
 | CarbonBlackEEDR.Alert.workflow.last_update_time | Date | Alert workflow - last updated time. | 
 | CarbonBlackEEDR.Alert.workflow.remediation | String | Alert workflow - remediation. | 
-| CarbonBlackEEDR.Alert.workflow.state | String | Alert workflow - state | 
+| CarbonBlackEEDR.Alert.workflow.state | String | Alert workflow - state. | 
 
 ### cb-eedr-watchlist-list
 
@@ -740,7 +740,7 @@ Adds a new watchlist report.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackEEDR.Report.ID | String | The report ID. | 
-| CarbonBlackEEDR.Report.IOCs | String | The report IOCs | 
+| CarbonBlackEEDR.Report.IOCs | String | The report IOCs. | 
 | CarbonBlackEEDR.Report.Link | String | Report link. | 
 | CarbonBlackEEDR.Report.Severity | Number | Report severity. | 
 | CarbonBlackEEDR.Report.Timestamp | Date | The report timestamp. | 
@@ -779,7 +779,7 @@ Updates the specified report.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackEEDR.Report.ID | String | The report ID. | 
-| CarbonBlackEEDR.Report.IOCs | String | The report IOC's | 
+| CarbonBlackEEDR.Report.IOCs | String | The report IOC's. | 
 | CarbonBlackEEDR.Report.Link | String | Report link. | 
 | CarbonBlackEEDR.Report.Severity | Number | Report severity. | 
 | CarbonBlackEEDR.Report.Timestamp | Date | The report timestamp. | 
@@ -841,13 +841,13 @@ Returns all of the metadata for the specified binary identified by the SHA256 ha
 | CarbonBlackEEDR.File.product_version | String | Product version from FileVersionInformation. | 
 | CarbonBlackEEDR.File.product_description | String | Product description from FileVersionInformation. | 
 | CarbonBlackEEDR.File.lang_id | String | The Language ID value from the Windows VERSIONINFO resource. | 
-| CarbonBlackEEDR.File.company_name | String | Company name from FileVersionInformation | 
+| CarbonBlackEEDR.File.company_name | String | Company name from FileVersionInformation. | 
 | CarbonBlackEEDR.File.internal_name | String | Internal name from FileVersionInformation. | 
 | CarbonBlackEEDR.File.charset_id | Number | The Character set ID value from the Windows VERSIONINFO resource. | 
 | CarbonBlackEEDR.File.available_file_size | Number | The size of the file, that is available for download. If the file is unavailable the size will be zero. | 
 | CarbonBlackEEDR.File.architecture | String | The set of architectures that this file was compiled for. This may contain one or more of the following values: none, x86, amd64, and arm64. | 
 | CarbonBlackEEDR.File.comments | String | Comments from FileVersionInformation. | 
-| CarbonBlackEEDR.File.os_type | String | The OS that this file is designed for. This may contain one or more of the following values: WINDOWS, ANDROID, MAC, IOS, LINUX, and OTHER | 
+| CarbonBlackEEDR.File.os_type | String | The OS that this file is designed for. This may contain one or more of the following values: WINDOWS, ANDROID, MAC, IOS, LINUX, and OTHER. | 
 | CarbonBlackEEDR.File.original_filename | String | Original filename from FileVersionInformation. | 
 | CarbonBlackEEDR.File.file_version | String | File version from FileVersionInformation. | 
 | CarbonBlackEEDR.File.file_description | String | File description from FileVersionInformation. | 
@@ -875,7 +875,7 @@ The files are able to be downloaded via AWS S3 pre-signed URLs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackEEDR.File.found.sha256 | String | SHA256 hash of file that is available to be downloaded | 
+| CarbonBlackEEDR.File.found.sha256 | String | SHA256 hash of file that is available to be downloaded. | 
 | CarbonBlackEEDR.File.found.url | String | An AWS S3 pre-signed URL for this file. Perform a GET on this URL to download the file. | 
 | CarbonBlackEEDR.File.not_found | String | The SHA256 hashes that were not found. | 
 | CarbonBlackEEDR.File.error | String | The SHA256 hashes that had an intermittent error. | 
@@ -883,7 +883,7 @@ The files are able to be downloaded via AWS S3 pre-signed URLs.
 ### cb-eedr-file-paths
 
 ***
-Return a summary of the observed file paths
+Return a summary of the observed file paths.
 
 #### Base Command
 
@@ -932,6 +932,34 @@ Creates a process search job.
 | --- | --- | --- |
 | CarbonBlackEEDR.SearchProcess.job_id | String | The ID of the job found by the search. | 
 | CarbonBlackEEDR.SearchProcess.status | String | The status of the job found by the search. | 
+
+#### Command example
+```!cb-eedr-process-search process_name="vmtoolsd.exe" limit=10```
+#### Context Example
+```json
+{
+    "CarbonBlackEEDR": {
+        "SearchProcess": [
+            {
+                "job_id": "2e486b0c-7dd4-40c2-90e5-22e204a3291d-sqs",
+                "status": "In Progress"
+            },
+            {
+                "job_id": "6112bfb3-4adb-468c-babd-8d1ca6eac3f6-sqs",
+                "status": "In Progress"
+            },
+            {
+                "job_id": "054cc9ce-332d-4f30-983f-f628c95863b7-sqs",
+                "status": "In Progress"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>job_id is 054cc9ce-332d-4f30-983f-f628c95863b7-sqs.
 
 ### cb-eedr-events-by-process-get
 
@@ -1009,7 +1037,7 @@ Retrieves the process search results for a given job ID.
 | CarbonBlackEEDR.SearchProcess.results.enriched_event_type | String | The CBD enriched event type. | 
 | CarbonBlackEEDR.SearchProcess.results.event_type | String | The CBD event type \(valid only for events coming through analytics\). Possible values are: CREATE_PROCESS, DATA_ACCESS, FILE_CREATE, INJECT_CODE, NETWORK, POLICY_ACTION, REGISTRY_ACCESS, and SYSTEM_API_CALL. | 
 | CarbonBlackEEDR.SearchProcess.results.filemod_count | Number | The cumulative count of file modifications since process tracking started. | 
-| CarbonBlackEEDR.SearchProcess.results.ingress_time | Date | Unknown | 
+| CarbonBlackEEDR.SearchProcess.results.ingress_time | Date | Unknown. | 
 | CarbonBlackEEDR.SearchProcess.results.legacy | Boolean | True if the process document came from the legacy data stream \(deprecated, use enriched\). | 
 | CarbonBlackEEDR.SearchProcess.results.modload_count | Number | The cumulative count of module loads since process tracking started. | 
 | CarbonBlackEEDR.SearchProcess.results.netconn_count | Number | The cumulative count of network connections since process tracking started. | 
@@ -1037,8 +1065,8 @@ Update threat ID tags.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | Threat ID to add the tags to. | Required | 
-| tags | The tags to be added to the threat. | Required | 
+| threat_id | Threat ID. | Required | 
+| tags | Comma-separated list of tags. | Required | 
 
 #### Context Output
 
@@ -1083,14 +1111,14 @@ Update alert ID notes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert ID. | Required | 
+| alert_id | Alert ID to add the notes to. | Required | 
 | notes | Notes to be added to the provided alert ID. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackEEDR.Alert.AlertID | unknown | Alert ID to add the notes to. | 
+| CarbonBlackEEDR.Alert.AlertID | unknown | The alert ID. | 
 | CarbonBlackEEDR.Alert.Notes | unknown | Alert notes. | 
 
 ### cb-eedr-get-threat-tags
@@ -1106,7 +1134,7 @@ Output a list of tags for the provided threat ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_id | Provide threat ID. | Required | 
+| threat_id | The threat ID for which we wish to get the tags. | Required | 
 
 #### Context Output
 
