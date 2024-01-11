@@ -16,6 +16,7 @@ stages:
   - run-instances
   - results
   - upload-to-marketplace
+  - create-release-branch
   - trigger-nightlies
   - wait-for-build-to-finish
   - are-jobs-really-done
