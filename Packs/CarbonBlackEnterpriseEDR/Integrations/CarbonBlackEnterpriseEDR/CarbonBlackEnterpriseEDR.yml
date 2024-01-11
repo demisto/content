@@ -1348,7 +1348,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.Notes
       description: Alert notes.
   - arguments:
-    - description: Provide threat ID.
+    - description: The threat ID for which we wish to get the tags.
       name: threat_id
       required: true
     description: Output a list of tags for the provided threat ID.
