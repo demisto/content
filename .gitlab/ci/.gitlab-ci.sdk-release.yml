@@ -24,12 +24,7 @@ trigger-nightlies:
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
 #    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - PIPELINE_ID=$(python3 ./Utils/trigger_private_build.py --nightly --github-token "${GITHUB_TOKEN}" --slack-channel "${SLACK_CHANNEL}" --sdk-ref $RELEASE_VERSION --artifacts-dir ${ARTIFACTS_FOLDER})
-    - echo "PIPELINE_ID =" $PIPELINE_ID[-1]
-    - echo "PIPELINE_ID =" $PIPELINE_ID
-    - echo ${PIPELINE_ID}
-    - echo ${PIPELINE_ID}[-1]
-    - echo $PIPELINE_ID[-1] > ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt
+    - python3 ./Utils/trigger_private_build.py --nightly --github-token "${GITHUB_TOKEN}" --slack-channel "${SLACK_CHANNEL}" --sdk-ref $RELEASE_VERSION --artifacts-folder ${ARTIFACTS_FOLDER}
 #    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION | jq .id)
 #    - echo "PIPELINE_ID = " $PIPELINE_ID
 #    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt
@@ -56,7 +51,5 @@ wait-for-build-to-finish:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
-    - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt)
-    - echo "PIPELINE_ID =" $PIPELINE_ID
-    - python3 ./Utils/get_private_build_status.py --github-token $GITHUB_TOKEN --workflow-id $PIPELINE_ID
+    - python3 ./Utils/get_private_build_status.py --github-token $GITHUB_TOKEN --workflow-id $PIPELINE_ID --artifacts-folder ${ARTIFACTS_FOLDER}
 #    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
