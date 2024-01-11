@@ -8,11 +8,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: CSV list of subcategories to fetch from. If no subcategories are specified, events from all subcategories will be fetched.
-  name: subcategories
-  required: false
-  type: 12
-  defaultvalue: ""
 - display: User
   name: credentials
   required: true
