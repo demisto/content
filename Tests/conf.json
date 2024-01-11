@@ -16,7 +16,7 @@
         "scripts": "Scripts that the test uses. Can hold a list.",
         "timeout": "Test specific timeout, in order to use a different timeout then default testTimeout. A number.",
         "toversion": "Server version to test up to it. Set it only when a real limit exists, otherwise use the 'marketplaces' field.",
-        "marketplaces": "Marketplaces that the test should run on. Available options are: xsoar (which runs on xsoar_on_prem and xsoar_saas), xsoar_on_prem, xsoar_saas, marketplacev2 and xpanse. Can hold a list."
+        "marketplaces": "Marketplaces that the test should run on. Available options are: xsoar (which runs on xsoar_on_prem and xsoar_saas), xsoar_on_prem, xsoar_saas, marketplacev2 and xpanse. Can hold a list. Default value is xsoar and marketplacev2."
     },
     "testTimeout": 160,
     "testInterval": 20,
@@ -71,8 +71,7 @@
             "instance_names": [
                 "active_directory_80k",
                 "virus_total_v3"
-            ],
-            "marketplaces": "marketplacev2"
+            ]
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2658,8 +2657,7 @@
             "instance_names": "active_directory_ninja_with_ntlm",
             "memory_threshold": 100,
             "fromversion": "5.0.0",
-            "has_api": false,
-            "marketplaces": "xsoar_on_prem"
+            "has_api": false
         },
         {
             "playbookID": "Docker Hardening Test",
@@ -2671,32 +2669,21 @@
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port",
             "memory_threshold": 100,
-            "has_api": false,
-            "marketplaces": "xsoar_on_prem"
-        },
-        {
-            "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_80k",
-            "playbookID": "Active Directory Query V2 configuration with port",
-            "memory_threshold": 100,
-            "has_api": false,
-            "marketplaces": "xsoar_saas"
+            "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory - ad-get-user limit check",
             "memory_threshold": 100,
-            "has_api": false,
-            "marketplaces": ["xsoar_on_prem", "xsoar_saas"]
+            "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "active directory search user with parentheses test",
             "memory_threshold": 100,
-            "has_api": false,
-            "marketplaces": "xsoar_saas"
+            "has_api": false
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
@@ -2776,8 +2763,7 @@
             "memory_threshold": 100,
             "instance_names": "active_directory_80k",
             "fromversion": "5.0.0",
-            "has_api": false,
-            "marketplaces": ["xsoar"]
+            "has_api": false
         },
         {
             "integrations": "Kafka V2",
