@@ -4,7 +4,8 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 import json
 import urllib3
-from datetime import datetime
+from dateutil.parser import parse
+from datetime import datetime, timedelta
 
 ''' PARAM DEFINITION '''
 MAX_RESOURCES = 100
@@ -281,8 +282,9 @@ def set_resource_rating(client: Client, args):
     })
 
 
-def get_resources_fetch(client: Client, ini_date, page, limit, status):
-    args = {"page": page, "limit": limit, "since": ini_date, "status": status}
+def get_resources_fetch(client: Client, ini_date, limit, status):
+    args = {"limit": limit, "since": ini_date, "status": status}
+
     result = client.resource_select(args)
 
     total_resources = result['total_resources']
@@ -293,18 +295,16 @@ def get_resources_fetch(client: Client, ini_date, page, limit, status):
 
 
 def fetch_incidents(client: Client, last_run, first_fetch_time, fetch_limit, fetch_status):
-    search_offset = demisto.getLastRun().get('offset', 1)
-
     last_fetch = last_run.get('last_fetch', None)
+
     if last_fetch is None:
-        last_fetch = blueliv_date_to_timestamp(first_fetch_time)
-    else:
-        last_fetch = str(last_fetch)
-        if len(last_fetch) == 10:
-            last_fetch = last_fetch + "000"
+        if first_fetch_time:
+            last_fetch = blueliv_date_to_timestamp(first_fetch_time)
+        else:
+            last_fetch = int(datetime.now().timestamp()) * 1000
 
     # convert the events to demisto incident
-    events = get_resources_fetch(client, last_fetch, search_offset, fetch_limit, fetch_status)
+    events = get_resources_fetch(client, last_fetch, fetch_limit, fetch_status)
 
     incidents = []
     for e in events:
@@ -315,14 +315,13 @@ def fetch_incidents(client: Client, last_run, first_fetch_time, fetch_limit, fet
         }
         incidents.append(incident)
 
-    # Check if are there pending events to fetch
-    offset = 0
-    if len(incidents) < fetch_limit:
-        last_run = int(round(time.time() * 1000))
-    else:
-        offset = search_offset + fetch_limit
+    if incidents:
+        last_fetch = parse(incidents[-1]['occurred']) + timedelta(seconds=1) # add 1 second for the next fetch
+        demisto.setLastRun({
+            'last_fetch': int(last_fetch.timestamp()) * 1000 # Save in milliseconds
+        })
 
-    return incidents, {'last_fetch': last_run, 'offset': offset}
+    return incidents
 
 
 def search_resource(client: Client, args):
@@ -457,13 +456,12 @@ def main():
 
     elif demisto.command() == 'fetch-incidents':
         last_run = demisto.getLastRun()
-        first_fetch_time = demisto.params().get('first_fetch_time', "0000-00-00")
+        first_fetch_time = demisto.params().get('first_fetch_time', None)
         fetch_limit = max(min(200, int(demisto.params().get("fetch_limit"))), 1)
         fetch_status = demisto.params().get('fetch_status')
         fetch_status = ",".join(fetch_status)
 
-        incidents, next_run = fetch_incidents(client, last_run, first_fetch_time, fetch_limit, fetch_status)
-        demisto.setLastRun(next_run)
+        incidents = fetch_incidents(client, last_run, first_fetch_time, fetch_limit, fetch_status)
         demisto.incidents(incidents)
 
     elif demisto.command() == 'blueliv-resource-search':
