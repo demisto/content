@@ -1334,7 +1334,7 @@ script:
     - contextPath: CarbonBlackEEDR.Threat.Notes
       description: Threat ID notes.
   - arguments:
-    - description: Alert ID.
+    - description: Alert ID to add the notes to.
       name: alert_id
       required: true
     - description: Notes to be added to the provided alert ID.
