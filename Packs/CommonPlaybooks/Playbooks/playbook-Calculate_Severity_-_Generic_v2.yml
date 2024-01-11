@@ -1,8 +1,16 @@
-id: Calculate Severity - Generic v2
-version: -1
+id: c1ccd199-9d15-4221-8079-4cc52a962616
+version: 5
 contentitemexportablefields:
-  contentitemfields: {}
-name: Calculate Severity - Generic v2
+  contentitemfields:
+    packID: ""
+    packName: Common Playbooks
+    itemVersion: 2.5.4
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Calculate Severity - Generic v2_dev
 description: |-
   Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
 
@@ -25,16 +33,16 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "19"
       - "18"
       - "24"
       - "16"
       - "27"
       - "28"
+      - "29"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -47,7 +55,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -71,6 +78,7 @@ tasks:
         simple: low
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -83,7 +91,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -107,6 +114,7 @@ tasks:
         simple: medium
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -119,7 +127,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -143,6 +150,7 @@ tasks:
         simple: high
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -155,7 +163,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -169,8 +176,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -183,7 +190,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -207,6 +213,7 @@ tasks:
         simple: critical
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -219,7 +226,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -230,7 +236,8 @@ tasks:
       id: b8bbb253-9e4b-406f-8253-31c2440b2338
       version: -1
       name: Determine incident severity
-      description: Determines the severity level based on the highest result of all severity calculations.
+      description: Determines the severity level based on the highest result of all
+        severity calculations.
       type: condition
       iscommand: false
       brand: ""
@@ -513,6 +520,7 @@ tasks:
                         simple: Low
                     ignorecase: true
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -525,7 +533,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -555,6 +562,7 @@ tasks:
           accessor: severity
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -567,7 +575,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -615,6 +622,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -632,48 +640,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 7347fd96-e6df-4a99-8bf1-7ba856806ec0
-    type: playbook
-    task:
-      id: 7347fd96-e6df-4a99-8bf1-7ba856806ec0
-      version: -1
-      name: Calculate Severity By Highest DBotScore
-      description: Calculates the incident severity level according to the highest indicator DBotScore.
-      playbookName: Calculate Severity By Highest DBotScore
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      DBotScore:
-        complex:
-          root: inputs.DBotScore
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1370,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "24":
@@ -684,7 +650,8 @@ tasks:
       id: 86c4ba1f-fddb-4f6b-8712-c5b0fc6bb55a
       version: -1
       name: Calculate Severity By Email Authenticity
-      description: Calculates a severity according to the verdict coming from the CheckEmailAuthenticity script.
+      description: Calculates a severity according to the verdict coming from the
+        CheckEmailAuthenticity script.
       playbookName: Calculate Severity By Email Authenticity
       type: playbook
       iscommand: false
@@ -697,6 +664,7 @@ tasks:
         complex:
           root: inputs.EmailAuthenticityCheck
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -714,7 +682,6 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "25":
@@ -738,6 +705,7 @@ tasks:
         simple: unknown
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -750,7 +718,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
@@ -761,7 +728,8 @@ tasks:
       id: 2b705d3f-b982-4480-806a-42ab6f3026be
       version: -1
       name: Set Microsoft Headers Severity Check
-      description: Calculates the severity after processing the PCL, BCL and PCL values inside Microsoft headers. If no value is entered, nothing is returned.
+      description: Calculates the severity after processing the PCL, BCL and PCL values
+        inside Microsoft headers. If no value is entered, nothing is returned.
       scriptName: Set
       type: regular
       iscommand: false
@@ -776,6 +744,7 @@ tasks:
         complex:
           root: inputs.MicrosoftHeadersSeverityCheck
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -788,7 +757,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "27":
@@ -799,7 +767,8 @@ tasks:
       id: 6e24dd7e-cb39-474c-87e1-8a94d2e42577
       version: -1
       name: Check if MicrosoftHeadersSeverityCheck is not empty
-      description: This task verifies that the playbook input "MicrosoftHeadersSeverityCheck" is not empty.
+      description: This task verifies that the playbook input "MicrosoftHeadersSeverityCheck"
+        is not empty.
       type: condition
       iscommand: false
       brand: ""
@@ -817,6 +786,7 @@ tasks:
             value:
               simple: inputs.MicrosoftHeadersSeverityCheck
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -829,7 +799,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "28":
@@ -844,7 +813,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -876,6 +844,61 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 92cbfafa-4642-43ae-8756-56081a975704
+    type: playbook
+    task:
+      id: 92cbfafa-4642-43ae-8756-56081a975704
+      version: -1
+      name: Calculate Severity By Highest DBotScore
+      description: Calculates the incident severity level according to the highest
+        DBotScore.
+      playbookName: Calculate Severity By Highest DBotScore
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      DBotScoreIndicators:
+        complex:
+          root: inputs.DBotScoreIndicators
+          transformers:
+          - operator: uniq
+      DBotScoreMaxScore:
+        complex:
+          root: inputs.DBotScoreMaxScore
+          transformers:
+          - operator: sort
+            args:
+              descending:
+                value:
+                  simple: "true"
+          - operator: uniq
+          - operator: FirstArrayElement
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -896,31 +919,34 @@ view: |-
     }
   }
 inputs:
-- key: DBotScore
+- key: DBotScoreIndicators
   value:
     complex:
       root: DBotScore
+      accessor: Indicator
+      transformers:
+      - operator: uniq
   required: false
-  description: 'Array of all indicators associated with the incident. '
-  playbookInputQuery:
+  description: 'Array of all indicator values associated with the incident. '
+  playbookInputQuery: null
 - key: CriticalUsers
   value:
     simple: admin,administrator
   required: false
   description: CSV of usernames of critical users.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: CriticalEndpoints
   value:
     simple: admin
   required: false
   description: CSV of hostnames of critical endpoints.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: CriticalGroups
   value:
     simple: admins,administrators
   required: false
   description: CSV of DN names of critical AD groups.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Account
   value:
     complex:
@@ -929,7 +955,7 @@ inputs:
       - operator: uniq
   required: false
   description: User accounts to check against the critical lists.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Endpoint
   value:
     complex:
@@ -938,7 +964,7 @@ inputs:
       - operator: uniq
   required: false
   description: Endpoints to check against the CriticalEndpoints list.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EmailAuthenticityCheck
   value:
     complex:
@@ -947,14 +973,17 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
-  playbookInputQuery:
+  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
+    script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
+  playbookInputQuery: null
 - key: MicrosoftHeadersSeverityCheck
   value:
     simple: ${Email.MicrosoftHeadersSeverityCheck}
   required: false
-  description: The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers.
-  playbookInputQuery:
+  description: The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook,
+    which calculates the severity after processing the PCL, BCL and PCL values inside
+    Microsoft's headers.
+  playbookInputQuery: null
 - key: XDRRiskyUsers
   value:
     complex:
@@ -963,8 +992,9 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: An object of risky users and their corresponding scores, as outputted by the "xdr-list-risky-users" command.
-  playbookInputQuery:
+  description: An object of risky users and their corresponding scores, as outputted
+    by the "xdr-list-risky-users" command.
+  playbookInputQuery: null
 - key: XDRRiskyHosts
   value:
     complex:
@@ -973,8 +1003,25 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: An object of risky hosts and their corresponding scores, as outputted by the "xdr-list-risky-hosts" command.
-  playbookInputQuery:
+  description: An object of risky hosts and their corresponding scores, as outputted
+    by the "xdr-list-risky-hosts" command.
+  playbookInputQuery: null
+- key: DBotScoreMaxScore
+  value:
+    complex:
+      root: DBotScore
+      accessor: Score
+      transformers:
+      - operator: sort
+        args:
+          descending:
+            value:
+              simple: "true"
+      - operator: uniq
+      - operator: FirstArrayElement
+  required: false
+  description: The highest score that was given to a DBotScore indicator, in number.
+  playbookInputQuery: null
 outputs:
 - contextPath: CriticalAssets
   description: All critical assets involved in the incident.
@@ -991,6 +1038,7 @@ outputs:
 - contextPath: CriticalAssets.CriticalUserGroups
   description: Critical user-groups involved in the incident.
   type: unknown
+sourceplaybookid: Calculate Severity - Generic v2
 tests:
 - Calculate Severity - Generic v2 - Test
 fromversion: 5.0.0
