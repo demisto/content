@@ -1166,7 +1166,7 @@ def test_uptycs_get_events(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": event
             }
@@ -1733,7 +1733,7 @@ def test_uptycs_get_process_open_sockets(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -1808,7 +1808,7 @@ def test_uptycs_get_process_information(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -1875,7 +1875,6 @@ def test_uptycs_get_process_child_processes(mocker, requests_mock):
     mocker.patch("Uptycs.CUSTOMER_ID", new=CUSTOMER_ID)
     mocker.patch("Uptycs.DOMAIN", new=DOMAIN)
 
-
     job_id = "9388f9f7-529b-48d9-898d-48fb82237c7d"
     mock_response_job = {
         "id": job_id,
@@ -1887,7 +1886,7 @@ def test_uptycs_get_process_child_processes(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -1965,7 +1964,7 @@ def test_uptycs_processes(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -2040,7 +2039,7 @@ def test_uptycs_process_open_files(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -2117,7 +2116,7 @@ def test_uptycs_process_event_information(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -2194,7 +2193,7 @@ def test_uptycs_process_events(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -2276,7 +2275,7 @@ def test_uptycs_socket_events(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -2353,7 +2352,7 @@ def test_uptycs_parent_event_information(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }
@@ -2435,7 +2434,7 @@ def test_uptycs_socket_event_information(mocker, requests_mock):
     }
 
     mock_response_final = {
-        "items": [ 
+        "items": [
             {
                 "rowData": result_item
             }

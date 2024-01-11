@@ -564,7 +564,7 @@ def uptycs_get_detection_details_command():
         if 'score' in event:
             event_text += '\n\tscore - ' + str(event['score'])
         elif 'severity' in event:
-            event_text += '\n\severity - ' + event['severity']
+            event_text += '\n\tseverity - ' + event['severity']
         if event.get('key') and event.get('value'):
             event_text += '\n\t' + event['key'] + ' : ' + event['value']
         final_alerts.append(event_text + '\n')
