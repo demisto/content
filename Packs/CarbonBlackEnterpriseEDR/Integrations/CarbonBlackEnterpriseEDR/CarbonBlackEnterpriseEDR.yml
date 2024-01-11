@@ -1344,7 +1344,7 @@ script:
     name: cb-eedr-add-alert-notes
     outputs:
     - contextPath: CarbonBlackEEDR.Alert.AlertID
-      description: Alert ID to add the notes to.
+      description: The alert ID.
     - contextPath: CarbonBlackEEDR.Alert.Notes
       description: Alert notes.
   - arguments:
