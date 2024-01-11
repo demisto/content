@@ -432,7 +432,7 @@ def fetch_incidents_command(
             # Take the last touched incident time and id for last_run object
             current_created = incident_raw.get('created')
             current_created_datetime = datetime.strptime(current_created, occurred_format)
-            if not datetime_new_last_run or (datetime_new_last_run and current_created_datetime > datetime.strptime(datetime_new_last_run, occurred_format)):  # noqa: E501 # type: ignore
+            if datetime_new_last_run and current_created_datetime > datetime.strptime(datetime_new_last_run, occurred_format):  # noqa: E501 # type: ignore
                 last_ids = set()
             datetime_new_last_run = incident_raw.get('created')
             last_ids.add(incident_raw.get('id'))
