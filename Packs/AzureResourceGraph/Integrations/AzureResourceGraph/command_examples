@@ -1,0 +1,2 @@
+!azure-rg-query query="Resources | project id, name, type, location, tags | limit 3"
+!azure-rg-list-operations
