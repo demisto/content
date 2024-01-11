@@ -88,19 +88,31 @@ display: Azure Resource Graph
 name: Azure Resource Graph
 script:
   commands:
-  - arguments: []
-    name: azure-rg-auth-reset
-  - arguments: []
-    name: azure-rg-list-operations
-  - arguments:
+  - name: azure-rg-auth-reset
+    arguments: []
+    description: Run this command if for some reason you need to rerun the authentication process.
+  - name: azure-rg-list-operations
+    arguments: []
+    outputs:
+    - contextPath: AzureResourceGraph.Operations
+      description: A list of available Azure Resource Graph operations permissions and descriptions.
+      type: String
+    description: Gets all Azure Resource Graph operations permissions and descriptions.
+  - name: azure-rg-query
+    arguments:
     - name: query
       required: true
-    name: azure-rg-query
-  dockerimage: demisto/crypto:1.0.0.83343
+      description: The query for the Azure Resource Graph to execute. The query is based on Kusto Query Language (KQL).
+    outputs:
+    - contextPath: AzureResourceGraph.Query
+      description: Data returned from query.
+      type: String
+    description: 'Executes a given Azure Resource Graph Query. (Ex: query="Resources | project name, type | limit 5 | order by name asc").'
+  dockerimage: demisto/crypto:1.0.0.84658
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
