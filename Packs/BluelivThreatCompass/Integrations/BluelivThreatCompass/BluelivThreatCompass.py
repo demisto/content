@@ -133,6 +133,7 @@ def create_search_query(args):
     # Time filter
     ini_date = args.get("iniDate", "")
     fin_date = args.get("finDate", "")
+    params["o"] = args.get("order", "id,ASC")
     params["granularity"] = "DAY"
 
     if fin_date:
@@ -158,7 +159,6 @@ def create_search_query(args):
     if "status" in args and all(status in STATUS_VALUES for status in args["status"].split(",")):
         params["analysisCalcResult"] = args['status']
 
-    params["o"] = "IDASC"
 
     return params
 
