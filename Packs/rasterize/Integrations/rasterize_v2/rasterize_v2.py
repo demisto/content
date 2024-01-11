@@ -222,10 +222,6 @@ def is_chrome_running_locally(port):
             # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
-            # else:
-            #     demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs, but {MAX_CHROME_TABS_COUNT=},"
-            #                   " so not using it")
-            #     return None
         except requests.exceptions.ConnectionError as exp:
             exp_str = str(exp)
             connection_refused = 'connection refused'
@@ -316,6 +312,8 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
                 write_info_file(PORT_FILE_PATH, chrome_port)
             else:
                 process.kill()
+                write_info_file(PORT_FILE_PATH, '')
+                return None, None
             return browser, chrome_port
         else:
             demisto.debug(f'Chrome did not start successfully on port {chrome_port}. Return code: {process.returncode}')
@@ -350,9 +348,10 @@ def ensure_chrome_running():  # pragma: no cover
     chrome_port = read_info_file(PORT_FILE_PATH)
     if chrome_port:
         browser = is_chrome_running_locally(chrome_port)
-
-    if browser:
-        return browser, chrome_port
+        if browser:
+            return browser, chrome_port
+        else:
+            write_info_file(PORT_FILE_PATH. '')
 
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
@@ -361,33 +360,18 @@ def ensure_chrome_running():  # pragma: no cover
 
     for chrome_port in ports_list:
         len_running_chromes = count_running_chromes(chrome_port)
-        browser = is_chrome_running_locally(chrome_port)
-        demisto.debug(f"Checking port {chrome_port}: {len_running_chromes=}, {browser}")
-        if browser and len_running_chromes == 1:
-            # There's a Chrome listening on that port, and we're connected to it. Use it
-            demisto.debug(f'Connected to Chrome running on port {chrome_port}')
-            write_info_file(PORT_FILE_PATH, chrome_port)
-
-            return browser, chrome_port
+        demisto.debug(f"Found {len_running_chromes=} on port {chrome_port} has ")
 
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
             demisto.debug(f"No Chrome found on port {chrome_port}")
-            break
+            demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
+            return start_chrome_headless(str(chrome_port))
 
-        if len_running_chromes > 1:
-            # There's more than one Chrome listening on that port, so we won't connect to it
-            demisto.debug(f"More than one Chrome running on port {chrome_port}, continuing")
-            continue
-        demisto.debug(f'Could not connect to Chrome on port {chrome_port}')
+        # There's already a Chrome listening on that port, Don't use it
 
-    if chrome_port == ports_list[-1]:
-        demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
-        return None, None
-
-    demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
-
-    return start_chrome_headless(str(chrome_port))
+    demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
+    return None, None
 
 
 def setup_tab_event(browser, tab):
