@@ -332,7 +332,7 @@ def terminate_chrome(browser):
     tab.Browser.close()
 
     # Keep the file
-    write_info_file(PORT_FILE_PATH, "")
+    write_info_file(PORT_FILE_PATH, '')
 
     if CHROME_PROCESS:
         CHROME_PROCESS.kill()
@@ -351,7 +351,7 @@ def ensure_chrome_running():  # pragma: no cover
         if browser:
             return browser, chrome_port
         else:
-            write_info_file(PORT_FILE_PATH. '')
+            write_info_file(PORT_FILE_PATH, '')
 
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
