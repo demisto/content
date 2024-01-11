@@ -3,8 +3,7 @@ commonfields:
   id: ReliaQuestGreyMatterDRPEventCollector
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Server URL
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -39,7 +38,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: Digital Shadows monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
 display: ReliaQuestGreyMatterDRPEventCollector
 name: ReliaQuestGreyMatterDRPEventCollector
 script:
@@ -58,7 +57,9 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.83255
+  isfetchevents: true
+  isfetchassets: true
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
