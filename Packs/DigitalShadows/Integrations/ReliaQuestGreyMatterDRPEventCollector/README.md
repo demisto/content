@@ -1,5 +1,3 @@
-This README contains the full documentation for your integration.
+GreyMatter Digital Risk Protection (DRP) focuses on digital risks that organizations care about, using a proven threat model that adapts to the organizations risk profile and appetite.
 
-You auto-generate this README file from your integration YML file using the `demisto-sdk generate-docs` command.
 
-For more information see the [integration documentation](https://xsoar.pan.dev/docs/integrations/integration-docs).
