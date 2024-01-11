@@ -593,7 +593,7 @@ def search_assets_by_external_id(client: Client, args: dict) -> CommandResults:
     human_readable_markdown = ""
     limit: int = arg_to_number(args.get('limit')) or 500
     to_context = args.get('to_context')
-    context: dict[str, Any] = {}
+    context: list[dict[str, Any]] = []
     response = client.http_request(message='GET', suffix=url_suffix).get('assets')
     if response:
         assets_list = response[:limit]
