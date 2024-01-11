@@ -271,7 +271,9 @@ METRIC = Literal[
 
 
 def return_metric(metric: METRIC):
-    return_results(ExecutionMetrics(**{metric: 1}).metrics)
+    execution_metrics = ExecutionMetrics(**{metric: 1})
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
+        return_results(execution_metrics.metrics)
 
 
 def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):
@@ -1177,9 +1179,7 @@ def test_module():
             }
         ]
     }
-
     do_search('samples', query=query, scope='Public', err_operation='Test module failed')
-    return
 
 
 def search_samples_command(args):
@@ -1869,7 +1869,7 @@ def main():
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
+        raise Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
     try:
         # Remove proxy if not set to true in params
