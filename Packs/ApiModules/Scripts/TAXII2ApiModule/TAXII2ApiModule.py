@@ -1213,9 +1213,8 @@ class Taxii2FeedClient:
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
-        start_time = datetime.now()
         try:
-            for _count, envelope in enumerate(envelopes):
+            for envelope in envelopes:
                 stix_objects = envelope.get("objects")
                 if not stix_objects:
                     # no fetched objects
@@ -1253,7 +1252,6 @@ class Taxii2FeedClient:
         except Exception as e:
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
-                demisto.debug(f"Cycle time: {datetime.now() - start_time}")
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
         demisto.debug("Finished parsing all objects")
