@@ -77,8 +77,8 @@ def list_operations_command(client: AzureResourceGraphClient) -> CommandResults:
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='AzureResourceGraph.Query',
-        outputs_key_field='Query',
+        outputs_prefix='AzureResourceGraph.Operations',
+        outputs_key_field='Operations',
         outputs=operations,
         raw_response=response
     )
