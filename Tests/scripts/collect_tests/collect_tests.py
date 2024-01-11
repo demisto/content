@@ -31,7 +31,7 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, find_pack_folder,
-                                               find_yml_content_type, to_tuple, hotfix_detect_old_script_yml,
+                                               find_yml_content_type, hotfix_detect_old_script_yml,
                                                FilesToCollect)
 from Tests.scripts.collect_tests.version_range import VersionRange
 
@@ -765,7 +765,7 @@ class TestCollector(ABC):
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
-                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
+                    raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
