@@ -1215,7 +1215,7 @@ class Taxii2FeedClient:
         relationships_lst = []
         start_time = datetime.now()
         try:
-            for count, envelope in enumerate(envelopes):
+            for _count, envelope in enumerate(envelopes):
                 stix_objects = envelope.get("objects")
                 if not stix_objects:
                     # no fetched objects
@@ -1269,7 +1269,7 @@ class Taxii2FeedClient:
         get_objects = self.collection_to_fetch.get_objects
         if self.objects_to_fetch:
             if 'relationship' not in self.objects_to_fetch and \
-                len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
+                    len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
                 self.objects_to_fetch.append('relationship')
             kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
