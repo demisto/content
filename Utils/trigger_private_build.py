@@ -227,7 +227,7 @@ def main():
         logging.success(f'Private repo build triggered successfully, workflow id: {workflow_id}\n URL:'
                         f' {WORKFLOW_HTML_URL}/{workflow_id}')
 
-        file_path=f'{artifacts_dir}PIPELINE_ID.txt'
+        file_path=f'{artifacts_dir}PIPELINE_ID2.txt'
         print('######')
         print(file_path)
         print('######')
