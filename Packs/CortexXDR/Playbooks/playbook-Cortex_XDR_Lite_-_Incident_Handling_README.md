@@ -20,10 +20,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Isolate Endpoint
 * Entity Enrichment - Generic v3
 * Command-Line Analysis
 * Block Indicators - Generic v3
+* Cortex XDR - Isolate Endpoint
 * Cortex XDR - Get entity alerts by MITRE tactics
 
 ### Integrations
@@ -33,8 +33,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* Set
 * SetAndHandleEmpty
+* Set
 
 ### Commands
 
@@ -47,16 +47,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| incident_id | Incident ID. | incident.xdrincidentid | Optional |
-| EndpointID | XDR endpoint ID. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
-| Hostname | Hostname. | PaloAltoNetworksXDR.Incident.alerts.host_name | Optional |
 | Username | Username. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
-| AutoIsolateEndpoint | Whether to isolate the endpoint automatically. | False | Optional |
-| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | False | Optional |
-| UserVerification | Possible values: True/False.  Default: False.<br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
-| XDRRelatedAlertsThreshold | This is the minimum threshold for XDR-related alerts of medium severity or higher, based on MITRE tactics used to identify malicious activity on the endpoint and by the user.<br/>Example: If this input is set to '5' and it detects '6' XDR-related alerts, it will classify this check as indicating malicious activity.<br/>The default value is '5'. | 5 | Optional |
-| InternalRange | This input is used in the "Entity Enrichment - Generic v3" playbook.<br/>A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, uses the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16 | Optional |
+| incident_id | Incident ID. | incident.xdrincidentid | Optional |
+| Hostname | Hostname. | PaloAltoNetworksXDR.Incident.alerts.host_name | Optional |
+| EndpointID | XDR endpoint ID. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
 | XDRDomain | XDR instance domain. | incident.xdrurl | Optional |
+| InternalRange | This input is used in the "Entity Enrichment - Generic v3" playbook.<br/>A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, uses the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16 | Optional |
+| XDRRelatedAlertsThreshold | This is the minimum threshold for XDR-related alerts of medium severity or higher, based on MITRE tactics used to identify malicious activity on the endpoint and by the user.<br/>Example: If this input is set to '5' and it detects '6' XDR-related alerts, it will classify this check as indicating malicious activity.<br/>The default value is '5'. | 5 | Optional |
+| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | False | Optional |
+| AutoIsolateEndpoint | Whether to isolate the endpoint automatically. | False | Optional |
+| UserVerification | Possible values: True/False.  Default: False.<br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
 
 ## Playbook Outputs
 
