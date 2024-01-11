@@ -129,6 +129,7 @@ def main():
     arg_parser.add_argument('--nightly', help='Is nightly build', action=argparse.BooleanOptionalAction)
     arg_parser.add_argument('--sdk-ref', help='Whether to override the sdk branch')
     arg_parser.add_argument('--slack-channel', help='The slack channel in which to send the notification', default='C04CHML16P8')
+    arg_parser.add_argument('--artifacts-dir', help='')
     arg_parser.add_argument(
         '--private-branch-name',
         help='Name of the branch in the private repository, if not provided the default will be master.',
@@ -141,6 +142,7 @@ def main():
     is_nightly = args.nightly
     sdk_ref = args.sdk_ref
     slack_channel = args.slack_channel
+    artifacts_dir = args.artifacts_dir
 
     # get branch name
     branches = tools.run_command("git branch")
@@ -225,8 +227,12 @@ def main():
         logging.success(f'Private repo build triggered successfully, workflow id: {workflow_id}\n URL:'
                         f' {WORKFLOW_HTML_URL}/{workflow_id}')
 
+        file_path=f'{artifacts_dir}PIPELINE_ID.txt'
+        print('######')
+        print(file_path)
+        print('######')
         # write the workflow id to text file to use it in get_private_build_status.py
-        with open(PRIVATE_REPO_WORKFLOW_ID_FILE, "w") as f:
+        with open(file_path, "w") as f:
             f.write(str(workflow_id))
         print(workflow_id)
         sys.exit(0)
