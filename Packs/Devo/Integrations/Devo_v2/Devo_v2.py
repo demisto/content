@@ -535,7 +535,7 @@ def filter_results_by_fields(results, fields_to_view_string):
         ValueError: If the fields_to_view_string contains invalid column names.
     """
     if fields_to_view_string == "":
-        raise ValueError("fields_to_view cannot be an empty.")
+        raise ValueError("fields_to_view cannot be empty.")
 
     if not fields_to_view_string:
         return results

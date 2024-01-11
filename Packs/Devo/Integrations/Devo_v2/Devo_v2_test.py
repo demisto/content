@@ -397,7 +397,7 @@ def test_get_alerts_with_repeated_fields(mock_query_results, mock_args_results):
 def test_get_alerts_with_empty_fields_to_view_param(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS_EMPTY_FIELDS_TO_VIEW_PRAM
-    with pytest.raises(ValueError, match="fields_to_view cannot be an empty."):
+    with pytest.raises(ValueError, match="fields_to_view cannot be empty."):
         get_alerts_command(OFFSET, ITEMS_PER_PAGE)
 
 
