@@ -1,0 +1,21 @@
+{
+    "name": "CommonScripts",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Suresh",
+    "url": "",
+    "email": "",
+    "created": "2024-01-11T10:39:52Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "suresh-a10"
+    ]
+}
