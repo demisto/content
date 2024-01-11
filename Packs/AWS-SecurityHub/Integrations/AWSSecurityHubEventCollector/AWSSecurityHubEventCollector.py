@@ -110,7 +110,7 @@ def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = Non
         result = response.get('Findings', [])
 
         # Filter out events based on id_ignore_set
-        result = [event for event in result if event.get('Id') not in id_ignore_set]
+        result = [event for event in result if event['Id'] not in id_ignore_set]
 
         count += len(result)
         yield result
