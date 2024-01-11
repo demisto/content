@@ -40,7 +40,7 @@ alter // Extract message header fields & message payload
     user_ipv4 = if(username ~= "(?:\d{1,3}\.){3}\d{1,3}", username),
     user_ipv6 = if(username ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", username),
     url_target_port = if(event_type ~= "EVT_URL", arrayindex(regextract(url, "\:(\d+)"), 0)),
-    url_target_ip = if(event_type = "EVT_URL_BLOCKING", arrayindex(regextract(url, "^\w+\:\/\/((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"))),
+    url_target_ip = if(event_type = "EVT_URL_BLOCKING", arrayindex(regextract(url, "^\w+\:\/\/((?:\d{1,3}\.){3}\d{1,3}|(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"), 0)),
 	target_ipv4 = arrayindex(regextract(server_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
 	target_ipv6 = arrayindex(regextract(server_ip, "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"), 0),
     target_file_extension = arrayindex(regextract(file_name, "\.(\w+)") , 0)
