@@ -1290,12 +1290,12 @@ def get_behaviors(behavior_ids: list[str]) -> dict:
 def get_ioarules(rule_ids: list[str]) -> dict:
     """
         Sends ioa rules entities request
-        :param rule_ids: IDs of the requested ioa rule. Format should be "cid:rule_id" or "123123fdasfa12fcafdasfadsfasdf:2300"
+        :param rule_ids: IDs of the requested ioa rule.
         :return: Response json of the get ioa rule entities endpoint (ioa rule objects)
     """
     return http_request(
-        'GET',
-        '/ioarules/entities/rules/v1',
+        'POST',
+        '/ioarules/entities/rules/GET/v1',
         data=json.dumps({'ids': rule_ids}),
     )
 

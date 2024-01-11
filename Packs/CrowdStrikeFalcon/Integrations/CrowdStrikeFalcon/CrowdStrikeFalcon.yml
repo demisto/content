@@ -4885,7 +4885,7 @@ script:
       description: The compound TTO.
       type: String
   - arguments:
-    - description: The rule ID to get IOA rules for. This can be acquired by combining cid and rule_instance_id from Crowdstrike.Detections context for Custom IOA Rules detections.
+    - description: The rule ID to get IOA rules for.
       name: rule_ids
       isArray: true
       required: true
@@ -4893,16 +4893,16 @@ script:
     name: cs-falcon-get-ioarules
     outputs:
     - contextPath: CrowdStrike.IOARules.instance_id
-      description: The IOA Rule's Instance ID.
+      description: The IOA Rule's instance ID.
       type: String
     - contextPath: CrowdStrike.IOARules.customer_id
       description: The customer ID.
       type: String
     - contextPath: CrowdStrike.IOARules.action_label
-      description: The IOA Rule's Action Label.
+      description: The IOA Rule's action label.
       type: String
     - contextPath: CrowdStrike.IOARules.comment
-      description: The IOA Rule's Comment.
+      description: The IOA Rule's comment.
       type: String
     - contextPath: CrowdStrike.IOARules.committed_on
       description: The timestamp of the IOA Rule's commitment.
@@ -4917,10 +4917,10 @@ script:
       description: Whether the IOA Rule is in deleted status.
       type: Boolean
     - contextPath: CrowdStrike.IOARules.description
-      description: The IOA Rule's Description.
+      description: The IOA Rule's description.
       type: String
     - contextPath: CrowdStrike.IOARules.disposition_id
-      description: The Disposition ID used by the IOA Rule.
+      description: The disposition ID used by the IOA Rule.
       type: String
     - contextPath: CrowdStrike.IOARules.enabled
       description: Whether the IOA Rule is enabled.
@@ -4929,10 +4929,10 @@ script:
       description: The IOA Rule's field values.
       type: String
     - contextPath: CrowdStrike.IOARules.instance_version
-      description: The IOA Rule's Instance Version.
+      description: The IOA Rule's instance version.
       type: String
     - contextPath: CrowdStrike.IOARules.magic_cookie
-      description: The IOA Rule's Magic Cookie.
+      description: The IOA Rule's magic cookie.
       type: String
     - contextPath: CrowdStrike.IOARules.modified_by
       description: The last user who modified the IOA Rule.
@@ -4941,25 +4941,25 @@ script:
       description: The timestamp of the IOA Rule's last modification.
       type: String
     - contextPath: CrowdStrike.IOARules.name
-      description: The IOA Rule Name.
+      description: The IOA Rule name.
       type: String
     - contextPath: CrowdStrike.IOARules.pattern_id
-      description: The IOA Rule's Pattern ID.
+      description: The IOA Rule's pattern ID.
       type: String
     - contextPath: CrowdStrike.IOARules.pattern_severity
-      description: The IOA Rule's Pattern Severity.
+      description: The IOA Rule's pattern severity.
       type: String
     - contextPath: CrowdStrike.IOARules.rulegroup_id
-      description: The IOA Rule's Rule Group ID.
+      description: The IOA Rule's Rule group ID.
       type: String
     - contextPath: CrowdStrike.IOARules.ruletype_id
-      description: The IOA Rule's Rule Type ID.
+      description: The IOA Rule's Rule type ID.
       type: String
     - contextPath: CrowdStrike.IOARules.ruletype_name
-      description: The IOA Rule's Rule Type Name.
+      description: The IOA Rule's Rule type name.
       type: String
     - contextPath: CrowdStrike.IOARules.version_ids
-      description: The IOA Rule's Version ID.
+      description: The IOA Rule's version ID.
       type: String
   dockerimage: demisto/py3-tools:1.0.0.84811
   isfetch: true
