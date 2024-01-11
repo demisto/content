@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 from datetime import datetime
 import pytest
 import re
+from freezegun import freeze_time
 
 from Devo_v2 import (
     alert_to_incident,
@@ -257,6 +258,7 @@ class MOCK_READER:
     pass
 
 
+@freeze_time("2024-01-01T00:00", tz_offset=0)
 def test_time_range():
     tolerance: float = 0.001
     time_from = time.time() - 60
