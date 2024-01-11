@@ -1216,8 +1216,6 @@ class Taxii2FeedClient:
         start_time = datetime.now()
         try:
             for count, envelope in enumerate(envelopes):
-                start_time = datetime.now()
-                demisto.debug(f"Received envelope number {count} with {envelope} objects")
                 stix_objects = envelope.get("objects")
                 if not stix_objects:
                     # no fetched objects
@@ -1230,7 +1228,6 @@ class Taxii2FeedClient:
                         if obj.get('type') not in ['extension-definition', 'relationship']
                     }
                 )
-                is_parsed_obj = False
                 # now we have a list of objects, go over each obj, save id with obj, parse the obj
                 for obj in stix_objects:
                     obj_type = obj.get('type')
@@ -1248,26 +1245,17 @@ class Taxii2FeedClient:
                         continue
                     if result := parse_objects_func[obj_type](obj):
                         indicators.extend(result)
-                        is_parsed_obj = True
                         self.update_last_modified_indicator_date(obj.get("modified"))
 
                     if reached_limit(limit, len(indicators)):
                         demisto.debug("Reached limit of indicators to fetch")
                         return indicators, relationships_lst
-                if not is_parsed_obj:
-                    demisto.debug("No objects were parsed bumping last run time")
-                    if self.last_fetched_indicator__modified:
-                        bumped_last_run_time = datetime.strftime(
-                            arg_to_datetime(self.last_fetched_indicator__modified) + timedelta(microseconds=1), TAXII_TIME_FORMAT)
-                        self.update_last_modified_indicator_date(bumped_last_run_time)
-                        demisto.debug(f"Updated the last modified indicator date to {bumped_last_run_time}")
-                demisto.debug(f"Cycle time: {datetime.now() - start_time}")
         except Exception as e:
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
                 demisto.debug(f"Cycle time: {datetime.now() - start_time}")
                 raise e
-            demisto.debug("Max retries exceeded but was able to fetch Indicators")
+            demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
         demisto.debug("Finished parsing all objects")
         return indicators, relationships_lst
 

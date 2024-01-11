@@ -86,7 +86,6 @@ def fetch_indicators_command(
             added_after = get_added_after(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
             )
-            demisto.debug(f'Calling build_iterator with {added_after=}')
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
             last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
