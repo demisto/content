@@ -72,6 +72,36 @@ trigger-content-internal-dist-nightly:
 #    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
 
 
+trigger-demisto-sdk-nightly:
+  stage: trigger-nightlies
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - create-release-branch
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+    when: always
+  variables:
+    BRANCH_NAME: $BRANCH_NAME
+    CONTENT_CI_TOKEN: $CONTENT_CI_TOKEN
+    CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY: $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    RELEASE_VERSION: $RELEASE_VERSION
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - echo "RELEASE_VERSION="$RELEASE_VERSION
+#    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CONTENT_CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g .id)
+    - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
+    - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
+#    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
+#    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
+
+
+
 wait-for-private-nightly:
   stage: wait-for-build-to-finish
   extends:
@@ -102,6 +132,8 @@ wait-for-content-internal-dist-nightly:
     paths:
       - ${CI_PROJECT_DIR}/artifacts/*
   variables:
-    PIPELINE_ID: $PIPELINE_ID
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
+    - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt)
+    - echo "PIPELINE_ID =" $PIPELINE_ID
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
