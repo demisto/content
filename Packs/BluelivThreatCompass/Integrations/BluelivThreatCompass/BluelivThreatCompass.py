@@ -160,7 +160,6 @@ def create_search_query(args):
     if "status" in args and all(status in STATUS_VALUES for status in args["status"].split(",")):
         params["analysisCalcResult"] = args['status']
 
-
     return params
 
 
@@ -316,9 +315,9 @@ def fetch_incidents(client: Client, last_run, first_fetch_time, fetch_limit, fet
         incidents.append(incident)
 
     if incidents:
-        last_fetch = parse(incidents[-1]['occurred']) + timedelta(seconds=1) # add 1 second for the next fetch
+        last_fetch = parse(incidents[-1]['occurred']) + timedelta(seconds=1)  # add 1 second for the next fetch
         demisto.setLastRun({
-            'last_fetch': int(last_fetch.timestamp()) * 1000 # Save in milliseconds
+            'last_fetch': int(last_fetch.timestamp()) * 1000  # Save in milliseconds
         })
 
     return incidents
