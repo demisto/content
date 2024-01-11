@@ -1,4 +1,10 @@
 from CommonServerPython import *
+from dataclasses import dataclass
+
+
+@dataclass
+class MockClient:
+    time_field = "calculatedTime"
 
 
 class MockHit:
@@ -291,3 +297,14 @@ def test_extract_api_from_username_password_username_api_key():
     import FeedElasticsearch as esf
     username = esf.API_KEY_PREFIX + 'api_id'
     assert esf.extract_api_from_username_password(username, 'api_key') == ('api_id', 'api_key')
+
+
+def test_last_run():
+    from FeedElasticsearch import update_last_fetch
+    ioc_lst = [{"id": "1", "calculatedTime": "2023-01-17T14:30:00.000Z"},
+               {"id": "2", "calculatedTime": "2023-01-17T14:32:00.000Z"},
+               {"id": "3", "calculatedTime": "2023-01-17T14:33:00.000Z"},
+               {"id": "4", "calculatedTime": "2023-01-17T14:33:00.000Z"}]
+    last_update, last_ids = update_last_fetch(MockClient(), ioc_lst)
+    assert set(last_ids) == {"4", "3"}
+    assert last_update.isoformat() == "2023-01-17T14:33:00+00:00"

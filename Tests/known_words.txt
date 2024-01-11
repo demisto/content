@@ -235,6 +235,7 @@ XDM
 Fortinet
 ADFS
 Webhook
+Workplan
 VM
 WSUS
 yml

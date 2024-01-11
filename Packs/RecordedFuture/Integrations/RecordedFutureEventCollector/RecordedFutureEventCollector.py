@@ -7,7 +7,7 @@ from typing import Any
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-BASE_URL = 'https://api.recordedfuture.com/v2'
+BASE_URL = 'https://api.recordedfuture.com/gw/xsiam'
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 VENDOR = 'Recorded Future'
@@ -30,9 +30,9 @@ class Client(BaseClient):
 
         return self._http_request(**request_kwargs)
 
-    def whoami(self) -> dict[str, Any]:
-        """Check whoami."""
-        return self._call(url_suffix='/info/whoami')
+    def test_connection(self) -> dict[str, Any]:
+        """Check connection."""
+        return self._call(url_suffix='/config/info')
 
     def get_alerts(self, params: dict = None) -> dict[str, Any]:
         """Get alerts."""
@@ -57,14 +57,14 @@ def test_module(client: Client):
     """
 
     try:
-        client.whoami()
+        client.test_connection()
         return_results('ok')
     except Exception as err:
         message = str(err)
         try:
             error = json.loads(str(err).split('\n')[1])
-            if 'fail' in error.get('result', dict()).get('status', ''):
-                message = error.get('result', dict())['message']
+            if 'fail' in error.get('result', {}).get('status', ''):
+                message = error.get('result', {})['message']
         except Exception:
             message = (
                 'Unknown error. Please verify that the API'
@@ -85,7 +85,7 @@ def get_events(client, params: dict) -> list:
     """
 
     result = client.get_alerts(params)
-    events = result.get('data', {}).get('results', [])
+    events = result.get('data', [])
 
     hr = tableToMarkdown(name='Test Event', t=events)
     return_results(CommandResults(
@@ -94,6 +94,20 @@ def get_events(client, params: dict) -> list:
     ))
 
     return events
+
+
+def get_triggered(event: dict) -> str:
+    """Get the 'triggered' value from an event without milliseconds since the API ignores them.
+
+    Args:
+        event (dict): The event from API.
+
+    Returns:
+        str: the "triggered" value.
+    """
+    if event:
+        return event.get('log', {}).get('triggered', '').split('.')[0]
+    return ''
 
 
 def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
@@ -114,13 +128,13 @@ def fetch_events(client: Client, **kwargs) -> tuple[list, dict]:
     response = client.get_alerts(params)
 
     next_run = {}
-    if events := response.get('data', {}).get('results', []):
-        # Obtain the latest triggered time (for the next fetch round), without milliseconds since the API ignores them.
-        next_run_time = events[0].get('triggered').split('.')[0]
+    if events := response.get('data', []):
+        # Obtain the latest triggered time (for the next fetch round)
+        next_run_time = get_triggered(events[0])
 
         # We need the IDs of the events with the same trigger time as the latest,
         # So that we can remove them in the next fetch, Since we are fetching from (including) this time.
-        next_run_ids = {event.get('id') for event in events if event.get('triggered').split('.')[0] == next_run_time}
+        next_run_ids = {event.get('id') for event in events if get_triggered(event) == next_run_time}
 
         # In case all events were triggered at the same time and the limit equals their amount,
         # We should increase the next run time, Otherwise the fetch will get stuck at this time forever.
@@ -147,7 +161,7 @@ def add_time_key_to_events(events: list = None):
         events: list, the events to add the time key to.
     """
     for event in events or []:
-        event["_time"] = event.get("triggered")
+        event["_time"] = demisto.get(event, 'log.triggered')
 
 
 ''' MAIN FUNCTION '''

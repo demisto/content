@@ -34,8 +34,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 70
+          "x": 240,
+          "y": -80
         }
       }
     note: false
@@ -61,12 +61,10 @@ tasks:
       '#default#':
       - "22"
       "yes":
-      - "6"
-      - "4"
-      - "5"
       - "9"
       - "8"
       - "7"
+      - "37"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -102,8 +100,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 210
+          "x": 240,
+          "y": 60
         }
       }
     note: false
@@ -139,8 +137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 580
+          "x": -850,
+          "y": 750
         }
       }
     note: false
@@ -164,14 +162,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 430
+          "x": -850,
+          "y": 420
         }
       }
     note: false
@@ -195,14 +193,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "12"
+      - "40"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 430
+          "x": -430,
+          "y": 420
         }
       }
     note: false
@@ -226,14 +224,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "38"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 430
+          "x": -10,
+          "y": 420
         }
       }
     note: false
@@ -263,8 +261,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 430
+          "x": 490,
+          "y": 420
         }
       }
     note: false
@@ -294,8 +292,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 430
+          "x": 910,
+          "y": 420
         }
       }
     note: false
@@ -325,8 +323,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 430
+          "x": 1330,
+          "y": 420
         }
       }
     note: false
@@ -362,8 +360,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 940
+          "x": -850,
+          "y": 1100
         }
       }
     note: false
@@ -404,8 +402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 1300
+          "x": -850,
+          "y": 1460
         }
       }
     note: false
@@ -447,8 +445,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 580
+          "x": -430,
+          "y": 750
         }
       }
     note: false
@@ -484,8 +482,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 580
+          "x": -10,
+          "y": 750
         }
       }
     note: false
@@ -521,8 +519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 580
+          "x": 490,
+          "y": 570
         }
       }
     note: false
@@ -560,8 +558,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 580
+          "x": 1330,
+          "y": 570
         }
       }
     note: false
@@ -597,8 +595,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 580
+          "x": 910,
+          "y": 570
         }
       }
     note: false
@@ -634,8 +632,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 940
+          "x": 910,
+          "y": 930
         }
       }
     note: false
@@ -673,8 +671,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 940
+          "x": 1330,
+          "y": 930
         }
       }
     note: false
@@ -712,8 +710,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 1670
+          "x": 240,
+          "y": 1810
         }
       }
     note: false
@@ -749,8 +747,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 940
+          "x": 490,
+          "y": 930
         }
       }
     note: false
@@ -793,8 +791,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 760
+          "x": 1330,
+          "y": 750
         }
       }
     note: false
@@ -837,8 +835,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 1120
+          "x": 1330,
+          "y": 1110
         }
       }
     note: false
@@ -881,8 +879,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 760
+          "x": 910,
+          "y": 750
         }
       }
     note: false
@@ -925,8 +923,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1120
+          "x": 910,
+          "y": 1110
         }
       }
     note: false
@@ -969,8 +967,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 760
+          "x": -10,
+          "y": 920
         }
       }
     note: false
@@ -1013,8 +1011,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 760
+          "x": -850,
+          "y": 920
         }
       }
     note: false
@@ -1057,8 +1055,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 1120
+          "x": -850,
+          "y": 1280
         }
       }
     note: false
@@ -1101,8 +1099,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 1490
+          "x": -850,
+          "y": 1620
         }
       }
     note: false
@@ -1129,8 +1127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 1850
+          "x": 240,
+          "y": 1980
         }
       }
     note: false
@@ -1173,8 +1171,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 760
+          "x": 490,
+          "y": 750
         }
       }
     note: false
@@ -1224,8 +1222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1120
+          "x": 490,
+          "y": 1110
         }
       }
     note: false
@@ -1275,8 +1273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 760
+          "x": -430,
+          "y": 920
         }
       }
     note: false
@@ -1286,17 +1284,195 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 5b2b1c42-7a11-456d-82a6-421c46feee98
+    type: regular
+    task:
+      id: 5b2b1c42-7a11-456d-82a6-421c46feee98
+      version: -1
+      name: Search for available tables
+      description: Executes an analytics query for data.
+      script: Azure Log Analytics|||azure-log-analytics-execute-query
+      type: regular
+      iscommand: true
+      brand: Azure Log Analytics
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: AzureTables=
+      query:
+        simple: search "*" | summarize count() by $table | sort by count_ desc
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 6660c680-dbb2-4718-8eb2-3c52f0aa5452
+    type: condition
+    task:
+      id: 6660c680-dbb2-4718-8eb2-3c52f0aa5452
+      version: -1
+      name: should perform queries on Azure Sentinel Anomalies tables?
+      description: Checks if the Azure Sentinel Anomalies table is available for querying.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${AzureTables.tables.rows.[].[0]}
+            iscontext: true
+          right:
+            value:
+              simple: Anomalies
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: edc86152-4e2a-405c-8822-bb3677942ab1
+    type: condition
+    task:
+      id: edc86152-4e2a-405c-8822-bb3677942ab1
+      version: -1
+      name: should perform queries on Azure Sentinel BehaviorAnalytics tables?
+      description: Checks if the Azure Sentinel BehaviorAnalytics table is available for querying.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${AzureTables.tables.rows.[].[0]}
+            iscontext: true
+          right:
+            value:
+              simple: BehaviorAnalytics
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 4bfe49ef-8907-4748-8d5e-e9ab50d96c8e
+    type: condition
+    task:
+      id: 4bfe49ef-8907-4748-8d5e-e9ab50d96c8e
+      version: -1
+      name: should perform queries on Azure Sentinel IdentityInfo tables?
+      description: Checks if the Azure Sentinel IdentityInfo table is available for querying.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${AzureTables.tables.rows.[].[0]}
+            iscontext: true
+          right:
+            value:
+              simple: IdentityInfo
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "1_22_#default#": 0.1
+      "1_22_#default#": 0.1,
+      "38_22_#default#": 0.15,
+      "39_22_#default#": 0.11,
+      "40_22_#default#": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 1845,
-        "width": 2540,
-        "x": -810,
-        "y": 70
+        "height": 2125,
+        "width": 2560,
+        "x": -850,
+        "y": -80
       }
     }
   }

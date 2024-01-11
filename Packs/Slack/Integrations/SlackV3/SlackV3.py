@@ -16,7 +16,6 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
-
 ''' CONSTANTS '''
 
 SEVERITY_DICT = {
@@ -91,7 +90,6 @@ DEMISTO_API_KEY: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -183,9 +181,10 @@ def return_user_filter(user_to_search: str, users_list):
         The dict which matched the user to search for if one was found, else an empty dict.
     """
     users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
-                               or u.get('profile', {}).get('display_name', '').lower() == user_to_search
-                               or u.get('profile', {}).get('email', '').lower() == user_to_search
-                               or u.get('profile', {}).get('real_name', '').lower() == user_to_search, users_list))
+                                         or u.get('profile', {}).get('display_name', '').lower() == user_to_search
+                                         or u.get('profile', {}).get('email', '').lower() == user_to_search
+                                         or u.get('profile', {}).get('real_name', '').lower() == user_to_search,
+                               users_list))
     if users_filter:
         return users_filter[0]
     else:
@@ -853,7 +852,7 @@ def answer_question(text: str, question: dict, email: str = ''):
     try:
         demisto.handleEntitlementForUser(incident_id, guid, email, content, task_id)
     except Exception as e:
-        demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
+        demisto.debug(f'Failed handling entitlement {entitlement}: {str(e)}')
     question['remove'] = True
     return incident_id
 
@@ -947,16 +946,13 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
     """
     slack_users = []
     for user in users:
-        slack_user: dict = {}
-        # Try to invite by XSOAR email
         user_email = user.get('email', '')
         user_name = user.get('username', '')
-        if user_email:
-            slack_user = get_user_by_name(user_email, False)
-        if not slack_user:
-            # Try to invite by XSOAR user name
-            if user_name:
-                slack_user = get_user_by_name(user_name, False)
+
+        # Try to invite by XSOAR email, if not found then by XSOAR user name
+        slack_user = get_user_by_name(user_email, False) if user_email else None
+        if not slack_user and user_name:
+            slack_user = get_user_by_name(user_name, False)
         if slack_user:
             slack_users.append(slack_user)
         else:
@@ -1259,7 +1255,8 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
             labels.append({'type': 'Source', 'value': 'Slack'})
         incident['labels'] = labels
 
-    data = demisto.createIncidents(incidents, userID=user_demisto_id) if user_demisto_id else demisto.createIncidents(incidents)
+    data = demisto.createIncidents(incidents, userID=user_demisto_id) if user_demisto_id else demisto.createIncidents(
+        incidents)
 
     return data
 
@@ -1310,12 +1307,12 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
 
 
 async def process_entitlement_reply(
-    entitlement_reply: str,
-    user_id: str,
-    action_text: str,
-    response_url: str | None = None,
-    channel: str | None = None,
-    message_ts: str | None = None
+        entitlement_reply: str,
+        user_id: str,
+        action_text: str,
+        response_url: str | None = None,
+        channel: str | None = None,
+        message_ts: str | None = None
 ):
     """
     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
@@ -1507,47 +1504,20 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if len(actions) > 0:
                 channel = data.get('channel', {}).get('id', '')
                 entitlement_json = actions[0].get('value')
+                entitlement_string = json.loads(entitlement_json)
                 if entitlement_json is None:
                     return
                 if actions[0].get('action_id') == 'xsoar-button-submit':
                     demisto.debug("Handling a SlackBlockBuilder response.")
-                entitlement_string = json.loads(entitlement_json)
-                entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
-                action_text = actions[0].get('text').get('text')
-                incident_id = answer_question(action_text, entitlement_string,
-                                              user.get('profile', {}).get('email'))  # type: ignore
-                if state and DEMISTO_API_KEY:
-                    string_safe_state = json.dumps(state)
-                    body = {
-                        "data": "!Set",
-                        "args": {
-                            "value": {
-                                "simple": string_safe_state
-                            },
-                            "key": {
-                                "simple": "SlackBlockState"
-                            }
-                        },
-                        "investigationId": str(incident_id)
-                    }
-                    headers = {
-                        'Authorization': f'{DEMISTO_API_KEY}',
-                        'Content-Type': 'application/json',
-                        'accept': 'application/json'
-                    }
-
-                    _body = json.dumps(body)
-                    try:
-                        response = requests.request("POST",  # type: ignore
-                                                    f"{DEMISTO_URL}/entry/execute/sync",
-                                                    headers=headers,
-                                                    data=_body,
-                                                    verify=VERIFY_CERT
-                                                    )
-                        response.raise_for_status()  # type: ignore
-                    except requests.exceptions.ConnectionError as err:
-                        err_message = f'Error submitting context command to server. Check your API Key: {err}'
-                        demisto.updateModuleHealth(err_message)
+                    if state:
+                        state.update({"xsoar-button-submit": "Successful"})
+                        action_text = json.dumps(state)
+                else:
+                    demisto.debug("Not handling a SlackBlockBuilder response.")
+                    action_text = actions[0].get('text').get('text')
+                _ = answer_question(action_text, entitlement_string,
+                                    user.get('profile', {}).get('email'))  # type: ignore
+                entitlement_reply = entitlement_string.get("reply", "Thank you for your reply.")
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
                 reset_listener_health()
@@ -1581,7 +1551,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             user = await get_user_details(user_id=user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
             if entitlement_reply:
-                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel, message_ts=message_ts)
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel,
+                                                message_ts=message_ts)
                 reset_listener_health()
                 return
 
@@ -1855,7 +1826,8 @@ def slack_send():
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
                  or not (len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
-        demisto.debug(f"Severity of the notification is - {severity} and the Severity threshold is {SEVERITY_THRESHOLD}")
+        demisto.debug(
+            f"Severity of the notification is - {severity} and the Severity threshold is {SEVERITY_THRESHOLD}")
 
     if not (to or group or channel or channel_id):
         return_error('Either a user, group, channel id, or channel must be provided.')
@@ -2611,7 +2583,8 @@ def list_channels():
                                                                body={'user': channel.get('creator')})
             entry['Creator'] = creator_details_response['user']['name']
         context.append(entry)
-    readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}', context)
+    readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}',
+                                      context)
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': channels,
@@ -2886,7 +2859,8 @@ def slack_get_integration_context():
         'ContentsFormat': EntryFormat.MARKDOWN,
         'Contents': readable_stats,
     })
-    return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
+    return_results(
+        fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
 def slack_get_integration_context_statistics():

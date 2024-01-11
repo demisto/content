@@ -1,0 +1,32 @@
+{
+    "id": "incident_cybersixgilltriggereddomain",
+    "version": -1,
+    "modified": "2023-11-09T22:08:00.46683194+05:30",
+    "name": "Cybersixgill Triggered domain",
+    "ownerOnly": false,
+    "description": "Triggered domain",
+    "cliName": "cybersixgilltriggereddomain",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Cybersixgill Actionable Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

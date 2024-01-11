@@ -1,12 +1,27 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # STD Libraries
-from typing import Optional, List, Dict, Any
+from typing import Any
 # 3-rd party libraries
 import pandas as pd
 import phrases_case
 # Local packages
 from CommonServerUserPython import *
+
+
+def get_error_message(grid_id: str) -> str:
+    """ Gets error message.
+
+    Args:
+        grid_id: The grid ID.
+
+    Returns:
+        str: The error message.
+    """
+    return f"The following grid id was not found: {grid_id}. Make sure you entered the correct " \
+           f"incident type with the \"Machine name\" as it appears in the incident field editor in " \
+           f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the " \
+           f"incident Context Data under incident - if not then consult with PANW support team."
 
 
 def normalized_string(phrase: str) -> str:
@@ -46,7 +61,7 @@ def normalized_column_name(phrase: str) -> str:
     return re.sub(r'[^a-zA-Z\d_]', '', phrase).lower()
 
 
-def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[int] = None) -> Dict[Any, Any]:
+def filter_dict(dict_obj: dict[Any, Any], keys: list[str], max_keys: int | None = None) -> dict[Any, Any]:
     """ Filter keys from Dictionary:
             1. Will only save keys which specified in keys parameters.
             2. If key in index 0 is "*", will save all keys until max_keys (as much as Grid can include).
@@ -77,7 +92,7 @@ def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[in
     return new_dict
 
 
-def entry_dicts_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
+def entry_dicts_to_string(dict_obj: dict[Any, Any], keys_to_choose: list[str]):
     """
 
     Args:
@@ -87,7 +102,7 @@ def entry_dicts_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
     Returns:
         string contains all selected values from the nested dictionary of the context entry.
     """
-    new_dict = {key: '' for key in dict_obj.keys()}
+    new_dict = {key: '' for key in dict_obj}
     for (key, value) in dict_obj.items():
         if isinstance(value, dict):
             value = filter_dict(value, keys_to_choose)
@@ -108,7 +123,7 @@ def entry_dicts_to_string(dict_obj: Dict[Any, Any], keys_to_choose: list[str]):
     return new_dict
 
 
-def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], columns: List[str]):
+def unpack_all_data_from_dict(entry_context: dict[Any, Any], keys: list[str], columns: list[str]):
     """ Unpacks lists and dicts to flatten the object for the grid.
 
     Args:
@@ -123,7 +138,7 @@ def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], co
 
     filtered_dict = filter_dict(entry_context, keys)
 
-    def recursively_unpack_data(item_to_unpack: Dict[Any, Any], path: str):
+    def recursively_unpack_data(item_to_unpack: dict[Any, Any], path: str):
         for key, value in item_to_unpack.items():
             if isinstance(value, dict):
                 recursively_unpack_data(filter_dict(value, keys), path + '.' + key)
@@ -135,14 +150,14 @@ def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], co
                         unpacked_data.append(
                             {
                                 columns[0]: key,
-                                columns[1]: item if isinstance(item, (str, int, float, bool)) else ""
+                                columns[1]: item if isinstance(item, str | int | float | bool) else ""
                             }
                         )
             else:
                 unpacked_data.append(
                     {
                         columns[0]: key,
-                        columns[1]: value if isinstance(value, (str, int, float, bool)) else ""
+                        columns[1]: value if isinstance(value, str | int | float | bool) else ""
                     }
                 )
 
@@ -161,8 +176,13 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     Returns:
         DataFrame: Existing grid data.
     """
-    custom_fields = demisto.incident().get("CustomFields", {})
-    current_table: Optional[List[dict]] = custom_fields.get(grid_id)
+    # Note: in XSIAM empty grid fields doe not exist in the context.
+    # in XSOAR the fields exist with empty values.
+    incident = demisto.incident()
+    custom_fields = incident.get("CustomFields", {}) or {}
+    if (not is_xsiam()) and grid_id not in custom_fields:
+        raise ValueError(get_error_message(grid_id))
+    current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
 
 
@@ -191,9 +211,9 @@ def validate_entry_context(context_path: str, entry_context: Any, unpack_nested_
                 'When the unpack_nested_elements argument is set to True, the context object for the path should be '
                 'of type dict.')
         else:
-            return
+            return None
 
-    if not isinstance(entry_context, (list, dict)):
+    if not isinstance(entry_context, list | dict):
         raise ValueError(
             f'The context object {context_path} should be of type dict or list.\n'
             f'Received type: {type(entry_context)}')
@@ -218,7 +238,7 @@ def validate_entry_context(context_path: str, entry_context: Any, unpack_nested_
     if not has_seen_dict:
         data_type = 'list'
         for index, item in enumerate(entry_context):
-            if not isinstance(item, (str, int, float, bool)):
+            if not isinstance(item, str | int | float | bool):
                 raise ValueError(
                     f'The context path {context_path} should contain a list of simple values '
                     f'(string, number, boolean)\n'
@@ -227,8 +247,8 @@ def validate_entry_context(context_path: str, entry_context: Any, unpack_nested_
     return data_type
 
 
-def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_nested_elements: bool,
-               keys_from_nested: List[str]) -> pd.DataFrame:
+def build_grid(context_path: str, keys: list[str], columns: list[str], unpack_nested_elements: bool,
+               keys_from_nested: list[str]) -> pd.DataFrame:
     """ Build new DateFrame from current context retrieved by DT.
         There are 3 cases:
             1. DT returns dict - In this case we will insert it in the table as key, value in each row.
@@ -288,9 +308,9 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
 
 
 @logger
-def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns: List[str], overwrite: bool,
-                       sort_by: List[str], unpack_nested_elements: bool, keys_from_nested: List[str]) \
-        -> List[Dict[Any, Any]]:
+def build_grid_command(grid_id: str, context_path: str, keys: list[str], columns: list[str], overwrite: bool,
+                       sort_by: list[str], unpack_nested_elements: bool, keys_from_nested: list[str]) \
+        -> list[dict[Any, Any]]:
     """ Build Grid in one of the 3 options:
             1. Context_path contains list of dicts where values are of primitive types (str, int, float, bool),
                 e.g. [{'a': 1, 'b': 2}, {'a': 1, 'b': 2}]
@@ -362,7 +382,7 @@ def main():  # pragma: no cover
                                    keys_from_nested=argToList(args.get('keys_from_nested'))
                                    )
         # Execute automation 'setIncident` which change the Context data in the incident
-        res = demisto.executeCommand("setIncident", {
+        res_set = demisto.executeCommand("setIncident", {
             'customFields': {
                 grid_id: table,
             },
@@ -370,17 +390,19 @@ def main():  # pragma: no cover
         # we want to check if the incident was succefully updated
         # we execute command and not using `demisto.incident()` because we want to get the updated incident and context
         res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
-        data = res[0]["Contents"]["data"]
-        custom_fields = data[0].get("CustomFields")
-
-        if table and grid_id not in custom_fields:
-            raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
-                             f"incident type with the \"Machine name\" as it appears in the incident field editor in "
-                             f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
-                             f"incident Context Data under incident - if not then please consult with support.")
-
-        if is_error(res):
-            demisto.error(f'failed to execute "setIncident" with table: {table}')
+        custom_fields = {}
+        for entry in res:
+            if entry['Contents']:
+                data = entry["Contents"]["data"]
+                custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
+        # in the debugger, there is an addition of the "_grid" suffix to the grid_id.
+        if is_xsiam() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
+            raise ValueError(get_error_message(grid_id))
+        if is_error(res_set):
+            demisto.error(f'failed to execute "setIncident" with table: {table}.')
+            return_results(res_set)
+        elif is_error(res):
+            demisto.error('failed to execute "getIncidents".')
             return_results(res)
         else:
             return_results(f'Set grid {grid_id} using {context_path} successfully.')

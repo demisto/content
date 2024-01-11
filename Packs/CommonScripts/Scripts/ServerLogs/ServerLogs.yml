@@ -1,8 +1,8 @@
-comment: Uses the ssh integration to grab the host server logs
+comment: Uses the ssh integration to grab the host server logs.
 commonfields:
   id: ServerLogs
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: ServerLogs
 runas: DBotWeakRole

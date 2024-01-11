@@ -1,17 +1,22 @@
 import base64
 import json
+import unittest
+from unittest.mock import MagicMock, patch
+
 import demistomock as demisto
 
 import pytest
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
+from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
 
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item, parse_item_as_dict)
+                     handle_transient_files, parse_incident_from_item, parse_item_as_dict, get_item_as_eml,
+                     create_message)
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -508,13 +513,13 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
 
 @pytest.mark.parametrize("mime_content, expected_data, expected_attachmentSHA256", [
     (b'\xc400',
-     '\nÄ00',
+     '\r\nÄ00',
      '90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8'),
     ("Hello, this is a sample email with non-ASCII characters: é, ñ, ü.",
-     "\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",
+     "\r\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",
      "228d032fb728b3f86c49084b7d99ec37e913789415789084cd44fd94ea4647b7"),
     ("Hello, this is a sample email with ASCII characters",
-     "\nHello, this is a sample email with ASCII characters",
+     "\r\nHello, this is a sample email with ASCII characters",
      "84f8a0dec6732c2341eeb7b05ebdbe919e7092bcaf6505fbd6cda495d89b55d6")
 ])
 def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_attachmentSHA256):
@@ -533,6 +538,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     """
     mock_file_result = mocker.patch('EWSO365.fileResult')
     message = Message(
+        datetime_received=EWSDate(year=2021, month=1, day=25),
         datetime_created=EWSDate(year=2021, month=1, day=25),
         to_recipients=[],
         attachments=[
@@ -569,6 +575,7 @@ def test_parse_incident_from_item_with_attachments():
               b'nUT26MNdeTzcQSwK679doIz5Avpv8Ps2H/aBkBamwRNOCJBkl7iCHyy+04yRj3ghikw3u/ufIFHi0sQ7QG95mO1PVPLibv9A=='
 
     message = Message(
+        datetime_received=EWSDate(year=2021, month=1, day=25),
         datetime_created=EWSDate(year=2021, month=1, day=25),
         to_recipients=[],
         attachments=[
@@ -581,6 +588,69 @@ def test_parse_incident_from_item_with_attachments():
     )
     incident = parse_incident_from_item(message)
     assert incident['attachment']
+
+
+def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
+    """
+    Given:
+        1. Message with EML attachment
+        2. Attachment Item Header Keys differ in case from mime content case
+
+    When:
+        - Parsing incident from item
+
+    Verify:
+        - Result EML attachment headers are intact
+
+    """
+
+    # raw mime data
+    content = b'MIME-Version: 1.0\r\n' \
+              b'Message-ID:\r\n' \
+              b' <message-test-idRANDOMVALUES@testing.com>' \
+              b'Content-Type: text/plain; charset="us-ascii"\r\n' \
+              b'X-FAKE-Header: HVALue\r\n' \
+              b'X-Who-header: whovALUE\r\n' \
+              b'DATE: 2023-12-16T12:04:45\r\n' \
+              b'\r\nHello'
+    # headers set in the Item
+    item_headers = [
+        # these headers may have different casing than what exists in the raw content
+        MessageHeader(name="Mime-Version", value="1.0"),
+        MessageHeader(name="Content-Type", value="text/plain; charset=\"us-ascii\""),
+        MessageHeader(name="X-Fake-Header", value="HVALue"),
+        MessageHeader(name="X-WHO-header", value="whovALUE"),
+        # this is a header whose value is different. The field is limited to 1 by RFC
+        MessageHeader(name="Date", value="2023-12-16 12:04:45"),
+        # This is an extra header logged by exchange in the item -> add to the output
+        MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
+    ]
+
+    # sent to "fileResult", original headers from content with matched casing, with additional header
+    expected_data = 'MIME-Version: 1.0\r\n' \
+                    'Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n' \
+                    'X-FAKE-Header: HVALue\r\n' \
+                    'X-Who-header: whovALUE\r\n' \
+                    'DATE: 2023-12-16T12:04:45\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
+                    '\r\nHello'
+
+    message = Message(
+        datetime_received=EWSDate(year=2021, month=1, day=25),
+        datetime_created=EWSDate(year=2021, month=1, day=25),
+        to_recipients=[],
+        attachments=[
+            ItemAttachment(
+                item=Item(mime_content=content, headers=item_headers),
+                attachment_id=AttachmentId(),
+                last_modified_time=EWSDate(year=2021, month=1, day=25),
+            ),
+        ],
+    )
+    mock_file_result = mocker.patch('EWSO365.fileResult')
+    parse_incident_from_item(message)
+    # assert the fileResult is created with the expected results
+    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
 
 
 @pytest.mark.parametrize('params, expected_result', [
@@ -656,3 +726,101 @@ def test_categories_parse_item_as_dict():
 
     return_value = parse_item_as_dict(message)
     assert return_value.get("categories") == ['Purple category', 'Orange category']
+
+
+@pytest.mark.parametrize("subject, expected_file_name", [
+    ("test_subject", "test_subject.eml"),
+    ("", "demisto_untitled_eml.eml"),
+    ("another subject", "another subject.eml")
+])
+def test_get_item_as_eml(subject, expected_file_name, mocker):
+    """
+    Given
+        1. An Item Exists in the Target Mailbox
+        2. That Item Can be Retrieved By Item ID
+    When
+        - Requesting Item As EML
+
+    Then
+        - Item is converted to an EML with the correct filename and headers intact.
+
+    """
+    content = b'MIME-Version: 1.0\r\n' \
+              b'Message-ID:\r\n' \
+              b' <message-test-idRANDOMVALUES@testing.com>' \
+              b'Content-Type: text/plain; charset="us-ascii"\r\n' \
+              b'X-FAKE-Header: HVALue\r\n' \
+              b'X-Who-header: whovALUE\r\n' \
+              b'DATE: 2023-12-16T12:04:45\r\n' \
+              b'\r\nHello'
+
+    # headers set in the Item
+    item_headers = [
+        # these header keys may have different casing than what exists in the raw content
+        MessageHeader(name="Mime-Version", value="1.0"),
+        MessageHeader(name="Content-Type", value="text/plain; charset=\"us-ascii\""),
+        MessageHeader(name="X-Fake-Header", value="HVALue"),
+        MessageHeader(name="X-WHO-header", value="whovALUE"),
+        # this is a header whose value is different. The field is limited to 1 by RFC
+        MessageHeader(name="Date", value="2023-12-16 12:04:45"),
+        # This is an extra header logged by exchange in the item -> add to the output
+        MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
+    ]
+    expected_data = 'MIME-Version: 1.0\r\n' \
+                    'Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n' \
+                    'X-FAKE-Header: HVALue\r\n' \
+                    'X-Who-header: whovALUE\r\n' \
+                    'DATE: 2023-12-16T12:04:45\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
+                    '\r\nHello'
+
+    class MockEWSClient:
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def get_account(self, target_mailbox):
+            return "Account"
+
+        def get_item_from_mailbox(self, account, item_id):
+
+            return Item(mime_content=content, headers=item_headers, subject=subject)
+    mock_file_result = mocker.patch('EWSO365.fileResult')
+
+    get_item_as_eml(MockEWSClient(), "item", "account@test.com")
+
+    mock_file_result.assert_called_once_with(expected_file_name, expected_data)
+
+
+class TestEmailModule(unittest.TestCase):
+
+    @patch('EWSO365.FileAttachment')
+    @patch('EWSO365.HTMLBody')
+    @patch('EWSO365.Body')
+    @patch('EWSO365.Message')
+    def test_create_message_with_html_body(self, mock_message, mock_body, mock_html_body, mock_file_attachment):
+        """
+        Test create_message function with an HTML body.
+        """
+        # Setup
+        to = ["recipient@example.com"]
+        subject = "Test Subject"
+        html_body = "<p>Test HTML Body</p>"
+        attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
+
+        mock_message.return_value = MagicMock()
+        mock_html_body.return_value = MagicMock()
+        mock_file_attachment.return_value = MagicMock()
+
+        # Call the function
+        result = create_message(
+            to, subject, html_body=html_body, attachments=attachments
+        )
+
+        # Assertions
+        mock_html_body.assert_called_once_with(html_body)
+        mock_file_attachment.assert_called_once_with(
+            name="file.txt", content="data", is_inline=True, content_id="12345"
+        )
+        mock_message.assert_called_once()
+        self.assertIsInstance(result, MagicMock)

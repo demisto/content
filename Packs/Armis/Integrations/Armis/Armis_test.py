@@ -7,6 +7,7 @@ import pytest
 import time
 
 import CommonServerPython
+import demistomock as demisto
 
 
 def test_untag_device_success(requests_mock):
@@ -429,3 +430,30 @@ def test_fetch_incidents_no_duplicates(mocker):
     assert incidents[0]['rawJSON'] == json.dumps(armis_incident)
     _, incidents = fetch_incidents(client, next_run, '', 'Low', [], [], '', 1)
     assert not incidents
+
+
+class MockClient:
+    def __init__(self, secret: str, base_url: str, verify: bool, proxy):
+        pass
+
+
+def test_url_parameter(mocker):
+    """
+    Given:
+    - Instance parameters with a base URL without `api/v1` prefix.
+
+    When:
+    - Running the main function and configured the client class.
+
+    Then:
+    - Ensure that hte base URL in the client class is with teh `api/v1` prefix.
+
+    """
+    from Armis import main
+
+    mocker.patch.object(demisto, 'params', return_value={'url': 'test.com'})
+    mock_client = mocker.patch('Armis.Client', side_effect=MockClient)
+
+    main()
+
+    assert mock_client.call_args.kwargs['base_url'] == 'test.com/api/v1/'

@@ -1,8 +1,8 @@
 {
     "name": "Tessian",
-    "description": "XSoar integration for interacting with Tessian's events",
+    "description": "Tessian's complete cloud email security platform defends customers against advanced phishing threats, and protects their sensitive data on email.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Tessian",
     "url": "",
     "email": "support@tessian.com",
@@ -22,6 +22,7 @@
         "marketplacev2"
     ],
     "githubUser": [
-        "NicBunn-PlutoFlume"
+        "NicBunn-PlutoFlume",
+        "nicokuyum-PlutoFlume"
     ]
 }

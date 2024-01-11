@@ -7,6 +7,10 @@ from dateutil import parser
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+EVENT_TYPE_ALERTS = 'alerts'
+EVENT_TYPE_ACTIVITIES = 'activity'
+EVENT_TYPE_DEVICES = 'devices'
+
 
 class EVENT_TYPE:
     """
@@ -31,11 +35,12 @@ API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 5000
 DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
-    'Alerts': EVENT_TYPE(unique_id_key='alertId', aql_query='in:alerts', type='alerts', order_by='time', dataset_name='alerts'),
-    'Activities': EVENT_TYPE(unique_id_key='activityUUID', aql_query='in:activity', type='activity',
+    'Alerts': EVENT_TYPE(unique_id_key='alertId', aql_query=f'in:{EVENT_TYPE_ALERTS}', type=EVENT_TYPE_ALERTS, order_by='time',
+                         dataset_name=EVENT_TYPE_ALERTS),
+    'Activities': EVENT_TYPE(unique_id_key='activityUUID', aql_query=f'in:{EVENT_TYPE_ACTIVITIES}', type=EVENT_TYPE_ACTIVITIES,
                              order_by='time', dataset_name='activities'),
-    'Devices': EVENT_TYPE(unique_id_key='id', aql_query='in:devices', type='devices', order_by='lastSeen',
-                          dataset_name='devices'),
+    'Devices': EVENT_TYPE(unique_id_key='id', aql_query=f'in:{EVENT_TYPE_DEVICES}', type=EVENT_TYPE_DEVICES,
+                          order_by='lastSeen', dataset_name=EVENT_TYPE_DEVICES),
 }
 DEVICES_LAST_FETCH = 'devices_last_fetch_time'
 
@@ -62,6 +67,33 @@ class Client(BaseClient):
         self._headers = headers
         self._access_token = access_token
 
+    def perform_fetch(self, params):
+        try:
+            raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+        except Exception as e:
+            if "Invalid access token" in str(e):
+                demisto.debug("debug-log: Invalid access token")
+                self.update_access_token()
+                raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+            else:
+                demisto.debug(f"debug-log: Error occurred while fetching events: {e}")
+                raise e
+        return raw_response
+
+    def fetch_by_ids_in_aql_query(self, aql_query: str, order_by: str = 'time'):
+        """ Fetches events using AQL query.
+
+        Args:
+            aql_query (str): AQL query request parameter for the API call.
+            max_fetch (int): Max number of events to fetch.
+            order_by (str): Order by parameter for the API call. Defaults to 'time'.
+        Returns:
+            list[dict]: List of events objects represented as dictionaries.
+        """
+        params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'orderBy': order_by}
+        raw_response = self.perform_fetch(params)
+        return raw_response.get('data', {}).get('results', [])
+
     def fetch_by_aql_query(self, aql_query: str, max_fetch: int, after: None | datetime = None,
                            order_by: str = 'time'):
         """ Fetches events using AQL query.
@@ -78,7 +110,7 @@ class Client(BaseClient):
         if not after:  # this should only happen when get-events command is used without from_date argument
             after = datetime.now() - timedelta(minutes=1)
         params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
-        raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+        raw_response = self.perform_fetch(params)
         results = raw_response.get('data', {}).get('results', [])
 
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
@@ -88,7 +120,7 @@ class Client(BaseClient):
             if next < max_fetch:
                 params['length'] = max_fetch - next
             params['from'] = next
-            raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
+            raw_response = self.perform_fetch(params)
             results.extend(raw_response.get('data', {}).get('results', []))
 
         return results
@@ -274,17 +306,17 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         return new_events, new_ids
 
 
-def fetch_by_event_type(event_type: EVENT_TYPE, events: dict, next_run: dict, client: Client,
-                        max_fetch: int, last_run: dict, fetch_start_time: datetime | None):
+def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, max_fetch: int, last_run: dict,
+                        next_run: dict, fetch_start_time: datetime | None):
     """ Fetch events by specific event type.
 
     Args:
+        client (Client): Armis client to use for API calls.
         event_type (EVENT_TYPE): A namedtuple object containing the event's unique ID key, AQL query and type name.
         events (list): List of fetched events.
-        next_run (dict): Last run dictionary for next fetch cycle.
-        client (Client): Armis client to use for API calls.
         max_fetch (int): Max number of events to fetch.
         last_run (dict): Last run dictionary.
+        next_run (dict): Last run dictionary for next fetch cycle.
         fetch_start_time (datetime | None): Fetch start time.
     """
     last_fetch_ids = f'{event_type.type}_last_fetch_ids'
@@ -314,6 +346,31 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: dict, next_run: dict, cl
         next_run.update(last_run)
 
 
+def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
+    """Fetches Activities and Devices for specific Armis alert IDs.
+
+    Args:
+        client (Client): The Armis API client.
+        alert (dict): The alert dict.
+        aql_alert_id (str): The AQL alert ID to fetch events for.
+
+    Returns:
+        None: Alert dict is updated in-place with activitiesData and devicesData.
+
+    """
+    demisto.debug(f'debug-log: Fetching Activities and Devices for specific alert IDs: {aql_alert_id}')
+    activities_aql_query = f'{EVENT_TYPES["Activities"].aql_query}  {aql_alert_id}'
+    devices_aql_query = f'{EVENT_TYPES["Devices"].aql_query}  {aql_alert_id}'
+    activities_response = client.fetch_by_ids_in_aql_query(aql_query=activities_aql_query,
+                                                           order_by=EVENT_TYPES["Activities"].order_by)
+    devices_response = client.fetch_by_ids_in_aql_query(aql_query=devices_aql_query,
+                                                        order_by=EVENT_TYPES["Devices"].order_by)
+    demisto.debug(f'debug-log: fetch by alert ids\
+fetched {len(activities_response)} Activities and {len(devices_response)} Devices')
+    alert['activitiesData'] = activities_response if activities_response else {}
+    alert['devicesData'] = devices_response if devices_response else {}
+
+
 def fetch_events(client: Client,
                  max_fetch: int,
                  devices_max_fetch: int,
@@ -325,7 +382,8 @@ def fetch_events(client: Client,
 
     Args:
         client (Client): Armis client to use for API calls.
-        max_fetch (int): Max number of alerts to fetch.
+        max_fetch (int): Max number of alerts and activities to fetch.
+        devices_max_fetch (int): Max number of devices to fetch.
         last_run (dict): Last run dictionary.
         fetch_start_time (datetime | None): Fetch start time.
         event_types_to_fetch (list[str]): List of event types to fetch.
@@ -337,19 +395,23 @@ def fetch_events(client: Client,
     next_run: dict[str, list | str] = {}
     if 'Devices' in event_types_to_fetch\
             and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
+        demisto.debug('debug-log: skipping Devices fetch as it is not yet reached the device interval.')
         event_types_to_fetch.remove('Devices')
 
+    if 'Alerts' in event_types_to_fetch:
+        # begin Alerts fetch flow: fetch Alerts extract and fetch activities and devices from alert response.
+        fetch_by_event_type(client, EVENT_TYPES['Alerts'], events, max_fetch, last_run,
+                            next_run, fetch_start_time,)
+        if events and events.get(EVENT_TYPE_ALERTS):
+            for alert in events[EVENT_TYPE_ALERTS]:
+                alert_id = alert.get('alertId')
+                aql_with_alerts_id = f'alert:(alertId:({alert_id}))'
+                fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
+        event_types_to_fetch.remove('Alerts')
     for event_type in event_types_to_fetch:
         event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
-        try:
-            fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client,
-                                event_max_fetch, last_run, fetch_start_time)
-        except Exception as e:
-            if "Invalid access token" in str(e):
-                demisto.debug("debug-log: Invalid access token")
-                client.update_access_token()
-                fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client,
-                                    event_max_fetch, last_run, fetch_start_time)
+        fetch_by_event_type(client, EVENT_TYPES[event_type], events, event_max_fetch, last_run,
+                            next_run, fetch_start_time,)
 
     next_run['access_token'] = client._access_token
 
@@ -405,7 +467,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]],
             else:
                 add_time_to_events(events_list, event_type)
                 demisto.debug(f'debug-log: {len(events_list)} events of type: {event_type} are about to be sent to XSIAM.')
-            product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
+            product = f'{PRODUCT}_{event_type}' if event_type != EVENT_TYPE_ALERTS else PRODUCT
             send_events_to_xsiam(
                 events_list,
                 vendor=VENDOR,
@@ -431,7 +493,7 @@ def events_to_command_results(events: dict[str, list], event_type) -> CommandRes
         CommandResults: CommandResults containing table of fetched events.
     """
     events_output = events[event_type] if events else []
-    product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
+    product = f'{PRODUCT}_{event_type}' if event_type != EVENT_TYPE_ALERTS else PRODUCT
     return CommandResults(raw_response=events_output,
                           readable_output=tableToMarkdown(name=f'{VENDOR} {product} events',
                                                           t=events_output,

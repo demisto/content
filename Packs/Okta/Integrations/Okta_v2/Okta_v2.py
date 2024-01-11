@@ -1,15 +1,25 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import urllib3
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
-# IMPORTS
-# Disable insecure warnings
-urllib3.disable_warnings()
+from OktaApiModule import *  # noqa: E402
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SEARCH_LIMIT = 200
+OAUTH_TOKEN_SCOPES = [  # Scopes to request when generating an OAuth token
+    'okta.apps.manage',
+    'okta.apps.read',
+    'okta.groups.manage',
+    'okta.groups.read',
+    'okta.logs.read',
+    'okta.networkZones.manage',
+    'okta.networkZones.read',
+    'okta.sessions.manage',
+    'okta.sessions.read',
+    'okta.users.manage',
+    'okta.users.read'
+]
 PROFILE_ARGS = [
     'firstName',
     'lastName',
@@ -49,46 +59,43 @@ GROUP_PROFILE_ARGS = [
 ]
 
 
-class Client(BaseClient):
-    """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
-
+class Client(OktaClient):
     # Getting Group Id with a given group name
     def get_group_id(self, group_name):
-        uri = 'groups'
+        uri = '/api/v1/groups'
         query_params = {
             'q': encode_string_results(group_name)
         }
-        res = self._http_request(
+        res = self.http_request(
             method="GET",
             url_suffix=uri,
             params=query_params
         )
         if res and len(res) == 1:
             return res[0].get('id')
+        return None
 
     def get_app_id(self, app_name):
-        uri = 'apps'
+        uri = '/api/v1/apps'
         query_params = {
             'q': encode_string_results(app_name)
         }
-        res = self._http_request(
+        res = self.http_request(
             method="GET",
             url_suffix=uri,
             params=query_params
         )
         if res and len(res) == 1:
             return res[0].get('id')
+        return None
 
     # Getting User Id with a given username
     def get_user_id(self, username):
-        uri = 'users'
+        uri = '/api/v1/users'
         query_params = {
             'filter': encode_string_results(f'profile.login eq "{username}"')
         }
-        res = self._http_request(
+        res = self.http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
@@ -102,103 +109,103 @@ class Client(BaseClient):
         """
         sending a POST request to unlock a specific user
         """
-        uri = f'users/{user_id}/lifecycle/unlock'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/lifecycle/unlock'
+        return self.http_request(
             method='POST',
             url_suffix=uri
         )
 
     def deactivate_user(self, user_id):
-        uri = f'users/{user_id}/lifecycle/deactivate'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/lifecycle/deactivate'
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def activate_user(self, user_id):
-        uri = f'users/{user_id}/lifecycle/activate'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/lifecycle/activate'
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def suspend_user(self, user_id):
-        uri = f'users/{user_id}/lifecycle/suspend'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/lifecycle/suspend'
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def unsuspend_user(self, user_id):
-        uri = f'users/{user_id}/lifecycle/unsuspend'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/lifecycle/unsuspend'
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def get_user_factors(self, user_id):
-        uri = f'users/{user_id}/factors'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/factors'
+        return self.http_request(
             method="GET",
             url_suffix=uri
         )
 
     def reset_factor(self, user_id, factor_id):
-        uri = f'users/{user_id}/factors/{factor_id}'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/factors/{factor_id}'
+        return self.http_request(
             method="DELETE",
             url_suffix=uri,
             resp_type='text'
         )
 
     def set_password(self, user_id, password):
-        uri = f'users/{user_id}'
+        uri = f'/api/v1/users/{user_id}'
         body = {
             "credentials": {
                 "password": {"value": password}
             }
         }
 
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri,
             json_data=body
         )
 
     def set_temp_password(self, user_id):
-        uri = f'users/{user_id}/lifecycle/expire_password'
+        uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
 
-        return self._http_request(
+        return self.http_request(
             method="POST",
             url_suffix=uri,
         )
 
     def expire_password(self, user_id):
-        uri = f'users/{user_id}/lifecycle/expire_password'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
 
     def add_user_to_group(self, user_id, group_id):
-        uri = f'groups/{group_id}/users/{user_id}'
-        return self._http_request(
+        uri = f'/api/v1/groups/{group_id}/users/{user_id}'
+        return self.http_request(
             method="PUT",
             url_suffix=uri,
             resp_type='text'
         )
 
     def remove_user_from_group(self, user_id, group_id):
-        uri = f'groups/{group_id}/users/{user_id}'
-        return self._http_request(
+        uri = f'/api/v1/groups/{group_id}/users/{user_id}'
+        return self.http_request(
             method="DELETE",
             url_suffix=uri,
             resp_type='text'
         )
 
     def get_groups_for_user(self, user_id):
-        uri = f'users/{user_id}/groups'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/groups'
+        return self.http_request(
             method="GET",
             url_suffix=uri
         )
@@ -280,8 +287,8 @@ class Client(BaseClient):
         Creates a new transaction and sends an asynchronous push notification to the device for the user to approve or reject.
         You must poll the transaction to determine when it completes or expires.
         """
-        uri = f'users/{user_id}/factors/{factor_id}/verify'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/factors/{factor_id}/verify'
+        return self.http_request(
             method="POST",
             url_suffix=uri
         )
@@ -293,12 +300,12 @@ class Client(BaseClient):
         """
         counter = 0
         while counter < 10:
-            response = self._http_request(
+            response = self.http_request(
                 method='GET',
                 full_url=url,
                 url_suffix=''
             )
-            if not response.get('factorResult') == 'WAITING':
+            if response.get('factorResult') != 'WAITING':
                 return response
             counter += 1
             time.sleep(5)
@@ -306,13 +313,13 @@ class Client(BaseClient):
         return response
 
     def search(self, term, limit, advanced_search):
-        uri = "users"
+        uri = "/api/v1/users"
         query_params = assign_params(
             limit=limit,
             q=encode_string_results(term),
             search=encode_string_results(advanced_search)
         )
-        return self._http_request(
+        return self.http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
@@ -421,8 +428,8 @@ class Client(BaseClient):
             return users
 
     def get_user(self, user_term):
-        uri = f'users/{encode_string_results(user_term)}'
-        return self._http_request(
+        uri = f'/api/v1/users/{encode_string_results(user_term)}'
+        return self.http_request(
             method='GET',
             url_suffix=uri
         )
@@ -433,12 +440,12 @@ class Client(BaseClient):
             'groupIds': group_ids or [],
             'credentials': cred
         }
-        uri = 'users'
+        uri = '/api/v1/users'
         query_params = {
             'activate': activate,
             'provider': 'true' if cred.get('provider') else None
         }
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             json_data=body,
@@ -449,8 +456,8 @@ class Client(BaseClient):
         body = {
             'profile': profile,
         }
-        uri = 'groups'
-        return self._http_request(
+        uri = '/api/v1/groups'
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             json_data=body
@@ -499,15 +506,15 @@ class Client(BaseClient):
             "profile": profile,
             "credentials": cred
         }
-        uri = f"users/{user_id}"
-        return self._http_request(
+        uri = f"/api/v1/users/{user_id}"
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             json_data=body
         )
 
     def get_paged_results(self, uri, query_param=None):
-        response = self._http_request(
+        response = self.http_request(
             method="GET",
             url_suffix=uri,
             resp_type='response',
@@ -516,7 +523,7 @@ class Client(BaseClient):
         paged_results = response.json()
         while "next" in response.links and len(response.json()) > 0:
             next_page = response.links.get("next").get("url")
-            response = self._http_request(
+            response = self.http_request(
                 method="GET",
                 full_url=next_page,
                 url_suffix='',
@@ -528,12 +535,12 @@ class Client(BaseClient):
         return paged_results
 
     def get_group_members(self, group_id, limit):
-        uri = f'groups/{group_id}/users'
+        uri = f'/api/v1/groups/{group_id}/users'
         if limit:
             query_params = {
                 'limit': limit
             }
-            return self._http_request(
+            return self.http_request(
                 method="GET",
                 url_suffix=uri,
                 params=query_params
@@ -542,14 +549,14 @@ class Client(BaseClient):
 
     def list_users(self, args):
         # Base url - if none of the above specified - returns all the users (default 200 items)
-        uri = "users"
+        uri = "/api/v1/users"
         query_params = {}
         for key, value in args.items():
             if key == 'query':
                 key = 'q'
             query_params[key] = encode_string_results(value)
         limit = int(args.get('limit'))
-        response = self._http_request(
+        response = self.http_request(
             method="GET",
             url_suffix=uri,
             resp_type='response',
@@ -562,7 +569,7 @@ class Client(BaseClient):
             while limit > 0 and "next" in response.links and len(response.json()) > 0:
                 query_params['limit'] = encode_string_results(str(limit))
                 next_page = delete_limit_param(response.links.get("next").get("url"))
-                response = self._http_request(
+                response = self.http_request(
                     method="GET",
                     full_url=next_page,
                     url_suffix='',
@@ -578,14 +585,14 @@ class Client(BaseClient):
 
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
-        uri = "groups"
+        uri = "/api/v1/groups"
         query_params = {}
         for key, value in args.items():
             if key == 'query':
                 key = 'q'
             query_params[key] = encode_string_results(value)
         if args.get('limit'):
-            return self._http_request(
+            return self.http_request(
                 method='GET',
                 url_suffix=uri,
                 params=query_params
@@ -593,14 +600,14 @@ class Client(BaseClient):
         return self.get_paged_results(uri, query_params)
 
     def get_logs(self, args):
-        uri = 'logs'
+        uri = '/api/v1/logs'
         query_params = {}
         for key, value in args.items():
             if key == 'query':
                 key = 'q'
             query_params[key] = encode_string_results(value)
         if args.get('limit'):
-            return self._http_request(
+            return self.http_request(
                 method='GET',
                 url_suffix=uri,
                 params=query_params
@@ -608,33 +615,33 @@ class Client(BaseClient):
         return self.get_paged_results(uri, query_params)
 
     def delete_user(self, user_term):
-        uri = f"users/{encode_string_results(user_term)}"
-        return self._http_request(
+        uri = f"/api/v1/users/{encode_string_results(user_term)}"
+        return self.http_request(
             method="DELETE",
             url_suffix=uri,
             resp_type='text'
         )
 
     def clear_user_sessions(self, user_id):
-        uri = f'users/{user_id}/sessions'
-        return self._http_request(
+        uri = f'/api/v1/users/{user_id}/sessions'
+        return self.http_request(
             method='DELETE',
             url_suffix=uri,
             resp_type='text'
         )
 
     def get_zone(self, zoneID):
-        uri = f'zones/{zoneID}'
-        return self._http_request(
+        uri = f'/api/v1/zones/{zoneID}'
+        return self.http_request(
             method='GET',
             url_suffix=uri
         )
 
     def list_zones(self, limit):
-        uri = 'zones'
+        uri = '/api/v1/zones'
         if limit:
             query_params = {'limit': encode_string_results(limit)}
-            return self._http_request(
+            return self.http_request(
                 method='GET',
                 url_suffix=uri,
                 params=query_params
@@ -642,8 +649,8 @@ class Client(BaseClient):
         return self.get_paged_results(uri)
 
     def create_zone(self, zoneObject):
-        uri = 'zones'
-        return self._http_request(
+        uri = '/api/v1/zones'
+        return self.http_request(
             method='POST',
             url_suffix=uri,
             json_data=zoneObject
@@ -651,35 +658,32 @@ class Client(BaseClient):
 
     def update_zone(self, zoneObject):
         zoneID = zoneObject['id']
-        uri = f'zones/{zoneID}'
+        uri = f'/api/v1/zones/{zoneID}'
 
-        return self._http_request(
+        return self.http_request(
             method='PUT',
             url_suffix=uri,
             data=json.dumps(zoneObject)
         )
 
     def assign_group_to_app(self, group_id, app_id):
-        uri = f'apps/{app_id}/groups/{group_id}'
-        return self._http_request(
+        uri = f'/api/v1/apps/{app_id}/groups/{group_id}'
+        return self.http_request(
             method="PUT",
             url_suffix=uri,
             resp_type='text'
         )
 
 
-def test_module(client, args):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+def module_test(client, args):
+    if client.auth_type == AuthType.OAUTH:
+        # For OAuth 2.0, there's no user the token belongs to, but an app. So the '/users/me' endpoint won't work.
+        uri = '/api/v1/users'
 
-    Args:
-        client: HelloWorld client
+    else:
+        uri = '/api/v1/users/me'
 
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
-    uri = 'users/me'
-    client._http_request(method='GET', url_suffix=uri)
+    client.http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
 
 
@@ -1330,6 +1334,11 @@ def create_group_command(client, args):
     )
 
 
+def reset_auth_command(client, args):
+    reset_integration_context()
+    return CommandResults(readable_output='Authentication data cleared successfully.')
+
+
 def get_after_tag(url):
     """retrieve the after param from the url
 
@@ -1360,78 +1369,91 @@ def delete_limit_param(url):
 
 
 def main():
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
-    apitoken = demisto.params().get("credentials", {}).get("password", '') or demisto.params().get('apitoken', '')
-
-    if not apitoken:
-        raise ValueError('Missing API token.')
-
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-
-    LOG(f'Command being called is {demisto.command()}')
-
-    commands = {
-        'test-module': test_module,
-        'okta-unlock-user': unlock_user_command,
-        'okta-deactivate-user': deactivate_user_command,
-        'okta-activate-user': activate_user_command,
-        'okta-suspend-user': suspend_user_command,
-        'okta-unsuspend-user': unsuspend_user_command,
-        'okta-reset-factor': reset_factor_command,
-        'okta-set-password': set_password_command,
-        'okta-expire-password': expire_password_command,
-        'okta-add-to-group': add_user_to_group_command,
-        'okta-remove-from-group': remove_from_group_command,
-        'okta-get-groups': get_groups_for_user_command,
-        'okta-get-user-factors': get_user_factors_command,
-        'okta-verify-push-factor': verify_push_factor_command,
-        'okta-search': search_command,
-        'okta-get-user': get_user_command,
-        'okta-create-user': create_user_command,
-        'okta-update-user': update_user_command,
-        'okta-get-group-members': get_group_members_command,
-        'okta-list-users': list_users_command,
-        'okta-list-groups': list_groups_command,
-        'okta-get-logs': get_logs_command,
-        'okta-get-failed-logins': get_failed_login_command,
-        'okta-get-application-assignments': get_application_assignments_command,
-        'okta-get-group-assignments': get_group_assignments_command,
-        'okta-get-application-authentication': get_application_authentication_command,
-        'okta-delete-user': delete_user_command,
-        'okta-clear-user-sessions': clear_user_sessions_command,
-        'okta-list-zones': list_zones_command,
-        'okta-get-zone': get_zone_command,
-        'okta-update-zone': update_zone_command,
-        'okta-create-zone': create_zone_command,
-        'okta-create-group': create_group_command,
-        'okta-assign-group-to-app': assign_group_to_app_command
-
-    }
-
-    command = demisto.command()
-
-    client = Client(
-        base_url=base_url,
-        verify=verify_certificate,
-        headers={
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f'SSWS {apitoken}'
-        },
-        proxy=proxy,
-        ok_codes=(200, 201, 204))
-
     try:
-        if command in commands:
-            human_readable, outputs, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+        params = demisto.params()
+        base_url = params['url'].rstrip('/')
 
-    # Log exceptions
+        api_token = params.get("credentials", {}).get("password") or params.get('apitoken')
+
+        if not api_token:
+            raise ValueError('Missing API token.')
+
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+
+        demisto.debug(f'Command being called is {demisto.command()}')
+
+        commands = {
+            'test-module': module_test,
+            'okta-unlock-user': unlock_user_command,
+            'okta-deactivate-user': deactivate_user_command,
+            'okta-activate-user': activate_user_command,
+            'okta-suspend-user': suspend_user_command,
+            'okta-unsuspend-user': unsuspend_user_command,
+            'okta-reset-factor': reset_factor_command,
+            'okta-set-password': set_password_command,
+            'okta-expire-password': expire_password_command,
+            'okta-add-to-group': add_user_to_group_command,
+            'okta-remove-from-group': remove_from_group_command,
+            'okta-get-groups': get_groups_for_user_command,
+            'okta-get-user-factors': get_user_factors_command,
+            'okta-verify-push-factor': verify_push_factor_command,
+            'okta-search': search_command,
+            'okta-get-user': get_user_command,
+            'okta-create-user': create_user_command,
+            'okta-update-user': update_user_command,
+            'okta-get-group-members': get_group_members_command,
+            'okta-list-users': list_users_command,
+            'okta-list-groups': list_groups_command,
+            'okta-get-logs': get_logs_command,
+            'okta-get-failed-logins': get_failed_login_command,
+            'okta-get-application-assignments': get_application_assignments_command,
+            'okta-get-group-assignments': get_group_assignments_command,
+            'okta-get-application-authentication': get_application_authentication_command,
+            'okta-delete-user': delete_user_command,
+            'okta-clear-user-sessions': clear_user_sessions_command,
+            'okta-list-zones': list_zones_command,
+            'okta-get-zone': get_zone_command,
+            'okta-update-zone': update_zone_command,
+            'okta-create-zone': create_zone_command,
+            'okta-create-group': create_group_command,
+            'okta-assign-group-to-app': assign_group_to_app_command,
+            'okta-auth-reset': reset_auth_command,
+        }
+
+        command = demisto.command()
+        auth_type = AuthType.OAUTH if argToBoolean(params.get('use_oauth', False)) else AuthType.API_TOKEN
+
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            headers={
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            proxy=proxy,
+            ok_codes=(200, 201, 204),
+            api_token=api_token,
+            auth_type=auth_type,
+            client_id=params.get('client_id'),
+            scopes=OAUTH_TOKEN_SCOPES,
+            private_key=params.get('private_key'),
+            jwt_algorithm=JWTAlgorithm(params['jwt_algorithm']) if params.get('jwt_algorithm') else None,
+        )
+
+        if command in commands:
+            result = commands[command](client, demisto.args())
+
+            if isinstance(result, CommandResults | str | dict):
+                return_results(result)
+
+            else:
+                human_readable, outputs, raw_response = result
+                return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented.')
+
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

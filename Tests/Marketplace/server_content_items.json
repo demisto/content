@@ -58,7 +58,8 @@
         "dbotMirrorTags",
         "dbotMirrorLastSync",
         "timestamp",
-        "slaField"
+        "slaField",
+        "alert_sub_type"
     ],
     "IndicatorField": [
         "name",

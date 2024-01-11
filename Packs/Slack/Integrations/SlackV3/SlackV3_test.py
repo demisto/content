@@ -1,13 +1,15 @@
 import json as js
 import threading
+from unittest.mock import MagicMock
+
+import aiohttp
 import pytest
 import slack_sdk
+from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.errors import SlackApiError
-from unittest.mock import MagicMock
+
 from CommonServerPython import *
-import datetime
 
 
 def load_test_data(path):
@@ -2794,7 +2796,7 @@ def test_send_request_with_entitlement(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
@@ -2860,7 +2862,7 @@ def test_send_request_with_entitlement_blocks(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
@@ -2927,7 +2929,7 @@ def test_send_request_with_entitlement_blocks_message(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
-    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+    mocker.patch.object(SlackV3, 'get_current_utc_time', return_value=datetime(2019, 9, 26, 18, 38, 25))
 
     questions = [{
         'thread': 'cool',
@@ -4267,7 +4269,7 @@ def test_get_poll_minutes(sent, expected_minutes):
     from SlackV3 import get_poll_minutes
 
     # Set
-    current = datetime.datetime(2019, 9, 26, 18, 38, 25)
+    current = datetime(2019, 9, 26, 18, 38, 25)
 
     # Arrange
     minutes = get_poll_minutes(current, sent)
@@ -4362,9 +4364,10 @@ def test_edit_message_not_valid_thread_id(mocker):
                                                 headers={})
     api_call = SlackApiError('The request to the Slack API failed.', err_response)
 
-    expected_body = ('The request to the Slack API failed.\n'"The server responded with: {'ok': "
-                     "False, 'error': 'message_not_found'}")
-
+    expected_body = (
+        "The request to the Slack API failed.\n"
+        "The server responded with: {'ok': False, 'error': 'message_not_found'}"
+    )
     link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
     mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
@@ -4447,8 +4450,9 @@ def test_pin_message_invalid_thread_id(mocker):
     api_call = SlackApiError('The request to the Slack API failed.', err_response)
 
     expected_body = (
-        'The request to the Slack API failed.\n'"The server responded with: {'ok': False, "
-        "'error': 'message_not_found'}")
+        "The request to the Slack API failed.\n"
+        "The server responded with: {'ok': False, 'error': 'message_not_found'}"
+    )
 
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
     mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "1629281551.001000"})
@@ -4983,6 +4987,13 @@ def test_list_channels(mocker):
     slack_response_mock = {
         'ok': True,
         'channels': json.loads(CHANNELS)}
+    expected_human_readable = (
+        '### Channels list for None with filter None\n'
+        '|Created|Creator|ID|Name|Purpose|\n|---|---|---|---|---|\n'
+        '| 1666361240 | spengler | C0475674L3Z | general | This is the '
+        'one channel that will always include everyone. It’s a great '  # noqa: RUF001
+        'spot for announcements and team-wide conversations. |\n'
+    )
     mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=[slack_response_mock, {'user': js.loads(USERS)[0]}])
     mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'public_channel': 'public_channel', 'limit': 1})
     mocker.patch.object(demisto, 'results')
@@ -4990,11 +5001,7 @@ def test_list_channels(mocker):
     # mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=slack_response_mock)
     SlackV3.list_channels()
     assert demisto.results.called
-    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channels list for None with filter None\n' \
-                                                               '|Created|Creator|ID|Name|Purpose|\n|---|---|---|---|---|\n' \
-                                                               '| 1666361240 | spengler | C0475674L3Z | general | This is the' \
-                                                               ' one channel that will always include everyone. It’s a great'\
-                                                               ' spot for announcements and team-wide conversations. |\n'
+    assert demisto.results.call_args[0][0]['HumanReadable'] == expected_human_readable
     assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
 
 
@@ -5065,3 +5072,71 @@ def test_conversation_replies(mocker):
                                                                ' joke | 1690479887.647239 | 1690479887.647239 | message |' \
                                                                ' U047D5QSZD4 |\n'
     assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
+
+
+SAMPLE_PAYLOAD = json.loads(
+    load_test_data('./test_data/entitlement_response_payload.txt')
+)
+
+
+@pytest.fixture
+async def client_session():
+    session = aiohttp.ClientSession()
+    yield session
+    await session.close()
+
+
+@pytest.mark.asyncio
+async def test_listen(client_session):
+    """
+    Unit test for the `listen` function in the `SlackV3` module. This test case verifies that the function handles
+    Slack events correctly.
+    The test uses a mocked SocketModeRequest object and a mocked SocketModeClient object. It also mocks the Slack API
+    call and the `demisto.debug` method.
+    The test sets a return value for the `get_user_details` method, which is used in the function. It also sets a mock
+    response for the Slack API call.
+    The function is expected to call the `demisto.debug` method once with the message "Starting to process message",
+    and make a Slack API call with the expected JSON payload.
+    """
+    from unittest import mock
+    from slack_sdk.socket_mode.aiohttp import SocketModeClient
+    from slack_sdk.socket_mode.request import SocketModeRequest
+
+    import SlackV3
+
+    default_envelope_id = "SOMEID"
+
+    expected_content = ('{"values": {"checkboxes_0": {"checkboxes-action": {"type": "checkboxes", '
+                        '"selected_options": [{"text": {"type": "plain_text", "text": "*Option 3*", '
+                        '"emoji": true}, "value": "value-2"}]}}, "timepicker_1": {"timepicker1": '
+                        '{"type": "timepicker", "selected_time": "06:00"}}}, "xsoar-button-submit": '
+                        '"Successful"}')
+    req = SocketModeRequest(type='event', payload=SAMPLE_PAYLOAD, envelope_id=default_envelope_id)
+    client = mock.MagicMock(spec=SocketModeClient)
+    with mock.patch.object(SlackV3, 'get_user_details') as mock_get_user_details, \
+        mock.patch.object(demisto, 'debug') as mock_debug, \
+        mock.patch.object(requests, 'post') as mock_send_slack_request, \
+        mock.patch.object(SlackV3, 'reset_listener_health'), \
+            mock.patch.object(demisto, 'handleEntitlementForUser') as mock_result:
+
+        # Set the return value of the mocked get_user_details function
+        mock_user = {'id': 'mock_user_id', 'name': 'mock_user'}
+        mock_get_user_details.return_value = mock_user
+
+        mock_send_slack_request_response = {'ok': True}
+        mock_send_slack_request.return_value.json.return_value = mock_send_slack_request_response
+
+        await SlackV3.listen(client, req)
+
+        # Here we verify the call was processed at all.
+        assert mock_debug.call_count == 2
+        assert mock_send_slack_request.call_args[1].get('json') == {'text': 'reply to 3', 'replace_original': True}
+
+        # Extract the specific information which should be found in the entitlement
+        result_incident_id = mock_result.call_args[0][0]
+        result_entitlement = mock_result.call_args[0][1]
+        test_result_content = mock_result.call_args[0][3]
+
+        assert result_incident_id == '3'
+        assert result_entitlement == '326a8a51-3dbd-4b07-8662-d36bfa9509fb'
+        assert test_result_content == expected_content

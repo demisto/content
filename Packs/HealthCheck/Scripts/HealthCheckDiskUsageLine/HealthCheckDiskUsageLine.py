@@ -5,13 +5,13 @@ def main():
     ctx = demisto.context()
     dataFromCtx = ctx.get("widgets")
     if not dataFromCtx:
-        res = execute_command("demisto-api-get", {"uri": "/system/config"})
+        res = execute_command("core-api-get", {"uri": "/system/config"})
 
         config_json = res['response']
         partition = config_json.get('sysConf', {}).get('disk.partitions.to.monitor') or '/'
 
         res = execute_command(
-            "demisto-api-post",
+            "core-api-post",
             {
                 "uri": "/statistics/widgets/query",
                 "body": {

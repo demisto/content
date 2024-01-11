@@ -1,4 +1,4 @@
-var res = executeCommand('demisto-api-get', {uri: '/roles'});
+var res = executeCommand('core-api-get', {uri: '/roles'});
 if (isError(res[0])) {
     throw res[0].Contents;
 }
@@ -20,7 +20,7 @@ body = {
     roles: roleIDs
 };
 
-res = executeCommand('demisto-api-post', {uri: '/invite', body: body});
+res = executeCommand('core-api-post', {uri: '/invite', body: body});
 if (isError(res[0])) {
     throw res[0].Contents;
 }

@@ -1,0 +1,24 @@
+{
+    "meta": {
+        "query_time": 2.10823729,
+        "powered_by": "powered_by",
+        "trace_id": "trace_id"
+    },
+    "combined": {
+        "resources": {
+            "host_id": {
+                "session_id": "session_id",
+                "task_id": "task_id",
+                "complete": true,
+                "stdout": "Directory listing for C:\\ -\n\nName                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC+2)     Created (UTC+2)          \n----                                     ----         ------------    ---------       ---------------------     ---------------          \n$Recycle.Bin                             <Directory>  --              --              6/19/2023 4:11:43 PM      9/15/2018 10:19:00 AM    \nConfig.Msi                               <Directory>  --              --              11/14/2023 1:56:25 AM     8/17/2023 1:49:07 AM     \n",
+                "stderr": "",
+                "base_command": "ls",
+                "aid": "aid",
+                "errors": [],
+                "query_time": 2.105078272,
+                "offline_queued": false
+            }
+        }
+    },
+    "errors": []
+}

@@ -32,28 +32,28 @@ script:
   - name: remedy-get-server-details
     arguments:
     - name: qualification
-      description: 'Search qualification, given as: ''key1''="value1" AND ''key2''!="value2"'
+      description: 'Search qualification, given as: ''key1''="value1" AND ''key2''!="value2".'
     - name: fields
-      description: Parts of the entry object to retrieve, given as CSV (i.e. Company,Name)
+      description: Parts of the entry object to retrieve, given as CSV (i.e. Company,Name).
       defaultValue: Name,Company,Short Description,NC_IOPs,Reconciliation Identity
     outputs:
     - contextPath: Remedy.ServerDetails.Reconciliation Identity
-      description: Server reconciliation Identity
+      description: Server reconciliation Identity.
       type: string
     - contextPath: Remedy.ServerDetails.Short Description
-      description: Server description
+      description: Server description.
       type: string
     - contextPath: Remedy.ServerDetails.Company
-      description: Company name
+      description: Company name.
       type: string
     - contextPath: Remedy.ServerDetails.NC_IOPs
-      description: Server NC IOPS
+      description: Server NC IOPS.
       type: string
     - contextPath: Remedy.ServerDetails.Name
-      description: Server name
+      description: Server name.
       type: string
-    description: Retrieves server details
-  dockerimage: demisto/python3:3.10.12.63474
+    description: Retrieves server details.
+  dockerimage: demisto/python3:3.10.13.83255
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

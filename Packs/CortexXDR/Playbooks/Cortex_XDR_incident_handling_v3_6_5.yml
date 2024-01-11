@@ -1593,14 +1593,14 @@ tasks:
     continueonerrortype: ""
   "78":
     id: "78"
-    taskid: cd52a989-d59a-4204-831c-60f8724e6a20
+    taskid: bbbe7cb3-668d-4dc2-80a3-7ff7a1586e6a
     type: playbook
     task:
-      id: cd52a989-d59a-4204-831c-60f8724e6a20
+      id: bbbe7cb3-668d-4dc2-80a3-7ff7a1586e6a
       version: -1
-      name: Cortex XDR Alerts Handling
-      description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan"
-      playbookName: Cortex XDR Alerts Handling
+      name: Cortex XDR Alerts Handling v2
+      description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation."
+      playbookName: Cortex XDR Alerts Handling v2
       type: playbook
       iscommand: false
       brand: ""
@@ -1608,6 +1608,9 @@ tasks:
       '#none#':
       - "79"
     scriptarguments:
+      InternalIPRanges:
+        complex:
+          root: inputs.InternalRange
       alert_id:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
@@ -1628,7 +1631,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 340
+          "y": 350
         }
       }
     note: false
@@ -1992,30 +1995,11 @@ view: |-
     }
   }
 inputs:
-- key: incident_id
-  value:
-    complex:
-      root: incident
-      accessor: xdrincidentid
-  required: false
-  description: Incident ID.
-  playbookInputQuery:
 - key: LinkSimilarIncidents
   value:
     simple: "Yes"
   required: false
   description: This input indicates whether the playbook will link similar incidents. To link similar incidents, specify Yes/No.
-  playbookInputQuery:
-- key: Hunting
-  value:
-    simple: "Yes"
-  required: false
-  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
-  playbookInputQuery:
-- key: InternalRange
-  value: {}
-  required: false
-  description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
   playbookInputQuery:
 - key: CriticalUsernames
   value:
@@ -2035,27 +2019,13 @@ inputs:
   required: false
   description: A comma-separated list of DN names of critical Active Directory groups. This will affect the severity calculated for this incident.
   playbookInputQuery:
-- key: InternalHostRegex
-  value: {}
-  required: false
-  description: This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \w{6}\d{1}.
-  playbookInputQuery:
-- key: InternalDomainName
-  value: {}
-  required: false
-  description: The organizations internal domain name. This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
-  playbookInputQuery:
-- key: TimeStamp
+- key: incident_id
   value:
-    simple: 10 days
+    complex:
+      root: incident
+      accessor: xdrincidentid
   required: false
-  description: Timestamp in relative date format for query device control events from Cortex XDR.
-  playbookInputQuery:
-- key: AutoRemediation
-  value:
-    simple: "False"
-  required: false
-  description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
+  description: Incident ID.
   playbookInputQuery:
 - key: XDRDomain
   value:
@@ -2074,6 +2044,53 @@ inputs:
   required: false
   description: XDR instance domain
   playbookInputQuery:
+- key: InternalRange
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexReplace
+        args:
+          action_dt: {}
+          ignore_case: {}
+          multi_line: {}
+          output_format: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: IANA_Private_Address
+  required: false
+  description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
+  playbookInputQuery:
+- key: InternalDomainName
+  value: {}
+  required: false
+  description: The organizations internal domain name. This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
+  playbookInputQuery:
+- key: InternalHostRegex
+  value: {}
+  required: false
+  description: This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \w{6}\d{1}.
+  playbookInputQuery:
+- key: Hunting
+  value:
+    simple: "Yes"
+  required: false
+  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
+  playbookInputQuery:
+- key: TimeStamp
+  value:
+    simple: 10 days
+  required: false
+  description: Timestamp in relative date format for query device control events from Cortex XDR.
+  playbookInputQuery:
+- key: AutoRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
+  playbookInputQuery:
 - key: AutoBlockIndicators
   value:
     simple: "True"
@@ -2091,6 +2108,37 @@ inputs:
   required: false
   description: "Possible values: True/False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
+inputSections:
+- inputs:
+  - LinkSimilarIncidents
+  - CriticalUsernames
+  - CriticalHostnames
+  - CriticalADGroups
+  - incident_id
+  - XDRDomain
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements and ticketing methods
+- inputs:
+  - InternalRange
+  - InternalDomainName
+  - InternalHostRegex
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - Hunting
+  - TimeStamp
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - AutoRemediation
+  - AutoBlockIndicators
+  - UserVerification
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - Test XDR Playbook
