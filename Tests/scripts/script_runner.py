@@ -5,13 +5,15 @@
 import subprocess
 import os
 import sys
-from multiprocessing.pool import Pool
-from coverage.cmdline import main as coverage_main
+from multiprocessing.pool import ThreadPool
+# from coverage.cmdline import main as coverage_main
 
 def run_script(args, files):
     try:
         # can't use with in python2
-        results = [run_command(args + [os.path.abspath(file)], os.path.abspath(os.path.dirname(file))) for file in files]
+        pool = ThreadPool()
+        results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.abspath(os.path.dirname(file))) for file in files])
+        pool.close()
         if any(result != 0 for result in results):
             sys.exit(1)
     except subprocess.CalledProcessError as e:
@@ -23,13 +25,14 @@ def run_script(args, files):
     return 0
 
 
-def run_command(args, directory):
-    if args[0] == "coverage":
-        cwd = os.getcwd()
-        os.chdir(directory)
-        status = coverage_main(args[1:])
-        os.chdir(cwd)
-        return status
+def run_command(args_dir):
+    args, directory = args_dir
+    # if args[0] == "coverage":
+    #     cwd = os.getcwd()
+    #     os.chdir(directory)
+    #     status = coverage_main(args[1:])
+    #     os.chdir(cwd)
+    #     return status
     if sys.version_info[0] < 3:
         return subprocess.call(args, cwd=directory)
     return subprocess.run(args, cwd=directory).returncode
