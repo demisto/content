@@ -1407,7 +1407,24 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
 
 class SDKNightlyTestCollector(TestCollector):
 
+    @property
+    def sanity_tests(self) -> CollectionResult:
+        return CollectionResult(
+            test="Sanity Test - Playbook with no integration",
+            modeling_rule_to_test=None,
+            pack="HelloWorld",
+            reason=CollectionReason.SANITY_TESTS,
+            version_range=None,
+            reason_description='Demisto-SDK Sanity Test for test-content command',
+            conf=self.conf,
+            id_set=self.id_set,
+            is_sanity=True,
+            only_to_install=True,
+        )
+
     def _collect(self) -> CollectionResult | None:
+        if self.marketplace == MarketplaceVersions.XPANSE:
+            return None
         return self.sanity_tests
 
 
