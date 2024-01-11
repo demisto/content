@@ -5,5 +5,3 @@ Some important things to take into account about the integration:
     - **Organization ID**: can be found in the GUI URL. Iit is the number after the key "organizations". For example: for https://demisto.blueliv.com/dashboard/organizations/8/indexed the Organization ID will be 8.
     - **Module ID**: can be found in the GUI URL. It is the number after the key "modules". For example: for https://demisto.blueliv.com/dashboard/organizations/8/modules/59 the Module ID will be 59.
     - It is important that the value in **Module Type** matches the type of module referred by the Module ID. So, if the module with ID 59 (see previous point) is Data Leaks the value of Module Type should be Data Leaks.
-    
- [API Documentation](https://safe.sur.ly/o/apidocs.blueliv.com/AA000014?pageviewId=desktop-302e323731323432303020313730343935343131322031363737383539303635)
