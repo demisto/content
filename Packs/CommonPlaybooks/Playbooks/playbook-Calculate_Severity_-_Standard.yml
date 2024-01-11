@@ -1,19 +1,8 @@
-id: 0c91e31d-89ea-42a9-8a3b-2b8bd5851f3b
-version: 6
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Common Playbooks
-    itemVersion: 2.5.4
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: Calculate Severity - Standard_dev
-description: Calculates and sets the incident severity based on the combination of
-  the current incident severity, and the severity returned from the Evaluate Severity
-  - Set By Highest DBotScore playbook.
+id: Calculate Severity - Standard
+version: -1
+name: Calculate Severity - Standard
+description: Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the Evaluate Severity - Set By Highest DBotScore playbook.
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -26,12 +15,12 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
       - "20"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -42,6 +31,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -67,7 +57,6 @@ tasks:
         simple: low
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -78,6 +67,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -103,7 +93,6 @@ tasks:
         simple: medium
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -114,6 +103,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -139,7 +129,6 @@ tasks:
         simple: high
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -150,6 +139,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -165,8 +155,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -177,6 +167,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -202,7 +193,6 @@ tasks:
         simple: critical
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -213,6 +203,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -225,8 +216,7 @@ tasks:
       id: 14b9554d-23ca-4e85-86f8-51f290b2a18d
       version: -1
       name: Set severity based on the highest severity
-      description: Determines and sets the incident severity based on the highest
-        result of all severity calculations.
+      description: Determines and sets the incident severity based on the highest result of all severity calculations.
       type: condition
       iscommand: false
       brand: ""
@@ -352,7 +342,6 @@ tasks:
                         simple: low
                     ignorecase: true
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -363,6 +352,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -394,7 +384,6 @@ tasks:
           accessor: severity
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -405,6 +394,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -430,7 +420,6 @@ tasks:
         simple: unknown
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -441,6 +430,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -453,8 +443,7 @@ tasks:
       id: 0488f795-a0de-432a-848e-ccc213a40e15
       version: -1
       name: Calculate Severity By Highest DBotScore
-      description: Calculates the incident severity level according to the highest
-        DBotScore.
+      description: Calculates the incident severity level according to the highest DBotScore.
       playbookName: Calculate Severity By Highest DBotScore
       type: playbook
       iscommand: false
@@ -526,7 +515,7 @@ inputs:
       - operator: uniq
   required: false
   description: A list of DBotScore indicator values.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: DBotScoreMaxScore
   value:
     complex:
@@ -542,8 +531,9 @@ inputs:
       - operator: FirstArrayElement
   required: false
   description: The highest score (number) that was given to a DBotScore indicator.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Calculate Severity - Standard
 tests:
 - Calculate Severity - Standard - Test
+contentitemexportablefields:
+  contentitemfields: {}

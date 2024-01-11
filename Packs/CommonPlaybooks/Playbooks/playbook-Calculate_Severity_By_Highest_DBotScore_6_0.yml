@@ -1,16 +1,8 @@
-id: 2fdfe142-e842-49e9-862c-64e4967f674a
-version: 9
+id: Calculate Severity By Highest DBotScore
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Common Playbooks
-    itemVersion: 2.4.13
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: Calculate Severity By Highest DBotScore_dev
+  contentitemfields: {}
+name: Calculate Severity By Highest DBotScore
 description: Calculates the incident severity level according to the highest DBotScore.
 starttaskid: "0"
 tasks:
@@ -24,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -54,6 +47,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -123,6 +117,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -290,8 +285,7 @@ tasks:
       id: 86bc9089-08a5-44e2-8a0f-03dd11411f9b
       version: -1
       name: Set severity to high
-      description: Sets the severity of the incident to "High". This severity level
-        means that malicious indicators were identified.
+      description: Sets the severity of the incident to "High". This severity level means that malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -329,8 +323,7 @@ tasks:
       id: 288ac730-e8e3-4782-805f-e54721977877
       version: -1
       name: Set severity to medium
-      description: Sets the severity of the incident to "Medium". This severity level
-        means that only suspicious indicators were identified (no malicious indicators).
+      description: Sets the severity of the incident to "Medium". This severity level means that only suspicious indicators were identified (no malicious indicators).
       scriptName: Set
       type: regular
       iscommand: false
@@ -368,8 +361,7 @@ tasks:
       id: 3132e114-0841-4c3f-800f-fab492944f7a
       version: -1
       name: Set severity to low
-      description: Sets the severity of the incident to "Low". This severity level
-        means no suspicious or malicious indicators were identified.
+      description: Sets the severity of the incident to "Low". This severity level means no suspicious or malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -407,9 +399,7 @@ tasks:
       id: ca3d7b7e-95d9-48b6-87e1-c625b8f53c43
       version: -1
       name: Set severity to unknown
-      description: Sets the severity of the incident to "Unknown". This severity level
-        means that either unknown indicators were identified, or no indicators were
-        identified.
+      description: Sets the severity of the incident to "Unknown". This severity level means that either unknown indicators were identified, or no indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -505,7 +495,7 @@ inputs:
       - operator: uniq
   required: false
   description: 'Array of all DBotScore indicator values associated with the incident. '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: DBotScoreMaxScore
   value:
     complex:
@@ -521,13 +511,11 @@ inputs:
       - operator: FirstArrayElement
   required: false
   description: The highest score that was given to a DBotScore indicator.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Severities.DBotScoreSeverity
-  description: The severity level of the incident identified and set in the Calculate
-    Severity By Highest DBotScore playbook.
+  description: The severity level of the incident identified and set in the Calculate Severity By Highest DBotScore playbook.
   type: string
-sourceplaybookid: Calculate Severity By Highest DBotScore
 tests:
 - Calculate Severity - Standard - Test
 fromversion: 6.0.0

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Playbook inputs have been reset. If you are keeping the DBotScore context under another key, or if you've customized the inputs of the Calculate Severity playbooks or subplaybooks, you will need to reconfigure them. Out of the box, the playbooks have been adjusted to accommodate for the new inputs."
+}
