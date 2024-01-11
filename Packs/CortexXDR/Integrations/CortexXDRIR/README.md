@@ -157,6 +157,7 @@ To setup the mirroring follow these instructions:
   - The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
      different playbook that does not use `XDRSyncScript`.
   - The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
+  - Mirroring impacts only incidents fetched after successfully enabling mirroring. If incidents were fetched without mirroring or with mirroring but with the incorrect mapper, enabling mirroring with the correct mapper now won't resolve issues for those incidents. The solution is to create a new instance from scratch.
 
 - The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a limit rate exception, the sync loop will stop and will resume from the last incident. 
 
