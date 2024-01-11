@@ -779,7 +779,7 @@ tasks:
     task:
       id: cea46dd3-1bd8-45b2-8fab-d71391fef508
       version: -1
-      name: Wait for a 5 minutes
+      name: Wait for a 900 secund
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -792,7 +792,7 @@ tasks:
       execution-timeout:
         simple: "1000"
       seconds:
-        simple: "300"
+        simple: "900"
     reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
