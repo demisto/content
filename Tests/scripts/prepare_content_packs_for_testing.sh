@@ -133,5 +133,5 @@ echo -e "https://console.cloud.google.com/storage/browser/$BUILD_BUCKET_FULL_PAT
 echo "Finished preparing content packs for testing successfully."
 
 echo -e "\nIf you want to connect this build bucket to your test machine, add this server configs:"
-echo "marketplace.bootstrap.bypass.url: https://storage.googleapis.com/$BUILD_BUCKET_FULL_PATH"
+echo "marketplace.bootstrap.bypass.url: $BUILD_BUCKET_FULL_PATH"
 echo "jobs.marketplacepacks.schedule: 1m"
