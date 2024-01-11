@@ -76,19 +76,23 @@ def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, 
 def main():
     install_logging("GetPrivateBuildStatus.log", logger=logging)
 
-    if not os.path.isfile(PRIVATE_REPO_WORKFLOW_ID_FILE):
-        logging.info('Build private repo skipped')
-        sys.exit(0)
-
-    # gets workflow id from the file
-    with open(PRIVATE_REPO_WORKFLOW_ID_FILE, 'r') as f:
-        workflow_id = f.read()
-
     # get github_token parameter
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--github-token', help='Github token')
+    arg_parser.add_argument('--workflow-id', help='Specify workflow Id to retrieve', required=False)
     args = arg_parser.parse_args()
     github_token = args.github_token
+    workflow_id = args.workflow_id
+
+    if not workflow_id:
+        # get the workflow id from file
+        if not os.path.isfile(PRIVATE_REPO_WORKFLOW_ID_FILE):
+            logging.info('Build private repo skipped')
+            sys.exit(0)
+
+        # gets workflow id from the file
+        with open(PRIVATE_REPO_WORKFLOW_ID_FILE, 'r') as f:
+            workflow_id = f.read()
 
     # gets the workflow status
     status, conclusion, step = get_workflow_status(github_token, workflow_id)

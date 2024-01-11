@@ -185,7 +185,7 @@ def main():
         pre_existing_workflow_ids = get_dispatch_workflows_ids(github_token, private_branch_name, True)
 
         payload = {
-            'ref': 'add-sdk-ref',
+            'ref': 'master',
             'inputs': {
                 'slack_channel': slack_channel
             }
