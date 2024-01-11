@@ -71,6 +71,48 @@ GET_FULL_REPORT_HTTP_RESPONSE_EMPTY = {
     "resources": []
 }
 
+GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE = {
+    "errors": [],
+    "meta": {
+        "powered_by": "falconx-api",
+        "query_time": 0.006237549,
+        "quota": {
+            "in_progress": 2,
+            "total": 100,
+            "used": 47
+        },
+        "trace_id": "trace_id"
+    },
+    "resources": [
+        {
+            "id": "id",
+            "cid": "cid",
+            "created_timestamp": "2024-01-10T16:17:37Z",
+            "index_timestamp": "2024-01-10T16:20:54Z",
+            "origin": "apigateway",
+            "verdict": "no verdict",
+            "sandbox": [
+                {
+                    "sha256": "dummy_sha256",
+                    "environment_id": "dummy_environment_id",
+                    "environment_description": "Windows 10 64 bit",
+                    "file_type": "PNG image data, 1951 x 954, 8-bit/color RGBA, non-interlaced",
+                    "file_type_short": [
+                        "img"
+                    ],
+                    "submit_name": "dummy_sha256",
+                    "submission_type": "file",
+                    "error_message": 'File "dummy_sha256" was detected as "image", this format is not supported on WINDOWS',
+                    "error_type": "FILE_TYPE_BAD_ERROR",
+                    "error_origin": "CLIENT",
+                    "is_certificates_valid": False
+                }
+            ]
+        }
+    ]
+}
+
+
 GET_FULL_REPORT_HTTP_RESPONSE = {
     "errors": [],
     "meta": {

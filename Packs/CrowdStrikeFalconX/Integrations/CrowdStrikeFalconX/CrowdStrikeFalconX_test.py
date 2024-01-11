@@ -16,7 +16,7 @@ from test_data.http_responses import SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP
     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE, \
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE, \
     GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE, \
-    GET_FULL_REPORT_HTTP_RESPONSE_EMPTY, FIND_SANDBOX_REPORTS_NOT_FOUND_HTTP_RESPONSE
+    GET_FULL_REPORT_HTTP_RESPONSE_EMPTY, FIND_SANDBOX_REPORTS_NOT_FOUND_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE
 
 
 class ResMocker:
@@ -120,6 +120,24 @@ FIND_SUBMISSION_ID_ARGS = {
     "filter": "",
 }
 
+@pytest.mark.parametrize('command', [(get_full_report_command), (get_report_summary_command)])
+def test_get_report_commands_error(mocker, command):
+    """
+    Given
+    - A client object
+    When
+    - Running the commands 'cs-fx-get-full-report' and 'cs-fx-get-report-summary'
+    Then
+    - Validate that we return an error when the report contains an error object
+    """
+    mocker.patch.object(Client, '_get_access_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, reliability=DBotScoreReliability.B)
+
+    mocker.patch.object(Client, '_http_request', return_value=GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE)
+    with pytest.raises(DemistoException) as e:
+        command(client, '1')
+    assert 'Sandbox report returned an error' in str(e)
 
 @pytest.mark.parametrize('command, args, http_response, context', [
     (get_report_summary_command, GET_REPORT_SUMMARY_ARGS, GET_REPORT_SUMMARY_HTTP_RESPONSE, GET_REPORT_SUMMARY_CONTEXT),

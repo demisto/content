@@ -1001,6 +1001,8 @@ def get_full_report_command(
         response = client.get_full_report(id_)
         if response.get('resources'):
             is_command_finished = True  # flag used when commands
+            # We can extract the error from the response object under resources
+            validate_sandbox_full_report(response.get('resources', []))
 
         if extended_data == 'true':
             extra_sandbox_fields = extra_sandbox_fields + ("mitre_attacks", "signatures")  # type:ignore[assignment]
@@ -1043,6 +1045,21 @@ def get_full_report_command(
         ]
     return command_results, is_command_finished
 
+def validate_sandbox_full_report(report_resources: list[dict[str, Any]]):
+    """This function checks for any error messages in the sandbox report
+
+    Args:
+        report_resources (list[dict[str, Any]]): Report resources of the report. They hold the data about
+        any error messages returned from the report.
+
+    Raises:
+        DemistoException: If an error message is found.
+    """
+    for resource in report_resources:
+        for sandbox_entity in resource.get('sandbox', []):
+            if error_message := sandbox_entity.get('error_message'):
+                error_type = sandbox_entity.get('error_type')
+                raise DemistoException(f'Sandbox report returned an error of type {error_type} with content: {error_message}')
 
 def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str, Common.File]:
     """
@@ -1092,6 +1109,9 @@ def get_report_summary_command(
 
     for single_id in argToList(ids):
         response = client.get_report_summary(single_id)
+        if response.get('resources'):
+            # We can extract the error from the response object under resources
+            validate_sandbox_full_report(response.get('resources', []))
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         results.append(
