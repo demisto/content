@@ -21,65 +21,65 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "FiltersAndTransformers": {
+        "CommonScripts": {
             "mandatory": true,
-            "display_name": "Filters And Transformers"
+            "display_name": "Common Scripts"
         },
-        "qualys": {
-            "mandatory": false,
-            "display_name": "Qualys"
-        },
-        "Rapid7_Nexpose": {
-            "mandatory": false,
-            "display_name": "Rapid7 InsightVM"
-        },
-        "GCP-Enrichment-Remediation": {
-            "mandatory": false,
-            "display_name": "GCP Enrichment and Remediation"
+        "PAN-OS": {
+            "mandatory": true,
+            "display_name": "PAN-OS by Palo Alto Networks"
         },
         "AWS-Enrichment-Remediation": {
             "mandatory": false,
             "display_name": "AWS Enrichment and Remediation"
         },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "PrismaCloud": {
+        "Rapid7_Nexpose": {
             "mandatory": false,
-            "display_name": "Prisma Cloud by Palo Alto Networks"
-        },
-        "SplunkPy": {
-            "mandatory": false,
-            "display_name": "Splunk"
-        },
-        "ServiceNow": {
-            "mandatory": false,
-            "display_name": "ServiceNow"
-        },
-        "PAN-OS": {
-            "mandatory": false,
-            "display_name": "PAN-OS by Palo Alto Networks"
-        },
-        "SplunkPyPreRelease": {
-            "mandatory": false,
-            "display_name": "Splunk Prerelease (Deprecated)"
+            "display_name": "Rapid7 InsightVM"
         },
         "Azure-Enrichment-Remediation": {
             "mandatory": false,
             "display_name": "Azure Enrichment and Remediation"
         },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "Splunk"
+        },
+        "SplunkPyPreRelease": {
+            "mandatory": false,
+            "display_name": "Splunk Prerelease (Deprecated)"
+        },
         "Jira": {
             "mandatory": false,
             "display_name": "Atlassian Jira"
         },
-        "Tenable_io": {
+        "MicrosoftGraphUser": {
+            "mandatory": true,
+            "display_name": "Microsoft Graph User"
+        },
+        "PrismaCloud": {
+            "mandatory": true,
+            "display_name": "Prisma Cloud by Palo Alto Networks"
+        },
+        "GCP-Enrichment-Remediation": {
             "mandatory": false,
+            "display_name": "GCP Enrichment and Remediation"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "Tenable_io": {
+            "mandatory": true,
             "display_name": "Tenable.io"
         },
-        "GCP-IAM": {
-            "mandatory": false,
-            "display_name": "GCP-IAM"
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "qualys": {
+            "mandatory": true,
+            "display_name": "Qualys"
         }
     },
     "marketplaces": [
@@ -90,16 +90,20 @@
         "ASM"
     ],
     "displayedImages": [
-        "qualys",
-        "Rapid7_Nexpose",
-        "GCP-Enrichment-Remediation",
-        "AWS-Enrichment-Remediation",
-        "PrismaCloud",
-        "SplunkPy",
-        "ServiceNow",
+        "CommonScripts",
         "PAN-OS",
+        "AWS-Enrichment-Remediation",
+        "Rapid7_Nexpose",
         "Azure-Enrichment-Remediation",
+        "SplunkPy",
+        "SplunkPyPreRelease",
         "Jira",
-        "Tenable_io"
+        "MicrosoftGraphUser",
+        "PrismaCloud",
+        "GCP-Enrichment-Remediation",
+        "ServiceNow",
+        "Tenable_io",
+        "FiltersAndTransformers",
+        "qualys"
     ]
 }
