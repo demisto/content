@@ -21,7 +21,9 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: []
+tags:
+- general
+- transformer
 type: python
 fromversion: 6.0.0
 tests:
