@@ -1293,10 +1293,12 @@ def get_ioarules(rule_ids: list[str]) -> dict:
         :param rule_ids: IDs of the requested ioa rule.
         :return: Response json of the get ioa rule entities endpoint (ioa rule objects)
     """
+    params = { 'ids': rule_ids }
+
     return http_request(
-        'POST',
-        '/ioarules/entities/rules/GET/v1',
-        data=json.dumps({'ids': rule_ids}),
+        'GET',
+        '/ioarules/entities/rules/v1',
+        params = params,
     )
 
 
