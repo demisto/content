@@ -2,12 +2,11 @@ args:
 - description: The value is an array of elements
   isArray: true
   name: value
-- description: Provide the value from the array
-  name: array_value
+- description: The item whos index we want to find
+  name: item_to_find
   required: true
 comment: |-
-  This transformer will get an index of an element from an array.
-  ex:["phishing","Malware"], if we provide "Malware" to array_value argument, will get index as 1.
+  Retrieve the index of a given item in a given array.\nex:['phishing', 'Malware'], if we provide 'Malware' to item_to_find argument, will get index as 1.
 commonfields:
   id: GetIndexOfArrayValue
   version: -1
