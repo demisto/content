@@ -155,6 +155,7 @@ class ZFClient(BaseClient):
             "Authorization": f"Token {token}",
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "zf-source": "XSOAR",
         }
 
     def get_cti_request_header(self) -> dict[str, str]:
@@ -163,6 +164,7 @@ class ZFClient(BaseClient):
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "zf-source": "XSOAR",
         }
 
     def get_policy_types(self) -> dict[str, Any]:
