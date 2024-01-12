@@ -1298,7 +1298,7 @@ def get_ioarules(rule_ids: list[str]) -> dict:
     return http_request(
         'GET',
         '/ioarules/entities/rules/v1',
-        params = params,
+        params=params,
     )
 
 
