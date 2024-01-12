@@ -1,0 +1,6 @@
+name: TrendMicro InterScan Web Security Suite Parsing Rule
+id: Trend_Micro_InterScan_Web_Security_Suite_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''
