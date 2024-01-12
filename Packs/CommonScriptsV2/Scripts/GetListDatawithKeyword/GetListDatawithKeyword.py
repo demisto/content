@@ -9,13 +9,9 @@ result_data=[]
 
 def get_data(key_word, json_data):
     for i in range(len(json_data)):
-        for key,value in json_data[i].items():
+        for value in json_data[i].values():
             if key_word in value:
                 result_data.append(json_data[i])
-                break
-            else:
-                pass
-
     return result_data
 
 
@@ -23,11 +19,11 @@ def get_data(key_word, json_data):
 
 
 def main():
+    args= demisto.args()
+    key_word = args.get('Keyword', "")
+    json_data = argToList(args.get('value',[]))
     try:
-        key_word = demisto.args()['Keyword']
-        json_data = argToList(demisto.args()['value'])
         res = get_data(key_word,json_data)
-
         md = tableToMarkdown("List Data",res)
         demisto.results({
             'Type': entryTypes['note'],
