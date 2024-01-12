@@ -8,6 +8,7 @@ ex:["phishing","Malware"], if we provide "Malware" to array_value argument, will
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
+| Tags | general, transformer |
 
 ## Inputs
 
