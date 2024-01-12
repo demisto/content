@@ -29,6 +29,7 @@ Retrieve a list of keywords containing given substring for a given list of json 
 
 | **Argument Name** | **Description** |
 | --- | --- |
+| value | the list of json objects |
 | Keyword | the substring to look for in the data |
 
 ## Outputs
