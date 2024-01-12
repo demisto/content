@@ -5,14 +5,11 @@ from CommonServerPython import *  # noqa: F401
 from typing import Dict, Any
 import traceback
 
-
-
-''' MAIN FUNCTION '''
 def get_index(json_data,array_val):
     element_index=json_data.index(array_val)
     return element_index
 
-
+''' MAIN FUNCTION '''
 def main():
     args = demisto.args()
     json_data = argToList(args.get('value'))
