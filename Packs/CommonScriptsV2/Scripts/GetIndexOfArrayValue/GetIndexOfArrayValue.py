@@ -14,11 +14,11 @@ def get_index(json_data,array_val):
 
 
 def main():
+    args = demisto.args()
+    json_data = argToList(args.get('value'))
+    array_val = args.get('item_to_find')
     try:
-        json_data = argToList(demisto.args()['value'])
-        array_val = demisto.args()['array_value']
-        res=get_index(json_data,array_val)
-        demisto.results(res)
+        return_results(get_index(json_data,array_val)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
