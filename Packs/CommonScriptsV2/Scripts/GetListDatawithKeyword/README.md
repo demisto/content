@@ -1,4 +1,4 @@
-This transformer will get list of array elements by providing keyword. List data format
+Retrieve a list of keywords containing given substring for a given list of json objects.
 [
     {
     "folder": "abc",
@@ -29,7 +29,7 @@ This transformer will get list of array elements by providing keyword. List data
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| Keyword | Provide a key word to search the data |
+| Keyword | the substring to look for in the data |
 
 ## Outputs
 
