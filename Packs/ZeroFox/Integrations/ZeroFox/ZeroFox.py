@@ -5,7 +5,7 @@ from CommonServerPython import *
 """ IMPORTS  """
 from dateparser import parse as parse_date
 from datetime import datetime
-from typing import Any
+from typing import Any, TypedDict
 from collections.abc import Callable
 from requests import Response
 from copy import deepcopy
@@ -17,6 +17,16 @@ FETCH_TIME_DEFAULT = "3 days"
 CLOSED_ALERT_STATUS = ["Closed", "Deleted"]
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 MAX_ALERT_IDS_STORED = 200
+
+""" Types """
+FetchIncidentsStorage = TypedDict("FetchIncidentsStorage", {
+    "last_fetched": str,
+    "last_offset": str,
+    "first_run_at": str,
+    "last_modified_fetched": str,
+    "last_modified_offset": str,
+    "zf-ids": list[int],
+})
 
 
 """ CLIENT """
@@ -1059,7 +1069,11 @@ def get_incidents_data(
         next_offset = parsed_query.get("offset", ["0"])[0]
 
     # last_alert_timestamp is the oldest timestamp in alerts
-    parsed_last_alert_timestamp: datetime | None = params.get('min_timestamp') or params.get('last_modified_min_date')
+    parsed_last_alert: str = params.get('min_timestamp') or params.get('last_modified_min_date') or ""
+    parsed_last_alert_timestamp = parse_date(
+        parsed_last_alert,
+        date_formats=(DATE_FORMAT,),
+    )
     if parsed_last_alert_timestamp is None:
         raise ValueError("Incorrect timestamp in params of fetch-incidents")
     for alert in processed_alerts:
@@ -1116,9 +1130,9 @@ def test_module(client: ZFClient) -> str:
 
 def fetch_incidents(
     client: ZFClient,
-    last_run: dict[str, str],
+    last_run: FetchIncidentsStorage,
     first_fetch_time: str
-) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+) -> tuple[FetchIncidentsStorage, list[dict[str, Any]]]:
     # Last fetched date
     last_fetched_str = last_run.get("last_fetched", "")
     last_fetched = parse_last_fetched_date(last_fetched_str, first_fetch_time)
@@ -1142,12 +1156,9 @@ def fetch_incidents(
     last_modified_offset = int(last_modified_offset_str)
 
     # ZeroFox Alert IDs previously created
-    zf_ids: list[int] = []
-    stored_zf_ids = last_run.get("zf-ids")
-    if isinstance(stored_zf_ids, list):
-        zf_ids = list(stored_zf_ids)
+    zf_ids: list[int] = last_run.get("zf-ids", [])
 
-    next_run = {
+    next_run: FetchIncidentsStorage = {
         "last_fetched": last_fetched_str,
         "last_offset": last_offset_str,
         "first_run_at": first_run_at.strftime(DATE_FORMAT),
@@ -1158,7 +1169,7 @@ def fetch_incidents(
 
     # Fetch new alerts
     params = {
-        "min_timestamp": last_fetched,
+        "min_timestamp": last_fetched.strftime(DATE_FORMAT),
         "sort_direction": "asc",
         "offset": last_offset,
     }
@@ -1176,7 +1187,7 @@ def fetch_incidents(
 
     # If no new alerts, fetch modified alerts
     params = {
-        "last_modified_min_date": last_modified_fetched,
+        "last_modified_min_date": last_modified_fetched.strftime(DATE_FORMAT),
         "sort_direction": "asc",
         "offset": last_modified_offset,
     }

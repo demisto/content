@@ -89,10 +89,6 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
     client = build_zf_client()
     last_run: dict = {}
     first_fetch_time = "2023-06-01T00:00:00.000000"
-    first_fetch_time_parsed = parse_date(
-        first_fetch_time,
-        date_formats=(DATE_FORMAT,),
-    )
     expected_offset = 0
     spy = mocker.spy(client, "list_alerts")
 
@@ -105,13 +101,13 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
     # One call for new alerts, and another call to modified alerts
     assert spy.call_count == 2
     list_alert_params = spy.call_args_list[0].args[0]
-    assert list_alert_params.get("min_timestamp") == first_fetch_time_parsed
+    assert list_alert_params.get("min_timestamp") == first_fetch_time
     assert list_alert_params.get("sort_direction") == "asc"
     assert list_alert_params.get("offset") == expected_offset
     list_modified_alert_params = spy.call_args_list[1].args[0]
     assert list_modified_alert_params.get("sort_direction") == "asc"
     assert list_modified_alert_params.get("offset") == expected_offset
-    assert list_modified_alert_params.get("last_modified_min_date") == first_fetch_time_parsed
+    assert list_modified_alert_params.get("last_modified_min_date") == first_fetch_time
     assert next_run["last_fetched"] == first_fetch_time
     assert next_run["last_offset"] == str(expected_offset)
     assert next_run["first_run_at"] == first_fetch_time
@@ -141,10 +137,6 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
     client = build_zf_client()
     last_run: dict = {}
     first_fetch_time = "2023-06-01T00:00:00.000000"
-    first_fetch_time_parsed = parse_date(
-        first_fetch_time,
-        date_formats=(DATE_FORMAT,),
-    )
     last_alert_timestamp_formatted = get_delayed_formatted_date(
         last_alert_timestamp,
     )
@@ -159,7 +151,7 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
 
     spy.assert_called_once()
     list_alert_params = spy.call_args[0][0]
-    assert list_alert_params.get("min_timestamp") == first_fetch_time_parsed
+    assert list_alert_params.get("min_timestamp") == first_fetch_time
     assert list_alert_params.get("sort_direction") == "asc"
     assert list_alert_params.get("offset") == expected_offset
     assert next_run["last_fetched"] == last_alert_timestamp_formatted
@@ -208,9 +200,7 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
 
     spy.assert_called_once()
     list_alert_params = spy.call_args[0][0]
-    min_timestamp_called = list_alert_params.get(
-        "min_timestamp"
-    ).strftime(DATE_FORMAT)
+    min_timestamp_called = list_alert_params.get("min_timestamp")
     assert min_timestamp_called == last_run["last_fetched"]
     assert list_alert_params.get("sort_direction") == "asc"
     assert list_alert_params.get("offset") == last_offset_saved
@@ -228,7 +218,6 @@ def test_fetch_incidents_with_modified_alerts_first_call(requests_mock, mocker):
         There are no new alerts
         And there are modified alerts
         And there are more in the next page
-        And last_modified_fetched is not set in last_run
         And last_modified_fetched is not set in last_run
     When
         Calling fetch_incidents
@@ -248,13 +237,9 @@ def test_fetch_incidents_with_modified_alerts_first_call(requests_mock, mocker):
     ])
     client = build_zf_client()
     last_run: dict = {
-        "zf-ids": list(map(lambda alert: alert["id"], modified_alerts_response["alerts"]))[2:],
+        "zf-ids": [alert["id"] for alert in modified_alerts_response["alerts"]][2:],
     }
     first_fetch_time = "2023-06-01T00:00:00.000000"
-    first_fetch_time_parsed = parse_date(
-        first_fetch_time,
-        date_formats=(DATE_FORMAT,),
-    )
     expected_offset = 0
     expected_modified_offset = 20
     spy = mocker.spy(client, "list_alerts")
@@ -267,13 +252,13 @@ def test_fetch_incidents_with_modified_alerts_first_call(requests_mock, mocker):
 
     assert spy.call_count == 2
     list_alert_params = spy.call_args_list[0].args[0]
-    assert list_alert_params.get("min_timestamp") == first_fetch_time_parsed
+    assert list_alert_params.get("min_timestamp") == first_fetch_time
     assert list_alert_params.get("sort_direction") == "asc"
     assert list_alert_params.get("offset") == expected_offset
     list_modified_alert_params = spy.call_args_list[1].args[0]
     assert list_modified_alert_params.get("sort_direction") == "asc"
     assert list_modified_alert_params.get("offset") == expected_offset
-    assert list_modified_alert_params.get("last_modified_min_date") == first_fetch_time_parsed
+    assert list_modified_alert_params.get("last_modified_min_date") == first_fetch_time
     assert next_run["last_fetched"] == first_fetch_time
     assert next_run["last_offset"] == str(expected_offset)
     assert next_run["first_run_at"] == first_fetch_time
@@ -310,17 +295,9 @@ def test_fetch_incidents_with_modified_alerts_and_not_first_call(requests_mock, 
     last_run: dict = {
         "last_modified_fetched": last_modified_fetched,
         "last_modified_offset": "20",
-        "zf-ids": list(map(lambda alert: alert["id"], modified_alerts_response["alerts"]))[2:],
+        "zf-ids": [alert["id"] for alert in modified_alerts_response["alerts"]][2:],
     }
     first_fetch_time = "2023-05-31T00:00:00.000000"
-    first_fetch_time_parsed = parse_date(
-        first_fetch_time,
-        date_formats=(DATE_FORMAT,),
-    )
-    last_modified_fetched_parsed = parse_date(
-        last_modified_fetched,
-        date_formats=(DATE_FORMAT,),
-    )
     expected_offset = 0
     expected_modified_offset = int(last_run["last_modified_offset"])
     spy = mocker.spy(client, "list_alerts")
@@ -335,13 +312,13 @@ def test_fetch_incidents_with_modified_alerts_and_not_first_call(requests_mock, 
 
     assert spy.call_count == 2
     list_alert_params = spy.call_args_list[0].args[0]
-    assert list_alert_params.get("min_timestamp") == first_fetch_time_parsed
+    assert list_alert_params.get("min_timestamp") == first_fetch_time
     assert list_alert_params.get("sort_direction") == "asc"
     assert list_alert_params.get("offset") == expected_offset
     list_modified_alert_params = spy.call_args_list[1].args[0]
     assert list_modified_alert_params.get("sort_direction") == "asc"
     assert list_modified_alert_params.get("offset") == expected_modified_offset
-    assert list_modified_alert_params.get("last_modified_min_date") == last_modified_fetched_parsed
+    assert list_modified_alert_params.get("last_modified_min_date") == last_modified_fetched
     assert next_run["last_fetched"] == first_fetch_time
     assert next_run["last_offset"] == str(expected_offset)
     assert next_run["first_run_at"] == first_fetch_time
