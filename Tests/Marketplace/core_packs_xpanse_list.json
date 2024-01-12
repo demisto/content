@@ -2,6 +2,7 @@
   "core_packs_list": [
     "AWS-EC2",
     "AWS-IAM",
+    "AWS-Organizations",
     "AWS-Route53",
     "AWS-S3",
     "AccessInvestigation",
@@ -37,6 +38,7 @@
   "update_core_packs_list": [
     "AWS-EC2",
     "AWS-IAM",
+    "AWS-Organizations",
     "AWS-Route53",
     "AWS-S3",
     "AccessInvestigation",
