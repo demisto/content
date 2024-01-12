@@ -60,6 +60,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - ServiceNow ITSM
   - Tenable.io Assets
   - Qualys
+  - Active Directory
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
@@ -86,6 +87,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Prisma Cloud Enrichment](#cortex-asm---prisma-cloud-enrichment)
   - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
   - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
+  - [Cortex ASM - Active Directory Enrichment](#cortex-asm---active-directory-enrichment)
   - [Cortex ASM - Remediation Confirmation Scan](#cortex-asm---remediation-confirmation-scan)
   - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
   - [Cortex ASM - Remediation Objectives](#cortex-asm---remediation-objectives)
@@ -190,6 +192,12 @@ Playbook that given the IP address enriches Qualys information relevant to ASM a
 A playbook that given the IP address enriches Rapid7 information relevant to ASM alerts.
 
 ![Cortex ASM - Rapid7 Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Rapid7_Enrichment.png)
+
+#### Cortex ASM - Active Directory Enrichment
+
+A playbook that given the email address enriches Service owner in Azure directory.
+
+![Cortex ASM - Active Directory Enrichment]()
 
 #### Cortex ASM - Remediation Confirmation Scan
 
