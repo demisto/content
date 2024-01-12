@@ -1,0 +1,3227 @@
+id: Fortimail
+version: -1
+name: Fortimail
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f415b85-a069-42c9-81c2-1a90a170fbfe
+    type: start
+    task:
+      id: 3f415b85-a069-42c9-81c2-1a90a170fbfe
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8d023509-bdca-4210-8f74-377ce2f09a0a
+    type: regular
+    task:
+      id: 8d023509-bdca-4210-8f74-377ce2f09a0a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5cd00dae-0618-45a4-89cc-25886ce85ea3
+    type: regular
+    task:
+      id: 5cd00dae-0618-45a4-89cc-25886ce85ea3
+      version: -1
+      name: fortimail-ip-group-create
+      script: fortimail|||fortimail-ip-group-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      name:
+        simple: TestT
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 808665b8-bbb7-4147-819e-65869c9edda4
+    type: condition
+    task:
+      id: 808665b8-bbb7-4147-819e-65869c9edda4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPGroup.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 974df610-b9b7-4e19-8205-a785e5c98567
+    type: regular
+    task:
+      id: 974df610-b9b7-4e19-8205-a785e5c98567
+      version: -1
+      name: fortimail-ip-group-update
+      script: fortimail|||fortimail-ip-group-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      comment:
+        simple: comment
+      name:
+        simple: TestT
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d7dff366-027e-4ae4-8ff5-1e914bbd2d37
+    type: condition
+    task:
+      id: d7dff366-027e-4ae4-8ff5-1e914bbd2d37
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPGroup.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPGroup.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: befc26b8-5e85-4ed6-82ea-86dc6dacbbe1
+    type: regular
+    task:
+      id: befc26b8-5e85-4ed6-82ea-86dc6dacbbe1
+      version: -1
+      name: fortimail-ip-group-delete
+      script: fortimail|||fortimail-ip-group-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      name:
+        simple: TestT
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c0471157-7fa7-4e2e-8527-fe184692eaf0
+    type: regular
+    task:
+      id: c0471157-7fa7-4e2e-8527-fe184692eaf0
+      version: -1
+      name: fortimail-ip-group-list
+      script: fortimail|||fortimail-ip-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0d0962ab-c6df-4400-85df-89db8eb5c8d8
+    type: condition
+    task:
+      id: 0d0962ab-c6df-4400-85df-89db8eb5c8d8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPGroup.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 58f2226a-d4da-4dc2-869d-77be304d7e58
+    type: regular
+    task:
+      id: 58f2226a-d4da-4dc2-869d-77be304d7e58
+      version: -1
+      name: fortimail-ip-group-member-add
+      script: fortimail|||fortimail-ip-group-member-add
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      group_name:
+        simple: test
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 37d4ffc7-d3eb-4c6f-823d-6fbbd13e94df
+    type: condition
+    task:
+      id: 37d4ffc7-d3eb-4c6f-823d-6fbbd13e94df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPGroup.mkey
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPGroup.Member.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6dc71d67-f4db-46d2-8ad3-685c6a464f61
+    type: regular
+    task:
+      id: 6dc71d67-f4db-46d2-8ad3-685c6a464f61
+      version: -1
+      name: fortimail-ip-group-member-replace
+      script: fortimail|||fortimail-ip-group-member-replace
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      group_name:
+        simple: test
+      ips:
+        simple: 3.3.3.3,4.4.4.4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 68717516-9647-4909-826f-df7f66dc6dae
+    type: regular
+    task:
+      id: 68717516-9647-4909-826f-df7f66dc6dae
+      version: -1
+      name: fortimail-ip-group-member-delete
+      script: fortimail|||fortimail-ip-group-member-delete
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      group_name:
+        simple: test
+      ip:
+        simple: 4.4.4.4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f76c0db5-5118-45b8-8979-cfb3bf04f7f0
+    type: regular
+    task:
+      id: f76c0db5-5118-45b8-8979-cfb3bf04f7f0
+      version: -1
+      name: fortimail-ip-group-member-list
+      script: fortimail|||fortimail-ip-group-member-list
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      group_name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 041f7fba-af3c-4303-8fe9-a5b1252d4ce7
+    type: condition
+    task:
+      id: 041f7fba-af3c-4303-8fe9-a5b1252d4ce7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPGroup.mkey
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPGroup.Member.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 1d62a1ad-7ef3-4341-8cfb-dcbdb2415f7b
+    type: regular
+    task:
+      id: 1d62a1ad-7ef3-4341-8cfb-dcbdb2415f7b
+      version: -1
+      name: fortimail-email-group-create
+      script: fortimail|||fortimail-email-group-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      name:
+        simple: TestT
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e3ff98f9-ff9c-4a9d-8009-5b82a2a450a6
+    type: condition
+    task:
+      id: e3ff98f9-ff9c-4a9d-8009-5b82a2a450a6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.EmailGroup.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8a530b16-d04e-43c6-8d4f-a8d1fed851e1
+    type: regular
+    task:
+      id: 8a530b16-d04e-43c6-8d4f-a8d1fed851e1
+      version: -1
+      name: fortimail-email-group-update
+      script: fortimail|||fortimail-email-group-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      comment:
+        simple: comment
+      name:
+        simple: TestT
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 20924990-8710-498a-8447-a714bd8fc6b8
+    type: condition
+    task:
+      id: 20924990-8710-498a-8447-a714bd8fc6b8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.EmailGroup.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.EmailGroup.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a13561e4-d190-44f2-8bf2-21f99e86ada7
+    type: regular
+    task:
+      id: a13561e4-d190-44f2-8bf2-21f99e86ada7
+      version: -1
+      name: fortimail-email-group-delete
+      script: fortimail|||fortimail-email-group-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      name:
+        simple: TestT
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 381a63bf-02bc-4a62-8a39-17a508790ace
+    type: regular
+    task:
+      id: 381a63bf-02bc-4a62-8a39-17a508790ace
+      version: -1
+      name: fortimail-email-group-list
+      script: fortimail|||fortimail-email-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 144ff952-1dff-4e9c-8e49-d450770dfa9b
+    type: condition
+    task:
+      id: 144ff952-1dff-4e9c-8e49-d450770dfa9b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.EmailGroup.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6c92fd62-570a-47d2-8b61-310494820952
+    type: regular
+    task:
+      id: 6c92fd62-570a-47d2-8b61-310494820952
+      version: -1
+      name: fortimail-email-group-member-add
+      script: fortimail|||fortimail-email-group-member-add
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      email:
+        simple: t@t.com
+      group_name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: dd527952-741e-40b8-8a33-8034a3d89449
+    type: condition
+    task:
+      id: dd527952-741e-40b8-8a33-8034a3d89449
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.EmailGroup.mkey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.EmailGroup.Member.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: f5e626a8-ea28-436b-80cf-0ed7f29a10ef
+    type: regular
+    task:
+      id: f5e626a8-ea28-436b-80cf-0ed7f29a10ef
+      version: -1
+      name: fortimail-email-group-member-replace
+      script: fortimail|||fortimail-email-group-member-replace
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      emails:
+        simple: d@d.com,r@r.com
+      group_name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 41c1e2da-214f-4370-8f20-dd1a15866ef4
+    type: regular
+    task:
+      id: 41c1e2da-214f-4370-8f20-dd1a15866ef4
+      version: -1
+      name: fortimail-email-group-member-delete
+      script: fortimail|||fortimail-email-group-member-delete
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      email:
+        simple: r@r.com
+      group_name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 7644afc7-1cf9-434c-811f-f57352fa490f
+    type: regular
+    task:
+      id: 7644afc7-1cf9-434c-811f-f57352fa490f
+      version: -1
+      name: fortimail-email-group-member-list
+      script: fortimail|||fortimail-email-group-member-list
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      group_name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: d9be3323-94c0-4223-8ef8-20c35419f324
+    type: condition
+    task:
+      id: d9be3323-94c0-4223-8ef8-20c35419f324
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.EmailGroup.mkey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.EmailGroup.Member.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a472ee7a-1959-4a51-8507-6bec61e14fd8
+    type: regular
+    task:
+      id: a472ee7a-1959-4a51-8507-6bec61e14fd8
+      version: -1
+      name: fortimail-system-safe-block-list
+      script: fortimail|||fortimail-system-safe-block-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      list_type:
+        simple: Blocklist
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 624cdc33-a761-40bc-87e2-2f571e348c29
+    type: condition
+    task:
+      id: 624cdc33-a761-40bc-87e2-2f571e348c29
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.SystemList.item
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.SystemList.list_type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: e6dcdefb-d2df-403b-879a-e7d6b2a528ed
+    type: regular
+    task:
+      id: e6dcdefb-d2df-403b-879a-e7d6b2a528ed
+      version: -1
+      name: fortimail-system-safe-block-add
+      script: fortimail|||fortimail-system-safe-block-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      list_type:
+        simple: Blocklist
+      values:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 32abfdc5-e41d-4e5a-8ffb-1e3160a75dc6
+    type: regular
+    task:
+      id: 32abfdc5-e41d-4e5a-8ffb-1e3160a75dc6
+      version: -1
+      name: fortimail-system-safe-block-delete
+      script: fortimail|||fortimail-system-safe-block-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      list_type:
+        simple: Blocklist
+      values:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 0578d7d8-8652-495e-8ed7-e280857850d1
+    type: regular
+    task:
+      id: 0578d7d8-8652-495e-8ed7-e280857850d1
+      version: -1
+      name: fortimail-ip-policy-create
+      script: fortimail|||fortimail-ip-policy-create
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      comment:
+        simple: test88
+      status:
+        simple: enable
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: bb8043c5-1798-45a9-8cf4-aac60f6f9ba7
+    type: condition
+    task:
+      id: bb8043c5-1798-45a9-8cf4-aac60f6f9ba7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.comment
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiMail.IPPolicy.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 78aa0dbf-6a96-4125-841c-435fa1866132
+    type: regular
+    task:
+      id: 78aa0dbf-6a96-4125-841c-435fa1866132
+      version: -1
+      name: fortimail-ip-policy-update
+      script: fortimail|||fortimail-ip-policy-update
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      comment:
+        simple: test2
+      ip_policy_id:
+        simple: ${FortiMail.IPPolicy.mkey}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: f34bb18c-d40a-467f-8440-b98d8837e30a
+    type: condition
+    task:
+      id: f34bb18c-d40a-467f-8440-b98d8837e30a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.comment
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiMail.IPPolicy.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c054fbeb-5f28-41b1-8d33-1a57e6d1fc3b
+    type: regular
+    task:
+      id: c054fbeb-5f28-41b1-8d33-1a57e6d1fc3b
+      version: -1
+      name: fortimail-ip-policy-move
+      script: fortimail|||fortimail-ip-policy-move
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      action:
+        simple: up
+      policy_id:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 4cbc6585-5d0b-4da3-8b8a-b1273357f930
+    type: regular
+    task:
+      id: 4cbc6585-5d0b-4da3-8b8a-b1273357f930
+      version: -1
+      name: fortimail-ip-policy-delete
+      script: fortimail|||fortimail-ip-policy-delete
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      policy_id:
+        simple: ${FortiMail.IPPolicy.mkey}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 440be612-0a2d-4a87-84fc-4b9a48090788
+    type: regular
+    task:
+      id: 440be612-0a2d-4a87-84fc-4b9a48090788
+      version: -1
+      name: fortimail-ip-policy-list
+      script: fortimail|||fortimail-ip-policy-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 0fd68cb1-de17-4695-8a9d-dd5b59e93216
+    type: condition
+    task:
+      id: 0fd68cb1-de17-4695-8a9d-dd5b59e93216
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.client
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.server
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPolicy.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: ff544e1d-6ee7-428a-862c-41bf66b9824f
+    type: regular
+    task:
+      id: ff544e1d-6ee7-428a-862c-41bf66b9824f
+      version: -1
+      name: fortimail-access-control-create
+      script: fortimail|||fortimail-access-control-create
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      comment:
+        simple: test88
+      status:
+        simple: enable
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 0e2950e8-7930-4d2b-8d49-016a5c93f1f5
+    type: condition
+    task:
+      id: 0e2950e8-7930-4d2b-8d49-016a5c93f1f5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AccessControl.comment
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AccessControl.authenticated
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiMail.AccessControl.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AccessControl.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: a292f6bd-3c85-45bd-8bca-498f285e7a4b
+    type: regular
+    task:
+      id: a292f6bd-3c85-45bd-8bca-498f285e7a4b
+      version: -1
+      name: fortimail-access-control-update
+      script: fortimail|||fortimail-access-control-update
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      access_control_id:
+        simple: ${FortiMail.AccessControl.mkey}
+      comment:
+        simple: test2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 83bfc438-7220-4498-82f2-44dcad86ec91
+    type: condition
+    task:
+      id: 83bfc438-7220-4498-82f2-44dcad86ec91
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AccessControl.comment
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AccessControl.authenticated
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiMail.AccessControl.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AccessControl.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 08c970bb-3e50-4585-8c62-26d0c0806cdc
+    type: regular
+    task:
+      id: 08c970bb-3e50-4585-8c62-26d0c0806cdc
+      version: -1
+      name: fortimail-access-control-delete
+      script: fortimail|||fortimail-access-control-delete
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      access_control_id:
+        simple: ${FortiMail.AccessControl.mkey}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 1a2c1f06-fba1-4db8-88e0-a4bce49d2f81
+    type: regular
+    task:
+      id: 1a2c1f06-fba1-4db8-88e0-a4bce49d2f81
+      version: -1
+      name: fortimail-access-control-move
+      script: fortimail|||fortimail-access-control-move
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      access_control_id:
+        simple: "1"
+      action:
+        simple: down
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: a436f21e-21be-412e-8788-9a5c1e5e61b3
+    type: regular
+    task:
+      id: a436f21e-21be-412e-8788-9a5c1e5e61b3
+      version: -1
+      name: fortimail-access-control-list
+      script: fortimail|||fortimail-access-control-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: f54ff210-a33e-4f6f-8337-66d2911874c3
+    type: condition
+    task:
+      id: f54ff210-a33e-4f6f-8337-66d2911874c3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AccessControl.comment
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: FortiMail.AccessControl.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AccessControl.mkey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: bce80291-e2c9-4da1-8816-3f29f0c09614
+    type: regular
+    task:
+      id: bce80291-e2c9-4da1-8816-3f29f0c09614
+      version: -1
+      name: fortimail-recipient-policy-create
+      script: fortimail|||fortimail-recipient-policy-create
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      comment:
+        simple: test882
+      resource_profile:
+        simple: Res_Default
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 959152da-982f-43ba-8ac5-73da9335e834
+    type: condition
+    task:
+      id: 959152da-982f-43ba-8ac5-73da9335e834
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.comment
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.mkey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.direction
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 8642e65f-4238-4466-8b9d-63f304e067cb
+    type: regular
+    task:
+      id: 8642e65f-4238-4466-8b9d-63f304e067cb
+      version: -1
+      name: fortimail-recipient-policy-update
+      script: fortimail|||fortimail-recipient-policy-update
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      comment:
+        simple: test2
+      recipient_policy_id:
+        simple: ${FortiMail.RecipientPolicy.mkey}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: f48d543c-00ef-4468-8664-aaeae1a16214
+    type: condition
+    task:
+      id: f48d543c-00ef-4468-8664-aaeae1a16214
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.comment
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.mkey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.direction
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: d4ed05a3-41b0-4dca-8b06-33b2d1853c29
+    type: regular
+    task:
+      id: d4ed05a3-41b0-4dca-8b06-33b2d1853c29
+      version: -1
+      name: fortimail-recipient-policy-delete
+      script: fortimail|||fortimail-recipient-policy-delete
+      type: regular
+      iscommand: true
+      brand: fortimail
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      recipient_policy_id:
+        simple: ${FortiMail.RecipientPolicy.mkey}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 2a280edc-ec50-4c1e-8909-b0d781a94131
+    type: regular
+    task:
+      id: 2a280edc-ec50-4c1e-8909-b0d781a94131
+      version: -1
+      name: fortimail-recipient-policy-move
+      script: fortimail|||fortimail-recipient-policy-move
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      action:
+        simple: after
+      recipient_policy_id:
+        simple: "1"
+      reference_id:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 301f4a06-7105-426e-892b-5dbb28c7c132
+    type: regular
+    task:
+      id: 301f4a06-7105-426e-892b-5dbb28c7c132
+      version: -1
+      name: fortimail-recipient-policy-list
+      script: fortimail|||fortimail-recipient-policy-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: ec609126-2d71-4e90-89b7-fdc891d164bb
+    type: condition
+    task:
+      id: ec609126-2d71-4e90-89b7-fdc891d164bb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.mkey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RecipientPolicy.direction
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 97fcf8ed-70d2-4abe-8bc7-be934f692948
+    type: regular
+    task:
+      id: 97fcf8ed-70d2-4abe-8bc7-be934f692948
+      version: -1
+      name: fortimail-tls-profile-list
+      script: fortimail|||fortimail-tls-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: c0467cad-dbc5-4981-8290-668f8b4b5dc8
+    type: condition
+    task:
+      id: c0467cad-dbc5-4981-8290-668f8b4b5dc8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.TLSprofile.mkey
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.TLSprofile.level
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.TLSprofile.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.TLSprofile.comment
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 50732000-72cb-4930-842b-ebfa6c9ab998
+    type: regular
+    task:
+      id: 50732000-72cb-4930-842b-ebfa6c9ab998
+      version: -1
+      name: fortimail-ldap-group-list
+      script: fortimail|||fortimail-ldap-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: f4517352-a120-49ed-82c0-ea7fdaee6b9d
+    type: condition
+    task:
+      id: f4517352-a120-49ed-82c0-ea7fdaee6b9d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.LDAPprofile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: c0aa39eb-c384-481b-8e0d-1916f4742e2c
+    type: regular
+    task:
+      id: c0aa39eb-c384-481b-8e0d-1916f4742e2c
+      version: -1
+      name: fortimail-geoip-group-list
+      script: fortimail|||fortimail-geoip-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: d85638de-3dce-4d42-86cc-9a2320de3d04
+    type: condition
+    task:
+      id: d85638de-3dce-4d42-86cc-9a2320de3d04
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.GeoIPgroup.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 48616c21-bf82-4fb0-8579-a718e76f2d3a
+    type: regular
+    task:
+      id: 48616c21-bf82-4fb0-8579-a718e76f2d3a
+      version: -1
+      name: fortimail-antispam-profile-list
+      script: fortimail|||fortimail-antispam-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 929c99af-a4e2-47fb-80e5-d49082e710ee
+    type: condition
+    task:
+      id: 929c99af-a4e2-47fb-80e5-d49082e710ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AntispamProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: def5355b-ccec-4939-8cf0-53e55a096798
+    type: regular
+    task:
+      id: def5355b-ccec-4939-8cf0-53e55a096798
+      version: -1
+      name: fortimail-antivirus-profile-list
+      script: fortimail|||fortimail-antivirus-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: eaed4280-c067-45c3-8991-70c1feb7d798
+    type: condition
+    task:
+      id: eaed4280-c067-45c3-8991-70c1feb7d798
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.AntivirusProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 28de381a-ba5e-4df9-8acf-b23a118ebe00
+    type: regular
+    task:
+      id: 28de381a-ba5e-4df9-8acf-b23a118ebe00
+      version: -1
+      name: fortimail-content-profile-list
+      script: fortimail|||fortimail-content-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 51a23c4b-b968-406c-84bb-ba6440ebc149
+    type: condition
+    task:
+      id: 51a23c4b-b968-406c-84bb-ba6440ebc149
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.ContentProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 91559026-bb28-410c-8fe2-70ca199dbfb8
+    type: regular
+    task:
+      id: 91559026-bb28-410c-8fe2-70ca199dbfb8
+      version: -1
+      name: fortimail-ip-pool-list
+      script: fortimail|||fortimail-ip-pool-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 83ed00a8-98ca-4e99-8f96-3d38f2beccbb
+    type: condition
+    task:
+      id: 83ed00a8-98ca-4e99-8f96-3d38f2beccbb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.IPPool.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 4c3f721d-ece1-40fa-8d41-41e722f324ee
+    type: regular
+    task:
+      id: 4c3f721d-ece1-40fa-8d41-41e722f324ee
+      version: -1
+      name: fortimail-session-profile-list
+      script: fortimail|||fortimail-session-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: f96cfcb7-ea7a-4b9e-8188-ae28a784b6b6
+    type: condition
+    task:
+      id: f96cfcb7-ea7a-4b9e-8188-ae28a784b6b6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.SessionProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 37a6eebd-6827-4c44-8c5e-2f92504afaaa
+    type: regular
+    task:
+      id: 37a6eebd-6827-4c44-8c5e-2f92504afaaa
+      version: -1
+      name: fortimail-radius-auth-profile-list
+      script: fortimail|||fortimail-radius-auth-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 560d8ed8-77a6-4168-8ce7-f0a54384486f
+    type: condition
+    task:
+      id: 560d8ed8-77a6-4168-8ce7-f0a54384486f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.RadiusAuthProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 59b8d9d8-5889-49a8-837b-062427110b6d
+    type: regular
+    task:
+      id: 59b8d9d8-5889-49a8-837b-062427110b6d
+      version: -1
+      name: fortimail-pop3-auth-profile-list
+      script: fortimail|||fortimail-pop3-auth-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 7aac96d0-7b17-4973-8948-7ff49134228d
+    type: condition
+    task:
+      id: 7aac96d0-7b17-4973-8948-7ff49134228d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.Pop3AuthProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 16755f26-e9c9-4927-82ca-18f4c5c42f25
+    type: regular
+    task:
+      id: 16755f26-e9c9-4927-82ca-18f4c5c42f25
+      version: -1
+      name: fortimail-imap-auth-profile-list
+      script: fortimail|||fortimail-imap-auth-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: c159ebf1-2553-46a1-8b66-8987d1f6ea9e
+    type: condition
+    task:
+      id: c159ebf1-2553-46a1-8b66-8987d1f6ea9e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.ImapAuthProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: a945398b-b12d-4805-8d1d-a2d094629d72
+    type: regular
+    task:
+      id: a945398b-b12d-4805-8d1d-a2d094629d72
+      version: -1
+      name: fortimail-smtp-auth-profile-list
+      script: fortimail|||fortimail-smtp-auth-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 8fb12f8c-e810-4b36-86c5-d05bad9b02fb
+    type: condition
+    task:
+      id: 8fb12f8c-e810-4b36-86c5-d05bad9b02fb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.SmtpAuthProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: b9769d20-1d4c-40e3-809a-e7a85e57c820
+    type: regular
+    task:
+      id: b9769d20-1d4c-40e3-809a-e7a85e57c820
+      version: -1
+      name: fortimail-resource-profile-list
+      script: fortimail|||fortimail-resource-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 2f37eff9-dfd0-46aa-8e16-1ae3b2a16370
+    type: condition
+    task:
+      id: 2f37eff9-dfd0-46aa-8e16-1ae3b2a16370
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.ResourceProfile.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 3d9250dd-096e-4660-8dcf-650e367c0eba
+    type: regular
+    task:
+      id: 3d9250dd-096e-4660-8dcf-650e367c0eba
+      version: -1
+      name: fortimail-pki-user-list
+      script: fortimail|||fortimail-pki-user-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 6887d462-12c8-4409-8b16-cb46b7fbae35
+    type: condition
+    task:
+      id: 6887d462-12c8-4409-8b16-cb46b7fbae35
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiMail.PKIuser.mkey
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 5c4bf796-77e9-4aa0-8ced-3f37135dbea7
+    type: title
+    task:
+      id: 5c4bf796-77e9-4aa0-8ced-3f37135dbea7
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 16815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: ''
