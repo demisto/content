@@ -1,5 +1,4 @@
-This transformer will get an index of an element from an array.
-ex:["phishing","Malware"], if we provide "Malware" to array_value argument, will get index as 1.
+Retrieve the index of a given item in a given array.\nex:['phishing', 'Malware'], if we provide 'Malware' to item_to_find argument, will get index as 1.
 
 ## Script Data
 
@@ -17,7 +16,7 @@ ex:["phishing","Malware"], if we provide "Malware" to array_value argument, will
 | **Argument Name** | **Description** |
 | --- | --- |
 | value | The value is an array of elements |
-| array_value | Provide the value from the array |
+| item_to_find | The item whos index we want to find |
 
 ## Outputs
 
