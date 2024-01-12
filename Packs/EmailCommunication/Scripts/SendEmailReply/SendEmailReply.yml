@@ -29,6 +29,13 @@ args:
   - 'false'
   description: Specify whether to calculate the reputation in an asynchronous way.
   defaultValue: 'false'
+- auto: PREDEFINED
+  defaultValue: html
+  description: 'The body type of the email. Can be: "text", or "HTML".'
+  name: body_type
+  predefined:
+  - text
+  - HTML
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
@@ -44,7 +51,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.13.84405
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
