@@ -71,6 +71,7 @@ class ReilaQuestClient(BaseClient):
 
         if events:
             while len(events) < limit and "event-num" in events[-1]:
+                params.update({"event-num-after": events[-1]["event-num"]})
                 events.extend(self.http_request("/triage-item-events", params=params))
 
         return events
