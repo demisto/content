@@ -5647,7 +5647,8 @@
         },
         {
             "integrations": "AWS - Organizations",
-            "playbookID": "Test - AWS_Organizations"
+            "playbookID": "Test - AWS_Organizations",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "Netcraft V2",
