@@ -1,24 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
 
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
 from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Dict, Any
+from requests.exceptions import ConnectionError, Timeout
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -27,6 +14,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO8601 format
+DEFAULT_MAX_FETCH = 200
 
 ''' CLIENT CLASS '''
 
@@ -49,10 +37,11 @@ class ReilaQuestClient(BaseClient):
         self.verify_ssl = verify_ssl
         super().__init__(base_url=url, verify=verify_ssl, proxy=proxy, auth=(username, password))
 
-    def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None):
+    @retry(times=5, exceptions=(ConnectionError, Timeout))
+    def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> List[Dict[str, Any]]:
         return self._http_request(method, url_suffix=url_suffix, headers=headers or {"searchlight-account-id": self.account_id}, params=params)
 
-    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000, events_num_after: int | None = None):
+    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000, events_num_after: int | None = None) -> List[Dict[str, Any]]:
         """
         Args:
                 api docs:
@@ -73,7 +62,7 @@ class ReilaQuestClient(BaseClient):
 
         return self.http_request("/triage-item-events", params=params)
 
-    def triage_items(self, triage_item_ids: list[str]):
+    def triage_items(self, triage_item_ids: list[str]) -> List[Dict[str, Any]]:
         """
         Args:
             triage_item_ids: a list of triage item IDs.
@@ -83,7 +72,7 @@ class ReilaQuestClient(BaseClient):
         """
         return self.http_request("/triage-items", params={"id": triage_item_ids})
 
-    def get_alerts_by_ids(self, alert_ids: list[str]):
+    def get_alerts_by_ids(self, alert_ids: list[str]) -> List[Dict[str, Any]]:
         """
         List of alerts was created from alert_id fields of /triage-items  response
 
@@ -95,7 +84,7 @@ class ReilaQuestClient(BaseClient):
         """
         return self.http_request("/alerts", params={"id": alert_ids})
 
-    def get_incident_ids(self, incident_ids: list[str]):
+    def get_incident_ids(self, incident_ids: list[str]) -> List[Dict[str, Any]]:
         """
         List of alerts was created from incident-id fields of /triage-items response
 
@@ -104,7 +93,7 @@ class ReilaQuestClient(BaseClient):
         """
         return self.http_request("/incidents", params={"id": incident_ids})
 
-    def get_asset_ids(self, asset_ids: list[str]):
+    def get_asset_ids(self, asset_ids: list[str]) -> List[Dict[str, Any]]:
         """
         Retrieve the Asset Information for the Alert or Incident
 
@@ -131,6 +120,26 @@ def test_module(client: ReilaQuestClient) -> str:
     return "ok"
 
 
+# def collect_event_ids_by_type(triage_item_ids: )
+
+
+def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
+
+    triaged_events = client.list_triage_item_events()
+    triage_item_ids = [event.get("triage-item-id") for event in triaged_events]
+    demisto.info(f'Fetched the following item IDs: {triage_item_ids}')
+
+    triaged_items = client.triage_items(triage_item_ids)
+    for item in triaged_items:
+        triage_item = item.get("triage-item") or {}
+        if triage_item.get("source")
+
+
+    incident_ids = [(item.get("triage-item") or {}).get() for item in triaged_items]
+
+
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -143,8 +152,8 @@ def main() -> None:
     params = demisto.params()
     url = params.get("url")
     account_id = params.get("account_id")
-    max_fetch_events = arg_to_number(params.get("max_fetch_events")) or 200
-    events_first_fetch = dateparser.parse(params.get("first_fetch_events"), settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
+    max_fetch = arg_to_number(params.get("max_fetch_events")) or 200
+    first_fetch = dateparser.parse(params.get("first_fetch_events"), settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
     credentials = params.get("credentials") or {}
     username = credentials.get("identifier")
     password = credentials.get("password")
@@ -160,7 +169,7 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "fetch-events":
             pass
-        elif command == "fetch-assets":
+        elif command == "reila-quest-get-events":
             pass
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')

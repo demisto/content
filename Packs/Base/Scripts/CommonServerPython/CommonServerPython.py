@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from functools import wraps
 from inspect import currentframe
 
 import demistomock as demisto
@@ -11496,6 +11497,45 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     zipped_data=zipped_data, is_json_response=True)
 
     demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+
+
+def retry(
+    times: int = 3,
+    delay: int = 1,
+    exceptions: Union[tuple[type[Exception], ...], type[Exception]] = Exception,
+):
+    """
+    retries to execute a function until an exception isn't raised anymore.
+
+    Args:
+        times: the amount of times to try and execute the function
+        delay: the number of seconds to wait between each time
+        exceptions: the exceptions that should be caught when executing the function
+
+    Returns:
+        Any: the decorated function result
+    """
+
+    def _retry(func: callable):
+        func_name = func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for i in range(1, times + 1):
+                demisto.debug("Running func {func_name} for the {time} time".format(func_name=func_name, time=i))
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as error:
+                    demisto.debug(
+                        "Error when executing func {func_name}, error: {error}, time {time}".format(func_name=func_name, error=error, time=i)
+                    )
+                    if i == times:
+                        raise
+                    time.sleep(delay)  # pylint: disable=sleep-exists
+
+        return wrapper
+
+    return _retry
 
 
 ###########################################
