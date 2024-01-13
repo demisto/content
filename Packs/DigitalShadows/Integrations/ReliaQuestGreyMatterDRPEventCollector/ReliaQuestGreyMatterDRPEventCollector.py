@@ -53,11 +53,12 @@ class ReilaQuestClient(BaseClient):
                 api docs:
                     Return events with an event-num greater than this value
                     Must be greater than or equal to 0.
-            event_created_before (str): retrieve events occurred before a specific time, format:  YYYY-MM-DDThh:mm:ssTZD.
-            event_created_after (str): retrieve events occurred after a specific time, format:  YYYY-MM-DDThh:mm:ssTZD.
+            event_created_before (str): retrieve events occurred before a specific time (included), format:  YYYY-MM-DDThh:mm:ssTZD.
+            event_created_after (str): retrieve events occurred after a specific time (included), format:  YYYY-MM-DDThh:mm:ssTZD.
             limit (int): the maximum number of events to retrieve
             events_num_after (int): used for pagination, can be retrieved from the "event-num" value from previous responses.
         """
+
         params: dict = {"limit": limit}
         if event_created_before:
             params["event-created-before"] = event_created_before
@@ -66,7 +67,13 @@ class ReilaQuestClient(BaseClient):
         if events_num_after:
             params["events-num-after"] = events_num_after
 
-        return self.http_request("/triage-item-events", params=params)
+        events = self.http_request("/triage-item-events", params=params)
+
+        if events:
+            while len(events) < limit and "event-num" in events[-1]:
+                events.extend(self.http_request("/triage-item-events", params=params))
+
+        return events
 
     def triage_items(self, triage_item_ids: list[str]) -> List[Dict[str, Any]]:
         """
@@ -126,14 +133,14 @@ def test_module(client: ReilaQuestClient) -> str:
     return "ok"
 
 
-# def collect_event_ids_by_type(triage_item_ids: )
+def collect_event_ids_by_type(triage_item_ids: )
 
 
 def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
 
-    triaged_events = client.list_triage_item_events()
-    triage_item_ids = [event.get("triage-item-id") for event in triaged_events]
-    demisto.info(f'Fetched the following item IDs: {triage_item_ids}')
+    events = client.list_triage_item_events()
+    triage_item_ids = [event.get("triage-item-id") for event in events]
+    demisto.info(f"Fetched the following item IDs: {triage_item_ids}")
 
     triaged_items = client.triage_items(triage_item_ids)
     for item in triaged_items:
