@@ -47,7 +47,7 @@ class ReilaQuestClient(BaseClient):
                 raise error.exception
             raise
 
-    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000, events_num_after: int | None = None) -> List[Dict[str, Any]]:
+    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000) -> List[Dict[str, Any]]:
         """
         Args:
                 api docs:
@@ -56,7 +56,6 @@ class ReilaQuestClient(BaseClient):
             event_created_before (str): retrieve events occurred before a specific time (included), format:  YYYY-MM-DDThh:mm:ssTZD.
             event_created_after (str): retrieve events occurred after a specific time (included), format:  YYYY-MM-DDThh:mm:ssTZD.
             limit (int): the maximum number of events to retrieve
-            events_num_after (int): used for pagination, can be retrieved from the "event-num" value from previous responses.
         """
 
         params: dict = {"limit": limit}
@@ -64,8 +63,6 @@ class ReilaQuestClient(BaseClient):
             params["event-created-before"] = event_created_before
         if event_created_after:
             params["event-created-after"] = event_created_after
-        if events_num_after:
-            params["events-num-after"] = events_num_after
 
         events = self.http_request("/triage-item-events", params=params)
 
