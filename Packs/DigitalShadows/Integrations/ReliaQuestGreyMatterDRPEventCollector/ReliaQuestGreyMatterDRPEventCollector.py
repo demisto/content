@@ -52,7 +52,7 @@ class ReilaQuestClient(BaseClient):
     def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None):
         return self._http_request(method, url_suffix=url_suffix, headers=headers or {"searchlight-account-id": self.account_id}, params=params)
 
-    def list_triage_item_events(self, event_created_before: str | None, event_created_after: str | None, limit: int = 1000, events_num_after: int | None = None):
+    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000, events_num_after: int | None = None):
         """
         Args:
                 api docs:
@@ -127,18 +127,8 @@ def test_module(client: ReilaQuestClient) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    client.list_triage_item_events(limit=1)
+    return "ok"
 
 
 ''' MAIN FUNCTION '''
