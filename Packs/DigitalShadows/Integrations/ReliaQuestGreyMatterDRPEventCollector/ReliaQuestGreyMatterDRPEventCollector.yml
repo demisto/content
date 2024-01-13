@@ -44,12 +44,29 @@ name: ReliaQuestGreyMatterDRPEventCollector
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
+    - name: event_type
+      description: 'The type of events to retrieve'
       required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
-    outputs:
+      auto: PREDEFINED
+      predefined:
+        - 'incident'
+        - 'alert'
+        - 'all'
+      defaultValue: 'all'
+    - name: start_time
+      description: 'From which time to get the events'
+      required: false
+      defaultValue: '3 days ago'
+    - name: end_time
+      description: 'Until which time to get the events'
+      required: false
+    - name: limit
+      description: 'The maximum number of events to retrieve'
+      required: false
+      defaultValue: '200'
+    description: Manual command to fetch events and display them.
+    name: reila-quest-get-events
+    outputs:  # add the outputs here
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
@@ -59,7 +76,6 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.13.83255
   isfetchevents: true
-  isfetchassets: true
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
