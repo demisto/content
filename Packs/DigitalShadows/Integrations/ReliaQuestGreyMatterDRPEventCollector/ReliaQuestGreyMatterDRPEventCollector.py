@@ -39,7 +39,13 @@ class ReilaQuestClient(BaseClient):
 
     @retry(times=5, exceptions=(ConnectionError, Timeout))
     def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> List[Dict[str, Any]]:
-        return self._http_request(method, url_suffix=url_suffix, headers=headers or {"searchlight-account-id": self.account_id}, params=params)
+        try:
+            return self._http_request(method, url_suffix=url_suffix, headers=headers or {"searchlight-account-id": self.account_id}, params=params)
+        except DemistoException as error:
+            if isinstance(error.exception, ConnectionError):
+                # raise connection error to re-trigger the retry for temporary connection/timeout errors
+                raise error.exception
+            raise
 
     def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000, events_num_after: int | None = None) -> List[Dict[str, Any]]:
         """
