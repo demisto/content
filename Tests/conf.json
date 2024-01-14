@@ -3616,7 +3616,7 @@
             "integrations": "CreateIncidents",
             "playbookID": "DBotFindSimilarIncidentsByIndicators - Test",
             "instance_names": [
-                "Create_Test_Incidents_-_Phishing_Mock"
+                "Create Test Incidents - Phishing Mock"
             ]
         },
         {
