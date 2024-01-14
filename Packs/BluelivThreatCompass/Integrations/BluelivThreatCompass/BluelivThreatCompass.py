@@ -20,14 +20,14 @@ BLUELIV_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None,
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None,
                  organization=0, module=0, module_type=""):
         BaseClient.__init__(self, base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
 
         self.module_type = module_type
         self._organization = organization
         self._module = module
-        self._module_url = "/organization/{}/module/{}/{}".format(organization, module, MODULES[module_type])
+        self._module_url = f"/organization/{organization}/module/{module}/{MODULES[module_type]}"
 
     def authenticate(self, username: str, password: str):
         body = {
@@ -47,7 +47,7 @@ class Client(BaseClient):
 
     def resource_get(self, args):
         resource_id = args.get("id", "")
-        path = "/resource/{}".format(resource_id)
+        path = f"/resource/{resource_id}"
 
         res = self._http_request(method='GET', url_suffix=self._module_url + path)
         return res
@@ -69,7 +69,7 @@ class Client(BaseClient):
         resource_id = args.get("id", "")
         user_result = args.get("status", "")
 
-        path = "/resource/{}/userResult/{}".format(resource_id, user_result)
+        path = f"/resource/{resource_id}/userResult/{user_result}"
 
         res = self._http_request(method='PUT', url_suffix=self._module_url + path)
         return res
@@ -78,7 +78,7 @@ class Client(BaseClient):
         resource_id = args.get("id", "")
         tlp = args.get("tlp", "")
 
-        path = "/resource/{}/tlpStatus/{}".format(resource_id, tlp.upper())
+        path = f"/resource/{resource_id}/tlpStatus/{tlp.upper()}"
 
         res = self._http_request(method='PUT', url_suffix=self._module_url + path)
         return res
