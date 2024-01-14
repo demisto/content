@@ -49,7 +49,7 @@ tasks:
       incident_raw_json:
         simple: '[{"name": "DBotFindSimilarIncidentsByIndicatorsTest", "details": "8.8.8.8"}, {"name": "DBotFindSimilarIncidentsByIndicatorsTest", "details": "8.8.8.8"}]'
       using:
-        simple: CreateIncidents_instance_-_find_similar_incidents
+        simple: Create Test Incidents - Phishing Mock
     separatecontext: false
     skipunavailable: false
     task:
