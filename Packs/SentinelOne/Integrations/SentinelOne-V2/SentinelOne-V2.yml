@@ -130,7 +130,7 @@ name: SentinelOne V2
 script:
   commands:
   - arguments:
-    - description: The computer name by which to filter the results.
+    - description: The computer name by which to filter the results. It can match a partial computer name value (substring).
       name: computer_name
     - auto: PREDEFINED
       description: 'A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted".'

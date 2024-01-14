@@ -90,8 +90,10 @@ class NothingToCollectException(Exception):
 
 
 class IncompatibleMarketplaceException(NothingToCollectException):
-    def __init__(self, content_path: Path, expected_marketplace: MarketplaceVersions):
-        super().__init__(content_path, f'is not compatible with expected marketplace {expected_marketplace.name}')
+    def __init__(self, content_path: Path, content_item_marketplaces: tuple[MarketplaceVersions, ...],
+                 expected_marketplace: MarketplaceVersions):
+        super().__init__(content_path, f'content item marketplace values are: {", ".join(content_item_marketplaces)}, '
+                                       f'incompatible with expected marketplace {expected_marketplace.name}')
 
 
 class InvalidTestException(Exception):
@@ -121,3 +123,9 @@ class SkippedTestException(InvalidTestException):
 class PrivateTestException(InvalidTestException):
     def __init__(self, test_name: str):
         super().__init__(test_name, 'test is private')
+
+
+class IncompatibleTestMarketplaceException(InvalidTestException):
+    def __init__(self, test_name: str, test_marketplaces: set[MarketplaceVersions], expected_marketplace: MarketplaceVersions):
+        super().__init__(test_name, f'test marketplace values are: {", ".join(test_marketplaces)}, '
+                                    f'incompatible with expected marketplace: {expected_marketplace}')
