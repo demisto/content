@@ -1453,13 +1453,13 @@ inputSections:
   - username
   - ContactUserManager
   name: Alert Management
-  description: Incident management settings and data, including escalation processes, and user engagements.
+  description: Alert management settings and data, including escalation processes, and user engagements.
 - inputs:
   - WhitelistedIPs
   - AllowlistCIDR
   - MaxMilesPerHourAllowed
   name: Investigation
-  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
 - inputs:
   - preInvestigationContainment
   - AutoContainment

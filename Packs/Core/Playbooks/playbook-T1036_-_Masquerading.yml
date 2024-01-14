@@ -1647,8 +1647,8 @@ inputs:
 inputSections:
 - inputs:
   - AutoCloseAlert
-  name: Incident Management
-  description: Incident management settings and data, including escalation processes, and user engagements.
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, and user engagements.
 - inputs:
   - FileSHA256
   - FilePath

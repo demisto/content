@@ -1688,12 +1688,12 @@ inputSections:
   - FileSHA256
   - FilePath
   - IP
-  name: Incident Management
-  description: Incident management settings and data, including escalation processes, and user engagements.
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, and user engagements.
 - inputs:
   - RunAdvancedAnalysis
   name: Investigation
-  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
 - inputs:
   - earlyRemediation
   - AutoContainment
