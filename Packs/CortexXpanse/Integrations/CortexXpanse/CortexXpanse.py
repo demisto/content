@@ -1018,7 +1018,7 @@ def list_external_websites_command(client: Client, args: Dict[str, Any]) -> Comm
     command_results = CommandResults(
         outputs_prefix='ASM.ExternalWebsite',
         outputs_key_field='',
-        outputs=response.get('reply').get('websites')
+        outputs=response.get('reply').get('websites'),
         raw_response=response,
         readable_output=human_readable
     )
