@@ -449,6 +449,14 @@ script:
     - name: notes
       required: true
       description: Notes about the asset.
+    - auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      required: true
+      name: inactive
+      description: Whether to inactivate the asset.
     description: Inactivates a single asset.
   - name: kenna-search-assets-by-external-id
     arguments:
@@ -463,7 +471,7 @@ script:
       description: Whether to put data in context.
       defaultValue: "false"
     - name: limit
-      description: The maximum number of assets to return. 
+      description: The maximum number of assets to return.
       defaultValue: "500"
     outputs:
     - contextPath: Kenna.Assets.ID

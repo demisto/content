@@ -1,33 +1,37 @@
 Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
 
 ## Configure Kenna v2 on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Kenna v2.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Server URL (e.g.  https://api.kennasecurity.com)__
+    * __Server URL (e.g.  <https://api.kennasecurity.com>)__
     * __Kenna API key__
     * __Use system proxy settings__
     * __Trust any certificate (not secure)__
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### 1. Search vulnerabilities
+
 ---
 Searches for vulnerabilities in Kenna.
 
 ##### Base Command
 
 `kenna-search-vulnerabilities`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | id | Vulnerability ID to search. | Optional | 
 | top-priority | Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false". | Optional | 
@@ -39,7 +43,7 @@ Searches for vulnerabilities in Kenna.
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Kenna.Vulnerabilities.AssetID | Number | The asset ID related to the vulnerability. | 
 | Kenna.Vulnerabilities.Connectors.DefinitionName | String | The connector definition name related to the vulnerability. | 
@@ -65,9 +69,11 @@ Searches for vulnerabilities in Kenna.
 
 
 ##### Command Example
+
 ```!kenna-search-vulnerabilities limit=5```
 
 ##### Context Example
+
 ```
 {
     "Kenna.Vulnerabilities": [
@@ -266,7 +272,9 @@ Searches for vulnerabilities in Kenna.
 ```
 
 ##### Human Readable Output
+
 ### Kenna Vulnerabilities
+
 |Name|Score|id|
 |---|---|---|
 | CVE-2018-1273 | 100 | 631199 |
@@ -277,29 +285,33 @@ Searches for vulnerabilities in Kenna.
 
 
 ### 2. Run a connector
+
 ---
 Executes a run of the specified connector. If file based, it will use the most recently uploaded data file.
 
 ##### Base Command
 
 `kenna-run-connector`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | id | The connector ID to run. | Required | 
 
 
 ### 3. Search fixes
+
 ---
 Filters fixes by a given set of vulnerability and asset parameters and returns the filtered fixes.
 
 ##### Base Command
 
 `kenna-search-fixes`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | id | The vulnerability ID for which to search. | Optional | 
 | top-priority | Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false". | Optional | 
@@ -312,7 +324,7 @@ Filters fixes by a given set of vulnerability and asset parameters and returns t
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Kenna.Fixes.ID | Number | The fix ID. | 
 | Kenna.Fixes.Title | String | The fix title. | 
@@ -331,9 +343,11 @@ Filters fixes by a given set of vulnerability and asset parameters and returns t
 
 
 ##### Command Example
+
 ```!kenna-search-fixes limit=3```
 
 ##### Context Example
+
 ```
 {
     "Kenna.Fixes": [
@@ -399,36 +413,51 @@ Filters fixes by a given set of vulnerability and asset parameters and returns t
 ```
 
 ##### Human Readable Output
+
 CVE-2019-18408
+
 #### ID: 1459069
+
 1 vulnerabilities affected
+
 #### Diagnosis:
+
    Related CVE IDs:   CVE-2019-18408  
 &nbsp;
 CVE-2019-18409
+
 #### ID: 1459070
+
 1 vulnerabilities affected
+
 #### Diagnosis:
+
    Related CVE IDs:   CVE-2019-18409  
 &nbsp;
 CVE-2019-18393
+
 #### ID: 1459071
+
 1 vulnerabilities affected
+
 #### Diagnosis:
+
    Related CVE IDs:   CVE-2019-18393  
 &nbsp;
 
 
 ### 4. Update an asset
+
 ---
 Updates the attributes of a single asset.
 
 ##### Base Command
 
 `kenna-update-asset`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | id | The ID of the asset to update. | Required | 
 | notes | Notes about the asset. | Required | 
@@ -439,22 +468,26 @@ Updates the attributes of a single asset.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!kenna-update-asset id={asset_id} notes="My personal asset."```
 
 
 ##### Human Readable Output
+
 Asset {asset_id} was updated
 
 ### 5. Update a vulnerability
+
 ---
 Updates the attributes of a single vulnerability.
 
 ##### Base Command
 
 `kenna-update-vulnerability`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | id | The ID of the vulnerability to update. | Required | 
 | status | The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive". | Optional | 
@@ -466,28 +499,32 @@ Updates the attributes of a single vulnerability.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!kenna-update-vulnerability id=631199 status=risk_accepted```
 
 
 ##### Human Readable Output
+
 Asset 631199 was updated
 
 ### 6. Get a list of all connectors
+
 ---
 Returns all connectors.
 
 ##### Base Command
 
 `kenna-get-connectors`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Kenna.ConnectorsList.ID | Number | The connector ID. | 
 | Kenna.ConnectorsList.Name | String | The connector name. | 
@@ -496,9 +533,11 @@ Returns all connectors.
 
 
 ##### Command Example
+
 ```!kenna-get-connectors```
 
 ##### Context Example
+
 ```
 {
     "Kenna.ConnectorsList": [
@@ -537,7 +576,9 @@ Returns all connectors.
 ```
 
 ##### Human Readable Output
+
 ### Kenna Connectors
+
 |Host|ID|Name|Running|
 |---|---|---|---|
 |  | 152075 | Nessus XML | false |
@@ -548,15 +589,17 @@ Returns all connectors.
 
 
 ### 7. Search assets
+
 ---
 Searches for assets.
 
 ##### Base Command
 
 `kenna-search-assets`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | id | The asset ID to search for. | Optional | 
 | hostname | The hostname of the asset to search for. | Optional | 
@@ -568,7 +611,7 @@ Searches for assets.
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Kenna.Assets.ID | Number | The asset ID. | 
 | Kenna.Assets.Hostname | String | The hostname of the asset. | 
@@ -586,9 +629,11 @@ Searches for assets.
 
 
 ##### Command Example
+
 ```!kenna-search-assets limit=4```
 
 ##### Context Example
+
 ```
 {
     "Kenna.Assets": [
@@ -663,7 +708,9 @@ Searches for assets.
 ```
 
 ##### Human Readable Output
+
 ### Kenna Assets
+
 |IP-address|Operating System|Score|id|
 |---|---|---|---|
 | {ip} | Ubuntu | 1000 | {asset_id} |
@@ -673,15 +720,17 @@ Searches for assets.
 
 
 ### 8. Get an asset's vulnerabilities
+
 ---
 Gets vulnerabilities of the specified asset.
 
 ##### Base Command
 
 `kenna-get-asset-vulnerabilities`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | id | The asset ID for which to get vulnerabilities. | Required | 
 | limit | The maximum number of vulnerabilities to return. The default value is 500. | Optional | 
@@ -690,7 +739,7 @@ Gets vulnerabilities of the specified asset.
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Kenna.VulnerabilitiesOfAsset.AssetID | Number | The ID of the asset that this vulnerability is associated with. | 
 | Kenna.VulnerabilitiesOfAsset.CveID | String | The CVE ID of the vulnerability associated with the asset.  | 
@@ -702,9 +751,11 @@ Gets vulnerabilities of the specified asset.
 
 
 ##### Command Example
+
 ```!kenna-get-asset-vulnerabilities id={asset_id} limit=2```
 
 ##### Context Example
+
 ```
 {
     "Kenna.VulnerabilitiesOfAsset": [
@@ -731,7 +782,9 @@ Gets vulnerabilities of the specified asset.
 ```
 
 ##### Human Readable Output
+
 ### Kenna Vulnerabilities
+
 |Name|Score|id|
 |---|---|---|
 | CVE-2017-5817 | 91 | 631229 |
@@ -739,15 +792,17 @@ Gets vulnerabilities of the specified asset.
 
 
 ### 9. Add a tag to an asset
+
 ---
 Adds a tag to the specified asset.
 
 ##### Base Command
 
 `kenna-add-tag`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | tag | A comma-separated list of tags to add to the asset. | Required | 
 | id | The asset ID to which to add the tag.  | Required | 
@@ -758,23 +813,27 @@ Adds a tag to the specified asset.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!kenna-add-tag id={asset_id} tag="My test tag"```
 
 
 
 ##### Human Readable Output
+
 Tag My test tag was added to asset {asset_id}
 
 ### 10. Delete a tag from an asset
+
 ---
 Deletes tags from the specified asset.
 
 ##### Base Command
 
 `kenna-delete-tag`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | id | The asset ID from which to delete the tag. | Required | 
 | tag | The tag to delete. | Required | 
@@ -785,15 +844,18 @@ Deletes tags from the specified asset.
 There is no context output for this command.
 
 ##### Command Example
+
 ```!kenna-delete-tag id={asset_id} tag="My test tag"```
 
 
 
 ##### Human Readable Output
+
 Tag My test tag was deleted to asset {asset_id}
 
 
 ### kenna-get-connector-runs
+
 ***
 Returns JSON data on all the runs of a given connector.
 
@@ -801,16 +863,17 @@ Returns JSON data on all the runs of a given connector.
 #### Base Command
 
 `kenna-get-connector-runs`
+
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | connector_id | Unique numerical ID of the connector. | Required | 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Kenna.ConnectorRunsList.ID | Number | Connector Run ID. | 
 | Kenna.ConnectorRunsList.StartTime | Number | Connector Run Start Time. | 
@@ -833,9 +896,11 @@ Returns JSON data on all the runs of a given connector.
 
 
 #### Command Example
+
 ```!kenna-get-connector-runs connector_id={connector_id}```
 
 #### Context Example
+
 ```
 {
     "Kenna": {
@@ -865,9 +930,11 @@ Returns JSON data on all the runs of a given connector.
 #### Human Readable Output
 
 >### Kenna Connector Runs
+
 >|AssetsWithTagsReset|AutoclosedScannerVulnerabilities|AutoclosedVulnerabilities|ClosedScannerVulnerabilities|ClosedVulnerabilities|CreatedScannerVulnerabilities|EndTime|FailedPayload|ID|ProcessedAssets|ProcessedPayload|ProcessedScannerVulnerabilities|ReopenedScannerVulnerabilities|ReopenedVulnerabilities|StartTime|Success|TotalPayload|UpdatedScannerVulnerabilities|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 0 | 0 | 0 | 0 | 10 | 2019-10-24T19:13:36.000Z | 0 | 111111 | 10 | 10 | 10 | 0 | 0 | 2019-10-24T19:02:02.000Z | true | 10 | 0 |
+
 ### kenna-inactivate-asset
 
 ***
@@ -879,7 +946,7 @@ Inactivates a single asset.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | asset_id | The ID of the asset to inactivate. | Required | 
 | notes | Notes about the asset. | Required | 
@@ -887,6 +954,7 @@ Inactivates a single asset.
 #### Context Output
 
 There is no context output for this command.
+
 ### kenna-search-assets-by-external-id
 
 ***
@@ -915,3 +983,58 @@ Search assets by external ID.
 | Kenna.Assets.Score | Number | Score of current asset. | 
 | Kenna.Assets.IpAddress | String | IP of current asset. | 
 | Kenna.Assets.OperatingSystem | String | Operating system of current asset. | 
+
+#### Command example
+```!kenna-search-assets-by-external-id external_id=test_id limit=2 to_context=true```
+#### Context Example
+```json
+{
+    "Kenna": {
+        "Assets": [
+            {
+                "Fqdn": null,
+                "Hostname": null,
+                "ID": "dummy",
+                "IpAddress": "0.0.0",
+                "Notes": "test",
+                "OperatingSystem": "Windows",
+                "Owner": null,
+                "Priority": 10,
+                "Score": 1000,
+                "Status": "active",
+                "Tags": [
+                    "Category10",
+                    "Category9"
+                ],
+                "VulnerabilitiesCount": 10
+            },
+            {
+                "Fqdn": null,
+                "Hostname": null,
+                "ID": "dummy2",
+                "IpAddress": "0.0.0",
+                "Notes": null,
+                "OperatingSystem": "Windows",
+                "Owner": null,
+                "Priority": 10,
+                "Score": 1000,
+                "Status": "active",
+                "Tags": [
+                    "Category5",
+                    "Category7"
+                ],
+                "VulnerabilitiesCount": 10
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kenna Assets
+>|IP-address|Operating System|Score|id|
+>|---|---|---|---|
+>| 0.0.0 | Windows | 1000 | dummy |
+>| 0.0.0 | Windows | 1000 | dummy2 |
+

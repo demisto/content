@@ -10,4 +10,4 @@
 !kenna-delete-tag id=123 tag="sometag"
 !kenna-get-connector-runs connector_id=123
 !kenna-inactivate-asset id=123 notes="test"
-!kenna-search-assets-by-external-id external_id=123
+!kenna-search-assets-by-external-id external_id=test limit=2 to_context=true

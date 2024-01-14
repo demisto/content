@@ -1,11 +1,24 @@
+import json
 import pytest
+from pathlib import Path
+from pytest_mock import MockerFixture
 
 from KennaV2 import parse_response, search_vulnerabilities, get_connectors, Client, \
-    search_fixes, search_assets, get_asset_vulnerabilities, get_connector_runs
+    search_fixes, search_assets, get_asset_vulnerabilities, get_connector_runs, search_assets_by_external_id_command, \
+    update_asset_command
 from test_data.ExpectedResult import VULNERABILITIES_SEARCH_EXPECTED, GET_CONNECTORS_EXPECTED, SEARCH_FIXES_EXPECTED, \
     SEARCH_ASSETS_EXPECTED, GET_ASSETS_VULNERABILITIES_EXPECTED, GET_CONNECTOR_RUNS_EXPECTED
 from test_data.RawData import VULNERABILITIES_SEARCH_RESPONSE, GET_CONNECTORS_RESPONSE, SEARCH_FIXES_RESPONSE, \
     SEARCH_ASSETS_RESPONSE, GET_ASSETS_VULNERABILITIES_RESPONSE, GET_CONNECTOR_RUNS_RESPONSE
+
+
+class MockClient:
+    def http_request(self, message, suffix):
+        pass
+
+
+def util_load_json(path: str) -> dict:
+    return json.loads(Path(path).read_text())
 
 
 def test_parse_response():
@@ -43,3 +56,56 @@ def test_commands(command, args, response, expected_result, mocker):
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]
+
+
+def test_search_assets_by_external_id_command(mocker: MockerFixture) -> None:
+    """
+    Given
+        a valid external_id,
+    When
+        the search_assets_by_external_id_command function is called,
+    Then
+        it should return a table with the assets that match the given external_id.
+    """
+    mock_data = util_load_json("test_data/assets_response.json")
+    mocker.patch.object(MockClient, 'http_request', return_value=mock_data)
+    result = search_assets_by_external_id_command(MockClient(), {"external_id": "external_123"})
+    assert result.readable_output == (
+        '### Kenna Assets\n'
+        '|IP-address|Operating System|Score|id|\n'
+        '|---|---|---|---|\n'
+        '| 0.0.0 | Windows | 1000 | 1 |\n'
+        '| 0.0.0 | Windows | 1000 | 2 |\n'
+        '| 0.0.0 | Windows | 1000 | 5 |\n'
+        '| 0.0.0 | Windows | 1000 | 6 |\n'
+    )
+
+
+@pytest.mark.parametrize(
+    "mock_response, excepted_result",
+    [
+        pytest.param(
+            {'status': 'success'},
+            'Asset with ID 123 was successfully updated.',
+            id="successfully updated."
+        ),
+        pytest.param(
+            {'status': 'failure'},
+            'Could not update asset with ID 123.',
+            id="failure."
+        )
+    ]
+)
+def test_update_asset_command(mocker: MockerFixture, mock_response: dict[str, str], excepted_result: str) -> None:
+    """
+    Given
+        a valid asset id and notes,
+    When
+        the update_asset_command function is called with different API responses,
+    Then
+        it should return the expected result based on the API response.
+    """
+    mocker.patch.object(MockClient, 'http_request', return_value=mock_response)
+    args = {'id': '123', 'notes': 'Test notes'}
+    result = update_asset_command(MockClient(), args)
+    assert result.readable_output == excepted_result

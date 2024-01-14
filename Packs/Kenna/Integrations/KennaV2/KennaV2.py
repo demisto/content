@@ -1,12 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple, Callable
-
-import urllib3
-
-
-# Disable insecure warnings
-urllib3.disable_warnings()
+from collections.abc import Callable
 
 
 def parse_response(raw_data: List[Dict[str, Any]], wanted_keys: List[Any], actual_keys: List[Any]) -> \
@@ -77,17 +71,20 @@ class Client(BaseClient):
             raise DemistoException(f'Connection error in the API call to Kenna.\n'
                                    f'Check your Server URL parameter.\n\n{err}')
         try:
-            response_list = response.json() if response.text else {}
+            response_dict = response.json() if response.text else {}
             if not response.ok:
-                if response_list.get('error') == "unauthorized":
+                if response_dict.get('error') == "unauthorized":
                     raise DemistoException(f'Connection error in the API call to Kenna.\n'
-                                           f'Check your Api Key parameter.\n\n{demisto.get(response_list, "error.message")}')
+                                           f'Check your Api Key parameter.\n\n{response_dict.get("message")}')
                 else:
-                    raise DemistoException(f'API call to Kenna failed ,Error code [{response.status_code}]'
-                                           f' - {demisto.get(response_list, "error.message")}')
+                    raise DemistoException(
+                        f'API call to Kenna failed with error code: {response.status_code}.\n'
+                        f'Error: {response_dict.get("error")}\n'
+                        f'Message: {response_dict.get("message")}'
+                    )
             elif response.status_code == 204:
                 return {'status': 'success'}
-            return response_list
+            return response_dict
         except TypeError:
             raise Exception(f'Error in API call to Kenna, could not parse result [{response.status_code}]')
 
@@ -96,15 +93,11 @@ def test_module(client: Client, *_):
     """
     Performs basic get request from Kenna v2
     """
-    res_vulnerabilities = client.http_request('GET', '/vulnerabilities')
-    res_assets = client.http_request('GET', '/assets')
-
-    if isinstance(res_vulnerabilities.get('vulnerabilities'), list) and isinstance(res_assets.get('assets'), list):
-        return 'ok', None, None
-    raise Exception('Error occurred while trying to query the api.')
+    client.http_request('GET', '/assets')
+    return 'ok', None, None
 
 
-def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def search_vulnerabilities(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Search vulnerability command.
     Args:
         client: Client which connects to api
@@ -162,7 +155,7 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     return human_readable_markdown, context, response
 
 
-def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def get_connectors(client: Client, *_) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Get Connectors command.
     Args:
         client:  Client which connects to api
@@ -198,29 +191,34 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
     return human_readable_markdown, context, connectors
 
 
-def inactivate_asset(client: Client, args: dict) -> CommandResults:
-    """Inactivate asset command.
+def inactivate_asset(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Inactivate an asset.
+
+    This function sends a PUT request to the '/assets/{asset_id}' endpoint with the 'inactive' field set to True.
+
     Args:
-        client:  Client which connects to api
-        args: arguments for the request
+        client (Client): The client to use for the HTTP request.
+        args (dict): A dictionary of arguments. Expected keys are 'asset_id' and optionally 'notes'.
+
     Returns:
-        CommandResults
+        CommandResults: A CommandResults object.
     """
     asset_id = args['asset_id']
     url_suffix = f'/assets/{asset_id}'
     asset = {
         'asset': {
-            'inactive': True,
-            'notes': args.get('notes')
+            'inactive': argToBoolean(args["inactive"]),
+            'notes': args['notes']
         }
     }
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     if result.get('status') != "success":
-        return CommandResults(readable_output='Could not inactivate asset.')
-    return CommandResults(readable_output=f'Asset {asset_id} was updated')
+        return CommandResults(readable_output=f'Could not inactivate asset with ID {asset_id}.')
+    return CommandResults(readable_output=f'Asset with ID {asset_id} was successfully inactivated.')
 
 
-def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def get_connector_runs(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Get Connector Runs command.
     Args:
         client:  Client which connects to api
@@ -306,7 +304,7 @@ def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any],
     return human_readable_markdown, context, connectors
 
 
-def run_connector(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def run_connector(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Run Connector command.
     Args:
         client:  Client which connects to api
@@ -322,7 +320,7 @@ def run_connector(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     return f'Connector {args_id} did not ran successfully.', {}, []
 
 
-def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def search_fixes(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Search Fixes command.
     Args:
         client:  Client which connects to api
@@ -374,7 +372,7 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     return human_readable_markdown, context, response
 
 
-def update_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def update_asset_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Update Asset command.
     Args:
         client:  Client which connects to api
@@ -383,23 +381,20 @@ def update_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
         Success/ Failure , according to the response
     """
 
-    args_id = str(args.get('id'))
-    url_suffix = f'/assets/{args_id}'
+    asset_id = args['id']
+    url_suffix = f'/assets/{asset_id}'
     asset = {
         'asset': {
-            'notes': args.get('notes')
+            'notes': args['notes']
         }
     }
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
-    try:
-        if result.get('status') != "success":
-            return 'Could not update asset.', {}, []
-        return f'Asset {args_id} was updated', {}, []
-    except DemistoException as err:
-        return f'Error occurred while preforming update-asset command {err}', {}, []
+    if result.get('status') != "success":
+        return CommandResults(readable_output=f'Could not update asset with ID {asset_id}.')
+    return CommandResults(readable_output=f'Asset with ID {asset_id} was successfully updated.')
 
 
-def update_vulnerability(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def update_vulnerability(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Update Vulnerabilities command.
     Args:
         client:  Client which connects to api
@@ -427,7 +422,7 @@ def update_vulnerability(client: Client, args: dict) -> Tuple[str, Dict[str, Any
         return f'Error occurred while preforming update-vulenrability command {err}', {}, []
 
 
-def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def search_assets(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Search Asset command.
     Args:
         client:  Client which connects to api
@@ -487,7 +482,7 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     return human_readable_markdown, context, response
 
 
-def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def get_asset_vulnerabilities(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Get Asset by Vulnerability command.
     Args:
         client:  Client which connects to api
@@ -529,7 +524,7 @@ def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str
     return human_readable_markdown, context, response
 
 
-def add_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def add_tags(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Add tags command.
     Args:
         client:  Client which connects to api
@@ -554,7 +549,7 @@ def add_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict
         return f'Error occurred while preforming add-tags command {err}', {}, []
 
 
-def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def delete_tags(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Delete tags command.
     Args:
         client:  Client which connects to api
@@ -579,81 +574,81 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
         return f'Error occurred while preforming delete-tags command {err}', {}, []
 
 
-def search_assets_by_external_id(client: Client, args: dict) -> CommandResults:
-    """Search assets by external id command.
-    Args:
-        client:  Client which connects to api
-        args: arguments for the request
-    Returns:
-        CommandResults
+def search_assets_by_external_id_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
-    external_id = args.get('external_id')
+    Search for assets by their external ID.
+
+    This function sends a GET request to the '/assets/search' endpoint with the external ID as a query parameter.
+    If 'to_context' is True, it returns the results in the context.
+
+    Args:
+        client (Client): The client to use for the HTTP request.
+        args (dict): A dictionary of arguments. Expected keys are 'external_id' (required), 'limit', and 'to_context'.
+
+    Returns:
+        CommandResults: A CommandResults object.
+    """
+
+    external_id = args['external_id']
+    limit: int = arg_to_number(args.get('limit')) or 500
+    to_context = argToBoolean(args.get('to_context', False))
     url_suffix = f'/assets/search?&q=external_id%3A{external_id}/'
     human_readable = []
-    human_readable_markdown = ""
-    limit: int = arg_to_number(args.get('limit')) or 500
-    to_context = args.get('to_context')
-    context: list[dict[str, Any]] = []
     response = client.http_request(message='GET', suffix=url_suffix).get('assets')
-    if response:
-        assets_list = response[:limit]
-        wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount',
-                       'OperatingSystem', 'Tags', 'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
-        actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
-                       'operating_system', 'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
-        context_list: list[dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
-        for lst in assets_list:
-            human_readable.append({
-                'id': lst.get('id'),
-                'Hostname': lst.get('hostname'),
-                'IP-address': lst.get('ip_address'),
-                'Vulnerabilities Count': args.get('vulnerabilities_count'),
-                'Operating System': lst.get('operating_system'),
-                'Score': lst.get('risk_meter_score')
-            })
-        context = context_list
-        human_readable_markdown = tableToMarkdown('Kenna Assets', human_readable, removeNull=True)
-    else:
-        human_readable_markdown = "No assets in response"
-    if argToBoolean(to_context):
-        return CommandResults(
-            outputs_prefix="Kenna.Assets",
-            outputs_key_field="ID",
-            readable_output=human_readable_markdown,
-            outputs=context,
-            raw_response=response
-        )
+
+    if not response:
+        return CommandResults(readable_output="No assets were found.")
+
+    assets_list = response[:limit]
+    wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount',
+                   'OperatingSystem', 'Tags', 'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
+    actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
+                   'operating_system', 'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
+    context: list[dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
+    for lst in assets_list:
+        human_readable.append({
+            'id': lst.get('id'),
+            'Hostname': lst.get('hostname'),
+            'IP-address': lst.get('ip_address'),
+            'Vulnerabilities Count': args.get('vulnerabilities_count'),
+            'Operating System': lst.get('operating_system'),
+            'Score': lst.get('risk_meter_score')
+        })
+
     return CommandResults(
         outputs_prefix="Kenna.Assets",
         outputs_key_field="ID",
-        readable_output=human_readable_markdown,
+        readable_output=tableToMarkdown('Kenna Assets', human_readable, removeNull=True),
+        outputs=context if to_context else None,
         raw_response=response
     )
 
 
 def main():
+    command = demisto.command()
     params = demisto.params()
+    args = demisto.args()
+
     api = params.get('credentials_key', {}).get('password') or params.get('key')
     if not api:
         raise DemistoException('Kenna API key must be provided.')
     # Service base URL
-    base_url = params.get('url')
+    base_url = params.get('url', '')
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
     # Should we use system proxy settings
-    use_proxy = params.get('proxy')
+    use_proxy = params.get('proxy', False)
     # Initialize Client object
     client = Client(base_url=base_url, api_key=api, verify=use_ssl, proxy=use_proxy)
-    command = demisto.command()
-    LOG(f'Command being called is {command}')
-    # Commands dict
-    commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], List[Any]]]] = {
+
+    demisto.debug(f'Command being called is {command}')
+
+    commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], list[Any]]]] = {
         'test-module': test_module,
         'kenna-search-vulnerabilities': search_vulnerabilities,
         'kenna-get-connectors': get_connectors,
         'kenna-run-connector': run_connector,
         'kenna-search-fixes': search_fixes,
-        'kenna-update-asset': update_asset,
         'kenna-update-vulnerability': update_vulnerability,
         'kenna-search-assets': search_assets,
         'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
@@ -661,19 +656,20 @@ def main():
         'kenna-delete-tag': delete_tags,
         'kenna-get-connector-runs': get_connector_runs
     }
-    args = demisto.args()
     try:
         if command in commands:
             return_outputs(*commands[command](client, args))
         elif command == "kenna-inactivate-asset":
             return_results(inactivate_asset(client, args))
+        elif command == "kenna-update-asset":
+            return_results(update_asset_command(client, args))
         elif command == "kenna-search-assets-by-external-id":
-            return_results(search_assets_by_external_id(client, args))
+            return_results(search_assets_by_external_id_command(client, args))
         else:
             raise NotImplementedError(f'{command} is not an existing Kenna v2 command')
 
     except Exception as err:
-        return_error(f'Error from Kenna v2 Integration \n\n {err} \n', err)
+        return_error(f"Failed to execute {command} command.\nError:\n{err!s}")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
