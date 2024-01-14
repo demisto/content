@@ -27,13 +27,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "20"
+      - "27"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1125,
-          "y": -630
+          "y": -870
         }
       }
     note: false
@@ -1159,16 +1159,130 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 4b64da5f-53b9-4fdd-8e65-5a133c6700d6
+    type: condition
+    task:
+      id: 4b64da5f-53b9-4fdd-8e65-5a133c6700d6
+      description: ""
+      version: -1
+      name: Are there indicators to block?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IP
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilesToBlock
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DomainToBlock
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EmailToBlock
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": -700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: f0a6c388-3821-4ad0-8720-6660caa31997
+    type: title
+    task:
+      id: f0a6c388-3821-4ad0-8720-6660caa31997
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": -500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "27_20_yes": 0.4
+    },
     "paper": {
       "dimensions": {
-        "height": 1700,
+        "height": 1940,
         "width": 2530,
         "x": 50,
-        "y": -630
+        "y": -870
       }
     }
   }
