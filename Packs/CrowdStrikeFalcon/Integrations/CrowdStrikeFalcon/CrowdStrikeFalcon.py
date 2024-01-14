@@ -1287,6 +1287,19 @@ def get_behaviors(behavior_ids: list[str]) -> dict:
     )
 
 
+def get_ioarules(rule_ids: list[str]) -> dict:
+    """
+        Sends ioa rules entities request
+        :param rule_ids: IDs of the requested ioa rule.
+        :return: Response json of the get ioa rule entities endpoint (ioa rule objects)
+    """
+    return http_request(
+        'POST',
+        '/ioarules/entities/rules/GET/v1',
+        data=json.dumps({'ids': rule_ids}),
+    )
+
+
 def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     """
         Sends detections request. The function will ignore the arguments passed according to priority:
@@ -6536,6 +6549,28 @@ def get_incident_behavior_command(args: dict) -> CommandResults:
     )
 
 
+def get_ioarules_command(args: dict) -> CommandResults:
+    rule_ids = argToList(args['rule_ids'])
+    ioarules_response_data = get_ioarules(rule_ids)
+
+    ioarules = ioarules_response_data.get('resources', [])
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOARules',
+        outputs_key_field='instance_id',
+        outputs=ioarules,
+        readable_output=tableToMarkdown(
+            name='CrowdStrike IOA Rules',
+            t=ioarules,
+            headers=['instance_id', 'description', 'enabled', 'name', 'pattern_id'],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+            sort_headers=False,
+        ),
+        raw_response=ioarules_response_data,
+    )
+
+
 def main():
     command = demisto.command()
     args = demisto.args()
@@ -6765,6 +6800,8 @@ def main():
             return_results(cs_falcon_list_users_command(args=args))
         elif command == 'cs-falcon-get-incident-behavior':
             return_results(get_incident_behavior_command(args=args))
+        elif command == 'cs-falcon-get-ioarules':
+            return_results(get_ioarules_command(args=args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
