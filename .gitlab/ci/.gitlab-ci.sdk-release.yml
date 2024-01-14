@@ -86,14 +86,14 @@ trigger-demisto-sdk-nightly:
     when: always
   variables:
     BRANCH_NAME: $BRANCH_NAME
-    SDK_RELEASE: $SDK_RELEASE
+    CI_TOKEN: $CI_TOKEN
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
 #    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $SDK_RELEASE -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g .id)
+    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g .id)
     - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
     - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
