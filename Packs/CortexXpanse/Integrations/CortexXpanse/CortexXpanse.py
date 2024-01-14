@@ -997,7 +997,7 @@ def list_external_websites_command(client: Client, args: Dict[str, Any]) -> Comm
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
     """
     limit = int(args.get('limit', DEFAULT_SEARCH_LIMIT))
-    searchFilter = args.get('filter')
+    searchFilter = args.get('authentication')
     if limit > 500:
         raise ValueError('Limit cannot be more than 500, please try again')
 
