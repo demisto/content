@@ -108,6 +108,7 @@ repos:
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     split_by_object: true
+    split_by_network: true
     change_working_directory: true
     skip:commit: true
 
