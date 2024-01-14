@@ -1,5 +1,5 @@
 args:
-- description: Date value to convert.
+- description: A comma-separated list of date values to convert.
   name: value
   required: true
   isArray: true

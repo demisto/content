@@ -14,7 +14,7 @@ This is a thin wrapper around the `dateutil.parser.parse` function. It will pars
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | Date value to convert. |
+| value | A comma-separated list of date values to convert. |
 | dayfirst | Whether to interpret the first value in an ambiguous 3-integer date \(e.g. 01/05/09\) as the day \(\`\`True\`\`\) or month \(\`\`False\`\`\). If \`\`yearfirst\`\` is set to \`\`True\`\`, this distinguishes between YDM and YMD. |
 | yearfirst | Whether to interpret the first value in an ambiguous 3-integer date \(e.g. 01/05/09\) as the year. If \`\`True\`\`, the first number is taken to be the year, otherwise the last number is taken to be the year. |
 | fuzzy | Whether to allow fuzzy parsing, allowing for string like "Today is January 1, 2047 at 8:21:00AM". |
