@@ -7,7 +7,7 @@ import sys
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from pathlib import Path
-from typing import Any, Tuple
+from typing import Any
 
 import requests
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
@@ -290,7 +290,7 @@ def unit_tests_results() -> list[dict[str, Any]]:
 
 def bucket_upload_results(bucket_artifact_folder: Path,
                           marketplace_name: str,
-                          should_include_private_packs: bool) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+                          should_include_private_packs: bool) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     slack_msg_append = []
     threaded_messages = []
     pack_results_path = bucket_artifact_folder / BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK
@@ -361,7 +361,7 @@ def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None,
-                        shame_message: tuple[str, str] | None) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+                        shame_message: tuple[str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     # report failing jobs
     content_fields = []
     if shame_message:
@@ -594,10 +594,12 @@ def main():
         )
 
         if threaded_messages:
+            data: dict = response.data  # type: ignore[assignment]
+            thread_ts: str = data['ts']
             for slack_msg in threaded_messages:
                 slack_client.chat_postMessage(
                     channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
-                    thread_ts=response.data['ts']
+                    thread_ts=thread_ts
                 )
 
         link = build_link_to_message(response)
