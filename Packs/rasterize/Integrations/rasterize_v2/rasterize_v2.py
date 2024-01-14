@@ -367,7 +367,7 @@ def ensure_chrome_running():  # pragma: no cover
             demisto.debug(f"No Chrome found on port {chrome_port}")
             demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
             browser, chrome_port = start_chrome_headless(str(chrome_port))
-            if broser:
+            if browser:
                 return browser, chrome_port
 
         # There's already a Chrome listening on that port, Don't use it
