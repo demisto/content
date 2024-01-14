@@ -98,17 +98,6 @@ trigger-demisto-sdk-nightly:
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
 #    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
 
-test-manulal-job:
-  stage: trigger-nightlies
-  extends:
-    - .release-sdk
-    - .default-job-settings
-  needs:
-    - trigger-content-private-nightly
-  when: manual
-  script:
-    - echo "hi"
-
 
 
 wait-for-content-private-nightly:
@@ -181,3 +170,15 @@ create-release-pull-request:
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_pr.py -t $GITLAB_API_TOKEN -b $RELEASE_VERSION
+
+
+#test-manulal-job:
+#  stage: trigger-nightlies
+#  extends:
+#    - .release-sdk
+#    - .default-job-settings
+#  needs:
+#    - trigger-content-private-nightly
+#  when: manual
+#  script:
+#    - echo "hi"
