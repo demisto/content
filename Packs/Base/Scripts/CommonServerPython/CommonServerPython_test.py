@@ -3461,6 +3461,7 @@ def test_batch(iterable, sz, expected):
 
 regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.1.1:8080', True),
     (ipv4Regex, '192.168.1.1/24', False),
     (ipv4Regex, '192.168.a.1', False),
     (ipv4Regex, '192.168..1.1', False),
@@ -3492,6 +3493,7 @@ def test_regexes(pattern, string, expected):
 
 IP_TO_INDICATOR_TYPE_PACK = [
     ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1:8080', FeedIndicatorType.IP),
     ('192.168.1.1/32', FeedIndicatorType.CIDR),
     ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
     ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
@@ -3850,6 +3852,7 @@ VALID_URL_INDICATORS = [
     'https[:]//www.test.com/test',  # defanged colon sign
     "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
     "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
+    "https://test.com/a/b/c-d-e",  # hyphen in the path
 ]
 
 
