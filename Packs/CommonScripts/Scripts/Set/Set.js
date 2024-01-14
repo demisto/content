@@ -10,10 +10,12 @@ try {
     } else {
         value = JSON.parse(args.value);
     }
-} catch(err) {
+} catch (err) {
     value = args.value;
 }
-
+logDebug(`Got the args object ${JSON.stringify(args)}`)
+logDebug('Got the value ' + value)
+logDebug('Will insert the value to the key ' + args.key)
 ec[args.key] = value;
 var result = {
     Type: entryTypes.note,
@@ -27,5 +29,5 @@ if (!args.append || args.append === 'false') {
 } else {
     result.EntryContext = ec;
 }
-
+logDebug(`The final result object ${JSON.stringify(result)}`)
 return result;
