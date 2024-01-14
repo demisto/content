@@ -2015,19 +2015,6 @@ inputs:
   required: false
   description: The file SHA256. The 'HuntByFile' inputs should also be set to True.
   playbookInputQuery:
-- key: timeRange
-  value:
-    simple: 2 hours ago
-  required: false
-  description: |-
-    A time range to execute the hunting in.
-    The input should be in the following format:
-    * 1 day ago
-    * 2 minutes ago
-    * 4 hours ago
-    * 8 days ago
-    etc.
-  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

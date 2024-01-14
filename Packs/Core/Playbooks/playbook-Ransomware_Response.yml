@@ -1153,8 +1153,6 @@ tasks:
         complex:
           root: alert
           accessor: agentid
-      timeRange:
-        simple: 2 hours ago
     separatecontext: false
     loop:
       iscommand: false

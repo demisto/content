@@ -53,7 +53,6 @@ This playbook does not use any commands.
 | attackerExternalHost | The external host used by the attacker. The 'HuntAttacker' inputs should also be set to True. |  | Optional |
 | mitreTechniqueID | A MITRE technique identifier. The 'HuntByTechnique' inputs should also be set to True. |  | Optional |
 | FileSHA256 | The file SHA256. The 'HuntByFile' inputs should also be set to True. |  | Optional |
-| timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day ago<br/>\* 2 minutes ago<br/>\* 4 hours ago<br/>\* 8 days ago<br/>etc. | 2 hours ago | Optional |
 
 ## Playbook Outputs
 
