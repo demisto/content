@@ -29,10 +29,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f17b8ad3-a940-451a-88c6-155c81e265a6
+    taskid: 242ca8d9-02bc-4b94-86b4-6dc327662b2b
     type: start
     task:
-      id: f17b8ad3-a940-451a-88c6-155c81e265a6
+      id: 242ca8d9-02bc-4b94-86b4-6dc327662b2b
       version: -1
       name: ""
       description: '-'
@@ -59,10 +59,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 48811c91-d66a-467e-8adf-c99339bcc884
+    taskid: f38c9e4a-4710-434e-83fe-aeb69b6f67c5
     type: regular
     task:
-      id: 48811c91-d66a-467e-8adf-c99339bcc884
+      id: f38c9e4a-4710-434e-83fe-aeb69b6f67c5
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Get Full Report
       description: Get a full version of a sandbox report.
@@ -96,10 +96,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8490a33b-5b37-4a74-8801-7521957e62b8
+    taskid: 2ebfd348-a292-4004-8bff-51fe47cab4a5
     type: title
     task:
-      id: 8490a33b-5b37-4a74-8801-7521957e62b8
+      id: 2ebfd348-a292-4004-8bff-51fe47cab4a5
       version: -1
       name: Done
       description: Finished.
@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 22976b4f-cf15-451f-89a8-49d9cdfd4a27
+    taskid: 651e53ee-634b-48c0-8947-c81b83f45cb5
     type: condition
     task:
-      id: 22976b4f-cf15-451f-89a8-49d9cdfd4a27
+      id: 651e53ee-634b-48c0-8947-c81b83f45cb5
       version: -1
       name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: |
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 63df15c6-5ee5-4f91-8577-ac4e23da7add
+    taskid: 0d738b45-47e4-40dd-8395-8d4aa65ac22b
     type: condition
     task:
-      id: 63df15c6-5ee5-4f91-8577-ac4e23da7add
+      id: 0d738b45-47e4-40dd-8395-8d4aa65ac22b
       version: -1
       name: Is there a File to Detonate?
       description: Checks that there is a file in the playbook’s input.
@@ -228,10 +228,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 56ca9b94-c9f1-4638-88fa-2f07a96192a1
+    taskid: 9fd0af2e-345e-442f-8450-d2d456785bdb
     type: regular
     task:
-      id: 56ca9b94-c9f1-4638-88fa-2f07a96192a1
+      id: 9fd0af2e-345e-442f-8450-d2d456785bdb
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Upload File to Sandbox
       description: Uploads a file for sandbox analysis.
@@ -258,6 +258,31 @@ tasks:
       file:
         complex:
           root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|EXE|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
           accessor: EntryID
       file_name:
         complex:
@@ -297,10 +322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 80351b36-734b-4395-8701-ea7387a26a73
+    taskid: 5efe9fa9-4fc8-4cd7-88cc-343f9f43a83d
     type: condition
     task:
-      id: 80351b36-734b-4395-8701-ea7387a26a73
+      id: 5efe9fa9-4fc8-4cd7-88cc-343f9f43a83d
       version: -1
       name: Full Report or Report Summary?
       type: condition
@@ -342,10 +367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: dfff6bd9-e800-4eca-8f7f-668c26aa8bae
+    taskid: 018f3fb5-bd85-437d-886e-7d0412c2e57c
     type: regular
     task:
-      id: dfff6bd9-e800-4eca-8f7f-668c26aa8bae
+      id: 018f3fb5-bd85-437d-886e-7d0412c2e57c
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Get Report Summary
       description: Gets a short summary version of a sandbox report.
@@ -379,10 +404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 04f75a7e-10ef-4fb4-87d2-6aec62f9e316
+    taskid: 486e920e-45ec-4e57-88bf-5ed6dce351ab
     type: condition
     task:
-      id: 04f75a7e-10ef-4fb4-87d2-6aec62f9e316
+      id: 486e920e-45ec-4e57-88bf-5ed6dce351ab
       version: -1
       name: Is the file type supported?
       type: condition

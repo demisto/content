@@ -966,6 +966,7 @@ def get_full_report_command(
         client: Client,
         ids: str,  # argToList is called inside
         extended_data: str = '',
+        polling: str = 'false'
 ) -> Tuple[List[CommandResults], bool]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
@@ -1000,9 +1001,15 @@ def get_full_report_command(
     for id_ in argToList(ids):
         response = client.get_full_report(id_)
         if response.get('resources'):
+            is_polling = argToBoolean(polling)
             is_command_finished = True  # flag used when commands
             # We can extract the error from the response object under resources
-            validate_sandbox_report(response.get('resources', []))
+            error_message = validate_sandbox_report(response.get('resources', []))
+            if error_message:
+                if is_polling:
+                    raise DemistoException(error_message)
+                if not is_polling:
+                    return_warning(error_message)
 
         if extended_data == 'true':
             extra_sandbox_fields = extra_sandbox_fields + ("mitre_attacks", "signatures")  # type:ignore[assignment]
@@ -1045,21 +1052,22 @@ def get_full_report_command(
         ]
     return command_results, is_command_finished
 
-def validate_sandbox_report(report_resources: list[dict[str, Any]]):
-    """This function checks for any error messages in the sandbox report
+def validate_sandbox_report(report_resources: list[dict[str, Any]]) -> str:
+    """This function checks for any error messages in the sandbox report.
 
     Args:
         report_resources (list[dict[str, Any]]): Report resources of the report. They hold the data about
         any error messages returned from the report.
 
-    Raises:
-        DemistoException: If an error message is found.
+    Returns:
+        str: The error message found in the sandbox, or an empty strong if no error is found.
     """
     for resource in report_resources:
         for sandbox_entity in resource.get('sandbox', []):
             if error_message := sandbox_entity.get('error_message'):
                 error_type = sandbox_entity.get('error_type')
-                raise DemistoException(f'Sandbox report returned an error of type {error_type} with content: {error_message}')
+                return f'Sandbox report returned an error of type {error_type} with content: {error_message}'
+    return ''
 
 def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str, Common.File]:
     """
@@ -1081,7 +1089,8 @@ def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str,
 
 def get_report_summary_command(
         client: Client,
-        ids: str,  # argToList is called inside
+        ids: str,  # argToList is called inside,
+        polling: str = 'false'
 ) -> List[CommandResults]:
     """Get a short summary version of a sandbox report.
     :param client: the client object with an access token
@@ -1110,8 +1119,14 @@ def get_report_summary_command(
     for single_id in argToList(ids):
         response = client.get_report_summary(single_id)
         if response.get('resources'):
+            is_polling = argToBoolean(polling)
             # We can extract the error from the response object under resources
-            validate_sandbox_report(response.get('resources', []))
+            error_message = validate_sandbox_report(response.get('resources', []))
+            if error_message:
+                if is_polling:
+                    raise DemistoException(error_message)
+                if not is_polling:
+                    return_warning(error_message)
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         results.append(
@@ -1322,7 +1337,7 @@ def get_results_function_args(outputs, extended_data, item_type, interval_in_sec
 
 
 def pop_polling_related_args(args: dict) -> None:
-    for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'polling', 'environment_id'):
+    for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'environment_id'):
         args.pop(key, None)
 
 
