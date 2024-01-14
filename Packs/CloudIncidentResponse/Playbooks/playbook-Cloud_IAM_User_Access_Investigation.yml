@@ -995,6 +995,12 @@ view: |-
     }
   }
 inputs:
+- key: ShouldCloseAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to close alerts automatically as a false positive. (True/False).
+  playbookInputQuery:
 - key: autoAccessKeyRemediation
   value:
     simple: "False"
@@ -1068,119 +1074,158 @@ inputs:
     Delete - For deleting the user.
     Disable - For disabling the user.
   playbookInputQuery:
-- key: ShouldCloseAutomatically
-  value:
-    simple: "False"
-  required: false
-  description: Whether to close alerts automatically as a false positive. (True/False).
-  playbookInputQuery:
 - key: ShouldOpenTicket
   value:
     simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery: null
-- key: serviceNowShortDescription
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: A short description of the ticket.
-  playbookInputQuery: null
-- key: serviceNowImpact
-  value: {}
-  required: false
-  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery: null
-- key: serviceNowUrgency
-  value: {}
-  required: false
-  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery: null
-- key: serviceNowSeverity
-  value: {}
-  required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default
-    severity.
-  playbookInputQuery: null
-- key: serviceNowTicketType
-  value: {}
-  required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
-    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery: null
-- key: serviceNowCategory
-  value: {}
-  required: false
-  description: The category of the ServiceNow ticket.
-  playbookInputQuery: null
-- key: serviceNowAssignmentGroup
-  value: {}
-  required: false
-  description: The group to which to assign the new ticket.
-  playbookInputQuery: null
-- key: ZendeskPriority
-  value: {}
-  required: false
-  description: The urgency with which the ticket should be addressed. Allowed values
-    are "urgent", "high", "normal", or "low".
-  playbookInputQuery: null
-- key: ZendeskRequester
-  value: {}
-  required: false
-  description: The user who requested this ticket.
-  playbookInputQuery: null
-- key: ZendeskStatus
-  value: {}
-  required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending",
-    "hold", "solved", or "closed".
-  playbookInputQuery: null
-- key: ZendeskSubject
-  value:
-    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
-  required: false
-  description: The value of the subject field for this ticket.
-  playbookInputQuery: null
-- key: ZendeskTags
-  value: {}
-  required: false
-  description: The array of tags applied to this ticket.
-  playbookInputQuery: null
-- key: ZendeskType
-  value: {}
-  required: false
-  description: The type of this ticket. Allowed values are "problem", "incident",
-    "question", or "task".
-  playbookInputQuery: null
-- key: ZendeskAssigne
-  value: {}
-  required: false
-  description: The agent currently assigned to the ticket.
-  playbookInputQuery: null
-- key: ZendeskCollaborators
-  value: {}
-  required: false
-  description: The users currently CC'ed on the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery: null
-- key: addCommentPerEndpoint
-  value:
-    simple: "True"
-  required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident.  
-    Possible values: True/False.'
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
+- key: addCommentPerEndpoint
+  value:
+    simple: "True"
+  required: false
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  playbookInputQuery:
+- key: serviceNowShortDescription
+  value:
+    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+  required: false
+  description: A short description of the ticket.
+  playbookInputQuery:
+- key: serviceNowImpact
+  value: {}
+  required: false
+  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+  playbookInputQuery:
+- key: serviceNowUrgency
+  value: {}
+  required: false
+  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+  playbookInputQuery:
+- key: serviceNowSeverity
+  value: {}
+  required: false
+  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  playbookInputQuery:
+- key: serviceNowTicketType
+  value: {}
+  required: false
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery:
+- key: serviceNowCategory
+  value: {}
+  required: false
+  description: The category of the ServiceNow ticket.
+  playbookInputQuery:
+- key: serviceNowAssignmentGroup
+  value: {}
+  required: false
+  description: The group to which to assign the new ticket.
+  playbookInputQuery:
+- key: ZendeskPriority
+  value: {}
+  required: false
+  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  playbookInputQuery:
+- key: ZendeskRequester
+  value: {}
+  required: false
+  description: The user who requested this ticket.
+  playbookInputQuery:
+- key: ZendeskStatus
+  value: {}
+  required: false
+  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  playbookInputQuery:
+- key: ZendeskSubject
+  value:
+    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+  required: false
+  description: The value of the subject field for this ticket.
+  playbookInputQuery:
+- key: ZendeskTags
+  value: {}
+  required: false
+  description: The array of tags applied to this ticket.
+  playbookInputQuery:
+- key: ZendeskType
+  value: {}
+  required: false
+  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  playbookInputQuery:
+- key: ZendeskAssigne
+  value: {}
+  required: false
+  description: The agent currently assigned to the ticket.
+  playbookInputQuery:
+- key: ZendeskCollaborators
+  value: {}
+  required: false
+  description: The users currently CC'ed on the ticket.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - ShouldCloseAutomatically
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, user engagements, and ticketing methods.
+- inputs:
+  - autoAccessKeyRemediation
+  - autoBlockIndicators
+  - autoUserRemediation
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - AWS-accessKeyRemediationType
+  - AWS-userRemediationType
+  name: AWS Remediation
+  description: AWS Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - Azure-userRemediationType
+  name: Azure Remediation
+  description: Azure Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - GCP-accessKeyRemediationType
+  - GCP-userRemediationType
+  name: GCP Remediation
+  description: GCP Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - ShouldOpenTicket
+  - description
+  - CommentToAdd
+  - addCommentPerEndpoint
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

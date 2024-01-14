@@ -1452,7 +1452,7 @@ def test_build_curl_post_noproxy():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"data": "value"}\''
     ]
 
@@ -1479,7 +1479,7 @@ def test_build_curl_post_xml():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'<?xml version=\"1.0\" encoding=\"utf-8\"?>'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'<?xml version="1.0" encoding="utf-8"?>\''
     ]
 
@@ -1511,7 +1511,7 @@ def test_build_curl_get_withproxy(mocker):
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--proxy http://proxy -k -d \'{"data": "value"}\''
     ]
 
@@ -1548,9 +1548,9 @@ def test_build_curl_multiple_queries():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api/post -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"postdata": "value"}\'',
-        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api/get -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"getdata": "value"}\''
     ]
 
@@ -3461,6 +3461,7 @@ def test_batch(iterable, sz, expected):
 
 regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.1.1:8080', True),
     (ipv4Regex, '192.168.1.1/24', False),
     (ipv4Regex, '192.168.a.1', False),
     (ipv4Regex, '192.168..1.1', False),
@@ -3492,6 +3493,7 @@ def test_regexes(pattern, string, expected):
 
 IP_TO_INDICATOR_TYPE_PACK = [
     ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1:8080', FeedIndicatorType.IP),
     ('192.168.1.1/32', FeedIndicatorType.CIDR),
     ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
     ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
@@ -3850,6 +3852,7 @@ VALID_URL_INDICATORS = [
     'https[:]//www.test.com/test',  # defanged colon sign
     "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
     "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
+    "https://test.com/a/b/c-d-e",  # hyphen in the path
 ]
 
 
