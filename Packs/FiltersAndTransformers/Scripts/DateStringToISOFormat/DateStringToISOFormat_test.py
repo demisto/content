@@ -83,21 +83,21 @@ def test_parse_datestring_to_iso(mocker, date_value, day_first, year_first, fuzz
 
 
 @pytest.mark.parametrize('args', [
-    {'value': '05-11-2929', 'dayfirst': 'True', 'yearfirst': 'True', 'fuzzy': 'True', 'add_utc_timezone': 'True'},
+    {'value': '05-11-2929,06-11-2929', 'dayfirst': 'True', 'yearfirst': 'True', 'fuzzy': 'True', 'add_utc_timezone': 'True'},
 ])
 def test_cut_main(mocker, args):
     '''
     Given
-    - An arbitrary date string
+    - A comma-separated list of two arbitary date strings
     When
     - The date string can be an ambiguous 3-integer date, fuzzy date string or an
       already iso-8601 formatted date string
     Then
-    - Ensure that demisto results was called
+    - Ensure that demisto results was called with the two corresponding iso-8601 formatted date strings
     '''
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'results')
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert results == '2929-11-05T00:00:00+00:00'
+    assert results == ['2929-11-05T00:00:00+00:00', '2929-11-06T00:00:00+00:00']

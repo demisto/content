@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import *
 from dateutil.parser import ParserError, parse  # type: ignore[attr-defined]
 from datetime import timezone
 
@@ -19,13 +20,15 @@ def parse_datestring_to_iso(
 
 def main():
     args = demisto.args()
-    date_value = args.get('value')
+    results = []
+    date_values = argToList(args.get('value'))
     day_first = args.get('dayfirst', 'True').lower() == 'true'
     year_first = args.get('yearfirst', 'False').lower() == 'true'
     fuzzy = args.get('fuzzy', 'True').lower() == 'true'
     add_utc_timezone = args.get('add_utc_timezone', 'true').lower() == 'true'
-    iso_string = parse_datestring_to_iso(date_value, day_first, year_first, fuzzy, add_utc_timezone)
-    demisto.results(iso_string)
+    for date_value in date_values:
+        results.append(parse_datestring_to_iso(date_value, day_first, year_first, fuzzy, add_utc_timezone))
+    return_results(results)
 
 
 # python2 uses __builtin__ python3 uses builtins

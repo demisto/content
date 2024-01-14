@@ -4746,6 +4746,10 @@
             "fromversion": "6.0.0"
         },
         {
+            "playbookID": "DateStringToISOFormat - Test",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
             "timeout": 15000,

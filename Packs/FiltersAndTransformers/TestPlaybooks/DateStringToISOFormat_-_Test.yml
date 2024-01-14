@@ -1,0 +1,239 @@
+id: DateStringToISOFormat - Test
+inputs: []
+name: DateStringToISOFormat - Test
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5ca22ec4-abc3-4fd4-893a-a6d06bdb5369
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5ca22ec4-abc3-4fd4-893a-a6d06bdb5369
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DateValues
+      value:
+        simple: '["05-11-2929" ,"06-11-2929"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b35fbf4c-811c-4a71-8807-c6a8cfb3435b
+      iscommand: false
+      name: Set two dates
+      script: Set
+      type: regular
+      version: -1
+    taskid: b35fbf4c-811c-4a71-8807-c6a8cfb3435b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: DateValues
+                transformers:
+                - args:
+                    add_utc_timezone:
+                      value:
+                        simple: "True"
+                    dayfirst: {}
+                    fuzzy: {}
+                    yearfirst:
+                      value:
+                        simple: "True"
+                  operator: DateStringToISOFormat
+                - operator: FirstArrayElement
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpectedISODates
+                transformers:
+                - operator: FirstArrayElement
+      label: "yes"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: DateValues
+                transformers:
+                - args:
+                    add_utc_timezone:
+                      value:
+                        simple: "True"
+                    dayfirst: {}
+                    fuzzy: {}
+                    yearfirst:
+                      value:
+                        simple: "True"
+                  operator: DateStringToISOFormat
+                - operator: LastArrayElement
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpectedISODates
+                transformers:
+                - operator: LastArrayElement
+      label: condition-2
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 415e47d3-5c82-4ced-8535-c2f69a76927d
+      iscommand: false
+      name: Verify ISO formatted correctly
+      type: condition
+      version: -1
+    taskid: 415e47d3-5c82-4ced-8535-c2f69a76927d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ExpectedISODates
+      value:
+        simple: '["2929-11-05T00:00:00+00:00", "2929-11-06T00:00:00+00:00"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ac087538-f886-4995-809b-c0c84f4dfd67
+      iscommand: false
+      name: Set expected ISO-formatted dates
+      script: Set
+      type: regular
+      version: -1
+    taskid: ac087538-f886-4995-809b-c0c84f4dfd67
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b50b0f6c-19a5-41b8-8069-91bcffaeaf0d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: b50b0f6c-19a5-41b8-8069-91bcffaeaf0d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0
+description: ''

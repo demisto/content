@@ -2,6 +2,7 @@ args:
 - description: Date value to convert.
   name: value
   required: true
+  isArray: true
 - auto: PREDEFINED
   default: true
   defaultValue: 'true'
@@ -46,5 +47,7 @@ tags:
 - date
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.13.84405
 fromversion: 5.0.0
+tests:
+- DateStringToISOFormat - Test
