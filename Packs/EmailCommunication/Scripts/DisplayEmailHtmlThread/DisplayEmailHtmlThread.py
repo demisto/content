@@ -31,7 +31,8 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
                    f'<b>Subject:</b> {email_subject}<br><b>Email Time:</b> {email_time}<br>' \
                    f'<b>Attachments:</b> {attachment_names}</body></html>'
 
-    single_reply += f'\n{html_body}\n<hr style="width:98%;text-align:center;height:3px;border-width:0;">\n\n'
+    single_reply += (f'\n{html_body}\n<hr style="width:98%;text-align:center;height:3px;border-width:0;'
+                     f'background-color:#cccccc">\n\n')
 
     return single_reply
 
@@ -55,22 +56,21 @@ def html_cleanup(full_thread_html):
     return final_html_result
 
 
-def remove_style_and_color(html_message):
-    demisto.debug(f'DisplayEmailHtmlThread - {html_message=}')
+def remove_color_from_html_text(html_message):
+    """Remove the color from the html text, so the color will be determined by the front-end.
+    Args:
+        html_message: The content of the HTML that the color attribute should be removed from.
+    Returns:
+        str. The updated HTML, without the color attribute.
+    """
     parsed_html_body = BeautifulSoup(html_message, 'html.parser')
-
-    # Remove all style tags
-    for style_tag in parsed_html_body.find_all('style'):
-        style_tag.decompose()
 
     # Remove all style attributes from other tags
     for tag in parsed_html_body.find_all(True):
-        if 'style' in tag.attrs:
-            del tag.attrs['style']
         if 'color' in tag.attrs:
+            demisto.debug(f'Removing the attribute color {tag.attrs['color']} from the tag {tag}')
             del tag.attrs['color']
-    demisto.debug(f'DisplayEmailHtmlThread - after removing the style and color from the html {str(parsed_html_body)=}')
-    return str(parsed_html_body)
+    return parsed_html_body.get_text()
 
 
 def main():
@@ -79,7 +79,6 @@ def main():
     thread_number = custom_fields.get('emailselectedthread', 0)
     incident_context = demisto.context()
     email_threads = incident_context.get('EmailThreads', {})
-    demisto.debug(f'DisplayEmailHtmlThread - {email_threads=}')
 
     if len(email_threads) == 0:
         return_results({
@@ -104,7 +103,7 @@ def main():
                 'email_cc': thread.get('EmailCC', None),
                 'email_to': thread.get('EmailTo', None),
                 'email_subject': thread.get('EmailSubject', None),
-                'email_html': remove_style_and_color(thread.get('EmailHTML')) if thread.get('EmailHTML') else None,
+                'email_html': remove_color_from_html_text(thread.get('EmailHTML')) if thread.get('EmailHTML') else None,
                 'email_time': thread.get('MessageTime', None),
                 'email_attachments': thread.get('EmailAttachments', None),
             }
@@ -118,11 +117,9 @@ def main():
                                           thread.get('email_cc', None), thread.get('email_subject', None),
                                           thread.get('email_html', None), thread.get('email_time', None),
                                           thread.get('email_attachments', None))
-            demisto.debug(f'DisplayEmailHtmlThread - {email_reply=}')
             full_thread_html += email_reply
 
         final_html_result = html_cleanup(full_thread_html)
-        demisto.debug(f'DisplayEmailHtmlThread - {final_html_result=}')
         return_results({
             'ContentsFormat': EntryFormat.HTML,
             'Type': EntryType.NOTE,

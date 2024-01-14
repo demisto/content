@@ -1174,7 +1174,6 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
 def parse_incident_from_item(item, is_fetch):  # pragma: no cover
     incident = {}
     labels = []
-    demisto.debug(f'EWSv2 - {item=}')
 
     try:
         try:
@@ -1203,13 +1202,11 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
         email_format = ''
         try:
             if item.text_body:
-                demisto.debug(f'EWSv2 - {item.text_body=}')
                 labels.append({'type': 'Email/text', 'value': item.text_body})
                 email_format = 'text'
         except AttributeError:
             pass
         if item.body:
-            demisto.debug(f'EWSv2 - {item.body=}')
             labels.append({'type': 'Email/html', 'value': item.body})
             email_format = 'HTML'
         labels.append({'type': 'Email/format', 'value': email_format})

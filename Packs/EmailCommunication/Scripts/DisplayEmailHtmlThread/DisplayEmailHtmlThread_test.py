@@ -122,7 +122,7 @@ def test_main(emailselectedthread, email_threads, expected_result_type, mocker):
 
 
 def test_remove_style_and_color():
-    from DisplayEmailHtmlThread import remove_style_and_color
+    from DisplayEmailHtmlThread import remove_color_from_html_text
 
     html_message = ('<html>\r\n<head>\r\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\r\n'
                     '<meta name="Generator" content="Microsoft Exchange Server">\r\n<!-- converted from text --><style>'
@@ -147,7 +147,7 @@ def test_remove_style_and_color():
                              '</div>\n</div>\n</div>\n<font size="2"><span>\n<div class="PlainText">testing again from xsoar'
                              '</div>\n</span></font>\n</body>\n</html>\n')
 
-    result = remove_style_and_color(html_message)
+    result = remove_color_from_html_text(html_message)
     assert result == expected_html_message
 
 
@@ -177,4 +177,4 @@ def test_main_styled_html(mocker):
     return_results_mocker = mocker.patch.object(DisplayEmailHtmlThread, "return_results", return_value=True)
     main()
     results_call_args = return_results_mocker.call_args
-    assert 'color' not in results_call_args.args[0]['Contents']
+    assert ' color' not in results_call_args.args[0]['Contents']
