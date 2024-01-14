@@ -1407,10 +1407,9 @@ def run_polling_command(client: CoreClient,
     if command_decision_field not in args:
         # create new command run
         command_results = command_function(client, args)
-        if isinstance(command_results, CommandResults):
-            outputs = [command_results.raw_response] if command_results.raw_response else []
-        else:
-            outputs = [c.raw_response for c in command_results]
+        outputs = command_results.raw_response
+        if outputs and not isinstance(outputs, list):
+            outputs = [outputs]
         command_decision_values = [o.get(command_decision_field) for o in outputs] if outputs else []  # type: ignore
         if outputs and command_decision_values:
             polling_args = {
@@ -2050,65 +2049,72 @@ def run_script_execute_commands_command(client: CoreClient, args: Dict) -> Comma
     )
 
 
-def run_script_kill_process_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_kill_process_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     processes_names = argToList(args.get('process_name'))
-    all_processes_response = []
+    replies = []
+
     for process_name in processes_names:
         parameters = {'process_name': process_name}
         response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
-        all_processes_response.append(CommandResults(
-            readable_output=tableToMarkdown(f'Run Script Kill Process on {process_name}', reply),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=reply,
-        ))
+        replies.append(reply)
 
-    return all_processes_response
+    command_result = CommandResults(
+        readable_output=tableToMarkdown("Run Script Kill Process Results", replies),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=replies,
+        raw_response=replies,
+    )
+
+    return command_result
 
 
-def run_script_file_exists_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_file_exists_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     file_paths = argToList(args.get('file_path'))
-    all_files_response = []
+    replies = []
     for file_path in file_paths:
         parameters = {'path': file_path}
         response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
-        all_files_response.append(CommandResults(
-            readable_output=tableToMarkdown(f'Run Script File Exists on {file_path}', reply),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=reply,
-        ))
-    return all_files_response
+        replies.append(reply)
+
+    command_result = CommandResults(
+        readable_output=tableToMarkdown(f'Run Script File Exists on {",".join(file_paths)}', replies),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=replies,
+        raw_response=replies,
+    )
+    return command_result
 
 
-def run_script_delete_file_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_delete_file_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     file_paths = argToList(args.get('file_path'))
-    all_files_response = []
+    replies = []
     for file_path in file_paths:
         parameters = {'file_path': file_path}
         response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
-        all_files_response.append(CommandResults(
-            readable_output=tableToMarkdown(f'Run Script Delete File on {file_path}', reply),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=reply,
-        ))
-    return all_files_response
+        replies.append(reply)
+
+    command_result = CommandResults(
+        readable_output=tableToMarkdown(f'Run Script Delete File on {",".join(file_paths)}', replies),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=replies,
+        raw_response=replies,
+    )
+    return command_result
 
 
 def quarantine_files_command(client, args):
@@ -3064,21 +3070,25 @@ def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
     )
 
 
-def get_script_execution_status_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def get_script_execution_status_command(client: CoreClient, args: Dict) -> CommandResults:
     action_ids = argToList(args.get('action_id', ''))
-    command_results = []
+    replies = []
+    raw_responses = []
     for action_id in action_ids:
         response = client.get_script_execution_status(action_id)
         reply = response.get('reply')
         reply['action_id'] = int(action_id)
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptStatus',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=response,
-        ))
-    return command_results
+        replies.append(reply)
+        raw_responses.append(response)
+
+    command_result = CommandResults(
+        readable_output=tableToMarkdown(f'Script Execution Status - {",".join(str(i) for i in action_ids)}', replies),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptStatus',
+        outputs_key_field='action_id',
+        outputs=replies,
+        raw_response=raw_responses,
+    )
+    return command_result
 
 
 def parse_get_script_execution_results(results: List[Dict]) -> List[Dict]:

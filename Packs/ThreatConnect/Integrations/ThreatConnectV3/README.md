@@ -1246,3 +1246,735 @@ In the *tc-download-report* command:
 ## Additional Considerations for this version
 API version 3 [documentation](https://docs.threatconnect.com/en/latest/rest_api/rest_api.html#v3-api)
 Use the new REST v3 API instead of the old python module.
+### tc-create-victim-attribute
+
+***
+Creates a victim attribute.
+
+#### Base Command
+
+`tc-create-victim-attribute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_id | The ID of the victim. | Required | 
+| security_labels | A comma-separated list of the security labels to apply to the victim attribute. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE, TLP:AMBER+STRICT, TLP:CLEAR. | Optional | 
+| attribute_type | The attribute type. Possible values are: Additional Analysis and Context, Description, External ID, Impact Description, Impact Score, Physical Address, Response Team &amp; Staff involved, Source, Takedown Requests, Targeted Industry Sector, Title. | Required | 
+| attribute_value | The attribute value. | Required | 
+| source | The attribute source. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.VictimAttribute.dateAdded | string | The date that the victim attribute was added. | 
+| TC.VictimAttribute.default | string | Whether the attribute is the default attribute of its type for the victim to which it is added. | 
+| TC.VictimAttribute.id | string | The ID of the victim attribute. | 
+| TC.VictimAttribute.lastModified | string | The date that the victim attribute was last modified. | 
+| TC.VictimAttribute.pinned | string | Whether the victim attribute is pinned. | 
+| TC.VictimAttribute.type | string | The type of the victim attribute. | 
+| TC.VictimAttribute.value | string | The value of the victim attribute. | 
+| TC.VictimAttribute.createdBy.firstName | string | The first name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.id | string | The ID of the victim the attribute associated to. | 
+| TC.VictimAttribute.createdBy.lastName | string | The last name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.owner | string | The owner of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
+
+#### Command example
+```!tc-create-victim-attribute attribute_type="Takedown Requests" victim_id=668 attribute_value="test"```
+#### Context Example
+```json
+{
+    "TC": {
+        "VictimAttribute": {
+            "createdBy": {
+                "firstName": "Demisto API",
+                "id": 615,
+                "lastName": "Demisto API",
+                "owner": "Palo Alto Cortex XSOAR",
+                "pseudonym": "APIUsersTest",
+                "userName": "test"
+            },
+            "dateAdded": "2024-01-04T13:24:53Z",
+            "default": false,
+            "id": 133,
+            "lastModified": "2024-01-04T13:24:53Z",
+            "pinned": false,
+            "type": "Takedown Requests",
+            "value": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Victim Attribute 133 created successfully for victim id: 668
+### tc-create-victim
+
+***
+Creates a victim.
+
+#### Base Command
+
+`tc-create-victim`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the victim. | Required | 
+| nationality | The nationality of the victim. | Optional | 
+| org | The organization of the victim. | Optional | 
+| sub_org | The sub-organization of the victim. | Optional | 
+| security_labels | A comma-separated list of the security labels to apply to the victim. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE, TLP:AMBER+STRICT, TLP:CLEAR. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| work_location | The work location of the victim. | Optional | 
+| asset_type | The asset type of the victim. Possible values are: EmailAddress, NetworkAccount, Phone, SocialNetwork, WebSite. | Optional | 
+| asset_value | The asset value of the victim. | Optional | 
+| asset_address_type | The asset address type. Relevant only when the asset_type is EmailAddress. | Optional | 
+| asset_network_type | The asset network type. Relevant only when the asset_type is NetworkAccount. | Optional | 
+| asset_social_network | The asset social network. Required only when the asset_type is SocialNetwork. | Optional | 
+| associated_groups_ids | A comma-separated list of group IDs to associate to the victim. | Optional | 
+| attribute_type | The attribute type to associate to the victim. Possible values are: Additional Analysis and Context, Description, External ID, Impact Description, Impact Score, Physical Address, Response Team &amp; Staff involved, Source, Takedown Requests, Targeted Industry Sector, Title. | Optional | 
+| attribute_value | The attribute value to associate to the victim. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.Victim.Name | string | The name of the victim. | 
+| TC.Victim.ownerId | string | The owner ID of the victim. | 
+| TC.Victim.id | string | The ID of the victim. | 
+| TC.Victim.ownerName | string | The owner name of the victim. | 
+| TC.Victim.webLink | string | The web link of the victim. | 
+| TC.Victim.description | string | The description of the victim. | 
+| TC.Victim.org | string | The organization of the victim. | 
+| TC.Victim.suborg | string | The sub-organization of the victim. | 
+| TC.Victim.workLocation | string | The work location of the victim. | 
+| TC.Victim.nationality | string | The nationality of the victim. | 
+
+#### Command example
+```!tc-create-victim name="test" org="test" asset_type="EmailAddress" asset_value="test@test.com" attribute_type="Description" attribute_value="test"```
+#### Context Example
+```json
+{
+    "TC": {
+        "Victim": {
+            "id": 671,
+            "name": "test",
+            "org": "test",
+            "ownerId": 271,
+            "ownerName": "Palo Alto Cortex XSOAR",
+            "webLink": "https://threatconnect.com/auth/victim/victim.xhtml?victim=671"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Victim test created successfully with id: 671 
+### tc-create-victim-asset
+
+***
+Creates a victim asset.
+
+#### Base Command
+
+`tc-create-victim-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_id | The ID of the victim. | Required | 
+| asset_type | The asset type. Possible values are: EmailAddress, NetworkAccount, Phone, SocialNetwork, WebSite. | Required | 
+| asset_value | The asset value. | Required | 
+| asset_address_type | The asset address type. Relevant only when the asset_type is EmailAddress. | Optional | 
+| asset_network_type | The asset network type. Relevant only when the asset_type is NetworkAccount. | Optional | 
+| asset_social_network | The asset social network. Required only when the asset_type is SocialNetwork. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.VictimAsset.id | string | The ID of the victim asset. | 
+| TC.VictimAsset.type | string | The type of the victim asset. | 
+| TC.VictimAsset.victimId | string | The ID of the victim. | 
+| TC.VictimAsset.webLink | string | The web link of the victim asset. | 
+| TC.VictimAsset.phone | string | The phone number of the victim asset. | 
+| TC.VictimAsset.address | string | The address of the victim asset. | 
+| TC.VictimAsset.accountName | string | The account name of the victim asset. | 
+| TC.VictimAsset.addressType | string | The address type of the victim asset. | 
+| TC.VictimAsset.networkType | string | The network type of the victim asset. | 
+| TC.VictimAsset.socialNetwork | string | The social network of the victim asset. | 
+| TC.VictimAsset.website | string | The website of the victim asset. | 
+
+#### Command example
+```!tc-create-victim-asset victim_id=668 asset_type=SocialNetwork asset_value=test asset_social_network=test```
+#### Context Example
+```json
+{
+    "TC": {
+        "VictimAsset": {
+            "accountName": "test",
+            "id": 753,
+            "socialNetwork": "test",
+            "type": "SocialNetwork",
+            "victimId": 668,
+            "webLink": "https://threatconnect.com/auth/victim/victim.xhtml?victim=668"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Victim Asset 753 created successfully for victim id: 668
+
+### tc-list-victim-assets
+
+***
+Retrieves victim assets.
+
+#### Base Command
+
+`tc-list-victim-assets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_asset_id | The ID of a specific victim asset to retrieve. If not specified, all victim assets will be retrieved. | Optional | 
+| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| page | The page to take the results from. The first is 0. Default is 0. | Optional | 
+| limit | The maximum number of results that can be returned. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.VictimAsset.id | string | The ID of the victim asset. | 
+| TC.VictimAsset.type | string | The type of the victim asset. | 
+| TC.VictimAsset.victimId | string | The ID of the victim. | 
+| TC.VictimAsset.webLink | string | The web link of the victim asset. | 
+| TC.VictimAsset.phone | string | The phone number of the victim asset. | 
+| TC.VictimAsset.address | string | The address of the victim asset. | 
+| TC.VictimAsset.accountName | string | The account name of the victim asset. | 
+| TC.VictimAsset.addressType | string | The address type of the victim asset. | 
+| TC.VictimAsset.networkType | string | The network type of the victim asset. | 
+| TC.VictimAsset.socialNetwork | string | The social network of the victim asset. | 
+| TC.VictimAsset.website | string | The website of the victim asset. | 
+
+#### Command example
+```!tc-list-victim-assets limit=1```
+#### Context Example
+```json
+{
+    "TC": {
+        "VictimAsset": {
+            "id": 740,
+            "phone": "111111",
+            "type": "Phone",
+            "victimId": 660,
+            "webLink": "https://threatconnect.com/auth/victim/victim.xhtml?victim=660"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Victim assets
+>|id|type|victimId|asset|
+>|---|---|---|---|
+>| 740 | Phone | 660 | 111111 |
+
+### tc-list-victim-attributes
+
+***
+Retrieves victim attributes.
+
+#### Base Command
+
+`tc-list-victim-attributes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_attribute_id | The ID of a specific victim attribute to retrieve. If not specified, all victim attributes will be retrieved. | Optional | 
+| victim_id | The ID of a specific victim to retrieve its attributes. | Optional | 
+| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| page | The page to take the results from. The first is 0. Default is 0. | Optional | 
+| limit | The maximum number of results that can be returned. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.VictimAttribute.dateAdded | string | The date that the victim attribute was added. | 
+| TC.VictimAttribute.default | string | Whether the attribute is the default attribute of its type for the victim to which it is added. | 
+| TC.VictimAttribute.id | string | The ID of the victim attribute. | 
+| TC.VictimAttribute.lastModified | string | The date that the victim attribute was last modified. | 
+| TC.VictimAttribute.pinned | string | Whether the victim attribute is pinned. | 
+| TC.VictimAttribute.type | string | The type of the victim attribute. | 
+| TC.VictimAttribute.value | string | The value of the victim attribute. | 
+| TC.VictimAttribute.createdBy.firstName | string | The first name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.id | string | The ID of the victim the attribute associated to. | 
+| TC.VictimAttribute.createdBy.lastName | string | The last name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.owner | string | The owner of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
+
+#### Command example
+```!tc-list-victim-attributes limit=1```
+#### Context Example
+```json
+{
+    "TC": {
+        "VictimAttribute": {
+            "createdBy": {
+                "firstName": "Demisto API",
+                "id": 615,
+                "lastName": "Demisto API",
+                "owner": "Palo Alto Cortex XSOAR",
+                "pseudonym": "APIUsersTest",
+                "userName": "08265138623174323158"
+            },
+            "dateAdded": "2024-01-04T13:24:57Z",
+            "default": false,
+            "id": 134,
+            "lastModified": "2024-01-04T13:24:57Z",
+            "pinned": false,
+            "type": "Description",
+            "value": "test"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Victim attributes
+>|id|type|value|dateAdded|
+>|---|---|---|---|
+>| 134 | Description | test | 2024-01-04T13:24:57Z |
+
+### tc-list-victims
+
+***
+Retrieves victims.
+
+#### Base Command
+
+`tc-list-victims`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_id | The ID of a specific victim to retrieve. If not specified, all victims will be retrieved. | Optional | 
+| filter | A free text TQL filter. Refer to https://knowledge.threatconnect.com/docs/threatconnect-query-language-tql for a basic TQL guide. | Optional | 
+| include_assets | Whether to add victim's assets metadata to the result. Possible values are: true, false. Default is false. | Optional | 
+| include_associated_groups | Whether to add victim's associated groups metadata to the result. Possible values are: true, false. Default is false. | Optional | 
+| include_attributes | Whether to add victim's attributes metadata to the result. Possible values are: true, false. Default is false. | Optional | 
+| include_security_labels | Whether to add victim's security labels metadata to the result. Possible values are: true, false. Default is false. | Optional | 
+| include_all_metaData | Whether to add all victim metadata to the results. Possible values are: true, false. Default is false. | Optional | 
+| page | The page to take the results from. The first is 0. Default is 0. | Optional | 
+| limit | The maximum number of results that can be returned. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.Victim.id | Number | The victim's ID. | 
+| TC.Victim.securityLabels.data.id | Number | The security label ID. | 
+| TC.Victim.securityLabels.data.name | String | The security label name. | 
+| TC.Victim.securityLabels.data.description | String | The security label description. | 
+| TC.Victim.securityLabels.data.color | String | The security label color. | 
+| TC.Victim.securityLabels.data.owner | String | The security label owner. | 
+| TC.Victim.securityLabels.data.dateAdded | Date | The security label date added. | 
+| TC.Victim.ownerId | Number | The victim's owner ID. | 
+| TC.Victim.ownerName | String | The victim's owner name. | 
+| TC.Victim.webLink | String | The victim's web link. | 
+| TC.Victim.tags.data.id | Number | The victim's tag ID. | 
+| TC.Victim.tags.data.name | String | The victim's tag name. | 
+| TC.Victim.tags.data.lastUsed | Date | The victim's tag last use. | 
+| TC.Victim.name | String | The victim's name. | 
+| TC.Victim.description | String | The victim's description. | 
+| TC.Victim.org | String | The victim's organization. | 
+| TC.Victim.workLocation | String | The victim's work location. | 
+| TC.Victim.nationality | String | The victim's nationality. | 
+| TC.Victim.suborg | String | The victim's sub-organization. | 
+| TC.Victim.assets.data.id | Number | The victim asset ID. | 
+| TC.Victim.assets.data.type | String | The victim asset type. | 
+| TC.Victim.assets.data.victimId | Number | The victim asset victim ID. | 
+| TC.Victim.assets.data.phone | String | The victim asset phone number. | 
+| TC.Victim.assets.data.webLink | String | The victim asset web link. | 
+| TC.Victim.assets.data.website | String | The victim asset website. | 
+| TC.Victim.assets.data.accountName | String | The victim asset account name. | 
+| TC.Victim.assets.data.networkType | String | The victim asset network type. | 
+| TC.Victim.assets.data.address | String | The victim asset address. | 
+| TC.Victim.assets.data.addressType | String | The victim asset address type. | 
+| TC.Victim.assets.data.socialNetwork | String | The victim asset social network. | 
+| TC.Victim.associatedGroups.id | Unknown | The victim's associated group ID. | 
+| TC.Victim.attributes.data.id | Number | The victim attribute ID. | 
+| TC.Victim.attributes.data.dateAdded | Date | The victim attribute date added. | 
+| TC.Victim.attributes.data.type | String | The victim attribute type. | 
+| TC.Victim.attributes.data.value | String | The victim attribute value. | 
+| TC.Victim.attributes.data.source | String | The victim attribute source. | 
+| TC.Victim.attributes.data.createdBy.id | Number | The victim attribute creator ID. | 
+| TC.Victim.attributes.data.createdBy.userName | String | The victim attribute creator user name. | 
+| TC.Victim.attributes.data.createdBy.firstName | String | The victim attribute creator first name. | 
+| TC.Victim.attributes.data.createdBy.lastName | String | The victim attribute creator last name. | 
+| TC.Victim.attributes.data.createdBy.pseudonym | String | The victim attribute creator pseudonym. | 
+| TC.Victim.attributes.data.createdBy.owner | String | The victim attribute creator owner. | 
+| TC.Victim.attributes.data.lastModified | Date | The victim attribute last modified time. | 
+| TC.Victim.attributes.data.pinned | String | Whether the victim attribute is pinned. | 
+| TC.Victim.attributes.data.default | String | Whether the victim attribute is default. | 
+
+#### Command example
+```!tc-list-victims limit=1```
+#### Context Example
+```json
+{
+    "TC": {
+        "Victim": {
+            "id": 663,
+            "name": "nat",
+            "ownerId": 271,
+            "ownerName": "Palo Alto Cortex XSOAR",
+            "webLink": "https://threatconnect.com/auth/victim/victim.xhtml?victim=663"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Victims
+>|id|name|ownerName|description|org|
+>|---|---|---|---|---|
+>| 663 | nat | Palo Alto Cortex XSOAR |  |  |
+
+### tc-update-victim
+
+***
+Updates a victim.
+
+#### Base Command
+
+`tc-update-victim`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_id | The ID of the victim. | Required | 
+| name | The name of the victim. | Optional | 
+| nationality | The nationality of the victim. | Optional | 
+| org | The organization of the victim. | Optional | 
+| sub_org | The sub-organization of the victim. | Optional | 
+| security_labels | A comma-separated list of the security labels to apply to the victim. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE, TLP:AMBER+STRICT, TLP:CLEAR. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| work_location | The work location of the victim. | Optional | 
+| asset_type | The asset type of the victim. Possible values are: EmailAddress, NetworkAccount, Phone, SocialNetwork, WebSite. | Optional | 
+| asset_value | The asset value of the victim. | Optional | 
+| asset_address_type | The asset address type. Relevant only when the asset_type is EmailAddress. | Optional | 
+| asset_network_type | The asset network type. Relevant only when the asset_type is NetworkAccount. | Optional | 
+| asset_social_network | The asset social network. Relevant only when the asset_type is SocialNetwork. | Optional | 
+| associated_groups_ids | A comma-separated list of group IDs to associate to the victim. | Optional | 
+| attribute_type | The attribute type to associate to the victim. Possible values are: Additional Analysis and Context, Description, External ID, Impact Description, Impact Score, Physical Address, Response Team &amp; Staff involved, Source, Takedown Requests, Targeted Industry Sector, Title. | Optional | 
+| attribute_value | The attribute value to associate to the victim. | Optional | 
+| mode | The mode of the update operation. Relevant for associated groups, attributes, security labels and tags. Possible values are: append, delete, replace. Default is append. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.Victim.Name | string | The name of the victim. | 
+| TC.Victim.ownerId | string | The owner ID of the victim. | 
+| TC.Victim.id | string | The ID of the victim. | 
+| TC.Victim.ownerName | string | The owner name of the victim. | 
+| TC.Victim.webLink | string | The web link of the victim. | 
+| TC.Victim.description | string | The description of the victim. | 
+| TC.Victim.org | string | The organization of the victim. | 
+| TC.Victim.suborg | string | The sub-organization of the victim. | 
+| TC.Victim.workLocation | string | The work location of the victim. | 
+| TC.Victim.nationality | string | The nationality of the victim. | 
+
+#### Command example
+```!tc-update-victim victim_id=668 mode=append attribute_type="Source" attribute_value="test"```
+#### Context Example
+```json
+{
+    "TC": {
+        "Victim": {
+            "id": 668,
+            "name": "nat",
+            "ownerId": 271,
+            "ownerName": "Palo Alto Cortex XSOAR",
+            "webLink": "https://threatconnect.com/auth/victim/victim.xhtml?victim=668"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Victim 668 was successfully updated.
+### tc-update-victim-asset
+
+***
+Updates a victim asset.
+
+#### Base Command
+
+`tc-update-victim-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_asset_id | The ID of the victim asset. | Required | 
+| asset_value | The asset value. | Required | 
+| asset_address_type | The asset address type. Relevant only when the asset_type is EmailAddress. | Optional | 
+| asset_network_type | The asset network type. Relevant only when the asset_type is NetworkAccount. | Optional | 
+| asset_social_network | The asset social network. Required only when the asset_type is SocialNetwork. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.VictimAsset.id | string | The ID of the victim asset. | 
+| TC.VictimAsset.type | string | The type of the victim asset. | 
+| TC.VictimAsset.victimId | string | The ID of the victim. | 
+| TC.VictimAsset.webLink | string | The web link of the victim asset. | 
+| TC.VictimAsset.phone | string | The phone number of the victim asset. | 
+| TC.VictimAsset.address | string | The address of the victim asset. | 
+| TC.VictimAsset.accountName | string | The account name of the victim asset. | 
+| TC.VictimAsset.addressType | string | The address type of the victim asset. | 
+| TC.VictimAsset.networkType | string | The network type of the victim asset. | 
+| TC.VictimAsset.socialNetwork | string | The social network of the victim asset. | 
+| TC.VictimAsset.website | string | The website of the victim asset. | 
+
+#### Command example
+```!tc-update-victim-asset victim_asset_id=750 asset_value="11111"```
+#### Context Example
+```json
+{
+    "TC": {
+        "VictimAsset": {
+            "id": 750,
+            "phone": "11111",
+            "type": "Phone",
+            "victimId": 669,
+            "webLink": "https://threatconnect.com/auth/victim/victim.xhtml?victim=669"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Victim Asset 750 updated successfully for victim id: 669
+### tc-update-victim-attribute
+
+***
+Updates a victim attribute.
+
+#### Base Command
+
+`tc-update-victim-attribute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_attribute_id | The ID of the victim attribute. | Required | 
+| security_labels | A comma-separated list of the security labels to apply to the victim attribute. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE, TLP:AMBER+STRICT, TLP:CLEAR. | Optional | 
+| attribute_value | The attribute value. | Required | 
+| source | The attribute source. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.VictimAttribute.dateAdded | string | The date that the victim attribute was added. | 
+| TC.VictimAttribute.default | string | Whether the attribute is the default attribute of its type for the victim to which it is added. | 
+| TC.VictimAttribute.id | string | The ID of the victim attribute. | 
+| TC.VictimAttribute.lastModified | string | The date that the victim attribute was last modified. | 
+| TC.VictimAttribute.pinned | string | Whether the victim attribute is pinned. | 
+| TC.VictimAttribute.type | string | The type of the victim attribute. | 
+| TC.VictimAttribute.value | string | The value of the victim attribute. | 
+| TC.VictimAttribute.createdBy.firstName | string | The first name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.id | string | The ID of the victim the attribute associated to. | 
+| TC.VictimAttribute.createdBy.lastName | string | The last name of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.owner | string | The owner of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.pseudonym | string | The pseudonym of the user who created the victim attribute. | 
+| TC.VictimAttribute.createdBy.userName | string | The user name of the user who created the victim attribute. | 
+
+#### Command example
+```!tc-update-victim-attribute victim_attribute_id="132" attribute_value="test2"```
+#### Context Example
+```json
+{
+    "TC": {
+        "VictimAttribute": {
+            "createdBy": {
+                "firstName": "Demisto API",
+                "id": 615,
+                "lastName": "Demisto API",
+                "owner": "Palo Alto Cortex XSOAR",
+                "pseudonym": "APIUsersTest",
+                "userName": "test"
+            },
+            "dateAdded": "2024-01-04T09:14:16Z",
+            "default": false,
+            "id": 132,
+            "lastModified": "2024-01-04T13:25:19Z",
+            "pinned": false,
+            "type": "Source",
+            "value": "test2"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Victim attribute 132 was successfully updated.
+### tc-delete-victim-asset
+
+***
+Deletes a victim asset.
+
+#### Base Command
+
+`tc-delete-victim-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_asset_id | The ID of the victim asset. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!tc-delete-victim-asset victim_asset_id=738```
+#### Human Readable Output
+
+>Victim asset 738 was successfully deleted.
+### tc-delete-victim-attribute
+
+***
+Deletes a victim attribute.
+
+#### Base Command
+
+`tc-delete-victim-attribute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_attribute_id | The ID of the victim attribute. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!tc-delete-victim-attribute victim_attribute_id=110```
+#### Human Readable Output
+
+>Victim attribute 110 was successfully deleted.
+### tc-list-attribute-type
+
+***
+Retrieved all attribute types
+
+#### Base Command
+
+`tc-list-attribute-type`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attribute_type_id | A specific attribute type to retrieve. If not specified, all attribute types will be retrieved. | Optional | 
+| page | The page to take the results from. The first is 0. Default is 0. | Optional | 
+| limit | The maximum number of results that can be returned. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TC.AttributeType.allowMarkdown | string | Whether the attribute type markdown allowed. | 
+| TC.AttributeType.description | string | The attribute type description. | 
+| TC.AttributeType.name | string | The attribute type name. | 
+| TC.AttributeType.errorMessage | string | The attribute type error message. | 
+| TC.AttributeType.id | string | The attribute type ID. | 
+| TC.AttributeType.maxSize | string | The attribute type maximum size. | 
+| TC.AttributeType.TC.AttributeType.validationRule.description | string | The attribute type validation rule description. | 
+| TC.AttributeType.TC.AttributeType.validationRule.id | string | The attribute type validation rule ID. | 
+| TC.AttributeType.TC.AttributeType.validationRule.name | string | The attribute type validation rule name. | 
+| TC.AttributeType.TC.AttributeType.validationRule.text | string | The attribute type validation rule text. | 
+| TC.AttributeType.TC.AttributeType.validationRule.type | string | The attribute type validation rule type. | 
+| TC.AttributeType.TC.AttributeType.validationRule.version | string | The attribute type validation rule version. | 
+
+#### Command example
+```!tc-list-attribute-type limit=1```
+#### Context Example
+```json
+{
+    "TC": {
+        "AttributeType": {
+            "allowMarkdown": true,
+            "description": "Describe the Course of Action Taken.",
+            "errorMessage": "Please enter a valid Course of Action.",
+            "id": 1,
+            "maxSize": 500,
+            "name": "Course of Action Taken"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Attribute types
+>|id|name|description|
+>|---|---|---|
+>| 1 | Course of Action Taken | Describe the Course of Action Taken. |
+
+
+### tc-delete-victim
+
+***
+Deletes a victim.
+
+#### Base Command
+
+`tc-delete-victim`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| victim_id | The ID of the victim. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!tc-delete-victim victim_id=660```
+#### Human Readable Output
+
+>Victim 660 was successfully deleted.
