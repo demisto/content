@@ -63,7 +63,7 @@ trigger-content-internal-dist-nightly:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
-#    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION | jq .id)
+#    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -ch $SLACK_CHANNEL -sdk $RELEASE_VERSION | jq .id)
 #    - echo "PIPELINE_ID = " $PIPELINE_ID
 #    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt
 #    -

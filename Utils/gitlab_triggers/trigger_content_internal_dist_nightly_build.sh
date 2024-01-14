@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 
+_slack_channel="C04CHML16P8"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -10,6 +11,10 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -sdk|--sdk-ref) _sdk_ref="$2"
+    shift
+    shift;;
+
+  -ch|--slack-channel) _slack_channel="$2"
     shift
     shift;;
 
@@ -29,5 +34,5 @@ curl --request POST \
   --form "token=${_ci_token}" \
   --form "variables[SDK_REF]=${_sdk_ref}" \
   --form "variables[NIGHTLY]=true" \
-  --form "variables[SLACK_CHANNEL]=C04CHML16P8" \
+  --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
   "$BUILD_TRIGGER_URL"
