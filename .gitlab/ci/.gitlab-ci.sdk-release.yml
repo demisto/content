@@ -135,3 +135,22 @@ wait-for-content-internal-dist-nightly:
     - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt)
     - echo "PIPELINE_ID =" $PIPELINE_ID
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
+
+
+wait-for-demisto-sdk-nightly:
+  stage: wait-for-build-to-finish
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - trigger-demisto-sdk-nightly
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+  variables:
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt)
+    - echo "PIPELINE_ID =" $PIPELINE_ID
+    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1061
