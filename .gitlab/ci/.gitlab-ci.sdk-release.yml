@@ -154,3 +154,19 @@ wait-for-demisto-sdk-nightly:
     - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt)
     - echo "PIPELINE_ID =" $PIPELINE_ID
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1061
+
+
+create-release-pull-request:
+  stage: release-sdk
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - wait-for-demisto-sdk-nightly
+    - wait-for-content-private-nightly
+    - wait-for-content-internal-dist-nightly
+  variables:
+    RELEASE_VERSION: $RELEASE_VERSION
+  script:
+    - echo "RELEASE_VERSION="$RELEASE_VERSION
+    - python3 ./Tests/sdk_release/create_release_pr.py -t $GITLAB_API_TOKEN -b $RELEASE_VERSION

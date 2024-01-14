@@ -19,6 +19,7 @@ stages:
   - create-release-branch
   - trigger-nightlies
   - wait-for-build-to-finish
+  - release-sdk
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 

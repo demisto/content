@@ -5,6 +5,8 @@ import argparse
 import base64
 import json
 
+API_SUFFIX = 'https://api.github.com/repos/demisto/demisto-sdk'
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Creates release pull request for demisto-sdk.')
@@ -29,7 +31,7 @@ def main():
     }
 
     # get pyproject.toml file sha
-    url = f'https://api.github.com/repos/demisto/demisto-sdk/contents/pyproject.toml'
+    url = f'{API_SUFFIX}/contents/pyproject.toml'
     response = requests.request('GET', url, params={'ref': release_branch_name}, verify=False)
     if response.status_code != 200:
         print(f'Failed to get the pyproject.toml file from branch {release_branch_name}')
@@ -70,7 +72,7 @@ def main():
         'sha': pyproject_sha
     }
 
-    url = 'https://api.github.com/repos/demisto/demisto-sdk/contents/pyproject.toml'
+    url = f'{API_SUFFIX}/contents/pyproject.toml'
     response = requests.request('PUT', url, data=json.dumps(data), headers=headers, verify=False)
     if response.status_code != 200:
         print(f'Failed to commit the pyproject.toml file')
@@ -81,17 +83,17 @@ def main():
     data = {
         'base': 'master',
         'head': release_branch_name,
-        'title': f'demisto-sdk release {release_branch_name}',
+        'title': f'Demisto-sdk release {release_branch_name}',
         'body': release_changes
     }
-    url = 'https://api.github.com/repos/demisto/demisto-sdk/pulls'
+    url = f'{API_SUFFIX}/pulls'
     response = requests.request('POST', url, data=json.dumps(data), headers=headers, verify=False)
     if response.status_code != 201:
         print(f'Failed to create pull request for branch {release_branch_name}')
         print(response.text)
         sys.exit(1)
 
-    # get PR ID
+    # get the PR ID
     pr_url = response.json().get('html_url')
     print(f'The Pull request created successfully! {pr_url}')
 
