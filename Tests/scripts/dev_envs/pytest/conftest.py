@@ -52,6 +52,12 @@ def check_std_out_err(capfd):
     if err:
         pytest.fail("Found output in stderr: [{}]".format(err.strip()))
 
+def pytest_sessionfinish(session, exitstatus):
+    """
+    """
+    if exitstatus == 5:
+        print("No tests were collected")
+        session.exitstatus = 0
 
 def pytest_configure(config):
     """
