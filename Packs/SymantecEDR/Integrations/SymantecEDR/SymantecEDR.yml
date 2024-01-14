@@ -23,7 +23,7 @@ configuration:
 - display: Incident data source
   name: fetch_incidents_events_type
   type: 15
-  required: true
+  required: false
   defaultvalue: incidents
   options:
   - incidents
