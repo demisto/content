@@ -91,12 +91,23 @@ trigger-demisto-sdk-nightly:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
-#    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g | jq .id)
-    - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
-    - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
+#    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g | jq .id)
+#    - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
+#    - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
+#    -
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
 #    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
+
+test-manulal-job:
+  stage: trigger-nightlies
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - trigger-content-private-nightly
+  when: manual
+  script:
+    - echo "hi"
 
 
 
