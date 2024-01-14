@@ -1748,7 +1748,7 @@
                 "ews_mail_sender_labdemisto"
             ],
             "playbookID": "EWS V2 Send Mail Test 2",
-            "memory_threshold": 150
+            "memory_threshold": 250
         },
         {
             "integrations": [
@@ -1834,7 +1834,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 100
         },
         {
             "integrations": "EWS v2",
@@ -5835,6 +5836,7 @@
         "BambenekConsultingFeed_Test": "Issue CRTX-99480"
     },
     "skipped_integrations": {
+        "EWS Mail Sender": "The integration is deprecated",
         "CiscoWSAv2": "No instance - No license",
         "DatadogCloudSIEM": "No instance - No license",
         "Lastline v2": "No instance - No license",
@@ -5975,7 +5977,7 @@
         "Phishing",
         "Base",
         "Active_Directory_Query",
-        "EWS",
+        "MicrosoftExchangeOnline",
         "DefaultPlaybook",
         "DemistoRESTAPI",
         "Palo_Alto_Networks_WildFire",
@@ -5985,7 +5987,7 @@
         "ImageOCR",
         "SplunkPy",
         "MailSenderNew",
-        "EWSMailSender",
+        "MicrosoftExchangeOnPremise",
         "ServiceNow",
         "CortexXDR",
         "PAN-OS",
