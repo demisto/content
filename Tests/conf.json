@@ -2844,7 +2844,6 @@
         },
         {
             "playbookID": "Calculate Severity - Standard - Test",
-            "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
         },
         {
