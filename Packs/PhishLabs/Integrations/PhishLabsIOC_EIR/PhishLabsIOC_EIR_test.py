@@ -462,7 +462,6 @@ def test_get_incidents_with_offset(mocker):
     assert len(incident_report) == 4
 
 
-
 def test_duplicated_incident(mocker):
     """
 
@@ -492,7 +491,7 @@ def test_duplicated_incident(mocker):
     )
 
     assert len(incident_report) == 3
-    assert new_last_run.get('lastIds') == {'1','2','3'}
+    assert new_last_run.get('lastIds') == {'1', '2', '3'}
 
     incidents = [{'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
                  {'id': '2', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
@@ -500,7 +499,7 @@ def test_duplicated_incident(mocker):
                  {'id': '4', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
                  {'id': '5', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}}]
     mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 1}, 'incidents': incidents})
-    
+
     incident_report, new_last_run = fetch_incidents_command(
         client=client,
         last_run='2023-09-20T03:44:55Z',
@@ -510,8 +509,8 @@ def test_duplicated_incident(mocker):
     )
 
     assert len(incident_report) == 2
-    assert new_last_run.get('lastIds') == {'1','2','3','4','5'}
-    
+    assert new_last_run.get('lastIds') == {'1', '2', '3', '4', '5'}
+
     incidents = [{'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
                  {'id': '2', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
                  {'id': '3', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
@@ -519,7 +518,7 @@ def test_duplicated_incident(mocker):
                  {'id': '5', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
                  {'id': '6', 'created': '2023-09-20T03:45:55Z', 'details': {'subClassification': "No Threat Detected"}}]
     mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 1}, 'incidents': incidents})
-    
+
     incident_report, new_last_run = fetch_incidents_command(
         client=client,
         last_run='2023-09-20T03:44:55Z',
