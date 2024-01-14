@@ -1504,19 +1504,19 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if len(actions) > 0:
                 channel = data.get('channel', {}).get('id', '')
                 entitlement_json = actions[0].get('value')
+                entitlement_string = json.loads(entitlement_json)
                 if entitlement_json is None:
                     return
-                entitlement_string = json.loads(entitlement_json)
                 if actions[0].get('action_id') == 'xsoar-button-submit':
                     demisto.debug("Handling a SlackBlockBuilder response.")
                     if state:
                         state.update({"xsoar-button-submit": "Successful"})
                         action_text = json.dumps(state)
-                        _ = answer_question(action_text, entitlement_string,
-                                            user.get('profile', {}).get('email'))  # type: ignore
                 else:
                     demisto.debug("Not handling a SlackBlockBuilder response.")
                     action_text = actions[0].get('text').get('text')
+                _ = answer_question(action_text, entitlement_string,
+                                    user.get('profile', {}).get('email'))  # type: ignore
                 entitlement_reply = entitlement_string.get("reply", "Thank you for your reply.")
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
