@@ -23,7 +23,7 @@ configuration:
   name: credentials_access_key
   hiddenusername: true
   type: 9
-  required: false
+  required: true
   section: Connect
 - display: Secret key
   name: secret-key
@@ -35,7 +35,7 @@ configuration:
   name: credentials_secret_key
   hiddenusername: true
   type: 9
-  required: false
+  required: true
   section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
@@ -83,7 +83,7 @@ configuration:
   type: 16
   required: false
   section: Collect - assets
-- defaultvalue: '1440'
+- defaultvalue: '720'
   display: Assets and vulnerabilities fetch interval
   name: assetsFetchInterval
   type: 19
@@ -1354,7 +1354,7 @@ script:
   isfetchassets: true
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.84405
 tests:
 - Tenable.io test
 fromversion: 5.0.0
