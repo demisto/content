@@ -100,7 +100,7 @@ trigger-demisto-sdk-nightly:
 
 
 
-wait-for-private-nightly:
+wait-for-content-private-nightly:
   stage: wait-for-build-to-finish
   extends:
     - .release-sdk
