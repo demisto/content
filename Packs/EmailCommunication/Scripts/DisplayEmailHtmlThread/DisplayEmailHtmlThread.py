@@ -68,7 +68,7 @@ def remove_color_from_html_text(html_message):
     # Remove all style attributes from other tags
     for tag in parsed_html_body.find_all(True):
         if 'color' in tag.attrs:
-            demisto.debug(f'Removing the attribute color {tag.attrs['color']} from the tag {tag}')
+            demisto.debug(f"Removing the attribute color {tag.attrs['color']} from the tag {tag}")
             del tag.attrs['color']
     return parsed_html_body.get_text()
 
