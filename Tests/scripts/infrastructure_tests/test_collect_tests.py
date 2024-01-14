@@ -118,6 +118,7 @@ class MockerCases:
     RN_CONFIG = CollectTestsMocker(TEST_DATA / 'release_notes_config')
     PR1 = CollectTestsMocker(TEST_DATA / 'PR1')
     Xsoar_marketplaces = CollectTestsMocker(TEST_DATA / 'Xsoar_marketplaces')
+    conf_marketplaces_entry = CollectTestsMocker(TEST_DATA / 'conf marketplaces')
 
 
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
@@ -265,7 +266,18 @@ NIGHTLY_TESTS: tuple = (
      None, None, (MarketplaceVersions.XSOAR_SAAS,)),
 
     # Validate that when collecting test for xsoar_saas xsoarNightly does not collect xsoar_saas only packs.
-    (MockerCases.A_xsoar_saas, XSOARNightlyTestCollector, {}, (), None, None, ())
+    (MockerCases.A_xsoar_saas, XSOARNightlyTestCollector, {}, (), None, None, ()),
+
+    # Checks that tests are collected according to the marketplace entry they hold - xsoar_on_prem
+    (MockerCases.conf_marketplaces_entry, XSOARNightlyTestCollector,
+     {'myTestPlaybook_both', 'myTestPlaybook_both2', 'myTestPlaybook_on_prem', 'myTestPlaybook_two_entries'},
+     ('myPack',), None, None, (MarketplaceVersions.XSOAR,)),
+
+    # Checks that tests are collected according to the marketplace entry they hold - xsoar_saas
+    (MockerCases.conf_marketplaces_entry, XSOARNightlyTestCollector,
+     {'myTestPlaybook_both', 'myTestPlaybook_both2', 'myTestPlaybook_saas', 'myTestPlaybook_two_entries'},
+     ('myPack',), None, None, (MarketplaceVersions.XSOAR_SAAS,)),
+
 )
 
 
@@ -491,7 +503,29 @@ XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
             ('Packs/OnlyXsoarSaaS/Integrations/myOnlyXsoarSaaSIntegration/myOnlyXsoarSaaSIntegration.yml',
              'Packs/BothXsoar/Integrations/myBothXsoarIntegration/myBothXsoarIntegration.yml',
              'Packs/OnlyXsoarOnPrem/Integrations/myOnlyXsoarOnPremIntegration/myOnlyXsoarOnPremIntegration.yml'), (),
-         ('OnlyXsoarOnPrem', 'BothXsoar',))
+         ('OnlyXsoarOnPrem', 'BothXsoar',)),
+
+        # (42) Checks that tests are collected according to the marketplace entry they hold - xsoar_saas
+        (MockerCases.conf_marketplaces_entry,
+         ('myTestPlaybook_both', 'myTestPlaybook_both2', 'myTestPlaybook_saas', 'myTestPlaybook_two_entries'),
+         ('myPack',), None, None, XSOAR_SAAS_BRANCH_ARGS,
+            ('Packs/myPack/TestPlaybooks/myTestPlaybook_both.yml',
+             'Packs/myPack/TestPlaybooks/myTestPlaybook_both2.yml',
+             'Packs/myPack/TestPlaybooks/myTestPlaybook_on_prem.yml',
+             'Packs/myPack/TestPlaybooks/myTestPlaybook_saas.yml',
+             'Packs/myPack/TestPlaybooks/myTestPlaybook_two_entries.yml'), (),
+         ('myPack',)),
+
+        # (43) Checks that tests are collected according to the marketplace entry they hold - xsoar_on_prem
+        (MockerCases.conf_marketplaces_entry,
+         ('myTestPlaybook_both', 'myTestPlaybook_both2', 'myTestPlaybook_on_prem', 'myTestPlaybook_two_entries'),
+         ('myPack',), None, None, XSOAR_BRANCH_ARGS,
+            ('Packs/myPack/TestPlaybooks/myTestPlaybook_both.yml',
+             'Packs/myPack/TestPlaybooks/myTestPlaybook_both2.yml',
+             'Packs/myPack/TestPlaybooks/myTestPlaybook_on_prem.yml',
+             'Packs/myPack/TestPlaybooks/myTestPlaybook_saas.yml',
+             'Packs/myPack/TestPlaybooks/myTestPlaybook_two_entries.yml'), (),
+         ('myPack',)),
 
     )
 )
