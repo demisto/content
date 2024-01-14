@@ -35,7 +35,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false".
+      description: Whether to return vulnerabilities that Kenna deems a top priority to fix.
       isArray: true
       name: top-priority
       predefined:
@@ -44,7 +44,7 @@ script:
     - description: The minimum vulnerability score for which to return vulnerabilities.
       name: min-score
     - auto: PREDEFINED
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
+      description: The status of the vulnerability.
       isArray: true
       name: status
       predefined:
@@ -53,12 +53,12 @@ script:
       - risk_accepted
       - false_positive
     - defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return.
       name: limit
     - auto: PREDEFINED
       default: true
       defaultValue: 'True'
-      description: Whether to flush to context. Can be "True" or "False". The default value is "True".
+      description: Whether to flush to context.
       name: to_context
       predefined:
       - 'True'
@@ -144,7 +144,7 @@ script:
       isArray: true
       name: id
     - auto: PREDEFINED
-      description: Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false".
+      description: Whether to return vulnerabilities that Kenna deems a top priority to fix.
       isArray: true
       name: top-priority
       predefined:
@@ -153,7 +153,7 @@ script:
     - description: The minimum vulnerability score for which to return vulnerabilities.
       name: min-score
     - auto: PREDEFINED
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
+      description: The status of the vulnerability.
       isArray: true
       name: status
       predefined:
@@ -162,11 +162,11 @@ script:
       - risk_accepted
       - false_positive
     - defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: 'True'
-      description: Whether to flush to context. Can be "True" or "False". The default value is "True".
+      description: Whether to flush to context.
       name: to_context
       predefined:
       - 'True'
@@ -230,7 +230,7 @@ script:
       name: id
       required: true
     - auto: PREDEFINED
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
+      description: The status of the vulnerability.
       name: status
       predefined:
       - open
@@ -269,11 +269,11 @@ script:
       isArray: true
       name: tags
     - defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: 'True'
-      description: Whether to print output to context. Can be "True" or "False". The default value is "True".
+      description: Whether to print output to context.
       name: to_context
       predefined:
       - 'True'
@@ -326,11 +326,11 @@ script:
       name: id
       required: true
     - defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: 'True'
-      description: Whether to print output to context. Can be "True" or "False". The default value is "True".
+      description: Whether to print output to context.
       name: to_context
       predefined:
       - 'True'
@@ -372,8 +372,6 @@ script:
   - arguments:
     - description: The asset ID from which to delete the tag.
       name: id
-      predefined:
-      - ''
       required: true
     - description: The tag to delete.
       name: tag

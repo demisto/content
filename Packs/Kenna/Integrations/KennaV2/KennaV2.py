@@ -568,10 +568,10 @@ def delete_tags(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[D
     result = client.http_request(message='DELETE', suffix=url_suffix, data=asset)
     try:
         if result.get('status') != "success":
-            return f'Tag {tags} was not deleted to asset {args_id}', {}, []
-        return f'Tag {tags} was deleted to asset {args_id}', {}, []
+            return f'Tag {tags} was not removed from asset {args_id}.', {}, []
+        return f'Tag {tags} was successfully removed from asset {args_id}.', {}, []
     except DemistoException as err:
-        return f'Error occurred while preforming delete-tags command {err}', {}, []
+        return f'Error occurred while preforming delete-tags command {err}.', {}, []
 
 
 def search_assets_by_external_id_command(client: Client, args: dict[str, str]) -> CommandResults:
