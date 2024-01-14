@@ -2,19 +2,19 @@
   rules:
     - if: '$SDK_RELEASE == "true"'
 
-
-create-release-branch:
-  stage: create-release-branch
-  extends:
-    - .release-sdk
-    - .default-job-settings
-  variables:
-    SLACK_CHANNEL: $SLACK_CHANNEL
-    RELEASE_VERSION: $RELEASE_VERSION
-    GITHUB_TOKEN: $GITHUB_TOKEN
-  script:
-    - echo "RELEASE_VERSION="$RELEASE_VERSION
-    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+#
+#create-release-branch:
+#  stage: create-release-branch
+#  extends:
+#    - .release-sdk
+#    - .default-job-settings
+#  variables:
+#    SLACK_CHANNEL: $SLACK_CHANNEL
+#    RELEASE_VERSION: $RELEASE_VERSION
+#    GITHUB_TOKEN: $GITHUB_TOKEN
+#  script:
+#    - echo "RELEASE_VERSION="$RELEASE_VERSION
+#    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
 
 
 trigger-content-private-nightly:
@@ -22,8 +22,8 @@ trigger-content-private-nightly:
   extends:
     - .release-sdk
     - .default-job-settings
-  needs:
-    - create-release-branch
+#  needs:
+#    - create-release-branch
   artifacts:
     expire_in: 48 hrs
     paths:
@@ -39,8 +39,7 @@ trigger-content-private-nightly:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
-#    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - python3 ./Utils/trigger_private_build.py --nightly --github-token "${GITHUB_TOKEN}" --slack-channel "${SLACK_CHANNEL}" --sdk-ref $RELEASE_VERSION --artifacts-folder ${ARTIFACTS_FOLDER}
+#    - python3 ./Utils/trigger_private_build.py --nightly --github-token "${GITHUB_TOKEN}" --slack-channel "${SLACK_CHANNEL}" --sdk-ref $RELEASE_VERSION --artifacts-folder ${ARTIFACTS_FOLDER}
 
 
 trigger-content-internal-dist-nightly:
@@ -48,8 +47,8 @@ trigger-content-internal-dist-nightly:
   extends:
     - .release-sdk
     - .default-job-settings
-  needs:
-    - create-release-branch
+#  needs:
+#    - create-release-branch
   artifacts:
     expire_in: 48 hrs
     paths:
@@ -64,10 +63,10 @@ trigger-content-internal-dist-nightly:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
-#    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION | jq .id)
-    - echo "PIPELINE_ID = " $PIPELINE_ID
-    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt
+#    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -sdk $RELEASE_VERSION | jq .id)
+#    - echo "PIPELINE_ID = " $PIPELINE_ID
+#    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt
+#    -
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
 #    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
 
@@ -77,8 +76,8 @@ trigger-demisto-sdk-nightly:
   extends:
     - .release-sdk
     - .default-job-settings
-  needs:
-    - create-release-branch
+#  needs:
+#    - create-release-branch
   artifacts:
     expire_in: 48 hrs
     paths:
@@ -93,7 +92,7 @@ trigger-demisto-sdk-nightly:
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
 #    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g .id)
+    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g | jq .id)
     - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
     - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
 #    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
