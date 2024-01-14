@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b0f0baa0-e143-462d-8d65-40afab3ee28f
+    taskid: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
     type: start
     task:
-      id: b0f0baa0-e143-462d-8d65-40afab3ee28f
+      id: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f2639ea7-6574-456e-81f6-083abf047f34
+    taskid: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
     type: title
     task:
-      id: f2639ea7-6574-456e-81f6-083abf047f34
+      id: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
       version: -1
       name: |
         Done
@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": 1540
+          "y": 1730
         }
       }
     note: false
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 53e406b6-6b68-4dd0-8189-51d555d07e24
+    taskid: 8d20eec3-078e-44e6-849d-739876ba76a1
     type: regular
     task:
-      id: 53e406b6-6b68-4dd0-8189-51d555d07e24
+      id: 8d20eec3-078e-44e6-849d-739876ba76a1
       version: -1
       name: Lookup SecurityGroup information associated with InstanceID
       description: Describes one or more of your security groups.
@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8dedaf42-1479-43d2-82cf-4d34946dc410
+    taskid: 34bd81f1-1ad3-4ca5-8ceb-e87b995b16be
     type: condition
     task:
-      id: 8dedaf42-1479-43d2-82cf-4d34946dc410
+      id: 34bd81f1-1ad3-4ca5-8ceb-e87b995b16be
       version: -1
       name: Was there an EC2 instance?
       description: Check whether the last command returned EC2 information or not.
@@ -123,6 +123,7 @@ tasks:
       - "2"
       "yes":
       - "3"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -153,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 11e47c01-e611-4f22-8749-787199dd5be1
+    taskid: 28f25d84-28e3-4cf2-8480-832175edc4d5
     type: condition
     task:
-      id: 11e47c01-e611-4f22-8749-787199dd5be1
+      id: 28f25d84-28e3-4cf2-8480-832175edc4d5
       version: -1
       name: Is AWS - EC2 enabled and is Input value defined?
       description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
@@ -234,13 +235,13 @@ tasks:
     task:
       brand: AWS - EC2
       description: Describes one or more regions that are currently available to you.
-      id: 3085017b-3616-46da-815e-45d95a1115a4
+      id: 2936884e-c1ab-422a-81a8-0f380ee56d80
       iscommand: true
       name: aws-ec2-describe-regions
       script: AWS - EC2|||aws-ec2-describe-regions
       type: regular
       version: -1
-    taskid: 3085017b-3616-46da-815e-45d95a1115a4
+    taskid: 2936884e-c1ab-422a-81a8-0f380ee56d80
     timertriggers: []
     type: regular
     view: |-
@@ -278,12 +279,12 @@ tasks:
     task:
       brand: ""
       description: Determines if AWS regions were returned from the last command in order to proceed.
-      id: ff4e0ca1-6e50-4e2b-8e90-2c03403e586c
+      id: e8eb9593-4a8d-4203-84a2-12bf1490c09d
       iscommand: false
       name: Were regions returned?
       type: condition
       version: -1
-    taskid: ff4e0ca1-6e50-4e2b-8e90-2c03403e586c
+    taskid: e8eb9593-4a8d-4203-84a2-12bf1490c09d
     timertriggers: []
     type: condition
     view: |-
@@ -312,13 +313,13 @@ tasks:
     task:
       brand: AWS - EC2
       description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
-      id: 6a37b060-681a-4625-8a88-3efb5baf9998
+      id: d4b9a34c-46d1-46bf-8298-c3d7a5e84b22
       iscommand: true
       name: aws-ec2-describe-ipam-resource-discoveries
       script: AWS - EC2|||aws-ec2-describe-ipam-resource-discoveries
       type: regular
       version: -1
-    taskid: 6a37b060-681a-4625-8a88-3efb5baf9998
+    taskid: d4b9a34c-46d1-46bf-8298-c3d7a5e84b22
     timertriggers: []
     type: regular
     view: |-
@@ -356,12 +357,12 @@ tasks:
     task:
       brand: ""
       description: Determines if AWS IPAM resources discoveries were returned from the last command in order to proceed.
-      id: f18a0ebc-8b26-4994-80dc-6469938f8c85
+      id: 1779dfae-71e4-460b-8e8f-295dd08a340f
       iscommand: false
       name: Were IPAM resources discoveries returned?
       type: condition
       version: -1
-    taskid: f18a0ebc-8b26-4994-80dc-6469938f8c85
+    taskid: 1779dfae-71e4-460b-8e8f-295dd08a340f
     timertriggers: []
     type: condition
     view: |-
@@ -398,15 +399,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: "AWS - EC2"
+      brand: AWS - EC2
       description: Describes one or more of your instances.
-      id: 7843097c-5bce-4228-8ac3-855870f2d0b1
+      id: daab41ad-5569-4a64-8a87-64b678af54a6
       iscommand: true
       name: Lookup EC2 information associated with IP (default/all regions)
-      script: 'AWS - EC2|||aws-ec2-describe-instances'
+      script: AWS - EC2|||aws-ec2-describe-instances
       type: regular
       version: -1
-    taskid: 7843097c-5bce-4228-8ac3-855870f2d0b1
+    taskid: daab41ad-5569-4a64-8a87-64b678af54a6
     timertriggers: []
     type: regular
     view: |-
@@ -447,13 +448,13 @@ tasks:
     task:
       brand: AWS - EC2
       description: Gets the public IP addresses that have been discovered by IPAM.
-      id: 6cf27305-cfab-4178-844b-c2472d4883a9
+      id: c6086dbb-2e37-4747-8ae1-517cba869c2c
       iscommand: true
       name: aws-ec2-get-ipam-discovered-public-addresses
       script: AWS - EC2|||aws-ec2-get-ipam-discovered-public-addresses
       type: regular
       version: -1
-    taskid: 6cf27305-cfab-4178-844b-c2472d4883a9
+    taskid: c6086dbb-2e37-4747-8ae1-517cba869c2c
     timertriggers: []
     type: regular
     view: |-
@@ -491,12 +492,12 @@ tasks:
     task:
       brand: ""
       description: Determines if an AWS IPAM public IP was returned from the last command in order to proceed.
-      id: 5f18ae96-f69d-44aa-8acf-2336e03a1a68
+      id: d7730d11-6c48-4b1e-8476-c84a01f20418
       iscommand: false
       name: Was there an IPAM discovered public IP returned?
       type: condition
       version: -1
-    taskid: 5f18ae96-f69d-44aa-8acf-2336e03a1a68
+    taskid: d7730d11-6c48-4b1e-8476-c84a01f20418
     timertriggers: []
     type: condition
     view: |-
@@ -532,13 +533,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if the AWSAssumeRoleName Input values are defined in order to proceed.
-      id: f0439279-57e6-45e2-8cbf-7a6eef67dad5
+      description: Determines if the AWSAssumeRoleName input values are defined in order to proceed.
+      id: 95e5b728-aaa4-4c5c-8caa-f7278422f282
       iscommand: false
-      name: Is AWSAssumeRoleName Input defined?
+      name: Is AWSAssumeRoleName input defined?
       type: condition
       version: -1
-    taskid: f0439279-57e6-45e2-8cbf-7a6eef67dad5
+    taskid: 95e5b728-aaa4-4c5c-8caa-f7278422f282
     timertriggers: []
     type: condition
     view: |-
@@ -571,15 +572,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: "AWS - EC2"
+      brand: AWS - EC2
       description: Describes one or more of your instances.
-      id: c53beebd-aaf1-4a8d-8164-119e7164aa6c
+      id: 310aa2ab-87a5-4a20-873d-a131b4e65119
       iscommand: true
       name: Lookup EC2 information associated with IP (IPAM info)
-      script: 'AWS - EC2|||aws-ec2-describe-instances'
+      script: AWS - EC2|||aws-ec2-describe-instances
       type: regular
       version: -1
-    taskid: c53beebd-aaf1-4a8d-8164-119e7164aa6c
+    taskid: 310aa2ab-87a5-4a20-873d-a131b4e65119
     timertriggers: []
     type: regular
     view: |-
@@ -628,13 +629,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 1a67979a-6033-451d-8534-71752d5e12cd
+      id: 021bf9ac-5325-4d87-8001-7f55417b5ba5
       iscommand: false
       name: Set roleArn in temporary context
       script: Set
       type: regular
       version: -1
-    taskid: 1a67979a-6033-451d-8534-71752d5e12cd
+    taskid: 021bf9ac-5325-4d87-8001-7f55417b5ba5
     timertriggers: []
     type: regular
     view: |-
@@ -642,6 +643,106 @@ tasks:
         "position": {
           "x": 760,
           "y": 810
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - Organizations
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the AWS - Organizations integration instance is configured to pull hierarchy info.
+      id: 96d1440f-aa11-440f-8489-b31756d03013
+      iscommand: false
+      name: Is AWS - Organizations enabled ?
+      type: condition
+      version: -1
+    taskid: 96d1440f-aa11-440f-8489-b31756d03013
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1370
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      account_id:
+        complex:
+          accessor: OwnerId
+          root: AWS.EC2.Instances.NetworkInterfaces
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Determine AWS account hierarchy by looking up parent objects until the organization level is reached.
+      id: 7a4dfb5b-d397-4880-8a10-39c3362f2152
+      iscommand: false
+      name: AWSAccountHierarchy
+      script: AWSAccountHierarchy
+      type: regular
+      version: -1
+    taskid: 7a4dfb5b-d397-4880-8a10-39c3362f2152
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1550
         }
       }
 view: |-
@@ -652,11 +753,12 @@ view: |-
       "13_16_#default#": 0.35,
       "15_16_#default#": 0.22,
       "18_16_#default#": 0.35,
-      "20_21_#default#": 0.31
+      "20_21_#default#": 0.31,
+      "23_2_#default#": 0.33
     },
     "paper": {
       "dimensions": {
-        "height": 2385,
+        "height": 2575,
         "width": 1190,
         "x": 210,
         "y": -780
@@ -704,8 +806,10 @@ outputs:
 - contextPath: AWS.EC2.SecurityGroups
   description: AWS Security group information.
   type: unknown
+- contextPath: AWSHierarchy
+  description: AWS account hierarchy information.
+  type: unknown
+quiet: true
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
