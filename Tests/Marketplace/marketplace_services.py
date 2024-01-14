@@ -796,7 +796,7 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-    def sign_and_zip_pack(self, signature_key, uploaded_packs_dir=None):
+    def sign_and_zip_pack(self, signature_key, uploaded_packs_dir=None):#todo
         """
         Signs and zips the pack before uploading it to GCP.
 

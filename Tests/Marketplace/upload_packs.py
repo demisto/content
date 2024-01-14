@@ -1276,7 +1276,7 @@ def main():
                 pack.cleanup()
                 continue
         else:
-            # Signs and zips non-modified packs for the upload_with_dependencies phase
+            # Signs and zips non-modified packs for the upload_with_dependencies phase TODO
             if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
                 continue
 
