@@ -1002,7 +1002,7 @@ def get_full_report_command(
         if response.get('resources'):
             is_command_finished = True  # flag used when commands
             # We can extract the error from the response object under resources
-            validate_sandbox_full_report(response.get('resources', []))
+            validate_sandbox_report(response.get('resources', []))
 
         if extended_data == 'true':
             extra_sandbox_fields = extra_sandbox_fields + ("mitre_attacks", "signatures")  # type:ignore[assignment]
@@ -1045,7 +1045,7 @@ def get_full_report_command(
         ]
     return command_results, is_command_finished
 
-def validate_sandbox_full_report(report_resources: list[dict[str, Any]]):
+def validate_sandbox_report(report_resources: list[dict[str, Any]]):
     """This function checks for any error messages in the sandbox report
 
     Args:
@@ -1111,7 +1111,7 @@ def get_report_summary_command(
         response = client.get_report_summary(single_id)
         if response.get('resources'):
             # We can extract the error from the response object under resources
-            validate_sandbox_full_report(response.get('resources', []))
+            validate_sandbox_report(response.get('resources', []))
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         results.append(
