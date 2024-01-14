@@ -12,7 +12,7 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 | username | Username (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory.  |
 | password | Password (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory.  |
 | certificate | (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported. | False |
-| Private Key | For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server. | False |
+| Private Key | (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server. | False |
 | incidentType | Incident type | False |
 | store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
 
