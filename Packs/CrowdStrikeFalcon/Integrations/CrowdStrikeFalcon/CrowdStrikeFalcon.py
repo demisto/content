@@ -368,19 +368,26 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
-            if resources:
+            demisto.debug(f'{res_json = }\n\n')
+            demisto.debug(f'{resources = }\n\n')
+            if res_json.get('errors'):
+                errors = res_json.get('errors', [])
+                demisto.debug('3\n\n')
+                for error in errors:
+                    reason += f"\n{error.get('message')}"
+            elif resources:
                 if isinstance(resources, list):
                     reason += f'\n{str(resources)}'
                 else:
                     for host_id, resource in resources.items():
+                        demisto.debug('Hello\n\n')
+                        demisto.debug(f'{resource = }\n\n')
                         errors = resource.get('errors', [])
+                        demisto.debug('1\n\n')
                         if errors:
                             error_message = errors[0].get('message')
+                            demisto.debug('2\n\n')
                             reason += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors'):
-                errors = res_json.get('errors', [])
-                for error in errors:
-                    reason += f"\n{error.get('message')}"
             err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
                 code=res.status_code,
                 reason=reason

@@ -119,7 +119,8 @@ Exmample: `cloud_provider: 'aws'+account_id: 'my_id'`
 #### IOA Incidents
 
 The IOA fetch query uses the following format:
-**param1=val1&param2=val2**
+`param1=val1&param2=val2`
+Multiple values for the same parameter is not supported.
 Available parameters:
 
 - cloud_provider (required in every query)
@@ -133,7 +134,7 @@ Available parameters:
 - state
 
 Exmample: `cloud_provider=aws&region=eu-west-2`
-
+More information about the parameters can be found [here](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
 ### 1. Search for a device
 
 ---
