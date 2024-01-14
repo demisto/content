@@ -97,7 +97,7 @@ def excepthook_recv_loop(args):
     Suppressing exceptions that might happen after the tab was closed.
     """
     exc_value = args.exc_value
-    if args.exc_type == json.decoder.JSONDecodeError:
+    if args.exc_type in [json.decoder.JSONDecodeError, websocket._exceptions.WebSocketConnectionClosedException]:
         # Suppress
         pass
     else:
