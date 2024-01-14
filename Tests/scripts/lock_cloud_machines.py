@@ -181,7 +181,8 @@ def adding_build_to_the_queue(storage_bucket: Any, lock_repository_name: str, jo
     blob.upload_from_string('')
 
 
-def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: str, job_id: str, my_places: list) -> tuple[int, str]:
+def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: str, job_id: str, my_places: list) \
+        -> tuple[int, str]:
     """
     get the place in the queue for job-id by the time-created of lock-file time-created.
     Args:
