@@ -409,7 +409,7 @@ def fetch_incidents_command(
     processed_incident_ids = set()
 
     # Gather incidents by demisto format
-    incidents_report: list[dict]= []
+    incidents_report: list[dict] = []
     demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
     if incidents_raw:
         for incident_raw in incidents_raw:
