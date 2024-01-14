@@ -60,7 +60,6 @@ DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
 
 MAX_RASTERIZATIONS_COUNT = int(demisto.args().get('max_rasterizations_count', '500'))
-NEED_TO_TERMINATE_CHROME = False
 
 FIRST_CHROME_PORT = 9301
 MAX_CHROMES_COUNT = int(demisto.params().get('max_chromes_count', "64"))
@@ -117,14 +116,30 @@ class TabLifecycleManager:
         self.tab = None
 
     def __enter__(self):
-        self.tab = self.browser.new_tab()
-        self.tab.start()
-        if self.offline_mode:
-            self.tab.Network.emulateNetworkConditions(offline=True, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
-        else:
-            self.tab.Network.emulateNetworkConditions(offline=False, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
+        try:
+            self.tab = self.browser.new_tab()
+        except Exception as ex:
+            demisto.info(f'TabLifecycleManager, __enter__, {self.chrome_port=}, failed to create a new tab due to {ex}')
+            raise ex
+        try:
+            self.tab.start()
+        except Exception as ex:
+            demisto.info(f'TabLifecycleManager, __enter__, {self.chrome_port=}, failed to start a new tab due to {ex}')
+            raise ex
+        try:
+            if self.offline_mode:
+                self.tab.Network.emulateNetworkConditions(offline=True, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
+            else:
+                self.tab.Network.emulateNetworkConditions(offline=False, latency=-1, downloadThroughput=-1, uploadThroughput=-1)
+        except Exception as ex:
+            demisto.info(f'TabLifecycleManager, __enter__, {self.chrome_port=}, failed to set tab NetworkConditions due to {ex}')
+            raise ex
 
-        self.tab.Page.enable()
+        try:
+            self.tab.Page.enable()
+        except Exception as ex:
+            demisto.info(f'TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable a new tab due to {ex}')
+            raise ex
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
@@ -171,7 +186,11 @@ class PychromeEventHandler:
         if self.start_frame == frameId:
             try:
                 with self.screen_lock:
-                    self.tab.Page.stopLoading()
+                    try:
+                        self.tab.Page.stopLoading()
+                    except Exception as ex:
+                        demisto.info(f'Failed to stop tab loading due to {ex}')
+                        raise ex
                     # Activate current tab
                     activation_result = self.browser.activate_tab(self.tab.id)
                     activation_result, operation_time = backoff(activation_result)
@@ -328,9 +347,15 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
 def terminate_chrome(browser):
     global CHROME_PROCESS
 
-    tab = browser.new_tab()
-    tab.start()
-    tab.Browser.close()
+    try:
+        tab = browser.new_tab()
+        tab.start()
+
+        threading.excepthook = excepthook_recv_loop
+
+        tab.Browser.close()
+    except Exception as ex:
+        demisto.info(f'Failed to terminate Chrome due to {ex}')
 
     # Keep the file
     write_info_file(PORT_FILE_PATH, '')
@@ -434,15 +459,24 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     """
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
-    page_layout_metrics = tab.Page.getLayoutMetrics()
+    try:
+        page_layout_metrics = tab.Page.getLayoutMetrics()
+    except Exception as ex:
+        demisto.info(f'Failed to get tab LayoutMetrics due to {ex}')
+        raise ex
+
     demisto.debug(f"{page_layout_metrics=}")
     css_content_size = page_layout_metrics['cssContentSize']
-    if full_screen:
-        viewport = css_content_size
-        viewport['scale'] = 1
-        screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)['data']
-    else:
-        screenshot_data = tab.Page.captureScreenshot()['data']
+    try:
+        if full_screen:
+            viewport = css_content_size
+            viewport['scale'] = 1
+            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)['data']
+        else:
+            screenshot_data = tab.Page.captureScreenshot()['data']
+    except Exception as ex:
+        demisto.info(f'Failed to capture screenshot due to {ex}')
+        raise ex
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     screenshot_data, operation_time = backoff(screenshot_data)
     if screenshot_data:
@@ -478,7 +512,11 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         else:
             demisto.info(f"request_id not available available after {operation_time} seconds.")
         demisto.debug(f"Got {request_id=} after {operation_time} seconds.")
-        response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
+        try:
+            response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
+        except Exception as ex:
+            demisto.info(f'Failed to get page body due to {ex}')
+            raise ex
         response_body, operation_time = backoff(response_body)
         if response_body:
             demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}")
@@ -494,7 +532,11 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     if include_url:
         header_template = "<span class=url></span>"
 
-    pdf_data = tab.Page.printToPDF(headerTemplate=header_template)['data']
+    try:
+        pdf_data = tab.Page.printToPDF(headerTemplate=header_template)['data']
+    except Exception as ex:
+        demisto.info(f'Failed to get PDF due to {ex}')
+        raise ex
     # Make sure that the (asynchronous) PDF data is available before continuing with execution
     pdf_data, operation_time = backoff(pdf_data)
     if pdf_data:
@@ -518,7 +560,11 @@ def rasterize_thread(browser, chrome_port, path: str,
                      ):
     demisto.debug(f'rasterize_thread, starting TabLifecycleManager, {path=}, {rasterize_type=}')
     with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
-        tab.call_method("Emulation.setVisibleSize", width=width, height=height)
+        try:
+            tab.call_method("Emulation.setVisibleSize", width=width, height=height)
+        except Exception as ex:
+            demisto.info(f'Failed to set the chrome tab size due to {ex}')
+            raise ex
 
         if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
@@ -591,9 +637,9 @@ def rasterize(path: str,
                 total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
             else:
                 total_rasterizations_count = len(rasterization_threads)
-            demisto.debug(f"Should Chrome be terminated? {NEED_TO_TERMINATE_CHROME=}, {total_rasterizations_count=},"
+            demisto.debug(f"Should Chrome be terminated?, {total_rasterizations_count=},"
                           f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
-            if NEED_TO_TERMINATE_CHROME or total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
+            if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
                 demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
                 terminate_chrome(browser)
                 demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
