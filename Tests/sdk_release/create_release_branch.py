@@ -40,7 +40,7 @@ def main():
       'Authorization': f'Bearer {options.access_token}'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
     if response.status_code != 201:
         print('failed to create the release branch')
         print(response.text)
