@@ -1,6 +1,5 @@
 import pytest
 from PhishLabsIOC_EIR import Client
-from CommonServerPython import argToList
 
 '''Globals'''
 INDICATORS_EC = [
