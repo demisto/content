@@ -28,7 +28,7 @@ def main():
     add_utc_timezone = args.get('add_utc_timezone', 'true').lower() == 'true'
     for date_value in date_values:
         results.append(parse_datestring_to_iso(date_value, day_first, year_first, fuzzy, add_utc_timezone))
-    return_results(results)
+    return_results(results[0] if len(results) == 1 else results)
 
 
 # python2 uses __builtin__ python3 uses builtins
