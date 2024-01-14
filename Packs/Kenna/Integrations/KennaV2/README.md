@@ -475,12 +475,12 @@ Gets vulnerabilities of the specified asset.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Kenna.VulnerabilitiesOfAsset.AssetID | Number | The ID of the asset that this vulnerability is associated with. | 
-| Kenna.VulnerabilitiesOfAsset.CveID | String | The CVE ID of the vulnerability associated with the asset.  | 
+| Kenna.VulnerabilitiesOfAsset.CveID | String | The CVE ID of the vulnerability associated with the asset. | 
 | Kenna.VulnerabilitiesOfAsset.ID | Number | The ID of the vulnerability associated withe the asset. | 
-| Kenna.VulnerabilitiesOfAsset.Patch | Boolean | Whether there is a patch for the vulnerability associated with the asset.  | 
-| Kenna.VulnerabilitiesOfAsset.Status | String | The status of the vulnerability associated with the asset.  | 
-| Kenna.VulnerabilitiesOfAsset.TopPriority | Boolean | Whether the vulnerability associated with the asset is a top priority.  | 
-| Kenna.VulnerabilitiesOfAsset.Score | Number | The score of the vulnerability associated with the asset.  | 
+| Kenna.VulnerabilitiesOfAsset.Patch | Boolean | Whether there is a patch for the vulnerability associated with the asset. | 
+| Kenna.VulnerabilitiesOfAsset.Status | String | The status of the vulnerability associated with the asset. | 
+| Kenna.VulnerabilitiesOfAsset.TopPriority | Boolean | Whether the vulnerability associated with the asset is a top priority. | 
+| Kenna.VulnerabilitiesOfAsset.Score | Number | The score of the vulnerability associated with the asset. | 
 
 #### Command example
 
@@ -539,7 +539,7 @@ Adds a tag to the specified asset.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tag | A comma-separated list of tags to add to the asset. | Required | 
-| id | The asset ID to which to add the tag. . | Required | 
+| id | The asset ID to which to add the tag. | Required | 
 
 #### Context Output
 

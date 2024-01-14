@@ -342,29 +342,29 @@ script:
       description: The ID of the asset that this vulnerability is associated with.
       type: Number
     - contextPath: Kenna.VulnerabilitiesOfAsset.CveID
-      description: 'The CVE ID of the vulnerability associated with the asset. '
+      description: The CVE ID of the vulnerability associated with the asset.
       type: String
     - contextPath: Kenna.VulnerabilitiesOfAsset.ID
-      description: 'The ID of the vulnerability associated withe the asset.'
+      description: The ID of the vulnerability associated withe the asset.
       type: Number
     - contextPath: Kenna.VulnerabilitiesOfAsset.Patch
-      description: 'Whether there is a patch for the vulnerability associated with the asset. '
+      description: Whether there is a patch for the vulnerability associated with the asset.
       type: Boolean
     - contextPath: Kenna.VulnerabilitiesOfAsset.Status
-      description: 'The status of the vulnerability associated with the asset. '
+      description: The status of the vulnerability associated with the asset.
       type: String
     - contextPath: Kenna.VulnerabilitiesOfAsset.TopPriority
-      description: 'Whether the vulnerability associated with the asset is a top priority. '
+      description: Whether the vulnerability associated with the asset is a top priority.
       type: Boolean
     - contextPath: Kenna.VulnerabilitiesOfAsset.Score
-      description: 'The score of the vulnerability associated with the asset. '
+      description: The score of the vulnerability associated with the asset.
       type: Number
   - arguments:
     - description: A comma-separated list of tags to add to the asset.
       isArray: true
       name: tag
       required: true
-    - description: 'The asset ID to which to add the tag. '
+    - description: The asset ID to which to add the tag.
       name: id
       required: true
     description: Adds a tag to the specified asset.
