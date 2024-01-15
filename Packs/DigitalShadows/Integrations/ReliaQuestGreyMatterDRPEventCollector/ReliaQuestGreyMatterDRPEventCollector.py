@@ -5,7 +5,7 @@ import hashlib
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 from requests.exceptions import ConnectionError, Timeout
 
 # Disable insecure warnings
@@ -16,6 +16,8 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO8601 format
 DEFAULT_MAX_FETCH = 200
+VENDOR = "ReliaQuest"
+PRODUCT = "GreyMatter DRP"
 
 ''' CLIENT CLASS '''
 
@@ -120,9 +122,6 @@ class ReilaQuestClient(BaseClient):
         return self.do_pagination(asset_ids, url_suffix="/assets")
 
     def do_pagination(self, _ids: list[str], url_suffix: str) -> list[dict[str, Any]]:
-        """
-        Do pagination
-        """
         chunk = 0
         response = []
         while chunk < len(_ids):
@@ -133,7 +132,7 @@ class ReilaQuestClient(BaseClient):
 
 def test_module(client: ReilaQuestClient) -> str:
     """
-    Tests that the credentials to ReliaQuest is ok
+    Tests that the credentials and the connection to Relia Quest is ok
 
     Args:
         client: the relia quest client
@@ -142,27 +141,42 @@ def test_module(client: ReilaQuestClient) -> str:
     return "ok"
 
 
-def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
+def get_triage_item_ids_to_events(client: ReilaQuestClient, event_created_after: str, max_fetch: int = DEFAULT_MAX_FETCH) -> Dict[str, List[Dict]]:
+    """
+    Maps the triage item IDs to events.
+    Triage item ID can refer to multiple events.
 
-    _time = last_run.get("time")
-    events = client.list_triage_item_events(event_created_after=_time, limit=max_fetch)
-    events_mapping = {}
+    Returns:
+        {"id-1": ["event-1", "event-2"]...}
+    """
+    events = client.list_triage_item_events(event_created_after=event_created_after, limit=max_fetch)
+    latest_created_item = get_latest_incident_created_time(events, created_time_field="event-created", date_format=DATE_FORMAT)
+    _triage_item_ids_to_events = {}
     for event in events:
         if triage_item_id := event.get("triage-item-id"):
-            if triage_item_id not in events_mapping:
-                events_mapping[triage_item_id] = []
-            events_mapping[triage_item_id].append(event)
+            if triage_item_id not in _triage_item_ids_to_events:
+                _triage_item_ids_to_events[triage_item_id] = []
+            _triage_item_ids_to_events[triage_item_id].append(event)
+    return _triage_item_ids_to_events, latest_created_item
 
-    triage_item_ids = list(events_mapping.keys())
+
+def enrich_events_with_triage_item(client: ReilaQuestClient, triage_item_ids_to_events: Dict[str, List[Dict]]) -> Tuple[Dict[str, str], Dict[str, str]]:
+    """
+    Enrich the events with triage-item response and return a mapping between incident|alert IDs to the triage-item-ids
+
+    Returns:
+        mapping between alert|incident IDs to the triage-IDs
+    """
+    triage_item_ids = list(triage_item_ids_to_events.keys())
     demisto.info(f"Fetched the following item IDs: {triage_item_ids}")
-    triage_items = client.triage_items(triage_item_ids)
+    triaged_items = client.triage_items(triage_item_ids)
 
     alert_ids_to_triage_ids, incident_ids_to_triage_ids = {}, {}
 
-    for triaged_item in triage_items:
+    for triaged_item in triaged_items:
         item_id = triaged_item.get("id")
-        if item_id in events_mapping:
-            for event in events_mapping[item_id]:
+        if item_id in triage_item_ids_to_events:
+            for event in triage_item_ids_to_events[item_id]:
                 event["triage-item"] = triaged_item
 
         source = triaged_item.get("source") or {}
@@ -171,6 +185,55 @@ def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: 
 
         if incident_id := source.get("incident-id"):
             incident_ids_to_triage_ids[incident_id] = item_id
+
+    return alert_ids_to_triage_ids, incident_ids_to_triage_ids
+
+
+def enrich_events_with_incident_or_alert_metadata(
+    alerts_incidents: List[Dict],
+    triage_item_ids_to_events: Dict[str, List[Dict]],
+    event_ids_to_triage_ids: Dict[str, str],
+    event_type: str,
+    assets_ids_to_triage_ids: Dict[str, List[str]]
+):
+
+    for alert_incident in alerts_incidents:
+        _id = alert_incident.get("id")
+        for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:
+            event[event_type] = event
+        for asset in alert_incident.get("assets") or []:
+            if asset_id := asset.get("id"):
+                if asset_id not in event_ids_to_triage_ids:
+                    assets_ids_to_triage_ids[asset_id] = []
+                assets_ids_to_triage_ids[asset_id].append(event_ids_to_triage_ids[_id])
+
+
+def enrich_events_with_assets_metadata(
+    client: ReilaQuestClient,
+    assets_ids_to_triage_ids: Dict[str, List[str]],
+    triage_item_ids_to_events: Dict[str, List[Dict]],
+):
+    asset_ids = list(assets_ids_to_triage_ids.keys())
+    demisto.info(f'Fetched the following asset-IDs {asset_ids}')
+
+    assets = client.get_asset_ids(asset_ids)
+    for asset in assets:
+        _id = asset.get("id")
+        for triage_item_id in assets_ids_to_triage_ids[_id]:
+            for event in triage_item_ids_to_events[triage_item_id]:
+                if "assets" not in event:
+                    event["assets"] = []
+                event["assets"].append(asset)
+
+
+def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> list[dict]:
+
+    _time = last_run.get("time")
+    triage_item_ids_to_events, latest_created_item = get_triage_item_ids_to_events(client, event_created_after=_time, max_fetch=max_fetch)
+
+    alert_ids_to_triage_ids, incident_ids_to_triage_ids = enrich_events_with_triage_item(
+        client, triage_item_ids_to_events=triage_item_ids_to_events
+    )
 
     alert_ids = list(alert_ids_to_triage_ids.keys())
     incident_ids = list(incident_ids_to_triage_ids.keys())
@@ -183,43 +246,34 @@ def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: 
 
     assets_ids_to_triage_ids = {}
 
-    for alert in alerts:
-        _id = alert.get("id")
-        for event in events_mapping[alert_ids_to_triage_ids[_id]]:
-            event["alert"] = alert
-        for asset in alert.get("assets") or []:
-            if asset_id := asset.get("id"):
-                if asset_id not in alert_ids_to_triage_ids:
-                    assets_ids_to_triage_ids[asset_id] = []
-                assets_ids_to_triage_ids[asset_id].append(alert_ids_to_triage_ids[_id])
+    enrich_events_with_incident_or_alert_metadata(
+        alerts,
+        triage_item_ids_to_events=triage_item_ids_to_events,
+        event_ids_to_triage_ids=alert_ids_to_triage_ids,
+        event_type="alert",
+        assets_ids_to_triage_ids=assets_ids_to_triage_ids
+    )
 
-    for incident in incidents:
-        _id = incident.get("id")
-        for event in events_mapping[incident_ids_to_triage_ids[_id]]:
-            event["incident"] = incident
-        for asset in incident.get("assets") or []:
-            if asset_id := asset.get("id"):
-                if asset_id not in assets_ids_to_triage_ids:
-                    assets_ids_to_triage_ids[asset_id] = []
-                assets_ids_to_triage_ids[asset_id].append(alert_ids_to_triage_ids[_id])
+    enrich_events_with_incident_or_alert_metadata(
+        incidents,
+        triage_item_ids_to_events=triage_item_ids_to_events,
+        event_ids_to_triage_ids=incident_ids_to_triage_ids,
+        event_type="incident",
+        assets_ids_to_triage_ids=assets_ids_to_triage_ids
+    )
 
-    asset_ids = list(assets_ids_to_triage_ids.keys())
-    assets = client.get_asset_ids(asset_ids)
-    for asset in assets:
-        _id = asset.get("id")
-        for triage_item_id in assets_ids_to_triage_ids[_id]:
-            for event in events_mapping[triage_item_id]:
-                if "assets" not in event:
-                    event["assets"] = []
-                event["assets"].append(asset)
+    enrich_events_with_assets_metadata(
+        client,
+        assets_ids_to_triage_ids=assets_ids_to_triage_ids,
+        triage_item_ids_to_events=triage_item_ids_to_events
+    )
 
     events = []
-    for items in events_mapping.values():
+    for items in triage_item_ids_to_events.values():
         events.extend(items)
 
-    print()
-
-''' MAIN FUNCTION '''
+    demisto.setLastRun({"time": latest_created_item})
+    return events
 
 
 def main() -> None:
@@ -246,7 +300,11 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == "fetch-events":
-            fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
+            send_events_to_xsiam(
+                fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch),
+                vendor=VENDOR,
+                product=PRODUCT
+            )
         elif command == "reila-quest-get-events":
             pass
         else:
