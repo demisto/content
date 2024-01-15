@@ -181,7 +181,7 @@ def adding_build_to_the_queue(storage_bucket: Any, lock_repository_name: str, jo
     blob.upload_from_string('')
 
 
-def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: str, job_id: str) \
+def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: str, job_id: str, my_prev_place: int | None = None) \
         -> tuple[int, str]:
     """
     get the place in the queue for job-id by the time-created of lock-file time-created.
@@ -189,6 +189,7 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
         storage_client(storage.Client): The GCP storage client.
         gcs_locks_path(str): the lock repository name.
         job_id(str): the job id to check.
+        my_prev_place(int): the previous place in the queue of the job-id
 
     Returns: the place in the queue.
 
@@ -207,10 +208,11 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
         previous_build_in_queue = sorted_builds_in_queue[my_place_in_the_queue - 1].get('name')  # type: ignore[assignment]
 
     try:
-        send_slack_notification([f"{gcs_locks_path}",
-                                 f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
-                                 f"Job ID: {job_id}",
-                                 f"{len(builds_in_queue)}"])
+        if my_place_in_the_queue != my_prev_place:
+            send_slack_notification([f"{gcs_locks_path}",
+                                     f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
+                                     f"Job ID: {job_id}",
+                                     f"{len(builds_in_queue)}"])
     except Exception as e:
         logging.info(f"Failed to send Slack notification. Reason: {str(e)}")
 
@@ -358,8 +360,9 @@ def wait_for_build_to_be_first_in_queue(storage_client: storage.Client,
         gitlab_status_token(str): the gitlab token.
     """
     sleep(random.randint(1, 3))
+    my_place_in_the_queue = None
     while True:
-        my_place_in_the_queue, previous_build = get_my_place_in_the_queue(storage_client, gcs_locks_path, job_id)
+        my_place_in_the_queue, previous_build = get_my_place_in_the_queue(storage_client, gcs_locks_path, job_id, my_place_in_the_queue)
         logging.info(f'My place in the queue is: {my_place_in_the_queue}')
 
         if my_place_in_the_queue == 0:
