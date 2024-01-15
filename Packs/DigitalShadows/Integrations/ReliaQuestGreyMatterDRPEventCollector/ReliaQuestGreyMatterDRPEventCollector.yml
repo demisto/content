@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ReliaQuestGreyMatterDRPEventCollector
+  id: Relia Quest GreyMatter DRP EventCollector
   version: -1
 configuration:
 - display: Server URL
@@ -33,8 +33,8 @@ configuration:
   type: 8
   required: false
 description: Digital Shadows monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
-display: ReliaQuestGreyMatterDRPEventCollector
-name: ReliaQuestGreyMatterDRPEventCollector
+display: Relia Quest GreyMatter DRP EventCollector
+name: Relia Quest GreyMatter DRP EventCollector
 script:
   commands:
   - arguments:

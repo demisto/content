@@ -4,7 +4,7 @@ the challenges of:
 * maintaining compliance consistently in the cloud
 * stopping threats to sensitive information, users, and resources
 
- 
+
 ## Configure SaaS Security on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
