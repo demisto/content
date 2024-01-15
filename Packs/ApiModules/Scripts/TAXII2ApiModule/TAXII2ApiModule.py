@@ -22,10 +22,12 @@ urllib3.disable_warnings()
 
 class SuppressWarningFilter(logging.Filter):    # pragma: no cover
     def filter(self, record):
-        if record.levelno == logging.WARNING:
+        # Suppress all logger records, but send the important ones to demisto logger
+        if record.levelno == logging.WARNING]
             demisto.debug(record.getMessage())
-        # Suppress warnings by returning False for the records with warning level
-        return record.levelno in [logging.ERROR, logging.CRITICAL]
+        elif record.levelno in [logging.ERROR, logging.CRITICAL]
+            demisto.error(record.getMessage())
+        return False
 
 
 v21_logger = logging.getLogger("taxii2client.v21")
