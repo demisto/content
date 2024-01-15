@@ -247,7 +247,7 @@ class Client(BaseClient):
             'actions': [
                 {
                     'value': action,
-                    'params': parameters,
+                    'params': parameters or {},
                 }
             ]
         }
