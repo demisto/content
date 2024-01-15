@@ -1,3 +1,5 @@
+import logging
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
@@ -20,7 +22,8 @@ urllib3.disable_warnings()
 
 class SuppressWarningFilter(logging.Filter):
     def filter(self, record):
-        demisto.debug(record.getMessage())
+        if record.levelno == logging.WARNING:
+            demisto.debug(record.getMessage())
         # Suppress warnings by returning False for the records with warning level
         return record.levelno in [logging.ERROR, logging.CRITICAL]
 
