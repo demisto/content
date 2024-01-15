@@ -1,5 +1,6 @@
 var ec = {};
 var value;
+logDebug(`Got the args object ${JSON.stringify(args)}`)
 try {
     if (args.stringify === 'true') {
         if (typeof args.value === 'string') {
@@ -8,14 +9,25 @@ try {
             value = JSON.stringify(args.value)
         }
     } else {
-        value = JSON.parse(args.value);
+        if (!isNaN(args.value)) {
+            // This means that the value is a number in string representation
+            if (args.value.includes('.')) {
+                // It is a decimal number
+                value = JSON.parse(args.value);
+            }
+            else {
+                // If the number is large
+                value = BigInt(args.value);
+            }
+        }
+        else {
+            value = JSON.parse(args.value);
+        }
     }
 } catch (err) {
     value = args.value;
 }
-logDebug(`Got the args object ${JSON.stringify(args)}`)
 logDebug('Got the value ' + value)
-logDebug('Will insert the value to the key ' + args.key)
 ec[args.key] = value;
 var result = {
     Type: entryTypes.note,
