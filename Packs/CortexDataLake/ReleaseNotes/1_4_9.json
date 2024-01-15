@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The name of the playbooks in this pack was changed from *Cortex Data Lake* to *Strata Logging Service*"
+}
