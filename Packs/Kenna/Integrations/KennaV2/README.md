@@ -1,8 +1,6 @@
 Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
 This integration was integrated and tested with version 1.0 of Kenna.
 
-Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-kenna-v2).
 
 ## Configure Kenna v2 on Cortex XSOAR
 
@@ -257,7 +255,7 @@ Updates the attributes of a single asset.
 | --- | --- | --- |
 | id | The ID of the asset to update. | Required | 
 | notes | Notes about the asset. | Required | 
-| inactive | Whether to inactivate the asset. Possible values are: true, false. | Optional | 
+| inactive | Whether to deactivate the asset. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -373,7 +371,7 @@ Searches for assets.
 | hostname | The hostname of the asset to search for. | Optional | 
 | min-score | The minimum vulnerability score for which to return vulnerabilities. | Optional | 
 | tags | The tags by which to search. | Optional | 
-| limit | The maximum number of vulnerabilities to return.Default is 500. | Optional | 
+| limit | The maximum number of vulnerabilities to return. Default is 500. | Optional | 
 | to_context | Whether to print output to context. Possible values are: True, False. Default is True. | Optional | 
 
 #### Context Output
@@ -392,7 +390,7 @@ Searches for assets.
 | Kenna.Assets.Owner | String | The asset owner. | 
 | Kenna.Assets.Priority | Number | The asset priority. | 
 | Kenna.Assets.Notes | String | Notes of current asset. | 
-| Kenna.Assets.OperatingSystem | String | Operating system of asset. | 
+| Kenna.Assets.OperatingSystem | String | Operating system of the asset. | 
 
 #### Command example
 

@@ -324,7 +324,7 @@ script:
       description: Notes of current asset.
       type: String
     - contextPath: Kenna.Assets.OperatingSystem
-      description: Operating system of asset.
+      description: Operating system of the asset.
       type: String
   - arguments:
     - description: The asset ID for which to get vulnerabilities.
