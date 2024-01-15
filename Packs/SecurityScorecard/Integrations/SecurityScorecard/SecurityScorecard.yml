@@ -1,71 +1,1482 @@
-name: SecurityScorecard
-display: SecurityScorecard
-category: Vulnerability Management
-description: Provides scorecards for domains.
-defaultmapperin: SecurityScorecard Alert Mapper
 commonfields:
   id: SecurityScorecard
   version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SecurityScorecard
+display: SecurityScorecard
+category: Vulnerability Management
+image: data:image/png;base64,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
+description: Provides scorecards for domains.
+detaileddescription: |-
+  ### Partner Contributed Integration
+  #### Integration Author: SecurityScorecard
+  Support and maintenance for this integration are provided by the author. Please use the following contact details:
+  - **Email**: [support@securityscorecard.io](mailto:support@securityscorecard.io)
+  - **URL**: [https://securityscorecard.com/contact-us](https://securityscorecard.com/contact-us)
+  ***
+  # Authorization
+
+  SecurityScorecard has two types of API keys used to authorize API calls:
+
+  - Regular user.
+  - Bot user.
+
+  If you have an administrator account, it's recommended to use Bot User instead, as it lets you generate many API keys.
+
+  ## Generate API key for Regular user
+
+  1. Sign into [SecurityScorecard](https://platform.securityscorecard.io/#/start)
+  2. Go to [My Settings](https://platform.securityscorecard.io/#/my-settings/api)
+  3. Under the *API Access* section, click on Generate new API token
+
+  ## Generate API key for Bot user
+
+  1. Sign into [SecurityScorecard](https://platform.securityscorecard.io/#/start)
+  2. Go to [My Settings > Users](https://platform.securityscorecard.io/#/my-settings/users)
+  3. Click *Add User*
+  4. After creating the user, click on *create token*.
+
+  See the [Getting Started section](https://securityscorecard.readme.io/docs/getting-started) for more information.
+
+  ## Update Interval
+
+  SecurityScorecard scores are updated on a daily basis. Therefore it's recommended to leave the Incidents Fetch Interval configuration to 1 day.
+
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/security-scorecard)
 configuration:
-- name: base_url
-  display: SecurityScorecard API Base URL
-  required: true
+- display: SecurityScorecard API Base URL
+  name: base_url
   defaultvalue: https://api.securityscorecard.io/
   type: 0
-- name: username
-  display: Username/Email
-  additionalinfo: The SecurityScorecard username/email.
   required: true
-  type: 9
+- display: Username/Email
   displaypassword: API Token
-- name: isFetch
-  display: Fetch incidents
+  name: username
+  type: 9
+  required: true
+  additionalinfo: The SecurityScorecard username/email.
+- display: Fetch incidents
+  name: isFetch
   type: 8
   required: false
-- name: incidentFetchInterval
-  display: Incidents Fetch Interval
-  additionalinfo: SecurityScorecard is updated on a daily basis therefore there's no need to modify this value.
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
   defaultvalue: "1440"
   type: 19
   required: false
-- name: max_fetch
-  display: Fetch Limit
-  defaultvalue: '50'
+  additionalinfo: SecurityScorecard is updated on a daily basis therefore there's
+    no need to modify this value.
+- display: Fetch Limit
+  name: max_fetch
+  defaultvalue: "50"
   type: 0
-  additionalinfo: Maximum number of alerts per fetch. The maximum is 50.
   required: false
-- name: first_fetch
-  display: First fetch
+  additionalinfo: Maximum number of alerts per fetch. The maximum is 50.
+- display: First fetch
+  name: first_fetch
   defaultvalue: 2 days
   type: 0
-  additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days. SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed, it's recommended to use a value less than 2 days.
   required: false
-- name: incidentType
-  display: Incident type
+  additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days.
+    SecurityScorecard provides a maximum of 7 days back. To ensure no alerts are missed,
+    it's recommended to use a value less than 2 days.
+- display: Incident type
+  name: incidentType
   defaultvalue: SecurityScorecard Alert
   type: 13
   required: false
-- name: insecure
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
+  name: insecure
   type: 8
   required: false
-- name: proxy
-  display: Use system proxy settings
+- display: Use system proxy settings
+  name: proxy
   type: 8
   required: false
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
+- display: Portfolio ID
+  name: portfolio_id
+  type: 0
+  required: false
 script:
-  script: '-'
+  script: |
+    register_module_line('SecurityScorecard', 'start', __line__())
+    ### pack version: 1.0.6
+
+
+
+    import requests
+    import traceback
+    from typing import Dict, Any
+    import urllib3
+
+    # Disable insecure warnings
+    urllib3.disable_warnings()
+
+
+    """ CONSTANTS """
+
+    SECURITYSCORECARD_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+    """ CLIENT CLASS """
+
+
+    class SecurityScorecardClient(BaseClient):
+        """Client class that interacts with the SecurityScorecard API
+
+        Attributes:
+            ``username`` (``str``): SecurityScorecard username/email.
+            ``api_key`` (``str``): SecurityScorecard API token.
+            ``max_fetch`` (``int``): Maximum alerts to fetch.
+        """
+
+        def __init__(self, base_url, verify, proxy, headers, username, api_key, max_fetch=50):
+            """
+            Args:
+                base_url (str): SecurityScorecard base URL.
+                verify (bool): Whether to verify certificates.
+                proxy (bool): Whether to use Cortex XSOAR proxy.
+                headers (dict): Dictionary holding the HTTP headers.
+            """
+            super().__init__(
+                base_url,
+                verify=verify,
+                proxy=proxy,
+                headers=headers
+            )
+            self.username = username
+            self.api_key = api_key
+            self.max_fetch = max_fetch
+
+        def get_portfolios(self) -> Dict[str, Any]:
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix='portfolios'
+            )
+
+        def get_companies_in_portfolio(
+            self,
+            portfolio: str,
+            grade: Optional[str],
+            industry: Optional[str],
+            vulnerability: Optional[str],
+            issue_type: Optional[str],
+            had_breach_within_last_days: Optional[int]
+        ) -> Dict[str, Any]:
+
+            request_params: Dict[str, Any] = assign_params(
+                grade=grade,
+                industry=industry,
+                vulnerability=vulnerability,
+                issue_type=issue_type,
+                had_breach_within_last_days=had_breach_within_last_days
+            )
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f'portfolios/{portfolio}/companies',
+                params=request_params
+            )
+
+        def get_company_score(self, domain: str) -> Dict[str, Any]:
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f'companies/{domain}'
+            )
+
+        def get_company_factor_score(self, domain: str, severity_in: Optional[List[str]]) -> Dict[str, Any]:
+
+            request_params: Optional[Dict[str, Any]] = {
+                "severity_in": severity_in
+            } if severity_in else None
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f'companies/{domain}/factors',
+                params=request_params
+            )
+
+        def get_company_events(self, domain: str, date_from: str, date_to: str) -> Dict[str, Any]:
+
+            request_params: Dict[str, Any] = assign_params(
+                date_from=date_from,
+                date_to=date_to
+            )
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f'companies/{domain}/history/events',
+                params=request_params
+            )
+
+        def get_company_event_findings(self, domain: str, date: str, issue_type: str, status: str) -> Dict[str, Any]:
+
+            request_params: Dict[str, Any] = assign_params(
+                group_status=status
+            )
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f'companies/{domain}/history/events/{date}/issues/{issue_type}',
+                params=request_params
+            )
+
+        def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
+
+            request_params: Dict[str, Any] = assign_params(
+                to=to,
+                timing=timing,
+                domain=domain
+            )
+
+            # assign_params cannot accept 'from' as a parameter since it's a Python keyword
+            if _from:
+                request_params['from'] = _from
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f'companies/{domain}/history/score',
+                params=request_params)
+
+        def get_company_historical_factor_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
+
+            request_params: Dict[str, Any] = assign_params(
+                to=to,
+                timing=timing
+            )
+
+            # Cannot use assign_params with reserved Python keyword 'from'
+            if _from:
+                request_params['from'] = _from
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f'companies/{domain}/history/factors/score',
+                params=request_params
+            )
+
+        def get_issue_metadata(self, issue_type: str) -> Dict[str, Any]:
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f'metadata/issue-types/{issue_type}'
+            )
+
+        def create_grade_change_alert(
+            self,
+            email: str,
+            change_direction: str,
+            score_types: List[str],
+            target: List[str]
+        ) -> Dict[str, Any]:
+
+            payload: Dict[str, Any] = assign_params(
+                change_direction=change_direction,
+                score_types=score_types,
+                target=target
+            )
+            return self.http_request_wrapper(
+                method='POST',
+                url_suffix=f"users/by-username/{email}/alerts/grade",
+                json_data=payload
+            )
+
+        def create_score_threshold_alert(
+            self,
+            email: str,
+            change_direction: str,
+            threshold: int,
+            score_types: List[str],
+            target: List[str]
+        ) -> Dict[str, Any]:
+
+            payload: Dict[str, Any] = assign_params(
+                change_direction=change_direction,
+                threshold=arg_to_number(arg=threshold, arg_name='threshold', required=True),
+                score_types=score_types,
+                target=target
+            )
+
+            return self.http_request_wrapper(
+                method='POST',
+                url_suffix=f"users/by-username/{email}/alerts/score",
+                json_data=payload
+            )
+
+        def delete_alert(self, email: str, alert_id: str, alert_type: str) -> None:
+
+            return self.http_request_wrapper(
+                method="DELETE",
+                url_suffix=f"users/by-username/{email}/alerts/{alert_type}/{alert_id}",
+                return_empty_response=True
+            )
+
+        def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> Dict[str, Any]:
+
+            query_params: Dict[str, Any] = assign_params(
+                portfolio=portfolio_id
+            )
+
+            return self.http_request_wrapper(
+                method="GET",
+                url_suffix=f"users/by-username/{email}/notifications/recent",
+                params=query_params
+            )
+
+        def get_domain_services(self, domain: str) -> Dict[str, Any]:
+
+            return self.http_request_wrapper(
+                method='GET',
+                url_suffix=f"companies/{domain}/services"
+            )
+
+        def fetch_alerts(self, page_size: int, page: int) -> Dict[str, Any]:
+
+            query_params: Dict[str, Any] = assign_params(
+                username=self.username,
+                page_size=page_size,
+                sort="date",
+                order="asc",
+                page=page
+            )
+
+            return self.http_request_wrapper(
+                method="GET",
+                url_suffix=f"users/by-username/{self.username}/notifications/recent",
+                params=query_params
+            )
+
+        def http_request_wrapper(
+            self,
+            method: str,
+            url_suffix: Optional[str] = None,
+            params: Optional[dict] = None,
+            json_data: Optional[dict] = None,
+            return_empty_response: Optional[bool] = False
+        ):
+            """Wrapper for the ``http_request`` function
+
+            Args:
+                ``self`` (``SecurityScorecardClient``).
+                ``method`` (``str``): The HTTP method.
+                ``url_suffix`` (``Optional[str]``): The URL suffix, appended to the base URL. Defaults to None.
+                ``params`` (``Optional[dict]``): The query parameters sent in the HTTP request. Defaults to None.
+                ``json_data`` (``Optional[dict]``): The payload to be sent in the HTTP request in JSON format. Defaults to None.
+
+            Return:
+                ``dict`` or ``str`` or ``requests.Response``
+            """
+
+            return super()._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                json_data=json_data,
+                error_handler=self.error_handler,
+                return_empty_response=return_empty_response
+            )
+
+        @staticmethod
+        def error_handler(response: requests.Response):
+            """
+            Error handler for the API requests
+
+            Args:
+                response (requests.Response): The server's response to the HTTP request.
+            """
+
+            try:
+                error_response_json = response.json().get("error")
+                raise DemistoException(f'{error_response_json.get("message")} ({error_response_json.get("statusCode")})')
+            except ValueError:
+                raise DemistoException(f'Error parsing response as JSON. Response: {response.status_code} {str(response.content)}')
+
+
+    """ HELPER FUNCTIONS """
+
+
+    def get_last_run(
+        last_run: str = demisto.getLastRun().get("last_run"),
+        first_fetch: str = demisto.params().get("first_fetch", "2 days")
+    ) -> datetime:
+
+        """
+        Helper function to return the last incident fetch runtime as a `datetime` object.
+        It uses the datetime of last_run from the demisto instance and first_fetch parameter.
+
+        Args:
+            ``last_run`` (``str``): last run datetime string of fetch
+            ``first_fetch`` (``str``): first fetch from integration parameters
+
+        Returns:
+            ``datetime`` representing the last fetch occurred.
+        """
+
+        # Check for existence of last run
+        # When integration runs for the first time, it will not exist
+        # Set 2 days by default if the first fetch parameter is not set
+
+        if last_run:
+            demisto.debug(f"Last run already exists: '{last_run}'")
+            return arg_to_datetime(last_run).replace(tzinfo=None)  # type: ignore
+        else:
+
+            demisto.debug(f"First fetch is defined as '{first_fetch}'")
+            days_ago = first_fetch
+
+            fetch_days_ago = arg_to_datetime(arg=days_ago, arg_name="first_fetch", required=False)
+
+            demisto.debug(f"getLastRun is 'None' in Integration context, using parameter '{days_ago}' value '{fetch_days_ago}'")
+
+            return fetch_days_ago.replace(tzinfo=None)  # type: ignore
+
+
+    def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_last_run()) -> List[Dict[str, Any]]:
+        """
+        Helper function to filter events that need to be imported.
+        It filters the events based on the `created_at` timestamp.
+        Function will only be called if the SecurityScorecard API returns more than one alert.
+
+        Args:
+            ``alerts``(``List[Dict[str, Any]]``): A list of alerts to sort through.
+        Returns:
+            ``List[Dict[str, Any]]``: Alerts to import
+        """
+
+        incidents: List[Dict[str, Any]] = []
+
+        # Check if there are more than 0 alerts
+        if alerts:
+
+            # The alerts are sorted by ascending date so last alert is the most recent
+            most_recent_alert = alerts[-1]
+
+            most_recent_alert_created_date = most_recent_alert.get("created_at")
+
+            most_recent_alert_datetime = arg_to_datetime(most_recent_alert_created_date).replace(tzinfo=None)  # type: ignore
+
+            for alert in alerts:
+
+                demisto.debug(f"iterating alert id '{alert}'...")
+                alert_id = alert.get("id")
+                alert_created_at = alert.get("created_at")
+
+                # alert_created_at includes a timezone whereas arg_to_datetime doesn't
+                # therefore we need to eliminate tz info and set seconds=0
+                # preventing err "can't compare offset-naive and offset-aware datetimes"
+                alert_datetime = arg_to_datetime(alert_created_at).replace(tzinfo=None).replace(second=0)  # type: ignore
+                company_name: str = alert.get("company_name")  # type: ignore
+                change_type: str = alert.get("change_type")  # type: ignore
+                demisto.debug(f"alert_created_at: {alert_created_at}")
+                demisto.debug(f"alert_datetime: {alert_datetime}")
+                demisto.debug(f"last_run: {last_run}")
+                debug_msg = f"import alert '{alert_id}'? (last_run < alert_datetime): {(last_run < alert_datetime)}"  # type: ignore
+
+                demisto.debug(debug_msg)
+
+                if alert_datetime > last_run:  # type: ignore
+                    incident = {}
+                    incident["name"] = f"{company_name} {change_type.replace('_', ' ').title()}"
+                    incident["occurred"] = alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
+                    incident["rawJSON"] = json.dumps(alert)
+                    incidents.append(incident)
+
+                    demisto.debug(
+                        f"Setting setLastRun as alert most recent: \
+                            {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}"  # type: ignore
+                    )
+
+                    demisto.setLastRun({
+                        'last_run': most_recent_alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
+                    })
+                    demisto.debug("Finished setLastRun")
+
+        # If there are no alerts then we can't use the most recent alert timestamp
+        # So we'll use the last run timestamp (last alert fetch modified date)
+        else:
+            demisto.debug(f"No alerts retrieved, setting last_run to last modified time ({last_run})")
+            demisto.setLastRun(last_run)
+
+        return incidents
+
+
+    """ COMMAND FUNCTIONS """
+
+
+    def test_module(
+        client: SecurityScorecardClient,
+        incident_fetch_interval: Optional[str]
+    ) -> str:
+        """Tests API connectivity and authentication
+
+        Runs the fetch-alerts mechanism to validate all integration parameters
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+
+        Returns:
+            ``str``: 'ok' if test passed, anything else will fail the test.
+        """
+        demisto.debug("Initialized test module...")
+
+        interval = arg_to_number(arg=incident_fetch_interval, arg_name="incident_fetch_interval", required=False)
+
+        if interval > 1440 * 2:  # type: ignore
+            return "Test failed. Incident Fetch Interval is greater than 2 days."
+
+        max_incidents = int(client.max_fetch)
+        if max_incidents > 50:
+            return "Test failed. Max Fetch is larger than 50."
+
+        client.fetch_alerts(page_size=1, page=1)
+        demisto.debug("Test module successful")
+        return('ok')
+
+    # region Methods
+    # ---------------
+
+
+    def portfolios_list_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+        """List all Portfolios you have access to.
+
+        See https://securityscorecard.readme.io/reference#get_portfolios
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, str]``): Portfolio fetch limit
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        limit = arg_to_number(  # type: ignore
+            arg=args.get("limit", "50"),
+            arg_name="limit",
+            required=False
+        )
+
+        portfolios = client.get_portfolios()
+
+        portfolios_total = int(portfolios.get("total"))  # type: ignore
+
+        # Check that API returned more than 0 portfolios
+        if portfolios_total == 0:
+            return CommandResults(
+                readable_output="No Portfolios were found in your account. Please create a new one and try again.",
+                outputs_prefix=None,
+                outputs=None,
+                raw_response=portfolios,
+                outputs_key_field=None
+            )
+
+        # API response is a dict with 'entries'
+        entries = portfolios.get('entries')
+
+        # If the number of portfolios returned is larger than the configured limit
+        # filter the first elements
+        if portfolios_total > limit:  # type: ignore
+            demisto.debug(f"portfolios_total ({portfolios_total}) > limit ({limit}), slicing number of entries")
+            entries = entries[:limit]  # type: ignore
+
+        markdown = tableToMarkdown(
+            f'Your SecurityScorecard Portfolios (first {limit})',
+            entries,
+            headers=['id', 'name', 'privacy']
+        )
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='SecurityScorecard.Portfolio',
+            outputs_key_field='id',
+            outputs=entries,
+            raw_response=portfolios
+        )
+
+        return results
+
+
+    def portfolio_list_companies_command(
+        client: SecurityScorecardClient,
+        args: Dict[str, Any]
+    ) -> CommandResults:
+        """Retrieve all companies in portfolio.
+
+        https://securityscorecard.readme.io/reference#get_portfolios-portfolio-id-companies
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, Any]``): Includes
+                - portfolio ID
+                - Grade filter
+                - Industry filter
+                - Vulnerability filter
+                - Issue type filter
+                - Filter breach days back
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        portfolio_id = args.get("portfolio_id")  # type: ignore
+        grade = args.get("grade")
+        industry_arg = args.get("industry")
+        vulnerability = args.get("vulnerability")
+        issue_type = args.get("issue_type")
+
+        # We need to capitalize the industry to conform to API
+        industry = str.upper(industry_arg) if industry_arg else None  # type: ignore
+
+        had_breach_within_last_days = arg_to_number(  # type: ignore
+            arg=args.get("had_breach_within_last_days"),
+            arg_name='had_breach_within_last_days',
+            required=False
+        )
+
+        response = client.get_companies_in_portfolio(
+            portfolio=portfolio_id,  # type: ignore
+            grade=grade,
+            industry=industry,
+            vulnerability=vulnerability,
+            issue_type=issue_type,
+            had_breach_within_last_days=had_breach_within_last_days  # type: ignore
+        )
+
+        # Check if the portfolio has more than 1 company
+        total_portfolios = int(response.get('total'))  # type: ignore
+        if not total_portfolios > 0:
+            return CommandResults(
+                readable_output=f"No companies found in Portfolio '{portfolio_id}'. Please add a company to it and retry.",
+                raw_response=response,
+                outputs_key_field=None
+            )
+
+        companies = response.get('entries')
+
+        title = f"**{total_portfolios}** companies found in Portfolio {portfolio_id}\n"
+        markdown = tableToMarkdown(
+            title,
+            companies,
+            headers=['domain', 'name', 'score', 'last30days_score_change', 'industry', 'size']
+        )
+
+        results = CommandResults(
+            outputs_prefix="SecurityScorecard.Portfolio.Company",
+            readable_output=markdown,
+            outputs=companies,
+            raw_response=response,
+            outputs_key_field='name'
+        )
+
+        return results
+
+
+    def company_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+        """Retrieve company overall score.
+
+        See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, str]``): The domain to get the score for.
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        domain = args.get("domain")
+
+        score = client.get_company_score(domain=domain)  # type: ignore
+
+        markdown = tableToMarkdown(
+            f"Domain {domain} Scorecard",
+            score,
+            headers=['name', 'grade', 'score', 'industry', 'last30day_score_change', 'size']
+        )
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Company.Score",
+            outputs=score,
+            raw_response=score,
+            outputs_key_field='name'
+        )
+
+        return results
+
+
+    def company_factor_score_get_command(
+        client: SecurityScorecardClient,
+        args: Dict[str, Any]
+    ) -> CommandResults:
+        """Retrieve company factor score and scores
+
+        See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, Any]``): The domain and severity filter
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        domain = args.get("domain")
+        severity = args.get("severity")
+
+        response = client.get_company_factor_score(domain=domain, severity_in=severity)  # type: ignore
+
+        entries = response['entries']
+
+        factor_scores = []
+        for entry in entries:
+            score = {
+                "name": entry.get("name"),
+                "grade": entry.get("grade"),
+                "score": entry.get("score"),
+                "issues": len(entry.get("issue_summary")),
+                "issue details": entry.get("issue_summary")
+            }
+
+            factor_scores.append(score)
+
+        markdown = tableToMarkdown(
+            f"Domain {domain} Scorecard",
+            factor_scores,
+            headers=['name', 'grade', 'score', 'issues']
+        )
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Company.Factor",
+            outputs=entries,
+            raw_response=response,
+            outputs_key_field='name'
+        )
+
+        return results
+
+
+    def company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+
+        """Retrieve company historical scores
+
+        See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client.
+            ``args`` (``Dict[str, str]``): Domain, start date, end date, timing.
+
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        domain = args.get("domain")
+        _from = args.get("from")
+        to = args.get("to")
+        timing = args.get("timing")
+
+        response = client.get_company_historical_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
+
+        entries = response.get('entries')
+
+        markdown = tableToMarkdown(
+            f"Historical Scores for Domain [`{domain}`](https://{domain})",
+            entries,
+            headers=['date', 'score']
+        )
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Company.ScoreHistory",
+            outputs=entries,
+            raw_response=response,
+            outputs_key_field="date"
+        )
+
+        return results
+
+
+    def company_events_get_command(
+        client: SecurityScorecardClient,
+        args: Dict[str, Any]
+    ) -> CommandResults:
+        """Retrieve company events
+
+        See https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-history-events
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, Any]``): The domain and severity filter TODO!!!!!!
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        domain = args.get("domain")
+        date_from = args.get("date_from")
+        date_to = args.get("date_to")
+
+        response = client.get_company_events(domain=domain, date_to=date_to, date_from=date_from)  # type: ignore
+
+        entries = response['entries']
+
+        events = []
+        for entry in entries:
+            event = {
+                "ssc_event_id": entry.get("id"),
+                "date": entry.get("date"),
+                "status": entry.get("group_status"),
+                "issue_count": entry.get("issue_count"),
+                "score_impact": entry.get("total_score_impact"),
+                "issue_type": entry.get("issue_type"),
+                "severity": entry.get("severity"),
+                "factor": entry.get("factor"),
+                "ssc_detail_url": entry.get("detail_url")
+            }
+
+            events.append(event)
+
+        markdown = tableToMarkdown(
+            f"Domain {domain} Events",
+            events,
+            headers=['ssc_event_id','date','status','factor','issue_type','severity','issue_count','score_impact','ssc_detail_url']
+        )
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Company.Events",
+            outputs=entries,
+            raw_response=response,
+            outputs_key_field='ssc_event_id'
+        )
+
+        return results
+
+
+    def company_event_findings_get_command(
+        client: SecurityScorecardClient,
+        args: Dict[str, Any]
+    ) -> CommandResults:
+        """Retrieve company events
+
+        See https://securityscorecard.readme.io/reference/get_companies-...
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, Any]``): The domain and severity filter TODO !!!!
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        domain = args.get("domain")
+        date = args.get("date")
+        issue_type = args.get("issue_type")
+        status = args.get("status")
+
+        response = client.get_company_event_findings(domain=domain, date=date, issue_type=issue_type, status=status)  # type: ignore
+
+        entries = response['entries']
+
+        events = []
+        for entry in entries:
+
+            # some issue types have domains, IPs and/or ports, but not all of them do
+            if "domain" in entry:
+                domain = entry.get("domain")
+            elif "target" in entry:
+                domain = entry.get("target")
+            else:
+                domain = ""
+
+
+            if "ip" in entry:
+                ip = entry.get("ip")
+            elif "src_ip" in entry:
+                ip = entry.get("src_ip")
+            elif "ip_address" in entry:
+                ip = entry.get("ip_address")
+            elif "connection_attributes" in entry:
+                ip = entry.get("connection_attributes").get("dst_ip")
+            else:
+                ip = ""
+
+            if "protocol" in entry:
+                protocol = entry.get("protocol")
+            elif "scheme" in entry:
+                protocol = entry.get("scheme")
+            elif "connection_attributes" in entry:
+                protocol = entry.get("connection_attributes").get("protocol")
+            else:
+                protocol = ""
+
+            if "port" in entry:
+                port = entry.get("port")
+            elif "connection_attributes" in entry:
+                port = entry.get("connection_attributes").get("dst_port")
+            else:
+                port = ""
+
+            event = {
+                "parent_domain": entry.get("parent_domain"),
+                "count": entry.get("count"),
+                "status": entry.get("group_status"),
+                "first_seen_time": entry.get("first_seen_time"),
+                "last_seen_time": entry.get("last_seen_time"),
+                # the following details may or may not be populated
+                "port": entry.get("port",""),
+                "domain_name": domain,
+                "ip_address": ip,
+                "protocol": protocol,
+                "observations": entry.get("observations"),
+                "issue_type": issue_type
+
+            }
+
+            events.append(event)
+
+        markdown = tableToMarkdown(
+            f"Domain {domain} Findings for {issue_type}",
+            events,
+            headers=['parent_domain','issue_type','count','status','first_seen_time','last_seen_time','port','domain_name','ip_address','protocol','observations']
+        )
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Company.Findings",
+            outputs=entries,
+            raw_response=response,
+            outputs_key_field='issue_id'
+        )
+
+        return results
+
+
+
+    def company_history_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+        """Retrieve company historical factor scores
+
+        See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-factors-score
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client.
+            ``args`` (``Dict[str, str]``): Domain, start date, end date, timing.
+
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        domain = args.get("domain")
+        _from = args.get("from")
+        to = args.get("to")
+        timing = args.get("timing")
+
+        response = client.get_company_historical_factor_scores(domain=domain, _from=_from, to=to, timing=timing)  # type: ignore
+
+        entries = response['entries']
+
+        factor_scores = []
+
+        for entry in entries:
+            factors = entry.get("factors")
+            factor_row = ''
+            for factor in factors:
+                factor_name = factor.get("name").title().replace("_", " ")
+                factor_score = factor.get("score")
+
+                factor_row = factor_row + f"{factor_name}: {factor_score}\n"
+
+            score = {
+                "date": entry.get("date").split("T")[0],
+                "factors": factor_row
+            }
+
+            factor_scores.append(score)
+
+        markdown = tableToMarkdown(f"Historical Factor Scores for Domain {domain})", factor_scores)
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Company.FactorHistory",
+            outputs=entries,
+            raw_response=response,
+            outputs_key_field='date'
+        )
+
+        return results
+
+
+    def issue_metadata_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+        """Retrieve description and recommendation for an issue.
+
+        See https://securityscorecard.readme.io/reference/get_metadata-issue-types-type-1
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, str]``): The domain to get the score for.
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        issue_type = args.get("issue_type")
+
+        metadata = client.get_issue_metadata(issue_type=issue_type)  # type: ignore
+
+        markdown = tableToMarkdown(
+            f"Issue Type {issue_type}",
+            metadata,
+            headers=['key', 'severity', 'factor', 'title', 'short_description', 'long_description', 'recommendation']
+        )
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Metadata.Issues",
+            outputs=metadata,
+            raw_response=metadata,
+            outputs_key_field='key'
+        )
+
+        return results
+
+
+    def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+        """Create alert based on grade change
+
+        See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-grade
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, str]``): The username, direction, score types, company, portfolio
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        change_direction = args.get("change_direction")
+        score_types = argToList(args.get('score_types'))
+        target = args.get('target')
+        portfolios = args.get('portfolios')
+
+        # Only one argument between portfolios and target should be defined
+        # Return error if neither of them is defined or if both are defined
+        # Else choose the one that is defined and use it as the target
+        if portfolios and target:
+            raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
+        else:
+            target = target or portfolios
+        if not target:
+            raise DemistoException("Either 'portfolio' or 'target' argument must be given")
+
+        response = client.create_grade_change_alert(
+            email=client.username,
+            change_direction=change_direction,  # type: ignore
+            score_types=score_types,
+            target=argToList(target)
+        )
+        demisto.debug(f"Response received: {response}")
+        alert_id = response.get("id")
+
+        markdown = f"Alert **{alert_id}** created"
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Alerts.GradeChangeAlert",
+            outputs=alert_id,
+            raw_response=response,
+            outputs_key_field="id"
+        )
+
+        return results
+
+
+    def alert_score_threshold_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+        """Create alert based score threshold met
+
+        See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-score
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, Any]``): direction, score threshold, score types, target, portfolio
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        change_direction = args.get("change_direction")
+        threshold = arg_to_number(args.get("threshold"))
+        score_types = argToList(args.get("score_types"))
+        target = args.get('target')
+        portfolios = args.get('portfolios')
+
+        # Only one argument between portfolios and target should be defined
+        # Return error if neither of them is defined or if both are defined
+        # Else choose the one that is defined and use it as the target
+        if portfolios and target:
+            raise DemistoException("Both 'portfolio' and 'target' argument have been set. Please remove one of them and try again.")
+        else:
+            target = target or portfolios
+        if not target:
+            raise DemistoException("Either 'portfolio' or 'target' argument must be given")
+
+        response = client.create_score_threshold_alert(
+            email=client.username,
+            change_direction=change_direction,  # type: ignore
+            threshold=threshold,  # type: ignore
+            score_types=score_types,
+            target=argToList(target)
+        )
+        demisto.debug(f"Response received: {response}")
+        alert_id = response.get("id")
+
+        markdown = f"Alert **{alert_id}** created"
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix="SecurityScorecard.Alerts.ScoreThresholdAlert",
+            outputs=alert_id,
+            raw_response=response,
+            outputs_key_field="id"
+        )
+
+        return results
+
+
+    def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+        """Delete an alert
+
+        See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-grade-alert
+
+        Args:
+            client (SecurityScorecardClient): SecurityScorecard client
+            args (Dict[str, Any]): Dictionary of arguments specified in the command
+
+        Returns:
+            CommandResults: The results of the command.
+        """
+
+        email = client.username
+        alert_id = args.get("alert_id")
+        alert_type = args.get("alert_type")
+        client.delete_alert(email=email, alert_id=alert_id, alert_type=alert_type)  # type: ignore
+
+        markdown = f"{str.capitalize(alert_type)} alert **{alert_id}** deleted"  # type: ignore
+
+        results = CommandResults(
+            readable_output=markdown,
+            raw_response=None,
+            outputs_key_field=None
+        )
+
+        return results
+
+
+    def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
+        """Retrieve alerts triggered in the last week
+
+        See https://securityscorecard.readme.io/reference#get_users-by-username-username-notifications-recent
+
+        Args:
+            client (SecurityScorecardClient): SecurityScorecard client
+            args (Dict[str, Any]): Dictionary of arguments specified in the command
+
+        Returns:
+            CommandResults: The results of the command.
+        """
+
+        email = client.username
+        demisto.debug(f"email: {email}")
+        portfolio_id = args.get('portfolio_id')
+
+        demisto.debug(f"Sending request to retrieve alerts with arguments {args}")
+
+        response = client.get_alerts_last_week(email=email, portfolio_id=portfolio_id)
+
+        entries = response.get("entries")  # type: ignore
+
+        alerts: List[Dict[str, str]] = []
+
+        for entry in entries:  # type: ignore
+            content: Dict[str, str] = {
+                "Alert ID": entry.get("id"),
+                "Company": entry.get("company_name"),
+                "Domain": entry.get("domain"),
+                "Creation Time": entry.get("created_at")
+            }
+
+            change_data = entry.get("change_data")
+
+            # Some alerts may have more than one change data object
+            change_str = ""
+            if len(change_data) > 1:
+                for change in change_data:
+                    factor_part = f"**{change.get('factor').replace('_', ' ').title()}** "
+                    direction = f"**{change.get('direction')}** by {change.get('score_impact')} "
+                    final_score = f"to {change.get('score')} ({change.get('grade_letter')})\n"
+                    change_str = change_str + factor_part + direction + final_score
+
+            else:
+                factor_part = f"**{change_data[0]['factor'].replace('_', ' ').title()}** "
+                direction = f"**{change_data[0]['direction']}** by {change_data[0]['score_impact']} "
+                final_score = f"to {change_data[0]['score']} ({change_data[0]['grade_letter']})\n"
+                change_str = factor_part + direction + final_score
+
+            content["Details"] = change_str
+            alerts.append(content)
+
+        markdown = tableToMarkdown(f"Latest Alerts for user {email}", alerts)
+
+        results = CommandResults(
+            outputs_prefix="SecurityScorecard.Alerts.Alert",
+            outputs_key_field="id",
+            readable_output=markdown,
+            outputs=alerts,
+            raw_response=response
+        )
+
+        return results
+
+
+    def company_services_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+        """Retrieve the service providers of a domain
+
+        See https://securityscorecard.readme.io/reference#get_companies-domain-services
+
+        Args:
+            ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+            ``args`` (``Dict[str, str]``): Domain.
+
+        Returns:
+            ``CommandResults``: The results of the command.
+        """
+
+        domain = args.get("domain")
+
+        response = client.get_domain_services(domain=domain)  # type: ignore
+
+        entries = response.get("entries")
+
+        services = []
+
+        if entries:
+            for entry in entries:  # type: ignore
+                categories = entry.get("categories")
+                for category in categories:
+                    service = {}
+                    service["vendor_domain"] = entry.get("vendor_domain")
+                    service["category"] = category
+                    services.append(service)
+
+            markdown = tableToMarkdown(f"Services for domain [{domain}](https://{domain})", services)
+
+            results = CommandResults(
+                outputs_prefix="SecurityScorecard.Company.Services",
+                outputs=entries,
+                readable_output=markdown,
+                raw_response=response,
+                outputs_key_field='category'
+            )
+        else:
+            results = CommandResults(
+                readable_output=f"Error returning services for domain '{domain}'",
+                raw_response=response
+            )
+
+        return results
+
+
+    def fetch_alerts(client: SecurityScorecardClient):
+
+        """
+        Fetch incidents/alerts from SecurityScorecard API
+
+        See https://securityscorecard.readme.io/reference#get_users-by-username-username-notifications-recent
+
+        The API is updated on a daily basis therefore `incidentFetchInterval` is set to 1440 (minutes per day)
+        The API returns all alerts received in the last week.
+
+        Every alert has a `"created_at"` parameter to notify when the alert was triggered.
+        This method will create incidents only for alerts that occurred on the day the alert was created.
+
+        Args:
+            client (SecurityScorecardClient): SecurityScorecard client
+
+        Returns:
+            None: It calls demisto.incidents() to import incidents.
+        """
+
+        # Set the query size
+        max_incidents = arg_to_number(client.max_fetch)  # type: ignore
+
+        # Set initial page
+        initial_page = 1
+
+        # Initial call will request the first page.
+        results = client.fetch_alerts(page_size=max_incidents, page=initial_page)  # type: ignore
+
+        first_fetch_alerts = results.get("entries")
+        size = results.get("size")
+
+        # The number of fetches needed to retrieve all alerts
+        # is the total number of alerts divided by the max fetch size
+        fetches_required = int(size / max_incidents)  # type: ignore
+
+        demisto.debug(f"API returned {size} alerts. Fetches required to retrieve all alerts: {fetches_required}")
+
+        # Check if the API returned any alerts
+        if size > 0:  # type: ignore
+
+            # If there are no fetches required, import the alerts pulled from the initial request
+            if fetches_required == 0:
+                incidents = incidents_to_import(alerts=first_fetch_alerts)  # type: ignore
+
+                # Check if any incidents should be imported according to last run time timestamp
+                if incidents:
+                    demisto.debug(f"{len(incidents)} Incidents will be imported")
+                    demisto.debug(f"Incidents: {incidents}")
+                    demisto.incidents(incidents)
+                else:
+                    demisto.debug("No incidents will be imported.")
+                    demisto.incidents([])
+
+            # In case we cannot import all alerts in one go,
+            # we paginate.
+            if fetches_required > 0:
+                alerts_to_import = []
+
+                # Add the alerts from the first fetch.
+                first_fetch_incidents = incidents_to_import(alerts=first_fetch_alerts)  # type: ignore
+                if first_fetch_incidents:
+                    alerts_to_import.extend(first_fetch_incidents)
+                    demisto.debug(f"Adding {len(first_fetch_incidents)} alerts from first fetch to total alerts to import")
+                    demisto.debug(f"Total alerts currently in list: {len(alerts_to_import)}")
+
+                # Iterate to bring the rest of the alerts
+                for fetch_iteration in range(initial_page + 1, fetches_required + 2):
+                    demisto.debug(f"Fetch iteration {fetch_iteration} started...")
+
+                    results = client.fetch_alerts(page_size=max_incidents, page=fetch_iteration)  # type: ignore
+                    alerts = results.get("entries")
+
+                    incidents = incidents_to_import(alerts=alerts)  # type: ignore
+
+                    # Check if any incidents should be imported according to last run time timestamp
+                    if incidents:
+                        demisto.debug(f"Adding {len(incidents)} to total alerts to import")
+                        alerts_to_import.extend(incidents)
+                        demisto.debug(f"Total alerts currently in list: {len(alerts_to_import)}")
+                    else:
+                        demisto.debug("No incidents will be imported in this iteration.")
+                    demisto.debug(f"Fetch iteration {fetch_iteration} finished")
+
+                demisto.debug(f"Total alerts to import: {len(alerts_to_import)}")
+                demisto.debug(alerts_to_import)
+                demisto.incidents(alerts_to_import)
+        # Return no incidents if API returned no alerts
+        else:
+            demisto.debug("API returned no alerts. Returning empty incident list")
+            demisto.incidents([])
+
+
+    """ MAIN FUNCTION """
+
+
+    def main() -> None:
+        """main function, parses params and runs command functions
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+
+        params = demisto.params()
+
+        # Credentials
+        api_key = params.get('username').get("password")
+        username = params.get('username').get("identifier")
+
+        # SecurityScorecard API URL
+        base_url = params.get('base_url', "https://api.securityscorecard.io/")
+
+        # Default configuration
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+
+        # Fetch configuration
+        max_fetch = params.get("max_fetch")
+        incident_fetch_interval = params.get("incidentFetchInterval")
+
+        args: Dict[str, str] = demisto.args()
+
+        demisto.debug(f'Command being called is {demisto.command()}')
+        try:
+
+            headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "2.0"}
+
+            client = SecurityScorecardClient(
+                base_url=base_url,
+                verify=verify_certificate,
+                headers=headers,
+                proxy=proxy,
+                api_key=api_key,
+                username=username,
+                max_fetch=max_fetch
+            )
+
+            if demisto.command() == 'test-module':
+                return_results(test_module(client=client, incident_fetch_interval=incident_fetch_interval))
+            elif demisto.command() == "fetch-incidents":
+                fetch_alerts(client=client)
+            elif demisto.command() == 'securityscorecard-portfolios-list':
+                return_results(portfolios_list_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-portfolio-list-companies':
+                return_results(portfolio_list_companies_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-company-score-get':
+                return_results(company_score_get_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-company-factor-score-get':
+                return_results(company_factor_score_get_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-company-history-score-get':
+                return_results(company_history_score_get_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-company-events-get':
+                return_results(company_events_get_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-company-findings-get':
+                return_results(company_event_findings_get_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-company-history-factor-score-get':
+                return_results(company_history_factor_score_get_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-alert-grade-change-create':
+                return_results(alert_grade_change_create_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-alert-score-threshold-create':
+                return_results(alert_score_threshold_create_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-alert-delete':
+                return_results(alert_delete_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-alerts-list':
+                return_results(alerts_list_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-company-services-get':
+                return_results(company_services_get_command(client=client, args=args))
+            elif demisto.command() == 'securityscorecard-issue-metadata':
+                return_results(issue_metadata_get_command(client=client, args=args))
+
+        # Log exceptions and return errors
+        except Exception as e:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+    """ ENTRY POINT """
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('SecurityScorecard', 'end', __line__())
   type: python
-  subtype: python3
-  isFetchSamples: true
-  isfetch: true
-  dockerimage: demisto/python3:3.10.12.63474
   commands:
   - name: securityscorecard-portfolios-list
-    description: List all Portfolios
     arguments:
     - name: limit
       description: Limit the amount of Portfolios to return. Defaults to 50.
@@ -85,41 +1496,75 @@ script:
     - contextPath: SecurityScorecard.Portfolio.read_only
       description: Whether the portfolio is read only.
       type: Boolean
+    description: List all Portfolios
   - name: securityscorecard-portfolio-list-companies
-    description: Lists all companies in Portfolio.
     arguments:
     - name: portfolio_id
-      description: Portfolio ID. The Portfolio ID can be retrieved using the 'securityscorecard-portfolios-list' command.
       required: true
+      description: Portfolio ID. The Portfolio ID can be retrieved using the 'securityscorecard-portfolios-list'
+        command.
     - name: grade
-      description: Grade filter. To filter multiple grades, comma-separate them, e.g. A,B.
       auto: PREDEFINED
       predefined:
-      - "A"
-      - "B"
-      - "C"
-      - "D"
-      - "E"
-      - "F"
+      - A
+      - B
+      - C
+      - D
+      - E
+      - F
+      description: Grade filter. To filter multiple grades, comma-separate them, e.g.
+        A,B.
     - name: industry
-      description: Industry filter. To filter multiple industries, comma-separate them, e.g. education,financial_services
       auto: PREDEFINED
       predefined:
-      - "education"
-      - "financial_services"
-      - "food"
-      - "government"
-      - "healthcare"
-      - "information_services"
-      - "manufacturing"
-      - "retail"
-      - "technology"
+      - education
+      - financial_services
+      - food
+      - government
+      - healthcare
+      - information_services
+      - manufacturing
+      - retail
+      - technology
+      description: Industry filter. To filter multiple industries, comma-separate
+        them, e.g. education,financial_services
     - name: vulnerability
-      description: Vulnerability filter. #TODO NEED TO CHECK POSSIBLE VALUES.
+      description: Vulnerability filter.
     - name: issue_type
-      description: "Comma-separated list of issue types. Possible values are: adware_installation_trail, adware_installation, alleged_breach_incident, chatter, anonymous_proxy, service_cassandra, service_couchdb, attack_detected, attack_feed, new_booter_shell, spa_browser, cdn_hosting, tlscert_expired, tlscert_revoked, tlscert_self_signed, tlscert_excessive_expiration, tlscert_weak_signature, tlscert_no_revocation, service_cloud_provider, csp_no_policy_v2, csp_unsafe_policy_v2, csp_too_broad_v2, marketing_site, cookie_missing_secure_attribute, short_term_lending_site, leaked_credentials, leaked_credentials_info, service_dns, new_defacement, ransomware_victim, domain_uses_hsts_preloading, service_elasticsearch, employee_satisfaction, service_end_of_life, service_end_of_service, exposed_personal_information, exposed_personal_information_info, admin_subdomain_v2, tlscert_extended_validation, service_ftp, patching_cadence_high, web_vuln_host_high, service_vuln_host_high, service_imap, iot_camera, industrial_control_device, insecure_https_redirect_pattern_v2, service_ldap, service_ldap_anonymous, social_network_issues, patching_cadence_low, web_vuln_host_low, service_vuln_host_low, spf_record_malformed, malware_controller, malware_1_day, malware_30_day, malware_365_day, malware_infection, malware_infection_trail, patching_cadence_medium, web_vuln_host_medium, service_vuln_host_medium, service_microsoft_sql, minecraft_server, service_mongodb, no_browser_policy, service_mysql, service_neo4j, service_networking, object_storage_bucket_with_risky_acl, open_resolver, exposed_ports, service_open_vpn, service_oracle_db, outdated_os, outdated_browser, non_malware_events_last_month, service_pop3, service_pptp, phishing, typosquat, service_postgresql, exploited_product, public_text_credit_cards, public_text_database_dump, public_text_hashes, public_text_mention, public_text_password_dump, service_pulse_vpn, service_rdp, ransomware_association, redirect_chain_contains_http_v2, service_redis, remote_access, service_smb, mail_server_unusual_port, service_soap, spf_record_wildcard, spf_record_softfail, spf_record_missing, ssh_weak_protocol, ssh_weak_cipher, ssh_weak_mac, tls_weak_protocol, github_information_leak_disclosure, google_information_leak_disclosure, cookie_missing_http_only, domain_missing_https_v2, suspicious_traffic, tls_ocsp_stapling, tls_weak_cipher, telephony, service_telnet, tor_node_events_last_month, upnp_accessible, unsafe_sri_v2, uce, service_vnc, dnssec_detected, waf_detected_v2, hsts_incorrect_v2, hosted_on_object_storage_v2, references_object_storage_v2, x_content_type_options_incorrect_v2, x_frame_options_incorrect_v2, x_xss_protection_incorrect_v2, service_rsync"
+      description: 'Comma-separated list of issue types. Possible values are: adware_installation_trail,
+        adware_installation, alleged_breach_incident, chatter, anonymous_proxy, service_cassandra,
+        service_couchdb, attack_detected, attack_feed, new_booter_shell, spa_browser,
+        cdn_hosting, tlscert_expired, tlscert_revoked, tlscert_self_signed, tlscert_excessive_expiration,
+        tlscert_weak_signature, tlscert_no_revocation, service_cloud_provider, csp_no_policy_v2,
+        csp_unsafe_policy_v2, csp_too_broad_v2, marketing_site, cookie_missing_secure_attribute,
+        short_term_lending_site, leaked_credentials, leaked_credentials_info, service_dns,
+        new_defacement, ransomware_victim, domain_uses_hsts_preloading, service_elasticsearch,
+        employee_satisfaction, service_end_of_life, service_end_of_service, exposed_personal_information,
+        exposed_personal_information_info, admin_subdomain_v2, tlscert_extended_validation,
+        service_ftp, patching_cadence_high, web_vuln_host_high, service_vuln_host_high,
+        service_imap, iot_camera, industrial_control_device, insecure_https_redirect_pattern_v2,
+        service_ldap, service_ldap_anonymous, social_network_issues, patching_cadence_low,
+        web_vuln_host_low, service_vuln_host_low, spf_record_malformed, malware_controller,
+        malware_1_day, malware_30_day, malware_365_day, malware_infection, malware_infection_trail,
+        patching_cadence_medium, web_vuln_host_medium, service_vuln_host_medium, service_microsoft_sql,
+        minecraft_server, service_mongodb, no_browser_policy, service_mysql, service_neo4j,
+        service_networking, object_storage_bucket_with_risky_acl, open_resolver, exposed_ports,
+        service_open_vpn, service_oracle_db, outdated_os, outdated_browser, non_malware_events_last_month,
+        service_pop3, service_pptp, phishing, typosquat, service_postgresql, exploited_product,
+        public_text_credit_cards, public_text_database_dump, public_text_hashes, public_text_mention,
+        public_text_password_dump, service_pulse_vpn, service_rdp, ransomware_association,
+        redirect_chain_contains_http_v2, service_redis, remote_access, service_smb,
+        mail_server_unusual_port, service_soap, spf_record_wildcard, spf_record_softfail,
+        spf_record_missing, ssh_weak_protocol, ssh_weak_cipher, ssh_weak_mac, tls_weak_protocol,
+        github_information_leak_disclosure, google_information_leak_disclosure, cookie_missing_http_only,
+        domain_missing_https_v2, suspicious_traffic, tls_ocsp_stapling, tls_weak_cipher,
+        telephony, service_telnet, tor_node_events_last_month, upnp_accessible, unsafe_sri_v2,
+        uce, service_vnc, dnssec_detected, waf_detected_v2, hsts_incorrect_v2, hosted_on_object_storage_v2,
+        references_object_storage_v2, x_content_type_options_incorrect_v2, x_frame_options_incorrect_v2,
+        x_xss_protection_incorrect_v2, service_rsync'
     - name: had_breach_within_last_days
-      description: Domains with breaches in the last X days. Possible values are numbers, e.g. 1000.
+      description: Domains with breaches in the last X days. Possible values are numbers,
+        e.g. 1000.
     outputs:
     - contextPath: SecurityScorecard.Portfolio.Company.domain
       description: Company domain.
@@ -151,12 +1596,13 @@ script:
     - contextPath: SecurityScorecard.Portfolio.Company.total
       description: Total number of companies in Portfolio.
       type: Number
+    description: Lists all companies in Portfolio.
   - name: securityscorecard-company-score-get
-    description: Retrieve company overall score.
     arguments:
     - name: domain
-      description: Company domain, e.g. google.com. The company must first be added to a Portfolio in order to be able to get its score.
       required: true
+      description: Company domain, e.g. google.com. The company must first be added
+        to a Portfolio in order to be able to get its score.
     outputs:
     - contextPath: SecurityScorecard.Company.Score.domain
       description: Company domain.
@@ -179,15 +1625,16 @@ script:
     - contextPath: SecurityScorecard.Company.Score.size
       description: Company size, e.g. 'size_more_than_10000'
       type: String
+    description: Retrieve company overall score.
   - name: securityscorecard-company-factor-score-get
-    description: Retrieve company factor score.
     arguments:
     - name: domain
-      description: Company domain.
       required: true
+      description: Company domain.
     - name: severity
+      description: 'Issue severity filter. Comma-separated list of the following values:
+        ''positive'', ''info'', ''low'', ''medium'', ''high''.'
       isArray: true
-      description: "Issue severity filter. Comma-separated list of the following values: 'positive', 'info', 'low', 'medium', 'high'."
     outputs:
     - contextPath: SecurityScorecard.Company.Factor.name
       description: Factor name.
@@ -216,22 +1663,22 @@ script:
     - contextPath: SecurityScorecard.Company.Factor.total
       description: Number of factors returned
       type: Number
+    description: Retrieve company factor score.
   - name: securityscorecard-company-history-score-get
-    description: Retrieve company historical scores
     arguments:
     - name: domain
-      description: Company domain, e.g. `google.com`
       required: true
+      description: Company domain, e.g. `google.com`
     - name: from
       description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
     - name: to
       description: Initial date for historical data. Value should be in format `YYYY-MM-DD`
     - name: timing
-      description: Timing granularity.
       auto: PREDEFINED
       predefined:
-      - "daily"
-      - "weekly"
+      - daily
+      - weekly
+      description: Timing granularity.
     outputs:
     - contextPath: SecurityScorecard.Company.ScoreHistory.domain
       description: Company domain.
@@ -242,23 +1689,23 @@ script:
     - contextPath: SecurityScorecard.Company.ScoreHistory.score
       description: Company historical security score in numeric form (55-100)
       type: Number
+    description: Retrieve company historical scores
   - name: securityscorecard-company-history-factor-score-get
-    description: Retrieve company historical factor scores
     arguments:
     - name: domain
-      description: Company domain, e.g. google.com
       required: true
+      description: Company domain, e.g. google.com
     - name: from
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
     - name: to
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
     - name: timing
-      description: Timing granularity. or "monthly"
       auto: PREDEFINED
       predefined:
-      - "daily"
-      - "weekly"
-      - "monthly"
+      - daily
+      - weekly
+      - monthly
+      description: Timing granularity. or "monthly"
     outputs:
     - contextPath: SecurityScorecard.Company.FactorHistory.domain
       description: Company domain.
@@ -272,78 +1719,91 @@ script:
     - contextPath: SecurityScorecard.Company.FactorHistory.score
       description: Company historical security score in numeric form (55-100)
       type: Number
+    description: Retrieve company historical factor scores
   - name: securityscorecard-alert-grade-change-create
-    description: Create alert based on grade
     arguments:
     - name: change_direction
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - rises
+      - drops
       description: Direction of change.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "rises"
-      - "drops"
     - name: score_types
-      isArray: true
-      description: Comma-separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'.
       required: true
+      description: Comma-separated list of risk factors to monitor. Possible values
+        are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
+        'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
+        'hacker_chatter', 'leaked_information', 'social_engineering'.
+      isArray: true
     - name: target
-      description: What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified.
       auto: PREDEFINED
       predefined:
-      - "my_scorecard"
-      - "any_followed_company"
+      - my_scorecard
+      - any_followed_company
+      description: What do you want to monitor with this alert. This argument is required
+        if the `portfolios` argument is not specified.
     - name: portfolios
+      description: A comma-separated list of Portfolios. to use as a target for the
+        alert. This argument is require if the `target` argument is not specified.
+        You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       isArray: true
-      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
     outputs:
     - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
       description: Alert ID
       type: String
+    description: Create alert based on grade
   - name: securityscorecard-alert-score-threshold-create
-    description: Create alert based threshold met
     arguments:
     - name: change_direction
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - rises_above
+      - drops_below
       description: Direction of change.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "rises_above"
-      - "drops_below"
     - name: threshold
+      required: true
       description: The numeric score used as the threshold to trigger the alert
-      required: true
     - name: score_types
-      isArray: true
-      description: Comma separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple factors, provide comma-separated list, i.e. leaked_information,social_engineering.
       required: true
+      description: Comma separated list of risk factors to monitor. Possible values
+        are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
+        'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
+        'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple
+        factors, provide comma-separated list, i.e. leaked_information,social_engineering.
+      isArray: true
     - name: target
-      description: What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified.
       auto: PREDEFINED
       predefined:
-      - "my_scorecard"
-      - "any_followed_company"
+      - my_scorecard
+      - any_followed_company
+      description: What do you want to monitor with this alert. This argument is required
+        if the `portfolios` argument is not specified.
     - name: portfolios
+      description: A comma-separated list of Portfolios. to use as a target for the
+        alert. This argument is require if the `target` argument is not specified.
+        You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       isArray: true
-      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
     outputs:
     - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
       description: Alert ID
       type: String
+    description: Create alert based threshold met
   - name: securityscorecard-alert-delete
-    description: Delete an alert
     arguments:
     - name: alert_id
-      description: Alert ID.
       required: true
+      description: Alert ID.
     - name: alert_type
-      description: Type of Alert to delete.
       required: true
       auto: PREDEFINED
       predefined:
-      - "score"
-      - "grade"
+      - score
+      - grade
+      description: Type of Alert to delete.
+    description: Delete an alert
   - name: securityscorecard-alerts-list
-    description: List alerts triggered in the last week
     arguments:
     - name: portfolio_id
       description: Portfolio ID. Can be retrieved using `!securityscorecard-portfolios-list`
@@ -367,24 +1827,90 @@ script:
       description: Alert Portfolio ID
       type: array
     - contextPath: SecurityScorecard.Alerts.Alert.my_scorecard
-      description: Whether the alert was triggered on private scorecard. This depends on whether 'my_scorecard' was added to the optional argument 'target' when creating alerts using the 'securityscorecard-alert-score-threshold-create' and 'securityscorecard-alert-grade-change-create' commands.
+      description: Whether the alert was triggered on private scorecard. This depends
+        on whether 'my_scorecard' was added to the optional argument 'target' when
+        creating alerts using the 'securityscorecard-alert-score-threshold-create'
+        and 'securityscorecard-alert-grade-change-create' commands.
       type: Boolean
     - contextPath: SecurityScorecard.Alerts.Alert.created_at
       description: Timestamp of when the alert was triggered
       type: Date
+    description: List alerts triggered in the last week
   - name: securityscorecard-company-services-get
-    description: Retrieve the service providers of a domain
     arguments:
     - name: domain
-      description: Company domain
       required: true
+      description: Company domain
     outputs:
     - contextPath: SecurityScorecard.Service.vendor_domain
       description: Vendor domain, e.g. Google, Amazon
       type: String
     - contextPath: SecurityScorecard.Service.client_domain
-      description: Client domain. This value is identical to the input of the domain argument
+      description: Client domain. This value is identical to the input of the domain
+        argument
       type: String
     - contextPath: SecurityScorecard.Service.categories
       description: Vendor service provider, e.g. mail_provider, nameserver_provider
       type: array
+    description: Retrieve the service providers of a domain
+  - name: securityscorecard-company-events-get
+    arguments:
+    - name: domain
+      required: true
+      type: textArea
+    - name: date_from
+    - name: date_to
+    outputs:
+    - contextPath: SecurityScorecard.Events.Event.ssc_event_id
+      type: string
+    - contextPath: SecurityScorecard.Events.Event.date
+      type: date
+    - contextPath: SecurityScorecard.Events.Event.status
+    - contextPath: SecurityScorecard.Events.Event.issue_count
+      type: number
+    - contextPath: SecurityScorecard.Events.Event.score_impact
+      type: number
+    - contextPath: SecurityScorecard.Events.Event.issue_type
+      type: string
+    - contextPath: SecurityScorecard.Events.Event.severity
+      type: string
+    - contextPath: SecurityScorecard.Events.Event.factor
+      type: string
+    - contextPath: SecurityScorecard.Events.Event.ssc_detail_url
+      type: string
+  - name: securityscorecard-company-findings-get
+    arguments:
+    - name: domain
+      required: true
+    - name: date
+      required: true
+    - name: issue_type
+      required: true
+    - name: status
+  - name: securityscorecard-issue-metadata
+    arguments:
+    - name: issue_type
+      required: true
+      description: Key representing issue type, e.g. api_key_exposed
+    outputs:
+    - contextPath: SecurityScorecard.Metadata.Issues.key
+      type: string
+    - contextPath: SecurityScorecard.Metadata.Issues.severity
+      type: string
+    - contextPath: SecurityScorecard.Metadata.Issues.factor
+      type: string
+    - contextPath: SecurityScorecard.Metadata.Issues.title
+      type: string
+    - contextPath: SecurityScorecard.Metadata.Issues.short_description
+      type: string
+    - contextPath: SecurityScorecard.Metadata.Issues.long_description
+      type: string
+    - contextPath: SecurityScorecard.Metadata.Issues.recommendation
+      type: string
+    description: Retrieve metadata for an issue type, including description and recommendation
+  dockerimage: demisto/python3:3.10.12.63474
+  isfetch: true
+  runonce: false
+  subtype: python3
+  isFetchSamples: true
+sourcemoduleid: SecurityScorecard
