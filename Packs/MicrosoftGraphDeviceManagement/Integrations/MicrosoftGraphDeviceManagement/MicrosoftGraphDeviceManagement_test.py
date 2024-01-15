@@ -81,17 +81,6 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
 
-ARGS_DEVICE_DETAILS = [
-    ({"device_id": '1'}, {'@odata.context':
-                          'https://graph.microsoft.com/v1.0/$metadata#deviceManagement/managedDevices(id,physicalMemoryInBytes,deviceName)/$entity',
-                          'id': '53c0a99e-988c-4dd0-8e4f-edbe4d6996ea',
-                          'physicalMemoryInBytes': 1, 'deviceName': 'IDTest'}, {"### Managed device DC1ENV11XPC01\n|physicalMemoryInBytes|id|\n\
-                                                              |---|---|\n| 4294967296 | 53c0a99e-988c-4dd0-8e4f-edbe4d6996ea\
-                                                                  |\n"}),
-    ({"device_id": '0'}, {"error": {"code": "ResourceNotFound"}}, {})
-]
-
-
 def test_get_managed_device_physical_memory_command(mocker):
     """
     Given:
@@ -118,7 +107,7 @@ def test_get_managed_device_physical_memory_command(mocker):
                                                                                      'physicalMemoryInBytes': 1})
     outputs = mocker.patch('MicrosoftGraphDeviceManagement.return_outputs')
     get_managed_device_physical_memory_command(client, {"device_id": '1'})
-    assert outputs.called
+    assert outputs.call_args.args[0] == '### Managed device Test\n|physicalMemoryInBytes|\n|---|\n| 1 |\n'
 
 
 def test_get_managed_device_physical_memory_command_error(mocker):

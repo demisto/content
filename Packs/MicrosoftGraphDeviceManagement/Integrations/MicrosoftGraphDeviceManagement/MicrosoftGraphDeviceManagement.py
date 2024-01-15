@@ -289,7 +289,12 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
 
 
 def get_managed_device_physical_memory_command(client: MsGraphClient, args: dict) -> None:
-    device_id: str = str(args.get('device_id'))
+    """
+    Returns the device physical memory. 
+    :param device_id: The device id 
+    :return: A CommandResults object
+    """
+    device_id: str = args.get('device_id', '')
     raw_response, device_id = client.get_managed_device_physical_memory(device_id)
 
     device: dict = build_device_object(raw_response)
@@ -298,7 +303,7 @@ def get_managed_device_physical_memory_command(client: MsGraphClient, args: dict
     human_readable: str = f'Managed device {device_id} not found.'
     if device:
         human_readable = tableToMarkdown(name=f'Managed device {device_name}', t=device, removeNull=True,
-                                         headers=['physicalMemoryInBytes', 'id'])
+                                         headers=['physicalMemoryInBytes'])
     return_outputs(human_readable, entry_context, device)
 
 
