@@ -18,6 +18,8 @@ urllib3.disable_warnings()
 
 """Helper function"""
 
+INTEGRATION_NAME = "Hurukai"
+
 TACTICS = {
     'reconnaissance': 'Reconnaissance',
     'resource_development': 'Resource Development',
@@ -746,6 +748,7 @@ def fetch_incidents(client, args):
 
     last_run = [current_fetch_info_sec_events, current_fetch_info_threats]
     demisto.setLastRun(last_run)
+
     demisto.incidents(incidents)
 
     return last_run, incidents
