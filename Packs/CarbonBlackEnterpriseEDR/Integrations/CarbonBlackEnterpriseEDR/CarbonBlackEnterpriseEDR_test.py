@@ -1,8 +1,13 @@
 import pytest
 import CarbonBlackEnterpriseEDR as cbe
+from CarbonBlackEnterpriseEDR import (
+    get_threat_tags_command,
+    add_threat_tags_command,
+    add_threat_notes_command,
+    add_alert_notes_command,
+)
 import demistomock as demisto
 from freezegun import freeze_time
-from CommonServerPython import CommandResults
 
 PROCESS_CASES = [
     (
@@ -174,41 +179,34 @@ def test_event_by_process_failing(mocker, requests_mock, demisto_args, expected_
     assert str(e.value) == expected_error_msg
 
 
-@pytest.fixture(autouse=True)
-def mock_demisto(mocker):
-    mocker.patch('CarbonBlackEnterpriseEDR.demisto', autospec=True)
-
-
 MOCK_UPDATE_THREAT_TAGS_RESPONSE = {
     'tags': ['tag1', 'tag2']
 }
 
 
-def demisto_commands(command_func):
-    @pytest.fixture
-    def wrapped(mocker):
-        from CarbonBlackEnterpriseEDR import demisto
-        mocker.patch.object(demisto, 'Command', autospec=True)
-        mocker.patch.object(demisto, 'args', return_value={})
-        mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': MOCK_UPDATE_THREAT_TAGS_RESPONSE}])
-        mocker.patch.object(demisto.Command, 'results', return_value=CommandResults())
+def test_add_threat_tags_command(mocker):
+    """
+    Given:
+        - args with threat_id and tags.
 
-        mocker.patch('CarbonBlackEnterpriseEDR.demisto', autospec=True)
+    When:
+        - Calling add_threat_tags_command.
 
-        demisto.Command.func = command_func
+    Then:
+        - validate that the returned results were parsed as expected.
 
-        return demisto.Command
+    """
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
 
-    return wrapped
+    mocker.patch.object(client, '_http_request', return_value=MOCK_UPDATE_THREAT_TAGS_RESPONSE)
 
-
-@demisto_commands
-def test_add_threat_tags_command(mocker, demisto_command):
-    mocker.patch.object(demisto_command.client, 'update_threat_tags', return_value=MOCK_UPDATE_THREAT_TAGS_RESPONSE)
-
-    demisto_command.set_args({'threat_id': '123456', 'tags': 'tag1,tag2'})
-
-    result = demisto_command.execute()
+    args = {'threat_id': '123456', 'tags': ['tag1', 'tag2']}
+    result = add_threat_tags_command(client, args)
 
     assert result.outputs == {'ThreatID': '123456', 'Tags': ['tag1', 'tag2']}
     assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
@@ -223,13 +221,29 @@ MOCK_CREATE_THREAT_NOTES_RESPONSE = {
 }
 
 
-@demisto_commands
-def test_add_threat_notes_command(mocker, demisto_command):
-    mocker.patch.object(demisto_command.client, 'create_threat_notes', return_value=MOCK_CREATE_THREAT_NOTES_RESPONSE)
+def test_add_threat_notes_command(mocker):
+    """
+    Given:
+        - args with threat_id and notes.
 
-    demisto_command.set_args({'threat_id': '123456', 'notes': 'These are threat notes'})
+    When:
+        - Calling add_threat_notes_command.
 
-    result = demisto_command.execute()
+    Then:
+        - validate that the returned results were parsed as expected.
+
+    """
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+
+    mocker.patch.object(client, '_http_request', return_value=MOCK_CREATE_THREAT_NOTES_RESPONSE)
+
+    args = {'threat_id': '123456', 'notes': 'These are threat notes'}
+    result = add_threat_notes_command(client, args)
 
     assert result.outputs == {'ThreatID': '123456', 'Notes': 'These are threat notes'}
     assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
@@ -237,27 +251,6 @@ def test_add_threat_notes_command(mocker, demisto_command):
 
     assert "Successfully added notes to threat: \"123456\"" in result.readable_output
     assert result.raw_response == MOCK_CREATE_THREAT_NOTES_RESPONSE
-
-
-MOCK_UPDATE_ALERT_NOTES_RESPONSE = {
-    'notes': 'These are alert notes'
-}
-
-
-@demisto_commands
-def test_add_alert_notes_command(mocker, demisto_command):
-    mocker.patch.object(demisto_command.client, 'update_alert_notes', return_value=MOCK_UPDATE_ALERT_NOTES_RESPONSE)
-
-    demisto_command.set_args({'alert_id': '987654', 'notes': 'These are alert notes'})
-
-    result = demisto_command.execute()
-
-    assert result.outputs == {'AlertID': '987654', 'Notes': 'These are alert notes'}
-    assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
-    assert result.outputs_key_field == 'AlertID'
-
-    assert "Successfully added notes to alert: \"987654\"" in result.readable_output
-    assert result.raw_response == MOCK_UPDATE_ALERT_NOTES_RESPONSE
 
 
 MOCK_GET_THREAT_TAGS_RESPONSE = {
@@ -268,13 +261,29 @@ MOCK_GET_THREAT_TAGS_RESPONSE = {
 }
 
 
-@demisto_commands
-def test_get_threat_tags_command(mocker, demisto_command):
-    mocker.patch.object(demisto_command.client, 'get_threat_tags', return_value=MOCK_GET_THREAT_TAGS_RESPONSE)
+def test_get_threat_tags_command(mocker):
+    """
+    Given:
+        - args with thread_it.
 
-    demisto_command.set_args({'threat_id': '123456'})
+    When:
+        - Calling get_threat_tags_command.
 
-    result = demisto_command.execute()
+    Then:
+        - validate that the returned results was parsed as expected.
+
+    """
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+
+    mocker.patch.object(client, '_http_request', return_value=MOCK_GET_THREAT_TAGS_RESPONSE)
+
+    args = {'threat_id': '123456'}
+    result = get_threat_tags_command(client, args)
 
     assert result.outputs == {'ThreatID': '123456', 'Tags': [{'tag': 'malware'}, {'tag': 'suspicious'}]}
     assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
@@ -284,7 +293,23 @@ def test_get_threat_tags_command(mocker, demisto_command):
     assert result.raw_response == MOCK_GET_THREAT_TAGS_RESPONSE
 
 
-def test_get_threat_tags(mocker):
+MOCK_UPDATE_ALERT_NOTES_RESPONSE = {
+    'notes': 'These are alert notes'
+}
+
+
+def test_add_alert_notes_command(mocker):
+    """
+    Given:
+        - args with alert_id and notes.
+
+    When:
+        - Calling add_alert_notes_command.
+
+    Then:
+        - validate that the returned results were parsed as expected.
+
+    """
     client = cbe.Client(
         base_url='https://server_url.com',
         use_ssl=False,
@@ -292,13 +317,14 @@ def test_get_threat_tags(mocker):
         token=None,
         cb_org_key="123")
 
-    # Mock the _http_request method to return the mock response
-    mocker.patch.object(client, '_http_request', return_value=MOCK_GET_THREAT_TAGS_RESPONSE)
-    threat_id = '123456'
-    result = client.get_threat_tags(threat_id)
+    mocker.patch.object(client, '_http_request', return_value=MOCK_UPDATE_ALERT_NOTES_RESPONSE)
 
-    # Assert that _http_request was called with the correct parameters
-    client._http_request.assert_called_with('GET', f'api/alerts/v7/orgs/{client.cb_org_key}/threats/{threat_id}/tags')
+    args = {'alert_id': '789012', 'notes': 'These are alert notes'}
+    result = add_alert_notes_command(client, args)
 
-    # Assert the result
-    assert result == MOCK_GET_THREAT_TAGS_RESPONSE
+    assert result.outputs == {'AlertID': '789012', 'Notes': 'These are alert notes'}
+    assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
+    assert result.outputs_key_field == 'AlertID'
+
+    assert "Successfully added notes to alert: \"789012\"" in result.readable_output
+    assert result.raw_response == MOCK_UPDATE_ALERT_NOTES_RESPONSE
