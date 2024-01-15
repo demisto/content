@@ -90,8 +90,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
        'operator': 'eq',
        'mode': 'or'
     }],
-    'filterGroups': [],
-}
+    'filterGroups': []}
     if score:
         filters["filters"].append({
             'key': 'x_opencti_score',
