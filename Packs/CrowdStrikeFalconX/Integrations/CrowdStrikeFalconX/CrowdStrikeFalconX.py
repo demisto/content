@@ -966,7 +966,6 @@ def get_full_report_command(
         client: Client,
         ids: str,  # argToList is called inside
         extended_data: str = '',
-        polling: str = 'false'
 ) -> Tuple[List[CommandResults], bool]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
@@ -1000,16 +999,13 @@ def get_full_report_command(
 
     for id_ in argToList(ids):
         response = client.get_full_report(id_)
+        print(response)
         if response.get('resources'):
-            is_polling = argToBoolean(polling)
             is_command_finished = True  # flag used when commands
             # We can extract the error from the response object under resources
             error_message = validate_sandbox_report(response.get('resources', []))
             if error_message:
-                if is_polling:
-                    raise DemistoException(error_message)
-                if not is_polling:
-                    return_warning(error_message)
+                return_warning(error_message)
 
         if extended_data == 'true':
             extra_sandbox_fields = extra_sandbox_fields + ("mitre_attacks", "signatures")  # type:ignore[assignment]
@@ -1063,10 +1059,12 @@ def validate_sandbox_report(report_resources: list[dict[str, Any]]) -> str:
         str: The error message found in the sandbox, or an empty strong if no error is found.
     """
     for resource in report_resources:
+        resource_id = resource.get('id')
         for sandbox_entity in resource.get('sandbox', []):
             if error_message := sandbox_entity.get('error_message'):
                 error_type = sandbox_entity.get('error_type')
-                return f'Sandbox report returned an error of type {error_type} with content: {error_message}'
+                return (f'Sandbox report for resource id {resource_id} returned an error of'
+                         f' type {error_type} with content: {error_message}')
     return ''
 
 def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str, Common.File]:
@@ -1089,8 +1087,7 @@ def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str,
 
 def get_report_summary_command(
         client: Client,
-        ids: str,  # argToList is called inside,
-        polling: str = 'false'
+        ids: str,  # argToList is called inside
 ) -> List[CommandResults]:
     """Get a short summary version of a sandbox report.
     :param client: the client object with an access token
@@ -1119,14 +1116,10 @@ def get_report_summary_command(
     for single_id in argToList(ids):
         response = client.get_report_summary(single_id)
         if response.get('resources'):
-            is_polling = argToBoolean(polling)
             # We can extract the error from the response object under resources
             error_message = validate_sandbox_report(response.get('resources', []))
             if error_message:
-                if is_polling:
-                    raise DemistoException(error_message)
-                if not is_polling:
-                    return_warning(error_message)
+                return_warning(error_message)
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         results.append(
@@ -1337,7 +1330,7 @@ def get_results_function_args(outputs, extended_data, item_type, interval_in_sec
 
 
 def pop_polling_related_args(args: dict) -> None:
-    for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'environment_id'):
+    for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'polling', 'environment_id'):
         args.pop(key, None)
 
 
@@ -1357,7 +1350,9 @@ def arrange_args_for_upload_func(args: dict) -> Any:
 
 
 def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable,
-                        item_type) -> Union[CommandResults, List[CommandResults]]:
+                        item_type,
+                        post_function: Optional[Callable] = None
+                        ) -> Union[CommandResults, List[CommandResults]]:
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
     starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
@@ -1410,7 +1405,17 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
             timeout_in_seconds=6000)
 
         command_result = CommandResults(scheduled_command=scheduled_command)
+    elif post_function:
+        # Validate the polling results
+        validate_polling_results(command_result)
     return command_result
+
+def validate_polling_results(command_results: list[CommandResults]):
+    for command_result in command_results:
+        raw_response: dict[str, Any] = command_result.raw_response
+        error_message = validate_sandbox_report(raw_response.get('resources', []))
+        if error_message:
+            raise DemistoException(f'Sandbox was not able to analyze one of the files, failing with error: {error_message}')
 
 
 def upload_file_with_polling_command(client: Client, args: dict):
