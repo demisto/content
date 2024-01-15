@@ -23,7 +23,7 @@ configuration:
 - display: Secret Key
   name: secret_key
   required: true
-  type: 4
+  type: 9
 - display: Role Session Duration
   name: sessionDuration
   type: 0
@@ -47,7 +47,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: Amazon Web Services Simple Notification Service (SNS)
+description: Amazon Web Services Simple Notification Service (SNS).
 display: AWS - SNS
 name: AWS - SNS
 script:
@@ -90,7 +90,7 @@ script:
       - 'False'
     - description: When specified, sends undeliverable messages to the specified Amazon SQS dead-letter queue.
       name: redrivePolicy
-    - description: 'The ARN of the IAM role that has the following: 1. Permission to write to the Kinesis Data Firehose delivery stream 2. Amazon SNS listed as a trusted entity'
+    - description: 'The ARN of the IAM role that has the following: 1. Permission to write to the Kinesis Data Firehose delivery stream 2. Amazon SNS listed as a trusted entity.'
       name: subscriptionRoleArn
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -104,7 +104,7 @@ script:
     name: aws-sns-create-subscription
     outputs:
     - contextPath: AWS.SNS.Subscriptions.SubscriptionArn
-      description: The Subscription Arn
+      description: The Subscription Arn.
       type: string
   - arguments:
     - description: Token returned by the previous ListTopics request.
@@ -121,7 +121,7 @@ script:
     name: aws-sns-list-topics
     outputs:
     - contextPath: AWS.SNS.Topics.TopicArn
-      description: The Topic ARN
+      description: The Topic ARN.
       type: string
   - arguments:
     - description: The topic you want to publish to. If you don't specify a value for the TopicArn parameter, you must specify a value for the PhoneNumber or TargetArn parameters.
@@ -224,8 +224,8 @@ script:
     name: aws-sns-list-subscriptions-by-topic
     outputs:
     - contextPath: AWS.SNS.Subscriptions.SubscriptionArn
-      description: The Subscription Arn
-  dockerimage: demisto/boto3py3:1.0.0.33827
+      description: The Subscription Arn.
+  dockerimage: demisto/boto3py3:1.0.0.84060
   script: ''
   subtype: python3
   type: python

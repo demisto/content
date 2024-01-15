@@ -143,7 +143,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - ./Documentation/commonServerDocs.sh
     - section_end "Common Server Documentation"
     - section_start "Collect Test List and Content Packs" --collapsed
-    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n "${IS_NIGHTLY}"
+    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n "${IS_NIGHTLY}" --sdk-nightly "${DEMISTO_SDK_NIGHTLY}"
     - section_end "Collect Test List and Content Packs"
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp "${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json" --output-path "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --all-packs-dependencies
@@ -407,7 +407,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
       MARKETPLACE_NAME: "marketplacev2"
       NON_REMOVABLE_PACKS: "Base"
       EXTRACT_PRIVATE_TESTDATA: "true"
-      NIGHTLY: "true"
       FAIL_ON_ERROR: "true"
       E2E_TEST_FOLDER: "xsiam"
       PRODUCT_TYPE: "XSIAM"
@@ -468,7 +467,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
-    NIGHTLY: "true"
     FAIL_ON_ERROR: "true"
     E2E_TEST_FOLDER: "xsoar-saas"
     PRODUCT_TYPE: "XSOAR"

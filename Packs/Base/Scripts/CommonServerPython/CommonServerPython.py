@@ -709,6 +709,30 @@ def get_schedule_metadata(context):
     return schedule_metadata
 
 
+def detect_file_indicator_type(indicator_value):
+    """
+      Detect the type of the file indicator.
+
+      :type indicator_value: ``str``
+      :param indicator_value: The indicator whose type we want to check. (required)
+
+      :return: The type of the indicator.
+      :rtype: ``str``
+    """
+    if ":" in indicator_value:
+        return 'ssdeep'
+    if re.match(sha256Regex, indicator_value):
+        return 'sha256'
+    if re.match(md5Regex, indicator_value):
+        return 'md5'
+    if re.match(sha1Regex, indicator_value):
+        return 'sha1'
+    if re.match(sha512Regex, indicator_value):
+        return 'sha512'
+
+    return None
+
+
 def auto_detect_indicator_type(indicator_value):
     """
       Infer the type of the indicator.
@@ -914,7 +938,7 @@ def urljoin(url, suffix=""):
     return url + suffix
 
 
-def positiveUrl(entry):
+def positiveUrl(entry): 
     """
        Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
 
@@ -1808,7 +1832,7 @@ def flattenCell(data, is_pretty=True):
 
         return ',\n'.join(string_list)
     else:
-        return json.dumps(data, indent=indent, ensure_ascii=False)
+        return json.dumps(data, indent=indent, ensure_ascii=False, default=str)
 
 
 def FormatIso8601(t):
@@ -7024,7 +7048,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``list``
+    :type results: ``CommandResults`` or ``PollResult`` or ``str`` or ``dict`` or ``BaseWidget`` or ``list`` or ``GetMappingFieldsResponse`` or ``GetModifiedRemoteDataResponse`` or ``GetRemoteDataResponse``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
