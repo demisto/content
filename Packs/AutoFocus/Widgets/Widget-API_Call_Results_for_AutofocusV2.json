@@ -42,6 +42,19 @@
                         ]
                     ],
                     "name": "Success"
+                },
+                "ConnectionError": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "ConnectionError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "ConnectionError"
                 }
             }
         ],
@@ -58,8 +71,8 @@
         "xAxisLabel": "Time",
         "yAxisLabel": "Request Counts"
     },
-    "query": "type:integration and instance:\"Autofocus (API v3)_instance_1\"",
-    "modified": "2022-04-27T15:34:53.64268093Z",
+    "query": "type:integration and name:\"AutoFocus V2\"",
+    "modified": "2024-01-14T16:57:28.451017133Z",
     "name": "API Call Results for Autofocus",
     "dateRange": {
         "fromDate": "0001-01-01T00:00:00Z",
@@ -76,8 +89,8 @@
     },
     "isPredefined": true,
     "version": -1,
-    "id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+    "id": "0821903b-1099-4f3d-8c30-12345d8c5c07",
     "widgetType": "line",
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.10.0",
     "description": ""
 }

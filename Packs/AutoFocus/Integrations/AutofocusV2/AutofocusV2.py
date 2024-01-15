@@ -1871,7 +1871,12 @@ def main():
     else:
         raise Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
+    import yaml
     try:
+        demisto.debug(type(demisto.callingContext))
+        demisto.debug(type(demisto.context()))
+        demisto.debug(f'callingContext = {yaml.safe_dump(demisto.callingContext)}')
+        demisto.debug(f'context = {yaml.safe_dump(demisto.context())}')
         # Remove proxy if not set to true in params
         handle_proxy()
         args = {k: v for (k, v) in demisto.args().items() if v}
@@ -1921,6 +1926,10 @@ def main():
                 return_results(search_url_command(**args))
             case 'file':
                 return_results(search_file_command(**args))
+            case _:
+                raise NotImplementedError(f'Command {command!r} is not implemented.')
+        demisto.debug(f'callingContext = {yaml.safe_dump(demisto.callingContext)}')
+        demisto.debug(f'context = {yaml.safe_dump(demisto.context())}')
     except Exception as e:
         return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
 
