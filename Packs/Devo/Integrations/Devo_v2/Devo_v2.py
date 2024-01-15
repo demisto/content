@@ -543,7 +543,7 @@ def filter_results_by_fields(results, fields_to_view_string):
     if not results:
         return results
 
-    fields_to_view_list = [field.strip() for field in fields_to_view_string.split(',')]
+    fields_to_view_list = argToList(fields_to_view_string)
 
     # Check if all fields from fields_to_view_list are present in the first dictionary in results
     first_dict = results[0]
