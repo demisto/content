@@ -20,7 +20,7 @@ import tempfile
 urllib3.disable_warnings()
 
 
-class SuppressWarningFilter(logging.Filter):
+class SuppressWarningFilter(logging.Filter):    # pragma: no cover
     def filter(self, record):
         if record.levelno == logging.WARNING:
             demisto.debug(record.getMessage())
