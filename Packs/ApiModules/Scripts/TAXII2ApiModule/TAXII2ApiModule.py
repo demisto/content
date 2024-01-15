@@ -23,9 +23,9 @@ urllib3.disable_warnings()
 class SuppressWarningFilter(logging.Filter):    # pragma: no cover
     def filter(self, record):
         # Suppress all logger records, but send the important ones to demisto logger
-        if record.levelno == logging.WARNING]
+        if record.levelno == logging.WARNING:
             demisto.debug(record.getMessage())
-        elif record.levelno in [logging.ERROR, logging.CRITICAL]
+        elif record.levelno in [logging.ERROR, logging.CRITICAL]:
             demisto.error(record.getMessage())
         return False
 
@@ -1247,6 +1247,7 @@ class Taxii2FeedClient:
 
                     # we currently don't support extension object
                     if obj_type == 'extension-definition':
+                        demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
                         continue
                     elif obj_type == 'relationship':
                         relationships_lst.append(obj)
