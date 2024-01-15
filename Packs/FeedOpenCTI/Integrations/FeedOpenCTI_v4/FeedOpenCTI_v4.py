@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import List, Optional, Tuple
 import urllib3
-
 from pycti import OpenCTIApiClient
 
 # Disable insecure warnings
@@ -98,7 +97,6 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
             'operator': 'eq',
             'mode': 'and'
         })
-
 
     observables = client.stix_cyber_observable.list(filters=filters, after=last_run_id, first=limit,
                                                     withPagination=True)
