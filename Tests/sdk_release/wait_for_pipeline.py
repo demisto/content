@@ -8,7 +8,7 @@ from Tests.scripts.utils.log_util import install_logging
 
 
 GITLAB_SERVER_URL = 'https://gitlab.xdr.pan.local'
-TIMEOUT = 60 * 60 * 6  # 6 hours - TODO - Decrease after replacing id-set with graph
+TIMEOUT = 60 * 60 * 6  # 6 hours
 
 
 def get_pipeline_status(pipeline_id, project_id, token):
