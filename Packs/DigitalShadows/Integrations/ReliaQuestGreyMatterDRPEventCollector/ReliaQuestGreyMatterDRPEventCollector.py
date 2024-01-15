@@ -141,7 +141,7 @@ def test_module(client: ReilaQuestClient) -> str:
     return "ok"
 
 
-def get_triage_item_ids_to_events(client: ReilaQuestClient, event_created_after: str, max_fetch: int = DEFAULT_MAX_FETCH) -> Dict[str, List[Dict]]:
+def get_triage_item_ids_to_events(client: ReilaQuestClient, event_created_after: str, max_fetch: int = DEFAULT_MAX_FETCH) -> Tuple[Dict[str, List[Dict]], str]:
     """
     Maps the triage item IDs to events.
     Triage item ID can refer to multiple events.
@@ -200,7 +200,7 @@ def enrich_events_with_incident_or_alert_metadata(
     for alert_incident in alerts_incidents:
         _id = alert_incident.get("id")
         for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:
-            event[event_type] = event
+            event[event_type] = alert_incident
         for asset in alert_incident.get("assets") or []:
             if asset_id := asset.get("id"):
                 if asset_id not in event_ids_to_triage_ids:
