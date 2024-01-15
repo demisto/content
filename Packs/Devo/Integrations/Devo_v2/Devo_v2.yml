@@ -117,6 +117,7 @@ script:
       description: Overrides the global Devo base domain for linq linking.
     - name: fields_to_view
       description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.
+      isArray: true
     outputs:
     - contextPath: Devo.QueryResults
       description: List of dictionary alerts from the specified time range.
@@ -151,6 +152,7 @@ script:
       description: Overrides the global Devo base domain for linq linking.
     - name: fields_to_view
       description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.
+      isArray: true
     outputs:
     - contextPath: Devo.AlertsResults
       description: List of dictionary alerts from the specified time range.
@@ -185,6 +187,7 @@ script:
       defaultValue: "50"
     - name: fields_to_view
       description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.
+      isArray: true
     outputs:
     - contextPath: Devo.MultiResults
       description: A list of dictionary results.
@@ -229,7 +232,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.84568
+  dockerimage: demisto/devo:1.0.0.84990
   isfetch: true
   subtype: python3
 tests:
