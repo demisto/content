@@ -16,8 +16,17 @@ import tempfile
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+
+class SuppressWarningFilter(logging.Filter):
+    def filter(self, record):
+        demisto.debug(record.getMessage())
+        # Suppress warnings by returning False for the records with warning level
+        return record.levelno in [logging.ERROR, logging.CRITICAL]
+
+
 v21_logger = logging.getLogger("taxii2client.v21")
-v21_logger.setLevel(logging.CRITICAL)
+v21_logger.addFilter(SuppressWarningFilter())
 
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
