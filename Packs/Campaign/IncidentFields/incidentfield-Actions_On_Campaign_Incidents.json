@@ -16,10 +16,10 @@
     "required": false,
     "selectValues": [
         "Close",
-        "Link",
-        "Link \u0026 Close",
         "Reopen",
-        "Unlink",
+        "Add To Campaign",
+        "Add To Campaign \u0026 Close",
+        "Remove From Campaign",
         "Take Ownership"
     ],
     "sla": 0,
