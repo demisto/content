@@ -85,7 +85,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
    'mode': 'and',
     'filters': [{
         'key': 'entity_type',
-       'values': [indicator_type],
+       'values': indicator_type,
        'operator': 'eq',
        'mode': 'or'
     }],
