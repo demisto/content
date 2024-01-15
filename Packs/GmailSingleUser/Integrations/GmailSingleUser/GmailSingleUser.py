@@ -931,7 +931,7 @@ class Client:
                 transientFileCID = None
                 msg = MIMEText(body, 'plain', 'utf-8')
                 attach_body_to.attach(msg)  # type: ignore
-                
+
             attachments = self.collect_attachments(entry_ids, file_names)
             manual_attachments = self.collect_manual_attachments()
             transientAttachments = self.transient_attachments(transientFile, transientFileContent, transientFileCID)
