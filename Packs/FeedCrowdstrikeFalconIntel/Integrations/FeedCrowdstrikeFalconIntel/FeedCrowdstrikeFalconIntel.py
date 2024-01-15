@@ -81,6 +81,7 @@ class Client(BaseClient):
                     },
                     'fields': fields
                 }
+                demisto.debug(f'Created the indicator {indicator} with value {actor.get("name")}')
                 demisto.debug(f'Got the following fields: {fields} for actor id {fields.get("stixid")}')
                 indicator['rawJSON'].update(actor)
                 demisto.debug(f'rawJson for actor id {actor.get("id")}: {actor}')
