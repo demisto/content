@@ -58,7 +58,11 @@ class MsGraphClient:
         return raw_response.get('value', []), raw_response
 
     def get_managed_device(self, device_id: str) -> tuple[Any, str]:
-        url_suffix: str = f'https://graph.microsoft.com/v1.0/deviceManagement/managedDevices/{device_id}?$select=id,physicalMemoryInBytes,deviceName'
+        url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
+        return self.ms_client.http_request('GET', url_suffix), device_id
+
+    def get_managed_device_physical_memory(self, device_id: str) -> tuple[Any, str]:
+        url_suffix: str = f'/deviceManagement/managedDevices/{device_id}?$select=id,physicalMemoryInBytes,deviceName'
         return self.ms_client.http_request('GET', url_suffix), device_id
 
     def make_action(self, device_id: str, action: str, body: str = None) -> None:
@@ -229,6 +233,7 @@ def build_device_object(raw_device: dict) -> dict:
         'TotalStorageSpaceInBytes': raw_device.get('totalStorageSpaceInBytes'),
         'FreeStorageSpaceInBytes': raw_device.get('freeStorageSpaceInBytes'),
         'ManagedDeviceName': raw_device.get('managedDeviceName'),
+        'physicalMemoryInBytes': raw_device.get('physicalMemoryInBytes'),
         'PartnerReportedThreatState': raw_device.get('partnerReportedThreatState')
     })
 
@@ -254,15 +259,12 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
 
 def find_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     device_name: str = str(args.get('device_name'))
-    list_raw_devices, raw_response = client.find_managed_devices(device_name)
-    list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
-    entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
+    raw_device, raw_response = client.find_managed_devices(device_name)
+    entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': raw_device}
     human_readable: str = f'Managed device {device_name} not found.'
-    if list_devices:
+    if raw_device:
         name: str = f'List managed devices with name {device_name}'
-        if len(list_devices) == 1:
-            name = f'Managed device {list_devices[0].get("Name", "")}'
-        human_readable = tableToMarkdown(name=name, t=list_raw_devices, headers=HEADERS['raw_device'],
+        human_readable = tableToMarkdown(name=name, t=raw_device, headers=HEADERS['raw_device'],
                                          headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
                                          removeNull=True)
     return_outputs(human_readable, entry_context, raw_response)
@@ -281,6 +283,20 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
                                          headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
                                          removeNull=True)
     return_outputs(human_readable, entry_context, raw_response)
+
+
+def get_managed_device_physical_memory_command(client: MsGraphClient, args: dict) -> None:
+    device_id: str = str(args.get('device_id'))
+    raw_response, device_id = client.get_managed_device_physical_memory(device_id)
+
+    device: dict = build_device_object(raw_response)
+    entry_context: dict = {'MSGraphDeviceManagement.DeviceMemory(val.ID === obj.ID)': device}
+    device_name: str = device.get('Name', '')
+    human_readable: str = f'Managed device {device_id} not found.'
+    if device:
+        human_readable = tableToMarkdown(name=f'Managed device {device_name}', t=device, removeNull=True,
+                                         headers=['physicalMemoryInBytes', 'id'])
+    return_outputs(human_readable, entry_context, device)
 
 
 def disable_lost_mode_command(client: MsGraphClient, args: dict) -> None:
@@ -448,6 +464,8 @@ def main():
             list_managed_devices_command(client, args)
         elif command == 'msgraph-get-managed-device-by-id':
             get_managed_device_command(client, args)
+        elif command == 'msgraph-get-managed-device-physical-memory-by-id':
+            get_managed_device_physical_memory_command(client, args)
         elif command == 'msgraph-device-disable-lost-mode':
             disable_lost_mode_command(client, args)
         elif command == 'msgraph-locate-device':
