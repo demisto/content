@@ -150,7 +150,11 @@ def get_triage_item_ids_to_events(client: ReilaQuestClient, event_created_after:
         {"id-1": ["event-1", "event-2"]...}
     """
     events = client.list_triage_item_events(event_created_after=event_created_after, limit=max_fetch)
-    latest_created_item = get_latest_incident_created_time(events, created_time_field="event-created", date_format=DATE_FORMAT)
+    latest_created_item = None
+    if events:
+        latest_created_item = get_latest_incident_created_time(
+            events, created_time_field="event-created", date_format=DATE_FORMAT
+        )
     _triage_item_ids_to_events = {}
     for event in events:
         if triage_item_id := event.get("triage-item-id"):
@@ -226,7 +230,7 @@ def enrich_events_with_assets_metadata(
                 event["assets"].append(asset)
 
 
-def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> list[dict]:
+def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> Tuple[List[dict], Dict[str, str]]:
 
     _time = last_run.get("time")
     triage_item_ids_to_events, latest_created_item = get_triage_item_ids_to_events(client, event_created_after=_time, max_fetch=max_fetch)
@@ -272,8 +276,10 @@ def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: 
     for items in triage_item_ids_to_events.values():
         events.extend(items)
 
-    demisto.setLastRun({"time": latest_created_item})
-    return events
+    # if latest_created_item = None, no new events were fetched, keep the same last-run until new events will be created
+    demisto.setLastRun({"time": latest_created_item or _time})
+    new_last_run = {"time": latest_created_item or _time}
+    return events, new_last_run
 
 
 def main() -> None:
@@ -300,11 +306,13 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == "fetch-events":
+            events, new_last_run = fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
             send_events_to_xsiam(
-                fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch),
+                events,
                 vendor=VENDOR,
                 product=PRODUCT
             )
+            demisto.setLastRun(new_last_run)
         elif command == "reila-quest-get-events":
             pass
         else:
