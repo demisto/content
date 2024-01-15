@@ -34,6 +34,10 @@ jobs:
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit
+    
+    # This step has to be removed after updating to `demisto-sdk` 1.25.3    
+    - name: Create coverage directory
+      run: mkdir -p .pre-commit/coverage
       
     - name: run pre-commit
       env:
