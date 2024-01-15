@@ -1,0 +1,6 @@
+fromversion: 8.3.0
+id: GitGuardian_ModelingRule
+name: GitGuardian Modeling Rule
+rules: ''
+schema: ''
+tags: GitGuardian
