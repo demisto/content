@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cloud Response - Azure
-description: "This playbook provides response actions to Azure. The following are available for execution automatically/manually:\n- Resource remediation    \n   - Delete the instance\n   - Power off the instance\n- Identity remediation:\n   - Disable the user\n   - Delete the user\n- Block indicators"
+description: "This playbook provides response actions to Azure. The following are available for execution automatically/manually:\n- Resource remediation    \n   - Delete the instance\n   - Power off the instance\n- Identity remediation:\n   - Disable the user\n   - Delete the user\n- Block indicators."
 starttaskid: "0"
 tasks:
   "0":
@@ -809,10 +809,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 0ddcddea-3cd0-438e-8c53-43afe80794cc
+    taskid: b1e272ac-82e0-49ac-8ba3-90eea0e26f7b
     type: collection
     task:
-      id: 0ddcddea-3cd0-438e-8c53-43afe80794cc
+      id: b1e272ac-82e0-49ac-8ba3-90eea0e26f7b
       version: -1
       name: Choose user to remediate
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
@@ -836,7 +836,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
         simple: XCLOUD Cryptominig Alert - User Remediation
       body:
@@ -974,10 +974,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 37757431-ae42-4631-8f57-52e57385a3d9
+    taskid: e5576fdc-78ac-4ed2-8344-9a212dc03f7e
     type: collection
     task:
-      id: 37757431-ae42-4631-8f57-52e57385a3d9
+      id: e5576fdc-78ac-4ed2-8344-9a212dc03f7e
       version: -1
       name: Choose indicators to block
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
@@ -1001,7 +1001,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
         simple: XCLOUD Cryptominig Alert - Block Indicators
       body:
@@ -1179,10 +1179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: d54db917-c724-44dc-8a03-ebaba5d923a5
+    taskid: d5484895-de9f-4476-8084-61335a33bf9f
     type: regular
     task:
-      id: d54db917-c724-44dc-8a03-ebaba5d923a5
+      id: d5484895-de9f-4476-8084-61335a33bf9f
       version: -1
       name: Set selected resources to remediate
       description: Set a value in context under the key you entered.
@@ -1236,10 +1236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 917bd820-4a5d-4be0-8238-3edb309c8e87
+    taskid: b5f2ce1e-84c6-444f-8fe7-7afca8212926
     type: collection
     task:
-      id: 917bd820-4a5d-4be0-8238-3edb309c8e87
+      id: b5f2ce1e-84c6-444f-8fe7-7afca8212926
       version: -1
       name: Choose resources to remediate
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
@@ -1263,7 +1263,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
         simple: XCLOUD Cryptominig Alert - Resource Remediation
       body:
@@ -1297,6 +1297,13 @@ tasks:
             accessor: referenced_resource_name
             transformers:
             - operator: uniq
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: inputs.resourceName
+                  iscontext: true
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
