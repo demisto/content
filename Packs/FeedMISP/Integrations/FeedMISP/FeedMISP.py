@@ -581,18 +581,14 @@ def fetch_indicators(client: Client, params: Dict[str, str]) -> None:
     indicators = []
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_types)
     params_dict['page'] = 1
-    # response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
     search_query_per_batch = client.search_query(params_dict)
     demisto.debug('MISP_Feed_command_ before while')
     while len(search_query_per_batch):
         demisto.debug(f'search_query_per_page: number of indicators: {len(search_query_per_batch)}')
-        # response['response']['Attribute'].extend(search_query_per_batch)
         indicators_iterator = build_indicators_iterator(search_query_per_batch, params.get('url'))
+        demisto.debug(f'Type: 1{type(indicators_iterator)}')
         added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, True) or []
-        demisto.setLastRun({
-            'params': params_dict,
-            'timestamp': added_indicators_iterator[len(search_query_per_batch) - 1]['value']['timestamp']
-        })
+        demisto.debug(f'Type: 1{type(added_indicators_iterator)}')
         demisto.debug('MISP_Feed_command_ after set last run')
         for indicator in added_indicators_iterator:
             demisto.debug('MISP_Feed_command_ in for loop start')
@@ -609,6 +605,10 @@ def fetch_indicators(client: Client, params: Dict[str, str]) -> None:
         demisto.createIndicators(added_indicators_iterator)
         params_dict['page'] += 1
         search_query_per_batch = client.search_query(params_dict)
+    demisto.setLastRun({
+            'params': params_dict,
+            'timestamp': indicators[len(indicators) - 1]['value']['timestamp']
+        })
     demisto.debug(f"fetch indicator results: {indicators} /n/n fetch_indicators finished")
     demisto.debug('END of functionnnnnnn')
 
