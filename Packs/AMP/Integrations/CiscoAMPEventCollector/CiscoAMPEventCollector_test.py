@@ -48,10 +48,10 @@ def mock_client() -> Client:
         (
             {
                 "last_fetch": "2022-07-18T00:00:00.000Z",
-                "previous_ids": ["6159258594551267593", "6159258594551267594", "6159258594551267595"]
+                "previous_ids": ["6159258594551267592", "6159258594551267593", "6159258594551267594"]
             },
-            5,
-            ["6159258594551267599"]
+            1,
+            ["6159258594551267595"]
         ),
         (
             {},
@@ -91,8 +91,9 @@ def test_fetch_events(
     """
     mock_response_1 = load_mock_response("incidents_response_1.json")
     mock_response_2 = load_mock_response("incidents_response_2.json")
+    mock_response_3 = load_mock_response("incidents_response_3.json")
 
-    mocker.patch.object(Client, "get_events", side_effect=[mock_response_1, mock_response_2])
+    mocker.patch.object(Client, "get_events", side_effect=[mock_response_1, mock_response_2, mock_response_3])
     mocker.patch("CiscoAMPEventCollector.date_to_timestamp", return_value=1699360451000)
 
     from CiscoAMPEventCollector import fetch_events

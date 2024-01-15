@@ -6,10 +6,10 @@
             "next": "metadata_links_next"
         },
         "results": {
-            "total": "metadata_results_total",
-            "current_item_count": "metadata_results_current_item_count",
-            "index": "metadata_results_index",
-            "items_per_page": "metadata_results_items_per_page"
+            "total": 1000,
+            "current_item_count": 500,
+            "index": 0,
+            "items_per_page": 500
         }
     },
     "data": [

@@ -36,11 +36,11 @@ class Client(BaseClient):
             auth=(client_id, api_key),
         )
 
-    def get_events(self, start_date: int = None, limit: int = None, offset: int = None) -> Dict[str, Any]:
+    def get_events(self, start_date: str = None, limit: int = None, offset: int = None) -> Dict[str, Any]:
         """
         Get a list of events.
         Args:
-            start_date (int, optional): Fetch events that are newer than given time.
+            start_date (str, optional): Fetch events that are newer than given time.
                 Defaults to None.
             limit (int, optional): Maximum number of events to return.
                 Defaults to None.
@@ -94,51 +94,36 @@ def get_events(client, args):
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, params: dict, last_run: dict):
-    """
-       Fetches events from CiscoAMP API.
-    """
-    start_date = last_run.get("last_fetch")
-    if start_date is None:
-        start_date = dateparser.parse('1 week').strftime(ISO_8601_FORMAT)
+def get_earliest_events(client, start_date, offset=0):
+    # A loop of fetching earliest events,
+    while True:
+        response = client.get_events(start_date=start_date, limit=500, offset=offset)
+        # Check if there are more pages to fetch
+        if "next" not in response["metadata"]["links"]:
+            break
+        offset = response['metadata']['results']['total'] - 500
 
-    last_fetch_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
-    demisto.debug(f'Getting events from: {start_date}')
+    # Reverses the list of events so that the list is in ascending order
+    # so that the earliest event will be the first in the list
+    events = response.get("data")
+    events.reverse()
+    return events
 
-    max_events_per_fetch = arg_to_number(params.get('max_events_per_fetch')) or 1000
 
-    # The list of event ids that are suspected of being duplicates
-    previous_ids = set(last_run.get("previous_ids", []))
+def iterate_events(events, max_events_per_fetch, previous_ids, last_fetch_timestamp):
 
     # Copy the previous_ids list to manage the events list suspected of being duplicates for the next fetch
     new_previous_ids = previous_ids.copy()
-
-    events: list[dict] = []
-    offset: int = 0
-
-    # A loop of fetching the events,
-    # fetches all the events from the current time up
-    # to the provided start_time or last_fetch
-    while True:
-        response = client.get_events(start_date=start_date, limit=500, offset=offset)
-        events = events + response["data"]
-
-        # Check if there are more pages to fetch
-        if "next" not in response["metadata"]["links"]:
-            # Reverses the list of events so that the list is in ascending order
-            # so that the earliest event will be the first in the list
-            events.reverse()
-            break
-        offset = len(events)
-
     retrieve_events: list[dict[str, Any]] = []
     for event in events:
         # Break once the maximum number of retrieve_events has been achieved.
         if len(retrieve_events) >= max_events_per_fetch:
+            demisto.debug('We reached the "max_events_per_fetch" requested by the user')
             break
 
         # Skip if the incident ID has been fetched already.
         if (incident_id := str(event.get("id"))) in previous_ids:
+            demisto.debug(f'skip {event} as it is in the previous_ids')
             continue
 
         event_timestamp = event["timestamp"] * 1000
@@ -149,20 +134,54 @@ def fetch_events(client: Client, params: dict, last_run: dict):
         # And accordingly initializing the list of `previous_ids`
         # to the ids that belong to the time of the last event received
         if event_timestamp > last_fetch_timestamp:
+            demisto.debug('updating the last run')
             new_previous_ids = {incident_id}
             last_fetch_timestamp = event_timestamp
 
         # Adding the event ID when the event time is equal to the last received event
         elif event_timestamp == last_fetch_timestamp:
+            demisto.debug('adding id to the "new_previous_ids"')
             new_previous_ids.add(incident_id)
 
-    next_run = ({
+    last_run = {
         "last_fetch": timestamp_to_datestring(last_fetch_timestamp, is_utc=True),
         "previous_ids": list(new_previous_ids),
-    })
+    }
+
+    return last_run, retrieve_events
+
+
+def fetch_events(client: Client, params: dict, last_run: dict):
+    """
+       Fetches events from CiscoAMP API.
+    """
+    max_events_per_fetch = arg_to_number(params.get('max_events_per_fetch')) or 1000
+    retrieve_events = []
+    while max_events_per_fetch:
+        demisto.debug(f'{last_run=}')
+        start_date = last_run.get("last_fetch")
+        if start_date is None:
+            start_date = dateparser.parse('1 week').strftime(ISO_8601_FORMAT)
+
+        last_fetch_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
+        demisto.debug(f'Getting events from: {start_date}')
+
+        # The list of event ids that are suspected of being duplicates
+        previous_ids = set(last_run.get("previous_ids", []))
+
+        events = get_earliest_events(client, start_date)
+        demisto.debug(f'get {len(events)} events from request')
+        last_run, events = iterate_events(events, max_events_per_fetch, previous_ids, last_fetch_timestamp)
+        demisto.debug(f'remained {len(events)} after filtering')
+
+        retrieve_events += events
+
+        if not events:
+            break
+        max_events_per_fetch -= len(retrieve_events)
 
     demisto.debug(f'Fetched {len(retrieve_events)} events.')
-    return next_run, retrieve_events
+    return last_run, retrieve_events
 
 
 ''' MAIN FUNCTION '''
@@ -172,7 +191,6 @@ def main() -> None:
     """
     main function, parses params and runs command functions
     """
-
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
