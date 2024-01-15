@@ -392,6 +392,7 @@ class Pack:
     def statistics_metadata(self):
         return {
             Metadata.SERVER_MIN_VERSION: self._server_min_version,
+            Metadata.KEY_WORDS: self._keywords,
             Metadata.NAME: self._pack_name,
             Metadata.DOWNLOADS: self.downloads_count,
             Metadata.SEARCH_RANK: self._search_rank,
