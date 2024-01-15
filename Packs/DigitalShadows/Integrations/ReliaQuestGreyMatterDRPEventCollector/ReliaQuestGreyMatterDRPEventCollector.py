@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import hashlib
 
 from CommonServerUserPython import *  # noqa
 
@@ -81,7 +82,7 @@ class ReilaQuestClient(BaseClient):
                 One or more triage item identifiers to resolve
                 Must provide between 1 and 100 items.
         """
-        return self.http_request("/triage-items", params={"id": triage_item_ids})
+        return self.do_pagination(triage_item_ids, url_suffix="/triage-items")
 
     def get_alerts_by_ids(self, alert_ids: list[str]) -> List[Dict[str, Any]]:
         """
@@ -93,7 +94,7 @@ class ReilaQuestClient(BaseClient):
                 One or more alert identifiers to resolve
                 Must provide between 1 and 100 items.
         """
-        return self.http_request("/alerts", params={"id": alert_ids})
+        return self.do_pagination(alert_ids, url_suffix="/alerts")
 
     def get_incident_ids(self, incident_ids: list[str]) -> List[Dict[str, Any]]:
         """
@@ -102,7 +103,7 @@ class ReilaQuestClient(BaseClient):
         Args:
             incident_ids: a list of incident-IDs.
         """
-        return self.http_request("/incidents", params={"id": incident_ids})
+        return self.do_pagination(incident_ids, url_suffix="/incidents")
 
     def get_asset_ids(self, asset_ids: list[str]) -> List[Dict[str, Any]]:
         """
@@ -111,7 +112,36 @@ class ReilaQuestClient(BaseClient):
         Args:
             asset_ids: a list of asset-IDs.
         """
-        return self.http_request("/assets", params={"id": asset_ids})
+        return self.do_pagination(asset_ids, url_suffix="/assets")
+
+    def do_pagination(self, _ids: list[str], url_suffix: str) -> list[dict[str, Any]]:
+        """
+        Do pagination
+        """
+        chunk = 0
+        response = []
+        while chunk < len(_ids):
+            response.extend(self.http_request(url_suffix, params={"id": _ids[chunk: chunk + 100]}))
+            chunk += 100
+        return response
+
+
+class TriagedItemEvent:
+
+    def __init__(self, event: Dict):
+        self.event = event
+
+    def __eq__(self, other):
+        return hashlib.sha256(
+            json.dumps(self.event, sort_keys=True).encode()
+        ).hexdigest() == hashlib.sha256(
+            json.dumps(other.event, sort_keys=True).encode()
+        ).hexdigest()
+
+    def __hash__(self):
+        return hash(hashlib.sha256(
+            json.dumps(self.event, sort_keys=True).encode()
+        ).hexdigest())
 
 
 def test_module(client: ReilaQuestClient) -> str:
@@ -127,30 +157,28 @@ def test_module(client: ReilaQuestClient) -> str:
 
 def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
 
-    last_run = last_run.get("time")
+    _time = last_run.get("time")
     events = {
         event.get("triage-item-id"): event for event in
-        client.list_triage_item_events(event_created_after=last_run, limit=max_fetch)
+        client.list_triage_item_events(event_created_after=_time, limit=max_fetch)
     }
-    triage_item_ids = set(events.keys())
-
-    demisto.info(f"Fetched the following event IDs: {events.keys()}")
-
-    triage_items = client.triage_items(list(triage_item_ids))
+    triage_item_ids = list(events.keys())
+    demisto.info(f"Fetched the following event IDs: {triage_item_ids}")
+    triage_items = client.triage_items(triage_item_ids)
 
     alert_ids_to_triage_ids, incident_ids_to_triage_ids = {}, {}
 
     for triaged_item in triage_items:
-        item_id = triaged_item.get("id")
-        if item_id in events:
-            events[item_id]["triage-item"] = triaged_item
+        unique_item_id = triaged_item.get("id")
+        if unique_item_id in events:
+            events[unique_item_id]["triage-item"] = triaged_item
 
         source = triaged_item.get("source") or {}
         if alert_id := source.get("alert-id"):
-            alert_ids_to_triage_ids[item_id] = alert_id
+            alert_ids_to_triage_ids[alert_id] = unique_item_id
 
         if incident_id := source.get("incident-id"):
-            incident_ids_to_triage_ids[incident_id] = item_id
+            incident_ids_to_triage_ids[incident_id] = unique_item_id
 
     alert_ids = list(alert_ids_to_triage_ids.keys())
     incident_ids = list(incident_ids_to_triage_ids.keys())
@@ -161,15 +189,35 @@ def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: 
     alerts = client.get_alerts_by_ids(alert_ids)
     incidents = client.get_incident_ids(incident_ids)
 
+    assets_ids_to_triage_ids = {}
+
     for alert in alerts:
         _id = alert.get("id")
         events[alert_ids_to_triage_ids[_id]]["alert"] = alert
+        for asset in alert.get("assets") or []:
+            if asset_id := asset.get("id"):
+                if asset_id in alert_ids_to_triage_ids:
+                    assets_ids_to_triage_ids[asset_id].append(alert_ids_to_triage_ids[_id])
+                else:
+                    assets_ids_to_triage_ids[asset_id] = [alert_ids_to_triage_ids[_id]]
 
     for incident in incidents:
         _id = incident.get("id")
         events[incident_ids_to_triage_ids[_id]]["incident"] = incident
+        for asset in incident.get("assets") or []:
+            if asset_id := asset.get("id"):
+                assets_ids_to_triage_ids[asset_id] = alert_ids_to_triage_ids[_id]
 
+    asset_ids = list(assets_ids_to_triage_ids.keys())
+    assets = client.get_asset_ids(asset_ids)
+    for asset in assets:
+        _id = asset.get("id")
+        if "assets" in events[assets_ids_to_triage_ids[_id]]:
+            events[assets_ids_to_triage_ids[_id]]["assets"].append(asset)
+        else:
+            events[assets_ids_to_triage_ids[_id]]["assets"] = [asset]
 
+    print()
 
 ''' MAIN FUNCTION '''
 
@@ -183,12 +231,11 @@ def main() -> None:
     params = demisto.params()
     url = params.get("url")
     account_id = params.get("account_id")
-    max_fetch = arg_to_number(params.get("max_fetch_events")) or 200
-    first_fetch = dateparser.parse(params.get("first_fetch_events"), settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
+    max_fetch = arg_to_number(params.get("max_fetch_events")) or DEFAULT_MAX_FETCH
     credentials = params.get("credentials") or {}
     username = credentials.get("identifier")
     password = credentials.get("password")
-    verify_ssl = not argToBoolean(password.get("insecure", True))
+    verify_ssl = not argToBoolean(params.get("insecure", True))
     proxy = argToBoolean(params.get("proxy", False))
 
     command = demisto.command()
@@ -199,7 +246,7 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == "fetch-events":
-            pass
+            fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
         elif command == "reila-quest-get-events":
             pass
         else:
@@ -207,7 +254,8 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        import traceback
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}, {traceback.format_exc()}')
 
 
 ''' ENTRY POINT '''
