@@ -181,8 +181,8 @@ def adding_build_to_the_queue(storage_bucket: Any, lock_repository_name: str, jo
     blob.upload_from_string('')
 
 
-def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: str, job_id: str, my_prev_place: int | None = None) \
-        -> tuple[int, str]:
+def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: str, job_id: str,
+                              my_prev_place: int | None = None) -> tuple[int, str]:
     """
     get the place in the queue for job-id by the time-created of lock-file time-created.
     Args:
@@ -362,7 +362,8 @@ def wait_for_build_to_be_first_in_queue(storage_client: storage.Client,
     sleep(random.randint(1, 3))
     my_place_in_the_queue = None
     while True:
-        my_place_in_the_queue, previous_build = get_my_place_in_the_queue(storage_client, gcs_locks_path, job_id, my_place_in_the_queue)
+        my_place_in_the_queue, previous_build = get_my_place_in_the_queue(
+            storage_client, gcs_locks_path, job_id, my_place_in_the_queue)
         logging.info(f'My place in the queue is: {my_place_in_the_queue}')
 
         if my_place_in_the_queue == 0:
