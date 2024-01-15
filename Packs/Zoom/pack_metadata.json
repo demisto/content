@@ -1,5 +1,5 @@
 {
-    "name": "Zoom",
+    "name": "Zoom test",
     "description": "Use the Zoom integration manage your Zoom users and meetings",
     "support": "xsoar",
     "currentVersion": "1.6.6",
@@ -16,5 +16,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "serverMinVersion": "8.2.0"
 }
