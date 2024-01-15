@@ -228,7 +228,7 @@ script:
       - "true"
       - "false"
       name: inactive
-      description: Whether to inactivate the asset.
+      description: Whether to deactivate the asset.
     description: Updates the attributes of a single asset.
     name: kenna-update-asset
   - arguments:
