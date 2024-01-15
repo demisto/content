@@ -13,6 +13,7 @@ def main():
             'extractor': params.get('extractor'),
             'indicator': params.get('indicator', 'indicator'),
             'rawjson_include_indicator_type': params.get('rawjson_include_indicator_type'),
+            'remove_ports': params.get('remove_ports', False)
         }
     }
     auto_detect = params.get('auto_detect_type')

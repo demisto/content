@@ -72,6 +72,12 @@ configuration:
   name: auto_detect_type
   type: 8
   required: false
+- additionalinfo: 102.168.1.1:8080 -> 192.168.1.1
+  defaultvalue: 'false'
+  display: Remove ports from IPv4 type indicators
+  name: remove_ports
+  type: 8
+  required: false
 - additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
@@ -138,6 +144,9 @@ script:
     - defaultValue: '50'
       description: The maximum number of results to return. The default value is 50.
       name: limit
+    - defaultValue: 'false'
+      description: Remove ports from IPv4s
+      name: remove_ports
     description: Gets the feed indicators.
     name: json-get-indicators
   dockerimage: demisto/py3-tools:1.0.0.47376

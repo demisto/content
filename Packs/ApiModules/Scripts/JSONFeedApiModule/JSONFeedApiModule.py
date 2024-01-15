@@ -239,7 +239,8 @@ def test_module(client: Client, limit) -> str:
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
-                             create_relationships: bool = False, limit: int = 0, **kwargs) -> Tuple[List[dict], bool]:
+                             create_relationships: bool = False, limit: int = 0, remove_ports: bool = False,
+                             **kwargs) -> Tuple[List[dict], bool]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -295,7 +296,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicators.extend(
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
                                           use_prefix_flat, feedTags, auto_detect, mapping_function,
-                                          create_relationships, create_relationships_function))
+                                          create_relationships, create_relationships_function, remove_ports))
 
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
@@ -319,10 +320,10 @@ def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
 def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                      indicator_type: str, indicator_field: str, use_prefix_flat: bool,
                      feedTags: list, auto_detect: bool, mapping_function: Callable = indicator_mapping,
-                     create_relationships: bool = False, relationships_func: Callable = None) -> List[dict]:
+                     create_relationships: bool = False, relationships_func: Callable = None,
+                     remove_ports = False) -> List[dict]:
     indicator_list = []
     mapping = feed_config.get('mapping')
-    remove_ports = feed_config.get('remove_ports', False)
     take_value_from_flatten = False
     indicator_value = item.get(indicator_field)
     if not indicator_value:
@@ -352,7 +353,6 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
         indicator_value = attributes.get(indicator_field)
     indicator['value'] = indicator_value
     attributes['value'] = indicator_value
-
     if mapping:
         mapping_function(mapping, indicator, attributes)
 
@@ -361,6 +361,9 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
 
     if feed_config.get('rawjson_include_indicator_type'):
         item['_indicator_type'] = current_indicator_type
+
+    if remove_ports and indicator['type'] == 'IP':
+        indicator['value'] = indicator['value'].split(':')[0]
 
     indicator['rawJSON'] = item
 
@@ -443,6 +446,7 @@ def feed_main(params, feed_name, prefix):
             return_results(test_module(client, limit))
 
         elif command == 'fetch-indicators':
+            remove_ports = argToBoolean(params.get('remove_ports', False))
             create_relationships = params.get('create_relationships')
             indicators, no_update = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
                                                              create_relationships)
@@ -464,9 +468,10 @@ def feed_main(params, feed_name, prefix):
                         demisto.createIndicators(b)
 
         elif command == f'{prefix}get-indicators':
-            # dummy command for testing
+            remove_ports = argToBoolean(demisto.args().get('remove_ports', False))
             create_relationships = params.get('create_relationships')
-            indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships, limit)
+            indicators, _ = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
+                                                     create_relationships, limit, remove_ports)
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 

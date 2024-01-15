@@ -131,7 +131,7 @@ def test_json_feed_with_config_mapping():
 
 FLAT_LIST_OF_INDICATORS = '''{
     "hooks": [
-    "1.1.1.1",
+    "1.1.1.1:8080",
     "2.2.2.2",
     "3.3.3.3"
     ]
@@ -143,7 +143,8 @@ def test_list_of_indicators_with_no_json_object():
         'Github': {
             'url': 'https://api.github.com/meta',
             'extractor': "hooks",
-            'indicator': None
+            'indicator': None,
+            'remove_ports': "true"
         }
     }
 
@@ -157,7 +158,7 @@ def test_list_of_indicators_with_no_json_object():
         )
 
         indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'],
-                                                 auto_detect=True)
+                                                 auto_detect=True, remove_ports=True)
         assert len(indicators) == 3
         assert indicators[0].get('value') == '1.1.1.1'
         assert indicators[0].get('type') == 'IP'
@@ -169,7 +170,8 @@ def test_post_of_indicators_with_no_json_object():
         'Github': {
             'url': 'https://api.github.com/meta',
             'extractor': "hooks",
-            'indicator': None
+            'indicator': None,
+            'remove_ports': "false"
         }
     }
 
@@ -186,7 +188,7 @@ def test_post_of_indicators_with_no_json_object():
         indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
         assert matcher.last_request.text == 'test=1'
         assert len(indicators) == 3
-        assert indicators[0].get('value') == '1.1.1.1'
+        assert indicators[0].get('value') == '1.1.1.1:8080'
         assert indicators[0].get('type') == 'IP'
         assert indicators[1].get('rawJSON') == {'indicator': '2.2.2.2'}
 
