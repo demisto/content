@@ -12,8 +12,6 @@ from junitparser import TestSuite, JUnitXml
 from Tests.scripts.utils import logging_wrapper as logging
 from gitlab.v4.objects.pipelines import ProjectPipeline
 from gitlab.v4.objects.commits import ProjectCommit
-from datetime import datetime, timedelta
-from dateutil import parser
 
 
 CONTENT_NIGHTLY = 'Content Nightly'
@@ -66,7 +64,7 @@ FAILED_TO_MSG = {
 
 # This is the github username of the bot (and its reviewer) that pushes contributions and docker updates to the content repo.
 CONTENT_BOT = 'content-bot'
-CONTENT_BOT_REVIEWER ='github-actions[bot]'
+CONTENT_BOT_REVIEWER = 'github-actions[bot]'
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -274,7 +272,7 @@ def get_person_in_charge(commit):
     return name, pr
 
 
-def are_pipelines_in_order(current_pipeline:ProjectPipeline, previous_pipeline: ProjectPipeline)-> bool:
+def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
     """
     This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions 
     that pipelines are not in the same order as the commits.
@@ -284,13 +282,13 @@ def are_pipelines_in_order(current_pipeline:ProjectPipeline, previous_pipeline: 
     Returns:
         bool
     """
-    
+
     previous_pipeline_timestamp = parser.parse(previous_pipeline.created_at)
     current_pipeline_timestamp = parser.parse(current_pipeline.created_at)
     return current_pipeline_timestamp > previous_pipeline_timestamp
 
 
-def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline)-> bool | None:
+def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool | None:
     """
     Is the current pipeline status a pivot from the previous pipeline status.
     Args:
@@ -315,7 +313,7 @@ def get_reviewer(pr_url: str) -> str | None:
     approved_reviewer = None
     try:
         # Extract the owner, repo, and pull request number from the URL
-        _, _, _, repo_owner, repo_name, _, pr_number = pr_url.split("/")  
+        _, _, _, repo_owner, repo_name, _, pr_number = pr_url.split("/")
 
         # Get reviewers
         reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
@@ -349,7 +347,9 @@ def get_commit_by_sha(commit_sha: str, list_of_commits: list) -> ProjectCommit |
 def get_pipeline_by_commit(commit, list_of_pipelines):
     return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)
 
-def create_shame_message(current_commit: ProjectCommit, pipeline_changed_status: bool, name_mapping_path: str)-> tuple[str, str, str]:
+
+def create_shame_message(current_commit: ProjectCommit,
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str]:
     """
     Create a shame message for the person in charge of the commit.
     """
@@ -361,7 +361,7 @@ def create_shame_message(current_commit: ProjectCommit, pipeline_changed_status:
     color = "danger" if pipeline_changed_status else "good"
     emoji = ":cry:" if pipeline_changed_status else ":muscle:"
     shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
-                        f" That was done in this {slack_link(pr,'PR.')}", color)
+                     f" That was done in this {slack_link(pr,'PR.')}", color)
     return shame_message
 
 
