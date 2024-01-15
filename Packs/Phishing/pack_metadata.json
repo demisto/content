@@ -37,6 +37,10 @@
             "mandatory": false,
             "display_name": "Microsoft Exchange On-Premise"
         },
+        "MicrosoftExchangeOnline": {
+            "mandatory": false,
+            "display_name": "Microsoft Exchange Online"
+        },
         "MicrosoftGraphListener": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail Single User"
