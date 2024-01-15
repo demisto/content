@@ -308,10 +308,10 @@ def bucket_upload_results(bucket_artifact_folder: Path,
         threaded_messages.append({
             'fallback': f'Successfully uploaded {marketplace_name} Pack(s): '
                         f'{", ".join(sorted({*successful_packs},key=lambda s: s.lower()))} to {marketplace_name}',
-            'title': f'Successfully uploaded {len(successful_packs)} Pack(s) to {marketplace_name}.',
+            'title': f'Successfully uploaded {len(successful_packs)} Pack(s) to {marketplace_name}:',
             'color': 'good',
             'fields': [{
-                'title': 'Pack(s):',
+                'title': '',
                 'value': ', '.join(sorted({*successful_packs}, key=lambda s: s.lower())),
                 'short': False
             }]
@@ -327,10 +327,10 @@ def bucket_upload_results(bucket_artifact_folder: Path,
         threaded_messages.append({
             'fallback': f'Successfully uploaded to {marketplace_name} Private Pack(s): '
                         f'{", ".join(sorted({*successful_private_packs}, key=lambda s: s.lower()))}',
-            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private packs.',
+            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private packs:',
             'color': 'good',
             'fields': [{
-                'title': 'Pack(s):',
+                'title': '',
                 'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
                 'short': False
             }]
@@ -345,10 +345,10 @@ def bucket_upload_results(bucket_artifact_folder: Path,
         threaded_messages.append({
             'fallback': f'Failed to upload {marketplace_name} Pack(s): '
                         f'{", ".join(sorted({*failed_packs}, key=lambda s: s.lower()))}',
-            'title': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}.',
+            'title': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}:',
             'color': 'danger',
             'fields': [{
-                'title': 'Pack(s):',
+                'title': '',
                 'value': ', '.join(sorted({*failed_packs}, key=lambda s: s.lower())),
                 'short': False
             }]
