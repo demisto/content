@@ -788,7 +788,7 @@ script:
     deprecated: false
     execution: false
   - name: zerofox-search-compromised-domain
-    description: Looks for a given domain in Zerofox's CTI feeds
+    description: Looks for a given domain in Zerofox's CTI feeds.
     arguments:
     - name: domain
       required: true
@@ -805,7 +805,7 @@ script:
       type: string
       description: Related domains to the threat separated by commas.
   - name: zerofox-search-compromised-email
-    description: Looks for a given email in ZeroFox's CTI feeds
+    description: Looks for a given email in ZeroFox's CTI feeds.
     arguments:
     - name: email
       required: true
@@ -823,7 +823,7 @@ script:
       type: string
       description: Date in which the email was found related to a threat.
   - name: zerofox-search-malicious-ip
-    description: Looks for malicious ips in ZeroFox's CTI feeds
+    description: Looks for malicious ips in ZeroFox's CTI feeds.
     arguments:
     - name: ip
       required: true
@@ -841,7 +841,7 @@ script:
       type: string
       description: Date in which the ip was found related to a threat.
   - name: zerofox-search-malicious-hash
-    description: Looks for registered hashes in ZeroFox's CTI feeds
+    description: Looks for registered hashes in ZeroFox's CTI feeds.
     arguments:
     - name: hash
       required: true
