@@ -77,7 +77,11 @@ def main():
         sys.exit(1)
 
     pipeline_url = get_pipeline_info(pipeline_id, project_id, token).get('web_url')
-    print(pipeline_url)
+
+    if pipeline_status != 'success':
+        logging.info(f'The pipeline status is {pipeline_status}. See pipeline here: {pipeline_url}')
+        sys.exit(1)
+
     logging.info(f'The pipeline has finished. See pipeline here: {pipeline_url}')
 
 
