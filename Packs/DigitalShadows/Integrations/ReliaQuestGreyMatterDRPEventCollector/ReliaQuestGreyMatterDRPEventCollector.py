@@ -115,40 +115,29 @@ class ReilaQuestClient(BaseClient):
 
 
 def test_module(client: ReilaQuestClient) -> str:
-    """Tests API connectivity and authentication'
+    """
+    Tests that the credentials to ReliaQuest is ok
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Args:
+        client: the relia quest client
     """
     client.list_triage_item_events(limit=1)
     return "ok"
 
-
-def collect_event_ids_by_type(triage_item_ids: )
-
-
 def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
 
-    events = client.list_triage_item_events()
-    triage_item_ids = [event.get("triage-item-id") for event in events]
-    demisto.info(f"Fetched the following item IDs: {triage_item_ids}")
+    last_run = last_run.get("time")
+    events = {event.get("triage-item-id"): event for event in client.list_triage_item_events(event_created_after=last_run, limit=max_fetch)}
+    triage_item_ids = set(events.keys())
 
-    triaged_items = client.triage_items(triage_item_ids)
-    for item in triaged_items:
-        triage_item = item.get("triage-item") or {}
-        if triage_item.get("source")
+    demisto.info(f"Fetched the following event IDs: {events.keys()}")
 
+    triage_items = client.triage_items(list(triage_item_ids))
 
-    incident_ids = [(item.get("triage-item") or {}).get() for item in triaged_items]
-
-
+    for triaged_item in triage_items:
+        item_id = triaged_item.get("id")
+        if item_id in events:
+            events[item_id].update({"triage-item": triaged_item})
 
 
 ''' MAIN FUNCTION '''
