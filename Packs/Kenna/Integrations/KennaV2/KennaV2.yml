@@ -223,6 +223,12 @@ script:
     - description: Notes about the asset.
       name: notes
       required: true
+    - auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      name: inactive
+      description: Whether to inactivate the asset.
     description: Updates the attributes of a single asset.
     name: kenna-update-asset
   - arguments:
@@ -439,23 +445,6 @@ script:
     - contextPath: Kenna.ConnectorRunsList.ReopenedVulnerabilities
       description: Amount of re-opened vulnerabilities.
       type: Number
-  - name: kenna-inactivate-asset
-    arguments:
-    - name: asset_id
-      required: true
-      description: The ID of the asset to inactivate.
-    - name: notes
-      required: true
-      description: Notes about the asset.
-    - auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      defaultValue: "false"
-      required: true
-      name: inactive
-      description: Whether to inactivate the asset.
-    description: Inactivates a single asset.
   - name: kenna-search-assets-by-external-id
     arguments:
     - name: external_id

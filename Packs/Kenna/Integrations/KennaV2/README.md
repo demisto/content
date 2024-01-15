@@ -257,18 +257,16 @@ Updates the attributes of a single asset.
 | --- | --- | --- |
 | id | The ID of the asset to update. | Required | 
 | notes | Notes about the asset. | Required | 
+| inactive | Whether to inactivate the asset. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 #### Command example
-
 ```!kenna-update-asset id=dummy notes="New asset info"```
-
 #### Human Readable Output
 
->Asset dummy was updated
+>Asset with ID dummy was successfully updated.
 
 ### kenna-update-vulnerability
 
@@ -661,35 +659,6 @@ Returns JSON data on all the runs of a given connector.
 >| 0 | 0 | 0 | 0 | 0 | 0 | 2019-10-24T19:13:36.000Z | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2019-10-24T19:02:02.000Z | true | 0 | 0 |
 
 
-### kenna-inactivate-asset
-
-***
-Inactivates a single asset.
-
-#### Base Command
-
-`kenna-inactivate-asset`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asset_id | The ID of the asset to inactivate. | Required | 
-| notes | Notes about the asset. | Required | 
-| inactive | Whether to inactivate the asset. Possible values are: true, false. Default is false. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command example
-
-```!kenna-inactivate-asset asset_id=dummy notes="test" inactive=true```
-
-#### Human Readable Output
-
->Asset with ID dummy was successfully inactivated.
-
 ### kenna-search-assets-by-external-id
 
 ***
@@ -704,7 +673,7 @@ Search assets by external ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | external_id | The external ID of the asset. | Required | 
-| to_context | Whether to put data in context. Possible values are: true, false. Default is false. | Optional | 
+| to_context | Whether to put data in context. Possible values are: true, false.| Optional | 
 | limit | The maximum number of assets to return. Default is 500. | Optional | 
 
 #### Context Output

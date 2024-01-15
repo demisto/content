@@ -373,14 +373,21 @@ def search_fixes(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[
 
 
 def update_asset_command(client: Client, args: dict[str, str]) -> CommandResults:
-    """Update Asset command.
-    Args:
-        client:  Client which connects to api
-        args: arguments for the request
-    Returns:
-        Success/ Failure , according to the response
     """
+    Update an asset in the Kenna Security Platform.
 
+    Args:
+        client (Client): The Kenna client object.
+        args (dict[str, str]): A dictionary containing:
+            - asset ID (required)
+            - notes (required)
+            - inactive (optional)
+
+    Returns:
+        CommandResults: If the update is successful,the result will contain a success message.
+        If the update fails, 
+                        the result will contain an error message.
+    """
     asset_id = args['id']
     url_suffix = f'/assets/{asset_id}'
     asset = {
@@ -388,6 +395,9 @@ def update_asset_command(client: Client, args: dict[str, str]) -> CommandResults
             'notes': args['notes']
         }
     }
+    if inactive := args.get("inactive"):
+        asset['asset'].update({'inactive': argToBoolean(inactive)})
+
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     if result.get('status') != "success":
         return CommandResults(readable_output=f'Could not update asset with ID {asset_id}.')
@@ -659,8 +669,6 @@ def main():
     try:
         if command in commands:
             return_outputs(*commands[command](client, args))
-        elif command == "kenna-inactivate-asset":
-            return_results(inactivate_asset(client, args))
         elif command == "kenna-update-asset":
             return_results(update_asset_command(client, args))
         elif command == "kenna-search-assets-by-external-id":

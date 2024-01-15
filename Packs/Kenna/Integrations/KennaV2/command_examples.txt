@@ -9,5 +9,4 @@
 !kenna-add-tag tag="Test tag" id=123
 !kenna-delete-tag id=123 tag="Test tag"
 !kenna-get-connector-runs connector_id=123
-!kenna-inactivate-asset asset_id=123 notes="test" inactive=true
 !kenna-search-assets-by-external-id external_id=123 limit=2 to_context=true
