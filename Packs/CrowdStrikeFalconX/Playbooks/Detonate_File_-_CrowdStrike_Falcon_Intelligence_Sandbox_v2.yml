@@ -66,10 +66,10 @@ tasks:
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Get Full Report
       description: Get a full version of a sandbox report.
-      script: CrowdStrike Falcon X Test|||cs-fx-get-full-report
+      script: '|||cs-fx-get-full-report'
       type: regular
       iscommand: true
-      brand: CrowdStrike Falcon X Test
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -157,7 +157,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: CrowdStrike Falcon X Test
+                        simple: CrowdStrike Falcon X
                 - - operator: isEqualString
                     left:
                       value:
