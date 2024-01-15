@@ -192,7 +192,7 @@ script:
       description: The expiration date of the domain.
       type: Date
     description: Returns domain information and reputation.
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   subtype: python3
 fromversion: 6.9.0
