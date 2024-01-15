@@ -28,7 +28,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | DBotScoreIndicators | Array of all DBotScore indicator values associated with the incident.  | DBotScore.Indicator | Optional |
-| DBotScoreMaxScore | The highest score that was given to a DBotScore indicator. | DBotScore.Score | Optional |
+| DBotScoreMaxScore | The highest score (number) that was given to a DBotScore indicator. | DBotScore.Score | Optional |
 
 ## Playbook Outputs
 
