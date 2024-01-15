@@ -7,8 +7,7 @@ import json
 from pancloud import QueryService, Credentials, exceptions
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Any
-from collections.abc import Callable
+from typing import Dict, Any, List, Tuple, Callable
 from tempfile import gettempdir
 from dateutil import parser
 from datetime import timedelta
@@ -51,16 +50,30 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key):
+    def __init__(self, registration_id_and_url, use_ssl, proxy, refresh_token, enc_key, client_id, client_secret, auth_code):
         headers = get_x_content_info_headers()
-        headers['Authorization'] = registration_id
         headers['Accept'] = 'application/json'
+        registration_id_and_url = registration_id_and_url.split('@')
+
+        if len(registration_id_and_url) != 2:
+            token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
+        else:
+            token_retrieval_url = registration_id_and_url[1]
+        registration_id = registration_id_and_url[0]
         super().__init__(base_url=token_retrieval_url, headers=headers, verify=use_ssl, proxy=proxy)
-        self.refresh_token = refresh_token
-        self.enc_key = enc_key
-        self.use_ssl = use_ssl
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
+        if client_id and client_secret and auth_code:
+            self.client_id = client_id
+            self.client_secret = client_secret
+            self.auth_code = auth_code
+            self.is_oproxy = False
+        else:
+            headers['Authorization'] = registration_id
+            self.refresh_token = refresh_token
+            self.enc_key = enc_key
+            self.is_oproxy = True
+        self.use_ssl = use_ssl
         self._set_access_token()
 
     def _set_access_token(self):
@@ -73,13 +86,14 @@ class Client(BaseClient):
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
         valid_until = integration_context.get(EXPIRES_IN)
-        if access_token and valid_until and int(time.time()) < valid_until:
-            self.access_token = access_token
-            self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
-            self.instance_id = integration_context.get(INSTANCE_ID_CONST)
-            return
+        if access_token and valid_until:
+            if int(time.time()) < valid_until:
+                self.access_token = access_token
+                self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
+                self.instance_id = integration_context.get(INSTANCE_ID_CONST)
+                return
         demisto.debug(f'access token time: {valid_until} expired/none. Will call oproxy')
-        access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
+        access_token, api_url, instance_id, refresh_token, expires_in = self._authorize()
         updated_integration_context = {
             ACCESS_TOKEN_CONST: access_token,
             EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
@@ -93,18 +107,18 @@ class Client(BaseClient):
         self.api_url = api_url
         self.instance_id = instance_id
 
-    def _oproxy_authorize(self) -> tuple[Any, Any, Any, Any, int]:
-        oproxy_response = self._get_access_token_with_backoff_strategy()
-        access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
-        api_url = oproxy_response.get('url')
-        refresh_token = oproxy_response.get('refresh_token')
-        instance_id = oproxy_response.get(INSTANCE_ID_CONST)
+    def _authorize(self) -> Tuple[Any, Any, Any, Any, int]:
+        response = self._get_access_token_with_backoff_strategy()
+        access_token = response.get(ACCESS_TOKEN_CONST)
+        api_url = response.get('url')
+        refresh_token = response.get('refresh_token')
+        instance_id = response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
-        expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60) or 0)
+        expires_in = int(response.get(EXPIRES_IN, MINUTES_60) or 0)
         if not access_token or not api_url or not instance_id:
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
-                                   f'Oproxy response: {oproxy_response}')
+                                   f'response: {response}')
         return access_token, api_url, instance_id, refresh_token, expires_in
 
     def _get_access_token_with_backoff_strategy(self) -> dict:
@@ -166,23 +180,47 @@ class Client(BaseClient):
         Returns: The oproxy response or raising a DemistoException
 
         """
-        demisto.debug('CDL - Fetching access token')
-        try:
-            oproxy_response = self._http_request('POST',
-                                                 '/cdl-token',
-                                                 json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
-                                                 timeout=(60 * 3, 60 * 3),
-                                                 retries=3,
-                                                 backoff_factor=10,
-                                                 status_list_to_retry=[400])
-        except DemistoException as e:
-            if re.match(BAD_REQUEST_REGEX, str(e)):
-                demisto.error('The request to retrieve the access token has failed with 400 status code.')
-                demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
-            raise e
+        if self.is_oproxy:
+            demisto.debug('CDL - Fetching access token from oproxy')
+            try:
+                response = self._http_request('POST',
+                                                     '/cdl-token',
+                                                     json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
+                                                     timeout=(60 * 3, 60 * 3),
+                                                     retries=3,
+                                                     backoff_factor=10,
+                                                     status_list_to_retry=[400])
+            except DemistoException as e:
+                if re.match(BAD_REQUEST_REGEX, str(e)):
+                    demisto.error('The request to retrieve the access token from oproxy has failed with 400 status code.')
+                    demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
+                raise e
 
-        self.reset_failure_times()
-        return oproxy_response
+        else:
+            demisto.debug('CDL - Fetching access token')
+            try:
+                body = {
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                    "code": self.auth_code,
+                    "redirect_uri": "https://localhost",
+                    "grant_type": "authorization_code",
+                }
+                response = self._http_request('POST',
+                                                     full_url='https://api.paloaltonetworks.com/api/oauth2/RequestToken',
+                                                     json_data=body,
+                                                     timeout=(60 * 3, 60 * 3),
+                                                     retries=3,
+                                                     backoff_factor=10,
+                                                     status_list_to_retry=[400])
+            except DemistoException as e:
+                if re.match(BAD_REQUEST_REGEX, str(e)):
+                    demisto.error('The request to retrieve the access token has failed with 400 status code.')
+                    demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
+                raise e
+
+            self.reset_failure_times()
+            return response
 
     @staticmethod
     def _cache_failure_times(integration_context: dict) -> dict:
@@ -216,7 +254,7 @@ class Client(BaseClient):
 
         demisto.setIntegrationContext(integration_context)
 
-    def query_loggings(self, query: str) -> tuple[list[dict], list]:
+    def query_loggings(self, query: str) -> Tuple[List[dict], list]:
         """
         This function handles all the querying of Cortex Logging service
 
@@ -228,7 +266,7 @@ class Client(BaseClient):
         """
         query_data = {'query': self.add_instance_id_to_query(query),
                       'language': 'csql'}
-        demisto.debug(f'Query being executed in CDL: {str(query_data)}')
+        demisto.debug('Query being executed in CDL: {}'.format(str(query_data)))
         query_service = self.initial_query_service()
         response = query_service.create_query(query_params=query_data, enforce_json=True)
         query_result = response.json()
@@ -252,7 +290,7 @@ class Client(BaseClient):
         except exceptions.HTTPError as e:
             raise DemistoException(f'Received error {str(e)} when querying logs.')
 
-        extended_results: list[dict] = []
+        extended_results: List[Dict] = []
         for result in raw_results:
             page = result.get('page', {})
             data = page.get('result', {}).get('data', [])
@@ -661,7 +699,7 @@ def records_to_human_readable_output(fields: str, table_name: str, results: list
     else:
         for result in results:
             filtered_result = {}
-            for root in result:
+            for root in result.keys():
                 parsed_tree: dict = parse_tree_by_root_to_leaf_paths(root, result[root])
                 filtered_result.update(parsed_tree)
             filtered_results.append(filtered_result)
@@ -912,7 +950,7 @@ def test_module(client: Client, fetch_table, fetch_fields, is_fetch, fetch_query
     return_outputs('ok')
 
 
-def query_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[dict]], List[Dict[str, Any]]]:
     """
     Return the result of querying the Logging service
     """
@@ -950,7 +988,7 @@ def get_table_name(query: str) -> str:
     return "Unrecognized table name"
 
 
-def get_critical_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+def get_critical_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[dict]], List[Dict[str, Any]]]:
     """
     Queries Cortex Logging according to a pre-set query
     """
@@ -971,7 +1009,7 @@ def get_critical_logs_command(args: dict, client: Client) -> tuple[str, dict[str
     return human_readable, ec, raw_results
 
 
-def query_timestamp(args: dict) -> tuple[datetime, datetime]:
+def query_timestamp(args: dict) -> Tuple[datetime, datetime]:
     start_time = args.get('start_time', '')
     end_time = args.get('end_time', '')
     time_range = args.get('time_range', '')
@@ -986,7 +1024,7 @@ def query_timestamp(args: dict) -> tuple[datetime, datetime]:
 
 
 def get_social_applications_command(args: dict,
-                                    client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+                                    client: Client) -> Tuple[str, Dict[str, List[dict]], List[Dict[str, Any]]]:
     """ Queries Cortex Logging according to a pre-set query """
     logs_amount = args.get('limit')
     query_start_time, query_end_time = query_timestamp(args)
@@ -1005,7 +1043,7 @@ def get_social_applications_command(args: dict,
     return human_readable, ec, raw_results
 
 
-def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+def search_by_file_hash_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[dict]], List[Dict[str, Any]]]:
     """
     Queries Cortex Logging according to a pre-set query
     """
@@ -1028,7 +1066,7 @@ def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[s
     return human_readable, ec, raw_results
 
 
-def query_traffic_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+def query_traffic_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
     """
     The function of the command that queries firewall.traffic table
 
@@ -1040,7 +1078,7 @@ def query_traffic_logs_command(args: dict, client: Client) -> tuple[str, dict, l
     return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
 
 
-def query_threat_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+def query_threat_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
     """
     The function of the command that queries firewall.threat table
 
@@ -1052,7 +1090,7 @@ def query_threat_logs_command(args: dict, client: Client) -> tuple[str, dict, li
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
-def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+def query_url_logs_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
     """
     The function of the command that queries firewall.url table
 
@@ -1064,7 +1102,7 @@ def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
-def query_file_data_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+def query_file_data_command(args: dict, client: Client) -> Tuple[str, dict, List[Dict[str, Any]]]:
     query_table_name: str = 'file_data'
     context_transformer_function = files_context_transformer
     table_context_path: str = 'CDL.Logging.File'
@@ -1075,7 +1113,7 @@ def query_table_logs(args: dict,
                      client: Client,
                      table_name: str,
                      context_transformer_function: Callable[[dict], dict],
-                     table_context_path: str) -> tuple[str, dict, list[dict[str, Any]]]:
+                     table_context_path: str) -> Tuple[str, dict, List[Dict[str, Any]]]:
     """
     This function is a generic function that get's all the data needed for a specific table of Cortex and acts as a
     regular command function
@@ -1117,7 +1155,7 @@ def fetch_incidents(client: Client,
                     fetch_fields: str,
                     fetch_limit: str,
                     last_run: dict,
-                    fetch_filter: str = '') -> tuple[dict[str, str], list]:
+                    fetch_filter: str = '') -> Tuple[Dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get('lastRun')
     demisto.debug("CortexDataLake - Start fetching")
     demisto.debug(f"CortexDataLake - Last run: {json.dumps(last_run)}")
@@ -1155,14 +1193,16 @@ def main():
     # If there's a stored token in integration context, it's newer than current
     refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
     enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
-    if not enc_key or not refresh_token or not registration_id_and_url:
+
+
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
+    auth_code = params.get('auth_code')
+
+    if (not enc_key or not refresh_token or not registration_id_and_url) and \
+        (not client_id or not client_secret or not auth_code):
         raise DemistoException('Key, Token and ID must be provided.')
-    registration_id_and_url = registration_id_and_url.split('@')
-    if len(registration_id_and_url) != 2:
-        token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
-    else:
-        token_retrieval_url = registration_id_and_url[1]
-    registration_id = registration_id_and_url[0]
+
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()
@@ -1176,7 +1216,7 @@ def main():
         return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
         return
 
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
+    client = Client(registration_id_and_url, use_ssl, proxy, refresh_token, enc_key, client_id, client_secret, auth_code)
 
     try:
         if command == 'test-module':
