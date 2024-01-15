@@ -1,0 +1,337 @@
+args:
+- default: false
+  description: Resolve and investigate domains from this URL. Also accepts a comma-separated list of up to 1,000 URLs.
+  isArray: false
+  name: url
+  required: true
+  secret: false
+- default: false
+  description: Optionally include the investigate results into the Context Data. Defaults to false.
+  isArray: false
+  name: include_context
+  required: false
+  secret: false
+comment: Resolves a URL or fully qualified domain name (FQDN) and looks up a complete profile of the domain on the DomainTools Iris Investigate API.
+commonfields:
+  id: DomainExtractAndInvestigate
+  version: -1
+enabled: true
+name: DomainExtractAndInvestigate
+outputs:
+- contextPath: Domain.Name
+  description: The name of the domain.
+  type: String
+- contextPath: Domain.DNS
+  description: The DNS of the domain.
+  type: String
+- contextPath: Domain.DomainStatus
+  description: The status of the domain.
+  type: Boolean
+- contextPath: Domain.CreationDate
+  description: The creation date.
+  type: Date
+- contextPath: Domain.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: Domain.NameServers
+  description: The nameServers of the domain.
+  type: String
+- contextPath: Domain.Registrant.Country
+  description: The registrant country of the domain.
+  type: String
+- contextPath: Domain.Registrant.Email
+  description: The registrant email of the domain.
+  type: String
+- contextPath: Domain.Registrant.Name
+  description: The registrant name of the domain.
+  type: String
+- contextPath: Domain.Registrant.Phone
+  description: The registrant phone number of the domain.
+  type: String
+- contextPath: Domain.Malicious.Vendor
+  description: The vendor who classified the domain as malicious.
+  type: String
+- contextPath: Domain.Malicious.Description
+  description: The description as to why the domain was found to be malicious.
+  type: String
+- contextPath: DomainTools.Domains.Name
+  description: The domain name in DomainTools.
+  type: String
+- contextPath: DomainTools.Domains.LastEnriched
+  description: The last Time DomainTools enriched domain data.
+  type: Date
+- contextPath: DomainTools.Domains.Analytics.OverallRiskScore
+  description: The Overall Risk Score in DomainTools.
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.ProximityRiskScore
+  description: The Proximity Risk Score in DomainTools.
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.RiskScore
+  description: The Threat Profile Risk Score in DomainTools.
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Threats
+  description: The threats of the Threat Profile Risk Score in DomainTools.
+  type: String
+- contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Evidence
+  description: The Threat Profile Risk Score Evidence in DomainTools.
+  type: String
+- contextPath: DomainTools.Domains.Analytics.WebsiteResponseCode
+  description: The Website Response Code in DomainTools.
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.AlexaRank
+  description: The Alexa Rank in DomainTools.
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.Tags
+  description: The Tags in DomainTools.
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantName
+  description: The name of the registrant.
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantOrg
+  description: The organization of the registrant.
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.value
+  description: The country value of the registrant contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.count
+  description: The count of the registrant contact country.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.value
+  description: The Email value of the registrant contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.count
+  description: The Email count of the registrant contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.value
+  description: The name value of the registrant contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.count
+  description: The name count of the registrant contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone.value
+  description: The phone value of the registrant contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone.count
+  description: The phone count of the registrant contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.SOAEmail
+  description: The SOA record of the Email.
+  type: String
+- contextPath: DomainTools.Domains.Identity.SSLCertificateEmail
+  description: The Email of the SSL certificate.
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Country.value
+  description: The country value of the administrator contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Country.count
+  description: The country count of the administrator contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.AdminContact.Email.value
+  description: The Email value of the administrator contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Email.count
+  description: The Email count of the administrator contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.AdminContact.Name.value
+  description: The name value of the administrator contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Name.count
+  description: The name count of the administrator contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.AdminContact.Phone.value
+  description: The phone value of the administrator contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdminContact.Phone.count
+  description: The phone count of the administrator contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.value
+  description: The country value of the technical contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.count
+  description: The country count of the technical contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.value
+  description: The Email value of the technical contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.count
+  description: The Email count of the technical contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.value
+  description: The name value of the technical Contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.count
+  description: The name count of the technical contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.value
+  description: The phone value of the technical contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.count
+  description: The phone count of the technical contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.BillingContact.Country.value
+  description: The country value of the billing contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.BillingContact.Country.count
+  description: The country count of the billing contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.BillingContact.Email.value
+  description: The Email value of the billing contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.BillingContact.Email.count
+  description: The Email count of the billing contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.BillingContact.Name.value
+  description: The name value of the billing contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.BillingContact.Name.count
+  description: The name count of the billing contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.BillingContact.Phone.value
+  description: The phone value of the billing contact.
+  type: String
+- contextPath: DomainTools.Domains.Identity.BillingContact.Phone.count
+  description: The phone count of the billing contact.
+  type: Number
+- contextPath: DomainTools.Domains.Identity.EmailDomains
+  description: The Email Domains.
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.value
+  description: The value of the Additional Whois Emails record.
+  type: String
+- contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.count
+  description: The count of the Additional Whois Emails record.
+  type: Number
+- contextPath: DomainTools.Domains.Registration.DomainRegistrant
+  description: The registrant of the domain.
+  type: String
+- contextPath: DomainTools.Domains.Registration.RegistrarStatus
+  description: The status of the registrar.
+  type: String
+- contextPath: DomainTools.Domains.Registration.DomainStatus
+  description: The active status of the domain.
+  type: Boolean
+- contextPath: DomainTools.Domains.Registration.CreateDate
+  description: The date the domain was created.
+  type: Date
+- contextPath: DomainTools.Domains.Registration.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.address.value
+  description: The address value of IP addresses.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.address.count
+  description: The address count of IP addresses.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.value
+  description: The ASN value of IP addresses.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.count
+  description: The ASN count of IP addresses.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.value
+  description: The country code value of IP addresses.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.count
+  description: The country code count of IP addresses.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.value
+  description: The ISP value of IP addresses.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.count
+  description: The ISP count of IP addresses.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.IPCountryCode
+  description: The country code of the IP address.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.MailServers.domain.value
+  description: The domain value of the Mail Servers.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.MailServers.domain.count
+  description: The domain count of the Mail Servers.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.MailServers.host.value
+  description: The host value of the Mail Servers.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.MailServers.host.count
+  description: The host count of the Mail Servers.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.MailServers.ip.value
+  description: The IP value of the Mail Servers.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.MailServers.ip.count
+  description: The IP count of the Mail Servers.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.SPFRecord
+  description: The SPF Record.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.NameServers.domain.value
+  description: The domain value of the domain NameServers.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.NameServers.domain.count
+  description: The domain count of the domain NameServers.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.NameServers.host.value
+  description: The host value of the domain NameServers.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.NameServers.host.count
+  description: The host count of the domain NameServers.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.NameServers.ip.value
+  description: The IP value of the domain NameServers.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.NameServers.ip.count
+  description: The IP count of domain NameServers.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.value
+  description: The hash value of the SSL certificate.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.count
+  description: The hash count of the SSL certificate.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.value
+  description: The organization value of the SSL certificate.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.count
+  description: The organization count of the SSL certificate information.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.value
+  description: The subject value of the SSL certificate information.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.count
+  description: The subject count of the SSL certificate information.
+  type: Number
+- contextPath: DomainTools.Domains.Hosting.RedirectsTo.value
+  description: The Redirects To Value of the domain.
+  type: String
+- contextPath: DomainTools.Domains.Hosting.RedirectsTo.count
+  description: The Redirects To Count of the domain.
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode
+  description: The tracking code of Google Adsense.
+  type: Number
+- contextPath: DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode
+  description: The tracking code of Google Analytics.
+  type: Number
+- contextPath: DBotScore.Indicator
+  description: The indicator of the DBotScore.
+  type: String
+- contextPath: DBotScore.Type
+  description: The indicator type of the DBotScore.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+script: '-'
+system: false
+tags:
+- DomainTools
+timeout: '0'
+type: python
+subtype: python3
+fromversion: 6.6.0
+dockerimage: demisto/python3:3.10.13.84405
+tests:
+- No tests (auto formatted)
