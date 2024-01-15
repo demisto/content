@@ -409,13 +409,14 @@ def main():
         f.write(f"export CLOUD_CHOSEN_MACHINE_IDS={','.join(lock_machine_list)}")
 
     end_time = time.time()
-    duration = end_time - start_time
+    duration_sec = (end_time - start_time) // 60
     try:
         send_slack_notification(["Lock Duration:",
                                  f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
                                  f"{options.gcs_locks_path}",
                                  f"Job ID: {options.ci_job_id}",
-                                 f"{duration/60}"])
+                                 f"Duration:",
+                                 f"{duration}"])
     except Exception as e:
         logging.info(f"Failed to send Slack notification. Reason: {str(e)}")
 
