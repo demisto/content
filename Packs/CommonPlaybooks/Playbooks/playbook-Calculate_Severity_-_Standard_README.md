@@ -14,7 +14,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
+Set
 
 ### Commands
 
