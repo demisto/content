@@ -10,9 +10,9 @@ Signature Line
 
 
 ________________________________
-From: SOC <soc_sender@company.com>
+From: SOC
 Sent: Friday, February 4, 2022 3:56 PM
-To: End User <end_user@company.com>
+To: End User
 Subject: <87692312> Test Email 4
 
 Outbound test message from XSOAR to User.
