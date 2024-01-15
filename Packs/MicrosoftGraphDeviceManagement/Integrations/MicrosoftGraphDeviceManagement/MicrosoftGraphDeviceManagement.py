@@ -233,7 +233,7 @@ def build_device_object(raw_device: dict) -> dict:
         'TotalStorageSpaceInBytes': raw_device.get('totalStorageSpaceInBytes'),
         'FreeStorageSpaceInBytes': raw_device.get('freeStorageSpaceInBytes'),
         'ManagedDeviceName': raw_device.get('managedDeviceName'),
-        'physicalMemoryInBytes': raw_device.get('physicalMemoryInBytes'),
+        'PhysicalMemoryInBytes': raw_device.get('physicalMemoryInBytes'),
         'PartnerReportedThreatState': raw_device.get('partnerReportedThreatState')
     })
 
