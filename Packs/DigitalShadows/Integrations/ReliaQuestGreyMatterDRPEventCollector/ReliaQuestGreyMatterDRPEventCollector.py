@@ -134,10 +134,19 @@ def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: 
 
     triage_items = client.triage_items(list(triage_item_ids))
 
+    alert_ids, incident_ids = [], []
+
     for triaged_item in triage_items:
         item_id = triaged_item.get("id")
         if item_id in events:
             events[item_id].update({"triage-item": triaged_item})
+
+        source = triaged_item.get("source") or {}
+        if alert_id := source.get("alert-id"):
+            alert_ids.append(alert_id)
+
+        if incident_id := source.get("incident-id"):
+            incident_ids.append(incident_id)
 
 
 ''' MAIN FUNCTION '''
