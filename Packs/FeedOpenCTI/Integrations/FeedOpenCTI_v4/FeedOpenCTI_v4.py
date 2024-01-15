@@ -82,15 +82,24 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
         indicators: list of indicators
     """
     indicator_type = build_indicator_list(indicator_types)
-    filters = [{
+    filters = {
+   'mode': 'and',
+    'filters': [{
         'key': 'entity_type',
-        'values': indicator_type
-    }]
+       'values': [indicator_type],
+       'operator': 'eq',
+       'mode': 'or'
+    }],
+    'filterGroups': [],
+}
     if score:
-        filters.append({
+        filters["filters"].append({
             'key': 'x_opencti_score',
-            'values': score
+            'values': score,
+            'operator': 'eq',
+            'mode': 'and'
         })
+
 
     observables = client.stix_cyber_observable.list(filters=filters, after=last_run_id, first=limit,
                                                     withPagination=True)
