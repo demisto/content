@@ -320,9 +320,9 @@ script:
     - description: 'End date (format: YYYY-MM-DDTHH:MM:SS).'
       name: to_date
     - name: limit
-      description: Fetch only the top N users who successfully authenticated on the host.
+      description: Fetch only the top n users who successfully authenticated on the host.
       defaultValue: 3
-    description: Get the top N users who successfully authenticated on the host.
+    description: Get the top n users who successfully authenticated on the host.
     name: harfanglab-telemetry-authentication-users
     outputs:
     - contextPath: Harfanglab.Authentications.Users
@@ -564,7 +564,7 @@ script:
       name: filepath
     - description: filehash to search (md5, sha1, sha256).
       name: hash
-    - description: restrict searchs for filename or filepath or filepath_regex to a given path.
+    - description: restrict search for filename or filepath or filepath_regex to a given path.
       name: search_in_path
     - description: size of the file associated to the 'hash' parameters (DEPRECATED, rather use the 'filesize' parameter). If known, it will speed up the search process.
       name: hash_filesize
@@ -682,7 +682,7 @@ script:
     - name: agent_id
       description: Agent unique identifier as provided by the HarfangLab EDR Manager.
       required: true
-    description: Start a job to get the entine RAM from a host (Windows / Linux).
+    description: Start a job to get the entire RAM from a host (Windows / Linux).
     name: harfanglab-job-artifact-ramdump
     outputs:
     - contextPath: Harfanglab.Job.ID
