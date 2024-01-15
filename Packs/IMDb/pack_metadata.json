@@ -1,0 +1,25 @@
+{
+    "name": "IMDb",
+    "description": "Access movie and TV information similar to the official one. Get Title, Year, Metascore Rating, IMDB rating, Release date, Runtime, Genre, Directors, Writers, Actors, Plot, Awards, Posters,etc…",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Mihovil Magdic",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "imdb",
+        "database",
+        "other"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [],
+    "githubUser": []
+}

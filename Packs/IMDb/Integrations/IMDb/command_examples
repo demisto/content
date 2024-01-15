@@ -1,0 +1,13 @@
+!imdb-auto-complete q=heat
+!imdb-get-all-filmography nconst=nm0000134
+!imdb-get-bio nconst=nm0000174
+!imdb-get-full-credits tconst=tt0113277
+!imdb-get-known-for nconst=nm0000199
+!imdb-get-most-popular-movies limit=3
+!imdb-get-overview-details tconst=tt0113277
+!imdb-get-popular-movies-by-genre genre=drama limit=5
+!imdb-get-reviews tconst=tt0113277
+!imdb-get-top-rated-movies limit=10
+!imdb-get-top-rated-shows limit=5
+!imdb-list-born-today month=4 day=25
+!imdb-list-most-popular-celebs limit=3

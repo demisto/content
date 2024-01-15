@@ -1,0 +1,828 @@
+category: Utilities
+commonfields:
+  id: IMDb
+  version: -1
+configuration:
+- additionalinfo: 'Your API key after you subscribe to IMDb freemium in RapidAPI'
+  displaypassword: API Key
+  hiddenusername: true
+  name: apikey
+  required: true
+  section: Connect
+  type: 9
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+description: IMDb helps to query for all information about films, actors, characters, etc & as on official websites.
+detaileddescription: |-
+  ### Community Contributed Integration
+   #### Integration Author: Mihovil Magdic
+   No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
+  ***
+  ## IMDb
+  - This section explains how to configure the instance of IMDb in Cortex XSOAR.
+  - You can use the following API Key: `add key`
+display: IMDb
+name: IMDb
+script:
+  commands:
+  - arguments:
+    - description: 'Anything that you are familiar with, such as : name of title, album, song, etc.'
+      name: q
+      required: true
+    description: 'Get auto complete suggestion by term or phrase.'
+    name: imdb-auto-complete
+    outputs:
+    - contextPath: IMDb.AutoComplete.d.i.imageUrl
+      description: 'URL of the image.'
+      type: String
+    - contextPath: IMDb.AutoComplete.d.id
+      description: 'ID of the query result.'
+      type: String
+    - contextPath: IMDb.AutoComplete.d.l
+      description: 'Name of the movie, tv show, video...'
+      type: String
+    - contextPath: IMDb.AutoComplete.d.s
+      description: 'Stars.'
+      type: String
+    - contextPath: IMDb.AutoComplete.d.q
+      description: 'E.g. TV short, Video...'
+      type: String
+    - contextPath: IMDb.AutoComplete.d.qid
+      description: 'E.g. movie, tvSeries, tvshort, video...'
+      type: String
+    - contextPath: IMDb.AutoComplete.d.rank
+      description: 'Rank of the show or movie.'
+      type: Number
+    - contextPath: IMDb.AutoComplete.d.y
+      description: 'Year.'
+      type: Number
+    - contextPath: IMDb.AutoComplete.d.yr
+      description: 'Years.'
+      type: String
+  - arguments:
+    - defaultValue: "10"
+      description: 'Limit results.'
+      name: limit
+      required: false
+    description: Get most popular movies.
+    name: imdb-get-most-popular-movies
+    outputs:
+    - contextPath: IMDb.Title.MostPopularMovies
+      description: 'Most Popular Movies.'
+      type: String
+  - arguments:
+    - defaultValue: "western"
+      description: 'One of the following: action | adventure | animation | biography | comedy | crime | documentary | drama | family | fantasy | film-noir | game-show | history | horror | music | musical | mystery | news | reality-tv | romance | sci-fi | short | sport | talk-show | thriller | war | western.'
+      name: genre
+      required: true
+    - defaultValue: "10"
+      description: 'Limit results.'
+      name: limit
+      required: false
+    description: Get popular movies by genre.
+    name: imdb-get-popular-movies-by-genre
+    outputs:
+    - contextPath: IMDb.Title.MostPopularByGenre
+      description: 'Most Popular Movies By Genre.'
+      type: String
+  - arguments:
+    - defaultValue: "10"
+      description: 'To limit original list of 250 movies returned.'
+      name: limit
+      required: false
+    description: 'Get top rated 250 movies.'
+    name: imdb-get-top-rated-movies
+    outputs:
+    - contextPath: IMDb.Title.TopRatedMovies
+      description: Top Rated Movies.
+      type: String
+  - arguments:
+    - defaultValue: "10"
+      description: 'To limit original list of 250 tv shows returned.'
+      name: limit
+      required: false
+    description: Get top rated 250 tv shows.
+    name: imdb-get-top-rated-shows
+    outputs:
+    - contextPath: IMDb.Title.TopRatedShows
+      description: Top Rated TV Shows.
+      type: String
+  - arguments:
+    - description: 'You need to extract the value started with "tt" of id field returned from imdb-auto-complete, imdb-get-most-popular-movies or imdb-get-top-rated-shows commands. Ex: tt0113277.'
+      name: tconst
+      required: true
+    description: 'Get reviews.'
+    name: imdb-get-reviews
+    outputs:
+    - contextPath: IMDb.Title.Reviews.imdbrating.id
+      description: 'ID of the title.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.imdbrating.title
+      description: 'Name of the title.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.imdbrating.titleType
+      description: 'Type of the title, e.g. movie, show...'
+      type: String
+    - contextPath: IMDb.Title.Reviews.imdbrating.year
+      description: 'Year of the title release.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.imdbrating.bottomRank
+      description: 'Bottom rank.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.imdbrating.canRate
+      description: 'True or False.'
+      type: Boolean
+    - contextPath: IMDb.Title.Reviews.imdbrating.rating
+      description: 'Rating.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.imdbrating.ratingCount
+      description: 'Rating count.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.imdbrating.topRank
+      description: 'Top rank.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.metacritic.metaScore
+      description: 'Metacritic score.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.metacritic.metacriticUrl
+      description: 'Metacritic critic URL.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.metacritic.reviewCount
+      description: 'Metacritic review count.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.metacritic.userRatingCount
+      description: 'Metacritic user rating count.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.metacritic.userScore
+      description: 'Metacritic user score.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.metacritic.reviews.quote
+      description: 'Metacritic quote.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.metacritic.reviews.reviewSite
+      description: 'Metacritic review site.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.metacritic.reviews.reviewer
+      description: 'Metacritic reviewer.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.metacritic.reviews.score
+      description: 'Metacritic review score.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.criticreviews
+      description: 'Critic reviews.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.base.image.id
+      description: 'ID of the title image.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.base.image.url
+      description: 'URL of the title image.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.base.title
+      description: 'Name of the title.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.base.titleType
+      description: 'Type of the title, e.g. movie, show...'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.base.year
+      description: 'Year of the title release.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.author.displayName
+      description: 'Review author user name.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.author.userId
+      description: 'Review author user id.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.authorRating
+      description: 'Review author rating.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.helpfulnessScore
+      description: 'Review author helpfulness score.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.interestingVotes.down
+      description: 'Review down votes.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.interestingVotes.up
+      description: 'Review up votes.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.languageCode
+      description: 'Language code.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.reviewText
+      description: 'Review text.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.reviewTitle
+      description: 'Review title.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.spoiler
+      description: 'True of False.'
+      type: Boolean
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.review.submissionDate
+      description: 'Review submission date.'
+      type: Date
+    - contextPath: IMDb.Title.Reviews.featuredUserReview.totalReviews
+      description: 'Total reviews.'
+      type: Number
+    - contextPath: IMDb.Title.Reviews.certificate.certificate
+      description: 'E.g. 18+.'
+      type: String
+    - contextPath: IMDb.Title.Reviews.hasParentsGuide
+      description: 'True or False.'
+      type: Boolean
+  - arguments:
+    - description: 'You need to extract the value started with "tt" of id field returned from imdb-auto-complete, imdb-get-most-popular-movies or imdb-get-top-rated-shows commands. Ex: tt0113277.'
+      name: tconst
+      required: true
+    description: Get overview information of the title.
+    name: imdb-get-overview-details
+    outputs:
+    - contextPath: IMDb.Title.Overview.id
+      description: 'ID of the title.'
+      type: String
+    - contextPath: IMDb.Title.Overview.title.image.id
+      description: 'ID of the title image.'
+      type: String
+    - contextPath: IMDb.Title.Overview.title.image.url
+      description: 'URL of the title image.'
+      type: String
+    - contextPath: IMDb.Title.Overview.title.runningTimeInMinutes
+      description: 'Movie duration.'
+      type: Number
+    - contextPath: IMDb.Title.Overview.title.title
+      description: 'Name of the title.'
+      type: String
+    - contextPath: IMDb.Title.Overview.title.titleType
+      description: 'Type of the title, e.g. tvSeries...'
+      type: String
+    - contextPath: IMDb.Title.Overview.title.year
+      description: 'Year of the title release.'
+      type: Number
+    - contextPath: IMDb.Title.Overview.certificates.US.certificate
+      description: 'E.g. 18+.'
+      type: String
+    - contextPath: IMDb.Title.Overview.certificates.US.certificateNumber
+      description: 'Certificate Number.'
+      type: Number
+    - contextPath: IMDb.Title.Overview.certificates.US.ratingReason
+      description: 'Rating Reason.'
+      type: String
+    - contextPath: IMDb.Title.Overview.certificates.US.ratingsBody
+      description: 'Ratings Body.'
+      type: String
+    - contextPath: IMDb.Title.Overview.certificates.US.country
+      description: 'Country.'
+      type: String
+    - contextPath: IMDb.Title.Overview.ratings.canRate
+      description: 'True or False.'
+      type: Boolean
+    - contextPath: IMDb.Title.Overview.ratings.rating
+      description: 'Rating.'
+      type: Number
+    - contextPath: IMDb.Title.Overview.ratings.ratingCount
+      description: 'Rating count.'
+      type: Number
+    - contextPath: IMDb.Title.Overview.ratings.topRank
+      description: 'Top rank.'
+      type: Number
+    - contextPath: IMDb.Title.Overview.genres
+      description: 'Genres.'
+      type: String
+    - contextPath: IMDb.Title.Overview.releaseDate
+      description: 'Release Date.'
+      type: Date
+    - contextPath: IMDb.Title.Overview.plotOutline.id
+      description: 'Plot ID.'
+      type: String
+    - contextPath: IMDb.Title.Overview.plotOutline.text
+      description: 'Plot text.'
+      type: String
+    - contextPath: IMDb.Title.Overview.plotSummary.author
+      description: 'Plot summary author.'
+      type: String
+    - contextPath: IMDb.Title.Overview.plotSummary.id
+      description: 'Plot summary author ID.'
+      type: String
+    - contextPath: IMDb.Title.Overview.plotSummary.text
+      description: 'Plot summary text.'
+      type: String
+  - arguments:
+    - defaultValue: "10"
+      description: 'Limit results.'
+      name: limit
+      required: false
+    description: List most popular celebs.
+    name: imdb-list-most-popular-celebs
+    outputs:
+    - contextPath: IMDb.Celebs.MostPopular
+      description: Most Popular Celebrities.
+      type: String
+  - arguments:
+    - description: 'You need to extract the value started with "nm" returned in imdb-list-born-today or imdb-list-most-popular-celebs commands. Ex: nm0000174.'
+      name: nconst
+      required: true
+    description: Get biography of actor or actress.
+    name: imdb-get-bio
+    outputs:
+    - contextPath: IMDb.Celebs.Bio.akas
+      description: 'Also known as.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.id
+      description: 'ID of the celebrity.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.image.id
+      description: 'ID of the celebrity image.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.image.url
+      description: 'URL of the celebrity image.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.legacyNameText
+      description: 'Legacy name.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.name
+      description: 'Name.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.birthDate
+      description: 'Birth date.'
+      type: Date
+    - contextPath: IMDb.Celebs.Bio.birthPlace
+      description: 'Place of birth.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.gender
+      description: 'Gender.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.heightCentimeters
+      description: 'Height in centimeters.'
+      type: Number
+    - contextPath: IMDb.Celebs.Bio.nicknames
+      description: 'Nicknames.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.realName
+      description: 'Real name.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.spouses.attributes
+      description: 'E.g. 1 child.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.spouses.current
+      description: 'True or False.'
+      type: Boolean
+    - contextPath: IMDb.Celebs.Bio.spouses.fromDate
+      description: 'Year married.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.spouses.id
+      description: 'Spouse id.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.spouses.name
+      description: 'Spouse name.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.trademarks
+      description: 'Trademarks.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.miniBios.author
+      description: 'Bio author.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.miniBios.id
+      description: 'Id of author.'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.miniBios.language
+      description: 'E.g. en, fr...'
+      type: String
+    - contextPath: IMDb.Celebs.Bio.miniBios.text
+      description: 'Mini bio text.'
+      type: String
+  - arguments:
+    - description: 'You need to extract the value started with "nm" returned in imdb-list-born-today or imdb-list-most-popular-celebs commands. Ex: nm0000199.'
+      name: nconst
+      required: true
+    description: 'Get known-for of actor or actress.'
+    name: imdb-get-known-for
+    outputs:
+    - contextPath: IMDb.Celebs.KnownFor.title.id
+      description: 'ID of the title.'
+      type: String
+    - contextPath: IMDb.Celebs.KnownFor.title.image.id
+      description: 'ID of the title image.'
+      type: String
+    - contextPath: IMDb.Celebs.KnownFor.title.image.url
+      description: 'URL of the title image.'
+      type: String
+    - contextPath: IMDb.Celebs.KnownFor.title.title
+      description: 'Name of the title.'
+      type: String
+    - contextPath: IMDb.Celebs.KnownFor.titleType
+      description: 'Type of the title, e.g. movie, show...'
+      type: String
+    - contextPath: IMDb.Celebs.KnownFor.title.year
+      description: 'Year of the title release.'
+      type: Number
+    - contextPath: IMDb.Celebs.KnownFor.imdbRating
+      description: 'IMDb rating.'
+      type: Number
+    - contextPath: IMDb.Celebs.KnownFor.summary.characters
+      description: 'Character.'
+      type: String
+    - contextPath: IMDb.Celebs.KnownFor.categories
+      description: 'Category of work, e.g. actor, Director...'
+      type: String
+  - arguments:
+    - description: 'The month of birth of actors.'
+      name: month
+      required: true
+    - description: 'The day of birth of actors.'
+      name: day
+      required: true
+    description: 'List all actors and actresses by day and month.'
+    name: imdb-list-born-today
+    outputs:
+    - contextPath: IMDb.Celebs.BornToday
+      description: 'Celebrities Born Today.'
+      type: string
+  - arguments:
+    - description: 'You need to extract the value started with "nm" returned in imdb-list-born-today or imdb-list-most-popular-celebs commands. Ex: nm0000134.'
+      name: nconst
+      required: true
+    description: 'Get all filmography of actor or actress.'
+    name: imdb-get-all-filmography
+    outputs:
+    - contextPath: IMDb.Celebs.AllFilm
+      description: 'All Filmography.'
+      type: string
+  - arguments:
+    - description: 'You need to extract the value started with "tt" of id field returned from imdb-auto-complete, imdb-get-most-popular-movies or imdb-get-top-rated-shows commands. Ex: tt0113277.'
+      name: tconst
+      required: true
+    description: 'Get full list of casts and Crews relating to specific title.'
+    name: imdb-get-full-credits
+    outputs:
+    - contextPath: IMDb.Title.Credits.id
+      description: 'ID of the title.'
+      type: String
+    - contextPath: IMDb.Title.Credits.base.image.url
+      description: 'URL of the title image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.base.runningTimeInMinutes
+      description: 'Movie duration.'
+      type: Number
+    - contextPath: IMDb.Title.Credits.base.title
+      description: 'Name of the title.'
+      type: String
+    - contextPath: IMDb.Title.Credits.base.titleType
+      description: 'Type of the title, e.g. movie, show...'
+      type: String
+    - contextPath: IMDb.Title.Credits.base.year
+      description: 'Year of the title release.'
+      type: Number
+    - contextPath: IMDb.Title.Credits.cast.id
+      description: 'ID of the actor.'
+      type: String
+    - contextPath: IMDb.Title.Credits.cast.image.id
+      description: 'ID of the image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.cast.image.url
+      description: 'URL of the image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.cast.legacyNameText
+      description: 'Legacy name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.cast.name
+      description: 'Name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.cast.category
+      description: 'Category.'
+      type: String
+    - contextPath: IMDb.Title.Credits.cast.characters
+      description: 'Characters played.'
+      type: String
+    - contextPath: IMDb.Title.Credits.cast.roles.characterId
+      description: 'ID of the character.'
+      type: String
+    - contextPath: IMDb.Title.Credits.cast.akas
+      description: 'Also known as.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.editor.akas
+      description: 'Also known as.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.editor.id
+      description: 'ID of the editor.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.editor.image.id
+      description: 'ID of the editor image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.editor.image.url
+      description: 'URL of the editor image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.editor.legacyNameText
+      description: 'Legacy name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.editor.name
+      description: 'Name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.editor.category
+      description: 'Category.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.director.id
+      description: 'ID of the director.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.director.image.id
+      description: 'ID of the director image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.director.image.url
+      description: 'URL of the director image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.director.legacyNameText
+      description: 'Legacy name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.director.name
+      description: 'Name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.director.category
+      description: 'Category.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.producer.id
+      description: 'ID of the producer.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.producer.image.id
+      description: 'ID of the producer image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.producer.image.url
+      description: 'URL of the producer image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.producer.legacyNameText
+      description: 'Legacy name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.producer.name
+      description: 'Name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.producer.category
+      description: 'Category.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.producer.job
+      description: 'E.g. executive or associate producer.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.producer.akas
+      description: 'Also known as.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.writer.id
+      description: 'ID of the writer.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.writer.image.id
+      description: 'ID of the writer image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.writer.image.url
+      description: 'URL of the writer image.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.writer.legacyNameText
+      description: 'Legacy name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.writer.name
+      description: 'Name.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.writer.category
+      description: 'Category.'
+      type: String
+    - contextPath: IMDb.Title.Credits.crew.writer.job
+      description: 'Written by.'
+      type: String
+  dockerimage: demisto/python3:3.10.13.84405
+  runonce: false
+  script: |
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+    class Client(BaseClient):
+        def __init__(self, api_key: str, base_url: str, proxy: bool, verify: bool, rapidapi_host: str):
+            super().__init__(base_url=base_url, proxy=proxy, verify=verify)
+            self.api_key = api_key
+            self.rapidapi_host = rapidapi_host
+
+            self._headers = {
+                'X-RapidAPI-Key': self.api_key,
+                'X-RapidAPI-Host': self.rapidapi_host
+            }
+
+        def auto_complete(self, q: str):
+            params = {'q': q}
+            return self._http_request(method='GET', url_suffix='auto-complete', params=params, resp_type='json',  ok_codes=(200,))
+
+        def most_popular_movies(self, homeCountry: str, purchaseCountry: str, currentCountry: str, limit: int):
+            params = {'homeCountry': homeCountry, 'purchaseCountry': purchaseCountry, 'currentCountry': currentCountry, 'limit': limit}
+            return self._http_request(method='GET', url_suffix='title/get-most-popular-movies', params=params, resp_type='json',  ok_codes=(200,))
+
+        def get_overview_details(self, tconst: str, currentCountry: str):
+            params = {'tconst': tconst, 'currentCountry': currentCountry}
+            return self._http_request(method='GET', url_suffix='title/get-overview-details', params=params, resp_type='json',  ok_codes=(200,))
+
+        def most_popular_celebs(self, homeCountry: str, purchaseCountry: str, currentCountry: str, limit: int):
+            params = {'homeCountry': homeCountry, 'purchaseCountry': purchaseCountry, 'currentCountry': currentCountry, 'limit': limit}
+            return self._http_request(method='GET', url_suffix='actors/list-most-popular-celebs', params=params, resp_type='json',  ok_codes=(200,))
+
+        def get_bio(self, nconst: str):
+            params = {'nconst': nconst}
+            return self._http_request(method='GET', url_suffix='actors/get-bio', params=params, resp_type='json',  ok_codes=(200,))
+
+        def get_known_for(self, nconst: str):
+            params = {'nconst': nconst}
+            return self._http_request(method='GET', url_suffix='actors/get-known-for', params=params, resp_type='json',  ok_codes=(200,))
+
+    def test_module(client: Client) -> str:
+        """
+        Tests API connectivity and authentication'
+
+        Returning 'ok' indicates that connection to the service is successful.
+        Raises exceptions if something goes wrong.
+        """
+
+        try:
+            response = client.auto_complete('1234567890') # testing with string 1234567890 as this only returns 2 results
+
+            success = demisto.get(response, 'v')  # Safe access to response['v'], which is just the API version and is always returned with results
+            if success != 1:
+                return f'Unexpected result from the service: success={success} (expected success=1)'
+
+            return 'ok'
+
+        except Exception as e:
+            exception_text = str(e).lower()
+            if 'message' in exception_text: # if there is error with API key this 'You are not subscribed to this API' message is returned
+                return 'You are not subscribed to this API. Authorization Error: make sure API Key is correctly set.'
+            else:
+                raise e
+
+    def auto_complete_command(client: Client, q: str) -> CommandResults:
+        if not q:
+            raise DemistoException('the q argument cannot be empty.')
+
+        response = client.auto_complete(q)
+
+        if response is None:
+            raise DemistoException('Search query failed: the response from server did not return anything.', res=response)
+
+        output = {'Results': response}
+
+        return CommandResults(outputs_prefix='IMDb',
+                              outputs_key_field='AutoComplete',
+                              outputs={'AutoComplete': output},
+                              raw_response=response,
+                              readable_output=tableToMarkdown(f'Search query results for {q}:', t=output, headers=['Results'])) #to get only one column header in War Room, in our case we need only 'Results'
+
+
+
+    def most_popular_movies_command(client: Client, homeCountry: str, purchaseCountry: str, currentCountry: str, limit: int) -> CommandResults:
+
+        all_response = client.most_popular_movies(homeCountry, purchaseCountry, currentCountry, limit) # response is changed to all_response where we receive default 100 results
+
+        response = all_response[:int(limit)] #To get only limit number of results we manually limit response as originally API is not supporting limit parameter
+        # Check if the response is empty or doesn't contain expected data
+        if response is None:
+            raise DemistoException('Get popular movies failed: the response from the server did not return anything.', res=response)
+
+        output = {'Results': response}
+
+        return CommandResults(outputs_prefix='IMDb',
+                              outputs_key_field='MostPopularMovies',
+                              outputs={'MostPopularMovies': output},
+                              raw_response=response,
+                              readable_output=tableToMarkdown(f'Most Popular Movies for {homeCountry}', t=output, headers=['Results']))
+
+
+    def get_overview_details_command(client: Client, tconst: str, currentCountry: str) -> CommandResults:
+
+        response = client.get_overview_details(tconst, currentCountry)
+
+        # Check if the response is empty or doesn't contain expected data
+        if response is None:
+            raise DemistoException('Get movie overview details failed: the response from the server did not return anything.', res=response)
+
+        readable_output=tableToMarkdown(f'Movie Overview Details', response)
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='IMDb',
+            outputs_key_field='OverviewDetails',
+            outputs=response
+        )
+
+    """
+        output = {'Results': response}
+
+        return CommandResults(outputs_prefix='IMDb',
+                              outputs_key_field='OverviewDetails',
+                              outputs={'OverviewDetails': output},
+                              raw_response=response,
+                              readable_output=tableToMarkdown(f'Movie Overview Details', t=output, headers=['Results']))
+    """
+
+    def most_popular_celebs_command(client: Client, homeCountry: str, purchaseCountry: str, currentCountry: str, limit: int) -> CommandResults:
+
+        all_response2 = client.most_popular_celebs(homeCountry, purchaseCountry, currentCountry, limit) # response is changed to all_response where we receive default 100 results
+
+        response = all_response2[:int(limit)] #To get only limit number of results we manually limit response as originally API is not supporting limit parameter
+        # Check if the response is empty or doesn't contain expected data
+        if response is None:
+            raise DemistoException('Get most popular celebs failed: the response from the server did not return anything.', res=response)
+
+        output = {'Celebs': response}
+
+        return CommandResults(outputs_prefix='IMDb',
+                              outputs_key_field='MostPopularCelebs',
+                              outputs={'MostPopularCelebs': output},
+                              raw_response=response,
+                              readable_output=tableToMarkdown(f'Most Popular Celebs This Week Are:', t=output, headers=['Celebs']))
+
+    def get_bio_command(client: Client, nconst: str) -> CommandResults:
+        if not nconst:
+            raise DemistoException('the nconst argument cannot be empty.')
+
+        response = client.get_bio(nconst)
+
+        if response is None:
+            raise DemistoException('Search query failed: the response from server did not return anything.', res=response)
+
+        output = {'Short Bio': response}
+
+        return CommandResults(outputs_prefix='IMDb',
+                              outputs_key_field='Bio',
+                              outputs={'Bio': output},
+                              raw_response=response,
+                              readable_output=tableToMarkdown(f'Short actor bio:', t=output, headers=['Short Bio']))
+
+    def get_known_for_command(client: Client, nconst: str) -> CommandResults:
+        if not nconst:
+            raise DemistoException('the nconst argument cannot be empty.')
+
+        response = client.get_known_for(nconst)
+
+        if response is None:
+            raise DemistoException('Search query failed: the response from server did not return anything.', res=response)
+
+        output = {'Known For': response}
+
+        return CommandResults(outputs_prefix='IMDb',
+                              outputs_key_field='KnownFor',
+                              outputs={'KnownFor': output},
+                              raw_response=response,
+                              readable_output=tableToMarkdown(f'The person is Known For:', t=output, headers=['Known For']))
+
+    def main() -> None:
+        params = demisto.params()
+        args = demisto.args()
+        command = demisto.command()
+
+        api_key = params.get('apikey', {}).get('password')
+        base_url = params.get('url', '')
+        rapidapi_host = params.get('host', '')
+        verify = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+
+        demisto.debug(f'Command being called is {command}')
+        try:
+            client = Client(api_key=api_key, base_url=base_url, rapidapi_host=rapidapi_host, verify=verify, proxy=proxy)
+
+            if command == 'test-module':
+                # This is the call made when clicking the integration Test button.
+                return_results(test_module(client))
+
+            elif command == 'imdb-auto-complete':
+                return_results(auto_complete_command(client, **args))
+
+            elif command == 'imdb-get-most-popular-movies':
+                return_results(most_popular_movies_command(client, **args))
+
+            elif command == 'imdb-get-overview-details':
+                return_results(get_overview_details_command(client, **args))
+
+            elif command == 'imdb-list-most-popular-celebs':
+                return_results(most_popular_celebs_command(client, **args))
+
+            elif command == 'imdb-get-bio':
+                return_results(get_bio_command(client, **args))
+
+            elif command == 'imdb-get-known-for':
+                return_results(get_known_for_command(client, **args))
+            else:
+                raise NotImplementedError(f"command {command} is not implemented.")
+
+        # Log exceptions and return errors
+        except Exception as e:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error("\n".join(("Failed to execute {command} command.",
+                                    "Error:",
+                                    str(e))))
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
