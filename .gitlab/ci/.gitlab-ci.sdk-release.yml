@@ -157,7 +157,7 @@ wait-for-demisto-sdk-nightly:
 
 
 create-release-pull-request:
-  stage: release-sdk
+  stage: sdk-flow
   extends:
     - .release-sdk
     - .default-job-settings
@@ -170,6 +170,24 @@ create-release-pull-request:
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_pr.py -t $GITLAB_API_TOKEN -b $RELEASE_VERSION
+
+create-the-release:
+  stage: sdk-flow
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - create-release-pull-request
+  when: manual
+  variables:
+    RELEASE_VERSION: $RELEASE_VERSION
+  script:
+    - echo "RELEASE_VERSION="$RELEASE_VERSION
+    - python3 ./Tests/sdk_release/create_release.py -t $GITLAB_API_TOKEN -b $RELEASE_VERSION -t "test"
+
+
+
+
 
 
 #test-manulal-job:

@@ -28,7 +28,7 @@ def main():
         'tag_name': f'v{release_branch_name}',
         'name': f'v{release_branch_name}',
         'body': release_text,
-        'draft': True,
+        'draft': True, ############# TODO: CHANGE TO False
         'target_commitish': release_branch_name
     })
 
