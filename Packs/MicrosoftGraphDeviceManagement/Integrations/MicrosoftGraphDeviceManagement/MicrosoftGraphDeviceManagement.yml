@@ -352,6 +352,22 @@ script:
     - description: The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command).
       name: device_id
       required: true
+    description: Get the managed device physical memory bytes.
+    name: msgraph-get-managed-device-physical-memory-by-id
+    outputs:
+    - contextPath: MSGraphDeviceManagement.DeviceMemory.id
+      description: The ID of the managed device.
+      type: String
+    - contextPath: MSGraphDeviceManagement.DeviceMemory.physicalMemoryInBytes
+      description: The correct value of ID of the managed device.
+      type: String
+    - contextPath: MSGraphDeviceManagement.DeviceMemory.deviceName
+      description: Name of the device.
+      type: String
+  - arguments:
+    - description: The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command).
+      name: device_id
+      required: true
     description: Check the device with Intune, immediately receive pending actions and policies.
     name: msgraph-sync-device
   - arguments:
