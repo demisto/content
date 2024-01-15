@@ -124,29 +124,51 @@ def test_module(client: ReilaQuestClient) -> str:
     client.list_triage_item_events(limit=1)
     return "ok"
 
+
 def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
 
     last_run = last_run.get("time")
-    events = {event.get("triage-item-id"): event for event in client.list_triage_item_events(event_created_after=last_run, limit=max_fetch)}
+    events = {
+        event.get("triage-item-id"): event for event in
+        client.list_triage_item_events(event_created_after=last_run, limit=max_fetch)
+    }
     triage_item_ids = set(events.keys())
 
     demisto.info(f"Fetched the following event IDs: {events.keys()}")
 
     triage_items = client.triage_items(list(triage_item_ids))
 
-    alert_ids, incident_ids = [], []
+    alert_ids_to_triage_ids, incident_ids_to_triage_ids = {}, {}
 
     for triaged_item in triage_items:
         item_id = triaged_item.get("id")
         if item_id in events:
-            events[item_id].update({"triage-item": triaged_item})
+            events[item_id]["triage-item"] = triaged_item
 
         source = triaged_item.get("source") or {}
         if alert_id := source.get("alert-id"):
-            alert_ids.append(alert_id)
+            alert_ids_to_triage_ids[item_id] = alert_id
 
         if incident_id := source.get("incident-id"):
-            incident_ids.append(incident_id)
+            incident_ids_to_triage_ids[incident_id] = item_id
+
+    alert_ids = list(alert_ids_to_triage_ids.keys())
+    incident_ids = list(incident_ids_to_triage_ids.keys())
+
+    demisto.info(f'Fetched the following alerts {alert_ids}')
+    demisto.info(f'Fetched the following incidents {incident_ids}')
+
+    alerts = client.get_alerts_by_ids(alert_ids)
+    incidents = client.get_incident_ids(incident_ids)
+
+    for alert in alerts:
+        _id = alert.get("id")
+        events[alert_ids_to_triage_ids[_id]]["alert"] = alert
+
+    for incident in incidents:
+        _id = incident.get("id")
+        events[incident_ids_to_triage_ids[_id]]["incident"] = incident
+
 
 
 ''' MAIN FUNCTION '''
