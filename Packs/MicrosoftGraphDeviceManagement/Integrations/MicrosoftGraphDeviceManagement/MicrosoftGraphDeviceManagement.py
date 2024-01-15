@@ -259,12 +259,15 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
 
 def find_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     device_name: str = str(args.get('device_name'))
-    raw_device, raw_response = client.find_managed_devices(device_name)
-    entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': raw_device}
+    list_raw_devices, raw_response = client.find_managed_devices(device_name)
+    list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
+    entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
     human_readable: str = f'Managed device {device_name} not found.'
-    if raw_device:
+    if list_devices:
         name: str = f'List managed devices with name {device_name}'
-        human_readable = tableToMarkdown(name=name, t=raw_device, headers=HEADERS['raw_device'],
+        if len(list_devices) == 1:
+            name = f'Managed device {list_devices[0].get("Name", "")}'
+        human_readable = tableToMarkdown(name=name, t=list_raw_devices, headers=HEADERS['raw_device'],
                                          headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
                                          removeNull=True)
     return_outputs(human_readable, entry_context, raw_response)
