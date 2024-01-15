@@ -21,9 +21,9 @@ def test_get_person_in_charge(mocker):
     assert result == expected
 
 
-@pytest.mark.parametrize('pipeline1_date, pipeline2_date, expected', [
-    ('2020-01-01T00:00:00Z', '2020-01-02T00:00:00Z', False),
-    ('2020-01-02T00:00:00Z', '2020-01-01T00:00:00Z', True)])
+@pytest.mark.parametrize(('pipeline1_date, pipeline2_date, expected'),(
+    pytest.param('2020-01-01T00:00:00Z', '2020-01-02T00:00:00Z', False, id= "pipelines not in order"),
+    pytest.param('2020-01-02T00:00:00Z', '2020-01-01T00:00:00Z', True, id= "pipelines in order")))
 def test_are_pipelines_in_order(mocker, pipeline1_date, pipeline2_date, expected):
     """
     Given:
@@ -48,12 +48,11 @@ def test_are_pipelines_in_order(mocker, pipeline1_date, pipeline2_date, expected
     assert result == expected
 
 
-@pytest.mark.parametrize('pipeline1_status, pipeline2_status, expected', [
-    ('success', 'failed', True),
-    ('failed', 'success', False),
-    ('success', 'success', None),
-    ('failed', 'in progress', None)
-])
+@pytest.mark.parametrize(('pipeline1_status, pipeline2_status, expected'),(
+    pytest.param('success', 'failed', True, id= "negative pivot"),
+    pytest.param('failed', 'success', False, id= "positiv pivot"),
+    pytest.param('success', 'success', None, id = "no change"),
+    pytest.param('failed', 'in progress', None, id = "pipeline still running")))
 def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     """
     Given:
@@ -78,13 +77,13 @@ def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     assert result == expected
 
 
-@pytest.mark.parametrize('response, expected', [
-    ([], None),
-    ([{"Jon": "test", "state": "test", "user": {"login": "Jon"}},
-      {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jane Doe"),
-    ([{"Jon": "test", "state": "APPROVED", "user": {"login": "Jon"}},
-     {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jon")
-])
+@pytest.mark.parametrize(('response, expected'), (
+    pytest.param([], None, id ="no reviewer"),
+    pytest.param([{"Jon": "test", "state": "test", "user": {"login": "Jon"}},
+      {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jane Doe", id = "one reviewer approved"),
+    pytest.param([{"Jon": "test", "state": "APPROVED", "user": {"login": "Jon"}},
+     {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jon", id = "2 reviewers approved"),
+))
 def test_get_reviewer(response, expected, requests_mock: MockerCore):
     """
     Given:
@@ -103,11 +102,11 @@ def test_get_reviewer(response, expected, requests_mock: MockerCore):
     assert result == expected
 
 
-@pytest.mark.parametrize('name, expected', [
-    ("Mike", "mike"),
-    ("Jon", "Jon"),
-    ("github-actions[bot]", "docker images bot owner")
-])
+@pytest.mark.parametrize(('name, expected'),( 
+    pytest.param("Mike", "mike", id ="name in map"),
+    pytest.param("Jon", "Jon", id = "name not in map"),
+    pytest.param("github-actions[bot]", "docker images bot owner", id= "name is 'github-actions[bot]'")
+))
 def test_get_slack_user_name(name, expected):
     """
     Given:
