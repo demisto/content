@@ -1,5 +1,5 @@
 This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
-It will create CVE indicators based on image or host vulnerabilities. 
+It creates CVE indicators based on image or host vulnerabilities. 
 
 ## Dependencies
 
@@ -15,11 +15,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
+SetAndHandleEmpty
 
 ### Commands
 
-* createNewIndicator
+createNewIndicator
 
 ## Playbook Inputs
 
