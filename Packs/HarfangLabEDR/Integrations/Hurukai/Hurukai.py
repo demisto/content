@@ -3279,7 +3279,8 @@ def main():
             args['alert_type'] = demisto.params().get('alert_type', None)
             args['min_severity'] = demisto.params().get(
                 'min_severity', SEVERITIES[0])
-            args['max_fetch'] = demisto.params().get('max_fetch', None)
+            if max_fetch_arg := demisto.params().get('max_fetch', None):
+                args['max_fetch'] = int(max_fetch_arg)
             args['mirror_direction'] = demisto.params().get('mirror_direction', None)
             args['fetch_types'] = demisto.params().get('fetch_types', None)
         return_results(target_function(client, args))
