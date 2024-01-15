@@ -1005,7 +1005,7 @@ inputs:
       - operator: uniq
       - operator: FirstArrayElement
   required: false
-  description: The highest score that was given to a DBotScore indicator, in number.
+  description: The highest score (number) that was given to a DBotScore indicator.
   playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets
