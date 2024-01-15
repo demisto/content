@@ -109,6 +109,7 @@ class Transformer:
         X_vect, _ = self.fit_transform()
         distance = scoring_function(X_vect)
         self.incidents_df[f"similarity {self.incident_field}"] = np.round(distance, ROUND_SCORING)
+        demisto.info(f"In Transfomer.get_score(), {self.incidents_df=}")
         return self.incidents_df
 
 
@@ -152,6 +153,7 @@ class Model:
         ]
 
     def get_score(self):
+        demisto.info(f"In get_score(), {self.incidents_df=}")
         for field in self.fields_for_frequencyIndicators:
             t = Transformer("frequency_indicators", field, self.incidents_df, self.incident_to_match,
                             self.transformation)
@@ -369,6 +371,7 @@ def get_similar_incidents(
     similar_incidents["Identical indicators"] = similar_incidents["Identical indicators"].apply(
         lambda inc_ids: replace_indicator_ids_with_values(inc_ids, indicators_data)
     )
+    demisto.info(f"In get_similar_incidents(), {similar_incidents=}")
     similar_incidents = similar_incidents[["incident ID", "id", "Identical indicators", "similarity indicators"]]
     similar_incidents = similar_incidents[similar_incidents["similarity indicators"] > threshold]
     similar_incidents = similar_incidents.sort_values(["similarity indicators"], ascending=False)
