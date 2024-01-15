@@ -41,7 +41,7 @@ class Client(BaseClient):
         if domain_arg:
             json_body['domain'] = domain_arg
 
-        response = self._http_request(method='POST', url_suffix='login', json_data=json_body, headers=self.headers)
+        response = self._http_request(method='POST', url_suffix='login', json_data=json_body, headers=self.headers, timeout=30)
         sid = response.get('sid', '')
 
         if sid:
@@ -77,7 +77,7 @@ class Client(BaseClient):
         Otherwise, an exception should be raised by self._http_request()
         """
         response = self._http_request(method='POST', url_suffix='show-api-versions', headers=self.headers,
-                                      ok_codes=(200, 500), resp_type='response', json_data={})
+                                      ok_codes=(200, 500), resp_type='response', json_data={}, timeout=30)
         if response.status_code == 500:
             return 'Server Error: make sure Server URL and Server Port are correctly set'
 
@@ -1739,8 +1739,8 @@ def checkpoint_show_threat_protection_command(client: Client, args):
     readable_output = ''
     uid = args.get('uid', '')
     name = args.get('name')
-    properties = False if args.get('properties') == 'false' else True
-    profiles = False if args.get('profiles') == 'false' else True
+    properties = args.get('properties') != 'false'
+    profiles = args.get('profiles') != 'false'
     result = client.show_threat_protection(uid, name, properties, profiles)
 
     if result:
