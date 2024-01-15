@@ -4,7 +4,7 @@ import time
 import requests
 
 
-TIMEOUT = 60 * 60 * 6  # 6
+TIMEOUT = 60 * 60 * 6  # 6 hours
 
 
 def get_pr(pr_id, token, suffix):
