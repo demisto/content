@@ -1,0 +1,112 @@
+id: DomainTools Associate Indicator to Incident
+version: -1
+name: DomainTools Associate Indicator to Incident
+description: 'This playbook calls the AssociateIndicatorsToIncident Script to Associate an Indicator to its the current incident created. Checks for additionalindicators in the customFields of an incident.'
+tags:
+- Domaintools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aa2db149-0cd4-46d9-82e1-8f096f7cc2ac
+    type: start
+    task:
+      id: aa2db149-0cd4-46d9-82e1-8f096f7cc2ac
+      description: ''
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d4fa084c-6d6f-4b89-8101-d2141c966ba2
+    type: regular
+    task:
+      id: d4fa084c-6d6f-4b89-8101-d2141c966ba2
+      version: -1
+      name: Associate Indicators to Incident
+      description: Associate Indicators to an Incident
+      scriptName: AssociateIndicatorsToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c3e58d8f-87ef-483e-8bcb-b8d4b7694f03
+    type: title
+    task:
+      id: c3e58d8f-87ef-483e-8bcb-b8d4b7694f03
+      description: ''
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 475,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)
