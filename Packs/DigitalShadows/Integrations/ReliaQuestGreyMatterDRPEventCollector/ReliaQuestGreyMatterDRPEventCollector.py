@@ -66,11 +66,16 @@ class ReilaQuestClient(BaseClient):
             params["event-created-after"] = event_created_after
 
         events = self.http_request("/triage-item-events", params=params)
+        demisto.info(f'Fetched {len(events)} events')
+        demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in events]}')
 
         if events:
             while len(events) < limit and "event-num" in events[-1]:
                 params.update({"event-num-after": events[-1]["event-num"]})
-                events.extend(self.http_request("/triage-item-events", params=params))
+                current_events = self.http_request("/triage-item-events", params=params)
+                demisto.info(f'Fetched {len(current_events)} events')
+                demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in current_events]}')
+                events.extend(current_events)
 
         return events
 
@@ -126,24 +131,6 @@ class ReilaQuestClient(BaseClient):
         return response
 
 
-class TriagedItemEvent:
-
-    def __init__(self, event: Dict):
-        self.event = event
-
-    def __eq__(self, other):
-        return hashlib.sha256(
-            json.dumps(self.event, sort_keys=True).encode()
-        ).hexdigest() == hashlib.sha256(
-            json.dumps(other.event, sort_keys=True).encode()
-        ).hexdigest()
-
-    def __hash__(self):
-        return hash(hashlib.sha256(
-            json.dumps(self.event, sort_keys=True).encode()
-        ).hexdigest())
-
-
 def test_module(client: ReilaQuestClient) -> str:
     """
     Tests that the credentials to ReliaQuest is ok
@@ -158,27 +145,32 @@ def test_module(client: ReilaQuestClient) -> str:
 def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
 
     _time = last_run.get("time")
-    events = {
-        event.get("triage-item-id"): event for event in
-        client.list_triage_item_events(event_created_after=_time, limit=max_fetch)
-    }
-    triage_item_ids = list(events.keys())
-    demisto.info(f"Fetched the following event IDs: {triage_item_ids}")
+    events = client.list_triage_item_events(event_created_after=_time, limit=max_fetch)
+    events_mapping = {}
+    for event in events:
+        if triage_item_id := event.get("triage-item-id"):
+            if triage_item_id not in events_mapping:
+                events_mapping[triage_item_id] = []
+            events_mapping[triage_item_id].append(event)
+
+    triage_item_ids = list(events_mapping.keys())
+    demisto.info(f"Fetched the following item IDs: {triage_item_ids}")
     triage_items = client.triage_items(triage_item_ids)
 
     alert_ids_to_triage_ids, incident_ids_to_triage_ids = {}, {}
 
     for triaged_item in triage_items:
-        unique_item_id = triaged_item.get("id")
-        if unique_item_id in events:
-            events[unique_item_id]["triage-item"] = triaged_item
+        item_id = triaged_item.get("id")
+        if item_id in events_mapping:
+            for event in events_mapping[item_id]:
+                event["triage-item"] = triaged_item
 
         source = triaged_item.get("source") or {}
         if alert_id := source.get("alert-id"):
-            alert_ids_to_triage_ids[alert_id] = unique_item_id
+            alert_ids_to_triage_ids[alert_id] = item_id
 
         if incident_id := source.get("incident-id"):
-            incident_ids_to_triage_ids[incident_id] = unique_item_id
+            incident_ids_to_triage_ids[incident_id] = item_id
 
     alert_ids = list(alert_ids_to_triage_ids.keys())
     incident_ids = list(incident_ids_to_triage_ids.keys())
@@ -193,29 +185,37 @@ def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: 
 
     for alert in alerts:
         _id = alert.get("id")
-        events[alert_ids_to_triage_ids[_id]]["alert"] = alert
+        for event in events_mapping[alert_ids_to_triage_ids[_id]]:
+            event["alert"] = alert
         for asset in alert.get("assets") or []:
             if asset_id := asset.get("id"):
-                if asset_id in alert_ids_to_triage_ids:
-                    assets_ids_to_triage_ids[asset_id].append(alert_ids_to_triage_ids[_id])
-                else:
-                    assets_ids_to_triage_ids[asset_id] = [alert_ids_to_triage_ids[_id]]
+                if asset_id not in alert_ids_to_triage_ids:
+                    assets_ids_to_triage_ids[asset_id] = []
+                assets_ids_to_triage_ids[asset_id].append(alert_ids_to_triage_ids[_id])
 
     for incident in incidents:
         _id = incident.get("id")
-        events[incident_ids_to_triage_ids[_id]]["incident"] = incident
+        for event in events_mapping[incident_ids_to_triage_ids[_id]]:
+            event["incident"] = incident
         for asset in incident.get("assets") or []:
             if asset_id := asset.get("id"):
-                assets_ids_to_triage_ids[asset_id] = alert_ids_to_triage_ids[_id]
+                if asset_id not in assets_ids_to_triage_ids:
+                    assets_ids_to_triage_ids[asset_id] = []
+                assets_ids_to_triage_ids[asset_id].append(alert_ids_to_triage_ids[_id])
 
     asset_ids = list(assets_ids_to_triage_ids.keys())
     assets = client.get_asset_ids(asset_ids)
     for asset in assets:
         _id = asset.get("id")
-        if "assets" in events[assets_ids_to_triage_ids[_id]]:
-            events[assets_ids_to_triage_ids[_id]]["assets"].append(asset)
-        else:
-            events[assets_ids_to_triage_ids[_id]]["assets"] = [asset]
+        for triage_item_id in assets_ids_to_triage_ids[_id]:
+            for event in events_mapping[triage_item_id]:
+                if "assets" not in event:
+                    event["assets"] = []
+                event["assets"].append(asset)
+
+    events = []
+    for items in events_mapping.values():
+        events.extend(items)
 
     print()
 
@@ -254,8 +254,9 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        import traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}, {traceback.format_exc()}')
+        raise e
+        # import traceback
+        # return_error(f'Failed to execute {command} command.\nError:\n{str(e)}, {traceback.format_exc()}')
 
 
 ''' ENTRY POINT '''
