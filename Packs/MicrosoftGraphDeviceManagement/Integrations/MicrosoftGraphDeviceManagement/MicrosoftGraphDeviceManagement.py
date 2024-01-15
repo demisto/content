@@ -290,7 +290,7 @@ def get_managed_device_physical_memory_command(client: MsGraphClient, args: dict
     raw_response, device_id = client.get_managed_device_physical_memory(device_id)
 
     device: dict = build_device_object(raw_response)
-    entry_context: dict = {'MSGraphDeviceManagement.DeviceMemory(val.ID === obj.ID)': device}
+    entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
     device_name: str = device.get('Name', '')
     human_readable: str = f'Managed device {device_id} not found.'
     if device:

@@ -355,13 +355,13 @@ script:
     description: Get the managed device physical memory bytes.
     name: msgraph-get-managed-device-physical-memory-by-id
     outputs:
-    - contextPath: MSGraphDeviceManagement.DeviceMemory.id
+    - contextPath: MSGraphDeviceManagement.Device.id
       description: The ID of the managed device.
       type: String
-    - contextPath: MSGraphDeviceManagement.DeviceMemory.physicalMemoryInBytes
+    - contextPath: MSGraphDeviceManagement.Device.physicalMemoryInBytes
       description: The correct value of ID of the managed device.
       type: String
-    - contextPath: MSGraphDeviceManagement.DeviceMemory.deviceName
+    - contextPath: MSGraphDeviceManagement.Device.deviceName
       description: Name of the device.
       type: String
   - arguments:
@@ -976,7 +976,7 @@ script:
     execution: false
     name: msgraph-device-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.82686
+  dockerimage: demisto/crypto:1.0.0.84658
   script: ''
   subtype: python3
   type: python
