@@ -1,6 +1,16 @@
-id: NGFW Scan
-version: -1
-name: NGFW Scan
+id: NGFW Scan_2
+version: 5
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Core - Investigation and Response
+    itemVersion: 3.0.8
+    fromServerVersion: 6.6.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: NGFW Scan_copy_2
 description: |-
   This playbook handles external and internal scanning alerts.
 
@@ -49,11 +59,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -68,7 +78,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
     taskid: fc3beac8-29a6-4c5e-860a-88da98d2f465
@@ -99,6 +108,7 @@ tasks:
           right:
             value:
               simple: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -113,7 +123,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 6e60d2b5-da62-4e51-8288-fa36e88a3b43
@@ -125,8 +134,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -141,7 +150,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 81114969-0dc4-4f7c-846d-9463dee9fabf
@@ -153,11 +161,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -172,7 +180,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "11":
     id: "11"
     taskid: eb6213f6-9508-4f40-8b7b-57f4fd29a859
@@ -184,11 +191,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "50"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -203,7 +210,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "14":
     id: "14"
     taskid: b54cde0f-11ea-44c2-8b0f-68b2e5e77897
@@ -215,11 +221,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "51"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -234,7 +240,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "17":
     id: "17"
     taskid: cc50c64f-41c7-49cb-873b-88891bef19e6
@@ -264,6 +269,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -278,7 +284,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "19":
     id: "19"
     taskid: 79f7f934-3b5f-4db6-8705-238fc63a2f1a
@@ -312,6 +317,7 @@ tasks:
         complex:
           root: inputs.SOCEmailAddress
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -326,7 +332,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "23":
     id: "23"
     taskid: f6288d7e-39f3-4da3-8a9e-5c5ffcd318b1
@@ -335,7 +340,18 @@ tasks:
       id: f6288d7e-39f3-4da3-8a9e-5c5ffcd318b1
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations
+        that are enabled. The direction of the traffic that will be blocked is determined
+        by the XSOAR user (and set by default to outgoing)\nNote the following:\n-
+        \ some of those integrations require specific parameters to run, which are
+        based on the playbook inputs. Also, certain integrations use FW rules or appended
+        network objects.\n- Note that the appended network objects should be specified
+        in blocking rules inside the system later on. \n\n\nSupported integrations
+        for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n*
+        Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n*
+        Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n*
+        Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n*
+        Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -348,6 +364,8 @@ tasks:
         simple: "No"
       CustomBlockRule:
         simple: "True"
+      Folder:
+        simple: Shared
       IP:
         complex:
           root: inputs.scannerIP
@@ -360,9 +378,8 @@ tasks:
       UserVerification:
         complex:
           root: inputs.UserVerification
-      Folder:
-        simple: Shared
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -382,7 +399,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "26":
     id: "26"
     taskid: 93f61f2a-d50e-4916-8221-2d83b81f4331
@@ -424,6 +440,7 @@ tasks:
           right:
             value:
               simple: "2"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -438,7 +455,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "27":
     id: "27"
     taskid: 37657fa8-531d-4142-8b8e-6bfe4b2b63ae
@@ -450,8 +466,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -466,7 +482,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "28":
     id: "28"
     taskid: d5aa0ea2-289c-4fe0-8dfb-c64b2e52fd19
@@ -475,7 +490,8 @@ tasks:
       id: d5aa0ea2-289c-4fe0-8dfb-c64b2e52fd19
       version: -1
       name: Should block repetitive scanning from benign IP Address?
-      description: Checks whether repetitive scanning from benign IP addresses should be blocked.
+      description: Checks whether repetitive scanning from benign IP addresses should
+        be blocked.
       type: condition
       iscommand: false
       brand: ""
@@ -509,6 +525,7 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -523,7 +540,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "33":
     id: "33"
     taskid: d59bde26-4667-41ec-8e8a-c38c87a3b7a4
@@ -567,6 +583,7 @@ tasks:
         complex:
           root: inputs.scannerIP
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -586,7 +603,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "34":
     id: "34"
     taskid: 12c20106-b5a4-4d4e-8f08-c81cf9ce2feb
@@ -618,6 +634,7 @@ tasks:
       trimevents:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -632,7 +649,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "40":
     id: "40"
     taskid: 06dcc969-335b-4309-8e46-5979aeff8158
@@ -705,10 +721,11 @@ tasks:
         complex:
           root: inputs.HostAutoContainment
       IAMUserDomain:
-        simple: ''
+        simple: '@demisto.com'
       UserContainment:
         simple: Fasle
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -728,7 +745,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "41":
     id: "41"
     taskid: 7284fa76-6c8d-45f9-8edf-f32abd30d498
@@ -746,6 +762,7 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -760,7 +777,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "42":
     id: "42"
     taskid: 9d36e4d2-085a-49ec-835a-c1cafe1e89d1
@@ -792,6 +808,7 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -806,7 +823,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "45":
     id: "45"
     taskid: b84fcf1d-129f-4b82-822a-be68527e7710
@@ -835,6 +851,7 @@ tasks:
       unIsolateEndpoint:
         simple: "false"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -854,7 +871,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "46":
     id: "46"
     taskid: c506b4fc-df2d-4f21-8414-d2a062e80aad
@@ -866,11 +882,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "42"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -885,7 +901,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "47":
     id: "47"
     taskid: 6823d96c-3b1f-4738-855f-79eceff629d5
@@ -904,6 +919,7 @@ tasks:
       "Yes":
       - "48"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -918,7 +934,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "48":
     id: "48"
     taskid: c61bb207-387d-49a5-8083-409ca876e978
@@ -948,6 +963,7 @@ tasks:
         complex:
           root: inputs.scannerIP
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -967,7 +983,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "50":
     id: "50"
     taskid: 510b6f41-c6c3-4a59-8e41-ab1562467fe4
@@ -989,6 +1004,7 @@ tasks:
         complex:
           root: inputs.scannerIP
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1003,7 +1019,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "51":
     id: "51"
     taskid: edd23e16-504a-450d-857b-1c93cd09c0d2
@@ -1064,6 +1079,7 @@ tasks:
       timeRange:
         simple: 2 hours ago
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1083,7 +1099,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "54":
     id: "54"
     taskid: 0caa2762-5a38-4642-8525-edd7f4924807
@@ -1107,6 +1122,7 @@ tasks:
         complex:
           root: inputs.scannerIP
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1121,7 +1137,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "55":
     id: "55"
     taskid: b0f3e23a-43a5-4394-806c-b097064ea017
@@ -1153,6 +1168,7 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1167,7 +1183,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "56":
     id: "56"
     taskid: 6958506f-7785-4f9c-87d1-e5c2a9a38cfd
@@ -1176,7 +1191,8 @@ tasks:
       id: 6958506f-7785-4f9c-87d1-e5c2a9a38cfd
       version: -1
       name: Is AbuseIPDB enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       type: condition
       iscommand: false
       brand: ""
@@ -1213,6 +1229,7 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1227,7 +1244,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "57":
     id: "57"
     taskid: 98a8bfdb-f55b-4948-8b31-0a11d8aef7c6
@@ -1317,7 +1333,10 @@ tasks:
       id: 0619c0c5-861a-4dc1-832f-102486fca073
       version: -1
       name: Ticket Management - Generic
-      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
+      description: "`Ticket Management - Generic` allows you to open new tickets or
+        update comments to the existing ticket in the following ticketing systems:\n-ServiceNow
+        \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk
+        - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
@@ -1455,7 +1474,6 @@ tasks:
       id: 0d9c70b9-65ea-4f19-8289-36ba6b10d480
       version: -1
       name: SOC Email exist?
-      description: Checks if the SOC Email exist.
       type: condition
       iscommand: false
       brand: ""
@@ -1525,36 +1543,37 @@ inputs:
       accessor: localip
   required: false
   description: The scanner IP address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: blockKnownScanner
   value:
     simple: "true"
   required: false
   description: Whether to block the IP address based on previously seen scanning alerts.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutoCloseAlert
   value:
     simple: "false"
   required: false
-  description: Whether to close the alert automatically or manually, after an analyst's review.
-  playbookInputQuery:
+  description: Whether to close the alert automatically or manually, after an analyst's
+    review.
+  playbookInputQuery: null
 - key: AutoRecovery
   value:
     simple: "false"
   required: false
   description: Whether to execute the Recovery playbook.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SOCEmailAddress
   value: {}
   required: false
   description: The SOC email address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: reportIPAddress
   value:
     simple: "false"
   required: false
   description: Whether to report the IP address to AbuseIPDB.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutoContainment
   value:
     simple: "false"
@@ -1564,114 +1583,120 @@ inputs:
     * Block indicators
     * Quarantine file
     * Disable user
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: HostAutoContainment
   value:
     simple: "false"
   required: false
   description: Whether to execute endpoint isolation automatically or manually.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ShouldOpenTicket
   value:
     simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowShortDescription
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: A short description of the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowImpact
   value: {}
   required: false
   description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowUrgency
   value: {}
   required: false
   description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
-  playbookInputQuery:
+  description: The severity of the new ticket. Leave empty for ServiceNow default
+    severity.
+  playbookInputQuery: null
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery:
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery: null
 - key: serviceNowCategory
   value: {}
   required: false
   description: The category of the ServiceNow ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: serviceNowAssignmentGroup
   value: {}
   required: false
   description: The group to which to assign the new ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
-  playbookInputQuery:
+  description: The urgency with which the ticket should be addressed. Allowed values
+    are "urgent", "high", "normal", or "low".
+  playbookInputQuery: null
 - key: ZendeskRequester
   value: {}
   required: false
   description: The user who requested this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
-  playbookInputQuery:
+  description: The state of the ticket. Allowed values are "new", "open", "pending",
+    "hold", "solved", or "closed".
+  playbookInputQuery: null
 - key: ZendeskSubject
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: The value of the subject field for this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskTags
   value: {}
   required: false
   description: The array of tags applied to this ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
-  playbookInputQuery:
+  description: The type of this ticket. Allowed values are "problem", "incident",
+    "question", or "task".
+  playbookInputQuery: null
 - key: ZendeskAssigne
   value: {}
   required: false
   description: The agent currently assigned to the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZendeskCollaborators
   value: {}
   required: false
   description: The users currently CC'ed on the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: addCommentPerEndpoint
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
-  playbookInputQuery:
+  description: 'Whether to append a new comment to the ticket for each endpoint in
+    the incident. Possible values: True/False.'
+  playbookInputQuery: null
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: UserVerification
   value:
     simple: "True"
@@ -1679,27 +1704,17 @@ inputs:
   description: |-
     Possible values: True/False.  Default: True.
     Whether to provide user verification for blocking IP addresses.
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
-  - SOCEmailAddress
-  - AutoCloseAlert
-  name: Alert Management
-  description: Alert management settings and data, including escalation processes, and user engagements.
-- inputs:
   - scannerIP
-  name: Investigation
-  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
-- inputs:
   - blockKnownScanner
+  - AutoCloseAlert
+  - AutoRecovery
+  - SOCEmailAddress
   - reportIPAddress
   - AutoContainment
-  - UserVerification
   - HostAutoContainment
-  - AutoRecovery
-  name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
-- inputs:
   - ShouldOpenTicket
   - serviceNowShortDescription
   - serviceNowImpact
@@ -1719,16 +1734,13 @@ inputSections:
   - description
   - addCommentPerEndpoint
   - CommentToAdd
-  name: Ticket Management
-  description: Ticket management settings and data.
+  - UserVerification
+  name: General (Inputs group)
+  description: Generic group for inputs
 outputSections:
 - outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-tests:
-- Test Playbook - NGFW Scan
-marketplaces: ["marketplacev2"]
-fromversion: 6.6.0
-contentitemexportablefields:
-  contentitemfields: {}
+sourceplaybookid: NGFW Scan
+dirtyInputs: true
