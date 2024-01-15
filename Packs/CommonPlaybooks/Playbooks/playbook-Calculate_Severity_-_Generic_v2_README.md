@@ -47,7 +47,7 @@ This playbook does not use any integrations.
 | MicrosoftHeadersSeverityCheck | The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers. | ${Email.MicrosoftHeadersSeverityCheck} | Optional |
 | XDRRiskyUsers | An object of risky users and their corresponding scores, as outputted by the "xdr-list-risky-users" command. | PaloAltoNetworksXDR.RiskyUser | Optional |
 | XDRRiskyHosts | An object of risky hosts and their corresponding scores, as outputted by the "xdr-list-risky-hosts" command. | PaloAltoNetworksXDR.RiskyHost | Optional |
-| DBotScoreMaxScore | The highest score that was given to a DBotScore indicator, in number. | DBotScore.Score | Optional |
+| DBotScoreMaxScore | The highest score (number) that was given to a DBotScore indicatorr. | DBotScore.Score | Optional |
 
 ## Playbook Outputs
 
