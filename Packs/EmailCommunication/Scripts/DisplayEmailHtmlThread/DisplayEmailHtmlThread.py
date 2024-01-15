@@ -70,7 +70,7 @@ def remove_color_from_html_text(html_message):
         if 'color' in tag.attrs:
             demisto.debug(f"Removing the attribute color {tag.attrs['color']} from the tag {tag}")
             del tag.attrs['color']
-    return parsed_html_body.get_text()
+    return str(parsed_html_body)
 
 
 def main():
