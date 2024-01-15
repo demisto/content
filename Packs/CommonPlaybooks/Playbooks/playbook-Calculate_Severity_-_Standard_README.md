@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Calculate Severity By Highest DBotScore
+Calculate Severity By Highest DBotScore
 
 ### Integrations
 
