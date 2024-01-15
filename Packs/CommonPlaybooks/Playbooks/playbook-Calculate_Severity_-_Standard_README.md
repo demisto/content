@@ -1,4 +1,4 @@
-Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the Evaluate Severity - Set By Highest DBotScore playbook.
+Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the **Evaluate Severity - Set By Highest DBotScore** playbook.
 
 ## Dependencies
 
