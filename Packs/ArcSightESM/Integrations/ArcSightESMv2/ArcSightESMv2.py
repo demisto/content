@@ -113,22 +113,17 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
 
                 elif key in IP_FIELDS:
                     key = 'decodedAddress' if key == 'addressAsBytes' else key
-                    demisto.debug(f'decoding ip {value=}')
                     d[key] = decode_ip(value)
                 elif key in TIMESTAMP_FIELDS:
                     key = key.replace('Time', 'Date').replace('stamp', '')
-                    demisto.debug(f'decoding timestamp {value=}')
                     d[key] = parse_timestamp_to_datestring(value)
                 elif key in ['eventId', 'baseEventIds']:
-                    demisto.debug(f'decoding event {value=}')
                     d[key] = str(value)
                 elif isinstance(value, int) and value > 10000000000000000:
                     # the platform rounds number larger than 10000000000000000
                     # so we cast them to string to keep as is
-                    demisto.debug(f'decoding int {value=}')
                     d[key] = str(value)
                 elif isinstance(value, bytes):
-                    demisto.debug(f'decoding bytes {value=}')
                     d[key] = value.decode()
     return d
 
@@ -520,7 +515,6 @@ def get_security_events_command():
     raw_events = get_security_events(ids, last_date_range)
     if raw_events:
         events = []
-        demisto.debug(f'calling decode_arcsight_output with {raw_events=}')
         contents = decode_arcsight_output(raw_events)
         demisto.debug(f'done decoding, {contents=}')
         for raw_event in contents:
@@ -571,7 +565,12 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
             'Failed to get security events with ids {}.\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
                 event_ids, BASE_URL + query_path, res.status_code, res.text))
 
-    res_json = res.json()
+    demisto.debug(f'{res.text=}')
+    res_text_replaced = res.text.replace("\\\\\\", "\\\\")
+    demisto.debug(f'{res_text_replaced=}')
+    res_json = json.loads(res_text_replaced)
+    demisto.debug(f'{res_json=}')
+
     if res_json.get('sev.getSecurityEventsResponse') and res_json.get('sev.getSecurityEventsResponse').get(
             'sev.return'):
         events = res_json.get('sev.getSecurityEventsResponse').get('sev.return')
