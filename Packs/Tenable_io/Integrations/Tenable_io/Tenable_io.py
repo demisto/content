@@ -149,7 +149,7 @@ HEADERS = AUTH_HEADERS | {
     'content-type': "application/json",
     'User-Agent': USER_AGENT_HEADERS_VALUE
 }
-USE_SSL = not PARAMS['unsecure'] or not PARAMS.get('insecure', False)
+USE_SSL = not PARAMS['unsecure']
 USE_PROXY = PARAMS.get('proxy', False)
 
 if not USE_PROXY:
@@ -1800,7 +1800,7 @@ def main():  # pragma: no cover
     access_key = params.get('credentials_access_key', {}).get('password') or params.get('access-key')
     secret_key = params.get('credentials_secret_key', {}).get('password') or params.get('secret-key')
     url = params.get('url')
-    verify_certificate = not params.get('insecure', False) or not params.get('unsecure', False)
+    verify_certificate = not params.get('unsecure', False)
     proxy = params.get('proxy', False)
 
     # Events Params
