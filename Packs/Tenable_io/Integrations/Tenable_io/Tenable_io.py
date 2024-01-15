@@ -149,7 +149,7 @@ HEADERS = AUTH_HEADERS | {
     'content-type': "application/json",
     'User-Agent': USER_AGENT_HEADERS_VALUE
 }
-USE_SSL = not PARAMS['unsecure']
+USE_SSL = not PARAMS['unsecure'] or not PARAMS.get('insecure', False)
 USE_PROXY = PARAMS.get('proxy', False)
 
 if not USE_PROXY:
