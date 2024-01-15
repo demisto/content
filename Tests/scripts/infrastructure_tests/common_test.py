@@ -106,7 +106,7 @@ def test_get_reviewer(response, expected, requests_mock: MockerCore):
 @pytest.mark.parametrize('name, expected', [
     ("Mike", "mike"),
     ("Jon", "Jon"),
-    ("github-actions[bot]", "the owner")
+    ("github-actions[bot]", "docker images bot owner")
 ])
 def test_get_slack_user_name(name, expected):
     """

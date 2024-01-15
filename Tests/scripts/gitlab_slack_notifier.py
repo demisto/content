@@ -404,9 +404,9 @@ def construct_slack_msg(triggering_workflow: str,
     if shame_message:
         shame_title, shame_value, shame_color = shame_message
         slack_msg_start.append({
-            "title": shame_title + "\n" + shame_value,
+            "title": f"{shame_title}\n{shame_value}",
             "color": shame_color
-        })
+})
     return slack_msg_start + [{
         'fallback': title,
         'color': color,

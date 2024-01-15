@@ -64,8 +64,9 @@ FAILED_TO_MSG = {
     False: "succeeded",
 }
 
-# This is the github username of the bot that pushes contributions and docker updates to the content repo.
+# This is the github username of the bot (and its reviewer) that pushes contributions and docker updates to the content repo.
 CONTENT_BOT = 'content-bot'
+CONTENT_BOT_REVIEWER ='github-actions[bot]'
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -314,7 +315,7 @@ def get_reviewer(pr_url: str) -> str | None:
     approved_reviewer = None
     try:
         # Extract the owner, repo, and pull request number from the URL
-        _1, _2,_3, repo_owner, repo_name,_4, pr_number = pr_url.split("/")  
+        _, _, _, repo_owner, repo_name, _, pr_number = pr_url.split("/")  
 
         # Get reviewers
         reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
@@ -334,8 +335,8 @@ def get_reviewer(pr_url: str) -> str | None:
 def get_slack_user_name(name: str, name_mapping_path: str) -> str:
     with open(name_mapping_path) as map:
         mapping = json.load(map)
-    # If the name is 'github-actions[bot]' (docker image update bot reviewer)  return the owner of that bot.
-        if name == 'github-actions[bot]':
+    # If the name is the name of the 'docker image update bot' reviewer - return the owner of that bot.
+        if name == CONTENT_BOT_REVIEWER:
             return mapping["docker_images"]["owner"]
         else:
             return mapping["names"].get(name, name)
