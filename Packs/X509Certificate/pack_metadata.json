@@ -7,12 +7,22 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-12-01T10:38:35Z",
-    "hidden": true,
+    "hidden": false,
     "categories": [
         "Utilities"
     ],
     "tags": [],
     "useCases": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": "true",
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": "true",
+            "display_name": "Common Scripts"
+        }
+    },
     "keywords": [
         "X509",
         "Certificate"
