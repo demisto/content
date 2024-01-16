@@ -154,9 +154,10 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
     """
     indicators_iterator = []
     try:
-        demisto.debug(f" 1111 attributes  : {attributes}")
-        demisto.debug(f" 2222 attributes['response'] : {attributes['response']}")
-        demisto.debug(f" 3333 attributes['response']['Attribute'] : {attributes['response']['Attribute']}")
+        demisto.debug(f" 1111 attributes {type(attributes)}  : {attributes}")
+        demisto.debug(f"list indices must be integers or slices EEERRROOORRR {attributes}")
+
+        attributes['response']['Attribute']
         attributes_list: List[Dict[str, Any]] = attributes['response']['Attribute']
         for attribute in attributes_list:
             if indicator_type := get_attribute_indicator_type(attribute):
@@ -564,7 +565,7 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     )
 
 
-def fetch_indicators(client: Client, params: Dict[str, str]) -> None:
+def fetch_indicators_old(client: Client, params: Dict[str, str]) -> None:
     """
     Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
@@ -628,12 +629,12 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color,
-                                  params.get('url'), reputation, feed_tags)
-    return indicators
+    # indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color,
+    #                               params.get('url'), reputation, feed_tags)
+    return []
 
 
-def fetch_indicator_test_mai(client: Client, params: Dict[str, str]) -> None:
+def fetch_indicators(client: Client, params: Dict[str, str]) -> None:
     """
     Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
@@ -651,7 +652,6 @@ def fetch_indicator_test_mai(client: Client, params: Dict[str, str]) -> None:
 
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_types)
     params_dict['page'] = 1
-    # response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
     search_query_per_page = client.search_query(params_dict)
     while len(search_query_per_page):
         demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators: {len(search_query_per_page)}')
@@ -712,7 +712,7 @@ def main():
         elif command == 'misp-feed-get-indicators':
             return_results(get_attributes_command(client, args, params))
         elif command == 'fetch-indicators':
-            fetch_indicator_test_mai(client, params)
+            fetch_indicators(client, params)
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
