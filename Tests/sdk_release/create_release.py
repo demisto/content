@@ -39,7 +39,7 @@ def main():
 
     response = requests.request("POST", url, headers=headers, data=data, verify=False)
     if response.status_code != 201:
-        print(f'Failed to crreate release {release_branch_name} for demisto SDK')
+        print(f'Failed to create release {release_branch_name} for demisto SDK')
         print(response.text)
         sys.exit(1)
 
