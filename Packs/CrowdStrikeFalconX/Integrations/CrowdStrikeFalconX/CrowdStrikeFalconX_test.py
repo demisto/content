@@ -7,7 +7,7 @@ from CrowdStrikeFalconX import Client, \
     get_full_report_command, get_report_summary_command, get_analysis_status_command, \
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command, \
     pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args, \
-    DBotScoreReliability, parse_indicator, upload_file_command, validate_sandbox_report
+    DBotScoreReliability, parse_indicator, upload_file_with_polling_command
 from test_data.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT, \
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT, \
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED, \
@@ -140,8 +140,7 @@ def test_running_polling_command_upload_file_error(mocker):
     mocker.patch.object(Client, 'send_uploaded_file_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE)
     with pytest.raises(DemistoException) as e:
-        run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command,
-                                          get_full_report_command, 'FILE', post_function=validate_sandbox_report)
+        upload_file_with_polling_command(client, args)
     assert 'Sandbox was not able to analyze one of the files, failing with error' in str(e)
 
 

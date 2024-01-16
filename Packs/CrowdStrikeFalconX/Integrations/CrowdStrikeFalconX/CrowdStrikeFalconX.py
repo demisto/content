@@ -1,8 +1,9 @@
+from math import e
 import uuid
 from dataclasses import dataclass
 from typing import Callable, Tuple
 from urllib.parse import quote
-
+from more_itertools import always_iterable
 import urllib3
 
 from CommonServerPython import *
@@ -10,6 +11,11 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+class FileReportWarning(Exception):
+    """
+    This class is in charge of catching errors raised from having an error object in the
+    file's sandbox analysis report
+    """
 
 @dataclass
 class RawCommandResults:
@@ -1000,10 +1006,12 @@ def get_full_report_command(
         response = client.get_full_report(id_)
         if response.get('resources'):
             is_command_finished = True  # flag used when commands
-            # We can extract the error from the response object under resources
-            error_message = validate_sandbox_report(response.get('resources', []))
-            if error_message:
-                return_warning(error_message)
+            # We can extract the error from the response object under resources section, as it looks like the error section is
+            # always empty
+            try:
+                validate_sandbox_report(response.get('resources', []))
+            except FileReportWarning as e:
+                return_warning(str(e))
 
         if extended_data == 'true':
             extra_sandbox_fields = extra_sandbox_fields + ("mitre_attacks", "signatures")  # type:ignore[assignment]
@@ -1046,24 +1054,50 @@ def get_full_report_command(
         ]
     return command_results, is_command_finished
 
-def validate_sandbox_report(report_resources: list[dict[str, Any]]) -> str:
+def validate_sandbox_report(report_resources: list[dict[str, Any]]) -> None:
     """This function checks for any error messages in the sandbox report.
-
+    The report resource can hold the following data:
+    "resources": [
+        {
+            "id": "resource_id",
+            "cid": "cid",
+            "created_timestamp": "2024-01-10T16:17:37Z",
+            "index_timestamp": "2024-01-10T16:20:54Z",
+            "origin": "apigateway",
+            "verdict": "no verdict",
+            "sandbox": [
+                {
+                    "sha256": "dummy_sha256",
+                    "environment_id": "dummy_environment_id",
+                    "environment_description": "Windows 10 64 bit",
+                    "file_type": "PNG image data, 1951 x 954, 8-bit/color RGBA, non-interlaced",
+                    "file_type_short": [
+                        "img"
+                    ],
+                    "submit_name": "dummy_sha256",
+                    "submission_type": "file",
+                    "error_message": 'File "dummy_sha256" was detected as "image", this format is not supported on WINDOWS',
+                    "error_type": "FILE_TYPE_BAD_ERROR",
+                    "error_origin": "CLIENT",
+                    "is_certificates_valid": False
+                }
+            ]
+        }
+    ]
     Args:
         report_resources (list[dict[str, Any]]): Report resources of the report. They hold the data about
         any error messages returned from the report.
 
-    Returns:
-        str: The error message found in the sandbox, or an empty string if no error is found.
+    Raises:
+        FileReportWarning: If an error message is found in the sandbox report
     """
     for resource in report_resources:
-        resource_id = resource.get('id')
+        resource_id = resource['id']
         for sandbox_entity in resource.get('sandbox', []):
             if error_message := sandbox_entity.get('error_message'):
-                error_type = sandbox_entity.get('error_type')
-                return (f'Sandbox report for resource id {resource_id} returned an error of'
+                error_type = sandbox_entity.get('error_type', '<UNKNOWN>')
+                raise FileReportWarning(f'Sandbox report for resource id {resource_id} returned an error of'
                          f' type {error_type} with content: {error_message}')
-    return ''
 
 def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str, Common.File]:
     """
@@ -1114,10 +1148,13 @@ def get_report_summary_command(
     for single_id in argToList(ids):
         response = client.get_report_summary(single_id)
         if response.get('resources'):
-            # We can extract the error from the response object under resources
-            error_message = validate_sandbox_report(response.get('resources', []))
-            if error_message:
-                return_warning(error_message)
+            # We can extract the error from the response object under resources section, as it looks like the error section is
+            # always empty
+            try:
+                validate_sandbox_report(response.get('resources', []))
+            except FileReportWarning as e:
+                return_warning(str(e))
+
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         results.append(
@@ -1403,12 +1440,12 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
             timeout_in_seconds=6000)
 
         command_result = CommandResults(scheduled_command=scheduled_command)
-    elif post_function:
+    elif post_function is not None:
         # Validate the polling results
-        validate_submit_file_polling_results(command_result)
+        post_function(command_result)
     return command_result
 
-def validate_submit_file_polling_results(command_results: list[CommandResults] | CommandResults):
+def validate_submit_file_polling_results(command_results: list[CommandResults] | CommandResults) -> None:
     """Validate the results of the polling function when submitting a file for analysis.
 
     Args:
@@ -1418,17 +1455,17 @@ def validate_submit_file_polling_results(command_results: list[CommandResults] |
         DemistoException: If the results contain an error message, stating that the sandbox analysis was not able to run
         properly.
     """
-    command_results = command_results if isinstance(command_results, list) else [command_results]
-    for command_result in command_results:
+    for command_result in always_iterable(command_results, CommandResults):
         raw_response: dict[str, Any] = command_result.raw_response
-        error_message = validate_sandbox_report(raw_response.get('resources', []))
-        if error_message:
-            raise DemistoException(f'Sandbox was not able to analyze one of the files, failing with error: {error_message}')
+        try:
+            validate_sandbox_report(raw_response.get('resources', []))
+        except FileReportWarning as e:
+            raise DemistoException(f'Sandbox was not able to analyze one of the files, failing with error: {e}')
 
 
 def upload_file_with_polling_command(client: Client, args: dict):
     return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command, 'FILE',
-                               post_function=validate_sandbox_report)
+                               post_function=validate_submit_file_polling_results)
 
 
 def submit_uploaded_file_polling_command(client: Client, args: dict):
