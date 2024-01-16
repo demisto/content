@@ -195,7 +195,7 @@ tasks:
     scriptarguments:
       ImageName:
         complex:
-          root: PrismaCloudCompute.AuditAlert
+          root: inputs.ImageName
           accessor: image
       audit_type:
         simple: '*'
