@@ -1,5 +1,4 @@
-# SEKOIA Intelligence Center
-
+# SEKOIA CTI
 Request observable, indicator and indicator context from SEKOIA.IO Intelligence Center.
 
 ## What does this pack do ?
