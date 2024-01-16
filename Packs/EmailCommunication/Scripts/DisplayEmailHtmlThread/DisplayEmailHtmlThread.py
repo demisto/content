@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 from bs4 import BeautifulSoup
 
-
 no_entries_message = """<!DOCTYPE html>
 <html>
 <body>
@@ -63,13 +62,26 @@ def remove_color_from_html_text(html_message):
     Returns:
         str. The updated HTML, without the color attribute.
     """
+    demisto.debug(f'DisplayEmailHtmlThread - {html_message=}')
     parsed_html_body = BeautifulSoup(html_message, 'html.parser')
 
-    # Remove all style attributes from other tags
+    # Remove style attributes of color
     for tag in parsed_html_body.find_all(True):
+        if 'style' in tag.attrs and tag.attrs['style'] and 'color' in tag.attrs['style']:
+            new_style = ''
+            style_attr = tag.attrs['style'].split(';')
+            for attr in style_attr:
+                if 'color' not in attr:
+                    new_style += f'{attr};'
+                else:  # Can be color, background-color, etc. Remove only the color of the text.
+                    color_attr = attr.split(':')
+                    if not (color_attr[0] == 'color' or color_attr[0] == ' color'):
+                        new_style += f'{attr};'
+            tag.attrs['style'] = new_style
+
         if 'color' in tag.attrs:
-            demisto.debug(f"Removing the attribute color {tag.attrs['color']} from the tag {tag}")
             del tag.attrs['color']
+    demisto.debug(f'DisplayEmailHtmlThread - after removing the style and color from the html {str(parsed_html_body)=}')
     return str(parsed_html_body)
 
 
