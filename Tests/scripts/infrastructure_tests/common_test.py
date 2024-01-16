@@ -169,5 +169,5 @@ def test_get_slack_user_name(name, expected):
         scenario 2: name is not in the mapping -> name
         scenario 3: name is 'github-actions[bot]' -> the owner of the docker image update bot.
     """
-    results = get_slack_user_name(name, '/tests_data/test_mapping.json')
+    results = get_slack_user_name(name, 'Tests/scripts/infrastructure_tests/tests_data/test_mapping.json')
     assert results == expected
