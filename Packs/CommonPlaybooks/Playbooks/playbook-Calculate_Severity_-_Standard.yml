@@ -1,7 +1,7 @@
 id: Calculate Severity - Standard
 version: -1
 name: Calculate Severity - Standard
-description: Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the Evaluate Severity - Set By Highest DBotScore playbook.
+description: Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the Calculate Severity By Highest DBotScore playbook.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -13,13 +13,13 @@ tasks:
       id: 39518188-8725-4c70-8f80-3a9a4554deb2
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
-      - "18"
+      - "20"
     separatecontext: false
     view: |-
       {
@@ -31,6 +31,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: d750bb71-4ef5-4de1-88ec-02d5035a0177
@@ -48,158 +53,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      killchain: {}
-      labels: {}
-      likelyimpact: {}
-      lob: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      queues: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: low
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -212,6 +67,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 9c7487d4-53f2-4645-8f7b-2653d6c76676
@@ -229,153 +89,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      killchain: {}
-      labels: {}
-      likelyimpact: {}
-      lob: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      queues: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: medium
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -388,6 +103,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 77f20a17-499a-4ed3-85ad-a24e697b4792
@@ -405,158 +125,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      killchain: {}
-      labels: {}
-      likelyimpact: {}
-      lob: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      queues: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: high
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -569,6 +139,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 84feda52-060b-4e27-89ef-05553ca57636
@@ -577,10 +152,10 @@ tasks:
       id: 84feda52-060b-4e27-89ef-05553ca57636
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -592,6 +167,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: ffcb1963-a04f-4f3b-8ff8-37e6829ac96c
@@ -609,155 +189,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      likelyimpact: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: critical
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -770,6 +203,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 14b9554d-23ca-4e85-86f8-51f290b2a18d
@@ -914,6 +352,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: dd9d54b5-409c-4bd2-82d3-62785b06c406
@@ -951,43 +394,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 64da7797-a618-454e-8243-37cfde94d1c5
-    type: playbook
-    task:
-      id: 64da7797-a618-454e-8243-37cfde94d1c5
-      version: -1
-      name: Evaluate Severity - Set By Highest DBotScore
-      description: Calculates the incident severity level according to the indicator with the highest DBotScore.
-      playbookName: Calculate Severity By Highest DBotScore
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      DBotScore:
-        complex:
-          root: inputs.DBotScore
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 620,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: c78dbddd-05c3-4810-8b62-9a0f5958dc73
@@ -1005,158 +416,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedhosts: {}
-      affectedindividualscontactinformation: {}
-      affectedips: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      arcsightcaseid: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      backupowner: {}
-      blah: {}
-      booltest: {}
-      bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      contactaddress: {}
-      contactname: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectedusers: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailbodyhtmlraw: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailfromdisplayname: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderdomain: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailsubjectlanguage: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      eventid: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      hostid: {}
-      hostname: {}
-      htmlimage: {}
-      htmlrenderedimage: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      isthedatasubjecttodpia: {}
-      killchain: {}
-      labels: {}
-      likelyimpact: {}
-      lob: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      mdtest: {}
-      measurestomitigate: {}
-      myfield: {}
-      name: {}
-      occurred: {}
-      owner: {}
-      phase: {}
-      phishingsubtype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      queues: {}
-      relateddomain: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reportinguser: {}
-      roles: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      selector: {}
       severity:
         simple: unknown
-      signature: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      sla: {}
-      slaField: {}
-      source: {}
-      src: {}
-      srcntdomain: {}
-      srcuser: {}
-      systems: {}
-      team: {}
-      telephoneno: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      type: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdr: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -1169,6 +430,65 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 0488f795-a0de-432a-848e-ccc213a40e15
+    type: playbook
+    task:
+      id: 0488f795-a0de-432a-848e-ccc213a40e15
+      version: -1
+      name: Calculate Severity By Highest DBotScore
+      description: Calculates the incident severity level according to the highest DBotScore.
+      playbookName: Calculate Severity By Highest DBotScore
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      DBotScoreIndicators:
+        complex:
+          root: inputs.DBotScoreIndicators
+          transformers:
+          - operator: uniq
+      DBotScoreMaxScore:
+        complex:
+          root: inputs.DBotScoreMaxScore
+          transformers:
+          - operator: sort
+            args:
+              descending:
+                value:
+                  simple: "true"
+          - operator: uniq
+          - operator: FirstArrayElement
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1186,12 +506,34 @@ view: |-
     }
   }
 inputs:
-- key: DBotScore
+- key: DBotScoreIndicators
   value:
     complex:
       root: DBotScore
+      accessor: Indicator
+      transformers:
+      - operator: uniq
   required: false
-  description: A list of DBotScores of indicators.
+  description: A list of DBotScore indicator values.
+  playbookInputQuery:
+- key: DBotScoreMaxScore
+  value:
+    complex:
+      root: DBotScore
+      accessor: Score
+      transformers:
+      - operator: sort
+        args:
+          descending:
+            value:
+              simple: "true"
+      - operator: uniq
+      - operator: FirstArrayElement
+  required: false
+  description: The highest score (number) that was given to a DBotScore indicator.
+  playbookInputQuery:
 outputs: []
 tests:
 - Calculate Severity - Standard - Test
+contentitemexportablefields:
+  contentitemfields: {}
