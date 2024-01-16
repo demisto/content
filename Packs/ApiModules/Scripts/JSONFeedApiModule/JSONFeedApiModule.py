@@ -449,7 +449,7 @@ def feed_main(params, feed_name, prefix):
             remove_ports = argToBoolean(params.get('remove_ports', False))
             create_relationships = params.get('create_relationships')
             indicators, no_update = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
-                                                             create_relationships)
+                                                             create_relationships, remove_ports=remove_ports)
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
