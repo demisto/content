@@ -1,0 +1,19 @@
+{
+    "1230586": [
+        {
+            "ioc_value": "192.168.1.1:443",
+            "ioc_type": "ip:port",
+            "threat_type": "botnet_cc",
+            "malware": "win.cobalt_strike",
+            "malware_alias": "Agentemis,BEACON,CobaltStrike,cobeacon",
+            "malware_printable": "Cobalt Strike",
+            "first_seen_utc": "2024-01-14 13:29:02",
+            "last_seen_utc": null,
+            "confidence_level": 100,
+            "reference": "",
+            "tags": "cobaltstrike,cs-watermark-100000",
+            "anonymous": "0",
+            "reporter": "myceliumbroker"
+        }
+    ]
+}

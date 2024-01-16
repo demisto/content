@@ -418,6 +418,53 @@ def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
         assert last_run.call_count == 0
 
 
+@pytest.mark.parametrize('remove_ports, expected_result', [
+    (True, "192.168.1.1"),
+    (False, "192.168.1.1:443")
+])
+def test_remove_ports_threatfox(mocker, remove_ports, expected_result):
+    """
+    Given
+    Fetch indicators command calling a server with type IPv4 indicators with ports.
+
+    When
+    - Running fetch indicators command
+
+    Then
+    - Ports are either included or removed based on the `remove_ports` parameter.
+    """
+    with open('test_data/threatfox_recent.json') as iocs:
+        iocs = json.load(iocs)
+
+    mocker.patch.object(demisto, 'debug')
+
+    feed_name_to_config = {
+        'THREATFOX': {
+            'url': 'https://threatfox.abuse.ch/export/json/recent/',
+            'extractor': "*[0].ioc_value",
+            'indicator_type': FeedIndicatorType.IP,
+        }
+    }
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('JSONFeedApiModule.is_demisto_version_ge', return_value=True)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://threatfox.abuse.ch/export/json/recent/', json=iocs, status_code=200)
+
+        client = Client(
+            url='https://threatfox.abuse.ch/export/json/recent/',
+            feed_name_to_config=feed_name_to_config,
+            insecure=True
+        )
+
+        indicators = fetch_indicators_command(client=client,
+                                              indicator_type='IP',
+                                              auto_detect=True,
+                                              remove_ports=remove_ports,
+                                              feedTags=["ThreatFox"])
+        assert indicators[0][0]["value"] == expected_result
+
+
 def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
     """
     Given
