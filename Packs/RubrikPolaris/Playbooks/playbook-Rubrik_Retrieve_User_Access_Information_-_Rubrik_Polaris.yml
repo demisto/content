@@ -1,0 +1,406 @@
+id: Rubrik Retrieve User Access Information - Rubrik Polaris
+version: -1
+name: Rubrik Retrieve User Access Information - Rubrik Polaris
+description: This playbook retrieves user access information for the provided username or email with the pagination related information.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d660b4f4-0641-46f2-861b-3b175a000488
+    type: start
+    task:
+      id: d660b4f4-0641-46f2-861b-3b175a000488
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b1f0112c-1394-477f-8a15-f85baa0e0c87
+    type: title
+    task:
+      id: b1f0112c-1394-477f-8a15-f85baa0e0c87
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3ef186c2-3b29-4595-81a2-b80ee203f4f2
+    type: condition
+    task:
+      id: 3ef186c2-3b29-4595-81a2-b80ee203f4f2
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether Rubrik Polaris integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: bbd12221-855a-4712-8334-8cfe9d6af4e4
+    type: regular
+    task:
+      id: bbd12221-855a-4712-8334-8cfe9d6af4e4
+      version: -1
+      name: Retrieve user access information from RSC using the playbook input and the next UPN page number.
+      description: Retrieve user access information from RSC using information collected from the playbook input and the next UPN page number.
+      script: '|||rubrik-sonar-user-access-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      next_page_token:
+        complex:
+          root: next_page_token
+      page_number:
+        complex:
+          root: RubrikPolaris.PageToken.UserAccess
+          accessor: next_upn_page_number
+      risk_levels:
+        complex:
+          root: inputs.risk_levels
+      search_time_period:
+        complex:
+          root: inputs.search_time_period
+      user_email:
+        complex:
+          root: inputs.user_email
+      user_name:
+        complex:
+          root: inputs.user_name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 5522ea42-f97e-4850-8fe5-68e5c71443f7
+    type: regular
+    task:
+      id: 5522ea42-f97e-4850-8fe5-68e5c71443f7
+      version: -1
+      name: Retrieve user access information from RSC using the playbook input and the next page token.
+      description: Retrieve user access information from RSC using information collected from the playbook input and the next page token.
+      script: '|||rubrik-sonar-user-access-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      next_page_token:
+        complex:
+          root: next_page_token
+      risk_levels:
+        complex:
+          root: inputs.risk_levels
+      search_time_period:
+        complex:
+          root: inputs.search_time_period
+      user_email:
+        complex:
+          root: inputs.user_email
+      user_name:
+        complex:
+          root: inputs.user_name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: c9830174-bfe0-4935-8e8f-4d0bd81c1bf6
+    type: condition
+    task:
+      id: c9830174-bfe0-4935-8e8f-4d0bd81c1bf6
+      version: -1
+      name: Check if the next UPN page is available or not.
+      description: Check if the next UPN page is available or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.PageToken.UserAccess
+                accessor: has_next_upn_page
+                transformers:
+                - operator: Stringify
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 6b7ae09c-0015-47a0-8b07-263552f21939
+    type: regular
+    task:
+      id: 6b7ae09c-0015-47a0-8b07-263552f21939
+      version: -1
+      name: Set the end cursor for the next set of pages.
+      description: |-
+        Set the end cursor for the next set of pages in context under the key "next_page_token". If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: next_page_token
+      value:
+        complex:
+          root: RubrikPolaris.PageToken.UserAccess
+          accessor: endCursor
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5ba777c3-1bff-4cdb-8d3e-6dc7f0835e64
+    type: regular
+    task:
+      id: 5ba777c3-1bff-4cdb-8d3e-6dc7f0835e64
+      version: -1
+      name: Delete context for the previous page token information.
+      description: |-
+        Delete context for the previous page token information.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: next_page_token
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 810,
+        "x": 50,
+        "y": 30
+      }
+    }
+  }
+inputs:
+- key: user_name
+  value: {}
+  required: false
+  description: The name of the user to search for.
+  playbookInputQuery:
+- key: user_email
+  value: {}
+  required: false
+  description: The email or the UPN of the user to search for.
+  playbookInputQuery:
+- key: search_time_period
+  value:
+    simple: 7 days
+  required: false
+  description: Specify the search time period to look for user access.
+  playbookInputQuery:
+- key: risk_levels
+  value:
+    simple: HIGH_RISK
+  required: false
+  description: |-
+    The comma-separated list of risk levels.
+
+    Supported values are: UNKNOWN_RISK, HIGH_RISK, MEDIUM_RISK, LOW_RISK, NO_RISK.
+
+    Note: For any other values, whether the obtained result is filtered or not, is not confirmed.
+  playbookInputQuery:
+outputs:
+- contextPath: RubrikPolaris.UserAccess
+  description: User Access Information.
+tests:
+- RubrikPolaris-Test
+fromversion: 6.5.0

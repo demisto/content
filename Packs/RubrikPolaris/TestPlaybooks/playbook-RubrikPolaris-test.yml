@@ -3088,10 +3088,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 2e883ff1-75cc-4eec-825b-4bc9c125dcd4
+    taskid: 58fc6f35-93d7-4d9c-8ad9-4690037ddeb6
     type: regular
     task:
-      id: 2e883ff1-75cc-4eec-825b-4bc9c125dcd4
+      id: 58fc6f35-93d7-4d9c-8ad9-4690037ddeb6
       version: -1
       name: rubrik-gps-vm-recover-files
       script: '|||rubrik-gps-vm-recover-files'
@@ -3100,7 +3100,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "70"
+      - "71"
     scriptarguments:
       cluster_id:
         complex:
@@ -3118,8 +3118,9 @@ tasks:
           accessor: id
           transformers:
           - operator: FirstArrayElement
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3136,10 +3137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 2262d74e-7ba3-4ae7-8c67-4fe38cfba843
+    taskid: aeb14c87-26b4-450e-8b9d-4db0f2b54384
     type: title
     task:
-      id: 2262d74e-7ba3-4ae7-8c67-4fe38cfba843
+      id: aeb14c87-26b4-450e-8b9d-4db0f2b54384
       version: -1
       name: Test Done
       type: title
@@ -3147,11 +3148,822 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 11570
+          "y": 12610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: fbfce9ac-c00f-4d9d-81f6-62daaf343bca
+    type: regular
+    task:
+      id: fbfce9ac-c00f-4d9d-81f6-62daaf343bca
+      version: -1
+      name: rubrik-sonar-user-access-list
+      description: Retrieve the user access information.
+      script: '|||rubrik-sonar-user-access-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: b9c58ba5-38d6-42fe-84b0-0282b51b0e46
+    type: condition
+    task:
+      id: b9c58ba5-38d6-42fe-84b0-0282b51b0e46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.principalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.fullName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.upn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.violatedHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.numDescendants
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.domainName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.startCursor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.endCursor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.hasNextPage
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.UserAccess.hasPreviousPage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 26100a06-bf89-4fbb-84d7-a82d623c14a7
+    type: regular
+    task:
+      id: 26100a06-bf89-4fbb-84d7-a82d623c14a7
+      version: -1
+      name: rubrik-sonar-file-context-list
+      description: Retrieve the user access information.
+      script: '|||rubrik-sonar-file-context-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      limit:
+        simple: "5"
+      object_id:
+        simple: 2eb639c6-379d-5070-b15d-afe257c39da3
+      snapshot_id:
+        simple: 80f5c43b-c060-514a-bbe5-f844252a7f9c
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: ec4069e4-8ae0-4ea2-86ca-78523d2f2c90
+    type: condition
+    task:
+      id: ec4069e4-8ae0-4ea2-86ca-78523d2f2c90
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.nativePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.stdPath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.mode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.lastAccessTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.lastModifiedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.directory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numDescendantFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numDescendantErrorFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numDescendantSkippedExtFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numDescendantSkippedSizeFiles
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.errorCode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.violationsDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.totalHitsDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.hits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.filesWithHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.filesWithHits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.filesWithHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.openAccessFilesWithHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.openAccessFilesWithHits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.openAccessFilesWithHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.staleFilesWithHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.staleFilesWithHits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.staleFilesWithHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.groupType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.analyzerType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.violationsDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.totalHitsDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.hits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.analyzerGroupResults.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.sensitiveFiles.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.openAccessType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.stalenessType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numActivities
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.numActivitiesDelta
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.FileContext.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.FileContext.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.FileContext.endCursor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.PageToken.FileContext.hasNextPage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 02bbc79b-9be6-42f6-80c3-0656bf320e95
+    type: regular
+    task:
+      id: 02bbc79b-9be6-42f6-80c3-0656bf320e95
+      version: -1
+      name: rubrik-sonar-user-access-get
+      description: Retrieve the user access information based on the provided user
+        ID.
+      script: '|||rubrik-sonar-user-access-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      user_id:
+        complex:
+          root: RubrikPolaris.UserAccess
+          accessor: principalId
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: ffaf8c61-a2bc-4c39-8079-a56f40fb3d42
+    type: condition
+    task:
+      id: ffaf8c61-a2bc-4c39-8079-a56f40fb3d42
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.principalId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.fullName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.upn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskReasons.accessRiskReasons
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskReasons.insecureReasons
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.riskReasons.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveFiles.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.totalHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.violatedHits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.totalSensitiveHits.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.totalCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.violatedCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.sensitiveObjectCount.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.numDescendants
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.domainName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.directGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.directGroups.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.directGroups.__typename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.UserAccess.__typename
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12080
         }
       }
     note: false
@@ -3166,7 +3978,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11585,
+        "height": 12625,
         "width": 492.5,
         "x": 50,
         "y": 50

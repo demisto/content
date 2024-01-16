@@ -1,0 +1,772 @@
+id: Rubrik File Context Analysis - Rubrik Polaris
+version: -1
+name: Rubrik File Context Analysis - Rubrik Polaris
+description: This playbook fetches file context information for the provided file/folder/fileshare name and the object ID to get the policy hits.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 418ccf19-8767-4836-849e-baf98bab2b7a
+    type: start
+    task:
+      id: 418ccf19-8767-4836-849e-baf98bab2b7a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a156a92b-d446-4c09-82d3-5579df1e2dc6
+    type: title
+    task:
+      id: a156a92b-d446-4c09-82d3-5579df1e2dc6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: dc44199f-d5b7-4720-8cc1-3da71c947e72
+    type: condition
+    task:
+      id: dc44199f-d5b7-4720-8cc1-3da71c947e72
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether Rubrik Polaris integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 81e6a53e-1eb7-47b8-8f30-6bdd9c6b7d53
+    type: regular
+    task:
+      id: 81e6a53e-1eb7-47b8-8f30-6bdd9c6b7d53
+      version: -1
+      name: Retrieve file context information from RSC using the user-submitted form.
+      description: Retrieve the context of the file, folder, or file share for the provided object and the file details.
+      script: '|||rubrik-sonar-file-context-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file_name:
+        complex:
+          root: File Context information.Answers
+          accessor: "0"
+      file_path:
+        complex:
+          root: File Context information.Answers
+          accessor: "1"
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: /
+              toReplace:
+                value:
+                  simple: \
+      limit:
+        complex:
+          root: File Context information.Answers
+          accessor: "2"
+      object_id:
+        complex:
+          root: RubrikPolaris.Object
+          accessor: id
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.Object.Snapshot
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      user_id:
+        complex:
+          root: inputs.user_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: fb57241f-6f5e-40bc-84e5-4994bbb56882
+    type: collection
+    task:
+      id: fb57241f-6f5e-40bc-84e5-4994bbb56882
+      version: -1
+      name: Collect the file-related information.
+      description: |-
+        Collecting file related information to retrieve the file context information from RSC.
+        Note: Provide the file name and/or folder path, whichever is available.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the file name or the folder/directory path to get the file context information.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the name of the file, folder, or file share object.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Specify the name of the file, folder, or file share object to retrieve the file context information from RSC.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the standard folder/directory path to filter with.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Specify the standard folder/directory path to retrieve the file context information from RSC.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Number of results to retrieve in the response. Default is 50.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: "50"
+        tooltip: Number of results to retrieve in the response. The maximum allowed size is 1000.
+        readonly: false
+      title: File Context information
+      description: Input arguments required to gather the file context information.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c1805a6b-74c3-4896-8eaf-e833ff17aece
+    type: condition
+    task:
+      id: c1805a6b-74c3-4896-8eaf-e833ff17aece
+      version: -1
+      name: Check whether file information is available or not.
+      description: Check whether file information is available or not from the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      Available:
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: Available
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.file_name
+                transformers:
+                - operator: trim
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.file_path
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: a7080e9b-0dd5-49a7-8bcd-74dbc2720f03
+    type: condition
+    task:
+      id: a7080e9b-0dd5-49a7-8bcd-74dbc2720f03
+      version: -1
+      name: Check whether the object ID is available or not.
+      description: Check whether the object ID is available or not from the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "YES":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.object_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 87a89615-8be5-4443-874b-0a28a185fbc1
+    type: collection
+    task:
+      id: 87a89615-8be5-4443-874b-0a28a185fbc1
+      version: -1
+      name: Collect the object ID.
+      description: Collecting Object ID or the Snappable ID to retrieve the file context information from RSC.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the object ID to get the file context information.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the Object ID.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The Object ID or the Snappable ID which will be used to retrieve the file context information. Note: Users can get the list of the object IDs by executing the "rubrik-polaris-object-list" command.'
+        readonly: false
+      title: Collect Object ID
+      description: Input arguments required to gather the Object ID.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 8291f73f-d950-4ec2-8206-1129f5c646ad
+    type: regular
+    task:
+      id: 8291f73f-d950-4ec2-8206-1129f5c646ad
+      version: -1
+      name: Retrieve the Snapshot ID using the Object ID.
+      description: Retrieve the Snapshot ID using the Object ID.
+      script: '|||rubrik-polaris-object-snapshot-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+      object_id:
+        complex:
+          root: inputs.object_id
+      sort_order:
+        simple: DESC
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0de682d4-1842-478a-8499-123ead91f5a9
+    type: regular
+    task:
+      id: 0de682d4-1842-478a-8499-123ead91f5a9
+      version: -1
+      name: Retrieve the Snapshot ID using the Object ID retrieved from the user-submitted form.
+      description: Retrieve the Snapshot ID using the Object ID retrieved from the user-submitted form.
+      script: '|||rubrik-polaris-object-snapshot-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+      object_id:
+        complex:
+          root: Collect Object ID.Answers
+          accessor: "0"
+      sort_order:
+        simple: DESC
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: f8e03117-fa08-453c-8a87-77a76dbe4a8e
+    type: regular
+    task:
+      id: f8e03117-fa08-453c-8a87-77a76dbe4a8e
+      version: -1
+      name: Retrieve file context information from RSC using the playbook input.
+      description: Retrieve the context of the file, folder, or file share for the provided object and the file details.
+      script: '|||rubrik-sonar-file-context-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file_name:
+        complex:
+          root: inputs.file_name
+      file_path:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: /
+              toReplace:
+                value:
+                  simple: \
+      limit:
+        complex:
+          root: inputs.limit
+      object_id:
+        complex:
+          root: RubrikPolaris.Object
+          accessor: id
+      snapshot_id:
+        complex:
+          root: RubrikPolaris.Object.Snapshot
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      user_id:
+        complex:
+          root: inputs.user_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 660a5398-03c5-424a-8b87-21fb6b57143b
+    type: regular
+    task:
+      id: 660a5398-03c5-424a-8b87-21fb6b57143b
+      version: -1
+      name: Delete context for the previous user input for the object ID.
+      description: |-
+        Delete context for the previous user input for the object ID.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      key:
+        simple: Collect Object ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 304b141b-57a2-4850-8d08-ab97ed1ac2cd
+    type: regular
+    task:
+      id: 304b141b-57a2-4850-8d08-ab97ed1ac2cd
+      version: -1
+      name: Delete context for the previous file context information.
+      description: |-
+        Delete context for the previous file context information.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: RubrikPolaris.Object
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: b2b9d94c-a3e4-4d70-8c26-d54ac9a11ef1
+    type: regular
+    task:
+      id: b2b9d94c-a3e4-4d70-8c26-d54ac9a11ef1
+      version: -1
+      name: Delete context for the previous user input for file context information.
+      description: |-
+        Delete context for the previous user input for file context information.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: File Context information
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1985,
+        "width": 1030,
+        "x": -170,
+        "y": -300
+      }
+    }
+  }
+inputs:
+- key: object_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisfid
+  required: false
+  description: |-
+    The Object ID or the Snappable ID. Default can be received from incident if present.
+
+    Note: Users can get the list of the object IDs by executing the "rubrik-polaris-object-list" command.
+  playbookInputQuery:
+- key: file_name
+  value: {}
+  required: false
+  description: Specify the name of the file, folder, or file share object.
+  playbookInputQuery:
+- key: file_path
+  value: {}
+  required: false
+  description: Specify the standard folder/directory path to filter with.
+  playbookInputQuery:
+- key: user_id
+  value: {}
+  required: false
+  description: |-
+    Specify the user ID to filter with.
+
+    Note: Users can get the list of the user IDs by executing the "rubrik-sonar-user-access-list" command.
+  playbookInputQuery:
+- key: limit
+  value:
+    simple: "50"
+  required: false
+  description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+  playbookInputQuery:
+outputs: []
+tests:
+- RubrikPolaris-Test
+fromversion: 6.5.0

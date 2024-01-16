@@ -1,0 +1,746 @@
+id: Rubrik User Access Analysis - Rubrik Polaris
+version: -1
+name: Rubrik User Access Analysis - Rubrik Polaris
+description: This playbook fetches user access information for the provided username or email to increase the incident severity if the fetched user has a high risk.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d660b4f4-0641-46f2-861b-3b175a000488
+    type: start
+    task:
+      id: d660b4f4-0641-46f2-861b-3b175a000488
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b1f0112c-1394-477f-8a15-f85baa0e0c87
+    type: title
+    task:
+      id: b1f0112c-1394-477f-8a15-f85baa0e0c87
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3ef186c2-3b29-4595-81a2-b80ee203f4f2
+    type: condition
+    task:
+      id: 3ef186c2-3b29-4595-81a2-b80ee203f4f2
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether Rubrik Polaris integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 51897159-6c64-4dfb-8363-46065eb476b5
+    type: collection
+    task:
+      id: 51897159-6c64-4dfb-8363-46065eb476b5
+      version: -1
+      name: Collect the username, the email, and the risk level.
+      description: |-
+        Collecting user metadata to retrieve the user access information from RSC.
+        Note: Provide the username and/or email address, whichever is available.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the username or email to get the user access information.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: The name of the user to search for.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The name of the user which will be used to retrieve the user access information.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: The email or the UPN of the user to search for.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The email or the UPN of the user which will be used to retrieve the user access information.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: The risk levels of the user to search for.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: HIGH_RISK
+        - simple: MEDIUM_RISK
+        - simple: LOW_RISK
+        - simple: NO_RISK
+        - simple: UNKNOWN_RISK
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The risk levels of the user which will be used to retrieve the user access information.
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Specify the search time period to look for.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: date
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Specify the search time period to look for user access.
+        readonly: false
+      title: User Access information
+      description: Input arguments required to gather the user access information.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 714c3b50-57d8-4b8c-89e0-929f6ec29188
+    type: condition
+    task:
+      id: 714c3b50-57d8-4b8c-89e0-929f6ec29188
+      version: -1
+      name: Check whether user meta information is available or not.
+      description: Check whether user meta information is available or not from the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      Available:
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: Available
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.user_name
+                transformers:
+                - operator: trim
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.user_email
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 69a59295-d1c7-491c-838d-401cb166d1fe
+    type: regular
+    task:
+      id: 69a59295-d1c7-491c-838d-401cb166d1fe
+      version: -1
+      name: Delete context for the previous user inputs.
+      description: |-
+        Delete context for the previous user inputs.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: User Access information
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 13d17535-6916-4c6c-89cb-d23272a5c38b
+    type: regular
+    task:
+      id: 13d17535-6916-4c6c-89cb-d23272a5c38b
+      version: -1
+      name: Delete context for the previous user access information.
+      description: |-
+        Delete context for the previous user access information.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: RubrikPolaris.UserAccess
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 858c95ed-f275-4ca4-845c-1b1635998e17
+    type: playbook
+    task:
+      id: 858c95ed-f275-4ca4-845c-1b1635998e17
+      version: -1
+      name: Rubrik Retrieve User Access Information - Rubrik Polaris
+      description: This playbook retrieves user access information for the provided username or email with the pagination related information.
+      playbookName: Rubrik Retrieve User Access Information - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      risk_levels:
+        complex:
+          root: User Access information.Answers
+          accessor: "2"
+      search_time_period:
+        complex:
+          root: User Access information.Answers
+          accessor: "3"
+      user_email:
+        complex:
+          root: User Access information.Answers
+          accessor: "1"
+          transformers:
+          - operator: trim
+      user_name:
+        complex:
+          root: User Access information.Answers
+          accessor: "0"
+          transformers:
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.PageToken.UserAccess
+                accessor: hasNextPage
+                transformers:
+                - operator: Stringify
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.PageToken.UserAccess
+                accessor: has_next_upn_page
+                transformers:
+                - operator: Stringify
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a5ceb828-06d0-4281-83c1-03e1785b0a60
+    type: playbook
+    task:
+      id: a5ceb828-06d0-4281-83c1-03e1785b0a60
+      version: -1
+      name: Rubrik Retrieve User Access Information - Rubrik Polaris
+      description: This playbook retrieves user access information for the provided username or email with the pagination related information.
+      playbookName: Rubrik Retrieve User Access Information - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      risk_levels:
+        complex:
+          root: inputs.risk_levels
+      search_time_period:
+        complex:
+          root: inputs.search_time_period
+      user_email:
+        complex:
+          root: inputs.user_email
+      user_name:
+        complex:
+          root: inputs.user_name
+          transformers:
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.PageToken.UserAccess
+                accessor: hasNextPage
+                transformers:
+                - operator: Stringify
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.PageToken.UserAccess
+                accessor: has_next_upn_page
+                transformers:
+                - operator: Stringify
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f14cb2b8-88ad-4033-870b-cd481f3dde39
+    type: regular
+    task:
+      id: f14cb2b8-88ad-4033-870b-cd481f3dde39
+      version: -1
+      name: Delete context for the previous user access page information.
+      description: |-
+        Delete context for the previous user access page information.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: RubrikPolaris.PageToken.UserAccess
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 76dd175d-f4cc-47df-8b24-9470888072f8
+    type: condition
+    task:
+      id: 76dd175d-f4cc-47df-8b24-9470888072f8
+      version: -1
+      name: Check if any user is available for the provided filter.
+      description: Check if any user is available for the provided filter.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Available:
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: Available
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris
+                accessor: UserAccess
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 64ed0a9b-756b-441d-854e-15c20b468577
+    type: regular
+    task:
+      id: 64ed0a9b-756b-441d-854e-15c20b468577
+      version: -1
+      name: Update incident severity as per user risk level.
+      description: Script used to set the incident severity using the risk level(s) provided from the argument.
+      scriptName: RubrikSonarSetIncidentSeverityUsingUserRiskLevel
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      risk_levels:
+        complex:
+          root: RubrikPolaris.UserAccess
+          accessor: riskLevel
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 2348ac23-59d2-4195-8759-4a5e1f9fd97d
+    type: regular
+    task:
+      id: 2348ac23-59d2-4195-8759-4a5e1f9fd97d
+      version: -1
+      name: Delete context for the previous page token information.
+      description: |-
+        Delete context for the previous page token information.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: next_page_token
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2015,
+        "width": 975,
+        "x": -115,
+        "y": -90
+      }
+    }
+  }
+inputs:
+- key: user_name
+  value: {}
+  required: false
+  description: The name of the user to search for.
+  playbookInputQuery:
+- key: user_email
+  value: {}
+  required: false
+  description: The email or the UPN of the user to search for.
+  playbookInputQuery:
+- key: search_time_period
+  value:
+    simple: 7 days
+  required: false
+  description: Specify the search time period to look for user access.
+  playbookInputQuery:
+- key: risk_levels
+  value:
+    simple: HIGH_RISK
+  required: false
+  description: |-
+    The comma-separated list of risk levels.
+
+    Supported values are: UNKNOWN_RISK, HIGH_RISK, MEDIUM_RISK, LOW_RISK, NO_RISK.
+
+    Note: For any other values, whether the obtained result is filtered or not, is not confirmed.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
