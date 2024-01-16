@@ -13,7 +13,7 @@ from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 
 
-from github_workflow_scripts.utils import (
+from utils import (
     get_env_var,
     timestamped_print,
     Checkout,
