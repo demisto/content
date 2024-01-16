@@ -1,3 +1,5 @@
+from pyats.datastructures import AttrDict
+
 import demistomock as demisto
 import pytest
 import requests_mock
@@ -25,6 +27,45 @@ def test_decode_ip(mocker):
 
     res = ArcSightESMv2.decode_ip(3232235845)
     assert res == '192.168.1.69'
+
+
+def test_get_security_events(mocker):
+    import ArcSightESMv2
+
+    with open("test_data/events_response.txt") as events_response:
+        response = events_response.read()
+
+    res = AttrDict({'ok': True, 'text': response})
+    mocker.patch('ArcSightESMv2.send_request', return_value=res)
+    ArcSightESMv2.AUTH_TOKEN = 'token'
+
+    expected_events = [{'agent': {'id': 'a',
+                                  'name': 'A',
+                                  'timeZone': 'Asia',
+                                  'type': 'B',
+                                  'version': '8'},
+                        'eventId': 12345,
+                        'file': {'createTime': -9223372036854775808,
+                                 'modificationTime': -9223372036854775808,
+                                 'name': 'c:\\users\\appdata\\local\\microsoft\\teams\\current\\teams.exe',
+                                 'size': -9223372036854775808},
+                        'id': 'b',
+                        'name': 'B',
+                        'originator': 'SOURCE',
+                        'persistence': -2147483648,
+                        'priority': 8,
+                        'rawEvent': '<12>2024-01-05 10:10:57 Registry (High)|10|dproc=teams.exe '
+                                    'fname=c:\\users\\appdata\\local\\microsoft\\teams\\current\\teams.exe '
+                                    'start=2024-01-05T02:00:48.522Z dhost=a123 msg=group '
+                                    'last_update:2024-01-05T02:01:31.121Z',
+                        'relevance': 10,
+                        'severity': 0,
+                        'startTime': 1704420659447,
+                        'timeZone': 'Asia',
+                        'ttl': 10,
+                        'type': 'BASE',
+                        'version': '8'}]
+    assert expected_events == ArcSightESMv2.get_security_events(['123456'], None, )
 
 
 test_data = [
