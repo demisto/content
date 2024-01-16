@@ -4,6 +4,7 @@ import sys
 import argparse
 import base64
 import json
+import datetime
 
 API_SUFFIX = 'https://api.github.com/repos/demisto/demisto-sdk'
 
@@ -93,10 +94,41 @@ def main():
         print(response.text)
         sys.exit(1)
 
-    # get the PR ID
     pr_url = response.json().get('html_url')
+    pr_number = response.json().get('number')
     print(f'The Pull request created successfully! {pr_url}')
 
+    # trigger SDK changelog workflow
+    print('Triggering SDK changelog workflow')
+    inputs = {
+        'branch_name': release_branch_name,
+        'pr_number': pr_number,
+        'pr_title': f'demisto-sdk release {release_branch_name}'
+    }
+
+    data = {
+        'ref': release_branch_name,
+        'inputs': inputs
+    }
+    url = f'{API_SUFFIX}/actions/workflows/sdk-release.yml/dispatches'
+    response = requests.request('POST', url, data=json.dumps(data), headers=headers, verify=False)
+
+    if response.status_code != 204:
+        print(f'Failed to trigger SDK changelog workflow')
+        print(response.text)
+        sys.exit(1)
+
+    response = requests.request('GET', url, params={'branch': release_branch_name}, headers=headers, verify=False)
+    if response.status_code != 200:
+        print(f'Failed to retrieve SDK changelog workflow')
+        print(response.text)
+        sys.exit(1)
+
+    workflow_runs = response.json()
+    a = max(
+        workflow_runs,
+        key=lambda x: datetime.strptime(x["created_at"], "%Y-%m-%dT%H:%M:%SZ"),
+    )
 
 if __name__ == "__main__":
     main()

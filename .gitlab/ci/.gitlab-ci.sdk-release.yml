@@ -171,7 +171,7 @@ create-release-pull-request:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_pr.py -t $GITLAB_API_TOKEN -b $RELEASE_VERSION
 
-create-the-release:
+deploy-sdk-to-pypi:
   stage: sdk-flow
   extends:
     - .release-sdk
