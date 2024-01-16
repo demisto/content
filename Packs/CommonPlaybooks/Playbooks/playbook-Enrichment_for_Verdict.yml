@@ -310,6 +310,15 @@ tasks:
             value:
               complex:
                 root: inputs.FileSHA256
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: inputs.FileSHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "64"
             iscontext: true
           right:
             value: {}
