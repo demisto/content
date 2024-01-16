@@ -2524,7 +2524,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         query_params.update({f: v})
     query_params.update(assign_params(
         active_threats=args.get('min_active_threats'),
-        computer_name=args.get('computer_name'),
+        computerName__like=args.get('computer_name'),
         scan_status=args.get('scan_status'),
         osTypes=args.get('os_type'),
         created_at=args.get('created_at'),
