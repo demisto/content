@@ -2940,6 +2940,7 @@ def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) 
 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
+    ret: list = []
     if client.block_site_ids:
         PAGE_SIZE = 20
         site_ids = ','.join(client.block_site_ids)
@@ -2949,7 +2950,6 @@ def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) 
         PAGE_SIZE = 4
         block_list = client.get_blocklist_request(tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type,
                                                   sort_by="updatedAt", sort_order="asc", value_contains=sha1)
-    ret: list = []
 
         # Validation check first
         if len(block_list) > 3:
