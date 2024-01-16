@@ -48,33 +48,82 @@ def test_are_pipelines_in_order(mocker, pipeline1_date, pipeline2_date, expected
     assert result == expected
 
 
-@pytest.mark.parametrize(('pipeline1_status, pipeline2_status, expected'), (
-    pytest.param('success', 'failed', True, id="negative pivot"),
-    pytest.param('failed', 'success', False, id="positiv pivot"),
-    pytest.param('success', 'success', None, id="no change"),
-    pytest.param('failed', 'in progress', None, id="pipeline still running")))
-def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
+@pytest.mark.parametrize(('current_pipeline_status, expected'), (
+    pytest.param('failed', True, id="negative pivot"),
+    pytest.param( 'success', None, id="no change")))
+def test_is_pivot__previously_pipeline_success(mocker, current_pipeline_status , expected):
+    """
+    Given:
+        - Current pipelines status, when the previously pipeline status was 'success'
+    When:
+        - Checking on status change.
+    Then:
+        - It should return the expected result.
+          scenario 1: Current pipelines status == 'failed' -> True
+          scenario 2: Current pipelines status == 'success' -> None
+    """
+    previously_pipeline = mocker.Mock()
+    previously_pipeline.status = 'success'
+    current_pipeline = mocker.Mock()
+    current_pipeline.status = current_pipeline_status
+
+    mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
+    result = is_pivot(current_pipeline,  previously_pipeline)
+
+    assert result == expected
+    
+
+@pytest.mark.parametrize(('current_pipeline_status, expected'), (
+    pytest.param('failed', None, id="no change"),
+    pytest.param( 'success', False, id="positive pivot")))
+def test_is_pivot__previously_pipeline_failed(mocker, current_pipeline_status, expected):
+    """
+    Given:
+        - Current pipelines status, when the previously pipeline status was 'failed'
+    When:
+        - Checking on status change.
+    Then:
+        - It should return the expected result.
+          scenario 1: Current pipelines status == 'failed' -> None
+          scenario 2: Current pipelines status == 'success' -> False
+     
+    """
+    previously_pipeline = mocker.Mock()
+    previously_pipeline.status = 'failed'
+    current_pipeline = mocker.Mock()
+    current_pipeline.status = current_pipeline_status
+
+    mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
+    result = is_pivot(current_pipeline,  previously_pipeline)
+
+    assert result == expected
+    
+
+@pytest.mark.parametrize(('current_pipeline_status, previously_pipeline_status'), (
+    pytest.param('failed', 'in progress', id="pipeline still running"),
+    pytest.param('success', 'canceled', id="pipeline canceled"),
+    ))
+def test_is_pivot__previously_pipeline_did_mot_end(mocker, current_pipeline_status, previously_pipeline_status):
     """
     Given:
         - Two pipelines with their statuses.
     When:
         - Checking on status change.
     Then:
-        - It should return the expected result.
-          scenario 1: pipeline1.status =='success' and pipeline2.status == 'failed' -> True
-          scenario 2: pipeline1.status == 'failed' and pipeline2.status =='success' -> False
-          scenario 3: pipeline1.status =='success' and pipeline2.status =='success' -> None
-          scenario 4: pipeline1.status == 'failed' and pipeline2.status == 'in progress' -> None
+        - If previous pipeline did not finish running, the result should be None regardless of the status of both pipelines .
+          scenario 1: current pipeline status =='failed' and previously pipeline status == 'in progress' -> None
+          scenario 2: current pipeline status =='success' and previously pipeline status == 'canceled' -> None
     """
-    pipeline1 = mocker.Mock()
-    pipeline1.status = pipeline1_status
-    pipeline2 = mocker.Mock()
-    pipeline2.status = pipeline2_status
+    current_pipeline = mocker.Mock()
+    current_pipeline.status = current_pipeline_status
+    previously_pipeline = mocker.Mock()
+    previously_pipeline.status = previously_pipeline_status
 
     mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
-    result = is_pivot(pipeline2, pipeline1)
+    result = is_pivot(current_pipeline,  previously_pipeline)
 
-    assert result == expected
+    assert result == None
+
 
 
 @pytest.mark.parametrize(('response, expected'), (
