@@ -896,7 +896,6 @@ def send_uploaded_file_to_sandbox_analysis_command(
     response = client.send_uploaded_file_to_sandbox_analysis(sha256, environment_id, action_script, command_line,
                                                              document_password, enable_tor, submit_name, system_date,
                                                              system_time)
-
     sandbox_fields = ("environment_id", "sha256")
     resource_fields = ('id', 'state', 'created_timestamp', 'created_timestamp')
     result = parse_outputs(response, reliability=client.reliability,
@@ -1055,7 +1054,7 @@ def validate_sandbox_report(report_resources: list[dict[str, Any]]) -> str:
         any error messages returned from the report.
 
     Returns:
-        str: The error message found in the sandbox, or an empty strong if no error is found.
+        str: The error message found in the sandbox, or an empty string if no error is found.
     """
     for resource in report_resources:
         resource_id = resource.get('id')
@@ -1406,10 +1405,20 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
         command_result = CommandResults(scheduled_command=scheduled_command)
     elif post_function:
         # Validate the polling results
-        validate_polling_results(command_result)
+        validate_submit_file_polling_results(command_result)
     return command_result
 
-def validate_polling_results(command_results: list[CommandResults]):
+def validate_submit_file_polling_results(command_results: list[CommandResults] | CommandResults):
+    """Validate the results of the polling function when submitting a file for analysis.
+
+    Args:
+        command_results (list[CommandResults] | CommandResults): The results of the polling method.
+
+    Raises:
+        DemistoException: If the results contain an error message, stating that the sandbox analysis was not able to run
+        properly.
+    """
+    command_results = command_results if isinstance(command_results, list) else [command_results]
     for command_result in command_results:
         raw_response: dict[str, Any] = command_result.raw_response
         error_message = validate_sandbox_report(raw_response.get('resources', []))

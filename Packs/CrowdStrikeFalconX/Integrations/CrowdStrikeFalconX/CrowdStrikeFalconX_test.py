@@ -7,7 +7,7 @@ from CrowdStrikeFalconX import Client, \
     get_full_report_command, get_report_summary_command, get_analysis_status_command, \
     check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command, \
     pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args, \
-    DBotScoreReliability, parse_indicator
+    DBotScoreReliability, parse_indicator, upload_file_command, validate_sandbox_report
 from test_data.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT, \
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT, \
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED, \
@@ -16,7 +16,8 @@ from test_data.http_responses import SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP
     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE, \
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE, \
     GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE, \
-    GET_FULL_REPORT_HTTP_RESPONSE_EMPTY, FIND_SANDBOX_REPORTS_NOT_FOUND_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE
+    GET_FULL_REPORT_HTTP_RESPONSE_EMPTY, FIND_SANDBOX_REPORTS_NOT_FOUND_HTTP_RESPONSE, \
+    GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE, UPLOAD_FILE_HTTP_RESPONSE
 
 
 class ResMocker:
@@ -120,6 +121,30 @@ FIND_SUBMISSION_ID_ARGS = {
     "filter": "",
 }
 
+def test_running_polling_command_upload_file_error(mocker):
+    """
+    Given
+    - A client object
+    - IDs of files that have been uploaded as part of the polling command
+    When
+    - Running the 'cs-fx-upload-file' command with polling
+    Then
+    - Validate that we return an error when the report contains an error object, meaning
+    that the sandbox analysis was not able to run properly
+    """
+    args = {'ids': '1234', 'extended_data': 'true'}
+    mocker.patch.object(Client, '_get_access_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, reliability=DBotScoreReliability.B)
+    mocker.patch.object(Client, 'upload_file', return_value=UPLOAD_FILE_HTTP_RESPONSE)
+    mocker.patch.object(Client, 'send_uploaded_file_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
+    mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE)
+    with pytest.raises(DemistoException) as e:
+        run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command,
+                                          get_full_report_command, 'FILE', post_function=validate_sandbox_report)
+    assert 'Sandbox was not able to analyze one of the files, failing with error' in str(e)
+
+
 @pytest.mark.parametrize('command', [(get_full_report_command), (get_report_summary_command)])
 def test_get_report_commands_error(mocker, command):
     """
@@ -128,16 +153,19 @@ def test_get_report_commands_error(mocker, command):
     When
     - Running the commands 'cs-fx-get-full-report' and 'cs-fx-get-report-summary'
     Then
-    - Validate that we return an error when the report contains an error object
+    - Validate that we return a warning when the report contains an error object
     """
+    demisto_results_mocker = mocker.patch.object(demisto, 'results')
     mocker.patch.object(Client, '_get_access_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
                     proxy=False, reliability=DBotScoreReliability.B)
 
     mocker.patch.object(Client, '_http_request', return_value=GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE)
-    with pytest.raises(DemistoException) as e:
-        command(client, '1')
-    assert 'Sandbox report returned an error' in str(e)
+    command(client, '1')
+    # Entry type '11' means warning
+    assert demisto_results_mocker.call_args_list[0][0][0].get('Type') == 11
+    assert 'Sandbox report for resource id resource_id returned an error of type FILE_TYPE_BAD_ERROR with content' \
+        in demisto_results_mocker.call_args_list[0][0][0].get('Contents')
 
 @pytest.mark.parametrize('command, args, http_response, context', [
     (get_report_summary_command, GET_REPORT_SUMMARY_ARGS, GET_REPORT_SUMMARY_HTTP_RESPONSE, GET_REPORT_SUMMARY_CONTEXT),

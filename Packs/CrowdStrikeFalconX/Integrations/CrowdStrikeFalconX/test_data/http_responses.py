@@ -1,3 +1,10 @@
+UPLOAD_FILE_HTTP_RESPONSE = {
+    "meta": {"query_time": 1.15e-07, "trace_id": "trace_id"},
+    "resources": [{"sha256": "sha256", "file_name": "test"}],
+    "errors": [],
+}
+
+
 SEND_UPLOADED_FILE_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE = {
     "errors": [],
     "meta": {
@@ -85,7 +92,7 @@ GET_FULL_REPORT_HTTP_RESPONSE_ERROR_MESSAGE = {
     },
     "resources": [
         {
-            "id": "id",
+            "id": "resource_id",
             "cid": "cid",
             "created_timestamp": "2024-01-10T16:17:37Z",
             "index_timestamp": "2024-01-10T16:20:54Z",
