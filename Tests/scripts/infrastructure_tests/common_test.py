@@ -150,12 +150,13 @@ def test_get_reviewer(response, expected, requests_mock: MockerCore):
     result = get_reviewer(pr_url)
     assert result == expected
 
-# This test should fail locally and pass on the build, doe to file directory mismatch 
+
 @pytest.mark.parametrize(('name, expected'), (
     pytest.param("Mike", "mike", id="name in map"),
     pytest.param("Jon", "Jon", id="name not in map"),
     pytest.param("github-actions[bot]", "docker images bot owner", id="name is 'github-actions[bot]'")
 ))
+# This test should fail locally and pass on the build, doe to file directory mismatch
 def test_get_slack_user_name(name, expected):
     """
     Given:
