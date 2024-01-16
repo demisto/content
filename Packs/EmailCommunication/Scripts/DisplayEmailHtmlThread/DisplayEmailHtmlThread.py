@@ -62,12 +62,12 @@ def remove_color_from_html_text(html_message):
     Returns:
         str. The updated HTML, without the color attribute.
     """
-    demisto.debug(f'DisplayEmailHtmlThread - {html_message=}')
     parsed_html_body = BeautifulSoup(html_message, 'html.parser')
 
     # Remove style attributes of color
     for tag in parsed_html_body.find_all(True):
         if 'style' in tag.attrs and tag.attrs['style'] and 'color' in tag.attrs['style']:
+            demisto.debug(f"The original style att {tag.attrs['style']=}")
             new_style = ''
             style_attr = tag.attrs['style'].split(';')
             for attr in style_attr:
@@ -78,10 +78,11 @@ def remove_color_from_html_text(html_message):
                     if not (color_attr[0] == 'color' or color_attr[0] == ' color'):
                         new_style += f'{attr};'
             tag.attrs['style'] = new_style
+            demisto.debug(f"The new style att {tag.attrs['style']=}")
 
         if 'color' in tag.attrs:
+            demisto.debug(f"Removed the color att {tag.attrs['color']} from the tag {tag=}")
             del tag.attrs['color']
-    demisto.debug(f'DisplayEmailHtmlThread - after removing the style and color from the html {str(parsed_html_body)=}')
     return str(parsed_html_body)
 
 
