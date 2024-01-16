@@ -19,6 +19,8 @@ description: |-
   - Block Indicators - Generic v3
   - Cloud Response - Generic
   - Manual Remediation.
+  
+  Currently, the playbook supports incidents created by **Runtime** and **WAAS** triggers.
 starttaskid: "0"
 tasks:
   "0":
