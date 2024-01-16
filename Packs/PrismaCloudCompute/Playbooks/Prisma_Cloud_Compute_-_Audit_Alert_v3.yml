@@ -1423,7 +1423,7 @@ tasks:
       id: 31b70d13-f37a-4b13-8dd3-de6587c05f96
       description: ""
       version: -1
-      name: Check if host or image resources exist in the incident
+      name: Check if host or image resources exist in the incident.
       type: condition
       iscommand: false
       brand: ""

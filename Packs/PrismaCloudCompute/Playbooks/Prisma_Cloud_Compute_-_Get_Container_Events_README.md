@@ -1,5 +1,5 @@
 This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
-- Get container runtime or WAAS events and set it to layout.
+- Get container runtime or WAAS events and set it in the layout.
 
 ## Dependencies
 

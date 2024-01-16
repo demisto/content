@@ -550,15 +550,17 @@ inputs:
     simple: High, Critical
   required: false
   description: |-
-    A list of the image or host CVEs severities which the playbook creates indicators from.
+    A list of the image or host CVE severities that the playbook creates indicators from.
     Available options (not case sensitive):
     - Critical
     - High
     - Medium
+    - moderate
+    - Important
     - Low
     - Negligible
 
-    Default value: high, critical.
+    Default value: High, Critical.
   playbookInputQuery:
 outputs:
 - contextPath: CVEReport

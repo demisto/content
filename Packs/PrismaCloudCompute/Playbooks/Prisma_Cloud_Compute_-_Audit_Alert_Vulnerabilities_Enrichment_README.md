@@ -25,11 +25,11 @@ createNewIndicator
 
 ---
 
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| ImageVulnerabilities | Image vulnerabilities that were retrieved. |  | Optional |
-| HostVulnerabilities | Host vulnerabilities that were retrieved. |  | Optional |
-| CVEsIndicatorsSeverities | A list of the image or host CVEs severities which the playbook creates indicators from.<br/>Available options \(not case sensitive\):<br/>- Critical<br/>- High<br/>- Medium<br/>- Low<br/>- Negligible<br/><br/>Default value: high, critical. | High, Critical | Optional |
+| **Name** | **Description**                                                                                                                                                                                                                               | **Default Value** | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
+| ImageVulnerabilities | Image vulnerabilities that were retrieved.                                                                                                                                                                                                    |  | Optional |
+| HostVulnerabilities | Host vulnerabilities that were retrieved.                                                                                                                                                                                                     |  | Optional |
+| CVEsIndicatorsSeverities | A list of the image or host CVE severities that the playbook creates indicators from.<br/>Available options \(not case sensitive\):<br/>- Critical<br/>- High<br/>- Medium<br/>- Low<br/>- Negligible<br/><br/>Default value: high, critical. | High, Critical | Optional |
 
 ## Playbook Outputs
 

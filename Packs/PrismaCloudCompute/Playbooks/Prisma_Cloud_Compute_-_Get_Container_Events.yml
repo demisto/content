@@ -3,7 +3,7 @@ version: -1
 name: Prisma Cloud Compute - Get Container Events
 description: |-
   This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
-  - Get container runtime or WAAS events and set it to layout.
+  - Get container runtime or WAAS events and set it in the layout.
 starttaskid: "0"
 tasks:
   "0":
