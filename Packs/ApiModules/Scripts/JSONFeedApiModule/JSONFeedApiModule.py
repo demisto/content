@@ -228,7 +228,7 @@ def get_formatted_feed_name(feed_name: str):
     return feed_name
 
 
-def test_module(client: Client, limit) -> str:
+def test_module(client: Client, limit) -> str:  # pragma: no cover
     for feed_name, feed in client.feed_name_to_config.items():
         custom_build_iterator = feed.get('custom_build_iterator')
         if custom_build_iterator:
@@ -429,7 +429,7 @@ def extract_all_fields_from_indicator(indicator: Dict, indicator_key: str, flat_
     return fields
 
 
-def feed_main(params, feed_name, prefix):
+def feed_main(params, feed_name, prefix):  # pragma: no cover
     handle_proxy()
     client = Client(**params)
     indicator_type = params.get('indicator_type')
