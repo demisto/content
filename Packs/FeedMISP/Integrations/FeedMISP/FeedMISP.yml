@@ -75,7 +75,7 @@ configuration:
   defaultvalue: "240"
   type: 19
   required: false
-- defaultvalue: 2000
+- defaultvalue: 5000
   display: Number of top indicators to fetch from the feed.
   name: limit
   type: 0
