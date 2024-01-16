@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 
 import requests
+
 from urllib3 import disable_warnings
 
 
