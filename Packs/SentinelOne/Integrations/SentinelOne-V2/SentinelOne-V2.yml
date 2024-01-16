@@ -2329,6 +2329,7 @@ script:
   - arguments:
     - description: Can filter on one account ID. Otherwise, it returns information from all accounts.
       name: account_id
+      required: false
     description: Returns details of accounts.
     name: sentinelone-get-accounts
     outputs:
@@ -2392,8 +2393,10 @@ script:
   script: ""
   type: python
   subtype: python3
-  runonce: false
 tests:
 - SentinelOne V2.1 - Test
 - SentinelOne V2.0 - Test
 fromversion: 5.0.0
+defaultclassifier: SentinelOne Classifier
+defaultmapperin: SentinelOne Incoming Mapper
+defaultmapperout: SentinelOne - Outgoing Mapper
