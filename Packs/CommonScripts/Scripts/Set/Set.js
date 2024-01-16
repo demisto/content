@@ -1,6 +1,5 @@
 var ec = {};
 var value;
-logDebug(`Got the args object ${JSON.stringify(args)}`)
 try {
     if (args.stringify === 'true') {
         if (typeof args.value === 'string') {
@@ -27,7 +26,6 @@ try {
 } catch (err) {
     value = args.value;
 }
-logDebug('Got the value ' + value)
 ec[args.key] = value;
 var result = {
     Type: entryTypes.note,
@@ -41,5 +39,5 @@ if (!args.append || args.append === 'false') {
 } else {
     result.EntryContext = ec;
 }
-logDebug(`The final result object ${JSON.stringify(result)}`)
+logDebug(`Setting ${JSON.stringify(result)}`)
 return result;
