@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
-from typing import Dict
 
 import urllib3
 
@@ -24,7 +23,7 @@ class Client(BaseClient):
         self.session = ''
         self.api_token = api_token
         self.check_authentication()
-        super(Client, self).__init__(base_url, **kwargs)
+        super().__init__(base_url, **kwargs)
 
     def do_request(self, method, url_suffix, data=None):
         if not self.session:
@@ -119,7 +118,7 @@ class Client(BaseClient):
             parameter_conditions (List): list of dictionaries
         """
         parameters_list = parameters.split(';')
-        parameter_conditions: List[Dict[str, str]] = list()
+        parameter_conditions: List[dict[str, str]] = []
         add_to_the_previous_pram = ''
         # Goes over the parameters from the end and any param that does not contain a key and value is added to the previous param
         for param in reversed(parameters_list):
@@ -218,7 +217,7 @@ class Client(BaseClient):
         for row in results_sets.get('rows'):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
-                item_value_lst = list(map(lambda x: x.get('text', ''), item))
+                item_value_lst = [x.get('text', '') for x in item]
                 if "[current result unavailable]" in item_value_lst:
                     break
                 item_value = ', '.join(item_value_lst)
