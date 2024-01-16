@@ -137,9 +137,19 @@ def test_remove_color_from_html_text():
                     'test 9.1 15:00</font>\r\n<div>&nbsp;</div>\r\n</div>\r\n</div>\r\n<font size="2">'
                     '<span style="font-size:10pt;">\r\n<div class="PlainText">testing again from xsoar</div>\r\n</span></font>'
                     '\r\n</body>\r\n</html>\r\n')
-    expected_html_message = ('\n\n\n\n\n\n\n\n\n\n\r\nreply to a thread from outlook\n\nFrom: Administrator\n'
-                             'Sent: Tuesday, January 9, 2024 3:01:34 PM\nTo: Administrator\nSubject: <04352911> test 9.1 15:00'
-                             '\n\xa0\n\n\n\ntesting again from xsoar\n\n\n\n')
+    expected_html_message = ('<html>\n<head>\n<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>\n'
+                             '<meta content="Microsoft Exchange Server" name="Generator"/>\n<!-- converted from text -->'
+                             '<style><!-- .EmailQuote { margin-left: 1pt; padding-left: 4pt; border-left: #800000 2px solid; } '
+                             '--></style>\n</head>\n<body>\n<meta content="text/html; charset=UTF-8"/>\n<style style="" '
+                             'type="text/css">\r\n<!--\r\np\r\n\t{margin-top:0;\r\n\tmargin-bottom:0}\r\n-->\r\n</style>\n<div '
+                             'dir="ltr">\n<div dir="ltr" id="x_divtagdefaultwrapper" style="font-size:12pt; color:#000000; '
+                             'font-family:Calibri,Helvetica,sans-serif">\r\nreply to a thread from outlook</div>\n'
+                             '<hr style="display:inline-block; width:98%" tabindex="-1"/>\n<div dir="ltr" id="x_divRplyFwdMsg">'
+                             '<font face="Calibri, sans-serif" style="font-size:11pt"><b>From:</b> Administrator<br/>\n<b>Sent:'
+                             '</b> Tuesday, January 9, 2024 3:01:34 PM<br/>\n<b>To:</b> Administrator<br/>\n<b>Subject:</b> '
+                             '&lt;04352911&gt; test 9.1 15:00</font>\n<div>\xa0</div>\n</div>\n</div>\n<font size="2">'
+                             '<span style="font-size:10pt;">\n<div class="PlainText">testing again from xsoar</div>\n</span>'
+                             '</font>\n</body>\n</html>\n')
 
     result = remove_color_from_html_text(html_message)
     assert result == expected_html_message
