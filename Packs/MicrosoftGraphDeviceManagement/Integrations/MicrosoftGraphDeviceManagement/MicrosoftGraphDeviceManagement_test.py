@@ -95,10 +95,11 @@ def test_get_managed_device_physical_memory_command(mocker):
                            azure_cloud=None, use_ssl=True, proxy=False, ok_codes=(200),
                            certificate_thumbprint='abc', private_key='abc', managed_identities_client_id=None)
     response_client = {"device_id": '1'}, {'@odata.context':
-                                           'https://graph.microsoft.com/v1.0/$metadata#deviceManagement/managedDevices(id,physicalMemoryInBytes,deviceName)/$entity',
+                                           'https://graph.microsoft.com/v1.0/$metadata#deviceManagement/managedDevices\
+                                           (id,physicalMemoryInBytes,deviceName)/$entity',
                                            'id': '1111111-1111-1111-1111-11111111',
-                                           'physicalMemoryInBytes': 1, 'deviceName': 'Test'}, {"### Managed device DC1ENV11XPC01\n\
-                                            |physicalMemoryInBytes|id|\n\
+                                           'physicalMemoryInBytes': 1, 'deviceName': 'Test'}, {"### Managed device DC1ENV11XPC01\
+                                            \n|physicalMemoryInBytes|id|\n\
                                             |---|---|\n| 1 | 1111111-1111-1111-1111-11111111\
                                             |\n"}
 

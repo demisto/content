@@ -290,8 +290,8 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
 
 def get_managed_device_physical_memory_command(client: MsGraphClient, args: dict) -> None:
     """
-    Returns the device physical memory. 
-    :param device_id: The device id 
+    Returns the device physical memory.
+    :param device_id: The device id
     :return: A CommandResults object
     """
     device_id: str = args.get('device_id', '')
