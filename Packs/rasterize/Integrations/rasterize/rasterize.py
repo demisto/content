@@ -96,9 +96,11 @@ def excepthook_recv_loop(args):
     """
     Suppressing exceptions that might happen after the tab was closed.
     """
+    demisto.debug(f"excepthook_recv_loop, {args.exc_type=}")
     exc_value = args.exc_value
     if args.exc_type in [json.decoder.JSONDecodeError, websocket._exceptions.WebSocketConnectionClosedException]:
         # Suppress
+        demisto.debug(f"Suppressed Exception in _recv_loop: {args.exc_type=}")
         pass
     else:
         demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}")
@@ -333,6 +335,7 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
             else:
                 process.kill()
                 write_info_file(PORT_FILE_PATH, '')
+                CHROME_PROCESS = None
                 return None, None
             return browser, chrome_port
         else:
@@ -356,13 +359,13 @@ def terminate_chrome(browser):
         tab.Browser.close()
     except Exception as ex:
         demisto.info(f'Failed to terminate Chrome due to {ex}')
+    finally:
+        # Keep the file
+        write_info_file(PORT_FILE_PATH, '')
 
-    # Keep the file
-    write_info_file(PORT_FILE_PATH, '')
-
-    if CHROME_PROCESS:
-        CHROME_PROCESS.kill()
-        CHROME_PROCESS = None
+        if CHROME_PROCESS:
+            CHROME_PROCESS.kill()
+            CHROME_PROCESS = None
 
 
 def ensure_chrome_running():  # pragma: no cover
