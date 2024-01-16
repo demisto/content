@@ -76,11 +76,6 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
-- display: Indicator Fetch Limit
-  name: limit
-  type: 0
-  additionalinfo: Provide value to limit the indicator to be fetched per iteration
-  required: false
 - display: Collection Name
   name: collection
   type: 0
@@ -136,7 +131,7 @@ script:
     - contextPath: CybleIntel.collection.names
       description: Available collection names for the feed service.
     description: Get the data feed collection names for the taxii feed.
-  dockerimage: demisto/taxii-server:1.0.0.84385
+  dockerimage: demisto/taxii-server:1.0.0.80235
   subtype: python3
   feed: true
 fromversion: 6.2.0

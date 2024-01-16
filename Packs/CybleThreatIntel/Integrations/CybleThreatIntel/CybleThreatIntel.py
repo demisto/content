@@ -96,7 +96,10 @@ class Client(object):
                 if not data:
                     data = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
             except Exception:
-                data = self.get_recursively(eachres['observables']['observables'][0], 'value')
+                try:
+                    data = self.get_recursively(eachres['observables']['observables'][0], 'value')
+                except Exception:
+                    continue
 
             if multi_data:
                 ind_val = {}
@@ -160,13 +163,14 @@ class Client(object):
                     raise ValueError("Last fetch time retrieval failed.")
 
                 for eachone in content:
-                    save_fetch_time = parser.parse(eachone['timestamp']).replace(tzinfo=pytz.UTC).strftime(
-                        DATETIME_FORMAT)
+                    if eachone.get('confidence'):
+                        save_fetch_time = (parser.parse(eachone['confidence']['timestamp']) + timedelta(microseconds=1)).replace(tzinfo=pytz.UTC).strftime(
+                            DATETIME_FORMAT)
 
                 taxii_data.append(response)
 
                 count += 1
-                if count == arg_to_number(args.get('limit', 1)):
+                if count == 10:
                     break
         except Exception as e:
             demisto.error("Failed to fetch feed details, exception:{}".format(e))
