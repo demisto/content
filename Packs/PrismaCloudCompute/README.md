@@ -140,7 +140,8 @@ At this point, you can add tasks that extend the playbook to check and respond t
 
 ### Audit Alert v3 playbook
 This playbook is not similar to the other 3 playbooks. It is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
-</br>The playbook has the following sections:<br>
+<br>The playbook has the following sections:</br>
+
 Enrichment:
 - Image details
 - Similar container events
