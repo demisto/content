@@ -231,7 +231,7 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
 
 
 def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
-                              look_back_hours: int) -> tuple[list[ProjectPipeline], list[ProjectCommit]]:
+                              look_back_hours: int):
     """
     Get all pipelines and commits on the master branch in the last X hours.
     The commits and pipelines are in order of creation time.
@@ -274,7 +274,7 @@ def get_person_in_charge(commit):
 
 def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
     """
-    This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions 
+    This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions
     that pipelines are not in the same order as the commits.
     Args:
         current_pipeline: The current pipeline object.
@@ -293,7 +293,7 @@ def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeli
     Is the current pipeline status a pivot from the previous pipeline status.
     Args:
         current_pipeline: The current pipeline object.
-        previous_pipeline: The previous pipeline object.   
+        previous_pipeline: The previous pipeline object.
     Returns:
         True status changed from success to failed
         False if the status changed from failed to success
@@ -330,7 +330,7 @@ def get_reviewer(pr_url: str) -> str | None:
     return approved_reviewer
 
 
-def get_slack_user_name(name: str, name_mapping_path: str) -> str:
+def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
     with open(name_mapping_path) as map:
         mapping = json.load(map)
     # If the name is the name of the 'docker image update bot' reviewer - return the owner of that bot.

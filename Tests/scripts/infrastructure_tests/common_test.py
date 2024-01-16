@@ -58,7 +58,7 @@ def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
     Given:
         - Two pipelines with their statuses.
     When:
-        - Checking on status change. 
+        - Checking on status change.
     Then:
         - It should return the expected result.
           scenario 1: pipeline1.status =='success' and pipeline2.status == 'failed' -> True
@@ -80,7 +80,8 @@ def test_is_pivot(mocker, pipeline1_status, pipeline2_status, expected):
 @pytest.mark.parametrize(('response, expected'), (
     pytest.param([], None, id="no reviewer"),
     pytest.param([{"Jon": "test", "state": "test", "user": {"login": "Jon"}},
-                  {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jane Doe", id="one reviewer approved"),
+                  {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}],
+                 "Jane Doe", id="one reviewer approved"),
     pytest.param([{"Jon": "test", "state": "APPROVED", "user": {"login": "Jon"}},
                   {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jon", id="2 reviewers approved"),
 ))
@@ -119,5 +120,5 @@ def test_get_slack_user_name(name, expected):
         scenario 2: name is not in the mapping -> name
         scenario 3: name is 'github-actions[bot]' -> the owner of the docker image update bot.
     """
-    results = get_slack_user_name(name, 'tests_data/test_mapping.json')
+    results = get_slack_user_name(name, '/tests_data/test_mapping.json')
     assert results == expected
