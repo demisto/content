@@ -118,6 +118,8 @@ def test_get_validate_resource_with_credentials(client):
 
 
 # This test only runs if SEKOIA.IO API_KEY is provided
+
+
 @pytest.mark.skipif("{'SEKOIAIO_APIKEY'}.issubset(os.environ.keys()) == False")
 def test_get_observables_with_credentials(client):
     args = {"value": "eicar@sekoia.io", "type": "email-addr"}
@@ -166,6 +168,8 @@ def test_get_indicator_unknown(client, requests_mock, indicator_value, indicator
     assert result.outputs_prefix == "SEKOIAIntelligenceCenter.Analysis"
 
 # This test only runs if SEKOIA.IO API_KEY is provided
+
+
 @pytest.mark.skipif("{'SEKOIAIO_APIKEY'}.issubset(os.environ.keys()) == False")
 def test_get_indicator_with_credentials(client):
     args = {"value": "eicar@sekoia.io", "type": "email-addr"}
