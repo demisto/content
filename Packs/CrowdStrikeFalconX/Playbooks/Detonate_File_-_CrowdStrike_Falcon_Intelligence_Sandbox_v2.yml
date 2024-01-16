@@ -354,6 +354,7 @@ tasks:
       version: -1
       name: Full Report or Report Summary?
       type: condition
+      description: A condition task.
       iscommand: false
       brand: ""
     nexttasks:
@@ -436,6 +437,7 @@ tasks:
       version: -1
       name: Is the file type supported?
       type: condition
+      description: A condition task.
       iscommand: false
       brand: ""
     nexttasks:
