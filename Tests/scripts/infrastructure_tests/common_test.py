@@ -50,8 +50,8 @@ def test_are_pipelines_in_order(mocker, pipeline1_date, pipeline2_date, expected
 
 @pytest.mark.parametrize(('current_pipeline_status, expected'), (
     pytest.param('failed', True, id="negative pivot"),
-    pytest.param( 'success', None, id="no change")))
-def test_is_pivot__previously_pipeline_success(mocker, current_pipeline_status , expected):
+    pytest.param('success', None, id="no change")))
+def test_is_pivot__previously_pipeline_success(mocker, current_pipeline_status, expected):
     """
     Given:
         - Current pipelines status, when the previously pipeline status was 'success'
@@ -68,14 +68,14 @@ def test_is_pivot__previously_pipeline_success(mocker, current_pipeline_status ,
     current_pipeline.status = current_pipeline_status
 
     mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
-    result = is_pivot(current_pipeline,  previously_pipeline)
+    result = is_pivot(current_pipeline, previously_pipeline)
 
     assert result == expected
-    
+
 
 @pytest.mark.parametrize(('current_pipeline_status, expected'), (
     pytest.param('failed', None, id="no change"),
-    pytest.param( 'success', False, id="positive pivot")))
+    pytest.param('success', False, id="positive pivot")))
 def test_is_pivot__previously_pipeline_failed(mocker, current_pipeline_status, expected):
     """
     Given:
@@ -86,7 +86,7 @@ def test_is_pivot__previously_pipeline_failed(mocker, current_pipeline_status, e
         - It should return the expected result.
           scenario 1: Current pipelines status == 'failed' -> None
           scenario 2: Current pipelines status == 'success' -> False
-     
+
     """
     previously_pipeline = mocker.Mock()
     previously_pipeline.status = 'failed'
@@ -94,15 +94,15 @@ def test_is_pivot__previously_pipeline_failed(mocker, current_pipeline_status, e
     current_pipeline.status = current_pipeline_status
 
     mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
-    result = is_pivot(current_pipeline,  previously_pipeline)
+    result = is_pivot(current_pipeline, previously_pipeline)
 
     assert result == expected
-    
+
 
 @pytest.mark.parametrize(('current_pipeline_status, previously_pipeline_status'), (
     pytest.param('failed', 'in progress', id="pipeline still running"),
     pytest.param('success', 'canceled', id="pipeline canceled"),
-    ))
+))
 def test_is_pivot__previously_pipeline_did_mot_end(mocker, current_pipeline_status, previously_pipeline_status):
     """
     Given:
@@ -120,10 +120,9 @@ def test_is_pivot__previously_pipeline_did_mot_end(mocker, current_pipeline_stat
     previously_pipeline.status = previously_pipeline_status
 
     mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
-    result = is_pivot(current_pipeline,  previously_pipeline)
+    result = is_pivot(current_pipeline, previously_pipeline)
 
-    assert result == None
-
+    assert result is None
 
 
 @pytest.mark.parametrize(('response, expected'), (
