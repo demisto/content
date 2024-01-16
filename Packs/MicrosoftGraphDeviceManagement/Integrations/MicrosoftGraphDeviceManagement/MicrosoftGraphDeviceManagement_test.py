@@ -97,9 +97,10 @@ def test_get_managed_device_physical_memory_command(mocker):
     response_client = {"device_id": '1'}, {'@odata.context':
                                            'https://graph.microsoft.com/v1.0/$metadata#deviceManagement/managedDevices(id,physicalMemoryInBytes,deviceName)/$entity',
                                            'id': '1111111-1111-1111-1111-11111111',
-                                           'physicalMemoryInBytes': 1, 'deviceName': 'Test'}, {"### Managed device DC1ENV11XPC01\n|physicalMemoryInBytes|id|\n\
-                                                              |---|---|\n| 1 | 1111111-1111-1111-1111-11111111\
-                                                                  |\n"}
+                                           'physicalMemoryInBytes': 1, 'deviceName': 'Test'}, {"### Managed device DC1ENV11XPC01\n\
+                                            |physicalMemoryInBytes|id|\n\
+                                            |---|---|\n| 1 | 1111111-1111-1111-1111-11111111\
+                                            |\n"}
 
     mocker.patch.object(client, 'get_managed_device_physical_memory', return_value=(response_client, '1'))
     mocker.patch('MicrosoftGraphDeviceManagement.build_device_object', return_value={'ID': '1111111-1111-1111-1111-11111111',
