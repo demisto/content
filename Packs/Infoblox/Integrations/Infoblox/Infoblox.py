@@ -72,7 +72,8 @@ RPZ_RULES_DICT = {
     }
 }
 
-NO_INDICATORS_FOUND = "A network was not found for this address"
+NETWORK_NOT_FOUND = "A network was not found for this address"
+
 
 
 class Client(BaseClient):
@@ -351,8 +352,8 @@ def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dic
     try:
         raw_response = client.get_ip(ip)
     except DemistoException as e:
-        if e.message and NO_INDICATORS_FOUND in e.message:
-            return "No indicators found", {},  {}
+        if e.message and NETWORK_NOT_FOUND in e.message:
+            return "No indicators found", {}, {}
         else:
             raise
     ip_list = raw_response.get('result')

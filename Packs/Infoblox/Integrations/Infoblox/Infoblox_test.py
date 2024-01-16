@@ -1,5 +1,5 @@
 import pytest
-from Infoblox import NO_INDICATORS_FOUND, Client, get_ip_command
+from Infoblox import NETWORK_NOT_FOUND, Client, get_ip_command
 import demistomock as demisto
 import json
 
@@ -130,19 +130,15 @@ def test_get_ip_command_no_indicator_found(mocker):
     Then:
         - Ensure that no raises an error when the IP address is not found
     """
-    mocker.patch.object(client, "get_ip", side_effect=DemistoException(NO_INDICATORS_FOUND))
+    mocker.patch.object(
+        client, "get_ip", side_effect=DemistoException(NETWORK_NOT_FOUND)
+    )
 
-    readable_output, _, _ = get_ip_command(client, {'ip': '1.1.1.1'})
+    readable_output, _, _ = get_ip_command(client, {"ip": "1.1.1.1"})
     assert readable_output == "No indicators found"
 
 
-@pytest.mark.parametrize(
-    "mock_exception",
-    [
-        DemistoException,
-        Exception
-    ]
-)
+@pytest.mark.parametrize("mock_exception", [DemistoException, Exception])
 def test_get_ip_command_raise_error(mocker, mock_exception):
     """
     Given:
@@ -155,4 +151,4 @@ def test_get_ip_command_raise_error(mocker, mock_exception):
     mocker.patch.object(client, "get_ip", side_effect=mock_exception("test"))
 
     with pytest.raises(mock_exception, match="test"):
-        get_ip_command(client, {'ip': '1.1.1.1'})
+        get_ip_command(client, {"ip": "1.1.1.1"})
