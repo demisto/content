@@ -1,11 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import hashlib
 
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple
+from typing import Any
 from requests.exceptions import ConnectionError, Timeout
 
 # Disable insecure warnings
@@ -41,7 +40,7 @@ class ReilaQuestClient(BaseClient):
         super().__init__(base_url=url, verify=verify_ssl, proxy=proxy, auth=(username, password))
 
     @retry(times=5, exceptions=(ConnectionError, Timeout))
-    def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+    def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> List[dict[str, Any]]:
         try:
             return self._http_request(method, url_suffix=url_suffix, headers=headers or {"searchlight-account-id": self.account_id}, params=params)
         except DemistoException as error:
@@ -50,7 +49,7 @@ class ReilaQuestClient(BaseClient):
                 raise error.exception
             raise
 
-    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000) -> List[Dict[str, Any]]:
+    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000) -> List[dict[str, Any]]:
         """
         Args:
                 api docs:
@@ -81,7 +80,7 @@ class ReilaQuestClient(BaseClient):
 
         return events
 
-    def triage_items(self, triage_item_ids: list[str]) -> List[Dict[str, Any]]:
+    def triage_items(self, triage_item_ids: list[str]) -> List[dict[str, Any]]:
         """
         Args:
             triage_item_ids: a list of triage item IDs.
@@ -91,7 +90,7 @@ class ReilaQuestClient(BaseClient):
         """
         return self.do_pagination(triage_item_ids, url_suffix="/triage-items")
 
-    def get_alerts_by_ids(self, alert_ids: list[str]) -> List[Dict[str, Any]]:
+    def get_alerts_by_ids(self, alert_ids: list[str]) -> List[dict[str, Any]]:
         """
         List of alerts was created from alert_id fields of /triage-items  response
 
@@ -103,7 +102,7 @@ class ReilaQuestClient(BaseClient):
         """
         return self.do_pagination(alert_ids, url_suffix="/alerts")
 
-    def get_incident_ids(self, incident_ids: list[str]) -> List[Dict[str, Any]]:
+    def get_incident_ids(self, incident_ids: list[str]) -> List[dict[str, Any]]:
         """
         List of alerts was created from incident-id fields of /triage-items response
 
@@ -112,7 +111,7 @@ class ReilaQuestClient(BaseClient):
         """
         return self.do_pagination(incident_ids, url_suffix="/incidents")
 
-    def get_asset_ids(self, asset_ids: list[str]) -> List[Dict[str, Any]]:
+    def get_asset_ids(self, asset_ids: list[str]) -> List[dict[str, Any]]:
         """
         Retrieve the Asset Information for the Alert or Incident
 
@@ -141,7 +140,7 @@ def test_module(client: ReilaQuestClient) -> str:
     return "ok"
 
 
-def get_triage_item_ids_to_events(client: ReilaQuestClient, event_created_after: str, max_fetch: int = DEFAULT_MAX_FETCH) -> Tuple[Dict[str, List[Dict]], str]:
+def get_triage_item_ids_to_events(client: ReilaQuestClient, event_created_after: str, max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[dict[str, List[dict]], str]:
     """
     Maps the triage item IDs to events.
     Triage item ID can refer to multiple events.
@@ -164,7 +163,7 @@ def get_triage_item_ids_to_events(client: ReilaQuestClient, event_created_after:
     return _triage_item_ids_to_events, latest_created_item
 
 
-def enrich_events_with_triage_item(client: ReilaQuestClient, triage_item_ids_to_events: Dict[str, List[Dict]]) -> Tuple[Dict[str, str], Dict[str, str]]:
+def enrich_events_with_triage_item(client: ReilaQuestClient, triage_item_ids_to_events: dict[str, List[dict]]) -> tuple[dict[str, str], dict[str, str]]:
     """
     Enrich the events with triage-item response and return a mapping between incident|alert IDs to the triage-item-ids
 
@@ -194,11 +193,11 @@ def enrich_events_with_triage_item(client: ReilaQuestClient, triage_item_ids_to_
 
 
 def enrich_events_with_incident_or_alert_metadata(
-    alerts_incidents: List[Dict],
-    triage_item_ids_to_events: Dict[str, List[Dict]],
-    event_ids_to_triage_ids: Dict[str, str],
+    alerts_incidents: List[dict],
+    triage_item_ids_to_events: dict[str, List[dict]],
+    event_ids_to_triage_ids: dict[str, str],
     event_type: str,
-    assets_ids_to_triage_ids: Dict[str, List[str]]
+    assets_ids_to_triage_ids: dict[str, List[str]]
 ):
 
     for alert_incident in alerts_incidents:
@@ -214,8 +213,8 @@ def enrich_events_with_incident_or_alert_metadata(
 
 def enrich_events_with_assets_metadata(
     client: ReilaQuestClient,
-    assets_ids_to_triage_ids: Dict[str, List[str]],
-    triage_item_ids_to_events: Dict[str, List[Dict]],
+    assets_ids_to_triage_ids: dict[str, List[str]],
+    triage_item_ids_to_events: dict[str, List[dict]],
 ):
     asset_ids = list(assets_ids_to_triage_ids.keys())
     demisto.info(f'Fetched the following asset-IDs {asset_ids}')
@@ -230,10 +229,11 @@ def enrich_events_with_assets_metadata(
                 event["assets"].append(asset)
 
 
-def fetch_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> Tuple[List[dict], Dict[str, str]]:
+def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[List[dict], dict[str, str]]:
 
     _time = last_run.get("time")
-    triage_item_ids_to_events, latest_created_item = get_triage_item_ids_to_events(client, event_created_after=_time, max_fetch=max_fetch)
+    triage_item_ids_to_events, latest_created_item = get_triage_item_ids_to_events(
+        client, event_created_after=_time, max_fetch=max_fetch)
 
     alert_ids_to_triage_ids, incident_ids_to_triage_ids = enrich_events_with_triage_item(
         client, triage_item_ids_to_events=triage_item_ids_to_events
@@ -302,7 +302,8 @@ def main() -> None:
     demisto.info(f'Command being called is {command}')
     try:
 
-        client = ReilaQuestClient(url, account_id=account_id, username=username, password=password, verify_ssl=verify_ssl, proxy=proxy)
+        client = ReilaQuestClient(url, account_id=account_id, username=username,
+                                  password=password, verify_ssl=verify_ssl, proxy=proxy)
         if command == 'test-module':
             return_results(test_module(client))
         elif command == "fetch-events":
