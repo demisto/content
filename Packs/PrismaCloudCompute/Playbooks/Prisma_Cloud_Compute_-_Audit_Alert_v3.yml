@@ -1672,5 +1672,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 6.10.0
