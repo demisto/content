@@ -9,7 +9,7 @@ try {
         }
     } else {
         if (!isNaN(args.value)) {
-            // This means that the value is a number in string representation
+            // This means that the value is a number
             if (args.value.includes('.')) {
                 // It is a decimal number
                 value = JSON.parse(args.value);
