@@ -88,13 +88,12 @@ def test_get_my_place_in_the_queue(mocker):
     then:   assert that returns the right place and the right previous_build_in_queue.
     """
     storage = MockResponse()
-    mocker.patch('Tests.scripts.lock_cloud_machines.send_slack_notification')
     mocker.patch.object(storage, 'list_blobs', return_value=[MockResponse('test/queue/1234', '08/04/2000'),
                                                              MockResponse('test/queue/1235', '05/04/2000'),
                                                              MockResponse('test/queue/1236', '06/04/2000'),
                                                              MockResponse('test/queue/1237', '03/04/2000')])
 
-    my_place_in_the_queue, previous_build_in_queue = get_my_place_in_the_queue(storage, 'test', '1235', None)
+    my_place_in_the_queue, previous_build_in_queue = get_my_place_in_the_queue(storage, 'test', '1235')
 
     assert my_place_in_the_queue == 1
     assert previous_build_in_queue == '1237'
@@ -108,9 +107,8 @@ def test_get_my_place_in_the_queue_exception(mocker):
     """
     storage = MockResponse()
     mocker.patch.object(storage, 'list_blobs', return_value=[MockResponse('test/queue/1234', '08/04/2000')])
-    mocker.patch('Tests.scripts.lock_cloud_machines.send_slack_notification')
     with pytest.raises(Exception) as excinfo:
-        get_my_place_in_the_queue(storage, 'test', '1238', None)
+        get_my_place_in_the_queue(storage, 'test', '1238')
     assert str(excinfo.value) == 'Unable to find the queue lock file, probably a problem creating the file'
 
 
