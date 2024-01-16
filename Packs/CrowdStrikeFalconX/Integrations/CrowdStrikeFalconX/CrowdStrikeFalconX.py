@@ -1419,7 +1419,8 @@ def validate_polling_results(command_results: list[CommandResults]):
 
 
 def upload_file_with_polling_command(client: Client, args: dict):
-    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command, 'FILE')
+    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command, 'FILE',
+                               post_function=validate_sandbox_report)
 
 
 def submit_uploaded_file_polling_command(client: Client, args: dict):
