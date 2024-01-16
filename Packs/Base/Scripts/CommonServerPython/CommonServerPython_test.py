@@ -3236,6 +3236,7 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
 
 class TestParseDateRange:
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_utc_time_sanity():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
@@ -3244,6 +3245,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_local_time_sanity():
         local_now = datetime.now()
         local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
@@ -3252,6 +3254,7 @@ class TestParseDateRange:
         assert abs(local_start_time - local_end_time).seconds / 60 == 73
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_with_trailing_spaces():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 days   ', utc=True)
@@ -3269,6 +3272,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_input_format(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3281,6 +3285,7 @@ class TestParseDateRange:
         assert 'date_range must be "number date_range_unit"' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_value_not_a_number(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3293,6 +3298,7 @@ class TestParseDateRange:
         assert 'The time value is invalid' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_value_not_an_integer(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3305,6 +3311,7 @@ class TestParseDateRange:
         assert 'The time value is invalid' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_unit(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
