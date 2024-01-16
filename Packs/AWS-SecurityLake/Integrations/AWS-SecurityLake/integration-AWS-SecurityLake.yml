@@ -1,0 +1,1414 @@
+category: IT Services
+commonfields:
+  id: AWS Security Lake
+  version: -1
+configuration:
+- name: name
+  display: Name
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo:
+- name: roleArn
+  display: Role Arn
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo:
+- name: roleSessionName
+  display: Role Session Name
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo:
+- name: sessionDuration
+  display: Role Session Duration
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo:
+- name: defaultRegion
+  display: AWS Default Region
+  required: false
+  defaultvalue:
+  type: 15
+  additionalinfo:
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
+- name: credentials
+  display: Access Key
+  required: false
+  defaultvalue:
+  type: 9
+  additionalinfo:
+  displaypassword: Secret Key
+  hiddenusername: false
+- name: timeout
+  display: Timeout
+  required: false
+  defaultvalue: 60,10
+  type: 0
+  additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
+- name: retries
+  display: Retries
+  required: false
+  defaultvalue: 5
+  type: 0
+  additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  defaultvalue: 'true'
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: 'true'
+  type: 8
+  additionalinfo:
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: AWS-SecurityLake
+name: AWS Security Lake
+script:
+  commands:
+  - name: aws-security-lake-query-execute
+    arguments:
+    - name: query_string
+      description: The SQL query statements to be executed.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: query_limit
+      description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
+      required: false
+      isArray: false
+      defaultValue: '50'
+      predefined:
+      - ''
+    - name: client_request_token
+      description: A unique case-sensitive string used to ensure the request to create the query is idempotent (executes only once). If another StartQueryExecution request is received, the same response is returned and another query is not created.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: database
+      description: The name of the database.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: output_location
+      description: The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: encryption_option
+      description: Indicates whether Amazon S3 server-side encryption with Amazon S3-managed keys (SSE-S3 ), server-side encryption with KMS-managed keys (SSE-KMS ), or client-side encryption with KMS-managed keys (CSE-KMS) is used.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: kms_key
+      description: For SSE-KMS and CSE-KMS , this is the KMS key ARN or ID.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: work_group
+      description: The name of the workgroup in which the query is being started.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: QueryExecutionId
+      hidden: true
+      description: ID of the newly created query. Used internally for polling.
+    - name: hide_polling_output
+      hidden: true
+      description: ''
+    description: Execute a new query, wait for the query to complete (using polling), and return query's execution information, and query's results (if successful). Either 'OutputLocation' or 'WorkGroup' must be specified for the query to run.
+    polling: true
+    outputs:
+    - contextPath: AWS.Athena.Query.QueryExecutionId
+      description: The unique identifier for each query execution.
+      type: String
+    - contextPath: AWS.Athena.Query.Query
+      description: The SQL query statements which the query execution ran.
+      type: String
+    - contextPath: AWS.Athena.Query.StatementType
+      description: The type of query statement that was run.
+      type: String
+    - contextPath: AWS.Athena.Query.ResultConfiguration.OutputLocation
+      description: The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'.
+      type: String
+    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
+      description: If query and calculation results are encrypted in Amazon S3, indicates the encryption option used (for example, SSE_KMS or CSE_KMS) and key information.
+      type: String
+    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
+      description: For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID.
+      type: String
+    - contextPath: AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner
+      description: The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation.
+      type: String
+    - contextPath: AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption
+      description: The Amazon S3 canned ACL that Athena should specify when storing query results.
+      type: String
+    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
+      description: True if previous query results can be reused when the query is run; otherwise, false. The default is false.
+      type: Boolean
+    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
+      description: Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60.
+      type: Number
+    - contextPath: AWS.Athena.Query.QueryExecutionContext.Database
+      description: The name of the database used in the query execution.
+      type: String
+    - contextPath: AWS.Athena.Query.QueryExecutionContext.Catalog
+      description: The name of the data catalog used in the query execution.
+      type: String
+    - contextPath: AWS.Athena.Query.Status.State
+      description: The state of query execution.
+      type: String
+    - contextPath: AWS.Athena.Query.Status.StateChangeReason
+      description: Further detail about the status of the query.
+      type: String
+    - contextPath: AWS.Athena.Query.Status.SubmissionDateTime
+      description: The date and time that the query was submitted.
+      type: String
+    - contextPath: AWS.Athena.Query.Status.CompletionDateTime
+      description: The date and time that the query completed.
+      type: String
+    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorCategory
+      description: An integer value that specifies the category of a query failure error.
+      type: Number
+    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorType
+      description: An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide.
+      type: Number
+    - contextPath: AWS.Athena.Query.Status.AthenaError.Retryable
+      description: True if the query might succeed if resubmitted.
+      type: Boolean
+    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorMessage
+      description: Contains a short description of the error that occurred.
+      type: String
+    - contextPath: AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis
+      description: The number of milliseconds that the query took to execute.
+      type: Number
+    - contextPath: AWS.Athena.Query.Statistics.DataScannedInBytes
+      description: The number of bytes in the data that was queried.
+      type: Number
+    - contextPath: AWS.Athena.Query.Statistics.DataManifestLocation
+      description: The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3.
+      type: String
+    - contextPath: AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis
+      description: The number of milliseconds that Athena took to run the query.
+      type: Number
+    - contextPath: AWS.Athena.Query.Statistics.QueryQueueTimeInMillis
+      description: The number of milliseconds that the query was in your query queue waiting for resources.
+      type: Number
+    - contextPath: AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis
+      description: The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine.
+      type: Number
+    - contextPath: AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis
+      description: The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source.
+      type: Number
+    - contextPath: AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis
+      description: The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query.
+      type: Number
+    - contextPath: AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult
+      description: True if a previous query result was reused; false if the result was generated from a new run of the query.
+      type: Boolean
+    - contextPath: AWS.Athena.Query.WorkGroup
+      description: The name of the workgroup in which the query ran.
+      type: String
+    - contextPath: AWS.Athena.Query.EngineVersion.SelectedEngineVersion
+      description: The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO.
+      type: String
+    - contextPath: AWS.Athena.Query.EngineVersion.EffectiveEngineVersion
+      description: The engine version on which the query runs.
+      type: String
+    - contextPath: AWS.Athena.Query.ExecutionParameters
+      description: A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response.
+      type: List
+    - contextPath: AWS.Athena.Query.SubstatementType
+      description: The kind of query statement that was run.
+      type: String
+    - contextPath: AWS.Athena.QueryResults
+      description: List of query results.
+      type: List
+  - name: aws-security-lake-data-catalogs-list
+    description: Lists the data catalogs in the current Amazon Web Services account.
+    deprecated: false
+    arguments:
+    - name: work_group
+      description: The name of the workgroup. Required if making an IAM Identity Center request.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: limit
+      description: Specifies the maximum number of data catalogs to return.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: next_token
+      description: Specifies the maximum number of data catalogs to return.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    outputs: []
+  - name: aws-security-lake-databases-list
+    description: Lists the databases in the specified data catalog.
+    deprecated: false
+    arguments:
+    - name: catalog_name
+      description: The name of the data catalog that contains the databases to return.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: work_group
+      description: The name of the workgroup for which the metadata is being fetched. Required if requesting an IAM Identity Center enabled Glue Data Catalog.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: limit
+      description: Specifies the maximum number of results to return.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: next_token
+      description: A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    outputs: []
+  - name: aws-security-lake-table-metadata-list
+    description: Lists the metadata for the tables in the specified data catalog database.
+    deprecated: false
+    arguments:
+    - name: catalog_name
+      description: The name of the data catalog that contains the databases to return.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: database_name
+      description: The name of the database for which table metadata should be returned.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: expression
+      description: A regex filter that pattern-matches table names. If no expression is supplied, metadata for all tables are listed.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: limit
+      description: Specifies the maximum number of results to return.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: next_token
+      description: A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: work_group
+      description: The name of the workgroup for which the metadata is being fetched. Required if requesting an IAM Identity Center enabled Glue Data Catalog.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    outputs: []
+  - name: aws-security-lake-user-mfalogin-query
+    description: Runs query that takes a provided username and queries the AWS Security Lake for MFA login attempts (Success/Failed) associated with the user's account, using AWS CloudTrail logs.
+    deprecated: false
+    arguments:
+    - name: database
+      description: The Database to run the query against.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: table
+      description: The Table to run the query against.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: user_name
+      description: The username to search for MFA login attempts.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: output_location
+      description: The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: query_limit
+      description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    outputs: []
+  - name: aws-security-lake-source-ip-query
+    description: Runs query takes a provided Source IP Address and queries the AWS Security Lake for Console login attempts (Success/Failed) associated with the IP Address, using AWS CloudTrail logs.
+    deprecated: false
+    arguments:
+    - name: database
+      description: The Database to run the query against.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: table
+      description: The Table to run the query against.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: ip_src
+      description: The source IP Address to search for console login attempts.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: output_location
+      description: The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: query_limit
+      description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    outputs: []
+  - name: aws-security-lake-guardduty-activity-query
+    description: This command is used to search for Guard Duty logs for any criticality level activity.
+    deprecated: false
+    arguments:
+    - name: database
+      description: The Database to run the query against.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: table
+      description: The Table to run the query against.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: severity
+      description: The severity of searchingto search related events for
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - 0-Unknown
+      - 1-Informational
+      - 2-Low
+      - 3-Medium
+      - 4-High
+      - 5-Critical
+      - 6-Fatal
+      - 99-Other
+    - name: output_location
+      description: The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.
+      required: true
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: query_limit
+      description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    outputs: []
+  - name: aws-security-lake-data-sources-list
+    description: Retrieves a snapshot of the current Region, including whether Amazon Security Lake is enabled for those accounts and which sources Security Lake is collecting data from.
+    deprecated: false
+    arguments:
+    - name: accounts
+      description: The Amazon Web Services account ID for which a static snapshot of the current Amazon Web Services Region, including enabled accounts and log sources, is retrieved.
+      required: true
+      isArray: true
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: query_limit
+      description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: limit
+      description: Specifies the maximum number of results to return.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: next_token
+      description: Lists if there are more results available. The value of nextToken is a unique pagination token for each page. Repeat the call using the returned token to retrieve the next page. Keep all other arguments unchanged.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    outputs: []
+  - name: aws-security-lake-data-lakes-list
+    description: Retrieves the Amazon Security Lake configuration object for the specified Amazon Web Services Regions.
+    deprecated: false
+    arguments:
+    - name: regions
+      description: The list of regions where Security Lake is enabled.
+      required: false
+      isArray: true
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: query_limit
+      description: A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.
+      required: false
+      isArray: false
+      defaultValue: ''
+      predefined:
+      - ''
+    outputs: []
+  runonce: false
+  script: >
+    register_module_line('AWS Security Lake', 'start', __line__())
+
+    ### pack version: 1.0.0
+
+
+
+
+
+    from datetime import datetime
+
+
+    AWS_SERVICE_NAME = 'athena'
+
+    AWS_SERVICE_NAME_LAKE = 'securitylake'
+
+    QUERY_DATA_OUTPUTS_KEY = 'Query'
+
+    QUERY_RESULTS_OUTPUTS_KEY = 'QueryResults'
+
+
+
+    def parse_rows_response(rows_data: list[dict]) -> list[dict]:
+        """
+        Parse and arrange the 'Rows' data from the response.
+
+        Args:
+            rows_data (list[dict]): The 'Rows' data from the response.
+
+        Note:
+            The 'Rows' data is returned in a table format, where each item in the list is a row.
+            Example for such a response can be seen on 'test_data/raw_data_mock/get_query_results.json'
+
+        Returns:
+            list[dict]: The data in a parsed and arranged format.
+        """
+        if not rows_data or not rows_data[0].get('Data'):
+            return []
+
+        keys: list[str] = [item['VarCharValue'] for item in rows_data[0]['Data']]
+        raw_results = [item['Data'] for item in rows_data[1:]]
+        result_data = []
+
+        for raw_result in raw_results:
+            current_item_data = {}
+
+            for idx, value in enumerate(raw_result):
+                if 'VarCharValue' in value:
+                    current_item_data[keys[idx]] = value['VarCharValue']
+
+            result_data.append(current_item_data)
+
+        return result_data
+
+    def determine_client_service_name(command: str):
+        """determines the needed client service name based on the command.
+
+        Args:
+            command (str): command name being called.
+
+        Returns:
+            _type_: service name based on the command.
+        """
+        if command in ['aws-security-lake-data-sources-list', 'aws-security-lake-data-lakes-list']:
+            return AWS_SERVICE_NAME_LAKE
+        else:
+            return AWS_SERVICE_NAME
+        
+    # --- API Call Functions --- #
+
+
+
+    def start_query_execution(client, query_string: str, query_limit: int | None = None, client_request_token: str | None = None,
+                              database: str | None = None, output_location: str | None = None, encryption_option: str | None = None,
+                              kms_key: str | None = None, work_group: str | None = None) -> dict:
+        if query_limit and 'LIMIT' not in query_string:
+            query_string = f'{query_string} LIMIT {query_limit}'
+
+        kwargs: dict[str, Any] = {'QueryString': query_string}
+
+        if client_request_token:
+            kwargs.update({'ClientRequestToken': client_request_token})
+
+        if database:
+            kwargs.update({'QueryExecutionContext': {'Database': database}})
+
+        if output_location:
+            kwargs.update({'ResultConfiguration': {'OutputLocation': output_location}})
+
+        if encryption_option:
+            kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'EncryptionOption': encryption_option}}})
+
+        if kms_key:
+            kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'KmsKey': kms_key}}})
+
+        if work_group:
+            kwargs.update({'WorkGroup': work_group})
+
+        return client.start_query_execution(**kwargs)
+
+
+    def get_query_execution(client, query_execution_id: str) -> dict:
+        response = client.get_query_execution(QueryExecutionId=query_execution_id)
+
+        # Convert datetime objects to strings
+        if ((datetime_value := response.get('QueryExecution', {}).get('Status', {}).get('SubmissionDateTime'))
+                and isinstance(datetime_value, datetime)):
+            response['QueryExecution']['Status']['SubmissionDateTime'] = datetime_value.isoformat()
+
+        if ((datetime_value := response.get('QueryExecution', {}).get('Status', {}).get('CompletionDateTime'))
+                and isinstance(datetime_value, datetime)):
+            response['QueryExecution']['Status']['CompletionDateTime'] = datetime_value.isoformat()
+
+        return response['QueryExecution']
+
+
+    def get_query_results(client, query_execution_id: str) -> list[dict]:
+        raw_response = client.get_query_results(QueryExecutionId=query_execution_id)
+        parsed_response = parse_rows_response(rows_data=raw_response['ResultSet']['Rows'])
+
+        for result_item in parsed_response:
+            result_item['query_execution_id'] = query_execution_id
+
+        return parsed_response
+
+
+    # --- Command Functions --- #
+
+
+
+    def module_test_command(client) -> str | CommandResults:
+        response = client.list_named_queries()
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            return 'ok'
+
+        else:
+            raise DemistoException(f'Error: {response}')
+
+
+    @polling_function(
+        name=demisto.command(),
+        interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+        timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 300)),
+        requires_polling_arg=False,
+    )
+
+    def execute_query_command(args: dict, client):
+        if 'QueryExecutionId' not in args:
+            start_query_response = start_query_execution(client=client, query_string=args['query_string'],
+                                                         query_limit=args.get('query_limit'),
+                                                         client_request_token=args.get('client_request_token'),
+                                                         database=args.get('database'),
+                                                         output_location=args.get('output_location'),
+                                                         encryption_option=args.get('encryption_option'),
+                                                         kms_key=args.get('kms_key'), work_group=args.get('work_group'))
+            query_execution_id = start_query_response['QueryExecutionId']
+
+            # If this is the first polling iteration, wait a second to allow the query to complete.
+            # This saves time for most cases where waiting for the next poll (with a minimum of 10 seconds) is not necessary.
+            time.sleep(1)
+
+        else:
+            query_execution_id = args['QueryExecutionId']
+
+        query_execution_response = get_query_execution(client=client, query_execution_id=query_execution_id)
+        query_state = query_execution_response['Status']['State']
+
+        if query_state in ("QUEUED", "RUNNING"):
+            args["QueryExecutionId"] = query_execution_id
+
+            return PollResult(
+                response=None,
+                continue_to_poll=True,
+                args_for_next_run=args,
+                partial_result=CommandResults(readable_output=f"Query is still running. Current state: '{query_state}'."),
+            )
+
+        output_data: dict[str, Any] = {QUERY_DATA_OUTPUTS_KEY: query_execution_response}
+        readable_output = None
+
+        if query_state == "SUCCEEDED":
+            query_results_response = get_query_results(client=client, query_execution_id=query_execution_id)
+            output_data[QUERY_RESULTS_OUTPUTS_KEY] = query_results_response
+            readable_output = tableToMarkdown('AWS Athena Query Results', query_results_response)
+
+        elif query_state == "CANCELLED":
+            readable_output = f"Query '{query_execution_id}' has been cancelled."
+
+        elif query_state == "FAILED":
+            readable_output = f"Query '{query_execution_id}' has failed."
+
+            if query_execution_response['QueryExecution']['Status'].get('AthenaError', {}).get('ErrorMessage'):
+                error_message = query_execution_response['QueryExecution']['Status']['AthenaError']['ErrorMessage']
+                readable_output += f"\nError: {error_message}"
+
+        return PollResult(
+            response=CommandResults(
+                outputs_prefix='AWS.SecurityLake',
+                outputs=output_data,
+                raw_response=output_data,
+                readable_output=readable_output,
+            ),
+            continue_to_poll=False,
+        )
+
+    def list_catalogs_command(client, args: dict):
+        """Lists the data catalogs in the current Amazon Web Services account.
+
+        Args:
+            client : aws client object
+            args (dict): command argument - nextToken, limit, workGroup
+        """
+        response = client.list_data_catalogs(
+            NextToken=args.get('next_token'),
+            MaxResults=args.get('limit'),
+            WorkGroup=args.get('work_group')
+        )
+        
+        return CommandResults(
+            outputs_prefix='AWS.SecurityLake.Catalog',
+            outputs_key_field='CatalogName',
+            outputs=response,
+            raw_response=response,
+            readable_output=tableToMarkdown('AWS Security Data Lake Catalogs', 
+                                            response.get('DataCatalogsSummary'),
+                                            headerTransform=pascalToSpace)
+        )
+        
+    def list_databases_command(client, args: dict):
+        """Lists the databases in the specified data catalog.
+        Args:
+            client : aws client object
+            args (dict): command argument
+        """
+        
+        response = client(
+            CatalogName=args.get('catalog_name'),
+            NextToken=args.get('next_token'),
+            MaxResults=args.get('limit'),
+            WorkGroup=args.get('work_group')
+        )
+        
+        return CommandResults(
+            outputs_prefix='AWS.SecurityLake.Database',
+            outputs_key_field='Name',
+            outputs=response,
+            raw_response=response,
+            readable_output=tableToMarkdown('AWS Security Data Lake Databases', 
+                                            response.get('DatabaseList'),
+                                            headers=['Name'],
+                                            headerTransform=pascalToSpace)
+        )
+
+    def list_table_metadata_command(client, args: dict):
+        """Lists the metadata for the tables in the specified data catalog database.
+
+        Args:
+            client : aws client object
+            args (dict): command argument
+        """
+        
+        response = client(
+            CatalogName=args.get('catalog_name'),
+            DatabaseName=args.get('database_name'),
+            Expression=args.get('expression'),
+            NextToken=args.get('next_token'),
+            MaxResults=args.get('limit'),
+            WorkGroup=args.get('work_group')
+        )
+        
+        return CommandResults(
+            outputs_prefix='AWS.SecurityLake.TableMetadata',
+            outputs_key_field='Name',
+            outputs=response,
+            raw_response=response,
+            readable_output=tableToMarkdown('AWS Security Data Lake Databases', 
+                                            response.get('DatabaseList'),
+                                            headers=['Table Name, Type, Columns, Partition Keys, Output Location'],
+                                            headerTransform=pascalToSpace)
+        )
+        
+    def mfalogin_query_command(client, args: dict):
+        """Running aws-security-lake-query-execute command with query_string:
+    SELECT * FROM <{database}>.<{table}>
+
+    WHERE CAST(actor.user.name AS VARCHAR) = '{user_name}';
+
+        Args:
+            client : aws client object
+            args (dict): command argument
+        """
+        database = args.get('database')
+        table = args.get('table')
+        user_name = args.get('user_name')
+        args['query_string'] = f"SELECT * FROM <{database}>.<{table}> WHERE CAST(actor.user.name AS VARCHAR) = '{user_name}';"
+        return execute_query_command(client=client, args=args)
+
+    def source_ip_query_command(client, args: dict):
+        """Running aws-security-lake-query-execute command with query_string:
+    SELECT * FROM <{database}>.<(table}>
+
+    WHERE CAST(src_endpoint.ip AS VARCHAR) = '{ip_src}';
+
+        Args:
+            client : aws client object
+            args (dict): command argument
+        """
+        database = args.get('database')
+        table = args.get('table')
+        ip_src = args.get('ip_src')
+        args['query_string'] = f"SELECT * FROM <{database}>.<{table}> WHERE CAST(src_endpoint.ip AS VARCHAR) = '{ip_src}';"
+        return execute_query_command(client=client, args=args)
+
+    def guardduty_activity_query_command(client, args: dict):
+        """Running aws-security-lake-query-execute command with query_string:
+            SELECT * FROM <{database}>.<{table}> WHERE severity_id = {severity};
+
+        Args:
+            client : aws client object
+            args (dict): command argument
+        """
+        database = args.get('database')
+        table = args.get('table')
+        severity = args.get('severity')
+        args['query_string'] = f"SELECT * FROM <{database}>.<{table}> WHERE severity_id = {severity};"
+        return execute_query_command(client=client, args=args)
+
+    def list_sources_command(client, args:dict):
+        """Retrieves a snapshot of the current Region.
+
+        Args:
+            client : aws client object
+            args (dict): command argument
+        """
+        response = client.get_data_lake_sources(accounts=args.get('accounts'),
+                                     maxResults=args.get('limit'),
+                                     nextToken=args.get('next_token'))
+        
+        return CommandResults(
+            outputs_prefix='AWS.SecurityLake.DataLakeSource',
+            outputs_key_field='account',
+            outputs=response,
+            raw_response=response,
+            readable_output=tableToMarkdown('AWS Security Data Lake Catalogs', 
+                                            response.get('DataCatalogsSummary'),
+                                            headerTransform=pascalToSpace))
+
+    def list_data_lakes_command(client, args:dict):
+        """Retrieves the Amazon Security Lake configuration object for the specified Amazon Web Services Regions.
+
+        Args:
+            client : aws client object
+            args (dict): command argument
+        """
+        response = client.list_data_lakes(regions=args.get('regions'))
+        
+        return CommandResults(
+            outputs_prefix='AWS.SecurityLake.DataLake',
+            outputs_key_field='dataLakeArn',
+            outputs=response,
+            raw_response=response,
+            readable_output=tableToMarkdown('AWS Security Data Lakes', 
+                                            response.get('DataCatalogsSummary'),
+                                            headerTransform=pascalToSpace))
+        
+        
+    def main():  # pragma: no cover
+        params = demisto.params()
+        args = demisto.args()
+        command = demisto.command()
+
+        aws_role_arn = params.get('roleArn')
+        aws_role_session_name = params.get('roleSessionName')
+        aws_default_region = params.get('defaultRegion')
+        aws_role_session_duration = params.get('sessionDuration')
+        aws_access_key_id = demisto.get(params, 'credentials.identifier')
+        aws_secret_access_key = demisto.get(params, 'credentials.password')
+        verify_certificate = not params.get('insecure', True)
+        timeout = params.get('timeout')
+        retries = params.get('retries', 5)
+        
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                        aws_secret_access_key)
+
+        try:
+            demisto.debug(f"Command being called is '{command}'.")
+
+            aws_client = AWSClient(aws_default_region=aws_default_region, aws_role_arn=aws_role_arn,
+                                   aws_role_session_name=aws_role_session_name, aws_role_session_duration=aws_role_session_duration,
+                                   aws_role_policy=None, aws_access_key_id=aws_access_key_id,
+                                   aws_secret_access_key=aws_secret_access_key,
+                                   verify_certificate=verify_certificate, timeout=timeout, retries=retries)
+            
+            service = determine_client_service_name(command=command)
+
+            client = aws_client.aws_session(
+                service=service,
+                region=args.get('region'),
+                role_arn=args.get('roleArn'),
+                role_session_name=args.get('roleSessionName'),
+                role_session_duration=args.get('roleSessionDuration'),
+            )
+
+            result: str | CommandResults
+
+            if command == 'test-module':
+                result = module_test_command(client)
+                
+            elif command == 'aws-athena-execute-query':
+                result = execute_query_command(client=client, args=args) # type: ignore
+                
+            elif command == 'aws-security-lake-data-catalogs-list':
+                result = list_catalogs_command(client=client, args=args)
+            
+            elif command == 'aws-security-lake-databases-list':
+                result = list_databases_command(client=client, args=args)
+                
+            elif command == 'aws-security-lake-table-metadata-list':
+                result = list_table_metadata_command(client=client, args=args)
+            
+            elif command == 'aws-security-lake-user-mfalogin-query':
+                result = mfalogin_query_command(client=client, args=args) # type: ignore
+                
+            elif command == 'aws-security-lake-source-ip-query':
+                result = source_ip_query_command(client=client, args=args) # type: ignore
+                
+            elif command == 'aws-security-lake-guardduty-activity-query':
+                result = guardduty_activity_query_command(client=client, args=args) # type: ignore
+            
+            elif command == 'aws-security-lake-data-sources-list':
+                result = list_sources_command(client=client, args=args)
+            
+            elif command == 'aws-security-lake-data-lakes-list':
+                result = list_data_lakes_command(client=client, args=args)
+            else:
+                raise NotImplementedError(f'Command "{command}" is not implemented.')
+
+            return_results(result)
+
+        except Exception as e:
+            return_error(f'Error: {e}')
+
+
+
+    ### GENERATED CODE ###: from AWSApiModule import *  # noqa: E402
+
+    # This code was inserted in place of an API module.
+
+    register_module_line('AWSApiModule', 'start', __line__(), wrapper=-3)
+
+
+
+    import boto3
+
+    from botocore.config import Config
+
+
+
+    def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key):
+        """
+        Validates that the provided parameters are compatible with the appropriate authentication method.
+        """
+        if not aws_default_region:
+            raise DemistoException('You must specify AWS default region.')
+
+        if bool(aws_access_key_id) != bool(aws_secret_access_key):
+            raise DemistoException('You must provide Access Key id and Secret key id to configure the instance with '
+                                   'credentials.')
+        if bool(aws_role_arn) != bool(aws_role_session_name):
+            raise DemistoException('Role session name is required when using role ARN.')
+
+
+    def extract_session_from_secret(secret_key, session_token):
+        """
+        Extract the session token from the secret_key field.
+        """
+        if secret_key and '@@@' in secret_key and not session_token:
+            return secret_key.split('@@@')[0], secret_key.split('@@@')[1]
+        else:
+            return secret_key, session_token
+
+
+    class AWSClient:
+
+        def __init__(self, aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                     aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries,
+                     aws_session_token=None, sts_endpoint_url=None, endpoint_url=None):
+
+            self.sts_endpoint_url = sts_endpoint_url
+            self.endpoint_url = endpoint_url
+            self.aws_default_region = aws_default_region
+            self.aws_role_arn = aws_role_arn
+            self.aws_role_session_name = aws_role_session_name
+            # handle cases where aws_role_session_duration can be also empty string
+            self.aws_role_session_duration = aws_role_session_duration if aws_role_session_duration else None
+            self.aws_role_policy = aws_role_policy
+            self.aws_access_key_id = aws_access_key_id
+            self.aws_secret_access_key, self.aws_session_token = extract_session_from_secret(aws_secret_access_key, aws_session_token)
+            self.verify_certificate = verify_certificate
+
+            proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+            (read_timeout, connect_timeout) = AWSClient.get_timeout(timeout)
+            if int(retries) > 10:
+                retries = 10
+            self.config = Config(
+                connect_timeout=connect_timeout,
+                read_timeout=read_timeout,
+                retries=dict(
+                    max_attempts=int(retries)
+                ),
+                proxies=proxies
+            )
+
+        def update_config(self):
+            command_config = {}
+            retries = demisto.getArg('retries')  # Supports retries and timeout parameters on the command execution level
+            if retries is not None:
+                command_config['retries'] = dict(max_attempts=int(retries))
+            timeout = demisto.getArg('timeout')
+            if timeout is not None:
+                (read_timeout, connect_timeout) = AWSClient.get_timeout(timeout)
+                command_config['read_timeout'] = read_timeout
+                command_config['connect_timeout'] = connect_timeout
+            if retries or timeout:
+                demisto.debug('Merging client config settings: {}'.format(command_config))
+                self.config = self.config.merge(Config(**command_config))  # type: ignore[arg-type]
+
+        def aws_session(self, service, region=None, role_arn=None, role_session_name=None, role_session_duration=None,
+                        role_policy=None):
+            kwargs = {}
+
+            self.update_config()
+
+            if role_arn and role_session_name is not None:
+                kwargs.update({
+                    'RoleArn': role_arn,
+                    'RoleSessionName': role_session_name,
+                })
+            elif self.aws_role_arn and self.aws_role_session_name is not None:
+                kwargs.update({
+                    'RoleArn': self.aws_role_arn,
+                    'RoleSessionName': self.aws_role_session_name,
+                })
+
+            if role_session_duration is not None:
+                kwargs.update({'DurationSeconds': int(role_session_duration)})
+            elif self.aws_role_session_duration is not None:
+                kwargs.update({'DurationSeconds': int(self.aws_role_session_duration)})
+
+            if role_policy is not None:
+                kwargs.update({'Policy': role_policy})
+            elif self.aws_role_policy is not None:
+                kwargs.update({'Policy': self.aws_role_policy})
+
+            demisto.debug('{kwargs}='.format(kwargs=kwargs))
+
+            if kwargs and not self.aws_access_key_id:  # login with Role ARN
+                if not self.aws_access_key_id:
+                    sts_client = boto3.client('sts', config=self.config, verify=self.verify_certificate,
+                                              region_name=region if region else self.aws_default_region,
+                                              endpoint_url=self.sts_endpoint_url)
+                    sts_response = sts_client.assume_role(**kwargs)
+                    client = boto3.client(
+                        service_name=service,
+                        region_name=region if region else self.aws_default_region,
+                        aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                        aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                        aws_session_token=sts_response['Credentials']['SessionToken'],
+                        verify=self.verify_certificate,
+                        config=self.config,
+                        endpoint_url=self.endpoint_url
+                    )
+            elif self.aws_access_key_id and (role_arn or self.aws_role_arn):  # login with Access Key ID and Role ARN
+                sts_client = boto3.client(
+                    service_name='sts',
+                    aws_access_key_id=self.aws_access_key_id,
+                    aws_secret_access_key=self.aws_secret_access_key,
+                    verify=self.verify_certificate,
+                    config=self.config,
+                    endpoint_url=self.sts_endpoint_url
+                )
+                kwargs.update({
+                    'RoleArn': role_arn or self.aws_role_arn,
+                    'RoleSessionName': role_session_name or self.aws_role_session_name,
+                })
+                sts_response = sts_client.assume_role(**kwargs)
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region if region else self.aws_default_region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=self.verify_certificate,
+                    config=self.config,
+                    endpoint_url=self.endpoint_url
+                )
+            elif self.aws_session_token and not self.aws_role_arn:  # login with session token
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region if region else self.aws_default_region,
+                    aws_access_key_id=self.aws_access_key_id,
+                    aws_secret_access_key=self.aws_secret_access_key,
+                    aws_session_token=self.aws_session_token,
+                    verify=self.verify_certificate,
+                    config=self.config,
+                    endpoint_url=self.endpoint_url
+                )
+            elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region if region else self.aws_default_region,
+                    aws_access_key_id=self.aws_access_key_id,
+                    aws_secret_access_key=self.aws_secret_access_key,
+                    verify=self.verify_certificate,
+                    config=self.config,
+                    endpoint_url=self.endpoint_url
+                )
+            else:  # login with default permissions, permissions pulled from the ec2 metadata
+                client = boto3.client(service_name=service,
+                                      region_name=region if region else self.aws_default_region,
+                                      endpoint_url=self.endpoint_url)
+
+            return client
+
+        @staticmethod
+        def get_timeout(timeout):
+            if not timeout:
+                timeout = "60,10"  # default values
+            try:
+
+                if isinstance(timeout, int):
+                    read_timeout = timeout
+                    connect_timeout = 10
+
+                else:
+                    timeout_vals = timeout.split(',')
+                    read_timeout = int(timeout_vals[0])
+                    # the default connect timeout is 10
+                    connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
+
+            except ValueError:
+                raise DemistoException("You can specify just the read timeout (for example 60) or also the connect "
+                                       "timeout followed after a comma (for example 60,10). If a connect timeout is not "
+                                       "specified, a default of 10 second will be used.")
+            return read_timeout, connect_timeout
+
+    register_module_line('AWSApiModule', 'end', __line__(), wrapper=1)
+
+    ### END GENERATED CODE ###
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('AWS Security Lake', 'end', __line__())
+  type: python
+  subtype: python3
+  dockerimage: demisto/boto3py3:1.0.0.83094
+  feed: false
+  isfetch: false
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
+image: data:image/png;base64,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
+detaileddescription: "## BaseIntegration Help\n\nMarkdown file for integration configuration  help snippet. In this file add:\n\n- Brief information about how to retrieve the API key of your product\n- Other useful information on how to configure your integration in XSOAR\n\nSince this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.\n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/aws-security-lake)"

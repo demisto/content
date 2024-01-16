@@ -1,0 +1,22 @@
+{
+    "DataLakeSource":{
+        "DataLakeArn": "test",
+        "DataLakeSources": [
+            {
+                "account": "test",
+                "eventClasses": [
+                    "test"
+                ],
+                "sourceName": "test",
+                "sourceStatuses": [
+                    {
+                        "resource": "test",
+                        "status": "COLLECTING"
+                    }
+                ]
+            }
+        ]
+    },
+    "DataLakeSourceNextToken": "test"
+
+}

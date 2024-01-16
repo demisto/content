@@ -1,0 +1,8 @@
+{
+    "Catalog": [
+        {
+            "CatalogName": "test",
+            "Type": "LAMBDA"
+        }
+    ],
+    "CatalogNextToken": "test"}

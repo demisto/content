@@ -1,0 +1,28 @@
+{
+    "TableMetadataList": [
+        {
+            "Name": "test",
+            "CreateTime": "01-01-2024",
+            "LastAccessTime": "01-01-2024",
+            "TableType": "test",
+            "Columns": [
+                {
+                    "Name": "test",
+                    "Type": "test",
+                    "Comment": "test"
+                }
+            ],
+            "PartitionKeys": [
+                {
+                    "Name": "test",
+                    "Type": "test",
+                    "Comment": "test"
+                }
+            ],
+            "Parameters": {
+                "string": "test"
+            }
+        }
+    ],
+    "NextToken": "test"
+}

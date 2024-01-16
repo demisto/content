@@ -1,0 +1,12 @@
+{
+    "Database": [
+        {
+            "Name": "test",
+            "Description": "test",
+            "Parameters": {
+                "test_param": "test"
+            }
+        }
+    ],
+    "DatabaseNextToken": "test"
+}
