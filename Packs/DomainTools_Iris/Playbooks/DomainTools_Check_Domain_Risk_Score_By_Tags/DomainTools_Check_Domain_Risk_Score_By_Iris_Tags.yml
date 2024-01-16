@@ -1,0 +1,312 @@
+id: DomainTools Check Domain Risk Score By Iris Tags
+version: -1
+name: DomainTools Check Domain Risk Score By Iris Tags
+description: This playbook will alert a user if a monitored set of domains, labeled by Iris Investigate tags, becomes high risk. To use it, tag domains in the Iris Investigate UI. Enter a comma-separated list of tags to monitor to the playbook input "dt_monitored_iris_tags" and run this playbook on a scheduled basis. It will add any new high risk domains (based on the threshold defined in this playbook) as indicators on the associated incident.
+tags:
+- Domaintools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e5960993-db4d-4b23-84d1-456892e20683
+    type: start
+    task:
+      id: e5960993-db4d-4b23-84d1-456892e20683
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b52308b6-6db3-474f-805f-db7dd06b15a8
+    type: regular
+    task:
+      id: b52308b6-6db3-474f-805f-db7dd06b15a8
+      version: -1
+      name: Query Domains by Iris Tag(s)
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      tagged_with_any:
+        complex:
+          root: inputs.dt_monitored_iris_tags
+          transformers:
+          - operator: trim
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a70c9e3d-65a5-4429-8f4f-f25a635fd3e0
+    type: title
+    task:
+      id: a70c9e3d-65a5-4429-8f4f-f25a635fd3e0
+      version: -1
+      name: Done
+      description: Title
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: cc098270-1a1c-49b3-8218-73e8e98ea37b
+    type: regular
+    task:
+      id: cc098270-1a1c-49b3-8218-73e8e98ea37b
+      version: -1
+      name: Manually Review High Risk Score Domains
+      description: Manually Review High Risk Score Domains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: Analyst
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: bff7a24a-8b22-4cb2-8228-83e1e66e38cd
+    type: condition
+    task:
+      id: bff7a24a-8b22-4cb2-8228-83e1e66e38cd
+      version: -1
+      name: Is there any Active and High Risk Score Domain?
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    scriptarguments:
+      first:
+        complex:
+          root: DomainTools.Pivots.PivotedDomains
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: DomainTools.Pivots.PivotedDomains.Registration.DomainStatus
+                iscontext: true
+          accessor: Analytics.OverallRiskScore
+      second:
+        simple: ${inputs.dt_min_riskscore_threshold}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 87ab1ad9-77c7-4470-875d-f2f4b03956c5
+    type: regular
+    task:
+      id: 87ab1ad9-77c7-4470-875d-f2f4b03956c5
+      version: -1
+      name: Add High Risk Domain to Indicator
+      description: Sets Data for a Domain in the Indicator Table
+      scriptName: SetIndicatorTableData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domaintools_data:
+        complex:
+          root: DomainTools.Pivots.PivotedDomains
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: DomainTools.Pivots.PivotedDomains.Analytics.OverallRiskScore
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.dt_min_riskscore_threshold
+                iscontext: true
+          - - operator: isTrue
+              left:
+                value:
+                  simple: DomainTools.Pivots.PivotedDomains.Registration.DomainStatus
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d553ecea-def5-43ce-84c3-ae0bbb1c7584
+    type: condition
+    task:
+      id: d553ecea-def5-43ce-84c3-ae0bbb1c7584
+      version: -1
+      name: Should wait for an analyst review?
+      description: Manually Review High Risk Score Domains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: inputs.should_wait_for_analyst_review
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_2_#default#": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 830,
+        "x": -400,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: dt_min_riskscore_threshold
+  value:
+    simple: "70"
+  required: true
+  description: The minimum risk score threshold value to compare.
+  playbookInputQuery:
+- key: dt_monitored_iris_tags
+  value:
+    simple: blocklist,good
+  required: true
+  description: |-
+    The Iris tags to lookup. Values should be a comma separated value.
+    e.g. (tag1,tag2)
+  playbookInputQuery:
+- key: should_wait_for_analyst_review
+  value:
+    simple: "false"
+  required: true
+  description: Flags if users should wait for an analyst to review. Default is false. Value can be either true/false only.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)
