@@ -8,7 +8,7 @@ import requests
 from google.cloud import storage  # noqa
 import argparse
 from Utils.github_workflow_scripts.utils import get_env_var
-from slack_sdk import WebClient
+from slack_sdk import WebClient as SlackWebClient
 from datetime import datetime
 
 GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
@@ -19,10 +19,6 @@ JOB_STATUS_URL = '{}/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
 CONTENT_GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '1061')
 
 
-SLACK_TOKEN = get_env_var('SLACK_TOKEN')
-SLACK_CHANNEL = get_env_var('WAIT_SLACK_CHANNEL', "dmst-test-wait-in-line")
-
-
 def send_slack_notification(text: list[str]):
     """
     Sends a Slack notification with a list of items.
@@ -31,10 +27,14 @@ def send_slack_notification(text: list[str]):
         text (List[str]): A list of items to be included in the Slack notification.
 
     """
+
+    slack_token = get_env_var('SLACK_TOKEN')
+    slack_channel = get_env_var('WAIT_SLACK_CHANNEL', "dmst-test-wait-in-line")
+
     text = "\n".join(text)
-    client = WebClient(token=SLACK_TOKEN)
+    client = SlackWebClient(token=slack_token)
     client.chat_postMessage(
-        channel=SLACK_CHANNEL,
+        channel=slack_channel,
         text=text
     )
 
