@@ -75,7 +75,6 @@ RPZ_RULES_DICT = {
 NETWORK_NOT_FOUND = "A network was not found for this address"
 
 
-
 class Client(BaseClient):
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, params=None):
         super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
