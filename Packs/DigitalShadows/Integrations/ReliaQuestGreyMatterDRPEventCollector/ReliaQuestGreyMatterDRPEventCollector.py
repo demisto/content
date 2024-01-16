@@ -329,17 +329,14 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
     fetched_events_with_latest_created_time = get_events_with_latest_created_time(events, latest_created_item)
 
     # if latest_created_item = None, no new events were fetched, keep the same last-run until new events will be created
-    new_last_run = {FETCHED_TIME_LAST_RUN: latest_created_item or _time,
-                    FOUND_IDS_LAST_RUN: fetched_events_with_latest_created_time}
+    new_last_run = {
+        FETCHED_TIME_LAST_RUN: latest_created_item or _time,
+        FOUND_IDS_LAST_RUN: fetched_events_with_latest_created_time
+    }
     return events, new_last_run
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
     params = demisto.params()
     url = params.get("url")
     account_id = params.get("account_id")
@@ -372,13 +369,9 @@ def main() -> None:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
     # Log exceptions and return errors
-    except Exception as e:
-        raise e
-        # import traceback
-        # return_error(f'Failed to execute {command} command.\nError:\n{str(e)}, {traceback.format_exc()}')
-
-
-''' ENTRY POINT '''
+    except Exception as exc:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{str(exc)}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
