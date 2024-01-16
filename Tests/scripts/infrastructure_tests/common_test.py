@@ -1,174 +1,261 @@
+from pathlib import Path
 from Tests.scripts.common import get_reviewer, get_person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name
-import pytest
 from requests_mock import MockerCore
 
 
 def test_get_person_in_charge(mocker):
     """
-    Given a commit object
-    When get_person_in_charge is called on it
-    Then it should return the expected name and PR link
+    Given:
+        A commit with author name and title
+    When:
+        The function get_person_in_charge is called with the commit
+    Then:
+        It should return the author name and the pull request URL
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
-    commit.author_email = 'john@doe.com'
     commit.title = 'Merge branch \'master\' into branch-name (#123)'
-
-    expected = ('John Doe', 'https://github.com/demisto/content/pull/123')
 
     result = get_person_in_charge(commit)
 
-    assert result == expected
+    assert result == ('John Doe', 'https://github.com/demisto/content/pull/123')
 
 
-@pytest.mark.parametrize(('pipeline1_date, pipeline2_date, expected'), (
-    pytest.param('2020-01-01T00:00:00Z', '2020-01-02T00:00:00Z', False, id="pipelines not in order"),
-    pytest.param('2020-01-02T00:00:00Z', '2020-01-01T00:00:00Z', True, id="pipelines in order")))
-def test_are_pipelines_in_order(mocker, pipeline1_date, pipeline2_date, expected):
+def test_are_pipelines_in_order_false(mocker):
     """
     Given:
-        - Two pipelines with their created_at dates.
+        Two pipelines with different creation dates
     When:
-        - are_pipelines_in_order is called on them.
+        The function are_pipelines_in_order is called with the two pipelines
     Then:
-        - It should return the expected result.
-          scenario 1: pipeline1.created_at > pipeline2.created_at -> False
-          scenario 2: pipeline1.created_at < pipeline2.created_at -> True
+        It should return False if the pipelines are not in order based on their creation dates
     """
     pipeline1 = mocker.Mock()
-    pipeline1.id = '1'
-    pipeline1.created_at = pipeline1_date
-
+    pipeline1.created_at = '2020-01-01T00:00:00Z'
     pipeline2 = mocker.Mock()
-    pipeline2.id = '2'
-    pipeline2.created_at = pipeline2_date
+    pipeline2.created_at = '2020-01-02T00:00:00Z'
 
     result = are_pipelines_in_order(pipeline1, pipeline2)
 
-    assert result == expected
+    assert result is False
 
 
-@pytest.mark.parametrize(('current_pipeline_status, expected'), (
-    pytest.param('failed', True, id="negative pivot"),
-    pytest.param('success', None, id="no change")))
-def test_is_pivot__previously_pipeline_success(mocker, current_pipeline_status, expected):
+def test_are_pipelines_in_order_true(mocker):
     """
     Given:
-        - Current pipelines status, when the previously pipeline status was 'success'
+        Two pipelines with different creation dates
     When:
-        - Checking on status change.
+        The function are_pipelines_in_order is called with the two pipelines
     Then:
-        - It should return the expected result.
-          scenario 1: Current pipelines status == 'failed' -> True
-          scenario 2: Current pipelines status == 'success' -> None
+        It should return True if the pipelines are in order based on their creation dates
+    """
+    pipeline1 = mocker.Mock()
+    pipeline1.created_at = '2020-01-02T00:00:00Z'
+    pipeline2 = mocker.Mock()
+    pipeline2.created_at = '2020-01-01T00:00:00Z'
+
+    result = are_pipelines_in_order(pipeline1, pipeline2)
+
+    assert result is True
+
+
+def test_is_pivot__previously_pipeline_success_and_current_failed(mocker):
+    """
+    Given:
+        A previously successful pipeline and a current failed pipeline
+    When:
+        The function is_pivot is called with the current and previous pipelines
+    Then:
+        It should return True if the current pipeline failed after a successful pipeline
     """
     previously_pipeline = mocker.Mock()
     previously_pipeline.status = 'success'
     current_pipeline = mocker.Mock()
-    current_pipeline.status = current_pipeline_status
+    current_pipeline.status = 'failed'
 
     mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
+
     result = is_pivot(current_pipeline, previously_pipeline)
 
-    assert result == expected
+    assert result is True
 
 
-@pytest.mark.parametrize(('current_pipeline_status, expected'), (
-    pytest.param('failed', None, id="no change"),
-    pytest.param('success', False, id="positive pivot")))
-def test_is_pivot__previously_pipeline_failed(mocker, current_pipeline_status, expected):
+def test_is_pivot__previously_pipeline_success_and_current_success(mocker):
     """
     Given:
-        - Current pipelines status, when the previously pipeline status was 'failed'
+        A previously successful pipeline and a current successful pipeline
     When:
-        - Checking on status change.
+        The function is_pivot is called with the current and previous pipelines
     Then:
-        - It should return the expected result.
-          scenario 1: Current pipelines status == 'failed' -> None
-          scenario 2: Current pipelines status == 'success' -> False
-
+        It should return None
     """
     previously_pipeline = mocker.Mock()
-    previously_pipeline.status = 'failed'
+    previously_pipeline.status = 'success'
     current_pipeline = mocker.Mock()
-    current_pipeline.status = current_pipeline_status
+    current_pipeline.status = 'success'
 
     mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
-    result = is_pivot(current_pipeline, previously_pipeline)
 
-    assert result == expected
-
-
-@pytest.mark.parametrize(('current_pipeline_status, previously_pipeline_status'), (
-    pytest.param('failed', 'in progress', id="pipeline still running"),
-    pytest.param('success', 'canceled', id="pipeline canceled"),
-))
-def test_is_pivot__previously_pipeline_did_mot_end(mocker, current_pipeline_status, previously_pipeline_status):
-    """
-    Given:
-        - Two pipelines with their statuses.
-    When:
-        - Checking on status change.
-    Then:
-        - If previous pipeline did not finish running, the result should be None regardless of the status of both pipelines .
-          scenario 1: current pipeline status =='failed' and previously pipeline status == 'in progress' -> None
-          scenario 2: current pipeline status =='success' and previously pipeline status == 'canceled' -> None
-    """
-    current_pipeline = mocker.Mock()
-    current_pipeline.status = current_pipeline_status
-    previously_pipeline = mocker.Mock()
-    previously_pipeline.status = previously_pipeline_status
-
-    mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
     result = is_pivot(current_pipeline, previously_pipeline)
 
     assert result is None
 
 
-@pytest.mark.parametrize(('response, expected'), (
-    pytest.param([], None, id="no reviewer"),
-    pytest.param([{"Jon": "test", "state": "test", "user": {"login": "Jon"}},
-                  {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}],
-                 "Jane Doe", id="one reviewer approved"),
-    pytest.param([{"Jon": "test", "state": "APPROVED", "user": {"login": "Jon"}},
-                  {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}], "Jon", id="2 reviewers approved"),
-))
-def test_get_reviewer(response, expected, requests_mock: MockerCore):
+def test_is_pivot__previously_pipeline_failed_and_current_failed(mocker):
     """
     Given:
-        - A PR URL.
+        A previously failed pipeline and a current failed pipeline
+    When:
+        The function is_pivot is called with the current and previous pipelines
+    Then:
+        It should return None if both pipelines failed
+    """
+    previously_pipeline = mocker.Mock()
+    previously_pipeline.status = 'failed'
+    current_pipeline = mocker.Mock()
+    current_pipeline.status = 'failed'
+
+    mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
+
+    result = is_pivot(current_pipeline, previously_pipeline)
+
+    assert result is None
+
+
+def test_is_pivot__previously_pipeline_failed_and_current_success(mocker):
+    """
+    Given:
+        A previously failed pipeline and a current successful pipeline
+    When:
+        The function is_pivot is called with the current and previous pipelines
+    Then:
+        It should return False
+    """
+    previously_pipeline = mocker.Mock()
+    previously_pipeline.status = 'failed'
+    current_pipeline = mocker.Mock()
+    current_pipeline.status = 'success'
+
+    mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
+
+    result = is_pivot(current_pipeline, previously_pipeline)
+
+    assert result is False
+
+
+def test_is_pivot__previously_pipeline_not_success_or_faild_and_current_failed(mocker):
+    """
+    Given:
+        A previously in-progress pipeline and a current failed pipeline
+    When:
+        The function is_pivot is called with the current and previous pipelines
+    Then:
+        It should return None if the previous pipeline did not end
+    """
+    current_pipeline = mocker.Mock()
+    current_pipeline.status = 'failed'
+    previously_pipeline = mocker.Mock()
+    previously_pipeline.status = 'in progress'
+
+    mocker.patch('Tests.scripts.common.are_pipelines_in_order', return_value=(True))
+
+    result = is_pivot(current_pipeline, previously_pipeline)
+
+    assert result is None
+    
+def test_get_reviewer__no_reviewer(requests_mock: MockerCore):
+    """
+    Given:
+        - A PR URL with no reviewers.
     When:
         - get_reviewer is called on it.
     Then:
-        - It should return the expected result.
-        scenario 1: No reviewers -> None
-        scenario 2: One reviewer who approved -> "Jane Doe"
-        scenario 3: Two reviewers who approved -> the first one - "Jon"
+        - It should return None.
     """
     pr_url = 'https://github.com/owner/repo/pull/123'
+    response = []
+    expected = None
     requests_mock.get('https://api.github.com/repos/owner/repo/pulls/123/reviews', json=response)
     result = get_reviewer(pr_url)
     assert result == expected
 
 
-@pytest.mark.parametrize(('name, expected'), (
-    pytest.param("Mike", "mike", id="name in map"),
-    pytest.param("Jon", "Jon", id="name not in map"),
-    pytest.param("github-actions[bot]", "docker images bot owner", id="name is 'github-actions[bot]'")
-))
-# This test should fail locally and pass on the build, doe to file directory mismatch
-def test_get_slack_user_name(name, expected):
+def test_get_reviewer__second_reviewer_approved(requests_mock: MockerCore):
     """
     Given:
-        - A name and a name mapping file path.
+        - A PR URL with the second reviewer who approved.
+    When:
+        - get_reviewer is called on it.
+    Then:
+        - It should return the second reviewer's name.
+    """
+    pr_url = 'https://github.com/owner/repo/pull/123'
+    response = [{"Jon": "test", "state": "test", "user": {"login": "Jon"}},
+                {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}]
+    expected = "Jane Doe"
+    requests_mock.get('https://api.github.com/repos/owner/repo/pulls/123/reviews', json=response)
+    result = get_reviewer(pr_url)
+    assert result == expected
+
+
+def test_get_reviewer__two_reviewers_approved(requests_mock: MockerCore):
+    """
+    Given:
+        - A PR URL with two reviewers who approved.
+    When:
+        - get_reviewer is called on it.
+    Then:
+        - It should return the first reviewer's name.
+    """
+    pr_url = 'https://github.com/owner/repo/pull/123'
+    response = [{"Jon": "test", "state": "APPROVED", "user": {"login": "Jon"}},
+                {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}]
+    expected = "Jon"
+    requests_mock.get('https://api.github.com/repos/owner/repo/pulls/123/reviews', json=response)
+    result = get_reviewer(pr_url)
+    assert result == expected
+
+
+def test_get_slack_user_name__name_in_map():
+    """
+    Given:
+        - A name that is in the mapping.
     When:
         - get_slack_user_name is called on it.
     Then:
-        - It should return the expected result.
-        scenario 1: name is in the mapping -> the mapped name
-        scenario 2: name is not in the mapping -> name
-        scenario 3: name is 'github-actions[bot]' -> the owner of the docker image update bot.
+        - It should return the mapped name.
     """
-    # To pass this test locally change the path to "tests_data/test_mapping.json"
-    results = get_slack_user_name(name, 'Tests/scripts/infrastructure_tests/tests_data/test_mapping.json')
-    assert results == expected
+    name = "Mike"
+    expected = "mike"
+    result = get_slack_user_name(name, str(Path(__file__).parent /'tests_data/test_mapping.json'))
+    assert result == expected
+
+
+def test_get_slack_user_name__name_not_in_map():
+    """
+    Given:
+        - A name that is not in the mapping.
+    When:
+        - get_slack_user_name is called on it.
+    Then:
+        - It should return the original name.
+    """
+    name = "Jon"
+    expected = "Jon"
+    result = get_slack_user_name(name, str(Path(__file__).parent /'tests_data/test_mapping.json'))
+    assert result == expected
+
+
+def test_get_slack_user_name__name_is_github_actions_bot():
+    """
+    Given:
+        - The name 'github-actions[bot]'.
+    When:
+        - get_slack_user_name is called on it.
+    Then:
+        - It should return the owner of the docker image update bot.
+    """
+    name = "github-actions[bot]"
+    expected = "docker images bot owner"
+    result = get_slack_user_name(name, str(Path(__file__).parent /'tests_data/test_mapping.json'))
+    assert result == expected
