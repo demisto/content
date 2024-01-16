@@ -34,12 +34,8 @@ class ReilaQuestClient(BaseClient):
     """
 
     def __init__(self, url: str, account_id: str, username: str, password: str, verify_ssl: bool = False, proxy: bool = False):
-        self.url = url
-        self.account_id = account_id
-        self.username = username
-        self.password = password
-        self.verify_ssl = verify_ssl
         super().__init__(base_url=url, verify=verify_ssl, proxy=proxy, auth=(username, password))
+        self.account_id = account_id
 
     @retry(times=5, exceptions=(ConnectionError, Timeout))
     def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> List[dict[str, Any]]:
@@ -122,12 +118,21 @@ class ReilaQuestClient(BaseClient):
         """
         return self.do_pagination(asset_ids, url_suffix="/assets")
 
-    def do_pagination(self, _ids: list[str], url_suffix: str) -> list[dict[str, Any]]:
+    def do_pagination(self, _ids: list[str], url_suffix: str, page_size: int = 100) -> list[dict[str, Any]]:
+        """
+        Args:
+            _ids: the list of IDs of events to retrieve
+            url_suffix: The URL suffix
+            page_size (int): the size of each page
+
+        Note:
+            by default the maximum size page for each request is 100.
+        """
         chunk = 0
         response = []
         while chunk < len(_ids):
-            response.extend(self.http_request(url_suffix, params={"id": _ids[chunk: chunk + 100]}))
-            chunk += 100
+            response.extend(self.http_request(url_suffix, params={"id": _ids[chunk: chunk + page_size]}))
+            chunk += page_size
         return response
 
 
@@ -237,7 +242,7 @@ def dedup_fetched_events(
     last_run: Dict[str, Any],
 ) -> List[dict]:
     """
-    Retrieve a list of all the logs that were not fetched yet.
+    Returns a list of all the events that were not fetched yet.
 
     Args:
         events (list): the events to dedup
@@ -253,21 +258,25 @@ def dedup_fetched_events(
     un_fetched_events = []
 
     for event in events:
-        _id = event.get("id")
+        _id = event.get("triage-item-id")
         if _id not in last_run_found_event_ids:
             demisto.info(f'Item with ID {_id} with type has not been fetched.')
             un_fetched_events.append(event)
         else:
             demisto.info(f'Item with ID {_id} has been fetched')
 
-    demisto.info(f'Fetching the following item-IDs after dedup: {set(event.get("id") for event in un_fetched_events)}')
+    demisto.info(f'Fetching the following item-IDs after dedup: { {event.get("id") for event in un_fetched_events} }')
     return un_fetched_events
 
 
-def get_events_with_latest_created_time(events: List[Dict], latest_created_time) -> List[Dict]:
+def get_events_with_latest_created_time(events: List[Dict], latest_created_time: str) -> List[Dict]:
+    """
+    Get the events with the latest created time
+    """
+    latest_create_time_date = dateparser.parse(latest_created_time)
     if not latest_created_time:
         return []
-    return [event for event in events if event.get("event-created") == latest_created_time]
+    return [event.get("triage-item-id") for event in events if dateparser.parse(event.get("event-created")) == latest_create_time_date]
 
 
 def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[List[dict], dict[str, str]]:
@@ -320,7 +329,8 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
     fetched_events_with_latest_created_time = get_events_with_latest_created_time(events, latest_created_item)
 
     # if latest_created_item = None, no new events were fetched, keep the same last-run until new events will be created
-    new_last_run = {FETCHED_TIME_LAST_RUN: latest_created_item or _time, FOUND_IDS_LAST_RUN: fetched_events_with_latest_created_time}
+    new_last_run = {FETCHED_TIME_LAST_RUN: latest_created_item or _time,
+                    FOUND_IDS_LAST_RUN: fetched_events_with_latest_created_time}
     return events, new_last_run
 
 
