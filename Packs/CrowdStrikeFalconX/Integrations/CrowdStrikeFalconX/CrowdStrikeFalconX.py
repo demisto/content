@@ -999,7 +999,6 @@ def get_full_report_command(
 
     for id_ in argToList(ids):
         response = client.get_full_report(id_)
-        print(response)
         if response.get('resources'):
             is_command_finished = True  # flag used when commands
             # We can extract the error from the response object under resources
