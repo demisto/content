@@ -1,0 +1,21 @@
+name: Adopt Ruff
+on: push
+
+jobs:
+  adopt-ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with: 
+          python-version: 3.x
+  
+      - name: Install ruff 
+        run: pip install ruff
+
+      - name: Run the adopt-ruff action
+        uses: ScDor/adopt-ruff@master
