@@ -1,0 +1,48 @@
+{
+    "cisco_secure_endpoint_raw": {
+        "computer": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "file": {
+            "type": "string",
+            "is_array": false
+        },
+        "detection_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "detection": {
+            "type": "string",
+            "is_array": false
+        },
+        "connector_guid": {
+            "type": "string",
+            "is_array": false
+        },
+        "parent": {
+            "type": "string",
+            "is_array": false
+        },
+        "tactics": {
+            "type": "string",
+            "is_array": false
+        },
+        "techniques": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
