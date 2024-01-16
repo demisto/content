@@ -195,7 +195,7 @@ class TestGenerateReleaseNotesSummary:
         """
         release_notes_files = [
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_33_19..md'),
             os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
         ]
 
@@ -241,7 +241,7 @@ class TestGenerateReleaseNotesSummary:
         """
         release_notes_files = [
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_33_19..md'),
             os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
         ]
 
@@ -282,7 +282,7 @@ class TestGenerateReleaseNotesSummary:
         """
         release_notes_files = [
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_33_19..md'),
             os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
         ]
 
@@ -500,7 +500,7 @@ class TestMergeVersionBlocks:
         """
         release_notes_paths = [
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_33_19..md'),
         ]
 
         pack_versions_dict = {}

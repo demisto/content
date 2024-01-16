@@ -614,7 +614,7 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=True)
 
         mocker.patch("git.Git", return_value=GitMock())
-        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
+        dir_list = ['1_0_1.md', '2_0_2.md', '1_33_19..md']
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch('builtins.open', open_mocker)
         build_number = random.randint(0, 100000)
@@ -636,7 +636,7 @@ class TestChangelogCreation:
         dummy_pack.current_version = '2.0.0'
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
-        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
+        dir_list = ['1_0_1.md', '2_0_2.md', '1_33_19..md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
@@ -673,7 +673,7 @@ class TestChangelogCreation:
         mocker.patch("git.Git", return_value=GitMock())
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services")
-        dir_list = ['1_0_1.md', '2_0_0.md']
+        dir_list = ['1_0_1.md', '1_33_19..md']
         mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
@@ -2232,9 +2232,9 @@ class TestReleaseNotes:
         '''
         aggregated_rn = "\n#### Integrations\n##### CrowdStrike Falcon Intel v2\n- wow1\n- wow2\n"
         open_mocker = MockOpen()
-        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_1_0.md', '2_0_0.md'])
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_1_0.md', '1_33_19..md'])
         open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
-        open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
+        open_mocker['rn_dir_fake_path/1_33_19..md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
         rn_lines, latest_rn, new_versions = \
             dummy_pack.get_release_notes_lines('rn_dir_fake_path', Version('1.0.0'), '')
