@@ -1,0 +1,7 @@
+name: Tenable.io Assets Modeling Rule
+id: Tenable_io_AssetsModelingRule
+fromversion: 6.8.0
+toversion: 6.9.9
+tags: tenable
+rules: ''
+schema: ''

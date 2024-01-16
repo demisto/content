@@ -1,0 +1,13 @@
+[MODEL: model=Endpoint, dataset=tenable_io_vulnerabilities_raw]
+| alter XDM.Endpoint.Target.host.hostname=replace(json_extract(asset,"$.hostname"),"\"",""),
+        XDM.Endpoint.Target.host.ipv4_addresses=arraycreate(replace(json_extract(asset,"$.ipv4"),"\"","")),
+        XDM.Endpoint.Target.host.device_id=replace(json_extract(asset,"$.uuid"),"\"",""),
+        XDM.Endpoint.Target.host.os=replace(arrayindex(json_extract_array(asset,"$.operating_system"),0),"\"",""),
+        XDM.Endpoint.threat.description=replace(json_extract(plugin,"$.description"),"\"",""),
+        XDM.Endpoint.threat.name=replace(json_extract(plugin,"$.name"),"\"",""),
+        XDM.Endpoint.threat.severity=severity,
+        XDM.Endpoint.outcome=output,
+        XDM.Endpoint.Actor.host.fqdn=replace(json_extract(asset,"$.fqdn"),"\"",""),
+        XDM.Endpoint.threat.category=replace(json_extract(plugin,"$.family"),"\"",""),
+        XDM.Endpoint.threat.original_threat_id=json_extract_scalar(plugin,"$.id"),
+        XDM.Endpoint.observation_timestamp=indexed;
