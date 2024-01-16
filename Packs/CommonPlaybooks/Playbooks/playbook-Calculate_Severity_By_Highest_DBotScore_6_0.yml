@@ -54,47 +54,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 975
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: c33bfc3b-3bfd-4b09-8fef-d7c299ddbcab
-    type: regular
-    task:
-      id: c33bfc3b-3bfd-4b09-8fef-d7c299ddbcab
-      version: -1
-      name: Set DBotScore from inputs
-      description: |
-        Sets the DBotScore into context.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      key:
-        simple: DBotScore
-      value:
-        complex:
-          root: inputs.DBotScore
-    reputationcalc: 1
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 290
+          "y": 855
         }
       }
     note: false
@@ -106,10 +66,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 0cc4278a-6b22-4ea9-834f-3ed21c346499
+    taskid: 2166ae1b-bafb-478b-81f9-c68b98651a63
     type: condition
     task:
-      id: 0cc4278a-6b22-4ea9-834f-3ed21c346499
+      id: 2166ae1b-bafb-478b-81f9-c68b98651a63
       version: -1
       name: Is there a DBotScore in inputs?
       description: Checks if there is a "DBotScore" in the playbook input.
@@ -120,19 +80,17 @@ tasks:
       '#default#':
       - "24"
       "yes":
-      - "22"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: inputs.DBotScore
+                root: inputs.DBotScoreIndicators
             iscontext: true
-          right:
-            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -181,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8ad27555-7d81-4dd4-86e5-598b2c445def
+    taskid: e66f1b7a-bf4c-4b8c-8995-ba249d9f7600
     type: condition
     task:
-      id: 8ad27555-7d81-4dd4-86e5-598b2c445def
+      id: e66f1b7a-bf4c-4b8c-8995-ba249d9f7600
       version: -1
       name: Evaluate severity based on DBotScore of indicators
       description: |-
@@ -209,7 +167,7 @@ tasks:
     conditions:
     - label: High
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -225,18 +183,16 @@ tasks:
                         simple: "3"
                 accessor: Score
             iscontext: true
-          right:
-            value: {}
-        - operator: isExists
+        - operator: isNotEmpty
           left:
             value:
               complex:
-                root: DBotScore.Score
+                root: inputs.DBotScoreMaxScore
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotScore.Score
+                        simple: inputs.DBotScoreMaxScore
                       iscontext: true
                     right:
                       value:
@@ -244,7 +200,7 @@ tasks:
             iscontext: true
     - label: Medium
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -259,16 +215,16 @@ tasks:
                       value:
                         simple: "2"
             iscontext: true
-        - operator: isExists
+        - operator: isNotEmpty
           left:
             value:
               complex:
-                root: DBotScore.Score
+                root: inputs.DBotScoreMaxScore
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotScore.Score
+                        simple: inputs.DBotScoreMaxScore
                       iscontext: true
                     right:
                       value:
@@ -276,7 +232,7 @@ tasks:
             iscontext: true
     - label: Low
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -291,16 +247,16 @@ tasks:
                       value:
                         simple: "1"
             iscontext: true
-        - operator: isExists
+        - operator: isNotEmpty
           left:
             value:
               complex:
-                root: DBotScore.Score
+                root: inputs.DBotScoreMaxScore
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotScore.Score
+                        simple: inputs.DBotScoreMaxScore
                       iscontext: true
                     right:
                       value:
@@ -311,7 +267,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 610
+          "y": 490
         }
       }
     note: false
@@ -349,7 +305,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 805
+          "y": 685
         }
       }
     note: false
@@ -387,7 +343,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 805
+          "y": 685
         }
       }
     note: false
@@ -425,7 +381,7 @@ tasks:
       {
         "position": {
           "x": 190,
-          "y": 805
+          "y": 685
         }
       }
     note: false
@@ -463,7 +419,7 @@ tasks:
       {
         "position": {
           "x": -210,
-          "y": 805
+          "y": 685
         }
       }
     note: false
@@ -475,10 +431,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 5acf56ba-5b7b-4472-86e2-637756c34822
+    taskid: 508c21c3-4362-4dd9-84a7-9efd305c0fef
     type: regular
     task:
-      id: 5acf56ba-5b7b-4472-86e2-637756c34822
+      id: 508c21c3-4362-4dd9-84a7-9efd305c0fef
       version: -1
       name: Get DBotScore from XSOAR
       description: Get the overall score for the indicator as calculated by DBot.
@@ -492,8 +448,7 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: DBotScore
-          accessor: Indicator
+          root: inputs.DBotScoreIndicators
           transformers:
           - operator: uniq
     separatecontext: false
@@ -502,7 +457,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 450
+          "y": 310
         }
       }
     note: false
@@ -515,7 +470,6 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "23_22_yes": 0.31,
       "23_24_#default#": 0.24,
       "25_27_High": 0.82,
       "25_28_Medium": 0.76,
@@ -524,7 +478,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1050,
+        "height": 930,
         "width": 1580,
         "x": -210,
         "y": -10
@@ -532,12 +486,31 @@ view: |-
     }
   }
 inputs:
-- key: DBotScore
+- key: DBotScoreIndicators
   value:
     complex:
       root: DBotScore
+      accessor: Indicator
+      transformers:
+      - operator: uniq
   required: false
-  description: 'Array of all indicators associated with the incident. '
+  description: 'Array of all DBotScore indicator values associated with the incident. '
+  playbookInputQuery:
+- key: DBotScoreMaxScore
+  value:
+    complex:
+      root: DBotScore
+      accessor: Score
+      transformers:
+      - operator: sort
+        args:
+          descending:
+            value:
+              simple: "true"
+      - operator: uniq
+      - operator: FirstArrayElement
+  required: false
+  description: The highest score that was given to a DBotScore indicator.
   playbookInputQuery:
 outputs:
 - contextPath: Severities.DBotScoreSeverity
