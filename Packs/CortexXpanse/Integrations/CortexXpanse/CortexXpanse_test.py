@@ -789,11 +789,12 @@ def test_list_external_websites_command(requests_mock):
         proxy=False)
 
     args = {
-        'limit': 2
+        'authentication': 'Form',
+        'limit': 5
     }
 
     response = list_external_websites_command(client, args)
 
-    assert response.outputs == EXTERNAL_WEBSITES_RESULTS.get('ExternalWebsite')
+    assert response.outputs == EXTERNAL_WEBSITES_RESULTS.get('ExternalWebsite', {}).get('websites')
     assert response.outputs_prefix == 'ASM.ExternalWebsite'
     # assert response.outputs_key_field == ''
