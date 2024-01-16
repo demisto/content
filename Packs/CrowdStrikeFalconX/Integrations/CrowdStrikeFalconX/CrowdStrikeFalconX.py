@@ -1,6 +1,6 @@
 import uuid
 from dataclasses import dataclass
-from typing import Callable, Tuple
+from collections.abc import Callable
 from urllib.parse import quote
 from more_itertools import always_iterable
 import urllib3
@@ -10,11 +10,13 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
 class FileReportWarning(Exception):
     """
     This class is in charge of catching errors raised from having an error object in the
     file's sandbox analysis report
     """
+
 
 @dataclass
 class RawCommandResults:
@@ -61,7 +63,7 @@ class Client:
     def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool, reliability: str):
         self._base_url = server_url
         self._verify = use_ssl
-        self._ok_codes = tuple()  # type: ignore[var-annotated]
+        self._ok_codes = ()  # type: ignore[var-annotated]
         self._username = username
         self._password = password
         self._session = requests.Session()
@@ -254,7 +256,7 @@ class Client:
             'client_secret': self._password
         }
 
-        byte_creds = f'{self._username}:{self._password}'.encode('utf-8')
+        byte_creds = f'{self._username}:{self._password}'.encode()
 
         headers = {
             'Authorization': f'Basic {base64.b64encode(byte_creds).decode()}'
@@ -613,7 +615,7 @@ def parse_file_results(report_to_results: Dict[str, RawCommandResults]) -> List[
     return command_results
 
 
-def find_suitable_hash_output(raw_results: Tuple[RawCommandResults]) -> Dict[str, dict]:
+def find_suitable_hash_output(raw_results: tuple[RawCommandResults]) -> Dict[str, dict]:
     """
     Aggregates data fields from various outputs, to create a single output per SHA256.
     :param raw_results: result that may include multiple outputs for the same SHA256 value.
@@ -679,10 +681,10 @@ def parse_outputs(
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
     """
-    output: Dict[str, Any] = dict()
+    output: Dict[str, Any] = {}
     indicator: Optional[Common.File] = None
 
-    if api_res_meta := response.get("meta", dict()):
+    if api_res_meta := response.get("meta", {}):
         output.update(filter_dictionary(api_res_meta, meta_fields))
         output.update(filter_dictionary(api_res_meta.get("quota", {}), quota_fields))
 
@@ -741,6 +743,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
             signature=signature,
             relationships=relationships or None,
         )
+    return None
 
 
 def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliability: str) -> List[EntityRelationship]:
@@ -970,7 +973,7 @@ def get_full_report_command(
         client: Client,
         ids: str,  # argToList is called inside
         extended_data: str = '',
-) -> Tuple[List[CommandResults], bool]:
+) -> tuple[List[CommandResults], bool]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -1053,6 +1056,7 @@ def get_full_report_command(
         ]
     return command_results, is_command_finished
 
+
 def validate_sandbox_report(report_resources: list[dict[str, Any]]) -> None:
     """This function checks for any error messages in the sandbox report.
     The report resource can hold the following data:
@@ -1096,9 +1100,10 @@ def validate_sandbox_report(report_resources: list[dict[str, Any]]) -> None:
             if error_message := sandbox_entity.get('error_message'):
                 error_type = sandbox_entity.get('error_type', '<UNKNOWN>')
                 raise FileReportWarning(f'Sandbox report for resource id {resource_id} returned an error of'
-                         f' type {error_type} with content: {error_message}')
+                                        f' type {error_type} with content: {error_message}')
 
-def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str, Common.File]:
+
+def find_suitable_hash_indicator(results: tuple[RawCommandResults]) -> Dict[str, Common.File]:
     """
     Returns the indicator with the highest dbot_score for every hash.
     :param results: raw results from a command
@@ -1443,6 +1448,7 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
         # Validate the polling results
         post_function(command_result)
     return command_result
+
 
 def validate_submit_file_polling_results(command_results: list[CommandResults] | CommandResults) -> None:
     """Validate the results of the polling function when submitting a file for analysis.
