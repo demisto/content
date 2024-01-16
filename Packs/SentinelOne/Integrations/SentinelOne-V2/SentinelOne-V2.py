@@ -2945,12 +2945,11 @@ def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) 
         site_ids = ','.join(client.block_site_ids)
         block_list = client.get_blocklist_request(tenant=False, skip=0, limit=PAGE_SIZE, os_type=os_type, site_ids=site_ids,
                                                   sort_by="updatedAt", sort_order="asc", value_contains=sha1)
-        ret: list = []
     else:
         PAGE_SIZE = 4
         block_list = client.get_blocklist_request(tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type,
                                                   sort_by="updatedAt", sort_order="asc", value_contains=sha1)
-        ret: list = []
+    ret: list = []
 
         # Validation check first
         if len(block_list) > 3:
