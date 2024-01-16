@@ -1,13 +1,15 @@
+import time
+
 import requests
 import re
 import sys
 import argparse
 import base64
 import json
-import datetime
+from datetime import datetime
 
 API_SUFFIX = 'https://api.github.com/repos/demisto/demisto-sdk'
-
+TIMEOUT = 60 * 60 * 6  # 6 hours
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Creates release pull request for demisto-sdk.')
@@ -118,17 +120,51 @@ def main():
         print(response.text)
         sys.exit(1)
 
+    time.sleep(10)
+
+    url = 'https://api.github.com/repos/demisto/demisto-sdk/actions/workflows/sdk-release.yml/runs'
     response = requests.request('GET', url, params={'branch': release_branch_name}, headers=headers, verify=False)
     if response.status_code != 200:
         print(f'Failed to retrieve SDK changelog workflow')
         print(response.text)
         sys.exit(1)
 
-    workflow_runs = response.json()
-    a = max(
+    # get the latest workflow
+    workflow_runs = response.json().get('workflow_runs', [])
+    workflow_id = max(
         workflow_runs,
         key=lambda x: datetime.strptime(x["created_at"], "%Y-%m-%dT%H:%M:%SZ"),
-    )
+    ).get('id')
+
+    # initialize timer
+    start = time.time()
+    elapsed: float = 0
+
+    # wait to the workflow to finished
+    status = ''
+    url = f'https://api.github.com/repos/demisto/demisto-sdk/actions/runs/{workflow_id}/jobs'
+    while status != 'completed' and elapsed < TIMEOUT:
+
+        response = requests.request('GET', url, headers=headers, verify=False)
+        if response.status_code != 200:
+            print(f'Failed to retrieve SDK changelog workflow status')
+            print(response.text)
+            sys.exit(1)
+
+        job_data = response.json().get('jobs', [])[0]
+        status = job_data.get('status')
+        time.sleep(300)
+
+        elapsed = time.time() - start
+
+    if elapsed >= TIMEOUT:
+        sys.exit(1)
+
+    if job_data.get('conclusion') != 'success':
+        sys.exit(1)
+
+    print('finished')
+
 
 if __name__ == "__main__":
     main()
