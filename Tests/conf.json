@@ -2731,7 +2731,6 @@
         {
             "playbookID": "Calculate Severity - Generic v2 - Test",
             "integrations": [
-                "Palo Alto Minemeld",
                 "Active Directory Query v2"
             ],
             "instance_names": "active_directory_ninja",
@@ -2847,7 +2846,6 @@
         },
         {
             "playbookID": "Calculate Severity - Standard - Test",
-            "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
         },
         {
@@ -5668,8 +5666,6 @@
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
-        "Calculate Severity - Standard - Test": "Issue 32715",
-        "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
         "McAfee-MAR_Test": "Issue CIAC-4521",
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
