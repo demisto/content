@@ -1069,7 +1069,7 @@ Get the managed device physical memory bytes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command). | Required | 
+| device_id | The ID of the managed device to be fetched. Can be retrieved using the msgraph-list-managed-devices command. | Required | 
 
 #### Context Output
 
