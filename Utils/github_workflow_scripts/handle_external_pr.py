@@ -13,7 +13,7 @@ from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 
 
-from utils import (
+from Utils.github_workflow_scripts.utils import (
     get_env_var,
     timestamped_print,
     Checkout,
@@ -196,7 +196,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
     for pr_file in pr_files:
         for item in SECURITY_CONTENT_ITEMS:
-            if item in pr_file:
+            if item in Path(pr_file).parts:
                 return True
 
     return False

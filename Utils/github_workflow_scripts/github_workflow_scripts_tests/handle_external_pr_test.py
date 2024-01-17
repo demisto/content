@@ -1,8 +1,37 @@
 import os
 import pytest
-from handle_external_pr import (
+from typing import Final
+from Utils.github_workflow_scripts.handle_external_pr import (
     is_requires_security_reviewer,
     SECURITY_CONTENT_ITEMS
+)
+
+INTEGRATION_PATH: Final[str] = 'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py'
+PLAYBOOK_PATH: Final[str] = 'Packs/HelloWorld/Playbooks/playbook-HelloWorld.yml'
+INCIDENT_TYPES_PATH: Final[str] = "Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World.json"
+INCIDENT_FIELDS_PATH: Final[str] = "Packs/HelloWorld/IncidentFields/incidentfield-Hello_World.json"
+INDICATOR_TYPES_PATH: Final[str] = "Packs/CrisisManagement/IncidentTypes/Employee_Health_Check.json"
+INDICATOR_FIELDS_PATH: Final[str] = "Packs/CrisisManagement/IndicatorFields/Job_Title.json"
+LAYOUTS_PATH: Final[str] = "Packs/HelloWorld/Layouts/layout-details-Hello_World.json"
+CLASSIFIERS_PATH: Final[str] = "Packs/HelloWorld/Classifiers/classifier-HelloWorld.json"
+WIZARDS_PATH: Final[str] = "Packs/Phishing/Wizards/wizard-Phishing.json"
+DASHBOARDS_PATH: Final[str] = "Packs/Base/Dashboards/dashboard-SystemHealth.json"
+TRIGGERS_PATH: Final[str] = "Packs/Phishing/Triggers/Trigger_-_Phishing.json"
+
+SHOULD_SECURITY_REVIEW: Final[tuple] = (
+    PLAYBOOK_PATH,
+    INCIDENT_TYPES_PATH,
+    INCIDENT_FIELDS_PATH,
+    INCIDENT_TYPES_PATH,
+    INCIDENT_FIELDS_PATH,
+    LAYOUTS_PATH,
+    CLASSIFIERS_PATH,
+    WIZARDS_PATH,
+    DASHBOARDS_PATH,
+    TRIGGERS_PATH,
+)
+NOT_SECURITY_REVIEW: Final[tuple] = (
+    INTEGRATION_PATH,
 )
 
 
@@ -117,7 +146,15 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
     (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
       f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[6]}/{SECURITY_CONTENT_ITEMS[6].lower()}-Hello_World_Alert-V2.json"], True),
     (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[7]}/{SECURITY_CONTENT_ITEMS[7].lower()}-Hello_World_Alert-V2.json"], True)
+      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[7]}/{SECURITY_CONTENT_ITEMS[7].lower()}-Hello_World_Alert-V2.json"], True),
+    pytest.param(['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+                  f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[8]}/{SECURITY_CONTENT_ITEMS[8].lower()}-Hello_World_Alert-V2.json"],
+                 True,
+                 id='Case J: The provided files are an integration and a classifier.'),
+    pytest.param(['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
+                  f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[9]}/{SECURITY_CONTENT_ITEMS[9].lower()}-Hello_World_Alert-V2.json"],
+                 True,
+                 id='Case K: The provided files are an integration and a Triggers.')
 ])
 def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
     """
@@ -135,11 +172,13 @@ def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
         - Case G: The provided files are an integration and a layout.
         - Case H: The provided files are an integration and a classifier.
         - Case I: The provided files are an integration and a wizard.
+        - Case J: The provided files are an integration and a Dashboards.
+        - Case K: The provided files are an integration and a Triggers.
 
     Then:
         - Case A: Requires a security engineer review.
         - Case B: Doesn't require a security engineer review.
-        - Cases C-I: Requires a security engineer review.
+        - Cases C-K: Requires a security engineer review.
     """
 
     assert is_requires_security_reviewer(pr_files) == expected
