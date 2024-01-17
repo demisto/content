@@ -357,6 +357,7 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         FETCHED_TIME_LAST_RUN: latest_created_item or _time,
         FOUND_IDS_LAST_RUN: fetched_events_with_latest_created_time
     }
+    demisto.info(f'updated last run: {new_last_run}')
     return events, new_last_run
 
 
