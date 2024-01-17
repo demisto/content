@@ -8,7 +8,7 @@ import re
 REGEX = re.compile(r"^(.*) \[(#\d+)\]\((http.*)\)")
 
 
-def get_changelog_text(release_branch_name):
+def get_changelog_text(release_branch_name, format='markdown'):
     # get release changelog
     url = f"https://raw.githubusercontent.com/demisto/demisto-sdk/{release_branch_name}/CHANGELOG.md"
     response = requests.request("GET", url, verify=False)
@@ -27,9 +27,19 @@ def get_changelog_text(release_branch_name):
         try:
             # Ignoring the mypy error because the regex must match
             change_parts = REGEX.match(change).groups()  # type: ignore[union-attr]
-            releases.append(
-                f"{change_parts[0]} [{change_parts[1]}]({change_parts[2]})"
-            )
+
+            if format == 'markdown':
+                releases.append(
+                    f"{change_parts[0]} [{change_parts[1]}]({change_parts[2]})"
+                )
+            elif format == 'slack':
+                releases.append(
+                    f"{change_parts[0]} <{change_parts[2]}|{change_parts[1]}>"
+                )
+            else:
+                print(f'The format {format} is not supported')
+                exit(1)
+
         except Exception as e:
             print(f'Error parsing change: {e}')
             exit(1)
