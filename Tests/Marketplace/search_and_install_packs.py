@@ -686,7 +686,9 @@ def merge_cycles(graph: DiGraph, map_cycles_nodes: dict):
     # Iterates over the edges in the graph and connects any edges pointing
     # to nodes in the cycle to the merged node instead.
     # Then removes the nodes that were part of the cycle.
-    for cycle in nx.simple_cycles(graph):
+    cycles = nx.simple_cycles(graph)
+    logging.info(f"All cycles:\n{list(nx.simple_cycles(graph))}\n")
+    for cycle in cycles:
         merged_node_name = "<->".join(cycle)
         map_cycles_nodes.update({node: "<->".join(cycle) for node in cycle})
 
@@ -698,6 +700,23 @@ def merge_cycles(graph: DiGraph, map_cycles_nodes: dict):
 
         for node in cycle:
             graph.remove_node(node)
+
+def split_cycles(sorted_packs_to_install: list[str]) -> list[list[str]]:
+    """Splits any cycles in the sorted packs list into separate packs.
+
+    Takes the sorted_packs_to_install list which contains pack IDs or merged 
+    cycle names, and splits any merged cycle names into the separate pack IDs 
+    that were part of the cycle.
+
+    Args:
+        sorted_packs_to_install (list): List of pack IDs or merged cycle names
+                                        that needs to have cycles split.
+
+    Returns:
+        list: Copy of the sorted_packs_to_install list with cycles split into 
+              separate pack IDs.
+    """
+    return [pack.split("<->") for pack in sorted_packs_to_install]
 
 
 def get_all_content_packs_dependencies(client: demisto_client) -> dict[str, dict]:
@@ -773,26 +792,6 @@ def get_one_page_of_packs_dependencies(
     return data
 
 
-def split_cycle_dependencies(dependencies: set) -> set:
-    """Splits cyclic dependencies in the given set of dependencies into individual dependencies.
-    For example:
-        IF `dependencies = {"A", "B", "C<->D"}`, the function will return `{"A", "B", "C", "D"}`
-
-    Args:
-        dependencies (set): A set of dependency strings, where cyclic dependencies are
-                           denoted with "<->".
-
-    Returns:
-        set: The set of all individual dependencies, with cyclic dependencies split
-             into individual items.
-    """
-    return set(
-        itertools.chain.from_iterable(
-            dependence.split("<->") for dependence in dependencies
-        )
-    )
-
-
 def search_for_deprecated_dependencies(
     pack_id: str,
     dependencies_for_pack_id: set,
@@ -805,15 +804,15 @@ def search_for_deprecated_dependencies(
     If any deprecated dependencies are found, returns False. 
     Otherwise returns True.
     """
-    for pack in dependencies_for_pack_id:
+    for dependency_pack in dependencies_for_pack_id:
         is_deprecated = is_pack_deprecated(
-            pack_id=pack,
+            pack_id=dependency_pack,
             production_bucket=production_bucket,
-            pack_api_data=all_packs_dependencies_data[pack],
+            pack_api_data=all_packs_dependencies_data[dependency_pack],
         )
         if is_deprecated:
             logging.critical(
-                f"Pack '{pack_id}' depends on pack '{pack}' which is a deprecated pack.\n"
+                f"Pack '{pack_id}' depends on pack '{dependency_pack}' which is a deprecated pack.\n"
                 "The pack and its dependencies will not be installed"
             )
             return False
@@ -838,7 +837,7 @@ def get_packs_and_dependencies_to_install(
         bool: False if any deprecated dependencies were found, True otherwise.
     """
     no_deprecated_dependencies = True
-    logging.info(f"graph_dependencies.nodes\n\n{graph_dependencies.nodes}\n\n")
+
     for pack_id in pack_ids:
         dependencies_for_pack_id = nx.ancestors(graph_dependencies, pack_id)
 
@@ -865,28 +864,30 @@ def get_packs_and_dependencies_to_install(
 
 
 def create_install_request_body(
-    packs_to_install: list,
+    packs_to_install: list[list[str]],
     all_packs_dependencies_data: dict[str, dict],
 ) -> list[list[dict]]:
+    """Creates the request body for installing packs.
+    An inner list will contain several IDs if they are circularly dependent on each other.
+    
+    Args:
+        packs_to_install: List of lists of pack IDs to install
+        all_packs_dependencies_data: Dict containing dependencies data for all packs
+    
+    Returns:
+        list: Request body with installation data for the packs  
+    """
     request_body = []
-    for pack_id in packs_to_install:
-        if "<->" in pack_id:
-            request_body.append(
-                [
-                    get_pack_installation_request_data(
-                        pack, all_packs_dependencies_data[pack]["currentVersion"]
-                    )
-                    for pack in split_cycle_dependencies({pack_id})
-                ]
-            )
-        else:
-            request_body.append(
-                [
-                    get_pack_installation_request_data(
-                        pack_id, all_packs_dependencies_data[pack_id]["currentVersion"]
-                    )
-                ]
-            )
+    for pack_ids in packs_to_install:
+        request_body.append(
+            [
+                get_pack_installation_request_data(
+                    pack, all_packs_dependencies_data[pack]["currentVersion"]
+                )
+                for pack in pack_ids
+            ]
+        )
+
     return request_body
 
 
@@ -979,6 +980,8 @@ def search_and_install_packs_and_their_dependencies(
     sorted_packs_to_install = list(
         nx.topological_sort(graph_dependencies_for_installed_packs)
     )
+        
+    sorted_packs_to_install = split_cycles(sorted_packs_to_install)
 
     packs_to_install_request_body = create_install_request_body(
         sorted_packs_to_install,
