@@ -1541,7 +1541,7 @@ def azure_tag_formatter(arg):
         return f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
     except Exception as e:
         raise Exception(
-            """Invalid tag format, please use the following format: '{"key_name":"value_name"}'""",
+            """Invalid tag format, please use the following formatt: '{"key_name":"value_name"}'""",
             e,
         ) from e
 
