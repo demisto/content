@@ -7,7 +7,7 @@ import requests
 from Tests.scripts.utils.log_util import install_logging
 
 
-GITLAB_SERVER_URL = 'https://gitlab.xdr.pan.local'
+GITLAB_SERVER_URL = 'https://gitlab.xdr.pan.local'  # disable-secrets-detection
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
 

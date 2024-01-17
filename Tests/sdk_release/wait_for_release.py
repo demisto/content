@@ -3,7 +3,7 @@ import sys
 import time
 import requests
 
-
+ARTIFACTS_URL = 'https://art.code.pan.run/artifactory/api/pypi/pypi.org/simple/demisto-sdk'  # disable-secrets-detection
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
 
@@ -24,14 +24,10 @@ def main():
     start = time.time()
     elapsed: float = 0
 
-    res = requests.get('https://art.code.pan.run/artifactory/api/pypi/pypi.org/simple/demisto-sdk', verify=False)
-    if res.status_code != 200:
-        sys.exit(1)
-
-    demisto_sdk_versions = res.text
+    demisto_sdk_versions = ''
 
     while f'demisto_sdk-{release_branch_name}' not in demisto_sdk_versions and elapsed < TIMEOUT:
-        res = requests.get('https://art.code.pan.run/artifactory/api/pypi/pypi.org/simple/demisto-sdk', verify=False)
+        res = requests.get(ARTIFACTS_URL, verify=False)
         if res.status_code != 200:
             sys.exit(1)
         demisto_sdk_versions = res.text

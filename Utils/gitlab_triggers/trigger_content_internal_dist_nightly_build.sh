@@ -26,7 +26,7 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
-export BUILD_TRIGGER_URL="https://gitlab.xdr.pan.local/api/v4/projects/1738/trigger/pipeline"
+export BUILD_TRIGGER_URL="https://gitlab.xdr.pan.local/api/v4/projects/1738/trigger/pipeline"  # disable-secrets-detection
 
 
 curl --request POST \
