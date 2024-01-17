@@ -8,22 +8,7 @@ import re
 REGEX = re.compile(r"^(.*) \[(#\d+)\]\((http.*)\)")
 
 
-
-def options_handler():
-    parser = argparse.ArgumentParser(description='Creates release branch for demisto-sdk.')
-
-    parser.add_argument('-t', '--access_token', help='Github access token', required=True)
-    parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
-
-    options = parser.parse_args()
-    return options
-
-
-def main():
-    options = options_handler()
-    release_branch_name = options.release_branch_name
-    access_token = options.access_token
-
+def get_changelog_text(release_branch_name):
     # get release changelog
     url = f"https://raw.githubusercontent.com/demisto/demisto-sdk/{release_branch_name}/CHANGELOG.md"
     response = requests.request("GET", url, verify=False)
@@ -43,13 +28,29 @@ def main():
             # Ignoring the mypy error because the regex must match
             change_parts = REGEX.match(change).groups()  # type: ignore[union-attr]
             releases.append(
-                f"{change_parts[0]} <{change_parts[2]}|{change_parts[1]}>"
+                f"{change_parts[0]} [{change_parts[1]}]({change_parts[2]})"
             )
         except Exception as e:
             print(f'Error parsing change: {e}')
             exit(1)
 
-    release_text = "\n".join(releases)
+    return "\n".join(releases)
+
+
+def options_handler():
+    parser = argparse.ArgumentParser(description='Creates release branch for demisto-sdk.')
+
+    parser.add_argument('-t', '--access_token', help='Github access token', required=True)
+    parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
+
+    options = parser.parse_args()
+    return options
+
+
+def main():
+    options = options_handler()
+    release_branch_name = options.release_branch_name
+    access_token = options.access_token
 
     print(f"Preparing to release Demisto SDK version {release_branch_name}")
 
@@ -57,7 +58,7 @@ def main():
     data = json.dumps({
         'tag_name': f'v{release_branch_name}',
         'name': f'v{release_branch_name}',
-        'body': release_text,
+        'body': get_changelog_text(release_branch_name),
         'draft': True, ############# TODO: CHANGE TO False
         'target_commitish': release_branch_name
     })

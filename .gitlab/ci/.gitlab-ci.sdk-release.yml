@@ -184,8 +184,8 @@ deploy-sdk-to-pypi:
   extends:
     - .release-sdk
     - .default-job-settings
-#  needs:
-#    - create-release-pull-request
+  needs:
+    - create-release-pull-request
   when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
@@ -195,18 +195,20 @@ deploy-sdk-to-pypi:
     - python3 ./Tests/sdk_release/create_release.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
     - python3 ./Tests/sdk_release/wait_for_release.py -b $RELEASE_VERSION
 
-
-
-
-
-
-#test-manulal-job:
-#  stage: trigger-nightlies
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
+create-content-pull-request:
+  stage: content-flow
+  extends:
+    - .release-sdk
+    - .default-job-settings
 #  needs:
-#    - trigger-content-private-nightly
-#  when: manual
-#  script:
-#    - echo "hi"
+#    - deploy-sdk-to-pypi
+  variables:
+    RELEASE_VERSION: $RELEASE_VERSION
+    GITHUB_TOKEN: $GITHUB_TOKEN
+  script:
+    - echo "RELEASE_VERSION="$RELEASE_VERSION
+#    - python3 ./Tests/sdk_release/wait_for_release.py -b $RELEASE_VERSION
+    - python3 ./Tests/sdk_release/trigger_update_sdk_workflow.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+
+
+
