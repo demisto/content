@@ -147,7 +147,7 @@ def test_module(client: ReilaQuestClient) -> str:
     return "ok"
 
 
-def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[dict[str, List[dict]], str]:
+def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[dict[str, List[dict]], Optional[str]]:
     """
     Maps the triage item IDs to events.
     Triage item ID can refer to multiple events.
@@ -269,14 +269,17 @@ def dedup_fetched_events(
     return un_fetched_events
 
 
-def get_events_with_latest_created_time(events: List[Dict], latest_created_time: str) -> List[Dict]:
+def get_events_with_latest_created_time(events: List[Dict], latest_created_time: Optional[str]) -> List[Dict]:
     """
     Get the events with the latest created time
     """
-    latest_create_time_date = dateparser.parse(latest_created_time)
     if not latest_created_time:
         return []
-    return [event.get("triage-item-id") for event in events if dateparser.parse(event.get("event-created")) == latest_create_time_date]
+    latest_create_time_date = dateparser.parse(latest_created_time)
+    return [
+        event.get("triage-item-id") for event in events
+        if event.get("event-created") and dateparser.parse(event.get("event-created")) == latest_create_time_date
+    ]
 
 
 def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[List[dict], dict[str, str]]:
