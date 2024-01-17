@@ -41,14 +41,14 @@ Execute a new query, wait for the query to complete (using polling), and return 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_string | The SQL query statements to be executed. Possible values are: . | Required | 
-| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored. Possible values are: . Default is 50. | Optional | 
-| client_request_token | A unique case-sensitive string used to ensure the request to create the query is idempotent (executes only once). If another StartQueryExecution request is received, the same response is returned and another query is not created. Possible values are: . | Optional | 
-| database | The name of the database. Possible values are: . | Optional | 
-| output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/. Possible values are: . | Optional | 
-| encryption_option | Indicates whether Amazon S3 server-side encryption with Amazon S3-managed keys (SSE-S3 ), server-side encryption with KMS-managed keys (SSE-KMS ), or client-side encryption with KMS-managed keys (CSE-KMS) is used. Possible values are: . | Optional | 
-| kms_key | For SSE-KMS and CSE-KMS , this is the KMS key ARN or ID. Possible values are: . | Optional | 
-| work_group | The name of the workgroup in which the query is being started. Possible values are: . | Optional | 
+| query_string | The SQL query statements to be executed.  | Required | 
+| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  Default is 50. | Optional | 
+| client_request_token | A unique case-sensitive string used to ensure the request to create the query is idempotent (executes only once). If another StartQueryExecution request is received, the same response is returned and another query is not created.  | Optional | 
+| database | The name of the database.  | Optional | 
+| output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.  | Optional | 
+| encryption_option | Indicates whether Amazon S3 server-side encryption with Amazon S3-managed keys (SSE-S3 ), server-side encryption with KMS-managed keys (SSE-KMS ), or client-side encryption with KMS-managed keys (CSE-KMS) is used.  | Optional | 
+| kms_key | For SSE-KMS and CSE-KMS , this is the KMS key ARN or ID.  | Optional | 
+| work_group | The name of the workgroup in which the query is being started.  | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -109,13 +109,13 @@ Lists the data catalogs in the current Amazon Web Services account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| work_group | The name of the workgroup. Required if making an IAM Identity Center request. Possible values are: . | Optional | 
-| region | The AWS Region, if not specified the default region will be used. Possible values are: . | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. Possible values are: . | Optional | 
-| roleSessionName | An identifier for the assumed role session. Possible values are: . | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Possible values are: . | Optional | 
-| limit | Specifies the maximum number of data catalogs to return. Possible values are: . | Optional | 
-| next_token | Specifies the maximum number of data catalogs to return. Possible values are: . | Optional | 
+| work_group | The name of the workgroup. Required if making an IAM Identity Center request.  | Optional | 
+| region | The AWS Region, if not specified the default region will be used.  | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
+| roleSessionName | An identifier for the assumed role session.  | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
+| limit | Specifies the maximum number of data catalogs to return.  | Optional | 
+| next_token | Specifies the maximum number of data catalogs to return.  | Optional | 
 
 #### Context Output
 
@@ -138,14 +138,14 @@ Lists the databases in the specified data catalog.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| catalog_name | The name of the data catalog that contains the databases to return. Possible values are: . | Required | 
-| work_group | The name of the workgroup for which the metadata is being fetched. Required if requesting an IAM Identity Center enabled Glue Data Catalog. Possible values are: . | Optional | 
-| region | The AWS Region, if not specified the default region will be used. Possible values are: . | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. Possible values are: . | Optional | 
-| roleSessionName | An identifier for the assumed role session. Possible values are: . | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Possible values are: . | Optional | 
-| limit | Specifies the maximum number of results to return. Possible values are: . | Optional | 
-| next_token | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call. Possible values are: . | Optional | 
+| catalog_name | The name of the data catalog that contains the databases to return.  | Required | 
+| work_group | The name of the workgroup for which the metadata is being fetched. Required if requesting an IAM Identity Center enabled Glue Data Catalog.  | Optional | 
+| region | The AWS Region, if not specified the default region will be used.  | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
+| roleSessionName | An identifier for the assumed role session.  | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
+| limit | Specifies the maximum number of results to return.  | Optional | 
+| next_token | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.  | Optional | 
 
 #### Context Output
 
@@ -172,15 +172,15 @@ Lists the metadata for the tables in the specified data catalog database.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| catalog_name | The name of the data catalog that contains the databases to return. Possible values are: . | Required | 
-| database_name | The name of the database for which table metadata should be returned. Possible values are: . | Required | 
-| expression | A regex filter that pattern-matches table names. If no expression is supplied, metadata for all tables are listed. Possible values are: . | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. Possible values are: . | Optional | 
-| roleSessionName | An identifier for the assumed role session. Possible values are: . | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Possible values are: . | Optional | 
-| limit | Specifies the maximum number of results to return. Possible values are: . | Optional | 
-| next_token | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call. Possible values are: . | Optional | 
-| work_group | The name of the workgroup for which the metadata is being fetched. Required if requesting an IAM Identity Center enabled Glue Data Catalog. Possible values are: . | Optional | 
+| catalog_name | The name of the data catalog that contains the databases to return.  | Required | 
+| database_name | The name of the database for which table metadata should be returned.  | Required | 
+| expression | A regex filter that pattern-matches table names. If no expression is supplied, metadata for all tables are listed.  | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
+| roleSessionName | An identifier for the assumed role session.  | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
+| limit | Specifies the maximum number of results to return.  | Optional | 
+| next_token | A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.  | Optional | 
+| work_group | The name of the workgroup for which the metadata is being fetched. Required if requesting an IAM Identity Center enabled Glue Data Catalog.  | Optional | 
 
 #### Context Output
 
@@ -215,15 +215,15 @@ Runs query that takes a provided username and queries the AWS Security Lake for 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| database | The Database to run the query against. Possible values are: . | Required | 
-| table | The Table to run the query against. Possible values are: . | Required | 
-| user_name | The username to search for MFA login attempts. Possible values are: . | Required | 
-| output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/. Possible values are: . | Required | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. Possible values are: . | Optional | 
-| roleSessionName | An identifier for the assumed role session. Possible values are: . | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Possible values are: . | Optional | 
+| database | The Database to run the query against.  | Required | 
+| table | The Table to run the query against.  | Required | 
+| user_name | The username to search for MFA login attempts.  | Required | 
+| output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.  | Required | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
+| roleSessionName | An identifier for the assumed role session.  | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
-| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored. Possible values are: . | Optional | 
+| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
 
@@ -281,15 +281,15 @@ Runs query takes a provided Source IP Address and queries the AWS Security Lake 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| database | The Database to run the query against. Possible values are: . | Required | 
-| table | The Table to run the query against. Possible values are: . | Required | 
-| ip_src | The source IP Address to search for console login attempts. Possible values are: . | Required | 
-| output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/. Possible values are: . | Required | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. Possible values are: . | Optional | 
-| roleSessionName | An identifier for the assumed role session. Possible values are: . | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Possible values are: . | Optional | 
+| database | The Database to run the query against.  | Required | 
+| table | The Table to run the query against.  | Required | 
+| ip_src | The source IP Address to search for console login attempts.  | Required | 
+| output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.  | Required | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
+| roleSessionName | An identifier for the assumed role session.  | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
-| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored. Possible values are: . | Optional | 
+| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
 
@@ -347,15 +347,15 @@ This command is used to search for Guard Duty logs for any criticality level act
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| database | The Database to run the query against. Possible values are: . | Required | 
-| table | The Table to run the query against. Possible values are: . | Required | 
+| database | The Database to run the query against.  | Required | 
+| table | The Table to run the query against.  | Required | 
 | severity | The severity of searchingto search related events for. Possible values are: 0-Unknown, 1-Informational, 2-Low, 3-Medium, 4-High, 5-Critical, 6-Fatal, 99-Other. | Required | 
-| output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/. Possible values are: . | Required | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. Possible values are: . | Optional | 
-| roleSessionName | An identifier for the assumed role session. Possible values are: . | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Possible values are: . | Optional | 
+| output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.  | Required | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
+| roleSessionName | An identifier for the assumed role session.  | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
-| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored. Possible values are: . | Optional | 
+| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
 
@@ -413,14 +413,14 @@ Retrieves a snapshot of the current Region, including whether Amazon Security La
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| accounts | The Amazon Web Services account ID for which a static snapshot of the current Amazon Web Services Region, including enabled accounts and log sources, is retrieved. Possible values are: . | Optional | 
-| limit | Specifies the maximum number of results to return. Possible values are: . | Optional | 
-| next_token | Lists if there are more results available. The value of nextToken is a unique pagination token for each page. Repeat the call using the returned token to retrieve the next page. Keep all other arguments unchanged. Possible values are: . | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. Possible values are: . | Optional | 
-| roleSessionName | An identifier for the assumed role session. Possible values are: . | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Possible values are: . | Optional | 
+| accounts | The Amazon Web Services account ID for which a static snapshot of the current Amazon Web Services Region, including enabled accounts and log sources, is retrieved.  | Optional | 
+| limit | Specifies the maximum number of results to return.  | Optional | 
+| next_token | Lists if there are more results available. The value of nextToken is a unique pagination token for each page. Repeat the call using the returned token to retrieve the next page. Keep all other arguments unchanged.  | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
+| roleSessionName | An identifier for the assumed role session.  | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
-| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored. Possible values are: . | Optional | 
+| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
 
@@ -450,12 +450,12 @@ Retrieves the Amazon Security Lake configuration object for the specified Amazon
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| regions | The list of regions where Security Lake is enabled. Possible values are: . | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. Possible values are: . | Optional | 
-| roleSessionName | An identifier for the assumed role session. Possible values are: . | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. Possible values are: . | Optional | 
+| regions | The list of regions where Security Lake is enabled.  | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
+| roleSessionName | An identifier for the assumed role session.  | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
-| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored. Possible values are: . | Optional | 
+| query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
 
