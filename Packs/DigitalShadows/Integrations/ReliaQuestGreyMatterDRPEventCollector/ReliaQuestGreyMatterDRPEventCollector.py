@@ -152,14 +152,14 @@ def get_event_latest_created_time(events: List[Dict], created_time_field: str, d
         latest_event_time = datetime.strptime(events[0][created_time_field], date_format)
     except ValueError:
         # The api might return rarely DATE_FORMAT only in seconds
-        latest_event_time = datetime.strptime(events[0][created_time_field], '%Y-%m-%dT%H:%M:%S')
+        latest_event_time = datetime.strptime(events[0][created_time_field], '%Y-%m-%dT%H:%M:%SZ')
 
     for event in events:
         try:
             event_time = datetime.strptime(event[created_time_field], date_format)
         except ValueError:
             # The api might return rarely DATE_FORMAT only in seconds
-            event_time = datetime.strptime(event[created_time_field], '%Y-%m-%dT%H:%M:%S')
+            event_time = datetime.strptime(event[created_time_field], '%Y-%m-%dT%H:%M:%SZ')
         if event_time > latest_event_time:
             latest_event_time = event_time
 
