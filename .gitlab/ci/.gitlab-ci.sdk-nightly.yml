@@ -380,6 +380,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - !reference [.destroy_xsoar_instances]
 
 demisto-sdk-nightly:run-end-to-end-tests-xsiam:
+  rules:
+    - when: never
   tags:
     - gce
   extends:
@@ -444,6 +446,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
     - !reference [.unlock-machine]
 
 demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
+  rules:
+    - when: never
   tags:
     - gce
   extends:
