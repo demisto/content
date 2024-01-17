@@ -57,12 +57,17 @@ def main():
     content_pr_state = 'open'
     sdk_pr_state = 'open'
 
+    print('sdk and content prs created')
+
     # wait to content pr and sdk pr to be closed
     while (sdk_pr_state == 'open' or content_pr_state == 'open') and elapsed < TIMEOUT:
         content_pr = get_pr_from_branch('content', release_branch_name, access_token)
         sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
         content_pr_state = content_pr.get('state')
         sdk_pr_state = sdk_pr.get('state')
+
+        print(f'content pr state is {content_pr_state}')
+        print(f'sdk pr state is {sdk_pr_state}')
 
         time.sleep(300)
         elapsed = time.time() - start

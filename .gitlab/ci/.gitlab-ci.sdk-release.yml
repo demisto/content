@@ -2,20 +2,20 @@
   rules:
     - if: '$SDK_RELEASE == "true"'
 
-#
-#create-release-branch:
-#  stage: create-release-branch
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
-#  variables:
-#    SLACK_CHANNEL: $SLACK_CHANNEL
-#    RELEASE_VERSION: $RELEASE_VERSION
-#    GITHUB_TOKEN: $GITHUB_TOKEN
-#  script:
-#    - echo "RELEASE_VERSION="$RELEASE_VERSION
-#    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-#
+
+create-release-branch:
+  stage: create-release-branch
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  variables:
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    RELEASE_VERSION: $RELEASE_VERSION
+    GITHUB_TOKEN: $GITHUB_TOKEN
+  script:
+    - echo "RELEASE_VERSION="$RELEASE_VERSION
+    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+
 #
 #trigger-content-private-nightly:
 #  stage: trigger-nightlies
@@ -65,7 +65,7 @@
 #    - echo "RELEASE_VERSION="$RELEASE_VERSION
 #    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -ch $SLACK_CHANNEL -sdk $RELEASE_VERSION | jq .id)
 #    - echo "PIPELINE_ID = " $PIPELINE_ID
-#    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt
+#    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
 ##    -
 ##    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
 ##    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
@@ -136,7 +136,7 @@
 #    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
 #  script:
 #    - exit 1
-#    - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt)
+#    - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt)
 #    - echo "PIPELINE_ID =" $PIPELINE_ID
 #    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
 #
@@ -160,27 +160,28 @@
 #    - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt)
 #    - echo "PIPELINE_ID =" $PIPELINE_ID
 #    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1061
-#
-#
-#create-release-pull-request:
-#  stage: sdk-flow
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
-#  needs:
+
+
+create-release-pull-request:
+  stage: release-flow
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
 #    - wait-for-demisto-sdk-nightly
 #    - wait-for-content-private-nightly
 #    - wait-for-content-internal-dist-nightly
-#  when: manual
-#  variables:
-#    RELEASE_VERSION: $RELEASE_VERSION
-#    GITHUB_TOKEN: $GITHUB_TOKEN
-#  script:
-#    - echo "RELEASE_VERSION="$RELEASE_VERSION
-#    - python3 ./Tests/sdk_release/create_release_pr.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - create-release-branch
+  when: manual
+  variables:
+    RELEASE_VERSION: $RELEASE_VERSION
+    GITHUB_TOKEN: $GITHUB_TOKEN
+  script:
+    - echo "RELEASE_VERSION="$RELEASE_VERSION
+    - python3 ./Tests/sdk_release/create_release_pr.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
 
 deploy-sdk-to-pypi:
-  stage: sdk-flow
+  stage: release-flow
   extends:
     - .release-sdk
     - .default-job-settings
@@ -193,22 +194,23 @@ deploy-sdk-to-pypi:
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - python3 ./Tests/sdk_release/wait_for_release.py -b $RELEASE_VERSION
 
 create-content-pull-request:
-  stage: content-flow
+  stage: release-flow
   extends:
     - .release-sdk
     - .default-job-settings
-#  needs:
-#    - deploy-sdk-to-pypi
+  needs:
+    - deploy-sdk-to-pypi
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
 #    - python3 ./Tests/sdk_release/wait_for_release.py -b $RELEASE_VERSION
+    - python3 ./Tests/sdk_release/wait_for_release.py -b 1.25.3
     - python3 ./Tests/sdk_release/trigger_update_sdk_workflow.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - python3 ./Tests/sdk_release/wait_for_release_prs.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
 
 
 

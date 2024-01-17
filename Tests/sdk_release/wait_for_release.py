@@ -42,6 +42,8 @@ def main():
     if elapsed >= TIMEOUT:
         sys.exit(1)
 
+    print(f'SDK release version {release_branch_name} is out')
+
 
 if __name__ == "__main__":
     main()
