@@ -385,8 +385,7 @@ def update_asset_command(client: Client, args: dict[str, str]) -> CommandResults
 
     Returns:
         CommandResults: If the update is successful,the result will contain a success message.
-        If the update fails, 
-                        the result will contain an error message.
+        If the update fails, the result will contain an error message.
     """
     asset_id = args['id']
     url_suffix = f'/assets/{asset_id}'
