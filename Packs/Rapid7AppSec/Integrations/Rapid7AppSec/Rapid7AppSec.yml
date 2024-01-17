@@ -723,7 +723,7 @@ script:
     - contextPath: Rapid7AppSec.EngineGroup.description
       description: Description about the engine group.
       type: String
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.84405
   feed: false
   isfetch: false
   longRunning: false
