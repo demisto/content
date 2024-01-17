@@ -678,7 +678,7 @@ def main():
         elif command == "kenna-search-assets-by-external-id":
             return_results(search_assets_by_external_id_command(client, args))
         else:
-            raise NotImplementedError(f'{command} is not an existing Kenna v2 command')
+            raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as err:
         return_error(f"Failed to execute {command} command.\nError:\n{err!s}")
