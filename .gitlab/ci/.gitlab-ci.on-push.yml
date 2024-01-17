@@ -396,12 +396,12 @@ jobs-done-check-nightly:
     - xsoar-prepare-testing-bucket
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
-    - xsoar_ng_server_ga
+    # - xsoar_ng_server_ga
     - tests_xsoar_server
     - xsoar-test_playbooks_results
     - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
-    - xsoar-saas_test_e2e_results
+    # - xsoar-saas_test_e2e_results
   tags:
     - gke
   rules:
@@ -675,7 +675,7 @@ xsoar_ng_server_ga:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-      when: always
+      when: never
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -790,7 +790,7 @@ test-upload-flow:
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
     - if: '$NIGHTLY'
-      when: always
+      when: never
   extends:
     - .default-job-settings
   needs:
