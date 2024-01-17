@@ -21,19 +21,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* ATD - Detonate File
+* Detonate File - ANYRUN
+* Detonate File - SecneurX Analysis
+* Detonate file - CrowdStrike Falcon Sandbox v2
+* Detonate File - CrowdStrike Falcon Intelligence Sandbox v2
 * Detonate File - FireEye AX
 * Detonate File - Group-IB TDS Polygon
-* Detonate File - JoeSecurity V2
-* ATD - Detonate File
-* Detonate file - CrowdStrike Falcon Sandbox v2
-* Detonate File - ANYRUN
-* Detonate File - ThreatGrid v2
 * WildFire - Detonate file v2
-* Detonate File - Lastline v2
-* Detonate File - Cuckoo
-* Detonate File - CrowdStrike Falcon Intelligence Sandbox v2
 * Detonate File - VMRay
-* Detonate File - SecneurX Analysis
+* Detonate File - Cuckoo
+* Detonate File - Lastline v2
+* Detonate File - JoeSecurity V2
+* Detonate File - ThreatGrid v2
 
 ### Integrations
 

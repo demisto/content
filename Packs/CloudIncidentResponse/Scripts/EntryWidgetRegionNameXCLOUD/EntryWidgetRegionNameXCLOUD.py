@@ -1,12 +1,14 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401   # pragma: no cover
+from CommonServerPython import *  # noqa: F401   # pragma: no cover
 
-BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;"
+BLACK_HTML_STYLE = "color:#555555;text-align:center;font-size:200%;"  # pragma: no cover
 
 
-def main():
+def main():  # pragma: no cover
     try:
-        alert = demisto.context().get('Core', {}).get('OriginalAlert')[0]
+        alert = demisto.context().get('Core', {}).get('OriginalAlert')
+        if isinstance(alert, list):
+            alert = alert[0]
         event = alert.get('event')
         regionName = event.get('region')
 
@@ -21,5 +23,5 @@ def main():
         return_error(f"An error occurred: {str(e)}")
 
 
-if __name__ in ["__main__", "builtin", "builtins"]:
-    return_results(main())
+if __name__ in ["__main__", "builtin", "builtins"]:  # pragma: no cover
+    return_results(main())  # pragma: no cover

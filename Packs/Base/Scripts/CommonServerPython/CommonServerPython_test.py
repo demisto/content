@@ -30,6 +30,48 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
     is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam
 
+EVENTS_LOG_ERROR = \
+    """Error sending new events into XSIAM.
+Parameters used:
+\tURL: https://api-url
+\tHeaders: {{
+        "authorization": "TOKEN",
+        "format": "json",
+        "product": "some product",
+        "vendor": "some vendor",
+        "content-encoding": "gzip",
+        "collector-name": "test_brand",
+        "instance-name": "test_integration_instance",
+        "final-reporting-device": "www.test_url.com",
+        "collector-type": "events"
+}}
+
+Response status code: {status_code}
+Error received:
+\t{error_received}"""
+
+ASSETS_LOG_ERROR = \
+    """Error sending new assets into XSIAM.
+Parameters used:
+\tURL: https://api-url
+\tHeaders: {{
+        "authorization": "TOKEN",
+        "format": "json",
+        "product": "some product",
+        "vendor": "some vendor",
+        "content-encoding": "gzip",
+        "collector-name": "test_brand",
+        "instance-name": "test_integration_instance",
+        "final-reporting-device": "www.test_url.com",
+        "collector-type": "assets",
+        "snapshot-id": "123000",
+        "total-items-count": "2"
+}}
+
+Response status code: {status_code}
+Error received:
+\t{error_received}"""
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -191,66 +233,66 @@ DATA_WITH_URLS = [(
 COMPLEX_DATA_WITH_URLS = [(
     [
         {'data':
-             {'id': '1',
-              'result':
-                  {'files':
-                      [
+         {'id': '1',
+          'result':
+          {'files':
+           [
                           {
                               'filename': 'name',
                               'size': 0,
                               'url': 'url'
                           }
-                      ]
-                  },
+                          ]
+           },
               'links': ['link']
-              }
+          }
          },
         {'data':
-             {'id': '2',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': 'url'
-                          }
-                      ]
-                  },
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': 'url'
+               }
+           ]
+           },
               'links': ['link']
-              }
+          }
          }
     ],
     [
         {'data':
-             {'id': '1',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': '[url](url)'
-                          }
-                      ]
-                  },
+         {'id': '1',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
               'links': ['[link](link)']
-              }
+          }
          },
         {'data':
-             {'id': '2',
-              'result':
-                  {'files':
-                      [
-                          {
-                              'filename': 'name',
-                              'size': 0,
-                              'url': '[url](url)'
-                          }
-                      ]
-                  },
+         {'id': '2',
+          'result':
+          {'files':
+           [
+               {
+                   'filename': 'name',
+                   'size': 0,
+                   'url': '[url](url)'
+               }
+           ]
+           },
               'links': ['[link](link)']
-              }
+          }
          }
     ])]
 
@@ -970,6 +1012,12 @@ def test_flatten_cell():
     expected_flatten_dict = u'{\n    "first": "\u4f1a"\n}'
     assert flattenCell(dict_to_flatten) == expected_flatten_dict
 
+    # datetime test
+    datetime_value = datetime(2019, 9, 17, 6, 16, 39)
+    dict_to_flatten = {'date': datetime_value}
+    expected_flatten_dict = '{\n    "date": "2019-09-17 06:16:39"\n}'
+    assert flattenCell(dict_to_flatten) == expected_flatten_dict
+
 
 def test_hash_djb2():
     assert hash_djb2("test") == 2090756197, "Invalid value of hash_djb2"
@@ -1299,7 +1347,7 @@ def test_logger_replace_strs(mocker):
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
     assert ilog.messages[1] == \
-           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+        'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -1404,7 +1452,7 @@ def test_build_curl_post_noproxy():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"data": "value"}\''
     ]
 
@@ -1431,7 +1479,7 @@ def test_build_curl_post_xml():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'<?xml version=\"1.0\" encoding=\"utf-8\"?>'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'<?xml version="1.0" encoding="utf-8"?>\''
     ]
 
@@ -1463,7 +1511,7 @@ def test_build_curl_get_withproxy(mocker):
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"data\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--proxy http://proxy -k -d \'{"data": "value"}\''
     ]
 
@@ -1500,9 +1548,9 @@ def test_build_curl_multiple_queries():
                     "Content-Type: application/json\\r\\n\\r\\n'")
     ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
     assert ilog.curl == [
-        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X POST https://demisto.com/api/post -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"postdata": "value"}\'',
-        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        'curl -X GET https://demisto.com/api/get -H "Authorization: <XX_REPLACED>" -H "Content-Type: application/json" '
         '--noproxy "*" -d \'{"getdata": "value"}\''
     ]
 
@@ -2001,7 +2049,7 @@ class TestCommandResults:
         results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
+            'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
 
     def test_output_prefix_includes_dt(self):
         """
@@ -2022,7 +2070,7 @@ class TestCommandResults:
                                  outputs_key_field='', outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+            'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
     @pytest.mark.parametrize('score, expected_readable',
                              [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
@@ -2632,7 +2680,7 @@ class TestCommandResults:
         )
         context = res.to_context()
         assert context["EntryContext"] == {"Path.To(true)": {"Value": "next_token"}}
-    
+
     def test_replace_existing_not_nested(self):
         """
         Given:
@@ -3188,6 +3236,7 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
 
 class TestParseDateRange:
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_utc_time_sanity():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
@@ -3196,6 +3245,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_local_time_sanity():
         local_now = datetime.now()
         local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
@@ -3204,6 +3254,7 @@ class TestParseDateRange:
         assert abs(local_start_time - local_end_time).seconds / 60 == 73
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_with_trailing_spaces():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 days   ', utc=True)
@@ -3221,6 +3272,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_input_format(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3233,6 +3285,7 @@ class TestParseDateRange:
         assert 'date_range must be "number date_range_unit"' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_value_not_a_number(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3245,6 +3298,7 @@ class TestParseDateRange:
         assert 'The time value is invalid' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_value_not_an_integer(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3257,6 +3311,7 @@ class TestParseDateRange:
         assert 'The time value is invalid' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_unit(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3413,6 +3468,7 @@ def test_batch(iterable, sz, expected):
 
 regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.1.1:8080', True),
     (ipv4Regex, '192.168.1.1/24', False),
     (ipv4Regex, '192.168.a.1', False),
     (ipv4Regex, '192.168..1.1', False),
@@ -3444,6 +3500,7 @@ def test_regexes(pattern, string, expected):
 
 IP_TO_INDICATOR_TYPE_PACK = [
     ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1:8080', FeedIndicatorType.IP),
     ('192.168.1.1/32', FeedIndicatorType.CIDR),
     ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
     ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
@@ -3694,11 +3751,12 @@ VALID_DOMAIN_INDICATORS = ['www.static.attackiqtes.com',
                            'test.com',
                            'www.testö.com',
                            'hxxps://path.test.com/check',
-                           'https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d7675' \
-                           '4d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3' \
+                           'https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d7675'
+                           '4d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3'
                            'D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C',
                            'https://emea01.safelinks.protection.outlook.com/',
                            'good.good']
+
 
 @pytest.mark.parametrize('indicator_value', VALID_DOMAIN_INDICATORS)
 def test_valid_domain_indicator_types(indicator_value):
@@ -3721,6 +3779,7 @@ INVALID_DOMAIN_INDICATORS = ['aaa.2234',
                              'test..com',
                              'test/com',
                              '3.21.32.65/path']
+
 
 @pytest.mark.parametrize('indicator_value', INVALID_DOMAIN_INDICATORS)
 def test_invalid_domain_indicator_types(indicator_value):
@@ -3800,6 +3859,7 @@ VALID_URL_INDICATORS = [
     'https[:]//www.test.com/test',  # defanged colon sign
     "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
     "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
+    "https://test.com/a/b/c-d-e",  # hyphen in the path
 ]
 
 
@@ -3874,6 +3934,8 @@ INVALID_URL_INDICATORS = [
     'https://216.58.199.78:12345fdsf',
     'https://www.216.58.199.78:sfsdg'
 ]
+
+
 @pytest.mark.parametrize('indicator_value', INVALID_URL_INDICATORS)
 def test_invalid_url_indicator_types(indicator_value):
     """
@@ -6597,8 +6659,8 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-               {'Address': 'user@example.com',
-                'Domain': 'example.com',
+            {'Address': 'user@example.com',
+             'Domain': 'example.com',
                 'Description': 'test',
                 'Internal': True,
                 'STIXID': 'stix_id_test',
@@ -6687,7 +6749,7 @@ class TestIndicatorsSearcher:
             if searchAfter in search_after_options:
                 search_after_value = searchAfter + 1
             else:
-                return {'searchAfter': None, 'iocs': []}
+                return {'searchAfter': None, 'iocs': [], "total": 0}
         iocs = [{'value': 'mock{}'.format(search_after_value)}]
         return {'searchAfter': search_after_value, 'iocs': iocs, 'total': 4}
 
@@ -6796,7 +6858,6 @@ class TestIndicatorsSearcher:
         demisto.searchIndicators.assert_called_once_with(**expected_args)
 
 
-
 class TestAutoFocusKeyRetriever:
     def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
         """
@@ -6813,7 +6874,6 @@ class TestAutoFocusKeyRetriever:
         mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
         auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='1234')
         assert auto_focus_key_retriever.key == '1234'
-
 
     def test_instantiate_class_without_param_key(self, mocker, clear_version_cache):
         """
@@ -7116,7 +7176,6 @@ class TestSetAndGetLastRun:
         mocker.patch.object(demisto, 'getLastRun', return_value={1: "first indicator"})
         result = get_feed_last_run()
         assert result == {1: "first indicator"}
-
 
     def test_get_last_run_in_6_2_when_get_last_run_has_no_results(self, mocker):
         """
@@ -7782,77 +7841,77 @@ class TestFetchWithLookBack:
             return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0])) if date_arr[1] == 'minutes' \
                 else datetime(2022, 4, 1, 11, 0, 0) - timedelta(hours=int(date_arr[0]))
         return datetime(2022, 4, 1, 11, 0, 0) - (
-                    datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, date_format))
+            datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, date_format))
 
     @pytest.mark.parametrize(
         'params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index',
         [
             (
-                    {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]],
-                    [INCIDENTS[4]], [],
-                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
-                    [NEW_INCIDENTS[0]], 2
+                {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS[2], INCIDENTS[3]],
+                [INCIDENTS[4]], [],
+                {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
+                [NEW_INCIDENTS[0]], 2
             ),
             (
-                    {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]],
-                    [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [INCIDENTS[4]],
-                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
-                    [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+                {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS[2], INCIDENTS[3]],
+                [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [INCIDENTS[4]],
+                {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+                [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
             ),
             (
-                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
-                    [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]], [],
-                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
-                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
-                    [NEW_INCIDENTS[0]], 2
+                {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
+                [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]], [],
+                {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
+                [NEW_INCIDENTS[0]], 2
             ),
             (
-                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 30*60},
-                    [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
-                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
-                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
-                    [NEW_INCIDENTS[0]], 2
-            ),
-
-            (
-                    {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
-                    [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
-                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
-                    [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+                {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 30 * 60},
+                [INCIDENTS[0], INCIDENTS[1], INCIDENTS[2]], [NEW_INCIDENTS[0], INCIDENTS[3], INCIDENTS[4]], [],
+                {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                [NEW_INCIDENTS[0]], 2
             ),
 
             (
-                    {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
-                    [INCIDENTS_TIME_AWARE[4]], [],
-                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
-                    [NEW_INCIDENTS_TIME_AWARE[0]], 2
+                {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
+                [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
+                {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
+                {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
+                [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+            ),
+
+            (
+                {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+                [INCIDENTS_TIME_AWARE[4]], [],
+                {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 5},
+                [NEW_INCIDENTS_TIME_AWARE[0]], 2
             ),
             (
-                    {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
-                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[4]],
-                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
-                    {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
-                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
+                {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+                [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[4]],
+                {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+                [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
             ),
             (
-                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
-                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
-                                                                                                  INCIDENTS_TIME_AWARE[4]], [],
-                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
-                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
-                    [NEW_INCIDENTS_TIME_AWARE[0]], 2
+                {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
+                [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
+                                                                                              INCIDENTS_TIME_AWARE[4]], [],
+                {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: ''}, 'limit': 8},
+                [NEW_INCIDENTS_TIME_AWARE[0]], 2
             ),
             (
-                    {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
-                    [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
-                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
-                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
-                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
+                {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
+                [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
+                [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
+                {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
+                {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
+                [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
             ),
         ])
     def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
@@ -8137,15 +8196,15 @@ class TestFetchWithLookBack:
         assert results.get('limit') == expected_results3.get('limit')
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
-    
+
     def test_lookback_with_offset_update_last_run(self):
         """
         Given:
             A last run
-        
+
         When:
             Calling create_updated_last_run_object with a new offset to change
-            
+
         Then:
             - The last run is updated with the new offset, and the start time remains as it was.
             - When the offset needs to be reset, the last time is the latest incident time and the offset resets
@@ -8166,7 +8225,7 @@ class TestFetchWithLookBack:
         # make sure that the start time is unchanged because of the offset, and the offset is updated
         assert new_last_run["offset"] == 4
         assert new_last_run["time"] == last_time
-        
+
         last_run = {"time": last_time, "offset": new_offset}
         new_offset = 0
         new_last_run, _ = create_updated_last_run_object(last_run,
@@ -8180,17 +8239,17 @@ class TestFetchWithLookBack:
                                                          )
         assert new_last_run["offset"] == 0
         assert new_last_run["time"] == "2022-04-01T10:51:00"
-        
+
     def test_calculate_new_offset(self):
         """
         Test that the new offset for the next run calculated correctly based on the old offset, number of incidents and total number of incidents.
         The first argument is the old offset, the second is number of incidents and the third is the total number of incidents returned.
         Given:
             old offset, number of incidents, total number of incidents (could be None)
-        
+
         When:
             Calculating a new offset to the next run
-            
+
         Then:
             Make sure that the new offset is correct
         """
@@ -8201,10 +8260,6 @@ class TestFetchWithLookBack:
         assert calculate_new_offset(1, 2, 4) == 3
         assert calculate_new_offset(1, 2, 3) == 0
         assert calculate_new_offset(1, 2, None) == 3
-
-
-
-
 
 
 class TestTracebackLineNumberAdgustment:
@@ -8497,10 +8552,10 @@ def test_content_type(content_format, outputs, expected_type):
 
 
 class TestSendEventsToXSIAMTest:
-    from test_data.send_events_to_xsiam_data import events_dict, events_log_error, assets_log_error
-    test_data = events_dict
-    events_test_log_data = events_log_error
-    assets_test_log_data = assets_log_error
+    with open('test_data/events.json') as f:
+        test_data = json.load(f)
+    events_test_log_data = EVENTS_LOG_ERROR
+    assets_test_log_data = ASSETS_LOG_ERROR
     orig_xsiam_file_size = 2 ** 20  # 1Mib
 
     @staticmethod
@@ -8509,7 +8564,6 @@ class TestSendEventsToXSIAMTest:
             return "TOKEN"
         elif 'url' in arg:
             return "url"
-
 
     @pytest.mark.parametrize('data_use_case, data_type', [
         ('json_events', 'events'),
@@ -8661,7 +8715,7 @@ class TestSendEventsToXSIAMTest:
         error_log_mocker = mocker.patch.object(demisto, 'error')
 
         events = self.test_data['json_events']['events']
-        expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_log_error
+        expected_request_and_response_info = self.events_test_log_data if data_type == "events" else self.assets_test_log_data
         expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
         with pytest.raises(
@@ -9130,8 +9184,8 @@ class TestIsIntegrationCommandExecution:
 
 
 @pytest.mark.parametrize("timestamp_str, seconds_threshold, expected", [
-    ("2019-01-01T00:00:00Z", 60, True), 
-    ("2022-01-01T00:00:00GMT+1", 60, True), 
+    ("2019-01-01T00:00:00Z", 60, True),
+    ("2022-01-01T00:00:00GMT+1", 60, True),
     ("2022-01-01T00:00:00Z", 60, False),
     ("invalid", 60, ValueError)
 ])
@@ -9157,3 +9211,35 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
         assert str(e.value) == "Failed to parse timestamp: invalid"
     else:
         assert has_passed_time_threshold(timestamp_str, seconds_threshold) == expected
+
+
+@pytest.mark.parametrize("indicator,expected_result", [
+    ("e61fcc6a06420106fa6642ef833b9c38", "md5"),
+    ("3fec1b14cea32bbcd97fad4507b06888", "md5"),
+    ("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "sha256"),
+    ("bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa", "sha256"),
+    ("193:iAklVz3fzvBk5oFblLPBN1iXf2bCRErwyN4aEbwyiNwyiQwNeDAi4XMG:iAklVzfzvBTFblLpN1iXOYpyuapyiWym", "ssdeep"),
+    ("3:Wg8oEIjOH9+KS3qvRBTdRi690oVqzBUGyT0/n:Vx0HgKnTdE6eoVafY8", "ssdeep"),
+    ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
+    ("6c5360d41bd2b14b1565f5b18e5c203cf512e493", "sha1"),
+    ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069", "sha512"),
+    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211", "sha512"),
+    ("@", None)
+])
+def test_detect_file_indicator_type(indicator, expected_result):
+    """
+    Given:
+        An indicator string.
+    When:
+        Running detect_file_indicator_type function.
+    Then:
+        Test - Assert the function returns the expected result.
+        Case 1: md5 indicator type.
+        Case 2: sha256 indicator type.
+        Case 3: ssdeep indicator type.
+        Case 4: sha1 indicator type.
+        Case 5: sha512 indicator type.
+        Case 6: invalid type.
+    """
+    from CommonServerPython import detect_file_indicator_type
+    assert detect_file_indicator_type(indicator) == expected_result

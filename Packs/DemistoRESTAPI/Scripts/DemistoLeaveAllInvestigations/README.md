@@ -1,5 +1,7 @@
-Leaves all investigations that the user is part of (clears out the incidents in the left pane). The incidents owner by the user will remain in the left pane. This requires Demisto REST API integration to be configured for the server.
+Leaves all investigations that the user is part of (clears out the incidents in the left pane). The incidents owner by the user will remain in the left pane. This requires Core REST API integration to be configured for the server.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,14 +11,18 @@ Leaves all investigations that the user is part of (clears out the incidents in 
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
+
+* core-api-post
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

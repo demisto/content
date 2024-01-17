@@ -273,7 +273,7 @@ Check file reputation
                 "rows": [
                     {
                         "count": 1,
-                        "domain": "dhl.com",
+                        "domain": "dtest.com",
                         "filepath": "Case File 5368.zip",
                         "firstseen": "2018-08-13T07:15:00Z",
                         "ip": "217.76.151.72",

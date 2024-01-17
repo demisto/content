@@ -25,6 +25,11 @@ configuration:
   name: proxy
   type: 8
   required: false
+- defaultvalue: '5'
+  display: "Number of connection error retries"
+  name: connection_error_retries
+  additionalinfo: "The number of times to try and re-create connections with rapid7 instance when there are temporary connection errors"
+  type: 0
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
@@ -50,7 +55,7 @@ script:
       description: All host names or aliases discovered on the asset.
       type: unknown
     - contextPath: Nexpose.Asset.HostType
-      description: The type of asset. Valid values are unknown, guest, hypervisor, physical, mobile
+      description: The type of asset. Valid values are unknown, guest, hypervisor, physical, mobile.
       type: string
     - contextPath: Nexpose.Asset.Site
       description: Asset site name.
@@ -89,7 +94,7 @@ script:
       description: The product running the service.
       type: string
     - contextPath: Nexpose.Asset.Services.protocol
-      description: The protocol of the service, valid values are ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
+      description: The protocol of the service, valid values are ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw.
       type: string
     - contextPath: Nexpose.Asset.Users.FullName
       description: The full name of the user account.
@@ -166,7 +171,7 @@ script:
       name: page_size
     - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
-    - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC"'
+    - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC".'
       name: sort
     - defaultValue: '10'
       description: A number of records to limit the response to.
@@ -224,6 +229,7 @@ script:
       name: query
     - description: Number of records to retrieve in each API call when pagination is used.
       name: page_size
+      defaultValue: '100'
     - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
     - description: A number of records to limit the response to.
@@ -318,13 +324,13 @@ script:
       description: The name of the user who started the scan.
       type: string
     - contextPath: Nexpose.Scan.Assets
-      description: The number of assets found in the scan
+      description: The number of assets found in the scan.
       type: number
     - contextPath: Nexpose.Scan.TotalTime
       description: The duration of the scan in minutes.
       type: string
     - contextPath: Nexpose.Scan.Status
-      description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
+      description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating.
       type: string
     - contextPath: Nexpose.Scan.Completed
       description: The end time of the scan in ISO8601 format.
@@ -345,7 +351,7 @@ script:
     - description: ID of an asset to search for the vulnerability.
       name: id
       required: true
-    - description: "ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536"
+    - description: "ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536."
       name: vulnerabilityId
       required: true
     description: Returns details and possible remediations for an asset's vulnerability.
@@ -397,7 +403,7 @@ script:
       description: The port of the service the result was discovered on.
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.Check.Protocol
-      description: The protocol of the service the result was discovered on, valid values ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
+      description: The protocol of the service the result was discovered on, valid values ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Check.Since
       description: The date and time the result was first recorded, in the ISO8601 format. If the result changes status this value is the date and time of the status change.
@@ -406,7 +412,7 @@ script:
       description: The proof explaining why the result was found vulnerable.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Check.Status
-      description: The status of the vulnerability check result. Valid values are, unknown, not-vulnerable, vulnerable, vulnerable-version, vulnerable-potential, vulnerable-with-exception-applied, vulnerable-version-with-exception-applied, vulnerable-potential-with-exception-applied
+      description: The status of the vulnerability check result. Valid values are, unknown, not-vulnerable, vulnerable, vulnerable-version, vulnerable-potential, vulnerable-with-exception-applied, vulnerable-version-with-exception-applied, vulnerable-potential-with-exception-applied.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.Type
       description: 'The type of the solution. One of: "Configuration", "Rollup patch", "Patch".'
@@ -421,7 +427,7 @@ script:
       description: The estimated duration to apply the solution, in minutes.
       type: string
     - contextPath: Nexpose.Asset.Vulnerability.Solution.AdditionalInformation
-      description: Additional information or resources that can assist in applying the remediation
+      description: Additional information or resources that can assist in applying the remediation.
       type: string
     - contextPath: CVE.ID
       description: Common Vulnerabilities and Exposures IDs.
@@ -577,7 +583,7 @@ script:
   - arguments:
     - description: The date and time the vulnerability exception is set to expire in ISO 8601 date format.
       name: expires
-    - description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
+    - description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536."
       name: vulnerability_id
       required: true
     - auto: PREDEFINED
@@ -626,9 +632,9 @@ script:
       name: id
       required: true
   - arguments:
-    - description: ID of the site to delete
+    - description: ID of the site to delete.
       name: site_id
-    - description: Name of the site to delete (can be used instead of `site_id`)
+    - description: Name of the site to delete (can be used instead of `site_id`).
       name: site_name
     - description: ID of the scheduled scan to delete.
       name: schedule_id
@@ -644,7 +650,7 @@ script:
   - arguments:
     - description: ID of the site.
       name: site_id
-    - description: Name of the site (can be used instead of `site_id`)
+    - description: Name of the site (can be used instead of `site_id`).
       name: site_name
     - description: ID of the site scan credential to delete.
       name: credential_id
@@ -652,7 +658,7 @@ script:
     description: "Beta Command\n\nDelete a site scan credential."
     name: nexpose-delete-site-scan-credential
   - arguments:
-    - description: ID of a site to delete
+    - description: ID of a site to delete.
       name: id
     - description: Name of the site to delete (can be used instead of `site_id`).
       name: site_name
@@ -687,7 +693,7 @@ script:
       description: The number of assets that belong to the site.
       type: number
     - contextPath: Nexpose.Site.Type
-      description: The type of the site. Valid values are agent, dynamic, static
+      description: The type of the site. Valid values are agent, dynamic, static.
       type: string
     - contextPath: Nexpose.Site.Vulnerabilities
       description: The total number of vulnerabilities.
@@ -813,7 +819,7 @@ script:
     - name: template
       description: Report template ID to use for report's creation. If not provided, the first available template will be used.
     - name: name
-      description: Report name
+      description: Report name.
     - auto: PREDEFINED
       description: Report format (uses PDF by default).
       name: format
@@ -867,7 +873,7 @@ script:
     - name: site_id
       description: ID of the site.
     - name: site_name
-      description: Name of the site (can be used instead of `site_id`)
+      description: Name of the site (can be used instead of `site_id`).
     - description: Name of the credential.
       name: name
       required: true
@@ -1552,7 +1558,7 @@ script:
       description: The login name of the user who submitted the vulnerability exception.
       type: string
     - contextPath: Nexpose.VulnerabilityException.submit.reason
-      description: 'The reason the vulnerability exception was submitted. One of: "False Positive", "Compensating Control", "Acceptable Use", "Acceptable Risk", "Other"'
+      description: 'The reason the vulnerability exception was submitted. One of: "False Positive", "Compensating Control", "Acceptable Use", "Acceptable Risk", "Other".'
       type: string
     - contextPath: Nexpose.VulnerabilityException.submit.user
       description: The identifier of the user who submitted the vulnerability exception.
@@ -1697,7 +1703,7 @@ script:
       description: The name of the user who started the scan.
       type: date
     - contextPath: Nexpose.Scan.Assets
-      description: The number of assets found in the scan
+      description: The number of assets found in the scan.
       type: number
     - contextPath: Nexpose.Scan.TotalTime
       description: The duration of the scan in minutes.
@@ -2109,7 +2115,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.84405
 fromversion: 5.0.0
 tests:
 - nexpose_test

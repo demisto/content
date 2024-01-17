@@ -35,7 +35,6 @@ PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get('credentials', {}).get('identifier', '') or PARAMS.get('bot_id', '')
 BOT_PASSWORD: str = PARAMS.get('credentials', {}).get('password', '') or PARAMS.get('bot_password', '')
 TENANT_ID: str = PARAMS.get('tenant_id', '')
-USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
@@ -119,6 +118,25 @@ class ErrorHandler:
 
 DEMISTO_LOGGER: Handler = Handler()
 ERROR_LOGGER: ErrorHandler = ErrorHandler()
+
+
+def handle_teams_proxy_and_ssl():
+    proxies = None
+    use_ssl = not PARAMS.get('insecure', False)
+    if not is_demisto_version_ge('8.0.0'):
+        return proxies, use_ssl
+    CRTX_HTTP_PROXY = os.environ.get('CRTX_HTTP_PROXY', None)
+    if CRTX_HTTP_PROXY:
+        proxies = {
+            "http": CRTX_HTTP_PROXY,
+            "https": CRTX_HTTP_PROXY
+        }
+        use_ssl = True
+    return proxies, use_ssl
+
+
+PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -291,8 +309,9 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         created_incident = cast(dict[Any, Any], created_incident)
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
+        server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
         data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
-               f"View it on: {server_link}/#/WarRoom/{created_incident.get('id', '')}"
+               f"View it on: {server_link}/WarRoom/{created_incident.get('id', '')}"
 
     return data
 
@@ -582,7 +601,8 @@ def get_bot_access_token() -> str:
     response: requests.Response = requests.post(
         url,
         data=data,
-        verify=USE_SSL
+        verify=USE_SSL,
+        proxies=PROXIES
     )
     if not response.ok:
         error = error_parser(response, 'bot')
@@ -627,7 +647,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id: str = integration_context.get('tenant_id') or demisto.params().get("tenant_id")
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -659,6 +679,7 @@ def get_graph_access_token() -> str:
         url,
         data=data,
         verify=USE_SSL,
+        proxies=PROXIES,
         headers=headers
     )
     if not response.ok:
@@ -713,6 +734,7 @@ def http_request(
             headers=headers,
             json=json_,
             verify=USE_SSL,
+            proxies=PROXIES,
             params=params,
         )
 
@@ -836,13 +858,13 @@ def validate_auth_header(headers: dict) -> bool:
         # Didn't find requested key in cache, getting new keys
         try:
             open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
-            response: requests.Response = requests.get(open_id_url, verify=USE_SSL)
+            response: requests.Response = requests.get(open_id_url, verify=USE_SSL, proxies=PROXIES)
             if not response.ok:
                 demisto.info(f'Authorization header validation failed to fetch open ID config - {response.reason}')
                 return False
             response_json: dict = response.json()
             jwks_uri: str = response_json.get('jwks_uri', '')
-            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL)
+            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL, proxies=PROXIES)
             if not keys_response.ok:
                 demisto.info(f'Authorization header validation failed to fetch keys - {response.reason}')
                 return False
@@ -2141,7 +2163,8 @@ def mirror_investigation():
         service_url: str = integration_context.get('service_url', '')
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
-        warroom_link = f'{server_link}/#/WarRoom/{investigation_id}'
+        server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
+        warroom_link = f"{server_link}/WarRoom/{investigation_id}"
         conversation: dict = {
             'type': 'message',
             'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '

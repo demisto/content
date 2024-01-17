@@ -157,3 +157,5 @@ ignore=BA124
 [file:EntryWidgetCoAHandled.yml]
 ignore=BA124
 
+[file:1_0_4.md]
+ignore=RN116

@@ -8,35 +8,47 @@ configuration:
   name: host
   required: true
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions)
+- display: Application ID / Client ID
   name: auth_id
   type: 4
   hidden: true
   required: false
 - name: credentials_auth_id
   type: 9
-  displaypassword: ID (received from the admin consent - see Detailed Instructions)
+  displaypassword: Application ID / Client ID
   hiddenusername: true
   required: false
-- display: Token (received from the admin consent - see Detailed Instructions)
+- display: Token / Tenant ID
   name: tenant_id
   type: 4
   hidden: true
   required: false
 - name: credentials_tenant_id
   type: 9
-  displaypassword: Token (received from the admin consent - see Detailed Instructions)
+  displaypassword: Token / Tenant ID
   hiddenusername: true
   required: false
-- display: Key (received from the admin consent - see Detailed Instructions)
+- display: Key / Client Secret
   name: enc_key
   type: 4
   hidden: true
   required: false
 - name: credentials_enc_key
   type: 9
-  displaypassword: Key (received from the admin consent - see Detailed Instructions)
+  displaypassword: Key / Client Secret
   hiddenusername: true
+  required: false
+- display: Application redirect URI (for Self Deployed - Authorization Code Flow)
+  name: redirect_uri
+  type: 0
+  section: Connect
+  required: false
+- display: ''
+  name: auth_code_creds
+  type: 9
+  displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
+  hiddenusername: true
+  section: Connect
   required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
@@ -54,6 +66,11 @@ configuration:
   display: Private Key
   name: private_key
   type: 14
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
+  name: self_deployed
+  type: 8
   required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
@@ -74,11 +91,6 @@ configuration:
   name: proxy
   type: 8
   required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self-deployed Azure Application
-  name: self_deployed
-  type: 8
-  required: false
 description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
 display: O365 File Management (Onedrive/Sharepoint/Teams)
 name: Microsoft_Graph_Files
@@ -86,7 +98,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       isArray: true
       name: object_type
       predefined:
@@ -95,16 +107,13 @@ script:
       - sites
       - users
       required: true
-    - auto: PREDEFINED
-      description: |-
+    - description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
         For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       name: object_type_id
-      predefined:
-      - ''
       required: true
     - description: |-
         The ID of the item to delete.
@@ -115,7 +124,7 @@ script:
     name: msgraph-delete-file
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -213,7 +222,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -295,7 +304,7 @@ script:
       description: URL to download the file's content.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.Size
-      description: File's size
+      description: File's size.
       type: Number
     - contextPath: MsGraphFiles.ReplacedFiles.Id
       description: The file ID.
@@ -308,7 +317,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -349,7 +358,7 @@ script:
       description: Unique identifier of the item in the drive.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.Path
-      description: The path to the item
+      description: The path to the item.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.LastModifiedDateTime
       description: Timestamp of when the item was last modified.
@@ -443,9 +452,12 @@ script:
     - contextPath: MsGraphFiles.ListDrives.OdataContext
       description: The OData query.
       type: String
+    - contextPath: MsGraphFiles.ListDrives.NextToken
+      description: The token for the next page.
+      type: String
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -537,10 +549,13 @@ script:
     - contextPath: MsGraphFiles.ListChildren.Children.OdataContext
       description: The OData query.
       type: String
+    - contextPath: MsGraphFiles.ListChildren.NextToken
+      description: The token for the next page.
+      type: String
   - arguments:
-    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites)
+    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites.
       name: keyword
-    description: Returns a list of the tenant sites.
+    description: "Returns a list of the tenant sites. This command requires the 'Sites.Read.All' permission."
     name: msgraph-list-sharepoint-sites
     outputs:
     - contextPath: MsGraph.Sites
@@ -581,7 +596,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
+      description: The MS Graph resource.
       name: object_type
       predefined:
       - drives
@@ -602,6 +617,12 @@ script:
         To get the ID of the file you want to download, use the msgraph-list-drive-content command.
       name: item_id
       required: true
+    - name: file_name
+      description: |-
+        The file name to download.
+        Use msgraph-list-drive-content to retrieve the name of a file,
+        if not provided, the file name will be the value of the item_id argument.
+      required: false
     description: Downloads the file contents of the drive item.
     name: msgraph-download-file
     outputs:
@@ -639,7 +660,109 @@ script:
     execution: false
     name: msgraph-files-auth-reset
     arguments: []
-  dockerimage: demisto/python_pancloud:1.0.0.66801
+  - arguments:
+    - description: The maximum number of results to return.
+      name: limit
+      defaultValue: 50
+    - description: |-
+        The ID of the site. Required if site_name is not provided.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+      name: site_id
+    - description: The name of the site. Required if site_id is not provided.
+      name: site_name
+    - description: The ID of the permission.
+      name: permission_id
+    - auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to retrieve all the apps with permission for the site. If true, the "limit" argument will be ignored.
+      name: all_results
+      defaultValue: "false"
+    name: msgraph-list-site-permissions
+    description: List of apps with permissions for the site. if permission_id is provided, it will return the details of that permission.
+    outputs:
+    - contextPath: MsGraphFiles.SitePermission.id
+      description: The unique identifier of the permission among all permissions on the item.
+      type: String
+    - contextPath: MsGraphFiles.SitePermission.roles
+      description: The type of permission, for example, read.
+      type: List
+    - contextPath: MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.id
+      description: Unique identifier for the application.
+      type: String
+    - contextPath: MsGraphFiles.SitePermission.grantedToIdentitiesV2.application.displayName
+      description: The display name of the application. The display name might not always be available or up to date.
+      type: String
+  - arguments:
+    - description: |-
+        The ID of the site. Required if site_name is not provided.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+      name: site_id
+    - description: The name of the site. Required if site_id is not provided.
+      name: site_name
+    - auto: PREDEFINED
+      predefined:
+      - read
+      - write
+      - owner
+      description: |-
+        read: Provides the ability to read the metadata and contents of the item.
+        write: Provides the ability to read and modify the metadata and contents of the item.
+        owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions.
+      name: role
+      required: true
+    - description: The ID of the application.
+      name: app_id
+      required: true
+    - description: The display name of the application.
+      name: display_name
+      required: true
+    name: msgraph-create-site-permissions
+    description: Create a new application permission for a site.
+  - arguments:
+    - description: The name of the site. Required if site_id is not provided.
+      name: site_name
+    - description: |-
+        The ID of the site. Required if site_name is not provided.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+      name: site_id
+    - description: The unique identifier of the permission to update.
+      name: permission_id
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - read
+      - write
+      - owner
+      description: |-
+        read: Provides the ability to read the metadata and contents of the item.
+        write: Provides the ability to read and modify the metadata and contents of the item.
+        owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions.
+      name: role
+      required: true
+    name: msgraph-update-site-permissions
+    description: Updates an existing permission for a site.
+  - arguments:
+    - description: |-
+        Unique identifier for SharePoint site. Required if site_name is not provided.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+      name: site_id
+    - description: The name of the site. Required if site_id is not provided.
+      name: site_name
+    - description: The unique identifier of the permission to delete.
+      name: permission_id
+      required: true
+    name: msgraph-delete-site-permissions
+    description: Deletes an app permission from a site.
+  - description: Tests connectivity to Microsoft.
+    execution: false
+    name: msgraph-files-auth-test
+    arguments: []
+  - description: Generate the login URL used for Authorization code flow.
+    name: msgraph-files-generate-login-url
+    arguments: []
+  dockerimage: demisto/python_pancloud:1.0.0.77747
   script: ''
   subtype: python3
   type: python

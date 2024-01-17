@@ -1,0 +1,985 @@
+{
+    "mock_response": {
+        "data": [
+            {
+                "id": "run-ABCABCABCABCABCA",
+                "type": "runs",
+                "attributes": {
+                    "actions": {
+                        "is-cancelable": false,
+                        "is-confirmable": false,
+                        "is-discardable": false,
+                        "is-force-cancelable": false
+                    },
+                    "allow-config-generation": false,
+                    "allow-empty-apply": false,
+                    "auto-apply": false,
+                    "canceled-at": null,
+                    "created-at": "2023-11-30T09:21:33.373Z",
+                    "has-changes": false,
+                    "is-destroy": false,
+                    "message": "Triggered via UI",
+                    "plan-only": false,
+                    "refresh": true,
+                    "refresh-only": true,
+                    "replace-addrs": [],
+                    "save-plan": false,
+                    "source": "tfe-ui",
+                    "status-timestamps": {
+                        "planned-at": "2023-11-30T09:21:42+00:00",
+                        "queuing-at": "2023-11-30T09:21:33+00:00",
+                        "planning-at": "2023-11-30T09:21:37+00:00",
+                        "plan-queued-at": "2023-11-30T09:21:33+00:00",
+                        "plan-queueable-at": "2023-11-30T09:21:33+00:00",
+                        "planned-and-finished-at": "2023-11-30T09:21:42+00:00"
+                    },
+                    "status": "planned_and_finished",
+                    "target-addrs": null,
+                    "trigger-reason": "manual",
+                    "terraform-version": "1.4.4",
+                    "permissions": {
+                        "can-apply": true,
+                        "can-cancel": true,
+                        "can-comment": true,
+                        "can-discard": true,
+                        "can-force-execute": true,
+                        "can-force-cancel": true,
+                        "can-override-policy-check": true
+                    },
+                    "variables": []
+                },
+                "relationships": {
+                    "workspace": {
+                        "data": {
+                            "id": "ws-ABCABCABCABCABCA",
+                            "type": "workspaces"
+                        }
+                    },
+                    "apply": {
+                        "data": {
+                            "id": "apply-ABCABCABCABCABCA",
+                            "type": "applies"
+                        },
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/apply"
+                        }
+                    },
+                    "configuration-version": {
+                        "data": {
+                            "id": "cv-ABCABCABCABCABCA",
+                            "type": "configuration-versions"
+                        },
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/configuration-version"
+                        }
+                    },
+                    "created-by": {
+                        "data": {
+                            "id": "user-ABCABCABCABCABCA",
+                            "type": "users"
+                        },
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/created-by"
+                        }
+                    },
+                    "plan": {
+                        "data": {
+                            "id": "plan-ABCABCABCABCABCA",
+                            "type": "plans"
+                        },
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/plan"
+                        }
+                    },
+                    "run-events": {
+                        "data": [
+                            {
+                                "id": "re-ABCABCABCABCABCA",
+                                "type": "run-events"
+                            },
+                            {
+                                "id": "re-ABCABCABCABCABCA",
+                                "type": "run-events"
+                            },
+                            {
+                                "id": "re-ABCABCABCABCABCA",
+                                "type": "run-events"
+                            },
+                            {
+                                "id": "re-ABCABCABCABCABCA",
+                                "type": "run-events"
+                            }
+                        ],
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/run-events"
+                        }
+                    },
+                    "task-stages": {
+                        "data": [],
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/task-stages"
+                        }
+                    },
+                    "policy-checks": {
+                        "data": [],
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/policy-checks"
+                        }
+                    },
+                    "comments": {
+                        "data": [],
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/comments"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "/api/v2/runs/run-ABCABCABCABCABCA"
+                }
+            },
+            {
+                "id": "run-ABCABCABCABCABCA",
+                "type": "runs",
+                "attributes": {
+                    "actions": {
+                        "is-cancelable": false,
+                        "is-confirmable": false,
+                        "is-discardable": false,
+                        "is-force-cancelable": false
+                    },
+                    "allow-config-generation": false,
+                    "allow-empty-apply": false,
+                    "auto-apply": true,
+                    "canceled-at": null,
+                    "created-at": "2023-10-25T10:33:02.368Z",
+                    "has-changes": true,
+                    "is-destroy": false,
+                    "message": "Triggered via CLI",
+                    "plan-only": false,
+                    "refresh": true,
+                    "refresh-only": false,
+                    "replace-addrs": null,
+                    "save-plan": false,
+                    "source": "terraform+cloud",
+                    "status-timestamps": {
+                        "applied-at": "2023-10-25T10:33:19+00:00",
+                        "planned-at": "2023-10-25T10:33:11+00:00",
+                        "queuing-at": "2023-10-25T10:33:02+00:00",
+                        "applying-at": "2023-10-25T10:33:16+00:00",
+                        "planning-at": "2023-10-25T10:33:07+00:00",
+                        "confirmed-at": "2023-10-25T10:33:11+00:00",
+                        "plan-queued-at": "2023-10-25T10:33:03+00:00",
+                        "apply-queued-at": "2023-10-25T10:33:12+00:00",
+                        "queuing-apply-at": "2023-10-25T10:33:11+00:00",
+                        "plan-queueable-at": "2023-10-25T10:33:02+00:00"
+                    },
+                    "status": "applied",
+                    "target-addrs": null,
+                    "trigger-reason": "manual",
+                    "terraform-version": "1.4.4",
+                    "permissions": {
+                        "can-apply": true,
+                        "can-cancel": true,
+                        "can-comment": true,
+                        "can-discard": true,
+                        "can-force-execute": true,
+                        "can-force-cancel": true,
+                        "can-override-policy-check": true
+                    },
+                    "variables": []
+                },
+                "relationships": {
+                    "workspace": {
+                        "data": {
+                            "id": "ws-ABCABCABCABCABCA",
+                            "type": "workspaces"
+                        }
+                    },
+                    "apply": {
+                        "data": {
+                            "id": "apply-ABCABCABCABCABCA",
+                            "type": "applies"
+                        },
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/apply"
+                        }
+                    },
+                    "configuration-version": {
+                        "data": {
+                            "id": "cv-ABCABCABCABCABCA",
+                            "type": "configuration-versions"
+                        },
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/configuration-version"
+                        }
+                    },
+                    "created-by": {
+                        "data": {
+                            "id": "user--ABCABCABCABCABCA",
+                            "type": "users"
+                        },
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/created-by"
+                        }
+                    },
+                    "plan": {
+                        "data": {
+                            "id": "plan-ABCABCABCABCABCA",
+                            "type": "plans"
+                        },
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/plan"
+                        }
+                    },
+                    "run-events": {
+                        "data": [
+                            {
+                                "id": "re-ABCABCABCABCABCA",
+                                "type": "run-events"
+                            }
+                        ],
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/run-events"
+                        }
+                    },
+                    "task-stages": {
+                        "data": [],
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/task-stages"
+                        }
+                    },
+                    "policy-checks": {
+                        "data": [],
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/policy-checks"
+                        }
+                    },
+                    "comments": {
+                        "data": [],
+                        "links": {
+                            "related": "/api/v2/runs/run-ABCABCABCABCABCA/comments"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "/api/v2/runs/run-ABCABCABCABCABCA"
+                }
+            }
+        ],
+        "links": {
+            "self": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+            "first": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+            "prev": null,
+            "next": null,
+            "last": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20"
+        },
+        "meta": {
+            "pagination": {
+                "current-page": 1,
+                "page-size": 20,
+                "prev-page": null,
+                "next-page": null,
+                "total-pages": 1,
+                "total-count": 2
+            },
+            "status-counts": {
+                "pending": 0,
+                "fetching": 0,
+                "fetching-completed": 0,
+                "pre-plan-running": 0,
+                "pre-plan-completed": 0,
+                "queuing": 0,
+                "plan-queued": 0,
+                "planning": 0,
+                "planned": 0,
+                "confirmed": 0,
+                "queuing-apply": 0,
+                "apply-queued": 0,
+                "applying": 0,
+                "applied": 1,
+                "discarded": 0,
+                "errored": 0,
+                "canceled": 0,
+                "cost-estimating": 0,
+                "cost-estimated": 0,
+                "policy-checking": 0,
+                "policy-override": 0,
+                "policy-checked": 0,
+                "policy-soft-failed": 0,
+                "planned-and-finished": 2,
+                "planned-and-saved": 0,
+                "post-plan-running": 0,
+                "post-plan-completed": 0,
+                "pre-apply-running": 0,
+                "pre-apply-completed": 0,
+                "post-apply-running": 0,
+                "post-apply-completed": 0,
+                "assessing": 0,
+                "assessed": 0,
+                "pre-plan-awaiting-decision": 0,
+                "post-plan-awaiting-decision": 0,
+                "pre-apply-awaiting-decision": 0,
+                "total": 3
+            }
+        }
+    },
+    "expected_results": {
+        "Type": 1,
+        "ContentsFormat": "json",
+        "Contents": {
+            "data": [
+                {
+                    "id": "run-ABCABCABCABCABCA",
+                    "type": "runs",
+                    "attributes": {
+                        "actions": {
+                            "is-cancelable": false,
+                            "is-confirmable": false,
+                            "is-discardable": false,
+                            "is-force-cancelable": false
+                        },
+                        "allow-config-generation": false,
+                        "allow-empty-apply": false,
+                        "auto-apply": false,
+                        "canceled-at": null,
+                        "created-at": "2023-11-30T09:21:33.373Z",
+                        "has-changes": false,
+                        "is-destroy": false,
+                        "message": "Triggered via UI",
+                        "plan-only": false,
+                        "refresh": true,
+                        "refresh-only": true,
+                        "replace-addrs": [],
+                        "save-plan": false,
+                        "source": "tfe-ui",
+                        "status-timestamps": {
+                            "planned-at": "2023-11-30T09:21:42+00:00",
+                            "queuing-at": "2023-11-30T09:21:33+00:00",
+                            "planning-at": "2023-11-30T09:21:37+00:00",
+                            "plan-queued-at": "2023-11-30T09:21:33+00:00",
+                            "plan-queueable-at": "2023-11-30T09:21:33+00:00",
+                            "planned-and-finished-at": "2023-11-30T09:21:42+00:00"
+                        },
+                        "status": "planned_and_finished",
+                        "target-addrs": null,
+                        "trigger-reason": "manual",
+                        "terraform-version": "1.4.4",
+                        "permissions": {
+                            "can-apply": true,
+                            "can-cancel": true,
+                            "can-comment": true,
+                            "can-discard": true,
+                            "can-force-execute": true,
+                            "can-force-cancel": true,
+                            "can-override-policy-check": true
+                        },
+                        "variables": []
+                    },
+                    "relationships": {
+                        "workspace": {
+                            "data": {
+                                "id": "ws-ABCABCABCABCABCA",
+                                "type": "workspaces"
+                            }
+                        },
+                        "apply": {
+                            "data": {
+                                "id": "apply-ABCABCABCABCABCA",
+                                "type": "applies"
+                            },
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/apply"
+                            }
+                        },
+                        "configuration-version": {
+                            "data": {
+                                "id": "cv-ABCABCABCABCABCA",
+                                "type": "configuration-versions"
+                            },
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/configuration-version"
+                            }
+                        },
+                        "created-by": {
+                            "data": {
+                                "id": "user-ABCABCABCABCABCA",
+                                "type": "users"
+                            },
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/created-by"
+                            }
+                        },
+                        "plan": {
+                            "data": {
+                                "id": "plan-ABCABCABCABCABCA",
+                                "type": "plans"
+                            },
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/plan"
+                            }
+                        },
+                        "run-events": {
+                            "data": [
+                                {
+                                    "id": "re-ABCABCABCABCABCA",
+                                    "type": "run-events"
+                                },
+                                {
+                                    "id": "re-ABCABCABCABCABCA",
+                                    "type": "run-events"
+                                },
+                                {
+                                    "id": "re-ABCABCABCABCABCA",
+                                    "type": "run-events"
+                                },
+                                {
+                                    "id": "re-ABCABCABCABCABCA",
+                                    "type": "run-events"
+                                }
+                            ],
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/run-events"
+                            }
+                        },
+                        "task-stages": {
+                            "data": [],
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/task-stages"
+                            }
+                        },
+                        "policy-checks": {
+                            "data": [],
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/policy-checks"
+                            }
+                        },
+                        "comments": {
+                            "data": [],
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/comments"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "/api/v2/runs/run-ABCABCABCABCABCA"
+                    }
+                },
+                {
+                    "id": "run-ABCABCABCABCABCA",
+                    "type": "runs",
+                    "attributes": {
+                        "actions": {
+                            "is-cancelable": false,
+                            "is-confirmable": false,
+                            "is-discardable": false,
+                            "is-force-cancelable": false
+                        },
+                        "allow-config-generation": false,
+                        "allow-empty-apply": false,
+                        "auto-apply": true,
+                        "canceled-at": null,
+                        "created-at": "2023-10-25T10:33:02.368Z",
+                        "has-changes": true,
+                        "is-destroy": false,
+                        "message": "Triggered via CLI",
+                        "plan-only": false,
+                        "refresh": true,
+                        "refresh-only": false,
+                        "replace-addrs": null,
+                        "save-plan": false,
+                        "source": "terraform+cloud",
+                        "status-timestamps": {
+                            "applied-at": "2023-10-25T10:33:19+00:00",
+                            "planned-at": "2023-10-25T10:33:11+00:00",
+                            "queuing-at": "2023-10-25T10:33:02+00:00",
+                            "applying-at": "2023-10-25T10:33:16+00:00",
+                            "planning-at": "2023-10-25T10:33:07+00:00",
+                            "confirmed-at": "2023-10-25T10:33:11+00:00",
+                            "plan-queued-at": "2023-10-25T10:33:03+00:00",
+                            "apply-queued-at": "2023-10-25T10:33:12+00:00",
+                            "queuing-apply-at": "2023-10-25T10:33:11+00:00",
+                            "plan-queueable-at": "2023-10-25T10:33:02+00:00"
+                        },
+                        "status": "applied",
+                        "target-addrs": null,
+                        "trigger-reason": "manual",
+                        "terraform-version": "1.4.4",
+                        "permissions": {
+                            "can-apply": true,
+                            "can-cancel": true,
+                            "can-comment": true,
+                            "can-discard": true,
+                            "can-force-execute": true,
+                            "can-force-cancel": true,
+                            "can-override-policy-check": true
+                        },
+                        "variables": []
+                    },
+                    "relationships": {
+                        "workspace": {
+                            "data": {
+                                "id": "ws-ABCABCABCABCABCA",
+                                "type": "workspaces"
+                            }
+                        },
+                        "apply": {
+                            "data": {
+                                "id": "apply-ABCABCABCABCABCA",
+                                "type": "applies"
+                            },
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/apply"
+                            }
+                        },
+                        "configuration-version": {
+                            "data": {
+                                "id": "cv-ABCABCABCABCABCA",
+                                "type": "configuration-versions"
+                            },
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/configuration-version"
+                            }
+                        },
+                        "created-by": {
+                            "data": {
+                                "id": "user--ABCABCABCABCABCA",
+                                "type": "users"
+                            },
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/created-by"
+                            }
+                        },
+                        "plan": {
+                            "data": {
+                                "id": "plan-ABCABCABCABCABCA",
+                                "type": "plans"
+                            },
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/plan"
+                            }
+                        },
+                        "run-events": {
+                            "data": [
+                                {
+                                    "id": "re-ABCABCABCABCABCA",
+                                    "type": "run-events"
+                                }
+                            ],
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/run-events"
+                            }
+                        },
+                        "task-stages": {
+                            "data": [],
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/task-stages"
+                            }
+                        },
+                        "policy-checks": {
+                            "data": [],
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/policy-checks"
+                            }
+                        },
+                        "comments": {
+                            "data": [],
+                            "links": {
+                                "related": "/api/v2/runs/run-ABCABCABCABCABCA/comments"
+                            }
+                        }
+                    },
+                    "links": {
+                        "self": "/api/v2/runs/run-ABCABCABCABCABCA"
+                    }
+                }
+            ],
+            "links": {
+                "self": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+                "first": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+                "prev": null,
+                "next": null,
+                "last": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20"
+            },
+            "meta": {
+                "pagination": {
+                    "current-page": 1,
+                    "page-size": 20,
+                    "prev-page": null,
+                    "next-page": null,
+                    "total-pages": 1,
+                    "total-count": 2
+                },
+                "status-counts": {
+                    "pending": 0,
+                    "fetching": 0,
+                    "fetching-completed": 0,
+                    "pre-plan-running": 0,
+                    "pre-plan-completed": 0,
+                    "queuing": 0,
+                    "plan-queued": 0,
+                    "planning": 0,
+                    "planned": 0,
+                    "confirmed": 0,
+                    "queuing-apply": 0,
+                    "apply-queued": 0,
+                    "applying": 0,
+                    "applied": 1,
+                    "discarded": 0,
+                    "errored": 0,
+                    "canceled": 0,
+                    "cost-estimating": 0,
+                    "cost-estimated": 0,
+                    "policy-checking": 0,
+                    "policy-override": 0,
+                    "policy-checked": 0,
+                    "policy-soft-failed": 0,
+                    "planned-and-finished": 2,
+                    "planned-and-saved": 0,
+                    "post-plan-running": 0,
+                    "post-plan-completed": 0,
+                    "pre-apply-running": 0,
+                    "pre-apply-completed": 0,
+                    "post-apply-running": 0,
+                    "post-apply-completed": 0,
+                    "assessing": 0,
+                    "assessed": 0,
+                    "pre-plan-awaiting-decision": 0,
+                    "post-plan-awaiting-decision": 0,
+                    "pre-apply-awaiting-decision": 0,
+                    "total": 3
+                }
+            }
+        },
+        "HumanReadable": "### Terraform Runs\n|Plan id|Planned at|Run id|Status|\n|---|---|---|---|\n| plan-ABCABCABCABCABCA | 2023-11-30T09:21:42+00:00 | run-ABCABCABCABCABCA | planned_and_finished |\n| plan-ABCABCABCABCABCA | 2023-10-25T10:33:11+00:00 | run-ABCABCABCABCABCA | applied |\n",
+        "EntryContext": {
+            "Terraform.Run(val.data.id && val.data.id == obj.data.id)": {
+                "data": [
+                    {
+                        "id": "run-ABCABCABCABCABCA",
+                        "type": "runs",
+                        "attributes": {
+                            "actions": {
+                                "is-cancelable": false,
+                                "is-confirmable": false,
+                                "is-discardable": false,
+                                "is-force-cancelable": false
+                            },
+                            "allow-config-generation": false,
+                            "allow-empty-apply": false,
+                            "auto-apply": false,
+                            "canceled-at": null,
+                            "created-at": "2023-11-30T09:21:33.373Z",
+                            "has-changes": false,
+                            "is-destroy": false,
+                            "message": "Triggered via UI",
+                            "plan-only": false,
+                            "refresh": true,
+                            "refresh-only": true,
+                            "replace-addrs": [],
+                            "save-plan": false,
+                            "source": "tfe-ui",
+                            "status-timestamps": {
+                                "planned-at": "2023-11-30T09:21:42+00:00",
+                                "queuing-at": "2023-11-30T09:21:33+00:00",
+                                "planning-at": "2023-11-30T09:21:37+00:00",
+                                "plan-queued-at": "2023-11-30T09:21:33+00:00",
+                                "plan-queueable-at": "2023-11-30T09:21:33+00:00",
+                                "planned-and-finished-at": "2023-11-30T09:21:42+00:00"
+                            },
+                            "status": "planned_and_finished",
+                            "target-addrs": null,
+                            "trigger-reason": "manual",
+                            "terraform-version": "1.4.4",
+                            "permissions": {
+                                "can-apply": true,
+                                "can-cancel": true,
+                                "can-comment": true,
+                                "can-discard": true,
+                                "can-force-execute": true,
+                                "can-force-cancel": true,
+                                "can-override-policy-check": true
+                            },
+                            "variables": []
+                        },
+                        "relationships": {
+                            "workspace": {
+                                "data": {
+                                    "id": "ws-ABCABCABCABCABCA",
+                                    "type": "workspaces"
+                                }
+                            },
+                            "apply": {
+                                "data": {
+                                    "id": "apply-ABCABCABCABCABCA",
+                                    "type": "applies"
+                                },
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/apply"
+                                }
+                            },
+                            "configuration-version": {
+                                "data": {
+                                    "id": "cv-ABCABCABCABCABCA",
+                                    "type": "configuration-versions"
+                                },
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/configuration-version"
+                                }
+                            },
+                            "created-by": {
+                                "data": {
+                                    "id": "user-ABCABCABCABCABCA",
+                                    "type": "users"
+                                },
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/created-by"
+                                }
+                            },
+                            "plan": {
+                                "data": {
+                                    "id": "plan-ABCABCABCABCABCA",
+                                    "type": "plans"
+                                },
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/plan"
+                                }
+                            },
+                            "run-events": {
+                                "data": [
+                                    {
+                                        "id": "re-ABCABCABCABCABCA",
+                                        "type": "run-events"
+                                    },
+                                    {
+                                        "id": "re-ABCABCABCABCABCA",
+                                        "type": "run-events"
+                                    },
+                                    {
+                                        "id": "re-ABCABCABCABCABCA",
+                                        "type": "run-events"
+                                    },
+                                    {
+                                        "id": "re-ABCABCABCABCABCA",
+                                        "type": "run-events"
+                                    }
+                                ],
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/run-events"
+                                }
+                            },
+                            "task-stages": {
+                                "data": [],
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/task-stages"
+                                }
+                            },
+                            "policy-checks": {
+                                "data": [],
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/policy-checks"
+                                }
+                            },
+                            "comments": {
+                                "data": [],
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/comments"
+                                }
+                            }
+                        },
+                        "links": {
+                            "self": "/api/v2/runs/run-ABCABCABCABCABCA"
+                        }
+                    },
+                    {
+                        "id": "run-ABCABCABCABCABCA",
+                        "type": "runs",
+                        "attributes": {
+                            "actions": {
+                                "is-cancelable": false,
+                                "is-confirmable": false,
+                                "is-discardable": false,
+                                "is-force-cancelable": false
+                            },
+                            "allow-config-generation": false,
+                            "allow-empty-apply": false,
+                            "auto-apply": true,
+                            "canceled-at": null,
+                            "created-at": "2023-10-25T10:33:02.368Z",
+                            "has-changes": true,
+                            "is-destroy": false,
+                            "message": "Triggered via CLI",
+                            "plan-only": false,
+                            "refresh": true,
+                            "refresh-only": false,
+                            "replace-addrs": null,
+                            "save-plan": false,
+                            "source": "terraform+cloud",
+                            "status-timestamps": {
+                                "applied-at": "2023-10-25T10:33:19+00:00",
+                                "planned-at": "2023-10-25T10:33:11+00:00",
+                                "queuing-at": "2023-10-25T10:33:02+00:00",
+                                "applying-at": "2023-10-25T10:33:16+00:00",
+                                "planning-at": "2023-10-25T10:33:07+00:00",
+                                "confirmed-at": "2023-10-25T10:33:11+00:00",
+                                "plan-queued-at": "2023-10-25T10:33:03+00:00",
+                                "apply-queued-at": "2023-10-25T10:33:12+00:00",
+                                "queuing-apply-at": "2023-10-25T10:33:11+00:00",
+                                "plan-queueable-at": "2023-10-25T10:33:02+00:00"
+                            },
+                            "status": "applied",
+                            "target-addrs": null,
+                            "trigger-reason": "manual",
+                            "terraform-version": "1.4.4",
+                            "permissions": {
+                                "can-apply": true,
+                                "can-cancel": true,
+                                "can-comment": true,
+                                "can-discard": true,
+                                "can-force-execute": true,
+                                "can-force-cancel": true,
+                                "can-override-policy-check": true
+                            },
+                            "variables": []
+                        },
+                        "relationships": {
+                            "workspace": {
+                                "data": {
+                                    "id": "ws-ABCABCABCABCABCA",
+                                    "type": "workspaces"
+                                }
+                            },
+                            "apply": {
+                                "data": {
+                                    "id": "apply-ABCABCABCABCABCA",
+                                    "type": "applies"
+                                },
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/apply"
+                                }
+                            },
+                            "configuration-version": {
+                                "data": {
+                                    "id": "cv-ABCABCABCABCABCA",
+                                    "type": "configuration-versions"
+                                },
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/configuration-version"
+                                }
+                            },
+                            "created-by": {
+                                "data": {
+                                    "id": "user--ABCABCABCABCABCA",
+                                    "type": "users"
+                                },
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/created-by"
+                                }
+                            },
+                            "plan": {
+                                "data": {
+                                    "id": "plan-ABCABCABCABCABCA",
+                                    "type": "plans"
+                                },
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/plan"
+                                }
+                            },
+                            "run-events": {
+                                "data": [
+                                    {
+                                        "id": "re-ABCABCABCABCABCA",
+                                        "type": "run-events"
+                                    }
+                                ],
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/run-events"
+                                }
+                            },
+                            "task-stages": {
+                                "data": [],
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/task-stages"
+                                }
+                            },
+                            "policy-checks": {
+                                "data": [],
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/policy-checks"
+                                }
+                            },
+                            "comments": {
+                                "data": [],
+                                "links": {
+                                    "related": "/api/v2/runs/run-ABCABCABCABCABCA/comments"
+                                }
+                            }
+                        },
+                        "links": {
+                            "self": "/api/v2/runs/run-ABCABCABCABCABCA"
+                        }
+                    }
+                ],
+                "links": {
+                    "self": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+                    "first": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+                    "prev": null,
+                    "next": null,
+                    "last": "https://app.terraform.io/api/v2/workspaces/ws-ABCABCABCABCABCA/runs?page%5Bnumber%5D=1&page%5Bsize%5D=20"
+                },
+                "meta": {
+                    "pagination": {
+                        "current-page": 1,
+                        "page-size": 20,
+                        "prev-page": null,
+                        "next-page": null,
+                        "total-pages": 1,
+                        "total-count": 2
+                    },
+                    "status-counts": {
+                        "pending": 0,
+                        "fetching": 0,
+                        "fetching-completed": 0,
+                        "pre-plan-running": 0,
+                        "pre-plan-completed": 0,
+                        "queuing": 0,
+                        "plan-queued": 0,
+                        "planning": 0,
+                        "planned": 0,
+                        "confirmed": 0,
+                        "queuing-apply": 0,
+                        "apply-queued": 0,
+                        "applying": 0,
+                        "applied": 1,
+                        "discarded": 0,
+                        "errored": 0,
+                        "canceled": 0,
+                        "cost-estimating": 0,
+                        "cost-estimated": 0,
+                        "policy-checking": 0,
+                        "policy-override": 0,
+                        "policy-checked": 0,
+                        "policy-soft-failed": 0,
+                        "planned-and-finished": 2,
+                        "planned-and-saved": 0,
+                        "post-plan-running": 0,
+                        "post-plan-completed": 0,
+                        "pre-apply-running": 0,
+                        "pre-apply-completed": 0,
+                        "post-apply-running": 0,
+                        "post-apply-completed": 0,
+                        "assessing": 0,
+                        "assessed": 0,
+                        "pre-plan-awaiting-decision": 0,
+                        "post-plan-awaiting-decision": 0,
+                        "pre-apply-awaiting-decision": 0,
+                        "total": 3
+                    }
+                }
+            }
+        },
+        "IndicatorTimeline": [],
+        "IgnoreAutoExtract": false,
+        "Note": false,
+        "Relationships": []
+    }
+}

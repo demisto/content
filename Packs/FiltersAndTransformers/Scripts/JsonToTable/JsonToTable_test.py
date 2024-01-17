@@ -27,4 +27,4 @@ def test_json_to_table__sanity(mocker, value, expected_md):
     mocker.patch.object(JsonToTable, 'return_results')
     JsonToTable.main()
 
-    JsonToTable.return_results.assert_called_with(expected_md)
+    assert JsonToTable.return_results.call_args[0][0].readable_output == expected_md

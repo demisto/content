@@ -16,7 +16,7 @@ isHosted = function () {
     return false
 }
 
-var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/'
+var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/content/packs/'
 
 getTenantAccountName = function () {
     // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'

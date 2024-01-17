@@ -45,11 +45,18 @@ def download_markdown_images_from_artifacts(
                 )
 
             pack_images_names[pack_name][readme_desc_data] = [
-                image_name.get("image_name") for image_name in images_data
+                decode_before_upload(image_name.get("image_name")) for image_name in images_data
             ]
 
     logging.debug(f'{pack_images_names=}')
     return pack_images_names
+
+
+def decode_before_upload(image_name):
+    """
+    To prevent double encoding when uploading the images to GCP.
+    """
+    return urllib.parse.unquote(image_name)
 
 
 def download_markdown_image_from_url_and_upload_to_gcs(
@@ -85,6 +92,8 @@ def download_markdown_image_from_url_and_upload_to_gcs(
 
             with open(image_name, "wb") as f:
                 shutil.copyfileobj(r.raw, f)
+
+            relative_image_path = decode_before_upload(relative_image_path)
             # init the blob with the correct path to save the image on gcs
             gcs_storage_path = os.path.join(storage_base_path, relative_image_path)
             logging.debug(f"{gcs_storage_path=}")

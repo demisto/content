@@ -38,6 +38,7 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
     if without_jira:
         logging.info("Printing test modeling rule summary without Jira tickets")
         issues = None
+        server_url = JIRA_SERVER_URL
     else:
         logging.info("Searching for Jira tickets for test modeling rule with the following settings:")
         logging.info(f"\tJira server url: {JIRA_SERVER_URL}")
@@ -48,7 +49,8 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
         logging.info(f"\tJira labels: {', '.join(JIRA_LABELS)}")
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
-        jira_server_information(jira_server)
+        jira_server_info = jira_server_information(jira_server)
+        server_url = jira_server_info["baseUrl"]
 
         issues = jira_search_all_by_query(jira_server, generate_query_by_component_and_issue_type())
 
@@ -56,7 +58,7 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
         calculate_test_modeling_rule_results(test_modeling_rules_results_files, issues)
     )
 
-    write_test_modeling_rule_to_jira_mapping(artifacts_path, jira_tickets_for_modeling_rule)
+    write_test_modeling_rule_to_jira_mapping(server_url, artifacts_path, jira_tickets_for_modeling_rule)
 
     if modeling_rules_to_test_suite:
         logging.info(f"Found {len(jira_tickets_for_modeling_rule)} Jira tickets out of {len(modeling_rules_to_test_suite)} "
