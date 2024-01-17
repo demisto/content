@@ -35,7 +35,7 @@ def main():
     repo = options.repo
     pr_id = options.pr_id
 
-    suffix = F'https://api.github.com/repos/{owner}/{repo}'
+    suffix = f'https://api.github.com/repos/{owner}/{repo}'
     pr_state = 'open'
 
     # initialize timer
