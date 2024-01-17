@@ -2,8 +2,11 @@ import requests
 import json
 import sys
 import argparse
+import urllib3
 from create_release import get_changelog_text
 
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Triggers update-demisto-sdk-version workflow')

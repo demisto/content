@@ -2,6 +2,10 @@ import requests
 import json
 import sys
 import argparse
+import urllib3
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
 def options_handler():

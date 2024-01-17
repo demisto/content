@@ -6,10 +6,10 @@ import sys
 import argparse
 import base64
 import json
+import urllib3
 from datetime import datetime
 
 # Disable insecure warnings
-import urllib3
 urllib3.disable_warnings()
 
 API_SUFFIX = 'https://api.github.com/repos/demisto/demisto-sdk'

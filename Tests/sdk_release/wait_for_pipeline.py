@@ -4,8 +4,11 @@ from Tests.scripts.utils import logging_wrapper as logging
 import sys
 import time
 import requests
+import urllib3
 from Tests.scripts.utils.log_util import install_logging
 
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 GITLAB_SERVER_URL = 'https://gitlab.xdr.pan.local'  # disable-secrets-detection
 TIMEOUT = 60 * 60 * 6  # 6 hours

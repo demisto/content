@@ -2,6 +2,10 @@ import argparse
 import sys
 import time
 import requests
+import urllib3
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 PRS_LIST_TEMPLATE = 'https://api.github.com/repos/demisto/{}/pulls?head=demisto:{}'
 PR_BY_ID_TEMPLATE = 'https://api.github.com/repos/demisto/{}/pulls/{}'
@@ -49,7 +53,6 @@ def main():
 
         time.sleep(30)
         elapsed = time.time() - start
-
 
     content_pr_state = 'open'
     sdk_pr_state = 'open'

@@ -3,7 +3,10 @@ import json
 import sys
 import argparse
 import re
+import urllib3
 
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 REGEX = re.compile(r"^(.*) \[(#\d+)\]\((http.*)\)")
 

@@ -2,6 +2,10 @@ import argparse
 import sys
 import time
 import requests
+import urllib3
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ARTIFACTS_URL = 'https://art.code.pan.run/artifactory/api/pypi/pypi.org/simple/demisto-sdk'  # disable-secrets-detection
 TIMEOUT = 60 * 60 * 6  # 6 hours

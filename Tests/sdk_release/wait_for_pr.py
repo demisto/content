@@ -2,7 +2,10 @@ import argparse
 import sys
 import time
 import requests
+import urllib3
 
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
