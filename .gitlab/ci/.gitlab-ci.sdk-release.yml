@@ -192,7 +192,7 @@ deploy-sdk-to-pypi:
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
-    - python3 ./Tests/sdk_release/create_release.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -t "test"
+    - python3 ./Tests/sdk_release/create_release.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
     - python3 ./Tests/sdk_release/wait_for_release.py -b $RELEASE_VERSION
 
 
