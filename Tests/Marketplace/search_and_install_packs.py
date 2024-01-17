@@ -715,10 +715,8 @@ def get_all_content_packs_dependencies(client: demisto_client) -> dict[str, dict
                          "currentVersion", "dependencies", "deprecated"
     """
     all_packs_dependencies = {}
-    for i in range(37):  # itertools.count():
-        # response = get_one_page_of_packs_dependencies(client, i)
-        with open(f"/Users/mwienfeld/Downloads/res_test/res{i}.json") as file:
-            response = json.loads(file.read())
+    for i in itertools.count():
+        response = get_one_page_of_packs_dependencies(client, i)
         packs = response["packs"]
         if not packs:
             break
@@ -840,7 +838,7 @@ def get_packs_and_dependencies_to_install(
         bool: False if any deprecated dependencies were found, True otherwise.
     """
     no_deprecated_dependencies = True
-    logging.debug(f"graph_dependencies.nodes\n\n{graph_dependencies.nodes}\n\n")
+    logging.info(f"graph_dependencies.nodes\n\n{graph_dependencies.nodes}\n\n")
     for pack_id in pack_ids:
         dependencies_for_pack_id = nx.ancestors(graph_dependencies, pack_id)
 
