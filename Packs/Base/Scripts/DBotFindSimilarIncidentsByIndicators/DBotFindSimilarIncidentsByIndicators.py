@@ -416,7 +416,7 @@ def similar_incidents_results(
         if x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_EXCLUDE_FROM_DISPLAY
     ]
     return CommandResults(
-        outputs={"similarIncident": outputs},
+        outputs={"similarIncident": outputs, "isSimilarIncidentFound": len(outputs) > 0},
         outputs_prefix="DBotFindSimilarIncidentsByIndicators",
         raw_response=outputs,
         readable_output=tableToMarkdown(
