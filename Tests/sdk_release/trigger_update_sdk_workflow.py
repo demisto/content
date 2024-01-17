@@ -8,6 +8,7 @@ from create_release import get_changelog_text
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
 def options_handler():
     parser = argparse.ArgumentParser(description='Triggers update-demisto-sdk-version workflow')
 
@@ -28,6 +29,7 @@ def main():
     inputs = {
         'reviewer': reviewer,
         'release_version': release_branch_name,
+        'release_version': '1.25.0', #TODO: remove this line
         'release_changes': get_changelog_text(release_branch_name)
     }
 

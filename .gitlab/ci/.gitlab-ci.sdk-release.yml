@@ -204,12 +204,14 @@ create-content-pull-request:
     - deploy-sdk-to-pypi
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
+    REVIEWER: $REVIEWER
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
+    - echo "REVIEWER="$REVIEWER
 #    - python3 ./Tests/sdk_release/wait_for_release.py -b $RELEASE_VERSION
     - python3 ./Tests/sdk_release/wait_for_release.py -b 1.25.3
-    - python3 ./Tests/sdk_release/trigger_update_sdk_workflow.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - python3 ./Tests/sdk_release/trigger_update_sdk_workflow.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -r $REVIEWER
     - python3 ./Tests/sdk_release/wait_for_release_prs.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
 
 

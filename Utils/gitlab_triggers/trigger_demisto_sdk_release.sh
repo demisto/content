@@ -17,6 +17,7 @@ if [ "$#" -lt "1" ]; then
   [-rv, --release-version]      The release version.
   [-ch, --slack-channel] A Slack channel to send notifications to. Default is dmst-sdk-release.
   [-b, --branch]         The branch name. Default is master branch.
+  [-r, --reviewer]         Github username of the release owner.
   "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection  TODO
   exit 1
@@ -46,6 +47,11 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -r|--reviewer) _reviewer="$2"
+    shift
+    shift;;
+
+
   esac
 done
 
@@ -59,11 +65,17 @@ if [ -z "$_release_version" ]; then
     exit 1
 fi
 
+if [ -z "$_reviewer" ]; then
+    echo "You must provide a github username username of the release owner."
+    exit 1
+fi
+
 
 echo "ci_token=" $_ci_token
 echo "slack_channel=" $_slack_channel
 echo "branch=" $_branch
 echo "release_version=" $_release_version
+echo "reviewer=" $_reviewer
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source "${SCRIPT_DIR}/trigger_build_url.sh"
@@ -72,5 +84,6 @@ curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[SDK_RELEASE]=true" \
     --form "variables[BRANCH_NAME]=${_branch}" \
     --form "variables[CI_TOKEN]=${_ci_token}" \
+    --form "variables[REVIEWER]=${_reviewer}" \
     --form "variables[RELEASE_VERSION]=${_release_version}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}"  | jq
