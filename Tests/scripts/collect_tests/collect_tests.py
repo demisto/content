@@ -164,7 +164,7 @@ class CollectionResult:
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
-            if only_to_upload == only_to_install:
+            if only_to_upload == only_to_install: # TODO
 
                 if only_to_upload and only_to_install:
                     raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
