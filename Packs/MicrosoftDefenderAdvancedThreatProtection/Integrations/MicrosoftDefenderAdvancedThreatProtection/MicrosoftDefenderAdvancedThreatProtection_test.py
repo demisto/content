@@ -32,7 +32,7 @@ client_mocker = MsClient(
 
 
 def atp_mocker(mocker, file_name):
-    with open(f'test_data/{file_name}', 'r') as f:
+    with open(f'test_data/{file_name}') as f:
         alerts = json.loads(f.read())
     mocker.patch.object(client_mocker, 'list_alerts_by_params', return_value=alerts)
 
@@ -44,9 +44,9 @@ def test_first_fetch_incidents(mocker):
 
     incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2018-11-26T16:19:21"}, False)
     # Check that all 3 incidents are extracted
-    assert 3 == len(incidents)
-    assert 'Microsoft Defender ATP Alert da636983472338927033_-2077013687' == \
-           incidents[2].get('name')
+    assert len(incidents) == 3
+    assert incidents[2].get('name') == \
+        'Microsoft Defender ATP Alert da636983472338927033_-2077013687'
 
 
 def test_second_fetch_incidents(mocker):
@@ -83,8 +83,8 @@ def test_third_fetch_incidents(mocker):
     # Check that new incident is extracted
     incidents, _ = fetch_incidents(client_mocker, {'last_alert_fetched_time': "2019-09-01T13:29:37",
                                                    'existing_ids': ['da637029413772554314_295039533']}, False)
-    assert 'Microsoft Defender ATP Alert da637029414680409372_735564929' == \
-           incidents[0].get('name')
+    assert incidents[0].get('name') == \
+        'Microsoft Defender ATP Alert da637029414680409372_735564929'
 
 
 def test_get_alert_related_ips_command(mocker):
@@ -849,7 +849,7 @@ def tests_get_future_time(mocker):
     mocker.patch(
         'MicrosoftDefenderAdvancedThreatProtection.parse_date_range',
         return_value=(datetime(1992, 3, 18), datetime(1992, 3, 21)))
-    assert '1992-03-24T00:00:00Z' == get_future_time('3 days')
+    assert get_future_time('3 days') == '1992-03-24T00:00:00Z'
 
 
 def test_build_std_output_domain():
