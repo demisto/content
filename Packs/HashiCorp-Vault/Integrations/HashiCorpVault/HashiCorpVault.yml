@@ -1,8 +1,8 @@
 commonfields:
-  id: HashiCorp Vault test
+  id: HashiCorp Vault test v2
   version: -1
-name: HashiCorp Vault test
-display: HashiCorp Vault test
+name: HashiCorp Vault test v2
+display: HashiCorp Vault test v2
 category: Authentication & Identity Management
 description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault.
 configuration:
@@ -60,6 +60,11 @@ configuration:
   name: concat_username_to_cred_name
   type: 8
   additionalinfo: Should be used in case there are several secrets under the same folder in order to make the credential object unique.
+  required: false
+- display: Concat folder to credential object name
+  name: concat_folder_to_cred_name
+  type: 8
+  additionalinfo: Should be used in case there are identical secrets in multiple folders in order to make the credential object unique.
   required: false
 script:
   script: ''
