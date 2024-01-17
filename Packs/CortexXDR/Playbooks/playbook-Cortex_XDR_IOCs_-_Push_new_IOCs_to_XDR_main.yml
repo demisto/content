@@ -1,0 +1,281 @@
+id: Cortex XDR IOCs - Push new IOCs to XDR (main)
+version: -1
+name: Cortex XDR IOCs - Push new IOCs to XDR (main)
+description: The playbook will "sync" IOCs into XDR by pushing new IOCs in and disabling expired IOCs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 27b02913-79c0-4a4c-8110-c0b5fa5a2b92
+    type: start
+    task:
+      id: 27b02913-79c0-4a4c-8110-c0b5fa5a2b92
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 893bd4b0-312b-418a-80ce-7cc2022c093e
+    type: playbook
+    task:
+      id: 893bd4b0-312b-418a-80ce-7cc2022c093e
+      version: -1
+      name: Cortex XDR IOCs - Push new IOCs to XDR (subplaybook)
+      playbookName: Cortex XDR IOCs - Push new IOCs to XDR (subplaybook)
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      batch_size:
+        simple: ${inputs.batch_size}
+      query:
+        complex:
+          root: inputs.query
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Done}
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      exitCondition: ""
+      wait: 10
+      max: 40
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e91bc043-76e8-4fd1-88c5-0cab4c4988ed
+    type: regular
+    task:
+      id: e91bc043-76e8-4fd1-88c5-0cab4c4988ed
+      version: -1
+      name: Set Done Flag
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Done
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: afd6b428-50dd-4193-8432-8718f2a897b9
+    type: title
+    task:
+      id: afd6b428-50dd-4193-8432-8718f2a897b9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 51dddf64-2667-448a-84fb-1b3f3d3d3ffd
+    type: regular
+    task:
+      id: 51dddf64-2667-448a-84fb-1b3f3d3d3ffd
+      version: -1
+      name: Reset Done Flag
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Done
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1dc8be8a-694f-4301-854c-49077f6a6e71
+    type: playbook
+    task:
+      id: 1dc8be8a-694f-4301-854c-49077f6a6e71
+      version: -1
+      name: Cortex XDR IOCs - Disable expired IOCs in XDR (subplaybook)
+      playbookName: Cortex XDR IOCs - Disable expired IOCs in XDR (subplaybook)
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      batch_size:
+        simple: ${inputs.batch_size}
+      query:
+        complex:
+          root: inputs.query_expired
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Done
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      exitCondition: ""
+      wait: 10
+      max: 40
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 950,
+        "width": 380,
+        "x": 50,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: batch_size
+  value:
+    simple: "4000"
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: query
+  value:
+    simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:active and -tags:xdr_pushed and -tags:xdr_not_processed
+  required: true
+  description: ""
+  playbookInputQuery:
+- key: query_expired
+  value:
+    simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:expired tags:xdr_pushed and -tags:xdr_disabled
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+tests:
+- Test XDR Playbook general commands
+- Test XDR Playbook
+fromversion: 6.10.0
