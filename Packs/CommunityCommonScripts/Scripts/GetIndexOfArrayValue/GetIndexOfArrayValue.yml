@@ -15,7 +15,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: docker.io/demisto/python3:3.10.13.84405
+dockerimage: demisto/python3:3.10.13.84405
 enabled: true
 name: GetIndexOfArrayValue
 runas: DBotWeakRole
