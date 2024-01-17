@@ -9,7 +9,7 @@
       "filter": {
         "AND": [
           {
-              "SEARCH_FIELD": "Alert Name",
+              "SEARCH_FIELD": "alert_name",
               "SEARCH_TYPE": "EQ",
               "SEARCH_VALUE": "Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service"
           }
