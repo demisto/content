@@ -63,7 +63,7 @@ class FrequencyIndicators(BaseEstimator, TransformerMixin):
     def __init__(self, incident_field: str, normalize_function: Any, actual_incident: pd.DataFrame):
         self.column_name = incident_field
         self.normalize_function = normalize_function
-        self.frequency = {}
+        self.frequency: dict = {}
         if self.normalize_function:
             actual_incident = actual_incident[self.column_name].apply(self.normalize_function)
         else:
