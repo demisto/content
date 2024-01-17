@@ -7412,7 +7412,7 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     ipv4_address = args.get('ipv4', 'pan-sinkhole-default-ip')
     ipv6_adderss = args.get('ipv6', '::1')
     packet_capture = args.get('packet_capture', 'disable')
-        
+
     # for Panorama instance
     params = {
         'action': 'set',
@@ -7430,8 +7430,8 @@ def apply_dns_signature_policy_command(args: dict) -> CommandResults:
     }
     if VSYS:  # if it's a firewall instance, modify the xpath param
         params['xpath'] = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']" \
-         f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']"
-            
+                          f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']"
+
     result = http_request(
         URL,
         'POST',
