@@ -147,6 +147,26 @@ def test_module(client: ReilaQuestClient) -> str:
     return "ok"
 
 
+def get_event_latest_created_time(events: List[Dict], created_time_field: str, date_format=DATE_FORMAT):
+    try:
+        latest_event_time = datetime.strptime(events[0][created_time_field], date_format)
+    except ValueError:
+        # The api might return rarely DATE_FORMAT only in seconds
+        latest_event_time = datetime.strptime(events[0][created_time_field], '%Y-%m-%dT%H:%M:%S')
+
+    for event in events:
+        try:
+            event_time = datetime.strptime(event[created_time_field], date_format)
+        except ValueError:
+            # The api might return rarely DATE_FORMAT only in seconds
+            event_time = datetime.strptime(event[created_time_field], '%Y-%m-%dT%H:%M:%S')
+        if event_time > latest_event_time:
+            latest_event_time = event_time
+
+    demisto.info(f'event latest created {latest_event_time}')
+    return latest_event_time.strftime(date_format)
+
+
 def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[dict[str, List[dict]], Optional[str]]:
     """
     Maps the triage item IDs to events.
@@ -159,9 +179,10 @@ def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, 
     events = dedup_fetched_events(events, last_run)
     latest_created_item = None
     if events:
-        latest_created_item = get_latest_incident_created_time(
+        latest_created_item = get_event_latest_created_time(
             events, created_time_field="event-created", date_format=DATE_FORMAT
         )
+
     _triage_item_ids_to_events = {}
     for event in events:
         if triage_item_id := event.get("triage-item-id"):
