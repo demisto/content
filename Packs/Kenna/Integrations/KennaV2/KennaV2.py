@@ -89,12 +89,12 @@ class Client(BaseClient):
             raise Exception(f'Error in API call to Kenna, could not parse result [{response.status_code}]')
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client) -> str:
     """
-    Performs basic get request from Kenna v2
+    Tests the connection to the Kenna v2 API by performing a basic GET request.
     """
     client.http_request('GET', '/assets')
-    return 'ok', None, None
+    return 'ok'
 
 
 def search_vulnerabilities(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -214,7 +214,7 @@ def inactivate_asset(client: Client, args: dict[str, str]) -> CommandResults:
     }
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     if result.get('status') != "success":
-        return CommandResults(readable_output=f'Could not inactivate asset with ID {asset_id}.')
+        return CommandResults(readable_output=f'Could not inactivate asset with ID {asset_id}.', raw_response=result)
     return CommandResults(readable_output=f'Asset with ID {asset_id} was successfully inactivated.')
 
 
@@ -400,7 +400,7 @@ def update_asset_command(client: Client, args: dict[str, str]) -> CommandResults
 
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     if result.get('status') != "success":
-        return CommandResults(readable_output=f'Could not update asset with ID {asset_id}.')
+        return CommandResults(readable_output=f'Could not update asset with ID {asset_id}.', raw_response=result)
     return CommandResults(readable_output=f'Asset with ID {asset_id} was successfully updated.')
 
 
@@ -424,12 +424,10 @@ def update_vulnerability(client: Client, args: dict) -> tuple[str, Dict[str, Any
         params_to_update['vulnerability'].update({'status': status})
     url_suffix = f'/vulnerabilities/{args_id}'
     result = client.http_request(message='PUT', suffix=url_suffix, data=params_to_update)
-    try:
-        if result.get('status') != "success":
-            return 'Could not update asset.', {}, []
-        return f'Asset {args_id} was updated', {}, []
-    except DemistoException as err:
-        return f'Error occurred while preforming update-vulenrability command {err}', {}, []
+
+    if result.get('status') != "success":
+        return 'Could not update asset.', {}, []
+    return f'Asset {args_id} was updated', {}, []
 
 
 def search_assets_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -465,19 +463,22 @@ def search_assets_command(client: Client, args: dict[str, Any]) -> CommandResult
         'min_risk_meter_score': args.get('min-score'),
         'tags[]': tags
     }
-    response = client.http_request(message='GET', suffix=url_suffix, params=params).get(
-        'assets')
+    response = client.http_request(message='GET', suffix=url_suffix, params=params).get('assets')
     if not response:
-        return CommandResults(readable_output="No assets were found.")
-    assets_list = response[:limit]
+        return CommandResults(readable_output="No assets were found.", raw_response=response)
+
+    assets = response[:limit]
+    if len(assets) > limit:
+        demisto.debug(f"found {len(assets)} assets, using the limit arg to keep only the first {limit} ones")
+
     wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
                    'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem', 'ExternalID']
     actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
                    'operating_system', 'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system',
                    'external_id']
-    context: list[dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
+    context: list[dict[str, Any]] = parse_response(assets, wanted_keys, actual_keys)
     human_readable = []
-    for lst in assets_list:
+    for lst in assets:
         human_readable.append({
             'id': lst.get('id'),
             'Hostname': lst.get('hostname'),
@@ -546,24 +547,22 @@ def add_tags(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict
     Returns:
         Success/ Failure , according to the response
     """
-    args_id = str(args.get('id'))
-    tags = str(args.get('tag'))
-    url_suffix = f'/assets/{args_id}/tags'
+    asset_id = args.get('id')
+    tags = args.get('tag')
+    url_suffix = f'/assets/{asset_id}/tags'
     asset = {
         'asset': {
             'tags': tags
         }
     }
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
-    try:
-        if result.get('status') != "success":
-            return f'Tag {tags} was not added to asset {args_id}', {}, []
-        return f'Tag {tags} was added to asset {args_id}', {}, []
-    except DemistoException as err:
-        return f'Error occurred while preforming add-tags command {err}', {}, []
+
+    if result.get('status') != "success":
+        return f'Tag {tags} was not added to asset {asset_id}.', {}, []
+    return f'Tag {tags} was added to asset {asset_id}.', {}, []
 
 
-def delete_tags(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def delete_tags(client: Client, args: dict) -> tuple[str, dict[str, Any], list[dict[str, Any]]]:
     """Delete tags command.
     Args:
         client:  Client which connects to api
@@ -571,21 +570,18 @@ def delete_tags(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[D
     Returns:
         Success/ Failure , according to the response
     """
-    args_id = str(args.get('id'))
-    tags = str(args.get('tag'))
-    url_suffix = f'/assets/{args_id}/tags'
+    asset_id = args.get('id')
+    tags = args.get('tag')
+    url_suffix = f'/assets/{asset_id}/tags'
     asset = {
         'asset': {
             'tags': tags
         }
     }
     result = client.http_request(message='DELETE', suffix=url_suffix, data=asset)
-    try:
-        if result.get('status') != "success":
-            return f'Tag {tags} was not removed from asset {args_id}.', {}, []
-        return f'Tag {tags} was successfully removed from asset {args_id}.', {}, []
-    except DemistoException as err:
-        return f'Error occurred while preforming delete-tags command {err}.', {}, []
+    if result.get('status') != "success":
+        return f'Tag {tags} was not deleted from asset {asset_id}.', {}, []
+    return f'Tag {tags} was successfully deleted from asset {asset_id}.', {}, []
 
 
 def search_assets_by_external_id_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -611,15 +607,18 @@ def search_assets_by_external_id_command(client: Client, args: dict[str, str]) -
     response = client.http_request(message='GET', suffix=url_suffix).get('assets')
 
     if not response:
-        return CommandResults(readable_output="No assets were found.")
+        return CommandResults(readable_output="No assets were found.", raw_response=response)
 
-    assets_list = response[:limit]
+    assets = response[:limit]
+    if len(assets) > limit:
+        demisto.debug(f"found {len(assets)} assets, using the limit arg to keep only the first {limit} ones.")
+
     wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount',
                    'OperatingSystem', 'Tags', 'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
     actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
                    'operating_system', 'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
-    context: list[dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
-    for lst in assets_list:
+    context: list[dict[str, Any]] = parse_response(assets, wanted_keys, actual_keys)
+    for lst in assets:
         human_readable.append({
             'id': lst.get('id'),
             'Hostname': lst.get('hostname'),
@@ -658,7 +657,6 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], list[Any]]]] = {
-        'test-module': test_module,
         'kenna-search-vulnerabilities': search_vulnerabilities,
         'kenna-get-connectors': get_connectors,
         'kenna-run-connector': run_connector,
@@ -672,6 +670,8 @@ def main():
     try:
         if command in commands:
             return_outputs(*commands[command](client, args))
+        elif command == "test-module":
+            return_results(test_module(client))
         elif command == "kenna-update-asset":
             return_results(update_asset_command(client, args))
         elif command == "kenna-search-assets":
