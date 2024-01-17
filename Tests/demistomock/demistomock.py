@@ -571,7 +571,7 @@ def setLastRun(obj):
       None: No data returned
 
     """
-    return
+    return None
 
 
 def info(msg, *args):
@@ -600,7 +600,7 @@ def error(msg, *args):
 
     """
     # print to stdout so pytest fail if not mocked
-    logging.getLogger().error(msg, *args)
+    print(msg, *args)
 
 
 def debug(msg, *args):
@@ -652,7 +652,7 @@ def results(results):
     """
     if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
-    log(f"demisto results: {json.dumps(results, indent=4, sort_keys=True)}")
+    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
 
 
 def credentials(credentials):
@@ -666,7 +666,7 @@ def credentials(credentials):
       None: No data returned
 
     """
-    log(f"credentials: {credentials}")
+    log("credentials: {}".format(credentials))
 
 
 def getFilePath(id):
@@ -1222,7 +1222,7 @@ def setLastMirrorRun(obj):
       None: No data returned
 
     """
-    return
+    return None
 
 
 def searchRelationships(args):
