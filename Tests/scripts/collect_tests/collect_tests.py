@@ -570,15 +570,19 @@ class TestCollector(ABC):
             # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
             if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
                     and not collect_only_to_upload:
+                logger.info(f'{collect_only_to_upload=}, {allow_incompatible_marketplace=}, {is_xsoar_and_xsiam_pack=}'
+                            f'because they have content that IS compatible.')
                 raise
 
         # If changes are done to README files. Upload only.
-        if reason == CollectionReason.README_FILE_CHANGED:
+        if reason == CollectionReason.README_FILE_CHANGED: # TODO
             collect_only_to_upload = True
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
             else (pack_metadata.version_range | content_item_range)
+
+        logger.info(f'{collect_only_to_upload=}, {only_to_install=}')
 
         return CollectionResult(
             test=None,
@@ -1029,6 +1033,8 @@ class BranchTestCollector(TestCollector):
                 )
 
             else:
+                logger.info('install pack without collecting tests.')
+
                 # install pack without collecting tests.
                 return self._collect_pack(
                     pack_id=pack_id,
