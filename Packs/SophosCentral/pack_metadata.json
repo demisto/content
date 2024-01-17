@@ -2,9 +2,9 @@
     "name": "Sophos Central",
     "description": "The unified console for managing Sophos products",
     "support": "xsoar",
-    "currentVersion": "1.2.9",
+    "currentVersion": "1.3.0",
     "author": "Sophos",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "url": "",
     "email": "",
     "created": "2020-11-25T17:22:30Z",
     "categories": [
