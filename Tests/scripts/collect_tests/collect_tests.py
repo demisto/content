@@ -766,9 +766,11 @@ class TestCollector(ABC):
                 # _collect_xsiam_and_modeling_pack function.
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
+                    logger.info(f"{content_item_marketplaces=}_collect_xsiam_and_modeling_pack function.")
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
+                    logger.info(f"{content_item_marketplaces=}, {self.marketplace=}")
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
@@ -1016,10 +1018,12 @@ class BranchTestCollector(TestCollector):
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
         except IncompatibleMarketplaceException:
             if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
+                logger.info('f file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):')
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
 
+        logger.info("Anything not dictionary-based.")
         pack_id = find_pack_folder(path).name
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
 
