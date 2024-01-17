@@ -2251,7 +2251,7 @@ Get a list of all your external websites filtered by authentication type. Maximu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| authentication | authentication type string on which to search. | Optional | 
+| authentication | Authentication type string on which to search. | Optional | 
 | limit | Maximum number of assets to return. The default and maximum is 100. | Optional | 
 
 #### Context Output
