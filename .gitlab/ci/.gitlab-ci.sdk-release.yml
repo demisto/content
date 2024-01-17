@@ -105,6 +105,7 @@ wait-for-content-private-nightly:
   extends:
     - .release-sdk
     - .default-job-settings
+  allow_failure: true
   needs:
     - trigger-content-private-nightly
   artifacts:
@@ -115,6 +116,7 @@ wait-for-content-private-nightly:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
+    - exit 1
     - python3 ./Utils/get_private_build_status.py --github-token $GITHUB_TOKEN --artifacts-folder ${ARTIFACTS_FOLDER}
 
 
@@ -123,6 +125,7 @@ wait-for-content-internal-dist-nightly:
   extends:
     - .release-sdk
     - .default-job-settings
+  allow_failure: true
   needs:
     - trigger-content-internal-dist-nightly
   artifacts:
@@ -132,6 +135,7 @@ wait-for-content-internal-dist-nightly:
   variables:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
+    - exit 1
     - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/PIPELINE_ID.txt)
     - echo "PIPELINE_ID =" $PIPELINE_ID
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
@@ -142,6 +146,7 @@ wait-for-demisto-sdk-nightly:
   extends:
     - .release-sdk
     - .default-job-settings
+  allow_failure: true
   needs:
     - trigger-demisto-sdk-nightly
   artifacts:
@@ -151,6 +156,7 @@ wait-for-demisto-sdk-nightly:
   variables:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
+    - exit 1
     - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt)
     - echo "PIPELINE_ID =" $PIPELINE_ID
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1061
@@ -165,7 +171,6 @@ create-release-pull-request:
     - wait-for-demisto-sdk-nightly
     - wait-for-content-private-nightly
     - wait-for-content-internal-dist-nightly
-  when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
   script:
