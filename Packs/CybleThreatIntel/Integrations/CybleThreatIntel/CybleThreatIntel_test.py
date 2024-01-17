@@ -25,7 +25,7 @@ def test_get_recursively():
     client = Client(params)
 
     mock_response_1 = load_json_file("test.json")
-    val = Client.get_recursively(client, mock_response_1[0][0], "value")
+    val = Client.get_recursively(client, mock_response_1['indicators'][0]['observable'], "value")
     assert isinstance(val, list)
     assert 'URL Watchlist' in val
 
