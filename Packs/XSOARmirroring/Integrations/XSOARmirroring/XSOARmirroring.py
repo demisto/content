@@ -1,14 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
-import json
-import requests
-import dateparser
 from datetime import timedelta
-from typing import Any
-import urllib3
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -29,6 +22,7 @@ MIRROR_DIRECTION = {
 }
 XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 MIRROR_RESET = 'XSOARMirror_mirror_reset'
+
 
 ''' CLIENT CLASS '''
 
@@ -353,14 +347,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_result: dict[str, Any] = {}
         incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
-        incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
+        incident_result['dbotMirrorTags'] = mirror_tag or None  # type: ignore
         incident_result['dbotMirrorId'] = incident['id']
 
-        if mirror_playbook_id:
-            fields = FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
-        else:
-            fields = [field for field in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
-                      if field != 'playbookId']
+        fields = FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
+        if not mirror_playbook_id:
+            fields.remove('playbookId')
 
         for key, value in incident.items():
             if key in fields:
@@ -369,7 +361,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_result['rawJSON'] = json.dumps(incident)
 
         file_attachments = []
-        if incident.get('attachment') and len(incident.get('attachment', [])) > 0 and incident.get('investigationId'):
+        if incident.get('attachment') and incident.get('investigationId'):
             entries = client.get_incident_entries(
                 incident_id=incident['investigationId'],  # type: ignore
                 from_date=0,
@@ -385,7 +377,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
                     file_result = fileResult(entry['file'], file_entry_content)
                     if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
                         if file_result['Type'] == EntryType.ERROR:
-                            raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+                            raise Exception(f"Error getting attachment: {file_result.get('Contents', '')}")
 
                         file_attachments.append({
                             'path': file_result.get('FileID', ''),
@@ -911,8 +903,8 @@ def main() -> None:  # pragma: no cover
                 fetch_incidents(
                     client=client,
                     max_results=max_results,
-                    last_run=demisto.getLastRun(),
-                    last_fetch=demisto.getLastRun().get("last_fetch"),
+                    last_run={},
+                    last_fetch=first_fetch_time,
                     first_fetch_time=first_fetch_time,
                     query=query,
                     mirror_direction=params.get('mirror_direction'),
@@ -920,15 +912,15 @@ def main() -> None:  # pragma: no cover
                     mirror_playbook_id=params.get('mirror_playbook_id', True),
                     fetch_incident_history=params.get('fetch_incident_history', False),
                 )
-
             return_results(test_module(client, first_fetch_time))
 
         elif command == 'fetch-incidents':
+            last_run: dict = demisto.getLastRun()
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,
-                last_run=demisto.getLastRun(),
-                last_fetch=demisto.getLastRun().get("last_fetch"),
+                last_run=last_run,
+                last_fetch=last_run.get("last_fetch"),
                 first_fetch_time=first_fetch_time,
                 query=query,
                 mirror_direction=params.get('mirror_direction'),
@@ -936,6 +928,14 @@ def main() -> None:  # pragma: no cover
                 mirror_playbook_id=params.get('mirror_playbook_id', True),
                 fetch_incident_history=params.get('fetch_incident_history', False),
             )
+
+            #  --- TEMP ---
+            next_run.update({
+                'ids': [i['dbotMirrorId'] for i in incidents],
+                'len': len(incidents)
+            })
+            #  ------------
+
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
