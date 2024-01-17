@@ -171,6 +171,7 @@ create-release-pull-request:
     - wait-for-demisto-sdk-nightly
     - wait-for-content-private-nightly
     - wait-for-content-internal-dist-nightly
+  when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
   script:

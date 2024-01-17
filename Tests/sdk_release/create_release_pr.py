@@ -51,18 +51,6 @@ def main():
         sys.exit(1)
     pyproject_content = response.text
 
-    # get the version changelog
-    url = f'https://raw.githubusercontent.com/demisto/demisto-sdk/{release_branch_name}/CHANGELOG.md'
-    response = requests.request('GET', url, verify=False)
-    if response.status_code != 200:
-        print(f'Failed to get the CHANGELOG.md file content from branch {release_branch_name}')
-        print(response.text)
-        sys.exit(1)
-    changelog_content = response.text
-    new_changelog_text = changelog_content.replace('## Unreleased', f'## Unreleased\n\n## {release_branch_name}')
-    release_changes = new_changelog_text.split(f'## {release_branch_name}\n')[1].split('\n\n')[0]
-    release_changes = f'demisto-sdk release changes:\n{release_changes}'
-
     # update pyproject.toml content with the release version
     file_text = re.sub(r'\nversion = \"(\d+\.\d+\.\d+)\"\n', f'\nversion = "{release_branch_name}"\n', pyproject_content)
     content = bytes(file_text, encoding='utf8')
@@ -87,7 +75,7 @@ def main():
         'base': 'master',
         'head': release_branch_name,
         'title': f'Demisto-sdk release {release_branch_name}',
-        'body': release_changes
+        'body': ''
     }
     url = f'{API_SUFFIX}/pulls'
     response = requests.request('POST', url, data=json.dumps(data), headers=headers, verify=False)
@@ -119,7 +107,7 @@ def main():
         print(f'Failed to trigger SDK changelog workflow')
         print(response.text)
         sys.exit(1)
-
+    print('SDK changelog workflow triggered, waiting for it to be finished')
     time.sleep(10)
 
     url = 'https://api.github.com/repos/demisto/demisto-sdk/actions/workflows/sdk-release.yml/runs'
@@ -153,7 +141,8 @@ def main():
 
         job_data = response.json().get('jobs', [])[0]
         status = job_data.get('status')
-        time.sleep(300)
+        print('still waiting')
+        time.sleep(10)
 
         elapsed = time.time() - start
 
@@ -161,9 +150,11 @@ def main():
         sys.exit(1)
 
     if job_data.get('conclusion') != 'success':
+        print(f'Retrieve SDK changelog workflow Failed:')
+        print(job_data)
         sys.exit(1)
 
-    print('finished')
+    print('Retrieve SDK changelog workflow finished successfully')
 
 
 if __name__ == "__main__":
