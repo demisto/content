@@ -84,14 +84,14 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
     indicator_type = build_indicator_list(indicator_types)
     demisto.debug(f'{OPENCTI_LOGS} - in get_indicators - builded indicator type  : {indicator_type}')
     filters = {
-   'mode': 'and',
-    'filters': [{
-        'key': 'entity_type',
-       'values': indicator_type,
-       'operator': 'eq',
-       'mode': 'or'
-    }],
-    'filterGroups': []}
+        'mode': 'and',
+        'filters': [{
+            'key': 'entity_type',
+            'values': indicator_type,
+            'operator': 'eq',
+            'mode': 'or'
+        }],
+        'filterGroups': []}
     if score:
         filters["filters"].append({
             'key': 'x_opencti_score',
