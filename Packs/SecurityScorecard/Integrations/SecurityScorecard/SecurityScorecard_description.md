@@ -1,3 +1,9 @@
+### Partner Contributed Integration
+#### Integration Author: SecurityScorecard
+Support and maintenance for this integration are provided by the author. Please use the following contact details:
+- **Email**: [support@securityscorecard.io](mailto:support@securityscorecard.io)
+- **URL**: [https://securityscorecard.com/contact-us](https://securityscorecard.com/contact-us)
+***
 # Authorization
 
 SecurityScorecard has two types of API keys used to authorize API calls:
