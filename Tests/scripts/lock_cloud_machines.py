@@ -29,7 +29,7 @@ def send_slack_notification(text: list[str]):
     """
 
     slack_token = get_env_var('SLACK_TOKEN')
-    slack_channel = get_env_var('WAIT_SLACK_CHANNEL', "dmst-test-wait-in-line")
+    slack_channel = "dmst-test-wait-in-line"
 
     text = "\n".join(text)
     client = SlackWebClient(token=slack_token)
@@ -396,6 +396,14 @@ def main():
 
     list_machines = create_list_of_machines_to_run(options.lock_machine_name, options.test_machines,
                                                    options.number_machines_to_lock)
+    try:
+        send_slack_notification([f"{options.gcs_locks_path}",
+                                 f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
+                                 f"Job ID: {options.ci_job_id}",
+                                 "Available machines:"
+                                 f"{len(list_machines)}"])
+    except Exception as e:
+        logging.info(f"Failed to send Slack notification. Reason: {str(e)}")
 
     lock_machine_list = get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machines,
                                                          options.gcs_locks_path, options.number_machines_to_lock,
