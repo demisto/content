@@ -260,8 +260,11 @@ Updates the attributes of a single asset.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!kenna-update-asset id=dummy notes="New asset info"```
+
 #### Human Readable Output
 
 >Asset with ID dummy was successfully updated.
@@ -379,7 +382,8 @@ Searches for assets.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Kenna.Assets.ID | Number | The asset ID. | 
-| Kenna.Assets.Hostname | String | The hostname of the asset. | 
+| Kenna.Assets.ExternalID | String | The asset external ID. |
+| Kenna.Assets.Hostname | String | The hostname of the asset. |
 | Kenna.Assets.IpAddress | String | The asset IP address. | 
 | Kenna.Assets.Score | Number | The asset risk score. | 
 | Kenna.Assets.VulnerabilitiesCount | Number | The number of vulnerabilities associated with the asset. | 

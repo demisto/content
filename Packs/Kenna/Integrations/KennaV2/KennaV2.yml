@@ -290,6 +290,9 @@ script:
     - contextPath: Kenna.Assets.ID
       description: The asset ID.
       type: Number
+    - contextPath: Kenna.Assets.ExternalID
+      description: The asset external ID.
+      type: String
     - contextPath: Kenna.Assets.Hostname
       description: The hostname of the asset.
       type: String

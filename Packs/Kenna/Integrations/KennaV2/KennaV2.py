@@ -432,64 +432,68 @@ def update_vulnerability(client: Client, args: dict) -> tuple[str, Dict[str, Any
         return f'Error occurred while preforming update-vulenrability command {err}', {}, []
 
 
-def search_assets(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
-    """Search Asset command.
+def search_assets_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Search for assets in Kenna based on the provided parameters.
+
     Args:
-        client:  Client which connects to api
-        args: arguments for the request
+        client (Client): The Kenna client object.
+        args (dict[str, Any]): A dictionary of arguments provided by the user.
+            The optional arguments are:
+            - 'limit': The maximum number of assets to return. Default is 500.
+            - 'to_context': Whether to include the results in the context. Default is True.
+            - 'hostname': The hostname to search for. Default is an empty string.
+            - 'tags': A list of tags to search for. Default is an empty list.
+            - 'id': A list of asset IDs to search for. Default is an empty list.
+            - 'min-score': The minimum vulnerability score for which to return vulnerabilities. Default is None.
+
     Returns:
-        Human Readable
-        Entry Context
-        Raw Data
+        CommandResults: A CommandResults object containing the results of the search.
+
     """
     url_suffix = '/assets/search'
-    human_readable = []
-    limit: int = int(args.get('limit', 500))
-    to_context = args.get('to_context')
-    context: Dict[str, Any] = {}
-    hostnames = args.get('hostname')
-    if args.get('tags'):
-        tags = argToList(args.get('tags'))
-    else:
-        tags = args.get('tags')
+    limit = arg_to_number(args.get('limit')) or 500
+    to_context = argToBoolean(args.get('to_context', True))
+    hostname: str = args.get('hostname', '')
+    tags = argToList(args.get('tags'))
 
-    hostnames_query = f'hostname:({hostnames.replace(",", " ")})' if hostnames else hostnames
+    hostname_query = f'hostname:({hostname.replace(",", " ")})' if hostname else hostname
 
     params = {
         'id[]': argToList(args.get('id')),
-        'q': hostnames_query,
+        'q': hostname_query,
         'min_risk_meter_score': args.get('min-score'),
         'tags[]': tags
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get(
         'assets')
-    if response:
-        assets_list = response[:limit]
-        wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
-                       'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
-        actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
-                       'operating_system',
-                       'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
-        context_list: List[Dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
+    if not response:
+        return CommandResults(readable_output="No assets were found.")
+    assets_list = response[:limit]
+    wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
+                   'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem', 'ExternalID']
+    actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
+                   'operating_system', 'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system',
+                   'external_id']
+    context: list[dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
+    human_readable = []
+    for lst in assets_list:
+        human_readable.append({
+            'id': lst.get('id'),
+            'Hostname': lst.get('hostname'),
+            'IP-address': lst.get('ip_address'),
+            'Vulnerabilities Count': args.get('vulnerabilities_count'),
+            'Operating System': lst.get('operating_system'),
+            'Score': lst.get('risk_meter_score')
+        })
 
-        for lst in assets_list:
-            human_readable.append({
-                'id': lst.get('id'),
-                'Hostname': lst.get('hostname'),
-                'IP-address': lst.get('ip_address'),
-                'Vulnerabilities Count': args.get('vulnerabilities_count'),
-                'Operating System': lst.get('operating_system'),
-                'Score': lst.get('risk_meter_score')
-            })
-        context = {
-            'Kenna.Assets(val.ID === obj.ID)': context_list
-        }
-        human_readable_markdown = tableToMarkdown('Kenna Assets', human_readable, removeNull=True)
-    else:
-        human_readable_markdown = "no assets in response"
-    if to_context == "False":
-        return human_readable_markdown, {}, response
-    return human_readable_markdown, context, response
+    return CommandResults(
+        outputs_prefix="Kenna.Assets",
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown('Kenna Assets', human_readable, removeNull=True),
+        outputs=context if to_context else None,
+        raw_response=response
+    )
 
 
 def get_asset_vulnerabilities(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -660,7 +664,6 @@ def main():
         'kenna-run-connector': run_connector,
         'kenna-search-fixes': search_fixes,
         'kenna-update-vulnerability': update_vulnerability,
-        'kenna-search-assets': search_assets,
         'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
         'kenna-add-tag': add_tags,
         'kenna-delete-tag': delete_tags,
@@ -671,6 +674,8 @@ def main():
             return_outputs(*commands[command](client, args))
         elif command == "kenna-update-asset":
             return_results(update_asset_command(client, args))
+        elif command == "kenna-search-assets":
+            return_results(search_assets_command(client, args))
         elif command == "kenna-search-assets-by-external-id":
             return_results(search_assets_by_external_id_command(client, args))
         else:

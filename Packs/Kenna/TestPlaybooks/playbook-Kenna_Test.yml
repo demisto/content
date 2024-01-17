@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 22ef3e2f-35f6-44b1-85aa-f9865f9d2b09
+    taskid: c65f6c82-bceb-42ec-8482-be8cf6d65e4b
     type: start
     task:
-      id: 22ef3e2f-35f6-44b1-85aa-f9865f9d2b09
+      id: c65f6c82-bceb-42ec-8482-be8cf6d65e4b
       version: -1
       name: ""
       iscommand: false
@@ -17,12 +17,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 245,
+          "x": 50,
           "y": 50
         }
       }
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3c6c5323-56c7-45d0-8b55-1f3b02dfd7b7
+    taskid: b5e82bb3-e902-4ff4-88aa-34c730227a7d
     type: regular
     task:
-      id: 3c6c5323-56c7-45d0-8b55-1f3b02dfd7b7
+      id: b5e82bb3-e902-4ff4-88aa-34c730227a7d
       version: -1
       name: kenna-get-connectors
       description: Returns all of your connectors
@@ -54,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 195
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4c322071-61e7-436e-864d-6ecd5e5dea07
+    taskid: 6f142506-d75d-4955-8495-7d16240786d8
     type: regular
     task:
-      id: 4c322071-61e7-436e-864d-6ecd5e5dea07
+      id: 6f142506-d75d-4955-8495-7d16240786d8
       version: -1
       name: kenna-search-vulnerabilities
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -86,8 +86,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1420
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -95,15 +95,22 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    scriptarguments:
+      id:
+        complex:
+          root: Kenna.VulnerabilitiesOfAsset
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 577a58c4-7dfb-44e4-81d2-79c7506d110e
+    taskid: 5fbc0d54-2db4-465c-8dbf-4e82272cc74f
     type: regular
     task:
-      id: 577a58c4-7dfb-44e4-81d2-79c7506d110e
+      id: 5fbc0d54-2db4-465c-8dbf-4e82272cc74f
       version: -1
       name: kenna-update-vulnerability
       description: Update a single vulnerability's attributes by ID
@@ -129,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 1770
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -143,20 +150,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b1f8eec2-ac2f-42dc-8cab-54b3ca18f0f5
+    taskid: 804ccdb5-d51d-4234-83f5-676eb613751b
     type: condition
     task:
-      id: b1f8eec2-ac2f-42dc-8cab-54b3ca18f0f5
+      id: 804ccdb5-d51d-4234-83f5-676eb613751b
       version: -1
       name: Connectors ID List Exists?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "9"
       "yes":
-      - "30"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -171,8 +176,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 245,
-          "y": 370
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -185,10 +190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 2ceec0f8-7f69-4e45-8881-e2d8bd8c07bf
+    taskid: 2c7fdd87-e20e-4fa4-8780-acd81254d9b9
     type: title
     task:
-      id: 2ceec0f8-7f69-4e45-8881-e2d8bd8c07bf
+      id: 2c7fdd87-e20e-4fa4-8780-acd81254d9b9
       version: -1
       name: Done
       type: title
@@ -199,40 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: d528c276-128a-4777-8c65-86ccd4619ab2
-    type: regular
-    task:
-      id: d528c276-128a-4777-8c65-86ccd4619ab2
-      version: -1
-      name: Failed
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: failed
-    separatecontext: false
-    view: |-
-      {
-        "position": {
           "x": 50,
-          "y": 2645
+          "y": 3870
         }
       }
     note: false
@@ -245,10 +218,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: c18e4ed1-1739-4519-8f8b-e6a82d48420f
+    taskid: 033ebf4b-aa18-4c77-80eb-db9c3c570d5d
     type: condition
     task:
-      id: c18e4ed1-1739-4519-8f8b-e6a82d48420f
+      id: 033ebf4b-aa18-4c77-80eb-db9c3c570d5d
       version: -1
       name: Verify Search Fixes Outputs
       type: condition
@@ -256,34 +229,21 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Kenna.Fixes.ID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: Kenna.Fixes.Assets.ID
-            iscontext: true
-      - - operator: hasLength
+      - - operator: isNotEmpty
           left:
             value:
               simple: Kenna.Fixes
             iscontext: true
-          right:
-            value:
-              simple: "30"
     view: |-
       {
         "position": {
-          "x": 357.5,
-          "y": 720
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -296,12 +256,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f37aa0e8-ae99-4d24-82af-20ce43d68049
+    taskid: 825dbe56-e572-4ede-8e4f-c30c2966c393
     type: regular
     task:
-      id: f37aa0e8-ae99-4d24-82af-20ce43d68049
+      id: 825dbe56-e572-4ede-8e4f-c30c2966c393
       version: -1
-      name: kenna-search-assets-round1
+      name: kenna-search-assets
       description: Filtering assets by those that Kenna recommands
       script: '|||kenna-search-assets'
       type: regular
@@ -314,8 +274,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 357.5,
-          "y": 895
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -323,25 +283,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "3"
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: dbdb7fb8-8469-47be-8304-db4c7e26d0e0
+    taskid: 9a13ca1b-5558-4315-8636-55cda676d536
     type: condition
     task:
-      id: dbdb7fb8-8469-47be-8304-db4c7e26d0e0
+      id: 9a13ca1b-5558-4315-8636-55cda676d536
       version: -1
       name: Check Asset List
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "9"
       "yes":
-      - "23"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -363,8 +324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 357.5,
-          "y": 1070
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -377,45 +338,32 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a439a054-a359-446e-8178-2b3dc662b73c
+    taskid: a570fa9f-0da1-4b1e-8a3f-dfc7b94c4f84
     type: condition
     task:
-      id: a439a054-a359-446e-8178-2b3dc662b73c
+      id: a570fa9f-0da1-4b1e-8a3f-dfc7b94c4f84
       version: -1
       name: Check Search Vulnerabilities
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "9"
       "yes":
-      - "6"
+      - "30"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: greaterThan
+      - - operator: isNotEmpty
           left:
             value:
               simple: Kenna.Vulnerabilities.AssetID
             iscontext: true
-          right:
-            value:
-              simple: "0"
-      - - operator: greaterThan
-          left:
-            value:
-              simple: Kenna.Vulnerabilities.Connectors.ID
-            iscontext: true
-          right:
-            value:
-              simple: "0"
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1595
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -428,10 +376,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: da04fd83-0f61-4c6b-8dc3-a28d6520ff5d
+    taskid: d9209faf-2449-475b-8386-74221d77a6fb
     type: regular
     task:
-      id: da04fd83-0f61-4c6b-8dc3-a28d6520ff5d
+      id: d9209faf-2449-475b-8386-74221d77a6fb
       version: -1
       name: check vulnerabilities after update
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -453,8 +401,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 1945
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -467,20 +415,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 546599fc-991c-4557-8aaf-ae5ba58b493e
+    taskid: 1f3c89af-9770-40aa-842f-256e8f68b3f6
     type: condition
     task:
-      id: 546599fc-991c-4557-8aaf-ae5ba58b493e
+      id: 1f3c89af-9770-40aa-842f-256e8f68b3f6
       version: -1
       name: check status after update
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "9"
       "yes":
-      - "24"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -496,8 +442,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
-          "y": 2120
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -510,10 +456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b75951da-56dc-4ab8-83de-71e6ac213ff3
+    taskid: 5d19135a-d611-475d-8503-d61e5a6bdce6
     type: regular
     task:
-      id: b75951da-56dc-4ab8-83de-71e6ac213ff3
+      id: 5d19135a-d611-475d-8503-d61e5a6bdce6
       version: -1
       name: kenna-add-tag
       description: Add tag to Asset id
@@ -523,7 +469,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "36"
     scriptarguments:
       id:
         complex:
@@ -537,8 +483,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1245
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -551,10 +497,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 3c60b294-7967-476d-8bd7-e96ce4b69b3e
+    taskid: d5c2dbdb-7627-479f-865a-fe45849e3e82
     type: regular
     task:
-      id: 3c60b294-7967-476d-8bd7-e96ce4b69b3e
+      id: d5c2dbdb-7627-479f-865a-fe45849e3e82
       version: -1
       name: kenna-search-assets-round2
       description: Filtering assets by those that Kenna recommands
@@ -576,8 +522,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2295
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -590,18 +536,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 1f34de37-69a7-4018-863d-3f876a594e7c
+    taskid: 5fe44608-ab10-405d-8ac7-f0e9348294f1
     type: condition
     task:
-      id: 1f34de37-69a7-4018-863d-3f876a594e7c
+      id: 5fe44608-ab10-405d-8ac7-f0e9348294f1
       version: -1
       name: check tag addition
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "9"
       "yes":
       - "26"
     separatecontext: false
@@ -611,16 +555,16 @@ tasks:
       - - operator: in
           left:
             value:
-              simple: Kenna.Assets.Tags
-            iscontext: true
+              simple: TestTag
           right:
             value:
-              simple: TestTag
+              simple: Kenna.Assets.Tags
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2470
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
@@ -633,10 +577,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: ab0f325a-739d-4bb4-8515-4ab9c07b5d60
+    taskid: 5d49871d-dbeb-4bb3-8922-4dab6d2c086a
     type: regular
     task:
-      id: ab0f325a-739d-4bb4-8515-4ab9c07b5d60
+      id: 5d49871d-dbeb-4bb3-8922-4dab6d2c086a
       version: -1
       name: kenna-delete-tag
       description: Delete tags from specific Asset
@@ -660,8 +604,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2645
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -674,10 +618,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 60356a5a-6d15-41e2-8873-65e5d2ea7a4e
+    taskid: 1930ae7f-6a0b-4420-8d89-0f850c91129a
     type: regular
     task:
-      id: 60356a5a-6d15-41e2-8873-65e5d2ea7a4e
+      id: 1930ae7f-6a0b-4420-8d89-0f850c91129a
       version: -1
       name: Kenna-search-fixes
       description: Filters fixes by a given set of vulnerability and asset parameters and returns the filtered fixes.
@@ -690,10 +634,10 @@ tasks:
       - "12"
     scriptarguments:
       limit:
-        simple: "30"
+        simple: "2"
       id:
         complex:
-          root: Kenna.ConnectorsList
+          root: Kenna.Vulnerabilities
           accessor: ID
           transformers:
           - operator: FirstArrayElement
@@ -701,8 +645,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 357.5,
-          "y": 545
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -715,10 +659,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 65368b08-cd29-4449-8237-385df452183b
+    taskid: fe3aefba-1e1e-4e55-8780-618d085119cd
     type: regular
     task:
-      id: 65368b08-cd29-4449-8237-385df452183b
+      id: fe3aefba-1e1e-4e55-8780-618d085119cd
       version: -1
       name: kenna-get-connector-runs
       description: Returns JSON data on all the runs of a given connector
@@ -744,8 +688,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2820
+          "x": 50,
+          "y": 3345
         }
       }
     note: false
@@ -758,10 +702,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 68507765-73c4-40f3-852f-c4491f3d127d
+    taskid: e2847cc6-1e60-44a4-82de-746c8234a60c
     type: regular
     task:
-      id: 68507765-73c4-40f3-852f-c4491f3d127d
+      id: e2847cc6-1e60-44a4-82de-746c8234a60c
       version: -1
       name: kenna-search-assets-by-external-id
       description: Search assets by external id.
@@ -771,14 +715,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+      - "35"
     scriptarguments:
       external_id:
-        complex:
-          root: Kenna.Vulnerabilities.ScannerVulnerabilities
-          accessor: ExternalID
-          transformers:
-          - operator: FirstArrayElement
+        simple: ${Kenna.Assets.ExternalID}
+      limit:
+        simple: "1"
       to_context:
         simple: "true"
     separatecontext: false
@@ -786,8 +728,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2995
+          "x": 50,
+          "y": 3520
         }
       }
     note: false
@@ -797,29 +739,149 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 33077e6a-4a6d-4aec-8b24-487f33af8368
+  "34":
+    id: "34"
+    taskid: 4f64677a-4a8d-4d0f-88f1-ede1a8fd6783
     type: regular
     task:
-      id: 33077e6a-4a6d-4aec-8b24-487f33af8368
+      id: 4f64677a-4a8d-4d0f-88f1-ede1a8fd6783
       version: -1
-      name: kenna-inactivate-asset
-      description: Inactivates a single asset.
-      script: '|||kenna-inactivate-asset'
+      name: kenna-get-asset-vulnerabilities
+      description: Gets vulnerabilities of the specified asset.
+      script: '|||kenna-get-asset-vulnerabilities'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "3"
+    scriptarguments:
+      id:
+        complex:
+          root: Kenna.Assets
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 3170
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: c87f3d19-9389-4676-8e50-cbe2b715a448
+    type: condition
+    task:
+      id: c87f3d19-9389-4676-8e50-cbe2b715a448
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Kenna.Assets
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 409fc94c-67db-4028-83b5-73ce62cc1cd4
+    type: regular
+    task:
+      id: 409fc94c-67db-4028-83b5-73ce62cc1cd4
+      version: -1
+      name: Sleep 10 Seconds
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 739fc683-2ac3-45cc-81c3-5f5f7fe0f1e1
+    type: regular
+    task:
+      id: 739fc683-2ac3-45cc-81c3-5f5f7fe0f1e1
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -831,13 +893,11 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "16_9_#default#": 0.54
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3360,
-        "width": 1035,
+        "height": 3885,
+        "width": 380,
         "x": 50,
         "y": 50
       }

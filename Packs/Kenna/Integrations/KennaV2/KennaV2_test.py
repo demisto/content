@@ -4,12 +4,12 @@ from pathlib import Path
 from pytest_mock import MockerFixture
 
 from KennaV2 import parse_response, search_vulnerabilities, get_connectors, Client, \
-    search_fixes, search_assets, get_asset_vulnerabilities, get_connector_runs, search_assets_by_external_id_command, \
-    update_asset_command
+    search_fixes, get_asset_vulnerabilities, get_connector_runs, search_assets_by_external_id_command, \
+    update_asset_command, search_assets_command
 from test_data.ExpectedResult import VULNERABILITIES_SEARCH_EXPECTED, GET_CONNECTORS_EXPECTED, SEARCH_FIXES_EXPECTED, \
-    SEARCH_ASSETS_EXPECTED, GET_ASSETS_VULNERABILITIES_EXPECTED, GET_CONNECTOR_RUNS_EXPECTED
+    GET_ASSETS_VULNERABILITIES_EXPECTED, GET_CONNECTOR_RUNS_EXPECTED
 from test_data.RawData import VULNERABILITIES_SEARCH_RESPONSE, GET_CONNECTORS_RESPONSE, SEARCH_FIXES_RESPONSE, \
-    SEARCH_ASSETS_RESPONSE, GET_ASSETS_VULNERABILITIES_RESPONSE, GET_CONNECTOR_RUNS_RESPONSE
+    GET_ASSETS_VULNERABILITIES_RESPONSE, GET_CONNECTOR_RUNS_RESPONSE
 
 
 class MockClient:
@@ -46,7 +46,6 @@ def test_parse_response():
     (search_vulnerabilities, {"to_context": "True"}, VULNERABILITIES_SEARCH_RESPONSE, VULNERABILITIES_SEARCH_EXPECTED),
     (get_connectors, {"to_context": "True"}, GET_CONNECTORS_RESPONSE, GET_CONNECTORS_EXPECTED),
     (search_fixes, {"to_context": "True"}, SEARCH_FIXES_RESPONSE, SEARCH_FIXES_EXPECTED),
-    (search_assets, {"to_context": "True"}, SEARCH_ASSETS_RESPONSE, SEARCH_ASSETS_EXPECTED),
     (get_asset_vulnerabilities, {'id': '3', "to_context": "True"}, GET_ASSETS_VULNERABILITIES_RESPONSE,
      GET_ASSETS_VULNERABILITIES_EXPECTED),
     (get_connector_runs, {"to_context": "True"}, GET_CONNECTOR_RUNS_RESPONSE, GET_CONNECTOR_RUNS_EXPECTED)
@@ -67,8 +66,7 @@ def test_search_assets_by_external_id_command(mocker: MockerFixture) -> None:
     Then
         it should return a table with the assets that match the given external_id.
     """
-    mock_data = util_load_json("test_data/assets_response.json")
-    mocker.patch.object(MockClient, 'http_request', return_value=mock_data)
+    mocker.patch.object(MockClient, 'http_request', return_value=util_load_json("test_data/assets_response.json"))
     result = search_assets_by_external_id_command(MockClient(), {"external_id": "external_123"})
     assert result.readable_output == (
         '### Kenna Assets\n'
@@ -78,6 +76,35 @@ def test_search_assets_by_external_id_command(mocker: MockerFixture) -> None:
         '| 0.0.0 | Windows | 1000 | 2 |\n'
         '| 0.0.0 | Windows | 1000 | 5 |\n'
         '| 0.0.0 | Windows | 1000 | 6 |\n'
+    )
+
+
+def test_search_assets_command(mocker: MockerFixture) -> None:
+    """
+    Given
+        A MockClient instance and a set of arguments for the search_assets_command function.
+    When
+        The function is called with the arguments,
+    Then
+        It should return the expected readable output.
+    """
+    args = {
+        'limit': 2,
+        'to_context': True,
+        'hostname': 'test-hostname',
+        'tags': ['tag1', 'tag2'],
+        'id': ['id1', 'id2'],
+        'min-score': 5
+    }
+    mocker.patch.object(MockClient, 'http_request', return_value=util_load_json("test_data/assets_response.json"))
+    result = search_assets_command(MockClient(), args)
+
+    assert result.readable_output == (
+        '### Kenna Assets\n'
+        '|IP-address|Operating System|Score|id|\n'
+        '|---|---|---|---|\n'
+        '| 0.0.0 | Windows | 1000 | 1 |\n'
+        '| 0.0.0 | Windows | 1000 | 2 |\n'
     )
 
 
