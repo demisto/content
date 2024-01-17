@@ -203,6 +203,10 @@ def create_ticket():
     if text:
         data += f"Text: {text}\n"
 
+    member_of = args.get('member_of')
+    if member_of:
+        data += f"MemberOf: {member_of}\n"
+
     customfields = args.get('customfields')
     if customfields:
         cf_list = customfields.split(',')
@@ -463,6 +467,12 @@ def edit_ticket():
         content += '\nStatus: ' + status
         arguments_given = True
         kwargs['Status'] = status
+
+    member_of = demisto.args().get('member_of')
+    if member_of:
+        content += '\nMemberOF: ' + member_of
+        arguments_given = True
+        kwargs['MemberOF'] = member_of
 
     priority = demisto.args().get('priority')
     if priority:
