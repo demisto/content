@@ -1040,7 +1040,7 @@ class BranchTestCollector(TestCollector):
                 logger.info('install pack without collecting tests.')
 
                 # install pack without collecting tests.
-                return self._collect_pack(
+                return self._collect_pack(  # todo only_to_install should be true?
                     pack_id=pack_id,
                     reason=CollectionReason.NON_CODE_FILE_CHANGED,
                     reason_description=reason_description,
