@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any
 import urllib3
 from pycti import OpenCTIApiClient
 
@@ -83,7 +83,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
     """
     indicator_type = build_indicator_list(indicator_types)
     demisto.debug(f'{OPENCTI_LOGS} - in get_indicators - builded indicator type  : {indicator_type}')
-    filters = {
+    filters: dict[str, Any] = {
         'mode': 'and',
         'filters': [{
             'key': 'entity_type',
