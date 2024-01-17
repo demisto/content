@@ -5,10 +5,8 @@ import itertools
 import json
 import os
 import re
-import traceback
 from functools import lru_cache
 from pathlib import Path
-from threading import Lock
 from typing import Any
 import networkx as nx
 from networkx import DiGraph
@@ -197,43 +195,6 @@ def get_pack_id_from_error_with_gcp_path(error: str) -> str:
         str: The id of given pack.
     """
     return error.split("/packs/")[1].split(".zip")[0].split("/")[0]
-
-
-def create_dependencies_data_structure(
-    response_data: dict, graph_dependencies: DiGraph, pack_id: str
-):
-    """
-    Recursively create packs' dependencies data structure for installation requests (only required and uninstalled).
-
-    Args:
-        response_data (dict): Dependencies data from the '/search/dependencies' endpoint response.
-        dependants_ids (list): A list of the dependant packs IDs.
-        dependencies_data (list): The dependencies data structure to be created.
-        checked_packs (list): Required dependants that were already found.
-    """
-    for i in itertools.count():
-        new_dependants = []
-        for dependency in response_data:
-            dependants = dependency.get("dependants", {})
-
-            for dependant in dependants:
-                is_required = dependants[dependant].get("level", "") == "required"
-
-                if all((dependant in graph_dependencies.nodes, is_required)):
-                    if dependency["id"] not in graph_dependencies.nodes:
-                        new_dependants.append(dependency["id"])
-                    min_version = dependants[dependant]["minVersion"]
-                    min_version = get_min_version(
-                        graph_dependencies, dependency["id"], Version(min_version)
-                    )
-                    graph_dependencies.add_node(dependency["id"], version=min_version)
-                    graph_dependencies.add_edge(dependency["id"], dependant)
-        if new_dependants:
-            logging.debug(
-                f"Get {i + 1} level of dependants for pack {pack_id}: {', '.join(new_dependants)}"
-            )
-        else:
-            break
 
 
 def find_malformed_pack_id(body: str) -> list:
@@ -484,7 +445,6 @@ def install_packs(
         should_try_handler=should_try_handler,
         request_timeout=request_timeout,
     )
-
 
 
 def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> str:
@@ -783,7 +743,7 @@ def get_one_page_of_packs_dependencies(
 ):
     api_endpoint = "/contentpacks/marketplace/search"
     body = {
-        "page": {page},
+        "page": page,
         "size": 50,
         "sort": [
             {"field": "searchRank", "asc": False},
@@ -792,13 +752,13 @@ def get_one_page_of_packs_dependencies(
     }
 
     def success_handler(response):
-        logging.success(f"Succeeded to fetch dependencies for page {page}")
+        logging.success(f"Succeeded to fetch dependencies of page {page}")
         return True, response
 
-    failure_massage = f"Failed to fetch dependencies for page: {page}"
-    retries_message = f"Retrying to fetch dependencies for page: {page}"
+    failure_massage = f"Failed to fetch dependencies of page: {page}"
+    retries_message = f"Retrying to fetch dependencies of page: {page}"
     prior_message = (
-        f"Fetching dependencies information for page: {page} using Marketplace API"
+        f"Fetching dependencies information of page {page} using Marketplace API"
     )
 
     _, data = generic_request_with_retries(
