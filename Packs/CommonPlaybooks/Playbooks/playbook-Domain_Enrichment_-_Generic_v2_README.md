@@ -21,8 +21,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* umbrella-domain-categorization
 * domain
+* umbrella-domain-categorization
 
 ## Playbook Inputs
 
@@ -31,7 +31,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Domain | The domain name to enrich. | Domain.Name | Optional |
-| UseReputationCommand | Define if you would like to use the \!url command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
+| UseReputationCommand | Define if you would like to use the \!domain command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. Default: False. | False | Required |
 
 ## Playbook Outputs
 

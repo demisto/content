@@ -388,9 +388,9 @@ inputs:
   description: The domain name to enrich.
   playbookInputQuery:
 - description: |-
-    Define if you would like to use the !url command.
+    Define if you would like to use the !domain command.
     Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
-    Possible values: True / False.
+    Possible values: True / False. Default: False.
   key: UseReputationCommand
   playbookInputQuery:
   required: true
