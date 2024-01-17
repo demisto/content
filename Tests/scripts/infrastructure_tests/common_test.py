@@ -162,7 +162,8 @@ def test_is_pivot__previously_pipeline_not_success_or_faild_and_current_failed(m
     result = is_pivot(current_pipeline, previously_pipeline)
 
     assert result is None
-    
+
+
 def test_get_reviewer__no_reviewer(requests_mock: MockerCore):
     """
     Given:
@@ -227,7 +228,7 @@ def test_get_slack_user_name__name_in_map():
     """
     name = "Mike"
     expected = "mike"
-    result = get_slack_user_name(name, str(Path(__file__).parent /'tests_data/test_mapping.json'))
+    result = get_slack_user_name(name, str(Path(__file__).parent / 'tests_data/test_mapping.json'))
     assert result == expected
 
 
@@ -242,7 +243,7 @@ def test_get_slack_user_name__name_not_in_map():
     """
     name = "Jon"
     expected = "Jon"
-    result = get_slack_user_name(name, str(Path(__file__).parent /'tests_data/test_mapping.json'))
+    result = get_slack_user_name(name, str(Path(__file__).parent / 'tests_data/test_mapping.json'))
     assert result == expected
 
 
@@ -257,5 +258,5 @@ def test_get_slack_user_name__name_is_github_actions_bot():
     """
     name = "github-actions[bot]"
     expected = "docker images bot owner"
-    result = get_slack_user_name(name, str(Path(__file__).parent /'tests_data/test_mapping.json'))
+    result = get_slack_user_name(name, str(Path(__file__).parent / 'tests_data/test_mapping.json'))
     assert result == expected
