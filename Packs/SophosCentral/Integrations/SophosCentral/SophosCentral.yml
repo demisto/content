@@ -1529,7 +1529,7 @@ script:
     - description: Comma-separated list of User UUIDs. Maximum 1000 unique User IDs are allowed (You can retrieve the userIds from the sophos-central-users-list).
       isArray: true
       name: userIds
-    description: Creates a new “custom” (Centrally Managed) Group
+    description: Creates a new “custom” (Centrally Managed) Group.
     name: sophos-central-usergroups-create
     outputs:
     - contextPath: SophosCentral.UserGroups.id
@@ -1958,31 +1958,31 @@ script:
     description: Get all endpoint policy.
     outputs:
     - contextPath: SophosCentral.PolicyAndEnumeration.id
-      description: Policy ID.
+      description: 'Policy ID.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.feature
-      description: Feature.
+      description: 'Feature.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.settings
-      description: Settings.
+      description: 'Settings.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.orderPriority
-      description: Order priority.
+      description: 'Order priority.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.name
-      description: Name.
+      description: 'Name.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.enforced
-      description: Enforced (T|F).
+      description: 'Enforced (T|F).'
       type: Boolean
     - contextPath: SophosCentral.PolicyAndEnumeration.typeSingle
-      description: Type Single.
+      description: 'Type Single.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.typeGroup
-      description: Type Group.
+      description: 'Type Group.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.lastModified
-      description: Last Modified.
+      description: 'Last Modified.'
       type: String
   - arguments:
     - description: The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command.
@@ -1993,31 +1993,31 @@ script:
     description: Get details of Policy by id.
     outputs:
     - contextPath: SophosCentral.PolicyAndEnumeration.id
-      description: Policy ID.
+      description: 'Policy ID.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.feature
-      description: Feature.
+      description: 'Feature.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.settings
-      description: Settings.
+      description: 'Settings.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.orderPriority
-      description: Order priority.
+      description: 'Order priority.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.name
-      description: Name.
+      description: 'Name.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.enforced
-      description: Enforced (T|F).
+      description: 'Enforced (T|F).'
       type: Boolean
     - contextPath: SophosCentral.PolicyAndEnumeration.typeSingle
-      description: Type Single.
+      description: 'Type Single.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.typeGroup
-      description: Type Group.
+      description: 'Type Group.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.lastModified
-      description: Last Modified.
+      description: 'Last Modified.'
       type: String
   - arguments:
     - description: The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command.
@@ -2398,7 +2398,7 @@ script:
     - contextPath: SophosCentral.DeletedUsers.deletedUserId
       description: Deleted User's Id.
       type: String
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'
