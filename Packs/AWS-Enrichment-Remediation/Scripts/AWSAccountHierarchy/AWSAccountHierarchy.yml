@@ -1,0 +1,34 @@
+args:
+- description: 'The unique identifier (ID) of the Amazon Web Services account that you want information about.'
+  name: account_id
+  required: true
+comment: Determine AWS account hierarchy by looking up parent objects until the organization level is reached.
+commonfields:
+  id: AWSAccountHierarchy
+  version: -1
+dockerimage: demisto/python3:3.10.13.84405
+enabled: true
+engineinfo: {}
+name: AWSAccountHierarchy
+outputs:
+- contextPath: AWSHierarchy.id
+  description: ID of the account/OU/root object such as `111111111111`.
+  type: string
+- contextPath: AWSHierarchy.level
+  description: Level in relation to the original AWS account such as account, 1, 2, etc.
+  type: string
+- contextPath: AWSHierarchy.arn
+  description: ARN of the account/OU/root object such as `arn:aws:organizations::111111111111:root/o-2222222222/r-3333`.
+  type: string
+- contextPath: AWSHierarchy.name
+  description: Human readable name of the account/OU/root object such as `aws-account-n`.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
