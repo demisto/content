@@ -8,8 +8,13 @@ import base64
 import json
 from datetime import datetime
 
+# Disable insecure warnings
+import urllib3
+urllib3.disable_warnings()
+
 API_SUFFIX = 'https://api.github.com/repos/demisto/demisto-sdk'
 TIMEOUT = 60 * 60 * 6  # 6 hours
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Creates release pull request for demisto-sdk.')
@@ -92,7 +97,7 @@ def main():
     print('Triggering SDK changelog workflow')
     inputs = {
         'branch_name': release_branch_name,
-        'pr_number': pr_number,
+        'pr_number': str(pr_number),
         'pr_title': f'demisto-sdk release {release_branch_name}'
     }
 
