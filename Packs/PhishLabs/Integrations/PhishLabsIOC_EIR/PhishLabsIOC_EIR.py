@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
+from datetime import datetime
 import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -306,11 +307,52 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
     raise DemistoException(f'Test module failed, {results}')
 
 
+def fetch_incidents_per_status(client: Client,
+                               created_after: str,
+                               offset: int,
+                               limit_page: int,
+                               sort: str,
+                               direction: str,
+                               limit_incidents: int,
+                               status: str,
+                               raws: List,
+                               incidents_raw: List):
+    """
+
+    Gets both closed and open incidents from Phishlabs for the given timeframe.
+
+    """
+    total: int = 0
+    raw_response = client.get_incidents(created_after=created_after,
+                                        offset=offset,
+                                        limit=limit_page,
+                                        sort=sort,
+                                        direction=direction,
+                                        status=status)
+    while raw_response.get('metadata', {}).get('count') and total < limit_incidents:
+        raws.append(raw_response)
+        incidents_raw += raw_response.get('incidents', [])
+        total += int(raw_response.get('metadata', {}).get('count'))
+        offset += int(raw_response.get('metadata', {}).get('count'))
+        if total >= limit_incidents:
+            break
+        if limit_incidents - total < 50:
+            limit_page = limit_incidents - total
+        raw_response = client.get_incidents(offset=offset,
+                                            created_after=created_after,
+                                            limit=limit_page,
+                                            sort=sort,
+                                            direction=direction,
+                                            status=status)
+    return raws, incidents_raw
+
+
 @logger
 def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         limit: str,
+        last_ids: Set,
         last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
@@ -335,34 +377,66 @@ def fetch_incidents_command(
     else:
         datetime_new_last_run = last_run
     # Query incidents by limit and creation time
-    total = 0
-    offset = 50
+    offset = 0
     limit_incidents = int(limit)
     limit_page = min(50, limit_incidents)
-    raw_response = client.get_incidents(created_after=datetime_new_last_run,
-                                        offset=offset,
-                                        limit=limit_page,
-                                        sort='created_at',
-                                        direction='asc')
-    while raw_response.get('metadata', {}).get('count') and total < limit_incidents:
-        raws.append(raw_response)
-        incidents_raw += raw_response.get('incidents', [])
-        total += int(raw_response.get('metadata', {}).get('count'))
-        offset += int(raw_response.get('metadata', {}).get('count'))
-        if total >= limit_incidents:
-            break
-        if limit_incidents - total < 50:
-            limit_page = limit_incidents - total
-        raw_response = client.get_incidents(offset=offset,
-                                            created_after=datetime_new_last_run,
-                                            limit=limit_page,
-                                            sort='created_at',
-                                            direction='asc')
+    # Fetch open Phishlabs incidents
+    raws, incidents_raw = fetch_incidents_per_status(client=client,
+                                                     created_after=datetime_new_last_run,
+                                                     offset=offset,
+                                                     limit_page=limit_page,
+                                                     limit_incidents=limit_incidents,
+                                                     sort='created_at',
+                                                     direction='asc',
+                                                     status='open',
+                                                     raws=raws,
+                                                     incidents_raw=incidents_raw)
+    # Fetch closed Phishlabs incidents
+    raws, incidents_raw = fetch_incidents_per_status(client=client,
+                                                     created_after=datetime_new_last_run,
+                                                     offset=offset,
+                                                     limit_page=limit_page,
+                                                     limit_incidents=limit_incidents,
+                                                     sort='created_at',
+                                                     direction='asc',
+                                                     status='closed',
+                                                     raws=raws,
+                                                     incidents_raw=incidents_raw)
+
+    # Sort incidents by created time
+    incidents_raw = sorted(incidents_raw, key=lambda inc: datetime.strptime(inc.get('created'), '%Y-%m-%dT%H:%M:%SZ'))
+
+    processed_incident_ids = set()
+
     # Gather incidents by demisto format
-    incidents_report = []
+    incidents_report: list[dict] = []
     demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
     if incidents_raw:
         for incident_raw in incidents_raw:
+            if len(incidents_report) >= limit_incidents:
+                break
+
+            # We need to remove duplicates
+            if incident_raw.get('id') in processed_incident_ids:
+                demisto.debug(f"Skipping duplicate incident with id {incident_raw.get('id')}")
+                continue
+
+            # We need to be sure we didnt fetch the last incident again
+            if incident_raw.get('id') in last_ids:
+                demisto.debug(f"Skipping duplicate incident (from last run) with id {incident_raw.get('id')}")
+                continue
+
+            # Mark the incident ID as processed
+            processed_incident_ids.add(incident_raw.get('id'))
+
+            # Take the last touched incident time and id for last_run object
+            current_created = incident_raw.get('created')
+            current_created_datetime = datetime.strptime(current_created, occurred_format)
+            if datetime_new_last_run and current_created_datetime > datetime.strptime(datetime_new_last_run, occurred_format):  # noqa: E501 # type: ignore
+                last_ids = set()
+            datetime_new_last_run = incident_raw.get('created')
+            last_ids.add(incident_raw.get('id'))
+
             # Creates incident entry
             occurred = incident_raw.get('created')
             incidents_report.append({
@@ -371,11 +445,8 @@ def fetch_incidents_command(
                 'rawJSON': json.dumps(incident_raw)
             })
 
-        new_last_run = incidents_report[-1].get('occurred')
-    else:
-        new_last_run = datetime_new_last_run
     # Return results
-    return incidents_report, {'lastRun': new_last_run}
+    return incidents_report, {'lastRun': datetime_new_last_run, 'lastIds': last_ids}
 
 
 @logger
@@ -489,7 +560,8 @@ def main():
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
                                                               last_run=demisto.getLastRun().get('lastRun'),
-                                                              limit=params.get('fetchLimit'))
+                                                              limit=params.get('fetchLimit'),
+                                                              last_ids=demisto.getLastRun().get('lastIds', set()))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         else:

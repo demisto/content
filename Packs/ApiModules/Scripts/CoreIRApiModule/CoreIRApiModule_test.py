@@ -1752,7 +1752,7 @@ def test_get_script_execution_status_command(requests_mock):
     response = get_script_execution_status_command(client, args)
 
     api_response['reply']['action_id'] = int(action_id)
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -1931,7 +1931,7 @@ def test_run_script_delete_file_command(requests_mock):
 
     response = run_script_delete_file_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -1978,7 +1978,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
 
     response = run_script_delete_file_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -2038,7 +2038,7 @@ def test_run_script_file_exists_command(requests_mock):
 
     response = run_script_file_exists_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2085,7 +2085,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
 
     response = run_script_file_exists_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2145,7 +2145,7 @@ def test_run_script_kill_process_command(requests_mock):
 
     response = run_script_kill_process_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
@@ -2192,7 +2192,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
 
     response = run_script_kill_process_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
