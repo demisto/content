@@ -23,9 +23,9 @@ alter
         xdm.target.file.path = file -> file_path,
         xdm.target.file.md5 = file -> identity.md5,
         xdm.target.file.sha256 = file -> identity.sha256,
-        xdm.target.process.parent_id = parent -> process_id,
-        xdm.target.process.executable.filename = parent -> file_name,
-        xdm.target.process.executable.md5 = parent -> identity.md5,
-        xdm.target.process.executable.sha256 = parent -> identity.sha256,
+        xdm.source.process.pid = file -> parent.process_id,
+        xdm.source.process.executable.filename = file -> parent.file_name,
+        xdm.source.process.executable.md5 = file -> parent.identity.md5,
+        xdm.source.process.executable.sha256 = file -> parent.identity.sha256,
         xdm.alert.mitre_tactics = arraymap(tactics -> [], trim("@element", "\"")),
         xdm.alert.mitre_techniques = arraymap(techniques -> [], trim("@element", "\""));
