@@ -188,7 +188,7 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
         # we have got a specific id to be deleted
         object_id_list.append(object_id)
 
-    if is_object_id_exist(client, object_id_list, list_type):
+    if object_id_list:
         human_readable = ""
         for object_id in object_id_list:
             url_suffix = f'{list_type}/ip_objects/{object_id}'
