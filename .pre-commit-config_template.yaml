@@ -106,7 +106,7 @@ repos:
     - --color=yes
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
-    split_by_object: true
+    isolate_container: true
     split_by_network: true
     change_working_directory: true
     skip:commit: true
@@ -125,8 +125,7 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    split_by_object: true
-    split_by_network: true
+    isolate_container: true
     change_working_directory: true
     skip:commit: true
   - id: pwsh-analyze-in-docker
@@ -145,7 +144,7 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    split_by_object: true
+    isolate_container: true
     change_working_directory: true
     skip:commit: true
   - id: is-circle-changed
