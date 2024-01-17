@@ -260,6 +260,8 @@ tasks:
     scriptarguments:
       value:
         simple: 8.8.8.8
+      type:
+        simple: "IP"
     separatecontext: false
     skipunavailable: false
     task:

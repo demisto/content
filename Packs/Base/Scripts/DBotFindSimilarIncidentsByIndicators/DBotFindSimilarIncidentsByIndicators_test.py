@@ -136,8 +136,10 @@ def test_find_similar_incidents_by_indicators(
         assert all(field in inc for field in args["fieldsIncidentToDisplay"].split(","))
 
 
-def test_score(mocker):
-    normalize_function = TRANSFORMATION["frequency_indicators"]["normalize"]
+def test_score():
+    """ Runs some sanity tests for the FrequencyIndicators transformer
+    """
+    normalize_function = None
     incident = pd.DataFrame({"indicators": ["1 2 3 4 5 6"]})
     # Check if incident is rare then the score is higher
     incidents_1 = pd.DataFrame({"indicators": ["1 2", "1 3", "1 3"]})
