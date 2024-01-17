@@ -219,9 +219,27 @@ tasks:
       keys:
         simple: name,email,source,timestamp
       val1:
-        simple: ${MSGraphUser.DisplayName}
+        complex:
+          accessor: DisplayName
+          root: MSGraphUser
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
       val2:
-        simple: ${MSGraphUser.Mail}
+        complex:
+          accessor: Mail
+          root: MSGraphUser
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
       val3:
         simple: Active-Directory
       val4:
@@ -231,20 +249,20 @@ tasks:
     task:
       brand: Builtin
       description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
-      id: 292dde13-00de-4af0-8b54-fca675a03fb7
+      id: 72c00c51-3c06-4b17-8bff-6f06b0b51cc0
       iscommand: false
       name: Set service owner grid field
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 292dde13-00de-4af0-8b54-fca675a03fb7
+    taskid: 72c00c51-3c06-4b17-8bff-6f06b0b51cc0
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 950
+          "x": 500,
+          "y": 905
         }
       }
   "14":
@@ -253,35 +271,14 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: MSGraphUser.DisplayName
-          operator: isNotEmpty
-        - left:
-            iscontext: true
-            value:
-              simple: MSGraphUser.DisplayName
-          operator: isNotEqualString
-          right:
-            value:
-              simple: "null"
-      - - left:
-            iscontext: true
-            value:
-              simple: MSGraphUser.Mail
-          operator: isNotEmpty
-        - left:
-            iscontext: true
-            value:
-              simple: MSGraphUser.Mail
-          operator: isNotEqualString
-          right:
-            value:
-              simple: "null"
-      label: Set Name and Mail
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: MSGraphUser.DisplayName
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: MSGraphUser.DisplayName
+                    operator: isNotEmpty
+                root: MSGraphUser.DisplayName
           operator: isNotEqualString
           right:
             value:
@@ -289,24 +286,19 @@ tasks:
         - left:
             iscontext: true
             value:
-              simple: MSGraphUser.DisplayName
-          operator: isNotEmpty
-      label: Set Name
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: MSGraphUser.Mail
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: MSGraphUser.Mail
+                    operator: isNotEmpty
+                root: MSGraphUser.Mail
           operator: isNotEqualString
           right:
             value:
               simple: "null"
-        - left:
-            iscontext: true
-            value:
-              simple: MSGraphUser.Mail
-          operator: isNotEmpty
-      label: Set Mail
+      label: "YES"
     continueonerrortype: ""
     id: "14"
     ignoreworker: false
@@ -315,11 +307,7 @@ tasks:
     nexttasks:
       '#default#':
       - "2"
-      Set Mail:
-      - "16"
-      Set Name:
-      - "15"
-      Set Name and Mail:
+      "YES":
       - "11"
     note: false
     quietmode: 0
@@ -328,12 +316,12 @@ tasks:
     task:
       brand: ""
       description: Ownership information exists?
-      id: 944b74fd-3b3b-4cd4-8b1a-f2ea2a5d4e54
+      id: e1f8b47b-349a-4265-8c87-838192ef4f75
       iscommand: false
       name: Ownership information exists?
       type: condition
       version: -1
-    taskid: 944b74fd-3b3b-4cd4-8b1a-f2ea2a5d4e54
+    taskid: e1f8b47b-349a-4265-8c87-838192ef4f75
     timertriggers: []
     type: condition
     view: |-
@@ -343,96 +331,6 @@ tasks:
           "y": 680
         }
       }
-  "15":
-    continueonerrortype: ""
-    id: "15"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "2"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      gridfield:
-        simple: asmserviceownerunrankedraw
-      keys:
-        simple: name,email,source,timestamp
-      val1:
-        simple: ${MSGraphUser.DisplayName}
-      val2:
-        simple: n/a
-      val3:
-        simple: Active-Directory
-      val4:
-        simple: TIMESTAMP
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
-      id: 330aedad-c9dd-4084-856d-963196a34127
-      iscommand: false
-      name: Set service owner grid field
-      script: GridFieldSetup
-      type: regular
-      version: -1
-    taskid: 330aedad-c9dd-4084-856d-963196a34127
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 720,
-          "y": 950
-        }
-      }
-  "16":
-    continueonerrortype: ""
-    id: "16"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "2"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      gridfield:
-        simple: asmserviceownerunrankedraw
-      keys:
-        simple: name,email,source,timestamp
-      val1:
-        simple: n/a
-      val2:
-        simple: ${MSGraphUser.Mail}
-      val3:
-        simple: Active-Directory
-      val4:
-        simple: TIMESTAMP
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
-      id: 029d0ddf-20db-4d0b-8ea6-f12d902564ae
-      iscommand: false
-      name: Set service owner grid field
-      script: GridFieldSetup
-      type: regular
-      version: -1
-    taskid: 029d0ddf-20db-4d0b-8ea6-f12d902564ae
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1180,
-          "y": 950
-        }
-      }
 version: -1
 view: |-
   {
@@ -440,7 +338,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1165,
-        "width": 1520,
+        "width": 840,
         "x": 40,
         "y": 50
       }
