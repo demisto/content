@@ -68,11 +68,11 @@ def test_execute_query_command(mocker):
     mocker.patch.object(client, 'get_query_results', return_value=get_query_results_mock_data)
 
     args = {
-        'QueryString': "SELECT * FROM test_db.test_table",
-        'OutputLocation': 's3://athena-queries-test',
+        'query_string': "SELECT * FROM test_db.test_table",
+        'output_location': 's3://athena-queries-test',
     }
 
-    result = AWSSecurityLake.execute_query_command(args, client)
+    result = AWSSecurityLake.execute_query_command(args, "QueryResults", client)
 
     expected_context_execution_details = load_test_data('expected_context', 'get_query_execution_command.json')
     expected_context_results = load_test_data('expected_context', 'get_query_results_command.json')
@@ -84,48 +84,6 @@ def test_execute_query_command(mocker):
 
     expected_hr = load_test_data('expected_hr', 'get_query_results_command.txt')
     assert result.readable_output == expected_hr
-
-
-    """
-    Given: argument to list catalogs
-    When: running list_table_metadata_command
-    Then: validate that the correct values are returned.
-    """
-    
-    client = MockClient()
-    mocker.patch.object(client, 'list_data_catalogs', return_value={
-    'TableMetadataList': [
-        {
-            'Name': 'string',
-            'CreateTime': datetime(2015, 1, 1),
-            'LastAccessTime': datetime(2015, 1, 1),
-            'TableType': 'string',
-            'Columns': [
-                {
-                    'Name': 'string',
-                    'Type': 'string',
-                    'Comment': 'string'
-                },
-            ],
-            'PartitionKeys': [
-                {
-                    'Name': 'string',
-                    'Type': 'string',
-                    'Comment': 'string'
-                },
-            ],
-            'Parameters': {
-                'string': 'string'
-            }
-        },
-    ],
-    'NextToken': 'string'
-})
-    
-    result = AWSSecurityLake.list_table_metadata_command(client, {})
-    assert result.outputs == {'Catalog': [{'CatalogName': 'test', 'Type': 'LAMBDA'}], 'CatalogNextToken': 'test'}
-    assert result.outputs_prefix == 'AWS.SecurityLake'
-    assert result.outputs_key_field == 'CatalogName'
 
 COMMANDS=[(AWSSecurityLake.list_catalogs_command, 'list_catalogs_command.json', 'CatalogName', 'list_data_catalogs'),
           (AWSSecurityLake.list_databases_command, 'list_database_command.json', 'Name', 'list_databases'),
@@ -150,6 +108,32 @@ def test_general_command(mocker, command, file_name, output_key_field, client_co
     assert result.outputs_key_field == output_key_field
 
 
+QUEYRY_COMMANDS = [(AWSSecurityLake.mfalogin_query_command, 
+                    {"database": "test_db", "table": "test_table", "user_name": "1234"},
+                    "SELECT * FROM <test_db>.<test_table> WHERE CAST(actor.user.name AS VARCHAR) = '1234';",
+                    'MfaLoginQueryResults'),
+                   (AWSSecurityLake.source_ip_query_command, 
+                    {"database": "test_db", "table": "test_table", "ip_src": "1234"},
+                    "SELECT * FROM <test_db>.<test_table> WHERE CAST(src_endpoint.ip AS VARCHAR) = '1234';",
+                    'SourceIPQueryResults'),
+                   (AWSSecurityLake.guardduty_activity_query_command, 
+                    {"database": "test_db", "table": "test_table", "severity": "1"},
+                    "SELECT * FROM <test_db>.<test_table> WHERE severity_id = 1;",
+                    'GuardDutyActivityQueryResults')]
 
+@pytest.mark.parametrize("command, args, query, query_results_context_key", QUEYRY_COMMANDS)
+def test_query_creation_commands(mocker, command, args, query, query_results_context_key):
+    """
+    Given: Command arguments 
+    When: Running query generating command
+    Then: Validate correct values are generated when calling the execute_query_command
+    """
+    client = MockClient()
+    execute_command = mocker.patch.object(AWSSecurityLake, "execute_query_command")
+    
+    command(client=client, args=args)
 
-
+    assert execute_command.called is True
+    assert execute_command.call_args.kwargs.get('args').get('query_string') == query
+    assert execute_command.call_args.kwargs.get('query_results_context_key') == query_results_context_key
+    

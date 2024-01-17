@@ -293,7 +293,7 @@ WHERE CAST(actor.user.name AS VARCHAR) = '{user_name}';
 
 def source_ip_query_command(client, args: dict):
     """Running aws-security-lake-query-execute command with query_string:
-SELECT * FROM <{database}>.<(table}>
+SELECT * FROM <{database}>.<{table}>
 WHERE CAST(src_endpoint.ip AS VARCHAR) = '{ip_src}';
 
     Args:
@@ -412,7 +412,7 @@ def main():  # pragma: no cover
             result = module_test_command(client)
             
         elif command == 'aws-athena-execute-query':
-            result = execute_query_command(client=client, args=args) # type: ignore
+            result = execute_query_command(client=client, args=args, query_results_context_key='QueryResults') # type: ignore
             
         elif command == 'aws-security-lake-data-catalogs-list':
             result = list_catalogs_command(client=client, args=args)
