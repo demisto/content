@@ -1,4 +1,4 @@
-name: Add PR link to Related Jira Issue
+name: Close Jira Issue Related To PR
 on:
   pull_request:
     types: [ closed ]
@@ -9,7 +9,7 @@ permissions:
 jobs:
   add_pr_link_to_related_jira_issue:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' && github.event.action == 'closed' && github.event.pull_request.merged == true 
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' && github.event.action == 'closed' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'contrib/') == false
     steps:
       - name: Checkout
         uses: actions/checkout@v4

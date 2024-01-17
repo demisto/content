@@ -13,17 +13,49 @@ configuration:
   section: Connect
 - name: credentials
   type: 9
-  displaypassword: API Token (see detailed instructions)
+  displaypassword: API Token
   hiddenusername: true
   section: Connect
   required: false
   display: ''
-- display: API Token (see detailed instructions)
+- display: API Token
   name: apitoken
   type: 4
   hidden: true
   section: Connect
   required: false
+- display: Use OAuth 2.0 Authentication
+  name: use_oauth
+  type: 8
+  section: Connect
+  required: false
+  additionalinfo: See detailed instructions on the 'Help' tab.
+- display: Client ID
+  name: client_id
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+- display: Private Key
+  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  name: private_key
+  type: 14
+  section: Connect
+  required: false
+- display: JWT Encoding Algorithm
+  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  name: jwt_algorithm
+  type: 15
+  section: Connect
+  required: false
+  options:
+  - RS256
+  - RS384
+  - RS512
+  - ES256
+  - ES384
+  - ES512
+  defaultvalue: RS256
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1451,7 +1483,9 @@ script:
     - contextPath: Account.Username
       description: Okta account usernames returned by the search.
       type: String
-  dockerimage: demisto/python3:3.10.13.74666
+  - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
+    name: okta-auth-reset
+  dockerimage: demisto/crypto:1.0.0.83343
   runonce: false
   script: ""
   subtype: python3

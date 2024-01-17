@@ -1,0 +1,130 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FeedORKL
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+- additionalinfo: Fetch related indicators. Default is "False".
+  defaultvalue: 'false'
+  display: Create Relationships
+  name: createRelationships
+  required: false
+  type: 8
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- defaultvalue: '1000'
+  display: Maximum Indicators per fetch
+  name: limit
+  required: false
+  type: 0
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: 'true'
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: verify
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the ORKL Threat Intel Feed integration to get receive threat intelligence indicators from the feed.
+display: ORKL Threat Intel Feed
+name: FeedORKL
+script:
+  commands:
+  - arguments:
+    - defaultValue: '5'
+      description: Maximum number of Reports to return.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: file_creation_date
+      description: Criteria to order Threat Reports.
+      name: order_by
+      predefined:
+      - created_at
+      - updated_at
+      - file_creation_date
+      - file_modification_date
+    - auto: PREDEFINED
+      default: true
+      defaultValue: desc
+      description: Ordering of results.
+      name: order
+      predefined:
+      - asc
+      - desc
+    description: Retrieves latest Threat Reports from ORKL.
+    name: orkl-get-reports
+  dockerimage: demisto/python3:3.10.13.82467
+  feed: true
+  isFetchSamples: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

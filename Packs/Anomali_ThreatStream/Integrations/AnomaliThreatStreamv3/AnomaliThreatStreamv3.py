@@ -2501,7 +2501,6 @@ def get_indicators(client: Client, **kwargs):
     """
     page = kwargs.get('page')
     page_size = kwargs.get('page_size')
-    offset = kwargs['offset'] = 0
     limit = kwargs['limit'] = int(kwargs.get('limit', 20))
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     kwargs.update(params)
@@ -2512,18 +2511,20 @@ def get_indicators(client: Client, **kwargs):
     url = "v2/intelligence/"
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"
-    iocs_list = client.http_request("GET", url, params=kwargs).get('objects', None)
+    res = client.http_request("GET", url, params=kwargs)
+    iocs_list = res.get('objects', None)
     if not iocs_list:
         return 'No indicators found from ThreatStream'
 
     iocs_context = parse_indicators_list(iocs_list)
     # handle the issue that the API does not return more than 1000 indicators.
     if limit > 1000:
-        while len(iocs_context) < limit:
-            offset += len(iocs_list)
-            kwargs['limit'] = limit
-            kwargs['offset'] = offset
-            iocs_list = client.http_request("GET", url, params=kwargs).get('objects', None)
+        next_page = res.get('meta', {}).get('next', None)
+        while len(iocs_context) < limit and next_page:
+            next_page = next_page.replace('api/', '')
+            res = client.http_request("GET", next_page)
+            iocs_list = res.get('objects', None)
+            next_page = res.get('meta', {}).get('next', None)
             if iocs_list:
                 iocs_context.extend(parse_indicators_list(iocs_list))
             else:

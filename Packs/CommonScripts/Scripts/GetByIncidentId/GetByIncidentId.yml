@@ -14,11 +14,11 @@ args:
   description: The ID of the incident from which to get context values. The default is the current incident.
 - name: get_key
   required: true
-  description: The key to get
+  description: The key to get.
 - name: set_key
   description: The key to set. The default is "get_key".
 scripttarget: 0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 tests:
 - No test - tested with unittest

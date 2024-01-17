@@ -1,0 +1,598 @@
+id: PAN-OS Commit Configuration v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: PAN-OS Commit Configuration v2
+description: Commit the PAN-OS Panorama or Firewall configuration. If specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 72f6ac89-7d29-48cd-8fc8-a87a469d368e
+    type: start
+    task:
+      id: 72f6ac89-7d29-48cd-8fc8-a87a469d368e
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9c71e52d-9168-48c7-85bf-c1ed81ed2c16
+    type: condition
+    task:
+      id: 9c71e52d-9168-48c7-85bf-c1ed81ed2c16
+      version: -1
+      name: Is Palo Alto Networks PAN-OS enabled?
+      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ba35b0ca-2a3c-4a01-8554-7599c67c8d6a
+    type: regular
+    task:
+      id: ba35b0ca-2a3c-4a01-8554-7599c67c8d6a
+      version: -1
+      name: Commit to Panorama
+      description: Commit Palo Alto Firewall or Panorama
+      script: '|||pan-os-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      interval_in_seconds:
+        simple: "60"
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 952b0224-dd79-4eca-8721-d93bd8edd76a
+    type: title
+    task:
+      id: 952b0224-dd79-4eca-8721-d93bd8edd76a
+      version: -1
+      name: Done
+      description: '-'
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cbf70090-8353-41e4-8efb-3290bfd04bcb
+    type: regular
+    task:
+      id: cbf70090-8353-41e4-8efb-3290bfd04bcb
+      version: -1
+      name: Push rules to the Panorama device group
+      description: Push rules from Palo Alto Panorama to the Palo Alto configured device group.
+      script: '|||pan-os-push-to-device-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      interval_in_seconds:
+        simple: "60"
+      polling:
+        simple: "true"
+      timeout:
+        simple: "600"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 589fe169-faf7-4986-806f-51eecdb7246c
+    type: regular
+    task:
+      id: 589fe169-faf7-4986-806f-51eecdb7246c
+      version: -1
+      name: Get Panorama commit status
+      description: Get commit status
+      script: '|||pan-os-commit-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      job_id:
+        complex:
+          root: Panorama
+          accessor: Commit.JobID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 326d59a9-9554-4d3a-89f5-b5774735b095
+    type: regular
+    task:
+      id: 326d59a9-9554-4d3a-89f5-b5774735b095
+      version: -1
+      name: Fetch instance info
+      description: Run any command supported in the API.
+      script: Panorama|||pan-os
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      cmd:
+        simple: <show><system><info></info></system></show>
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      type:
+        simple: op
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0a67cd5e-291c-4cbf-8cf6-1898cd23ef39
+    type: condition
+    task:
+      id: 0a67cd5e-291c-4cbf-8cf6-1898cd23ef39
+      version: -1
+      name: Identify the instance type
+      description: Automatically detects the product (Panorama/Firewall).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Panorama:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Panorama
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: db94418c-0822-4d35-8bdc-6a323ac302d4
+    type: condition
+    task:
+      id: db94418c-0822-4d35-8bdc-6a323ac302d4
+      version: -1
+      name: Was Panorama commit successful?
+      description: '-'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Commit.Status
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e5e51f27-0ef7-4603-8ff4-6f29c327187f
+    type: condition
+    task:
+      id: e5e51f27-0ef7-4603-8ff4-6f29c327187f
+      version: -1
+      name: Was Panorama push successful?
+      description: '-'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Push.Status
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 516e84d7-3bf1-4af1-821d-c7d930835966
+    type: regular
+    task:
+      id: 516e84d7-3bf1-4af1-821d-c7d930835966
+      version: -1
+      name: Print commit error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      message:
+        simple: Panorama Commit Failed
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 58e98f40-8373-4cc1-8346-fe35fd176373
+    type: regular
+    task:
+      id: 58e98f40-8373-4cc1-8346-fe35fd176373
+      version: -1
+      name: Print push error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      message:
+        simple: Panorama Commit Failed
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3e46d493-9404-476d-8d95-68b8ad017a84
+    type: regular
+    task:
+      id: 3e46d493-9404-476d-8d95-68b8ad017a84
+      version: -1
+      name: Fix errors and commit manually
+      description: '-'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6e3293ac-bae0-4627-8b89-b25f67466c9f
+    type: regular
+    task:
+      id: 6e3293ac-bae0-4627-8b89-b25f67466c9f
+      version: -1
+      name: Fix errors and push manually
+      description: '-'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_5_#default#": 0.1,
+      "13_6_Panorama": 0.73,
+      "14_12_yes": 0.24,
+      "15_17_#default#": 0.2,
+      "15_5_yes": 0.1,
+      "1_5_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2275,
+        "width": 1150,
+        "x": 370,
+        "y": -250
+      }
+    }
+  }
+inputs:
+- key: device-group
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: Panorama.Commit.JobID
+  description: The job ID to commit.
+- contextPath: Panorama.Commit.Status
+  description: The commit status.
+- contextPath: Panorama.Commit.Description
+  description: The commit description from the the command input.
+- contextPath: Panorama.Push.DeviceGroup
+  description: The device group in which the policies were pushed.
+- contextPath: Panorama.Push.JobID
+  description: The job ID of the policies that were pushed.
+- contextPath: Panorama.Push.Status
+  description: The push status.
+- contextPath: Panorama.Push.Warnings
+  description: The push warnings.
+- contextPath: Panorama.Push.Errors
+  description: The push errors.
+- contextPath: Panorama.Push.Details
+  description: The job ID details.
+tests:
+  - no tests
+fromversion: 6.10.0

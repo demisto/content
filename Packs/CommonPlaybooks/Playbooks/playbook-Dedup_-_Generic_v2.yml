@@ -537,8 +537,8 @@ tasks:
     task:
       id: 04d3848d-57da-47ab-827d-8950c9063c32
       version: -1
-      name: Is Demisto REST API enabled?
-      description: Checks whether the Demisto REST API integration is enabled.
+      name: Is Core REST API enabled?
+      description: Checks whether the Core REST API integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -564,7 +564,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Demisto REST API
+                        simple: Core REST API
                 - - operator: isEqualString
                     left:
                       value:

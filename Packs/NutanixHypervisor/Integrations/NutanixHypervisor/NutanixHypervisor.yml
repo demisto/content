@@ -367,10 +367,10 @@ script:
       description: The machine type of the virtual machine.
       type: String
   - arguments:
-    - description: "ID of the virtual machine to change its power status. Virtual machine ID is the 'uuid' field returned for by command 'nutanix-hypervisor-vms-list'"
+    - description: "ID of the virtual machine to change its power status. Virtual machine ID is the 'uuid' field returned for by command 'nutanix-hypervisor-vms-list'."
       name: vm_uuid
       required: true
-    - description: "The UUID of the host to be used to run the virtual machine if the virtual machine is transitioned with 'ON' or 'POWERCYCLE'. Host ID is the 'uuid' field returned for by command 'nutanix-hypervisor-hosts-list'"
+    - description: "The UUID of the host to be used to run the virtual machine if the virtual machine is transitioned with 'ON' or 'POWERCYCLE'. Host ID is the 'uuid' field returned for by command 'nutanix-hypervisor-hosts-list'."
       name: host_uuid
     - auto: PREDEFINED
       description: The new power state to which you want to transfer the virtual machine to.
@@ -394,7 +394,7 @@ script:
       description: The task UUID returned by Nutanix service for the power status change request. With this task UUID the task status can be monitored by using the nutanix-hypervisor-task-results-get command.
       type: String
   - arguments:
-    - description: "Comma-separated list of the task IDs to get results to. Task ID is the 'task_uuid' field returned for by command 'nutanix-hypervisor-vm-powerstatus-change'"
+    - description: "Comma-separated list of the task IDs to get results to. Task ID is the 'task_uuid' field returned for by command 'nutanix-hypervisor-vm-powerstatus-change'."
       name: task_ids
       required: true
       isArray: true
@@ -657,7 +657,7 @@ script:
       description: Metric value details.
       type: Unknown
   - arguments:
-    - description: The ID of the alert to acknowledge. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'
+    - description: The ID of the alert to acknowledge. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'.
       name: alert_id
       required: true
     description: Acknowledges the alert with the specified alert_id.
@@ -676,7 +676,7 @@ script:
     - description: The ID of the alert to resolve.
       name: alert_id
       required: true
-    description: "Resolves the alert with the specified alert_id. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'"
+    description: "Resolves the alert with the specified alert_id. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'."
     name: nutanix-hypervisor-alert-resolve
     outputs:
     - contextPath: NutanixHypervisor.ResolvedAlerts.id
@@ -779,7 +779,7 @@ script:
     - contextPath: NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.message
       description: Message returned by the resolve operation.
       type: String
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   script: ''
   subtype: python3

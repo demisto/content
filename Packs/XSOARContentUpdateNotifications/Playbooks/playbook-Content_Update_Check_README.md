@@ -1,26 +1,32 @@
 Deprecated. Use "Content Update Manager" playbook instead. This playbook will check to see if there are any content updates available for installed packs and notify users via e-mail or Slack.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Check For Content Installation
 
 ### Integrations
+
 * SlackV2
 
 ### Scripts
+
 * GetServerURL
 * Set
 
 ### Commands
+
 * closeInvestigation
 * send-notification
 * setIncident
 * send-mail
-* demisto-api-get
+* core-api-get
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -31,5 +37,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | packs | A CSV of packs to monitor | incident.contentpackselection | Required |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.

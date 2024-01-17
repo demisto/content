@@ -5,7 +5,7 @@ name: RecordedFutureLists
 display: 'Recorded Future - Lists'
 category: Data Enrichment & Threat Intelligence
 image:
-description: 'Search and manage watchlists in Recorded Future'
+description: 'Search and manage watchlists in Recorded Future.'
 configuration:
 - display: API URL
   name: server_url
@@ -31,15 +31,15 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.84405
   commands:
   - name: recordedfuture-lists-search
-    description: Search for lists in Recorded Future
+    description: Search for lists in Recorded Future.
     arguments:
     - name: list_names
-      description: Freetext name to search for
+      description: Freetext name to search for.
     - name: contains
-      description: Filter lists based on entity types, will only include lists with the entity types specified. Default value "" includes all types
+      description: Filter lists based on entity types, will only include lists with the entity types specified. Default value "" includes all types.
       auto: PREDEFINED
       predefined:
       - entity
@@ -63,7 +63,7 @@ script:
       - target
       - method
     - name: limit
-      description: Limits the amount of returned results
+      description: Limits the amount of returned results.
     - name: include
       required: false
       description: Include all search results. Default is to exclude all lists owned by the system user.
@@ -72,37 +72,37 @@ script:
       - all
     outputs:
     - contextPath: RecordedFuture.List.id
-      description: Unique id of the list in Recorded Future
+      description: Unique id of the list in Recorded Future.
       type: String
     - contextPath: RecordedFuture.List.name
-      description: Name of the list in Recorded Future
+      description: Name of the list in Recorded Future.
       type: String
     - contextPath: RecordedFuture.List.type
-      description: Recorded future entity type
+      description: Recorded future entity type.
       type: String
     - contextPath: RecordedFuture.List.created
-      description: Timestamp of creation
+      description: Timestamp of creation.
       type: String
     - contextPath: RecordedFuture.List.updated
-      description: Timestamp of last update to the list
+      description: Timestamp of last update to the list.
       type: String
     - contextPath: RecordedFuture.List.owner_id
-      description: Unique id of the owner in Recorded Future
+      description: Unique id of the owner in Recorded Future.
       type: String
     - contextPath: RecordedFuture.List.owner_name
-      description: Readable name of list in Recorded Future
+      description: Readable name of list in Recorded Future.
       type: String
   - name: recordedfuture-lists-add-entities
     description: Add entities to a list, separate entities by commas. "NOTE:" if entity type is specified, only one entity type can be added with each action.
     arguments:
     - name: list_id
       required: true
-      description: Id of the list that should be added, can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal
+      description: Id of the list that should be added, can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal.
     - name: entity_ids
       description: 'A comma-separated list of specific IDs from Recorded Future. For URLs containing commas, replace the comma with %2C. For more information, go to https://xsoar.pan.dev/docs/reference/integrations/recorded-future-lists#recordedfuture-lists-add-entities.'
       required: false
     - name: freetext_names
-      description: 'Freetext names will be matched to Recorded Future ids separated by comma, this alernative will add the best match in the Recorded Future data. For urls containing commas: escape with %2C'
+      description: 'Freetext names will be matched to Recorded Future ids separated by comma, this alernative will add the best match in the Recorded Future data. For urls containing commas: escape with %2C.'
     - name: entity_type
       required: false
       description: Type of the entities that should be added. Use together with freetext_names to improve entity resolution.
@@ -173,19 +173,19 @@ script:
       - malware-category
     outputs:
     - contextPath: RecordedFuture.List.Entities.name
-      description: Name of the entity in the list
+      description: Name of the entity in the list.
       type: String
     - contextPath: RecordedFuture.List.Entities.type
-      description: The Recorded Future entity type resolved during the action
+      description: The Recorded Future entity type resolved during the action.
       type: String
     - contextPath: RecordedFuture.List.Entities.id
-      description: Unique id of the entity in Recorded Future
+      description: Unique id of the entity in Recorded Future.
       type: String
     - contextPath: RecordedFuture.List.Entities.input_value
-      description: The value inputted to the command
+      description: The value inputted to the command.
       type: String
     - contextPath: RecordedFuture.List.Entities.action_result
-      description: Entity specific result for the action
+      description: Entity specific result for the action.
       type: String
   - name: recordedfuture-lists-entities
     description: Get the entities that are currently in the given lists.

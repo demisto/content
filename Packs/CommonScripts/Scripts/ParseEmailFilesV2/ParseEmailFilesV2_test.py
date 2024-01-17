@@ -384,6 +384,7 @@ def test_md_output_empty_body_text():
                u'* From:\temail2@paloaltonetworks.com\n' \
                u'* To:\temail1@paloaltonetworks.com\n' \
                u'* CC:\t\n' \
+               u'* BCC:\t\n' \
                u'* Subject:\t\n' \
                u'* Attachments:\t\n\n\n' \
                u'### HeadersMap\n' \
@@ -400,6 +401,7 @@ def test_md_output_empty_body_text():
                u'* From:\temail2@paloaltonetworks.com\n' \
                u'* To:\temail1@paloaltonetworks.com\n' \
                u'* CC:\t\n' \
+               u'* BCC:\t\n' \
                u'* Subject:\t\n' \
                u'* Attachments:\t\n\n\n' \
                u'### HeadersMap\n' \
@@ -429,6 +431,7 @@ def test_md_output_with_body_text():
                u'* From:\temail2@paloaltonetworks.com\n' \
                u'* To:\temail1@paloaltonetworks.com\n' \
                u'* CC:\t\n' \
+               u'* BCC:\t\n' \
                u'* Subject:\t\n' \
                u'* Body/Text:\t[email text]\n' \
                u'* Attachments:\t\n\n\n' \

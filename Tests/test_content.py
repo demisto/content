@@ -33,7 +33,7 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, p
 
 LOCKS_PATH = 'content-locks'
 BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
-BUILD_NUM = os.environ.get('CI_BUILD_ID')
+BUILD_NUM = os.environ.get('CI_JOB_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')

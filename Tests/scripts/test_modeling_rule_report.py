@@ -72,7 +72,8 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
         xml = JUnitXml()
         xml.add_testsuite(test_suite)
         xml.write(attachment_file_name.name, pretty=True)
-        jira_server.add_attachment(issue=jira_issue.key, attachment=attachment_file_name.name, filename=junit_file_name)
+        jira_server.add_attachment(issue=jira_issue.key, attachment=attachment_file_name.name,
+                                   filename=junit_file_name_with_suffix)
 
     back_link_to = f" with back link to {link_to_issue.key}" if link_to_issue else ""
     logging.info(f"{'Updated' if use_existing_issue else 'Created'} Jira issue: {jira_issue.key} {back_link_to}"
@@ -130,11 +131,12 @@ def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict
     return modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions
 
 
-def write_test_modeling_rule_to_jira_mapping(artifacts_path: Path, jira_tickets_for_modeling_rule: dict[str, Issue]):
+def write_test_modeling_rule_to_jira_mapping(server_url: str, artifacts_path: Path,
+                                             jira_tickets_for_modeling_rule: dict[str, Issue]):
     test_modeling_rule_to_jira_mapping_file = artifacts_path / TEST_MODELING_RULES_TO_JIRA_MAPPING
     logging.info(f"Writing test_modeling_rules_to_jira_mapping to {test_modeling_rule_to_jira_mapping_file}")
     with open(test_modeling_rule_to_jira_mapping_file, "w") as test_modeling_rule_to_jira_mapping_fp:
-        test_modeling_rule_to_jira_mapping = {modeling_rule: jira_ticket_to_json_data(jira_ticket)
+        test_modeling_rule_to_jira_mapping = {modeling_rule: jira_ticket_to_json_data(server_url, jira_ticket)
                                               for modeling_rule, jira_ticket in jira_tickets_for_modeling_rule.items()}
         test_modeling_rule_to_jira_mapping_fp.write(json.dumps(test_modeling_rule_to_jira_mapping, indent=4, sort_keys=True,
                                                                default=str))

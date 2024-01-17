@@ -207,6 +207,28 @@ script:
       required: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file (same as displayed in file entries).
+      type: String
+    - contextPath: File.Type
+      description: 'File type, for example: "PE".'
+      type: string
+    - contextPath: File.Size
+      description: File size.
+      type: number
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
@@ -224,6 +246,13 @@ script:
       - metadata
       - minimal
       - raw
+    - auto: PREDEFINED
+      defaultValue: False
+      description: Whether to include the attachment entries in the result or not.
+      name: include-attachments
+      predefined:
+      - 'False'
+      - 'True'
     description: Retrieves the Gmail message sent to a specified user.
     name: gmail-get-mail
     outputs:
@@ -257,9 +286,12 @@ script:
     - contextPath: Gmail.Body
       description: The content of the email.
       type: string
-    - contextPath: Gmail.Attachments
-      description: The attachments of the email. Attachments IDs are separated by commas.
-      type: unknown
+    - contextPath: Gmail.Attachments.ID
+      description: The email attachment ID (as appear in gmail).
+      type: Unknown
+    - contextPath: Gmail.Attachments.Name
+      description: The email attachment name.
+      type: Unknown
     - contextPath: Gmail.Headers
       description: All headers of the specific email (list).
       type: unknown
@@ -293,12 +325,36 @@ script:
     - contextPath: Email.Headers
       description: The headers of the email.
       type: String
-    - contextPath: Email.Attachments.entryID
-      description: Comma-separated email attachment IDs.
+    - contextPath: Email.Attachments.ID
+      description: The email attachment ID (as appear in gmail).
+      type: Unknown
+    - contextPath: Email.Attachments.Name
+      description: The email attachment name.
       type: Unknown
     - contextPath: Email.Date
       description: The date the email was received.
       type: String
+    - contextPath: File.MD5
+      description: Relevant only when include-attachments is set to True. The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: Relevant only when include-attachments is set to True. The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: Relevant only when include-attachments is set to True. The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: Relevant only when include-attachments is set to True. The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: Relevant only when include-attachments is set to True. The SSDeep hash of the file (same as displayed in file entries).
+      type: String
+    - contextPath: File.Type
+      description: 'Relevant only when include-attachments is set to True. File type, for example: "PE".'
+      type: string
+    - contextPath: File.Size
+      description: Relevant only when include-attachments is set to True. File size.
+      type: number
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
@@ -1659,7 +1715,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.77314
+  dockerimage: demisto/google-api-py3:1.0.0.82944
   isfetch: true
   runonce: false
   script: '-'

@@ -10,21 +10,22 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* QRadarFullSearch
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* QRadar_v3
 
 ### Scripts
 
-* IsIntegrationAvailable
-* SetAndHandleEmpty
 * Set
+* SetAndHandleEmpty
+* IsIntegrationAvailable
 * ChangeContext
 
 ### Commands
 
+* qradar-search-retrieve-events
 * setIncident
 
 ## Playbook Inputs
@@ -38,7 +39,7 @@ This playbook does not use any integrations.
 | StartTime | The QRadar offense start time | incident.starttime | Required |
 | GetOnlyCREEvents | If value "OnlyCRE" get only events made by CRE.<br/>Values can be "OnlyCRE", "OnlyNotCRE", "All". | All | Optional |
 | Fields | A comma-separated list of extra fields to get from each event.<br/>You can replace with different fields as well as rename the field names. | QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime | Optional |
-| ApiVersion | The API version for the timestamp format to use | 18 | Optional |
+| ApiVersion | The API version for the timestamp format changes between versions | 17 | Optional |
 
 ## Playbook Outputs
 
