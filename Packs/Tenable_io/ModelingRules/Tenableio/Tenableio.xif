@@ -1,5 +1,4 @@
 [MODEL: dataset=tenable_io_raw, model=Audit]
-filter xsiam_type = "audit_log"
 | alter XDM.Audit.TriggeredBy.identity.uuid=json_extract_scalar(actor, "$.id"),
       XDM.Audit.TriggeredBy.identity.name=json_extract_scalar(actor, "$.name"),
       XDM.Audit.original_event_description=description,

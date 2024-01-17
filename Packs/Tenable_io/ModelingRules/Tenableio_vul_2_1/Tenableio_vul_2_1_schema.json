@@ -1,9 +1,5 @@
 {
   "tenable_io_vulnerabilities_raw": {
-    "xsiam_type": {
-      "type": "string",
-      "is_array": false
-    },
     "id": {
       "type": "string",
       "is_array": false
