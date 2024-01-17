@@ -170,7 +170,7 @@ class Client(object):
                 taxii_data.append(response)
 
                 count += 1
-                if count == 100:
+                if count >= 100:
                     break
         except Exception as e:
             demisto.error("Failed to fetch feed details, exception:{}".format(e))
