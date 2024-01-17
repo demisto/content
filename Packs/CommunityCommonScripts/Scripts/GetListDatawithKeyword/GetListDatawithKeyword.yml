@@ -2,6 +2,10 @@ args:
 - description: Provide a key word to search the data
   name: Keyword
   required: true
+- description: The value is an array of elements
+  isArray: true
+  name: value
+  required: true
 comment: |-
   This transformer will get list of array elements by providing keyword. List data format
   [
