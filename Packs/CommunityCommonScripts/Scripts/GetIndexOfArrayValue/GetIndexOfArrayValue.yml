@@ -1,9 +1,9 @@
 args:
-- description: The value is an array of elements
+- description: The value is an array of elements.
   isArray: true
   name: value
   required: true
-- description: Provide the value from the array
+- description: Provide the value from the array.
   name: array_value
   required: true
 comment: |-

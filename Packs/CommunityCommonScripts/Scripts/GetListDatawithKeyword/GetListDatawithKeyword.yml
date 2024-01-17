@@ -1,8 +1,8 @@
 args:
-- description: Provide a key word to search the data
+- description: Provide a key word to search the data.
   name: Keyword
   required: true
-- description: The value is an array of elements
+- description: The value is an array of elements.
   isArray: true
   name: value
   required: true

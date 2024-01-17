@@ -2,19 +2,17 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, Any
 import traceback
 
-result_data=[]
+result_data = []
+
 
 def get_data(key_word, json_data):
     for i in range(len(json_data)):
-        for key,value in json_data[i].items():
+        for _key, value in json_data[i].items():
             if key_word in value:
                 result_data.append(json_data[i])
                 break
-            else:
-                pass
 
     return result_data
 
@@ -26,21 +24,20 @@ def main():
     try:
         key_word = demisto.args()['Keyword']
         json_data = argToList(demisto.args()['value'])
-        res = get_data(key_word,json_data)
+        res = get_data(key_word, json_data)
 
-        md = tableToMarkdown("List Data",res)
+        md = tableToMarkdown("List Data", res)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'HumanReadable': md,
-            'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext':{'ListData':res}
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {'ListData': res}
         })
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
-
 
 
 ''' ENTRY POINT '''
@@ -48,4 +45,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
