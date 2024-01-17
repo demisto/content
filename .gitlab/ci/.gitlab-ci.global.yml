@@ -87,7 +87,7 @@
 .stop_contrib_external_build: &stop_contrib_external_build
   - - section_start "Stop contrib external build"
   - |
-    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?state=open&base=master&head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
+    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --get --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?state=open&base=master" --data-urlencode "head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
       echo "not running on contrib/ branches when there is no open internal PR or the pipeline was manually triggered"
       set -e
       exit 1

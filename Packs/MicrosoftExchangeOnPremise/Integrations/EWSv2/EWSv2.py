@@ -2259,7 +2259,8 @@ def send_email(args):
     attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
-    body_type = args.get('bodyType') or args.get('body_type') or 'text'
+    # Lowering case as list options provided as capitalized for the argument
+    body_type = args.get('bodyType', '').lower() or args.get('body_type', '').lower() or 'text'
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
