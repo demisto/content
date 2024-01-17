@@ -860,6 +860,14 @@ inputs:
   required: false
   description: The alert ID.
   playbookInputQuery:
+- key: cloudProvider
+  value: {}
+  required: false
+  description: |-
+    The CSP that triggered the alert. Usually mapped to incident field named 'cloudprovider'.
+    e.g.
+    AWS, AZURE, GCP
+  playbookInputQuery:
 - key: autoAccessKeyRemediation
   value:
     simple: "False"
@@ -877,6 +885,31 @@ inputs:
     simple: "False"
   required: false
   description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: credentialsRemediationType
+  value: {}
+  required: false
+  description: |-
+    The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+    Supports: AWS, MSGraph Users, GCP and GSuite Admin.
+
+    Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.
+    Supports: GCP, GSuite Admin and MSGraph Users.
+
+    Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.
+    Supports: AWS.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
+  playbookInputQuery:
+- key: identityType
+  value: {}
+  required: false
+  description: |-
+    The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.
+    e.g.
+    IAM,SERVICE_ACCOUNT,APPLICATION
   playbookInputQuery:
 - key: AWS-accessKeyRemediationType
   value:
@@ -900,6 +933,36 @@ inputs:
     Delete - for the user deletion.
     Revoke - for revoking the user's credentials.
   playbookInputQuery:
+- key: AWS-instanceID
+  value: {}
+  required: false
+  description: The instance ID.
+  playbookInputQuery:
+- key: AWS-userID
+  value: {}
+  required: false
+  description: The user name.
+  playbookInputQuery:
+- key: AWS-accessKeyID
+  value: {}
+  required: false
+  description: The access key ID.
+  playbookInputQuery:
+- key: AWS-newRoleName
+  value: {}
+  required: false
+  description: The name of the new role to create if the analyst decides to clone the service account.
+  playbookInputQuery:
+- key: AWS-newInstanceProfileName
+  value: {}
+  required: false
+  description: The name of the new instance profile to create if the analyst decides to clone the service account.
+  playbookInputQuery:
+- key: AWS-roleNameToRestrict
+  value: {}
+  required: false
+  description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
+  playbookInputQuery:
 - key: Azure-userRemediationType
   value:
     simple: Disable
@@ -910,6 +973,21 @@ inputs:
     Azure available types:
     Disable - for disabling the user.
     Delete - for deleting the user.
+  playbookInputQuery:
+- key: Azure-AppID
+  value: {}
+  required: false
+  description: This is the unique application (client) ID of the application.
+  playbookInputQuery:
+- key: Azure-ObjectID
+  value: {}
+  required: false
+  description: This is the unique ID of the service principal object associated with the application.
+  playbookInputQuery:
+- key: Azure-userID
+  value: {}
+  required: false
+  description: The user ID or user principal name.
   playbookInputQuery:
 - key: GCP-accessKeyRemediationType
   value:
@@ -933,29 +1011,75 @@ inputs:
     Delete - For deleting the user.
     Disable - For disabling the user.
   playbookInputQuery:
+- key: GCP-userID
+  value: {}
+  required: false
+  description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
+  playbookInputQuery:
+- key: GCP-clientID
+  value: {}
+  required: false
+  description: The client ID.
+  playbookInputQuery:
+- key: GCP-zone
+  value: {}
+  required: false
+  description: |-
+    The name of the zone.
+    e.g.
+    us-central1-c
+    us-central1-b
+  playbookInputQuery:
+- key: GCP-SAEmail
+  value: {}
+  required: false
+  description: The service account email.
+  playbookInputQuery:
+- key: GCP-cloudProject
+  value: {}
+  required: false
+  description: The project that the alert was triggered on.
+  playbookInputQuery:
 inputSections:
 - inputs:
   - alert_id
+  - cloudProvider
   name: Incident Management
   description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
 - inputs:
   - autoAccessKeyRemediation
   - autoBlockIndicators
   - autoUserRemediation
+  - credentialsRemediationType
+  - identityType
   name: Remediation
   description: Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
   - AWS-accessKeyRemediationType
   - AWS-userRemediationType
+  - AWS-instanceID
+  - AWS-userID
+  - AWS-accessKeyID
+  - AWS-newRoleName
+  - AWS-newInstanceProfileName
+  - AWS-roleNameToRestrict
   name: AWS Remediation
   description: AWS Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
   - Azure-userRemediationType
+  - Azure-AppID
+  - Azure-ObjectID
+  - Azure-userID
   name: Azure Remediation
   description: Azure Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
   - GCP-accessKeyRemediationType
   - GCP-userRemediationType
+  - GCP-userID
+  - GCP-clientID
+  - GCP-zone
+  - GCP-SAEmail
+  - GCP-cloudProject
   name: GCP Remediation
   description: GCP Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
