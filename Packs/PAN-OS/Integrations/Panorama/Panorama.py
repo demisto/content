@@ -11943,10 +11943,9 @@ def pan_os_get_running_config(args: dict):
 
     if args.get("target"):
         params["target"] = args.get("target")
-
     file_name_arg = args.get("filename")
     target = args.get("target")
-    if file_name_arg != 'running_config':
+    if file_name_arg !='running_config' and file_name_arg:
         file_name = target + '_' + file_name_arg + '_running_config'
     else:
         file_name = file_name_arg
