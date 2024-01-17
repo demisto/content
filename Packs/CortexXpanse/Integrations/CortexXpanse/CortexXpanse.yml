@@ -839,7 +839,7 @@ script:
   - name: asm-list-external-websites
     arguments:
     - name: authentication
-      description: authentication type string on which to search.
+      description: Authentication type string on which to search.
     - name: limit
       description: Maximum number of assets to return. The default and maximum is 100.
       defaultValue: "100"
