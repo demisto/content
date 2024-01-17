@@ -236,10 +236,11 @@ def fetch_events_from_saas_security(
             response = client.get_events_request()
             if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
                 break
-            if isinstance(response.json(), dict):
-                fetched_events = response.json().get('events') or []
-            else:
-                fetched_events = response.json() or []
+            demisto.debug(f"response_json is: {response.json}")
+
+            result = response.json()
+            # handling the api response as a list or a dict, after api breaking changes
+            fetched_events = (result.get('events') or []) if isinstance(result, dict) else (result or [])
 
             demisto.info(f'fetched events length: ({len(fetched_events)}) in iteration {iteration_num}')
             demisto.info(f'fetched the following events: {fetched_events} in iteration {iteration_num}')
