@@ -60,7 +60,8 @@ class FrequencyIndicators(BaseEstimator, TransformerMixin):
     """
     FrequencyIndicators class for indicator frequencies computation
     """
-    def __init__(self, incident_field: str, normalize_function: Any, actual_incident: pd.DataFrame):
+
+    def __init__(self, incident_field: str, normalize_function: Any, actual_incident: pd.DataFrame) -> None:
         self.column_name = incident_field
         self.normalize_function = normalize_function
         self.frequency: dict = {}
