@@ -561,16 +561,20 @@ def main():
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
+            # Since commits are in ascending order, previous commit is the one after the current commit.
             previous_commit = list_of_commits[current_commit_index + 1]
             current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
             previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
             if current_pipeline and previous_pipeline:
                 pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
                 logging.info(
-                    f"""Checking pipeline {pipeline_id},
-                    the commit is {current_commit} and the pipeline change status is: {pipeline_changed_status}""")
+                    f"Checking pipeline {current_pipeline}, the commit is {current_commit} "
+                    f"and the pipeline change status is: {pipeline_changed_status}"
+                )
                 if pipeline_changed_status is not None:
-                    shame_message = create_shame_message(current_commit, pipeline_changed_status, options.name_mapping_path)
+                    shame_message = create_shame_message(
+                        current_commit, pipeline_changed_status, options.name_mapping_path
+                    )
                     computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
             computed_slack_channel = "dmst-build-test"

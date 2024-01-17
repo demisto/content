@@ -21,7 +21,7 @@ def test_get_person_in_charge(mocker):
     assert result == ('John Doe', 'https://github.com/demisto/content/pull/123')
 
 
-def test_are_pipelines_in_order_false(mocker):
+def test_pipelines_are_in_correct_order__false(mocker):
     """
     Given:
         Two pipelines with different creation dates
@@ -40,7 +40,7 @@ def test_are_pipelines_in_order_false(mocker):
     assert result is False
 
 
-def test_are_pipelines_in_order_true(mocker):
+def test_pipelines_are_in_correct_order__true(mocker):
     """
     Given:
         Two pipelines with different creation dates

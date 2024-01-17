@@ -240,7 +240,7 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
         project_id - the id of the project to query
         look_back_hours - the number of hours to look back for commits and pipeline
     Return:
-        a list of gitlab pipelines and a list of gitlab commits in ascending order
+        a list of gitlab pipelines and a list of gitlab commits in ascending order (as the way it is in the UI)
     """
     project = gitlab_client.projects.get(project_id)
 
