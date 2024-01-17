@@ -11,7 +11,7 @@ sudo chown -R demisto /workspaces/$repo/.vscode /workspaces/content/.git /worksp
 sudo chown -R demisto $HOME
 
 echo "Setting up git safe directory"
-git config --global --add safe.directory /workspaces/content
+git config --global --add safe.directory /workspaces/$repo
 
 echo "Setting up content dependencies"
 .hooks/bootstrap
