@@ -300,8 +300,8 @@ def main():
         print(f'{t.cyan}Determining name for new base branch{t.normal}')
         branch_prefix = 'contrib/'
         new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
-        existent_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
-        potential_conflicting_branch_names = [branch.ref.removeprefix('refs/heads/') for branch in existent_branches]
+        existing_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
+        potential_conflicting_branch_names = [branch.ref.removeprefix('refs/heads/') for branch in existing_branches]
         # make sure new branch name does not conflict with existing branch name
         while new_branch_name in potential_conflicting_branch_names:
             # append or increment digit

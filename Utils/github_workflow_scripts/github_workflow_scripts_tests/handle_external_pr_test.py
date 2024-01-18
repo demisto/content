@@ -1,10 +1,8 @@
 import os
 import pytest
 from typing import Final
-from Utils.github_workflow_scripts.handle_external_pr import (
-    is_requires_security_reviewer,
-    SECURITY_CONTENT_ITEMS
-)
+from Utils.github_workflow_scripts.handle_external_pr import is_requires_security_reviewer
+
 
 INTEGRATION_PATH: Final[str] = 'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py'
 PLAYBOOK_PATH: Final[str] = 'Packs/HelloWorld/Playbooks/playbook-HelloWorld.yml'
@@ -18,20 +16,20 @@ WIZARDS_PATH: Final[str] = "Packs/Phishing/Wizards/wizard-Phishing.json"
 DASHBOARDS_PATH: Final[str] = "Packs/Base/Dashboards/dashboard-SystemHealth.json"
 TRIGGERS_PATH: Final[str] = "Packs/Phishing/Triggers/Trigger_-_Phishing.json"
 
-SHOULD_SECURITY_REVIEW: Final[tuple] = (
-    PLAYBOOK_PATH,
-    INCIDENT_TYPES_PATH,
-    INCIDENT_FIELDS_PATH,
-    INCIDENT_TYPES_PATH,
-    INCIDENT_FIELDS_PATH,
-    LAYOUTS_PATH,
-    CLASSIFIERS_PATH,
-    WIZARDS_PATH,
-    DASHBOARDS_PATH,
-    TRIGGERS_PATH,
+REQUIRES_SECURITY_REVIEW: Final[tuple] = (
+    pytest.param(PLAYBOOK_PATH, id="Playbook requires security review"),
+    pytest.param(INCIDENT_TYPES_PATH, id="Incident type requires security review"),
+    pytest.param(INCIDENT_FIELDS_PATH, id="Incident field requires security review"),
+    pytest.param(INCIDENT_TYPES_PATH, id="Incident type requires security review"),
+    pytest.param(INCIDENT_FIELDS_PATH, id="Incident field requires security review"),
+    pytest.param(LAYOUTS_PATH, id="Layout requires security review"),
+    pytest.param(CLASSIFIERS_PATH, id="Classifier requires security review"),
+    pytest.param(WIZARDS_PATH, id="Wizard requires security review"),
+    pytest.param(DASHBOARDS_PATH, id="Dashboard requires security review"),
+    pytest.param(TRIGGERS_PATH, id="Trigger requires security review"),
 )
-NOT_SECURITY_REVIEW: Final[tuple] = (
-    INTEGRATION_PATH,
+NOT_REQUIRE_SECURITY_REVIEW: Final[tuple] = (
+    pytest.param(INTEGRATION_PATH, id="Integration does not require security review"),
 )
 
 
@@ -130,55 +128,30 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
         ) == 'Xsoar Support Level'
 
 
-@pytest.mark.parametrize('pr_files,expected', [
-    ([f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[0]}/{SECURITY_CONTENT_ITEMS[0].lower()}-Hello_World_Alert-V2.yml"], True),
-    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py'], False),
-    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[1]}/{SECURITY_CONTENT_ITEMS[1].lower()}-Hello_World_Alert-V2.json"], True),
-    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[2]}/{SECURITY_CONTENT_ITEMS[2].lower()}-Hello_World_Alert-V2.json"], True),
-    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[3]}/{SECURITY_CONTENT_ITEMS[3].lower()}-Hello_World_Alert-V2.json"], True),
-    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[4]}/{SECURITY_CONTENT_ITEMS[4].lower()}-Hello_World_Alert-V2.json"], True),
-    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[5]}/{SECURITY_CONTENT_ITEMS[5].lower()}-Hello_World_Alert-V2.json"], True),
-    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[6]}/{SECURITY_CONTENT_ITEMS[6].lower()}-Hello_World_Alert-V2.json"], True),
-    (['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-      f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[7]}/{SECURITY_CONTENT_ITEMS[7].lower()}-Hello_World_Alert-V2.json"], True),
-    pytest.param(['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-                  f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[8]}/{SECURITY_CONTENT_ITEMS[8].lower()}-Hello_World_Alert-V2.json"],
-                 True,
-                 id='Case J: The provided files are an integration and a classifier.'),
-    pytest.param(['Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py',
-                  f"Packs/HelloWorld/{SECURITY_CONTENT_ITEMS[9]}/{SECURITY_CONTENT_ITEMS[9].lower()}-Hello_World_Alert-V2.json"],
-                 True,
-                 id='Case K: The provided files are an integration and a Triggers.')
-])
-def test_is_requires_security_reviewer(pr_files: list[str], expected: bool):
+@pytest.mark.parametrize('pr_files', REQUIRES_SECURITY_REVIEW)
+def test_is_requires_security_reviewer_return_true(pr_files: str):
     """
     Test to check whether a security reviewer is needed depending on the PR changed files.
 
-    Given: a list of file paths
-
+    Given:
+        - a list of file paths
     When:
-        - Case A: The provided file is a Playbook.
-        - Case B: The provided file is an integration.
-        - Case C: The provided files are an integration and an incident type.
-        - Case D: The provided files are an integration and an incident field.
-        - Case E: The provided files are an integration and an indicator type.
-        - Case F: The provided files are an integration and an indicator field.
-        - Case G: The provided files are an integration and a layout.
-        - Case H: The provided files are an integration and a classifier.
-        - Case I: The provided files are an integration and a wizard.
-        - Case J: The provided files are an integration and a Dashboards.
-        - Case K: The provided files are an integration and a Triggers.
-
+        - The file includes a keyword that indicates it requires security review
     Then:
-        - Case A: Requires a security engineer review.
-        - Case B: Doesn't require a security engineer review.
-        - Cases C-K: Requires a security engineer review.
+        - make sure the function correctly identifies that a security review is required
     """
 
-    assert is_requires_security_reviewer(pr_files) == expected
+    assert is_requires_security_reviewer([pr_files]) is True
+
+
+@pytest.mark.parametrize('pr_files', NOT_REQUIRE_SECURITY_REVIEW)
+def test_is_requires_security_reviewer_return_false(pr_files: str):
+    """
+    Given:
+        - a list of files in a PR that do not require a security review
+    When:
+        - running is_requires_security_reviewer function
+    Then:
+        - make sure the function correctly identifies that a security review is not required
+    """
+    assert is_requires_security_reviewer([pr_files]) is False
