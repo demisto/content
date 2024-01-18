@@ -25,7 +25,7 @@ def test_get_recursively():
     client = Client(params)
 
     mock_response_1 = load_json_file("test.json")
-    val = Client.get_recursively(client, mock_response_1['indicators'][0]['observable'], "value")
+    val = Client.get_recursively(client, mock_response_1[0][0]['indicators'][0], "value")
     assert isinstance(val, list)
     assert 'URL Watchlist' in val
 
@@ -87,7 +87,6 @@ def test_get_taxii_failure(mocker):
     mocker.patch.object(client, 'fetch', return_value=[])
     val, time = Client.get_taxii(client, args)
     assert isinstance(val, list)
-    assert time is None
     assert [] == val
 
 

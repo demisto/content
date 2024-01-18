@@ -142,16 +142,15 @@ class Client(object):
         else:
             return {}
 
-    def get_taxii(self, args: Dict[str, Any], is_first_fetch: [bool] = True, limit: [int] = 10):
+    def get_taxii(self, args: Dict[str, Any], is_first_fetch: bool = True):
         """
         Fetch Taxii events for the given parameters
         :param args: arguments which would be used to fetch feed
         :param is_first_fetch: indicates whether this is the first run or a subsequent run
-        :param limit: number of indicators to pull in one request
         :return:
         """
         taxii_data = []
-        save_fetch_time = args.get('begin')
+        save_fetch_time: str = str(args.get('begin'))
         count = 0
 
         try:
@@ -168,8 +167,9 @@ class Client(object):
 
                 for eachone in content:
                     if eachone.get('confidence'):
-                        current_timestamp = parser.parse(eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
-                        if is_first_fetch or current_timestamp > save_fetch_time:
+                        current_timestamp = parser.parse(
+                            eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
+                        if is_first_fetch or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time):
                             save_fetch_time = current_timestamp
                         else:
                             skip = True
@@ -178,7 +178,7 @@ class Client(object):
                     taxii_data.append(response)
 
                     count += 1
-                    if count >= limit:
+                    if count >= 35:
                         break
 
         except Exception as e:
@@ -286,7 +286,6 @@ def fetch_indicators(client: Client):
     args = {}
     last_run = demisto.getLastRun()
     is_first_fetch = True
-    limit = 10
     if isinstance(last_run, dict):
         last_fetch_time = last_run.get('lastRun_{}'.format(client.collection_name), None)
 
@@ -296,13 +295,12 @@ def fetch_indicators(client: Client):
     else:
         last_fetch_time = datetime.utcnow() - timedelta(days=client.initial_interval)      # type: ignore
         args['begin'] = str(last_fetch_time.replace(tzinfo=pytz.UTC))
-        limit = 100
 
     args['end'] = str(datetime.utcnow().replace(tzinfo=pytz.UTC))
 
     args['collection'] = client.collection_name
     args['limit'] = client.limit       # type: ignore
-    indicator, save_fetch_time = client.get_taxii(args, is_first_fetch, limit)
+    indicator, save_fetch_time = client.get_taxii(args, is_first_fetch)
     indicators = client.build_indicators(args, indicator)
 
     if save_fetch_time:
