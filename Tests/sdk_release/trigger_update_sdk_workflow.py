@@ -50,6 +50,7 @@ def main():
         print(response.text)
         sys.exit(1)
 
+
     print('update-demisto-sdk-version workflow triggered successfully')
 
 
