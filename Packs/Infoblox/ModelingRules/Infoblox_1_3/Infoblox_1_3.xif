@@ -2,8 +2,9 @@
 /**************/
 // DNS Queries /
 /**************/
+// https://docs.infoblox.com/space/nios85/35816694/Capturing+DNS+Queries+and+Responses
 filter _raw_log ~= "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#\d{1,5}(?:\s+\([^\)]+\))?:\s+query"
-| alter 
+| alter // Extract syslog headers & syslog message 
     syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
     syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
@@ -12,22 +13,22 @@ filter _raw_log ~= "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#\d{1,5}(?:\
         arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to file and sent via an intermediate syslog client 
 | alter syslog_facility_code = floor(divide(syslog_priority, 8))
 | alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
-| alter 
+| alter // Extract the DNS query data out of the syslog messages 
     client_ip = arrayindex(regextract(_raw_log, "client\s+(?:\@0x[\da-fA-F]+\s+)?([\da-fA-F\.\:]+)\#\d{1,5}"), 0),
     client_port = arrayindex(regextract(_raw_log, "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#(\d{1,5})"), 0),
     dns_server_ip = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+\w+\s+[\+\-](?:[SETDC\(\)\d]+)?\s+\(?([\da-fA-F\.\:]+)"), 0),
     query_domain_name = coalesce(arrayindex(regextract(_raw_log, "query\:\s+(\S+)"), 0), arrayindex(regextract(_raw_log, "\(([^\)]+)\):\s+query"), 0)),
     query_class = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?(\w+)"), 0), // see https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4
-    query_record_type = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+(\w+)"), 0),
+    query_record_type = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+(\w+)"), 0), // see https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4
     query_flags = arrayindex(regextract(_raw_log, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+\w+\s+([\+\-](?:[SETDC\(\)\d]+)?)"), 0),
     rcode = arrayindex(regextract(_raw_log, "query failed\s*\((\w+)"), 0)
-| alter 
+| alter // Post extraction processing 
     application_protocol = "DNS",
 	client_ipv4 = if(client_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", client_ip),
 	client_ipv6 = if(client_ip ~= ":", client_ip),
     dns_server_ipv4 = if(dns_server_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", dns_server_ip),
 	dns_server_ipv6 = if(dns_server_ip ~= ":", dns_server_ip),
-    ip_protocol = if(query_flags contains "T", XDM_CONST.IP_PROTOCOL_TCP, XDM_CONST.IP_PROTOCOL_UDP)
+    ip_protocol = if(query_flags contains "T", XDM_CONST.IP_PROTOCOL_TCP)
 | alter // XDM Mapping 
     xdm.alert.severity = syslog_severity,
     xdm.event.type = "DNS Query",
@@ -54,8 +55,9 @@ filter _raw_log ~= "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#\d{1,5}(?:\
 /****************/
 // DNS Responses /
 /****************/
+// https://docs.infoblox.com/space/nios85/35816694/Capturing+DNS+Queries+and+Responses
 filter _raw_log ~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:"   
-| alter 
+| alter // Extract syslog headers & syslog message 
     syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
     syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
@@ -64,14 +66,14 @@ filter _raw_log ~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:"
         arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to file and sent via an intermediate syslog client 
 | alter syslog_facility_code = floor(divide(syslog_priority, 8))
 | alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
-| alter // Extract query & response data 
+| alter // Extract DNS query & response data 
     client_ip = arrayindex(regextract(syslog_msg, "client\s+([\da-fA-F\.\:]+)\#\d{1,5}"), 0),
     client_port = arrayindex(regextract(syslog_msg, "client\s+[\da-fA-F\.\:]+\#(\d{1,5})"), 0),
     ip_protocol = arrayindex(regextract(syslog_msg, "client\s+[\da-fA-F\.\:]+\#\d{1,5}:\s+(TCP|UDP)"), 0),
     query_domain_name = arrayindex(regextract(syslog_msg, "query\:\s+(\S+)"), 0),
-    query_class = arrayindex(regextract(syslog_msg, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?(\w+)"), 0),
-    query_record_type = arrayindex(regextract(syslog_msg, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+(\w+)"), 0),
-    response_rcode = arrayindex(regextract(syslog_msg, "response\:\s+(\S+)"), 0),
+    query_class = arrayindex(regextract(syslog_msg, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?(\w+)"), 0), // see https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-2
+    query_record_type = arrayindex(regextract(syslog_msg, "query\:\s+\S+\s+(?:\@0x[\da-fA-F]+\s+)?\w+\s+(\w+)"), 0), // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4
+    response_rcode = arrayindex(regextract(syslog_msg, "response\:\s+(\S+)"), 0), // see https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6
     response_flags = arrayindex(regextract(syslog_msg, "response\:\s+\S+\s+((?:\+|\-)*[ATEDVL]{0,6})"), 0),
     response_rr = arrayfilter(split(arrayindex(regextract(syslog_msg, "response\:\s+(?:\S+\s+){2}(.+)"), 0), ";"), len("@element") > 0) // response resource records (RR)
 | alter // Extract ipv4 & ipv6 resolved addresses (A & AAAA record types, respectively)
@@ -129,7 +131,7 @@ filter _raw_log ~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:"
 // DHCP Events /
 /*************/
 filter _raw_log ~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" or _raw_log ~= "DHCP\w+"
-| alter 
+| alter // Extract syslog headers & syslog message 
     syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
     syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
@@ -158,7 +160,7 @@ filter _raw_log ~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" or _raw_log ~= "
     dhcp_client_interface = arrayindex(regextract(_raw_log, "via\s+(\w+)(?:\s|$)"), 0), // interface port 
     dhcp_client_uid = rtrim(arrayindex(regextract(_raw_log, "uid\s+(\S+)"), 0), ":"), // client unique identifier 
     dhcp_expired_lease_ip = arrayindex(regextract(_raw_log, "DHCPEXPIRE\s+on\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
-    dhcp_lease_duration = arrayindex(regextract(_raw_log, "lease\-duration\s+((?:\d{1,3}\.){3}\d{1,3})"), 0), 
+    dhcp_lease_duration = arrayindex(regextract(_raw_log, "lease\-duration\s+(\d+)"), 0), 
     dhcp_offered_ip = arrayindex(regextract(_raw_log, "DHCPOFFER\s+on\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
     dhcp_relay_agent_ip = coalesce(
         arrayindex(regextract(_raw_log, "via\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
@@ -205,7 +207,7 @@ filter _raw_log ~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" or _raw_log ~= "
 // Audit Events /
 /***************/
 filter _raw_log ~= "httpd(?:\[\d+\])?:"
-| alter 
+| alter // Extract syslog headers & syslog message 
     syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
     syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
@@ -214,14 +216,14 @@ filter _raw_log ~= "httpd(?:\[\d+\])?:"
         arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to a file and sent via an intermediate syslog client 
 | alter syslog_facility_code = floor(divide(syslog_priority, 8))
 | alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
-| alter
+| alter // Extract audit data from the syslog message 
     auth_methods = arrayindex(regextract(_raw_log, "auth=(.*?)\s"), 0),
     client_ipv4 = arrayindex(regextract(_raw_log, "ip=(.*?)\s"), 0),
     client_user_groups = arrayindex(regextract(_raw_log, "group=(.*?)\s"), 0),
     client_user_username = arrayindex(regextract(_raw_log, "\s\[(.*?)\]\:"), 0),
     original_event_type = arrayindex(regextract(_raw_log, ":\s.*?:\s(.*?)\s-\s-"), 0),
     server_process_name = arrayindex(regextract(_raw_log, "to=(.*?)\s"), 0)
-| alter
+| alter // XDM mapping
     xdm.alert.severity = syslog_severity,
     xdm.auth.auth_method = auth_methods,
     xdm.event.description = syslog_msg,
@@ -238,12 +240,13 @@ filter _raw_log ~= "httpd(?:\[\d+\])?:"
 /**************************/
 // Fallback Mapping Events /
 /**************************/
-filter 
+// General implicit fallback mapping for all other Infoblox events
+filter // Exclude event types which are already mapped 
     _raw_log !~= "httpd\[\d+\]" // NOT Audit 
     and _raw_log !~= "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#\d{1,5}(?:\s+\([^\)]+\))?:\s+query" // NOT DNS Query
     and _raw_log !~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:" // NOT DNS Response
     and _raw_log !~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" and _raw_log ~= "DHCP\w+" // NOT DHCP
-| alter 
+| alter // Extract syslog headers & syslog message 
     syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
     syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
@@ -252,14 +255,13 @@ filter
         arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to a file and sent via an intermediate syslog client 
 | alter syslog_facility_code = floor(divide(syslog_priority, 8))
 | alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
-| alter 
+| alter // Extract additional fields from the syslog message 
     dns_event_type = if(_raw_log ~= "named\[\d+\]" or _raw_log ~= "(?:client|config|database|dnssec|general|lame_servers|network|notify|query|queries|query[_\-]rewrite|resolver|responses|rpz|security|update|update_security|xfer[_\-]in|xfer[_\-]out):", "DNS"),
     dns_event_subtype = arrayindex(regextract(_raw_log, "((?:client|config|database|dnssec|general|lame_servers|network|notify|query|queries|query[_\-]rewrite|resolver|responses|rpz|security|update|update_security|xfer[_\-]in|xfer[_\-]out)):"), 0),
     dnz_respone_policy_zone = coalesce(arrayindex(regextract(_raw_log, "rpz:\s+([\w\-\.]+)\:"), 0), arrayindex(regextract(_raw_log, "policy zone\s+\'([^']+)\'"), 0)), 
     resolved_domain = arrayindex(regextract(_raw_log, "resolving \'([\w\.\-]+)"), 0)
 | alter event_type = if(dns_event_type != null and dns_event_subtype != null, concat(dns_event_type, " ", dns_event_subtype))
-    
-| alter 
+| alter // XDM Mapping
     xdm.alert.severity = syslog_severity,
     xdm.event.description = syslog_msg,
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
