@@ -57,7 +57,9 @@ class ReilaQuestClient(BaseClient):
             )
             json_response = response.json()
             if response.status_code == 429:
-                rate_limit_error = f'Rate-limit when requesting {url_suffix} with params {params}, error: {json_response},'
+                rate_limit_error = f'Rate-limit when requesting {url_suffix} with params {params}, error: {json_response}, ' \
+                                   f'sleeping for 60 seconds to let the api recover'
+                time.sleep(60)
                 demisto.error(rate_limit_error)
                 raise RateLimit(rate_limit_error)
             return json_response
