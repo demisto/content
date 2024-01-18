@@ -11,11 +11,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* MDE - Retrieve File
+* CrowdStrike Falcon - Retrieve File
 * Get File Sample From Path - VMware Carbon Black EDR - Live Response API
 * Cortex XDR - Retrieve File v2
 * PS Remote Get File Sample From Path
-* CrowdStrike Falcon - Retrieve File
-* MDE - Retrieve File
 
 ### Integrations
 
