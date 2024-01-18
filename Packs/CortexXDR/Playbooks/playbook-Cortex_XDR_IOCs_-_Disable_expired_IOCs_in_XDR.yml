@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 25d71730-5d25-443f-80a0-5739ff614023
+    taskid: 74baff5c-9092-48a2-8c27-25cdb27e9165
     type: regular
     task:
-      id: 25d71730-5d25-443f-80a0-5739ff614023
+      id: 74baff5c-9092-48a2-8c27-25cdb27e9165
       version: -1
       name: Add xdr_disabled tag
       description: Appends values to the specified indicator field. Supported field types are tags and multi-select.
@@ -97,7 +97,7 @@ tasks:
       fieldValue:
         simple: xdr_disabled
       indicatorsValues:
-        simple: ${iocs}
+        simple: ${iocs.value}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -373,10 +373,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 83e1c275-1463-47c4-8876-9e0268522950
+    taskid: 49251589-6db7-4c7a-8cfb-125eb93b2ada
     type: regular
     task:
-      id: 83e1c275-1463-47c4-8876-9e0268522950
+      id: 49251589-6db7-4c7a-8cfb-125eb93b2ada
       version: -1
       name: Disable iocs using xdr-iocs-disable
       description: Disables IOCs in the XDR server.
@@ -392,7 +392,8 @@ tasks:
         simple: "800"
       indicator:
         complex:
-          root: iocs
+          root: ${iocs
+          accessor: value}
           transformers:
           - operator: join
             args:
