@@ -559,8 +559,11 @@ def configure_engine_command():  # pragma: no cover
 
     configure_engine(engine_path, engine_type, version, folder=folder, aws_roles_list=aws_roles_list,
                      aws_method=aws_method, ttl=ttl)
+    if not folder and argToBoolean(demisto.params().get('concat_folder_to_cred_name') or 'false'):
+        demisto.results('Engine configured successfully, but no folder was provided, so folder will not be added to credential name')
 
-    demisto.results('Engine configured successfully')
+    else:
+        demisto.results('Engine configured successfully')
 
 
 def reset_config_command():  # pragma: no cover
@@ -612,19 +615,20 @@ def fetch_credentials():  # pragma: no cover
             if 'version' not in engine:
                 return_error('Version not configured for KV engine, re-configure the engine')
             if engine['version'] == '1':
-                credentials += get_kv1_secrets(engine['path'], concat_username_to_cred_name, concat_folder_to_cred_name, folder)
+                credentials += get_kv1_secrets(engine['path'], concat_username_to_cred_name, folder, concat_folder_to_cred_name)
             elif engine['version'] == '2':
                 credentials += get_kv2_secrets(engine['path'],
                 concat_username_to_cred_name, folder, concat_folder_to_cred_name)
         elif engine['type'] == 'Cubbyhole':
-            credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name, concat_folder_to_cred_name, folder)
+            credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name, folder, concat_folder_to_cred_name)
+
 
         elif engine['type'] == 'AWS':
             aws_roles_list = []
             if engine.get('aws_roles_list'):
                 aws_roles_list = engine.get('aws_roles_list').split(',')
             credentials += get_aws_secrets(engine['path'], concat_username_to_cred_name,
-                                           aws_roles_list, engine.get('aws_method'), concat_folder_to_cred_name, folder)
+                                           aws_roles_list, engine.get('aws_method'), folder, concat_folder_to_cred_name)
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
@@ -632,7 +636,7 @@ def fetch_credentials():  # pragma: no cover
     demisto.credentials(credentials)
 
 
-def get_kv1_secrets(engine_path, concat_username_to_cred_name=False, concat_folder_to_cred_name= False, folder= None):  # pragma: no cover
+def get_kv1_secrets(engine_path, concat_username_to_cred_name=False, folder= None, concat_folder_to_cred_name= False):  # pragma: no cover
     path = engine_path
     params = {
         'list': 'true'
@@ -648,19 +652,15 @@ def get_kv1_secrets(engine_path, concat_username_to_cred_name=False, concat_fold
     for secret in res['data'].get('keys', []):
         secret_data = get_kv1_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).items():
-            if concat_username_to_cred_name:
-                name = '{0}_{1}'.format(secret, k)
-                if concat_folder_to_cred_name:
-                    name += f'_{folder}'
-            if concat_folder_to_cred_name:
-                name = '{0}_{1}_{2}'.format(secret, k, folder)
-            else:
-                name = secret
+            name = secret
+            name+= f'_{k}' if concat_username_to_cred_name else ''
+            name+= f'_{folder}' if concat_folder_to_cred_name and folder else ''
             secrets.append({
                 'user': k,
                 'password': v,
                 'name': name
             })
+            demisto.debug(f'{name=}, {folder=}, {k=} {concat_folder_to_cred_name=}, {concat_username_to_cred_name=}')
 
     return secrets
 
@@ -685,19 +685,15 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
         secret_data = get_kv2_secret(engine_path, secret, folder)
         secret_info = secret_data.get('data', {}).get('data', {})
         for k in secret_data.get('data', {}).get('data', {}):
-            if concat_username_to_cred_name:
-                name = '{0}_{1}'.format(secret, k)
-                if concat_folder_to_cred_name:
-                    name += f'_folder'
-            elif concat_folder_to_cred_name:
-                name = '{0}_{1}_{2}'.format(secret, k, folder)
-            else:
-                name = secret
+            name = secret
+            name+= f'_{k}' if concat_username_to_cred_name else ''
+            name+= f'_{folder}' if concat_folder_to_cred_name and folder else ''
             secrets.append({
                 'user': k,
                 'password': secret_info[k],
                 'name': name
             })
+            demisto.debug(f'{name=}, {folder=}, {k=} {concat_folder_to_cred_name=}, {concat_username_to_cred_name=}')
 
     return secrets
 
@@ -711,7 +707,7 @@ def get_kv2_secret(engine_path, secret, folder=None):
     return send_request(path, 'get')
 
 
-def get_ch_secrets(engine_path, concat_username_to_cred_name=False, concat_folder_to_cred_name=False, folder= None):  # pragma: no cover
+def get_ch_secrets(engine_path, concat_username_to_cred_name=False, folder= None, concat_folder_to_cred_name=False):  # pragma: no cover
     path = engine_path
 
     params = {
@@ -728,24 +724,20 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False, concat_folde
     for secret in res['data'].get('keys', []):
         secret_data = get_ch_secret(engine_path, secret)
         for k, v in secret_data.get('data', {}).items():
-            if concat_username_to_cred_name:
-                name = '{0}_{1}'.format(secret, k)
-                if concat_folder_to_cred_name:
-                    name += f'_{folder}'
-            elif concat_folder_to_cred_name:
-                name = '{0}_{1}_{2}'.format(secret, k, folder)
-            else:
-                name = secret
+            name = secret
+            name+= f'_{k}' if concat_username_to_cred_name else ''
+            name+= f'_{folder}' if concat_folder_to_cred_name and folder else ''
             secrets.append({
                 'user': k,
                 'password': v,
                 'name': name
             })
+            demisto.debug(f'{name=}, {folder=}, {k=} {concat_folder_to_cred_name=}, {concat_username_to_cred_name=}')
 
     return secrets
 
 
-def get_aws_secrets(engine_path, concat_username_to_cred_name, aws_roles_list, aws_method, concat_folder_to_cred_name, folder):
+def get_aws_secrets(engine_path, concat_username_to_cred_name, aws_roles_list, aws_method, folder= None, concat_folder_to_cred_name=False):
     secrets = []
     roles_list_url = engine_path + '/roles'
     demisto.debug('roles_list_url: {}'.format(roles_list_url))
@@ -785,17 +777,14 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name, aws_roles_list, a
         secret_key = aws_credentials['data'].get('secret_key')
         if aws_credentials['data'].get('security_token'):
             secret_key = secret_key + '@@@' + aws_credentials["data"].get("security_token")
-        if concat_username_to_cred_name:
-            role = '{0}_{1}'.format(role, access_key)
-            if concat_folder_to_cred_name:
-                role += f'_{folder}'
-        elif concat_folder_to_cred_name:
-            role = '{0}_{1}_{2}'.format(role, access_key, folder)
+        role+= f'_{access_key}' if concat_username_to_cred_name else ''
+        role+= f'_{folder}' if concat_folder_to_cred_name and folder else ''
         secrets.append({
             'user': access_key,
             'password': secret_key,
             'name': role
         })
+        demisto.debug(f'{role=}, {folder=}, {access_key=} {concat_folder_to_cred_name=}, {concat_username_to_cred_name=}')
 
     return secrets
 
