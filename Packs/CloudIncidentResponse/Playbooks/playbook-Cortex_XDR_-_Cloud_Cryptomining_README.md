@@ -18,10 +18,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - XCloud Cryptojacking - Set Verdict
-* Cortex XDR - Cloud Enrichment
-* Cloud Response - Generic
 * Cloud Credentials Rotation - Generic
+* Cortex XDR - XCloud Cryptojacking - Set Verdict
+* Cloud Response - Generic
+* Cortex XDR - Cloud Enrichment
 
 ### Integrations
 
@@ -33,12 +33,12 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* send-mail
-* xdr-update-incident
-* setIncident
-* xdr-get-cloud-original-alerts
 * closeInvestigation
+* setIncident
+* xdr-update-incident
 * xdr-get-incident-extra-data
+* xdr-get-cloud-original-alerts
+* send-mail
 
 ## Playbook Inputs
 
@@ -51,7 +51,6 @@ This playbook does not use any integrations.
 | incident_id | The incident ID. |  | Optional |
 | alert_id | The alert ID. |  | Optional |
 | cloudProvider | The cloud service provider involved. | PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider | Optional |
-| identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>IAM,SERVICE_ACCOUNT,APPLICATION |  | Optional |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
 | InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. |  | Optional |
 | autoBlockIndicators | Whether to block the indicators automatically. | False | Optional |

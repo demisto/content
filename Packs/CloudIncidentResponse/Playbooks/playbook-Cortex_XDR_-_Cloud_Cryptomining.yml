@@ -1157,14 +1157,6 @@ inputs:
   required: false
   description: The cloud service provider involved.
   playbookInputQuery:
-- key: identityType
-  value: {}
-  required: false
-  description: |-
-    The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.
-    e.g.
-    IAM,SERVICE_ACCOUNT,APPLICATION
-  playbookInputQuery:
 - key: ResolveIP
   value:
     simple: "True"
@@ -1335,7 +1327,6 @@ inputSections:
   - incident_id
   - alert_id
   - cloudProvider
-  - identityType
   name: Incident Management
   description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
 - inputs:

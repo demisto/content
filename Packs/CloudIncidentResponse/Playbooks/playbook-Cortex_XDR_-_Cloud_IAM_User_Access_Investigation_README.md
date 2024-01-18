@@ -12,9 +12,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Credentials Rotation - Generic
-* Account Enrichment - Generic v2.1
 * Cloud Response - Generic
+* Account Enrichment - Generic v2.1
+* Cloud Credentials Rotation - Generic
 * Cloud IAM Enrichment - Generic
 
 ### Integrations
@@ -27,8 +27,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* xdr-get-cloud-original-alerts
 * ip
+* xdr-get-cloud-original-alerts
 * setIncident
 
 ## Playbook Inputs
@@ -47,6 +47,7 @@ This playbook does not use any scripts.
 | AWS-newRoleName | The name of the new role to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-newInstanceProfileName | The name of the new instance profile to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
+| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>True/False |  | Optional |
 | Azure-userRemediationType | Choose the remediation type for the user involved.<br/><br/>Azure available types:<br/>Disable - for disabling the user.<br/>Delete - for deleting the user. | Disable | Optional |
 | GCP-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>GCP available types:<br/>Disable - For disabling the user's access key.<br/>Delete - For deleting the user's access key. | Disable | Optional |
 | GCP-userRemediationType | Choose the remediation type for the user involved.<br/><br/>GCP available types:<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |

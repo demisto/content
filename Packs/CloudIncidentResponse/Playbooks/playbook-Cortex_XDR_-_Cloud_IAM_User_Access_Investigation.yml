@@ -932,6 +932,13 @@ inputs:
   required: false
   description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
   playbookInputQuery:
+- key: shouldCloneSA
+  value: {}
+  required: false
+  description: |-
+    Whether to clone the compromised SA before putting a deny policy to it.
+    True/False
+  playbookInputQuery:
 - key: Azure-userRemediationType
   value:
     simple: Disable
@@ -983,6 +990,7 @@ inputSections:
   - AWS-newRoleName
   - AWS-newInstanceProfileName
   - AWS-roleNameToRestrict
+  - shouldCloneSA
   name: AWS Remediation
   description: AWS Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
