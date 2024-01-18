@@ -420,7 +420,7 @@ def main():
                                  f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
                                  f"Job ID: {options.ci_job_id}",
                                  "Available machines:",
-                                 f"{len(options.test_machines)}"])
+                                 f"{len(options.test_machines.split(','))}"])
     except Exception as e:
         logging.info(f"Failed to send Slack notification. Reason: {str(e)}")
 
