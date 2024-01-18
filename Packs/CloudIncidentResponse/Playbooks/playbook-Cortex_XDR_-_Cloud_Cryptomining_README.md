@@ -18,10 +18,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Cortex XDR - XCloud Cryptojacking - Set Verdict
 * Cortex XDR - Cloud Enrichment
 * Cloud Response - Generic
 * Cloud Credentials Rotation - Generic
-* Cortex XDR - XCloud Cryptojacking - Set Verdict
 
 ### Integrations
 
@@ -33,12 +33,12 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* xdr-update-incident
-* closeInvestigation
 * send-mail
-* xdr-get-incident-extra-data
+* xdr-update-incident
 * setIncident
 * xdr-get-cloud-original-alerts
+* closeInvestigation
+* xdr-get-incident-extra-data
 
 ## Playbook Inputs
 
@@ -62,25 +62,15 @@ This playbook does not use any integrations.
 | AWS-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>AWS available types:<br/>Disable - for disabling the user's access key.<br/>Delete - for the user's access key deletion. | Disable | Optional |
 | AWS-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>AWS available types:<br/>Stop - for stopping the instances.<br/>Terminate - for terminating the instances. | Stop | Optional |
 | AWS-userRemediationType | Choose the remediation type for the user involved.<br/><br/>AWS available types:<br/>Delete - for the user deletion.<br/>Revoke - for revoking the user's credentials. | Revoke | Optional |
-| AWS-instanceID | The instance ID. |  | Optional |
-| AWS-userID | The user name. |  | Optional |
-| AWS-accessKeyID | The access key ID. |  | Optional |
 | AWS-newRoleName | The name of the new role to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-newInstanceProfileName | The name of the new instance profile to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
 | shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>True/False | True | Optional |
 | Azure-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>Azure available types:<br/>Poweroff - for shutting down the instances.<br/>Delete - for deleting the instances. | Poweroff | Optional |
 | Azure-userRemediationType | Choose the remediation type for the user involved.<br/><br/>Azure available types:<br/>Disable - for disabling the user.<br/>Delete - for deleting the user. | Disable | Optional |
-| Azure-AppID | This is the unique application \(client\) ID of the application. |  | Optional |
-| Azure-ObjectID | This is the unique ID of the service principal object associated with the application. |  | Optional |
-| Azure-userID | The user ID or user principal name. |  | Optional |
 | GCP-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>GCP available types:<br/>Disable - For disabling the user's access key.<br/>Delete - For the deleting user's access key. | Disable | Optional |
 | GCP-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>GCP available types:<br/>Stop - For stopping the instances.<br/>Delete - For deleting the instances. | Stop | Optional |
 | GCP-userRemediationType | Choose the remediation type for the user involved.<br/><br/>GCP available types:<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |
-| GCP-userID | Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID. |  | Optional |
-| GCP-clientID | The client ID. |  | Optional |
-| GCP-zone | The name of the zone.<br/>e.g.<br/>us-central1-c<br/>us-central1-b |  | Optional |
-| GCP-SAEmail | The service account email. |  | Optional |
 
 ## Playbook Outputs
 

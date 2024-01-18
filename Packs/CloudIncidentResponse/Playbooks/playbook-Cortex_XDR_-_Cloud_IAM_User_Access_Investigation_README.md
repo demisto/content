@@ -12,10 +12,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Response - Generic
-* Cloud IAM Enrichment - Generic
 * Cloud Credentials Rotation - Generic
 * Account Enrichment - Generic v2.1
+* Cloud Response - Generic
+* Cloud IAM Enrichment - Generic
 
 ### Integrations
 
@@ -27,9 +27,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* ip
 * setIncident
 * xdr-get-cloud-original-alerts
+* ip
 
 ## Playbook Inputs
 
@@ -46,23 +46,12 @@ This playbook does not use any scripts.
 | identityType | The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.<br/>e.g.<br/>IAM,SERVICE_ACCOUNT,APPLICATION |  | Optional |
 | AWS-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>AWS available types:<br/>Disable - for disabling the user's access key.<br/>Delete - for deleting the user's access key. | Disable | Optional |
 | AWS-userRemediationType | Choose the remediation type for the user involved.<br/><br/>AWS available types:<br/>Delete - for the user deletion.<br/>Revoke - for revoking the user's credentials. | Revoke | Optional |
-| AWS-instanceID | The instance ID. |  | Optional |
-| AWS-userID | The user name. |  | Optional |
-| AWS-accessKeyID | The access key ID. |  | Optional |
 | AWS-newRoleName | The name of the new role to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-newInstanceProfileName | The name of the new instance profile to create if the analyst decides to clone the service account. |  | Optional |
 | AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
 | Azure-userRemediationType | Choose the remediation type for the user involved.<br/><br/>Azure available types:<br/>Disable - for disabling the user.<br/>Delete - for deleting the user. | Disable | Optional |
-| Azure-AppID | This is the unique application \(client\) ID of the application. |  | Optional |
-| Azure-ObjectID | This is the unique ID of the service principal object associated with the application. |  | Optional |
-| Azure-userID | The user ID or user principal name. |  | Optional |
 | GCP-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>GCP available types:<br/>Disable - For disabling the user's access key.<br/>Delete - For deleting the user's access key. | Disable | Optional |
 | GCP-userRemediationType | Choose the remediation type for the user involved.<br/><br/>GCP available types:<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |
-| GCP-userID | Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID. |  | Optional |
-| GCP-clientID | The client ID. |  | Optional |
-| GCP-zone | The name of the zone.<br/>e.g.<br/>us-central1-c<br/>us-central1-b |  | Optional |
-| GCP-SAEmail | The service account email. |  | Optional |
-| GCP-cloudProject | The project that the alert was triggered on. |  | Optional |
 
 ## Playbook Outputs
 

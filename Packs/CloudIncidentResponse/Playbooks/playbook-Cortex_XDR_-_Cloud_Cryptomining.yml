@@ -1250,21 +1250,6 @@ inputs:
     Delete - for the user deletion.
     Revoke - for revoking the user's credentials.
   playbookInputQuery:
-- key: AWS-instanceID
-  value: {}
-  required: false
-  description: The instance ID.
-  playbookInputQuery:
-- key: AWS-userID
-  value: {}
-  required: false
-  description: The user name.
-  playbookInputQuery:
-- key: AWS-accessKeyID
-  value: {}
-  required: false
-  description: The access key ID.
-  playbookInputQuery:
 - key: AWS-newRoleName
   value: {}
   required: false
@@ -1310,21 +1295,6 @@ inputs:
     Disable - for disabling the user.
     Delete - for deleting the user.
   playbookInputQuery:
-- key: Azure-AppID
-  value: {}
-  required: false
-  description: This is the unique application (client) ID of the application.
-  playbookInputQuery:
-- key: Azure-ObjectID
-  value: {}
-  required: false
-  description: This is the unique ID of the service principal object associated with the application.
-  playbookInputQuery:
-- key: Azure-userID
-  value: {}
-  required: false
-  description: The user ID or user principal name.
-  playbookInputQuery:
 - key: GCP-accessKeyRemediationType
   value:
     simple: Disable
@@ -1358,30 +1328,6 @@ inputs:
     Delete - For deleting the user.
     Disable - For disabling the user.
   playbookInputQuery:
-- key: GCP-userID
-  value: {}
-  required: false
-  description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
-  playbookInputQuery:
-- key: GCP-clientID
-  value: {}
-  required: false
-  description: The client ID.
-  playbookInputQuery:
-- key: GCP-zone
-  value: {}
-  required: false
-  description: |-
-    The name of the zone.
-    e.g.
-    us-central1-c
-    us-central1-b
-  playbookInputQuery:
-- key: GCP-SAEmail
-  value: {}
-  required: false
-  description: The service account email.
-  playbookInputQuery:
 inputSections:
 - inputs:
   - SOCEmailAddress
@@ -1409,9 +1355,6 @@ inputSections:
   - AWS-accessKeyRemediationType
   - AWS-resourceRemediationType
   - AWS-userRemediationType
-  - AWS-instanceID
-  - AWS-userID
-  - AWS-accessKeyID
   - AWS-newRoleName
   - AWS-newInstanceProfileName
   - AWS-roleNameToRestrict
@@ -1421,19 +1364,12 @@ inputSections:
 - inputs:
   - Azure-resourceRemediationType
   - Azure-userRemediationType
-  - Azure-AppID
-  - Azure-ObjectID
-  - Azure-userID
   name: Azure Remediation
   description: Azure Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
   - GCP-accessKeyRemediationType
   - GCP-resourceRemediationType
   - GCP-userRemediationType
-  - GCP-userID
-  - GCP-clientID
-  - GCP-zone
-  - GCP-SAEmail
   name: GCP Remediation
   description: GCP Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
