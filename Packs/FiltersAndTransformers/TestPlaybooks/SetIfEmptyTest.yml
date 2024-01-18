@@ -797,7 +797,7 @@ tasks:
       - "15"
     scriptarguments:
       key:
-        simple: Test8
+        simple: Test9
       value:
         complex:
           root: Invalid
