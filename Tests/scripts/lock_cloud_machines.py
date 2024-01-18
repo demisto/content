@@ -396,6 +396,7 @@ def main():
 
     list_machines = create_list_of_machines_to_run(options.lock_machine_name, options.test_machines,
                                                    options.number_machines_to_lock)
+
     lock_machine_list = get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machines,
                                                          options.gcs_locks_path, options.number_machines_to_lock,
                                                          options.ci_job_id, options.gitlab_status_token)
