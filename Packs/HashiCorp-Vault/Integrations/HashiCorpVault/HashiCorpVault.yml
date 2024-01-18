@@ -1,8 +1,8 @@
 commonfields:
-  id: HashiCorp Vault test v2
+  id: HashiCorp Vault Dev v2
   version: -1
-name: HashiCorp Vault test v2
-display: HashiCorp Vault test v2
+name: HashiCorp Vault Dev v2
+display: HashiCorp Vault Dev v2
 category: Authentication & Identity Management
 description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault.
 configuration:
