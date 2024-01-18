@@ -172,24 +172,13 @@ def test_module(client: ReilaQuestClient) -> str:
     return "ok"
 
 
-def get_event_latest_created_time(events: List[Dict], created_time_field: str, date_format=DATE_FORMAT):
+def parse_event_created_time(event_date_string: str) -> datetime:
     try:
-        latest_event_time = datetime.strptime(events[0][created_time_field], date_format)
+        return datetime.strptime(event_date_string, DATE_FORMAT)
     except ValueError:
         # The api might return rarely DATE_FORMAT only in seconds
-        latest_event_time = datetime.strptime(events[0][created_time_field], '%Y-%m-%dT%H:%M:%SZ')
-
-    for event in events:
-        try:
-            event_time = datetime.strptime(event[created_time_field], date_format)
-        except ValueError:
-            # The api might return rarely DATE_FORMAT only in seconds
-            event_time = datetime.strptime(event[created_time_field], '%Y-%m-%dT%H:%M:%SZ')
-        if event_time > latest_event_time:
-            latest_event_time = event_time
-
-    demisto.info(f'event latest created {latest_event_time}')
-    return latest_event_time.strftime(date_format)
+        demisto.debug(f'Could not parse {event_date_string=}')
+        return datetime.strptime(event_date_string, '%Y-%m-%dT%H:%M:%SZ')
 
 
 def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[dict[str, List[dict]], Optional[str]]:
@@ -202,19 +191,27 @@ def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, 
     """
     events = client.list_triage_item_events(event_created_after=last_run.get(FETCHED_TIME_LAST_RUN), limit=max_fetch)
     events = dedup_fetched_events(events, last_run)
-    latest_created_item = None
+    latest_event_time = None
     if events:
-        latest_created_item = get_event_latest_created_time(
-            events, created_time_field="event-created", date_format=DATE_FORMAT
-        )
+        latest_event_time = parse_event_created_time(events[0]["event-created"])
 
     _triage_item_ids_to_events = {}
     for event in events:
-        if triage_item_id := event.get("triage-item-id"):
+        triage_item_id = event.get("triage-item-id")
+        event_created_time = event.get("event-created")
+        if triage_item_id and event_created_time:
             if triage_item_id not in _triage_item_ids_to_events:
                 _triage_item_ids_to_events[triage_item_id] = []
             _triage_item_ids_to_events[triage_item_id].append(event)
-    return _triage_item_ids_to_events, latest_created_item
+
+            event_time = parse_event_created_time(event_created_time)
+            if event_time > latest_event_time:
+                latest_event_time = event_time
+        else:
+            demisto.error(f'event {event} does not have triage-item-id or event-created fields, skipping it')
+
+    demisto.info(f'Last event was created in {latest_event_time}')
+    return _triage_item_ids_to_events, latest_event_time
 
 
 def enrich_events_with_triage_item(client: ReilaQuestClient, triage_item_ids_to_events: dict[str, List[dict]]) -> tuple[dict[str, str], dict[str, str]]:
