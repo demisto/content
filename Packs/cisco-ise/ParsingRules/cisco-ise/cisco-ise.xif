@@ -8,7 +8,7 @@ filter _raw_log ~= "<\d+>\w+\s*\d+\s\d+:\d+:\d+\s" or _raw_log ~= "\d{4}-\d{2}-\
 // Parsing time format 2
 | alter tmp_time2_1 = concat(tmp_Year, " ", tmp_time2)
 | alter tmp_time2_1 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time2_1)
-| alter tmp_timeDiff = timestamp_diff(tmp_time2_1, current_time(), "DAY")
+| alter tmp_timeDiff = timestamp_diff(tmp_time2_1, current_time(), "MILLISECOND")
 | alter tmp_Year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_Year),1)),null)
 | alter tmp_time2_2 = if(tmp_Year2 != null, concat(tmp_Year2, " ", tmp_time2), null)
 | alter tmp_time2_2 = if(tmp_time2_2 != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_time2_2), null)
