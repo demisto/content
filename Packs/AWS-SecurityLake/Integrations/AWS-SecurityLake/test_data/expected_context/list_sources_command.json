@@ -1,5 +1,5 @@
 {
-    "DataLakeSource":{
+    "AWS.SecurityLake.DataLakeSource(val.DataLakeArn && val.DataLakeArn == obj.DataLakeArn)":{
         "DataLakeArn": "test",
         "DataLakeSources": [
             {
@@ -17,6 +17,6 @@
             }
         ]
     },
-    "DataLakeSourceNextToken": "test"
+    "AWS.SecurityLake.DataLakeSourceNextToken": "test"
 
 }

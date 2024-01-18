@@ -85,13 +85,13 @@ def test_execute_query_command(mocker):
     expected_hr = load_test_data('expected_hr', 'get_query_results_command.txt')
     assert result.readable_output == expected_hr
 
-COMMANDS=[(AWSSecurityLake.list_catalogs_command, 'list_catalogs_command.json', 'CatalogName', 'list_data_catalogs'),
-          (AWSSecurityLake.list_databases_command, 'list_database_command.json', 'Name', 'list_databases'),
-          (AWSSecurityLake.list_table_metadata_command, 'list_table_metadata_command.json', 'Name', 'list_table_metadata'),
-          (AWSSecurityLake.list_sources_command, 'list_sources_command.json', 'account', 'get_data_lake_sources'),
-          (AWSSecurityLake.list_data_lakes_command, 'list_data_lakes_command.json', 'dataLakeArn', 'list_data_lakes')]
-@pytest.mark.parametrize("command, file_name, output_key_field, client_command", COMMANDS)
-def test_general_command(mocker, command, file_name, output_key_field, client_command):
+COMMANDS=[(AWSSecurityLake.list_catalogs_command, 'list_catalogs_command.json', 'list_data_catalogs'),
+          (AWSSecurityLake.list_databases_command, 'list_database_command.json', 'list_databases'),
+          (AWSSecurityLake.list_table_metadata_command, 'list_table_metadata_command.json', 'list_table_metadata'),
+          (AWSSecurityLake.list_sources_command, 'list_sources_command.json', 'get_data_lake_sources'),
+          (AWSSecurityLake.list_data_lakes_command, 'list_data_lakes_command.json', 'list_data_lakes')]
+@pytest.mark.parametrize("command, file_name, client_command", COMMANDS)
+def test_general_command(mocker, command, file_name, client_command):
     """
     Given: argument to command
     When: running the relevant command
@@ -105,7 +105,6 @@ def test_general_command(mocker, command, file_name, output_key_field, client_co
     
     result = command(client, {})
     assert result.outputs == outputs
-    assert result.outputs_key_field == output_key_field
 
 
 QUEYRY_COMMANDS = [(AWSSecurityLake.mfalogin_query_command, 

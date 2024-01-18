@@ -1,5 +1,5 @@
 {
-    "Database": [
+    "AWS.SecurityLake.Database(val.Name && val.Name == obj.Name)": [
         {
             "Name": "test",
             "Description": "test",
@@ -8,5 +8,5 @@
             }
         }
     ],
-    "DatabaseNextToken": "test"
+    "AWS.SecurityLake.DatabaseNextToken": "test"
 }

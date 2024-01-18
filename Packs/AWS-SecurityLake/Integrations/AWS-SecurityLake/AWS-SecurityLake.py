@@ -54,7 +54,17 @@ def determine_client_service_name(command: str):
         return AWS_SERVICE_NAME_LAKE
     else:
         return AWS_SERVICE_NAME
-    
+
+def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_outputs: Any, page_outputs_key: str):
+    """Creates a dict for CommandResults.output with the next token.
+    """
+    outputs = {
+        f'AWS.SecurityLake.{outputs_prefix}(val.{page_outputs_key} && val.{page_outputs_key} == obj.{page_outputs_key})':
+            page_outputs,
+        f'AWS.SecurityLake.{outputs_prefix}NextToken': next_token
+    }
+    return remove_empty_elements(outputs)
+
 # --- API Call Functions --- #
 
 
@@ -199,16 +209,13 @@ def list_catalogs_command(client, args: dict):
     
     response = client.list_data_catalogs(**remove_empty_elements(args_to_request))
     
-    context_output = {
-        'Catalog': response.get('DataCatalogsSummary'),
-        'CatalogNextToken': response.get('NextToken')
-    }
+    catalogs = response.get('DataCatalogsSummary')
+    next_token = response.get('NextToken')
+    context_output = next_token_output_dict('Catalog', next_token, catalogs, 'CatalogName')
     
     return CommandResults(
-        outputs_prefix='AWS.SecurityLake',
-        outputs_key_field='CatalogName',
-        outputs=remove_empty_elements(context_output),
-        raw_response=context_output,
+        outputs=context_output,
+        raw_response=response,
         readable_output=tableToMarkdown('AWS Security Data Lake Catalogs', 
                                         response.get('DataCatalogsSummary'),
                                         headerTransform=pascalToSpace)
@@ -228,14 +235,13 @@ def list_databases_command(client, args: dict):
     
     response = client.list_databases(**remove_empty_elements(args_to_request))
     
-    context_output = {'Database': response.get('DatabaseList'),
-                      'DatabaseNextToken': response.get('NextToken')}
+    databases = response.get('DatabaseList')
+    next_token = response.get('NextToken')
+    context_output = next_token_output_dict('Database', next_token, databases, 'Name')
     
     return CommandResults(
-        outputs_prefix='AWS.SecurityLake',
-        outputs_key_field='Name',
-        outputs=remove_empty_elements(context_output),
-        raw_response=context_output,
+        outputs=context_output,
+        raw_response=response,
         readable_output=tableToMarkdown('AWS Security Data Lake Databases', 
                                         response.get('DatabaseList'),
                                         headers=['Name'],
@@ -260,16 +266,13 @@ def list_table_metadata_command(client, args: dict):
     
     response = client.list_table_metadata(**remove_empty_elements(args_to_request))
     
-    context_output = {
-        'TableMetadata': response.get('TableMetadataList'),
-        'TableMetadataNextToken': response.get('NextToken')
-    }
+    metadata_list = response.get('TableMetadataList')
+    next_token = response.get('NextToken')
+    context_output = next_token_output_dict('TableMetadata', next_token, metadata_list, 'Name')
     
     return CommandResults(
-        outputs_prefix='AWS.SecurityLake',
-        outputs_key_field='Name',
-        outputs=remove_empty_elements(context_output),
-        raw_response=context_output,
+        outputs=context_output,
+        raw_response=response,
         readable_output=tableToMarkdown('AWS Security Data Lake Databases', 
                                         response.get('DatabaseList'),
                                         headers=['Table Name, Type, Columns, Partition Keys, Output Location'],
@@ -341,11 +344,16 @@ def list_sources_command(client, args:dict):
         'DataLakeSourceNextToken': response.get('nextToken')
     }
     
+    data_lae_sources = {
+        'DataLakeArn': response.get('dataLakeArn'),
+        'DataLakeSources': response.get('dataLakeSources')
+    }
+    next_token = response.get('nextToken')
+    context_output = next_token_output_dict('DataLakeSource', next_token, data_lae_sources, 'DataLakeArn')
+    
     return CommandResults(
-        outputs_prefix='AWS.SecurityLake',
-        outputs_key_field='account',
-        outputs=remove_empty_elements(context_output),
-        raw_response=context_output,
+        outputs=context_output,
+        raw_response=response,
         readable_output=tableToMarkdown('AWS Security Data Lake Catalogs', 
                                         response.get('DataCatalogsSummary'),
                                         headerTransform=pascalToSpace))
@@ -359,13 +367,14 @@ def list_data_lakes_command(client, args:dict):
     """
     
     response = client.list_data_lakes(regions=argToList(args.get('regions')))
+    outputs = remove_empty_elements(response.get('dataLakes'))
     return CommandResults(
         outputs_prefix='AWS.SecurityLake.DataLake',
         outputs_key_field='dataLakeArn',
-        outputs=remove_empty_elements(response.get('dataLakes')),
+        outputs=outputs,
         raw_response=response,
         readable_output=tableToMarkdown('AWS Security Data Lakes', 
-                                        response.get('DataCatalogsSummary'),
+                                        outputs,
                                         headerTransform=pascalToSpace))
     
     
@@ -411,7 +420,7 @@ def main():  # pragma: no cover
         if command == 'test-module':
             result = module_test_command(client)
             
-        elif command == 'aws-athena-execute-query':
+        elif command == 'aws-security-lake-query-execute':
             result = execute_query_command(client=client, args=args, query_results_context_key='QueryResults') # type: ignore
             
         elif command == 'aws-security-lake-data-catalogs-list':

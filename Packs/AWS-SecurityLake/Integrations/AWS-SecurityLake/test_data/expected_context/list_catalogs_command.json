@@ -1,8 +1,9 @@
 {
-    "Catalog": [
+    "AWS.SecurityLake.Catalog(val.CatalogName && val.CatalogName == obj.CatalogName)": [
         {
             "CatalogName": "test",
             "Type": "LAMBDA"
         }
     ],
-    "CatalogNextToken": "test"}
+    "AWS.SecurityLake.CatalogNextToken": "test"
+}

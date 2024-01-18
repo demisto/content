@@ -107,7 +107,7 @@ script:
       - ""
     - name: output_location
       description: The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.
-      required: false
+      required: true
       isArray: false
       defaultValue: ""
       predefined:
