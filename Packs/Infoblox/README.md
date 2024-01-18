@@ -37,6 +37,7 @@ This section describes the configuration steps that need to be done on your Info
 3. In the **Grid Properties** editor, select the **Monitoring** tab, and then complete the following: 
    1. Select **Log to External Syslog Servers** to enable the appliance to send messages to a specified syslog server.
    2. Click the **Add** icon to add a new syslog server configuration and complete the following:
+      
    | Parameter                  | Value    
    | :---                       | :---                    
    | **`Address`**              | Enter the IP address of the Cortex XSIAM Broker VM Syslog server.
@@ -48,8 +49,8 @@ This section describes the configuration steps that need to be done on your Info
    | **`Port`**                 | Enter the port number that the Cortex XSIAM Broker VM is listening on for receiving syslog messages from the Infoblox appliance.
    | **`Severity`**             | Select the severity level of which messages from this level and above should be sent to Cortex XSIAM.
    | **`Logging Category`**     | Select **Send selected categories** and use the arrows to move the requested logging categories from the **Available** table to the **Selected** table and vice versa. 
-   3. Click **Add** to add the external syslog server information.
-   4. Optionally, click the **Test** button to test the connection to the Cortex XSIAM syslog server.
+   4. Click **Add** to add the external syslog server information.
+   5. Optionally, click the **Test** button to test the connection to the Cortex XSIAM syslog server.
 4. If you want Audit logs to be forwarded to Cortex XSIAM Broker VM as well, select **Copy Audit Log Messages to Syslog** and select the facility that determines the processes and daemons from which the log messages are generated.
 5. Save the configuration and click **Restart** if it appears at the top of the screen.
 
