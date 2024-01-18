@@ -278,6 +278,7 @@ def get_mutual_indicators_df(
 
 def mutual_indicators_results(mutual_indicators: list[dict], incident_ids: list[str]):
     indicators_df = get_mutual_indicators_df(mutual_indicators, incident_ids)
+    outputs = [] if indicators_df.empty else indicators_df[[INDICATOR_ID_FIELD, VALUE_FIELD]].to_dict(orient="records")
     readable_output = tableToMarkdown(
         "Mutual Indicators",
         indicators_df.to_dict(orient="records"),
@@ -285,7 +286,7 @@ def mutual_indicators_results(mutual_indicators: list[dict], incident_ids: list[
         headerTransform=pascalToSpace,
     )
     return CommandResults(
-        outputs=indicators_df[[INDICATOR_ID_FIELD, VALUE_FIELD]].to_dict(orient="records"),
+        outputs=outputs,
         outputs_prefix="MutualIndicators.indicators",
         readable_output=readable_output,
     )

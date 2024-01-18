@@ -5,28 +5,21 @@ outputs: []
 starttaskid: "0"
 tasks:
   "0":
-    continueonerrortype: ""
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 7f2c9926-6f44-4b32-8612-37dd52a259de
+    type: start
+    task:
+      id: 7f2c9926-6f44-4b32-8612-37dd52a259de
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 08fb7035-9f0c-4e6a-88b8-9cb960a324ab
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 08fb7035-9f0c-4e6a-88b8-9cb960a324ab
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,34 +27,34 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    continueonerrortype: ""
-    id: "1"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 49f2fdf2-392b-4d88-8677-ec8a29538a79
+    type: regular
+    task:
+      id: 49f2fdf2-392b-4d88-8677-ec8a29538a79
+      version: -1
+      name: 'Create two dummy incidents with "details": "8.8.8.8"'
+      description: Creates incidents from json file, and stores it in the instance context.
+      script: CreateIncidents|||create-test-incident-from-raw-json
+      type: regular
+      iscommand: true
+      brand: CreateIncidents
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       incident_raw_json:
         simple: '[{"name": "DBotFindSimilarIncidentsByIndicatorsTest", "details": "8.8.8.8"}, {"name": "DBotFindSimilarIncidentsByIndicatorsTest", "details": "8.8.8.8"}]'
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: CreateIncidents
-      description: Creates incidents from json file, and stores it in the instance context.
-      id: cb636794-52c2-4f25-83e4-cd2829181996
-      iscommand: true
-      name: 'Create two dummy incidents with "details": "8.8.8.8"'
-      script: CreateIncidents|||create-test-incident-from-raw-json
-      type: regular
-      version: -1
-    taskid: cb636794-52c2-4f25-83e4-cd2829181996
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -69,34 +62,34 @@ tasks:
           "y": 370
         }
       }
-  "3":
-    continueonerrortype: ""
-    id: "3"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 72aeccba-1e66-402e-89fd-4a4b98d7f743
+    type: regular
+    task:
+      id: 72aeccba-1e66-402e-89fd-4a4b98d7f743
+      version: -1
+      name: Sleep 1.5 minutes
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       seconds:
         simple: "90"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sleep for X seconds.
-      id: a0f68b5a-477e-4b3a-816c-f58b2dd37d21
-      iscommand: false
-      name: Sleep 1.5 minutes
-      script: Sleep
-      type: regular
-      version: -1
-    taskid: a0f68b5a-477e-4b3a-816c-f58b2dd37d21
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -104,17 +97,29 @@ tasks:
           "y": 545
         }
       }
-  "4":
-    continueonerrortype: ""
-    id: "4"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5c98a9ef-3a4b-4b4e-84dc-846f093b918d
+    type: regular
+    task:
+      id: 5c98a9ef-3a4b-4b4e-84dc-846f093b918d
+      version: -1
+      name: DBotFindSimilarIncidentsByIndicators
+      description: Finds similar incidents based on indicators' similarity. Indicators' contribution to the final score is based on their scarcity.
+      scriptName: DBotFindSimilarIncidentsByIndicators
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "5"
-    note: false
-    quietmode: 0
+      - "9"
     scriptarguments:
       fromDate:
         simple: 5 minutes ago
@@ -125,19 +130,7 @@ tasks:
       query:
         simple: name:DBotFindSimilarIncidentsByIndicatorsTest
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Finds similar incidents based on indicators' similarity. Indicators' contribution to the final score is based on their scarcity.
-      id: 27ad978d-2d74-4722-8e2f-bc3c41a27ec3
-      iscommand: false
-      name: DBotFindSimilarIncidentsByIndicators
-      script: DBotFindSimilarIncidentsByIndicators
-      type: regular
-      version: -1
-    taskid: 27ad978d-2d74-4722-8e2f-bc3c41a27ec3
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -145,72 +138,37 @@ tasks:
           "y": 720
         }
       }
-  "5":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: DBotFindSimilarIncidentsByIndicators.similarIncident.id
-          operator: isExists
-      label: "yes"
-    continueonerrortype: ""
-    id: "5"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0695c71d-70ed-4a22-8bc2-480e9ee9811d
+    type: condition
+    task:
+      id: 0695c71d-70ed-4a22-8bc2-480e9ee9811d
+      version: -1
+      name: Are there similar incidents?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       "yes":
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 093dec91-0c6b-448e-8c09-45ddb7682fcf
-      iscommand: false
-      name: Are there similar incidents?
-      type: condition
-      version: -1
-    taskid: 093dec91-0c6b-448e-8c09-45ddb7682fcf
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "6":
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotFindSimilarIncidentsByIndicators.similarIncident.id
+            iscontext: true
     continueonerrortype: ""
-    id: "6"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "7"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      id:
-        simple: ${DBotFindSimilarIncidentsByIndicators.similarIncident.id}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.close.inv
-      id: 26c664e6-5bff-4352-8ea1-2747f3229a7d
-      iscommand: true
-      name: Close them
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: 26c664e6-5bff-4352-8ea1-2747f3229a7d
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -218,27 +176,34 @@ tasks:
           "y": 1070
         }
       }
-  "7":
-    continueonerrortype: ""
-    id: "7"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 853a3f99-6afe-4c02-8b94-f00221ae3e45
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-      description: ''
-    taskid: 853a3f99-6afe-4c02-8b94-f00221ae3e45
     timertriggers: []
-    type: title
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b5c0fd0d-97a3-4083-871c-f3481b386440
+    type: regular
+    task:
+      id: b5c0fd0d-97a3-4083-871c-f3481b386440
+      version: -1
+      name: Close them
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        simple: ${DBotFindSimilarIncidentsByIndicators.similarIncident.id}
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -246,36 +211,64 @@ tasks:
           "y": 1245
         }
       }
-  "8":
-    continueonerrortype: ""
-    id: "8"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ba183997-fd83-4427-8380-94b1786a197e
+    type: title
+    task:
+      id: ba183997-fd83-4427-8380-94b1786a197e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3bcf64af-4828-423b-8f6f-830f3039cb6b
+    type: regular
+    task:
+      id: 3bcf64af-4828-423b-8f6f-830f3039cb6b
+      version: -1
+      name: Create indicator 8.8.8.8
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     scriptarguments:
+      type:
+        simple: IP
       value:
         simple: 8.8.8.8
-      type:
-        simple: "IP"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.new.indicator
-      id: fd578bc5-e1f5-4e80-82b8-d72b9781a40b
-      iscommand: true
-      name: Create indicator 8.8.8.8
-      script: Builtin|||createNewIndicator
-      type: regular
-      version: -1
-    taskid: fd578bc5-e1f5-4e80-82b8-d72b9781a40b
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -283,13 +276,60 @@ tasks:
           "y": 195
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e60306c9-5c2d-4c18-80d4-dde4f5988401
+    type: condition
+    task:
+      id: e60306c9-5c2d-4c18-80d4-dde4f5988401
+      version: -1
+      name: Is 8.8.8.8 a mutual indicator?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: MutualIndicators.indicators.value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1435,
         "width": 380,
         "x": 50,
         "y": 50
