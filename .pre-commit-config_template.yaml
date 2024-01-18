@@ -58,6 +58,11 @@ repos:
     - community
 - repo: local
   hooks:
+  - id: xsoar-linter
+    name: xsoar-linter
+    description: Run xsoar-linter on the code in content packs
+    entry: pylint
+    language: python
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
