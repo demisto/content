@@ -200,3 +200,63 @@ filter _raw_log ~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" or _raw_log ~= "
     xdm.source.process.pid = to_integer(syslog_process_id),
     xdm.target.ipv4 = dhcp_bootstrap_server_ip,
     xdm.target.subnet = target_network;
+
+/***************/
+// Audit Events /
+/***************/
+filter _raw_log ~= "httpd\[\d+\]"
+| alter 
+    syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
+    syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_msg = coalesce( 
+        arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+)"), 0), // messages that are sent directly from infoblox 
+        arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to a file and sent via an intermediate syslog client 
+| alter syslog_facility_code = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
+| alter
+    application_protocols = arrayindex(regextract(_raw_log, "apparently_via=(.*?)$"), 0),
+    auth_methods = arrayindex(regextract(_raw_log, "auth=(.*?)\s"), 0),
+    client_ipv4 = arrayindex(regextract(_raw_log, "ip=(.*?)\s"), 0),
+    client_user_groups = arrayindex(regextract(_raw_log, "group=(.*?)\s"), 0),
+    client_user_username = arrayindex(regextract(_raw_log, "\s\[(.*?)\]\:"), 0),
+    original_event_type = arrayindex(regextract(_raw_log, ":\s.*?:\s(.*?)\s-\s-"), 0),
+    server_process_name = arrayindex(regextract(_raw_log, "to=(.*?)\s"), 0)
+| alter
+    xdm.alert.severity = syslog_severity,
+    xdm.auth.auth_method = auth_methods,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.event.original_event_type = original_event_type,
+    xdm.event.type = "AUDIT",
+    xdm.intermediate.process.name = server_process_name,
+    xdm.network.application_protocol = application_protocols,
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.process.pid = to_integer(syslog_process_id),
+    xdm.source.user.groups = arraycreate(client_user_groups),
+    xdm.source.user.username = client_user_username;
+
+/**************************/
+// Fallback Mapping Events /
+/**************************/
+filter 
+    _raw_log !~= "httpd\[\d+\]" // NOT Audit 
+    and _raw_log !~= "client\s+(?:\@0x[\da-fA-F]+\s+)?[\da-fA-F\.\:]+\#\d{1,5}(?:\s+\([^\)]+\))?:\s+query" // NOT DNS Query
+    and _raw_log !~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:" // NOT DNS Response
+    and _raw_log !~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" and _raw_log ~= "DHCP\w+" // NOT DHCP
+| alter 
+    syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
+    syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),
+    syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\s*\w+"), 0)),
+    syslog_msg = coalesce( 
+        arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+)"), 0), // messages that are sent directly from infoblox 
+        arrayindex(regextract(_raw_log, "^\<\d+\>\w?\s+(?:\S+\s+){6}(.+)"), 0)) // messages that are downloaded to a file and sent via an intermediate syslog client 
+| alter syslog_facility_code = floor(divide(syslog_priority, 8))
+| alter syslog_severity = to_string(subtract(syslog_priority, multiply(syslog_facility_code, 8)))
+| alter 
+    xdm.alert.severity = syslog_severity,
+    xdm.event.description = syslog_msg,
+    xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
+    xdm.source.process.name = syslog_process_name,
+    xdm.source.process.pid = to_integer(syslog_process_id);
