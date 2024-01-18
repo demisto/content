@@ -20,7 +20,7 @@ DEFAULT_MAX_FETCH = 200
 VENDOR = "ReliaQuest"
 PRODUCT = "GreyMatter DRP"
 FETCHED_TIME_LAST_RUN = "time"
-FOUND_IDS_LAST_RUN = "fetched_ids"
+FOUND_IDS_LAST_RUN = "fetched_event_numbers"
 
 ''' CLIENT CLASS '''
 
@@ -317,22 +317,22 @@ def dedup_fetched_events(
 
     Returns: all the events that were not fetched yet
     """
-    last_run_found_event_ids = set(last_run.get(FOUND_IDS_LAST_RUN) or [])
-    demisto.info(f'last-run found events: {last_run_found_event_ids}')
-    if not last_run_found_event_ids:
+    last_run_found_event_numbers = set(last_run.get(FOUND_IDS_LAST_RUN) or [])
+    demisto.info(f'last-run found events: {last_run_found_event_numbers}')
+    if not last_run_found_event_numbers:
         return events
 
     un_fetched_events = []
 
     for event in events:
-        _id = event.get("triage-item-id")
-        if _id not in last_run_found_event_ids:
-            demisto.info(f'Item with ID {_id} with type has not been fetched.')
+        event_num = event.get("event-num")
+        if event_num not in last_run_found_event_numbers:
+            demisto.info(f'event number {event_num} with has not been fetched.')
             un_fetched_events.append(event)
         else:
-            demisto.info(f'Item with ID {_id} has been fetched')
+            demisto.info(f'event number {event_num} has been already fetched in previous fetch')
 
-    demisto.info(f'Fetching the following item-IDs after dedup: { {event.get("id") for event in un_fetched_events} }')
+    demisto.info(f'Fetching the following event-numbers after dedup: { {event.get("event-num") for event in un_fetched_events} }')
     return un_fetched_events
 
 
