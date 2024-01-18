@@ -41,7 +41,7 @@ This section describes the configuration steps that need to be done on your Info
    | :---                       | :---                    
    | **`Address`**              | Enter the IP address of the Cortex XSIAM Broker VM Syslog server.
    | **`Transport`**            | Select whether the appliance should use **UDP**, **TCP**, or **Secure TCP** to connect to the Cortex XSIAM Broker VM. 
-   | **`Server Certificate`**   | If you wish to transport the logs to over **Secure TCP**, upload a self-signed or a CA-signed server certificate.
+   | **`Server Certificate`**   | To transport the logs over **Secure TCP**, upload a self-signed or a CA-signed server certificate.
    | **`Interface`**            | Select the interface through which the appliance should send the syslog messages to the Cortex XSIAM Broker VM.
    | **`Source`**               | Select whether the appliance should send only **Internal** messages, **External** messages, or both (**Any**).
    | **`Node ID`**              | Specify the host or node identification string that would be used in the syslog message header to identify the appliance from which the syslog messages are originated from. 
