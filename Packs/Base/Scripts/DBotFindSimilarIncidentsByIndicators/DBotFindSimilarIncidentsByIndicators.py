@@ -516,7 +516,7 @@ def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[C
     return command_results_list
 
 
-def main():
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         incident_id = args.get("incidentId") or demisto.incidents()[0]["id"]
