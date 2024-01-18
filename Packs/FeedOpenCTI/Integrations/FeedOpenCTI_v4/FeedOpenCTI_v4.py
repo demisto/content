@@ -97,7 +97,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
             'key': 'x_opencti_score',
             'values': score,
             'operator': 'eq',
-            'mode': 'and'
+            'mode': 'or'
         })
     demisto.debug(f'{OPENCTI_LOGS} - in get_indicators - {filters=}')
     observables = client.stix_cyber_observable.list(filters=filters, after=last_run_id, first=limit,
@@ -140,7 +140,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
     return new_last_run, indicators
 
 
-def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, max_fetch: int, score: list = None,
+def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, max_fetch: int, score: list,
                              tlp_color=None, tags=None, is_test=False) -> list:
     """ fetch indicators from the OpenCTI
 
@@ -232,8 +232,8 @@ def main():
         max_fetch = arg_to_number(max_fetch)
     else:
         max_fetch = 500
-    start = arg_to_number(args.get('score_start', 1))
-    end = arg_to_number(args.get('score_end', 100)) + 1  # type:ignore
+    start = arg_to_number(params.get('score_start', 1))
+    end = arg_to_number(params.get('score_end', 100)) + 1  # type:ignore
     score = None
     if start or end:
         score = [str(i) for i in range(start, end)]  # type:ignore
