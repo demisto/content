@@ -17,14 +17,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Search Endpoints By Hash - Generic V2
+* Block Indicators - Generic v3
+* Entity Enrichment - Generic v3
 * Get File Sample - Generic
 * Extract Indicators From File - Generic v2
-* Entity Enrichment - Generic v3
-* Block Indicators - Generic v3
 * Dedup - Generic v4
+* Calculate Severity - Generic v2
 * Detonate URL - Generic v1.5
 * Detonate File - Generic
-* Calculate Severity - Generic v2
 
 ### Integrations
 
@@ -32,14 +32,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GenerateInvestigationSummaryReport
 * Set
+* GenerateInvestigationSummaryReport
 
 ### Commands
 
+* setIncident
 * extractIndicators
 * closeInvestigation
-* setIncident
 
 ## Playbook Inputs
 
