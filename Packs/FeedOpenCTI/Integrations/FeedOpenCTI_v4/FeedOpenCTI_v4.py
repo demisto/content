@@ -163,10 +163,11 @@ def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, ma
 
     if new_last_run and not is_test:
         demisto.setIntegrationContext({'last_run_id': new_last_run})
-        demisto.info(f'set last run {new_last_run}')
+        demisto.debug(f'{OPENCTI_LOGS} - in fetch_indicators_command - set last run = {new_last_run}')
         # we submit the indicators in batches
         for b in batch(indicators_list, batch_size=2000):
             demisto.createIndicators(b)
+            demisto.debug(f'{OPENCTI_LOGS} - in fetch_indicators_command - successful fetch, batch number = {b=}')
 
     return indicators_list
 
