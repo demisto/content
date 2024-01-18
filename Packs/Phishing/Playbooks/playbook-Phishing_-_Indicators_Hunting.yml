@@ -48,7 +48,7 @@ tasks:
       version: -1
       name: Microsoft 365 Defender - Threat Hunting Generic
       description: |
-        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`. and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
+        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`, and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
 
         - **Microsoft 365 Defender - Get Email URL clicks**:
                 Retrieves data based on URL click events.

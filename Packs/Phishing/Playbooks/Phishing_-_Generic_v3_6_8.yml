@@ -1263,7 +1263,7 @@ tasks:
         - Current incident severity
         - Microsoft Headers
         - Risky users (XDR)
-        - Risky hosts (XDR).
+        - Risky hosts (XDR)
     nexttasks:
       '#none#':
       - "2"
@@ -3512,7 +3512,7 @@ tasks:
       iscommand: false
       brand: ""
       description: |-
-        Detonate URL through one or more active integrations that support URL detonation.
+        Detonate a URL through one or more active integrations that support URL detonation.
         Supported integrations:
         - SecneurX Analysis
         - ANY.RUN
@@ -3531,7 +3531,7 @@ tasks:
         - ANYRUN
         -  VirusTotal
         - Anomali ThreatStream
-        - Hatching Triage.
+        - Hatching Triage
     nexttasks:
       '#none#':
       - "52"
