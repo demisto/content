@@ -36,7 +36,7 @@ This section describes the configuration steps that needs to be done on your Inf
 2. From the **Grid** tab, Navigate to **Grid Manager** &rarr; **Members**, and then click **Grid Properties** &rarr; **Edit** from the Toolbar.
 3. In the **Grid Properties** editor, select the **Monitoring** tab, and then complete the following: 
    1. Select **Log to External Syslog Servers** to enable the appliance to send messages to a specified syslog server.
-   2. Click the **Add** icon for adding a new syslog server configuration and complete the following:
+   2. Click the **Add** icon to add a new syslog server configuration and complete the following:
    | Parameter                  | Value    
    | :---                       | :---                    
    | **`Address`**              | Enter the IP address of the Cortex XSIAM Broker VM Syslog server.
