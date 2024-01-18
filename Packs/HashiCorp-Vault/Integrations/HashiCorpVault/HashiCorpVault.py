@@ -604,9 +604,10 @@ def fetch_credentials():  # pragma: no cover
         engines_to_fetch_from += engines_to_fetch
     if len(engines_to_fetch_from) == 0:
         return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
-
+    demisto.debug(f'{engines_to_fetch_from=}')
     for engine in engines_to_fetch_from:
         folder = engine.get('folder')
+        demisto.debug(f'{folder=}')
         if engine['type'] == 'KV':
             if 'version' not in engine:
                 return_error('Version not configured for KV engine, re-configure the engine')
