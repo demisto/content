@@ -72,7 +72,7 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following parameters:
    | Parameter     | Value    
    | :---          | :---                    
-   | `Protocol`    | Select **UDP**, **TCP**, or **Secure TCP**, in accordance to the selected syslog transport method configured on the Infoblox appliance.
+   | `Protocol`    | Select **UDP**, **TCP**, or **Secure TCP**, in accordance with the selected syslog transport method configured on the Infoblox appliance.
    | `Port`        | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from the Infoblox appliance. 
    | `Vendor`      | Enter **Infoblox**. 
    | `Product`     | Enter **Infoblox**. 
