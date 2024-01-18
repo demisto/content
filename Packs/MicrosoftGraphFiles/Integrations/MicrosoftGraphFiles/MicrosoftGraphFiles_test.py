@@ -34,7 +34,13 @@ class File:
 
 CLIENT_MOCKER = MsGraphClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', ok_codes=(200, 204, 201),
-    base_url='https://graph.microsoft.com/v1.0/', verify='use_ssl', proxy='proxy', self_deployed='self_deployed')
+    base_url='https://graph.microsoft.com/v1.0/', verify='use_ssl', proxy='proxy', self_deployed='self_deployed',
+    redirect_uri='', auth_code='')
+
+CLIENT_MOCKER_AUTH_CODE = MsGraphClient(
+    tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', ok_codes=(200, 204, 201),
+    base_url='https://graph.microsoft.com/v1.0/', verify='use_ssl', proxy='proxy', self_deployed='self_deployed',
+    redirect_uri='redirect_uri', auth_code='auth_code')
 
 
 def authorization_mock(requests_mock: MockerCore) -> None:
@@ -167,27 +173,47 @@ def test_parse_key_to_context_exclude_keys_from_list() -> None:
 
 
 @pytest.mark.parametrize(
-    "command, args, response",
+    "command, args, response, filename_expected",
     [
         (
             download_file_command,
             {"object_type": "drives", "object_type_id": "123", "item_id": "232"},
-            File
+            File,
+            "232",
+        ),
+        (
+            download_file_command,
+            {
+                "object_type": "drives",
+                "object_type_id": "123",
+                "item_id": "232",
+                "file_name": "test.xslx",
+            },
+            File,
+            "test.xslx",
         ),
     ],
 )  # noqa: E124
-def test_download_file(mocker: MockerFixture, command: Callable, args: dict, response: File) -> None:
+def test_download_file(
+    mocker: MockerFixture,
+    command: Callable,
+    args: dict,
+    response: File,
+    filename_expected: str,
+) -> None:
     """
     Given:
         - Location to where to upload file to Graph Api
     When
         - Using download file command in Demisto
     Then
-        - return FileResult object
+        - Ensure the `filename` is as sent in the command arguments when provided
+          otherwise, the `filename` is `item_id`
     """
     mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
-    result: dict = command(CLIENT_MOCKER, args)
-    assert "Contents" in list(result.keys())
+    mock_file_result = mocker.patch("MicrosoftGraphFiles.fileResult")
+    command(CLIENT_MOCKER, args)
+    mock_file_result.assert_called_with(filename_expected, response.content)
 
 
 @pytest.mark.parametrize(
@@ -391,8 +417,7 @@ def validate_upload_attachments_flow(create_upload_mock: MagicMock, upload_query
 
 
 def self_deployed_client() -> MsGraphClient:
-    return MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name',
-                         base_url='url', verify='use_ssl', proxy='proxy', self_deployed='self_deployed', ok_codes=(1, 2, 3))
+    return CLIENT_MOCKER
 
 
 json_response = {'@odata.context': 'dummy_url',
@@ -877,3 +902,79 @@ def test_delete_site_permission_command(requests_mock: MockerCore) -> None:
     result = delete_site_permission_command(CLIENT_MOCKER, args)
 
     assert result.readable_output == "Site permission was deleted."
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function msgraph-user-generate-login-url
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from MicrosoftGraphFiles import main, Scopes
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'self_deployed': 'True',
+        'credentials_tenant_id': {'password': tenant_id},
+        'credentials_auth_id': {'password': client_id},
+        'credentials_enc_key': {'password': 'client_secret'}
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='msgraph-files-generate-login-url')
+    return_results = mocker.patch('MicrosoftGraphFiles.return_results')
+
+    main()
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   f'response_type=code&scope=offline_access%20{Scopes.graph}' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = return_results.call_args[0][0].readable_output
+    assert expected_url in res
+
+
+@pytest.mark.parametrize('grant_type, self_deployed, demisto_command, expected_result, should_raise, client',
+                         [
+                             ('', False, 'test-module', 'ok', False, CLIENT_MOCKER),
+                             ('authorization_code', True, 'test-module', 'ok', True, CLIENT_MOCKER_AUTH_CODE),
+                             ('client_credentials', True, 'test-module', 'ok', False, CLIENT_MOCKER),
+                             ('client_credentials', True, 'msgraph-files-auth-test', '```✅ Success!```', False, CLIENT_MOCKER),
+                             ('authorization_code', True, 'msgraph-files-auth-test',
+                              '```✅ Success!```', False, CLIENT_MOCKER_AUTH_CODE)
+                         ])
+def test_test_function(mocker, grant_type, self_deployed, demisto_command, expected_result, should_raise, client):
+    """
+    Given:
+        - Authentication method, self_deployed information, and demisto command.
+    When:
+        - Calling test_function.
+    Then:
+        - Ensure the output is as expected.
+    """
+
+    from MicrosoftGraphFiles import test_function
+
+    client = client
+    client.ms_client.self_deployed = self_deployed
+
+    client.ms_client.grant_type = grant_type
+    demisto_params = {'self_deployed': self_deployed,
+                      'auth_code': client.ms_client.auth_code, 'redirect_uri': client.ms_client.redirect_uri}
+    mocker.patch('MicrosoftGraphFiles.demisto.params', return_value=demisto_params)
+    mocker.patch('MicrosoftGraphFiles.demisto.command', return_value=demisto_command)
+    mocker.patch.object(client.ms_client, 'http_request')
+
+    if should_raise:
+        with pytest.raises(DemistoException) as exc:
+            test_function(client)
+            assert 'self-deployed - Authorization Code Flow' in str(exc)
+    else:
+        result = test_function(client)
+        assert result == expected_result
+        client.ms_client.http_request.assert_called_once_with(url_suffix="sites", timeout=7, method="GET")

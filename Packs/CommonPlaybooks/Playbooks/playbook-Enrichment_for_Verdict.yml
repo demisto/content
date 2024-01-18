@@ -3,7 +3,7 @@ version: -1
 marketplaces:
 - marketplacev2
 name: Enrichment for Verdict
-description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
+description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
 starttaskid: "0"
 tasks:
   "0":
@@ -310,6 +310,15 @@ tasks:
             value:
               complex:
                 root: inputs.FileSHA256
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: inputs.FileSHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "64"
             iscontext: true
           right:
             value: {}

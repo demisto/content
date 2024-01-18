@@ -19,10 +19,10 @@ if [ "$#" -lt "1" ]; then
 fi
 
 _branch="$(git branch  --show-current)"
-_bucket="${TEST_XDR_PREFIX}marketplace-dist-dev"
-_bucket_v2="${TEST_XDR_PREFIX}marketplace-v2-dist-dev"
-_bucket_xpanse="${TEST_XDR_PREFIX}xpanse-dist-dev"
-_bucket_xsoar_saas="${TEST_XDR_PREFIX}marketplace-saas-dist-dev"
+_bucket="marketplace-dist-dev"
+_bucket_v2="marketplace-v2-dist-dev"
+_bucket_xpanse="xpanse-dist-dev"
+_bucket_xsoar_saas="marketplace-saas-dist-dev"
 _force="false"
 _slack_channel="dmst-bucket-upload"
 _override_all_pack="false"
