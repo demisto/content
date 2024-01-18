@@ -99,7 +99,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ''
       description: 'Collect a file from a device. NOTE: Backslashes in the path must be escaped.'
