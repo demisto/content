@@ -1047,7 +1047,7 @@ tasks:
       AWS-newRoleName:
         simple: ${inputs.AWS-newRoleName}
       AWS-roleNameToRestrict:
-        simple: ${inputs.AWS-newRoleName}
+        simple: ${inputs.AWS-roleNameToRestrict}
       AWS-userID:
         simple: ${alert.username}
       Azure-AppID:
