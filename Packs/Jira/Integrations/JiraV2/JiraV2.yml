@@ -609,8 +609,10 @@ script:
   isremotesyncout: true
   script: ''
   subtype: python3
+
   type: python
 tests:
+
 - Jira-v2-Test
 defaultmapperin: classifier-mapper-incoming-JiraV2
 fromversion: 5.0.0
