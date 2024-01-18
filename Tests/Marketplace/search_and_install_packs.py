@@ -42,6 +42,7 @@ PACK_METADATA_FILE = Pack.PACK_METADATA
 GITLAB_PACK_METADATA_URL = f"{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}"  # noqa: E501
 
 BATCH_SIZE = 10
+CYCLE_SEPARATOR = "<->"
 
 
 @lru_cache
@@ -659,38 +660,49 @@ def search_and_install_packs_and_their_dependencies_private(
 
 
 def create_graph(
-    graph_dependencies: DiGraph,
     all_packs_dependencies: dict,
-) -> None:
-    """Creates a directed graph of content pack dependencies.
+) -> DiGraph:
+    """Creates a NetworkX directed graph representing the dependencies between packs.
 
-    Iterates over the provided all_packs_dependencies dict and adds edges to 
-    the graph_dependencies DiGraph indicating dependencies between packs.
+    Iterates over the provided dictionary containing all packs dependencies and adds
+    directed edges to the graph from each dependent pack to the pack it depends on.
+    Edges are only added for mandatory dependencies.
 
     Args:
-        graph_dependencies: DiGraph to store pack dependencies
-        all_packs_dependencies: Dict mapping pack ID to pack metadata including 
-                                dependencies
+        all_packs_dependencies (dict): Dictionary containing pack IDs as keys and their
+                                       dependencies as the values.
+
+    Returns:
+        DiGraph: NetworkX directed graph with edges representing dependencies
+                 between packs.
     """
+    graph_dependencies = nx.DiGraph()
     for pack_id in all_packs_dependencies:
         pack_dependencies = all_packs_dependencies[pack_id]["dependencies"]
         for dependence in pack_dependencies:
             if pack_dependencies[dependence]["mandatory"]:
-                graph_dependencies.add_edge(
-                    dependence, pack_id
-                )
+                graph_dependencies.add_edge(dependence, pack_id)
+    return graph_dependencies
 
 
-def merge_cycles(graph: DiGraph, map_cycles_nodes: dict):
+def merge_cycles(graph: DiGraph) -> dict[str, str]:
     # Merges nodes in a cycle in the graph into a single node.
     # Iterates over the edges in the graph and connects any edges pointing
     # to nodes in the cycle to the merged node instead.
     # Then removes the nodes that were part of the cycle.
-    logging.debug(f"Found the following cycles in the graph: {list(nx.simple_cycles(graph))}")
+    logging.debug(
+        f"Found the following cycles in the graph: {list(nx.simple_cycles(graph))}"
+    )
+    map_cycles = {}
     while list(nx.simple_cycles(graph)):
         cycle = list(nx.simple_cycles(graph))[0]
-        merged_node_name = "<->".join(cycle)
-        map_cycles_nodes.update({node: "<->".join(cycle) for node in itertools.chain.from_iterable(split_cycles(cycle))})
+        merged_node_name = CYCLE_SEPARATOR.join(cycle)
+        map_cycles.update(
+            {
+                node: merged_node_name
+                for node in itertools.chain.from_iterable(split_cycles(cycle))
+            }
+        )
         for node_1, node_2 in list(graph.edges()):
             if node_1 in cycle:
                 graph.add_edge(merged_node_name, node_2)
@@ -698,14 +710,14 @@ def merge_cycles(graph: DiGraph, map_cycles_nodes: dict):
                 graph.add_edge(node_1, merged_node_name)
         for node in cycle:
             graph.remove_node(node)
-    
+    return map_cycles
 
 
 def split_cycles(sorted_packs_to_install: list[str]) -> list[list[str]]:
     """Splits any cycles in the sorted packs list into separate packs.
 
-    Takes the sorted_packs_to_install list which contains pack IDs or merged 
-    cycle names, and splits any merged cycle names into the separate pack IDs 
+    Takes the sorted_packs_to_install list which contains pack IDs or merged
+    cycle names, and splits any merged cycle names into the separate pack IDs
     that were part of the cycle.
 
     Args:
@@ -713,17 +725,17 @@ def split_cycles(sorted_packs_to_install: list[str]) -> list[list[str]]:
                                         that needs to have cycles split.
 
     Returns:
-        list: Copy of the sorted_packs_to_install list with cycles split into 
+        list: Copy of the sorted_packs_to_install list with cycles split into
               separate pack IDs.
     """
-    return [pack.split("<->") for pack in sorted_packs_to_install]
+    return [pack.split(CYCLE_SEPARATOR) for pack in sorted_packs_to_install]
 
 
 def get_all_content_packs_dependencies(client: demisto_client) -> dict[str, dict]:
     """Gets all content packs dependencies from the Marketplace API.
 
-    Iterates over all pages of pack results from the Marketplace /search API. 
-    Extracts the "dependencies" field from each pack and collects them into a 
+    Iterates over all pages of pack results from the Marketplace /search API.
+    Extracts the "dependencies" field from each pack and collects them into a
     mapping of pack ID to dependencies dict.
 
     Args:
@@ -800,8 +812,8 @@ def search_for_deprecated_dependencies(
 ):
     """Checks if the given pack ID has any deprecated dependencies.
 
-    For each dependency of the pack, checks if that dependency is deprecated. 
-    If any deprecated dependencies are found, returns False. 
+    For each dependency of the pack, checks if that dependency is deprecated.
+    If any deprecated dependencies are found, returns False.
     Otherwise returns True.
     """
     for dependency_pack in dependencies_for_pack_id:
@@ -830,7 +842,7 @@ def get_packs_and_dependencies_to_install(
 
     For each pack ID, finds its dependencies using the graph and splits any cyclic dependencies.
     Checks if each dependency is deprecated by calling search_for_deprecated_dependencies.
-    If no deprecated dependencies are found, adds the pack and its dependencies to 
+    If no deprecated dependencies are found, adds the pack and its dependencies to
     all_packs_and_dependencies_to_install.
 
     Returns:
@@ -869,13 +881,13 @@ def create_install_request_body(
 ) -> list[list[dict]]:
     """Creates the request body for installing packs.
     An inner list will contain several IDs if they are circularly dependent on each other.
-    
+
     Args:
         packs_to_install: List of lists of pack IDs to install
         all_packs_dependencies_data: Dict containing dependencies data for all packs
-    
+
     Returns:
-        list: Request body with installation data for the packs  
+        list: Request body with installation data for the packs
     """
     request_body = []
     for pack_ids in packs_to_install:
@@ -893,7 +905,7 @@ def create_install_request_body(
 
 def search_for_deprecated_packs(
     pack_ids: list[str], production_bucket: bool, commit_hash: str
-):
+) -> None:
     """Checks if any packs in pack_ids are deprecated and removes them from the list.
 
     For each pack ID in pack_ids, calls is_pack_deprecated to check if that pack is deprecated.
@@ -935,9 +947,10 @@ def search_and_install_packs_and_their_dependencies(
             If multithreading is used, installation requests will be sent in batches of each pack and its dependencies.
         production_bucket (bool): Whether the installation is in post update mode. Defaults to False.
     Returns (list, bool):
-        A list of the installed packs' ids, or an empty list if is_nightly == True.
+        A list of the installed packs IDs.
         A flag that indicates if the operation succeeded or not.
     """
+    logging.info(f"{type(client)=}")
     host = hostname or client.api_client.configuration.host
 
     logging.info(f"Starting search for packs to install on: {host}")
@@ -952,11 +965,9 @@ def search_and_install_packs_and_their_dependencies(
 
     all_packs_dependencies_data = get_all_content_packs_dependencies(client)
 
-    graph_dependencies = nx.DiGraph()
-    create_graph(graph_dependencies, all_packs_dependencies_data)
+    graph_dependencies = create_graph(all_packs_dependencies_data)
 
     all_packs_and_dependencies_to_install: set[str] = set()
-
     success &= get_packs_and_dependencies_to_install(
         pack_ids,
         graph_dependencies,
@@ -965,23 +976,22 @@ def search_and_install_packs_and_their_dependencies(
         all_packs_dependencies_data,
     )
 
-    map_cycles_nodes: dict[str, str] = {}
-    merge_cycles(graph_dependencies, map_cycles_nodes)
+    map_merged_cycles = merge_cycles(graph_dependencies)
 
     # Create subgraph only with the packs that will be installed
     graph_dependencies_for_installed_packs = nx.subgraph(
         graph_dependencies,
         {
-            map_cycles_nodes[pack] if pack in map_cycles_nodes else pack
+            map_merged_cycles[pack] if pack in map_merged_cycles else pack
             for pack in all_packs_and_dependencies_to_install
         },
     )
-
-    sorted_packs_to_install = list(
-        nx.topological_sort(graph_dependencies_for_installed_packs)
+    logging.debug(
+        f"Get the following topological sort: {list(nx.topological_generations(graph_dependencies_for_installed_packs))}"
     )
-        
-    sorted_packs_to_install = split_cycles(sorted_packs_to_install)
+    sorted_packs_to_install = split_cycles(
+        list(nx.topological_sort(graph_dependencies_for_installed_packs))
+    )
 
     packs_to_install_request_body = create_install_request_body(
         sorted_packs_to_install,
