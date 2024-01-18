@@ -1289,12 +1289,6 @@ tasks:
           root: Account
           transformers:
           - operator: uniq
-      CriticalEndpoints:
-        simple: admin
-      CriticalGroups:
-        simple: admins,administrators
-      CriticalUsers:
-        simple: admin,administrator
       DBotScoreIndicators:
         complex:
           root: DBotScore
