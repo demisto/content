@@ -687,7 +687,7 @@ def merge_cycles(graph: DiGraph, map_cycles_nodes: dict):
     # to nodes in the cycle to the merged node instead.
     # Then removes the nodes that were part of the cycle.
     cycles = nx.simple_cycles(graph)
-    logging.info(f"All cycles:\n{list(nx.simple_cycles(graph))}\n")
+    logging.debug(f"Found the following cycles in the graph: {list(nx.simple_cycles(graph))}")
     for cycle in cycles:
         merged_node_name = "<->".join(cycle)
         map_cycles_nodes.update({node: "<->".join(cycle) for node in cycle})
@@ -698,8 +698,8 @@ def merge_cycles(graph: DiGraph, map_cycles_nodes: dict):
             elif node_2 in cycle:
                 graph.add_edge(node_1, merged_node_name)
 
-        for node in cycle:
-            graph.remove_node(node)
+    for node in set(itertools.chain.from_iterable(cycles)):
+        graph.remove_node(node)
 
 def split_cycles(sorted_packs_to_install: list[str]) -> list[list[str]]:
     """Splits any cycles in the sorted packs list into separate packs.
@@ -1023,4 +1023,5 @@ def create_batches(list_of_packs_and_its_dependency: list):
             batch = packs_to_install_body
     list_of_batches.append(batch)
 
+    logging.debug(f"Create the following batches for install: {list_of_batches}")
     return list_of_batches
