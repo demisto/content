@@ -508,18 +508,42 @@ script:
       name: category
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Exfiltration'
+      - 'Reconnaissance'
+      - 'Intrusion'
+      - 'Privilege Escalation'
+      - 'Lateral movement'
+      - 'Exploitation'
+      - 'Obfuscation (anti-forensics)'
+      - 'Denial of Service'
+      - 'Other'
     - default: false
       description: List of requested threat model severities.
       isArray: true
       name: severity
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Emergency'
+      - 'Alert'
+      - 'Critical'
+      - 'Error'
+      - 'Warning'
+      - 'Notice'
+      - 'Informational'
     - default: false
       description: List of requested threat model sources.
       isArray: true
       name: source
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Predefined'
+      - 'User-defined'
     deprecated: false
     description: Get Varonis threat models.
     execution: false
