@@ -20,7 +20,7 @@ This playbook does not use any integrations.
 
 ### Commands
 
-This playbook does not use any commands.
+* setAlert
 
 ## Playbook Inputs
 
