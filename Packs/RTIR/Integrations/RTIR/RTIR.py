@@ -510,23 +510,23 @@ def edit_ticket():
             value = cf[equal_index + 1:]
             content += '\n' + key + value
 
-    edit_suc = False
+    edit_succeeded = False
     member_of = args.get('member-of')
     members = args.get('members')
     if members or member_of:
         links = edit_links(ticket_id, members, member_of)
         if "200 Ok" in links.text:
-            edit_suc = True
+            edit_succeeded = True
 
     if arguments_given:
         edited_ticket = edit_ticket_request(ticket_id, f"content={urllib.parse.quote_plus(content)}")
         if "200 Ok" in edited_ticket.text:
-            edit_suc = True
+            edit_succeeded = True
 
     elif not members and not member_of:
         raise DemistoException('No arguments were given to edit the ticket.')
 
-    if edit_suc:
+    if edit_succeeded:
         ticket_context = ({
             'ID': ticket_id,
             'Subject': subject,
