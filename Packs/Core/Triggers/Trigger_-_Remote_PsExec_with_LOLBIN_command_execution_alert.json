@@ -1,0 +1,19 @@
+{
+    "trigger_id": "155e823d9d56d1e3cec9061cd9c0523d",
+    "playbook_id": "Remote PsExec with LOLBIN command execution alert",
+    "suggestion_reason": "Recommended for Remote PsExec with LOLBIN command execution alerts",
+    "description": "This trigger is responsible for handling Remote PsExec with LOLBIN command execution alerts",
+    "trigger_name": "Remote PsExec with LOLBIN command execution alert",
+    "fromVersion": "6.10.0",
+    "alerts_filter": {
+      "filter": {
+        "AND": [
+          {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service"
+          }
+        ]
+      }
+    }
+  }
