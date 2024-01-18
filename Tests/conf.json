@@ -5647,9 +5647,6 @@
         {
             "integrations": "Fortimail",
             "playbookID": "playbook-Fortimail_Test"
-        },
-        {
-            "playbookID": "Test Playbook - MDE - Retrieve File"
         }
     ],
     "skipped_tests": {
