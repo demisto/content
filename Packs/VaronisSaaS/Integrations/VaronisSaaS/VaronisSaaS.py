@@ -1732,7 +1732,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
                                        ingest_time_to=ingest_time_to,
                                        alert_statuses=statuses, alert_severities=severities,
                                        extra_fields=None,
-                                       descending_order=True,
+                                       descending_order=False,
                                        max_fetch=max_fetch)
 
     demisto.debug(f'varonis_get_alerts returned: {len(alerts)} alerts')
@@ -1746,7 +1746,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
         )
 
         if not last_fetched_ingest_time or ingestTime > last_fetched_ingest_time:
-            last_fetched_ingest_time = ingestTime + timedelta(minutes=1)
+            last_fetched_ingest_time = ingestTime + timedelta(seconds=1)
         guid = alert[AlertAttributes.Alert_ID]
         name = alert[AlertAttributes.Alert_Rule_Name]
         alert_time = alert[AlertAttributes.Alert_TimeUTC]
