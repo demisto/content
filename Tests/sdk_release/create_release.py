@@ -4,6 +4,8 @@ import sys
 import argparse
 import re
 import urllib3
+from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,8 +18,8 @@ def get_changelog_text(release_branch_name, format='markdown'):
     url = f"https://raw.githubusercontent.com/demisto/demisto-sdk/{release_branch_name}/CHANGELOG.md"
     response = requests.request("GET", url, verify=False)
     if response.status_code != 200:
-        print(f'Failed to get the CHANGELOG.md file from branch {release_branch_name}')
-        print(response.text)
+        logging.error(f'Failed to get the CHANGELOG.md file from branch {release_branch_name}')
+        logging.error(response.text)
         sys.exit(1)
     file_text = response.text
     release_changes = (
@@ -40,11 +42,11 @@ def get_changelog_text(release_branch_name, format='markdown'):
                     f"{change_parts[0]} <{change_parts[2]}|{change_parts[1]}>"
                 )
             else:
-                print(f'The format {format} is not supported')
+                logging.error(f'The format {format} is not supported')
                 exit(1)
 
         except Exception as e:
-            print(f'Error parsing change: {e}')
+            logging.error(f'Error parsing change: {e}')
             exit(1)
 
     return "\n".join(releases)
@@ -61,11 +63,13 @@ def options_handler():
 
 
 def main():
+    install_logging("CreateSDKRelease.log", logger=logging)
+
     options = options_handler()
     release_branch_name = options.release_branch_name
     access_token = options.access_token
 
-    print(f"Preparing to release Demisto SDK version {release_branch_name}")
+    logging.info(f"Preparing to release Demisto SDK version {release_branch_name}")
 
     url = 'https://api.github.com/repos/demisto/demisto-sdk/releases'
     data = json.dumps({
@@ -83,11 +87,11 @@ def main():
 
     response = requests.request("POST", url, headers=headers, data=data, verify=False)
     if response.status_code != 201:
-        print(f'Failed to create release {release_branch_name} for demisto SDK')
-        print(response.text)
+        logging.error(f'Failed to create release {release_branch_name} for demisto SDK')
+        logging.error(response.text)
         sys.exit(1)
 
-    print(f"Demisto SDK v{release_branch_name} released successfully!")
+    logging.info(f"Demisto SDK v{release_branch_name} released successfully!")
 
 
 if __name__ == "__main__":

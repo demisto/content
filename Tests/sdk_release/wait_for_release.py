@@ -3,6 +3,8 @@ import sys
 import time
 import requests
 import urllib3
+from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,6 +23,8 @@ def options_handler():
 
 
 def main():
+    install_logging("WaitForRelease.log", logger=logging)
+
     options = options_handler()
     release_branch_name = options.release_branch_name
 
@@ -33,16 +37,20 @@ def main():
     while f'demisto_sdk-{release_branch_name}' not in demisto_sdk_versions and elapsed < TIMEOUT:
         res = requests.get(ARTIFACTS_URL, verify=False)
         if res.status_code != 200:
+            logging.error(f'Failed to get the artifacts from {ARTIFACTS_URL}')
             sys.exit(1)
+
         demisto_sdk_versions = res.text
+        logging.info(f'The release {release_branch_name} is not yet in the artifacts')
         time.sleep(300)
 
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
+        logging.error('Timeout reached while waiting for SDK release artifacts')
         sys.exit(1)
 
-    print(f'SDK release version {release_branch_name} is out')
+    logging.info(f'SDK release version {release_branch_name} is out')
 
 
 if __name__ == "__main__":
