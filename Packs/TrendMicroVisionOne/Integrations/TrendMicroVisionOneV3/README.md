@@ -1,4 +1,5 @@
-Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. In this new release 3 actions have been added, one to fetch email activity data with count, one to fetch endpoint activity data with count and one action to restore a quarantined email message. This integration was integrated and tested with version 3 API of Trend Micro Vision One.
+Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. We previously added 4 actions, one to fetch email activity data with count, one to fetch endpoint activity data with count and an action to restore a quarantined email message. In this release we hae added 6 new custom script actions allowing the user to fetch a list of available custom scripts in XDR portal, ability to run a custom script on a specified endpoint, capacity to add, download, update and delete a custom script from XDR portal.
+This integration was integrated and tested with version 3 API of Trend Micro Vision One.
 
 ## Configure Trend Micro Vision One V3. on Cortex XSOAR
 
@@ -376,10 +377,10 @@ Retrieves information about a specific endpoint.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                     | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| endpoint          | comma separated string containing Hostname, IP, macAddress or agentGuid of the endpoint(s) to query.                                                                                                                | Required     |
-| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. endpointName eq sample-host `or` macAddress eq 00:11:22:33:44:55. Possible values are: and, or. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                | **Required** |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| endpoint          | comma separated string containing Hostname, IP, macAddress or agentGuid of the endpoint(s) to query. e.g. endpoint="test-endpoint1,demo-endpoint2".            | Required     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. query_op=or. Possible values are: and, or. | Required     |
 
 #### Context Output
 
@@ -410,11 +411,11 @@ Displays search results from the Endpoint Activity Data source that match the pa
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                         | **Required** |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get). | Required     |
-| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. endpointName:sample-host `or` src:192.169.1.1. Possible values are: and, or.                                                                                             | Optional     |
-| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.                                                                                                                                     | Optional     |
-| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.                                                                                                                                           | Optional     |
-| top               | Number of records displayed on a page.                                                                                                                                                                                                                                                                  | Optional     |
-| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                                                                                                                                                    | Optional     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. query_op=or. Possible values are: and, or.                                                                                                                               | Optional     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z".                                                                                                  | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".                                                                                                          | Optional     |
+| top               | Number of records displayed on a page. e.g. top=5.                                                                                                                                                                                                                                                      | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName".                                                                                                                                            | Optional     |
 
 #### Context Output
 
@@ -478,10 +479,10 @@ Displays total count of search results from the Endpoint Activity Data source th
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                         | **Required** |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get). | Required     |
-| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. endpointName:sample-host `or` src:192.169.1.1.. Possible values are: and, or.                                                                                            | Optional     |
-| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.                                                                                                                                     | Optional     |
-| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.                                                                                                                                           | Optional     |
-| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                                                                                                                                                    | Optional     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. query_op=or. Possible values are: and, or.                                                                                                                               | Optional     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z".                                                                                                  | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".                                                                                                          | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName".                                                                                                                                            | Optional     |
 
 #### Context Output
 
@@ -504,10 +505,10 @@ Displays search results from the Email Activity Data source that match the param
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | fields            | Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get). | Required     |
 | query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1..'. Possible values are: and, or.                                                                         | Optional     |
-| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.                                                                                                                      | Optional     |
-| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.                                                                                                                            | Optional     |
-| top               | Number of records displayed on a page.                                                                                                                                                                                                                                                   | Optional     |
-| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                                                                                                                                     | Optional     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z".                                                                                   | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".                                                                                           | Optional     |
+| top               | Number of records displayed on a page. e.g. top=5.                                                                                                                                                                                                                                       | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses".                                                                                                     | Optional     |
 
 #### Context Output
 
@@ -543,10 +544,10 @@ Displays search results from the Email Activity Data source that match the param
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                          | **Required** |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | fields            | Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get). | Required     |
-| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1.. Possible values are: and, or.                                                                           | Optional     |
-| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.                                                                                                                      | Optional     |
-| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.                                                                                                                            | Optional     |
-| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                                                                                                                                     | Optional     |
+| query_op          | Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. query_op=and. Possible values are: and, or.                                                                                                                  | Optional     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z".                                                                                   | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".                                                                                           | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses".                                                                                                     | Optional     |
 
 #### Context Output
 
@@ -587,9 +588,9 @@ Retrieves the status of a sandbox analysis submission.
 
 #### Input
 
-| **Argument Name** | **Description**                                                              | **Required** |
-| ----------------- | ---------------------------------------------------------------------------- | ------------ |
-| task_id           | task_id from the trendmicro-visionone-submit-file-to-sandbox command output. | Required     |
+| **Argument Name** | **Description**                                                                                                                   | **Required** |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| task_id           | task_id from the trendmicro-visionone-submit-file-to-sandbox command output. e.g. task_id="012e4eac-9bd9-4e89-95db-77e02f75a611". | Required     |
 
 #### Context Output
 
@@ -617,11 +618,11 @@ Retrieves the sandbox submission analysis result.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                     | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| report_id         | report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command.                       | Required     |
-| poll              | If script should wait until the task is finished before returning the result, enabled by default. Possible values are: true, false. | Optional     |
-| poll_time_sec     | Maximum time to wait for the result to be available.                                                                                | Optional     |
+| **Argument Name** | **Description**                                                                                                                                                      | **Required** |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| report_id         | report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command. e.g. report_id="012e4eac-9bd9-4e89-95db-77e02f75a611". | Required     |
+| poll              | If script should wait until the task is finished before returning the result, enabled by default. poll=true. Possible values are: true, false.                       | Optional     |
+| poll_time_sec     | Maximum time to wait for the result to be available. e.g. poll_time_sec=45.                                                                                          | Optional     |
 
 #### Context Output
 
@@ -673,11 +674,11 @@ Retrieves a URL and other information required to download a collected file via 
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                     | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| task_id           | taskId output from the collect forensic file command.                                                                               | Required     |
-| poll              | If script should wait until the task is finished before returning the result, enabled by default. Possible values are: true, false. | Optional     |
-| poll_time_sec     | Maximum time to wait for the result to be available.                                                                                | Optional     |
+| **Argument Name** | **Description**                                                                                                                                     | **Required** |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| task_id           | taskId output from the collect forensic file command. e.g. task_id="00000012".                                                                      | Required     |
+| poll              | If script should wait until the task is finished before returning the result, enabled by default. e.g. poll=true. Possible values are: true, false. | Optional     |
+| poll_time_sec     | Maximum time to wait for the result to be available. e.g. poll_time_sec=45.                                                                         | Optional     |
 
 #### Context Output
 
@@ -712,11 +713,11 @@ Downloads the investigation package based on submission ID.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                     | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| submission_id     | The submission ID for the object submitted to sandbox for analysis.                                                                 | Required     |
-| poll              | If script should wait until the task is finished before returning the result, enabled by default. Possible values are: true, false. | Optional     |
-| poll_time_sec     | Maximum time to wait for the result to be available.                                                                                | Optional     |
+| **Argument Name** | **Description**                                                                                                                                     | **Required** |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| submission_id     | The submission ID for the object submitted to sandbox for analysis. e.g. submission_id="012e4eac-9bd9-4e89-95db-77e02f75a611".                      | Required     |
+| poll              | If script should wait until the task is finished before returning the result, enabled by default. e.g. poll=true. Possible values are: true, false. | Optional     |
+| poll_time_sec     | Maximum time to wait for the result to be available. e.g. poll_time_sec=45.                                                                         | Optional     |
 
 #### Context Output
 
@@ -737,11 +738,11 @@ Downloads the suspicious object list associated to the specified object. Note ~ 
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                     | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| submission_id     | The submission ID for the object submitted to sandbox for analysis.                                                                 | Required     |
-| poll              | If script should wait until the task is finished before returning the result, enabled by default. Possible values are: true, false. | Optional     |
-| poll_time_sec     | Maximum time to wait for the result to be available.                                                                                | Optional     |
+| **Argument Name** | **Description**                                                                                                                                     | **Required** |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| submission_id     | The submission ID for the object submitted to sandbox for analysis. e.g. submission_id="012e4eac-9bd9-4e89-95db-77e02f75a611".                      | Required     |
+| poll              | If script should wait until the task is finished before returning the result, enabled by default. e.g. poll=true. Possible values are: true, false. | Optional     |
+| poll_time_sec     | Maximum time to wait for the result to be available. e.g. poll_time_sec=45.                                                                         | Optional     |
 
 #### Context Output
 
@@ -765,11 +766,11 @@ Downloads the analysis report for an object submitted to sandbox for analysis ba
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                     | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| submission_id     | The submission ID for the object submitted to sandbox for analysis.                                                                 | Required     |
-| poll              | If script should wait until the task is finished before returning the result, enabled by default. Possible values are: true, false. | Optional     |
-| poll_time_sec     | Maximum time to wait for the result to be available.                                                                                | Optional     |
+| **Argument Name** | **Description**                                                                                                                                     | **Required** |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| submission_id     | The submission ID for the object submitted to sandbox for analysis. e.g. submission_id="012e4eac-9bd9-4e89-95db-77e02f75a611".                      | Required     |
+| poll              | If script should wait until the task is finished before returning the result, enabled by default. e.g. poll=true. Possible values are: true, false. | Optional     |
+| poll_time_sec     | Maximum time to wait for the result to be available. e.g. poll_time_sec=45.                                                                         | Optional     |
 
 #### Context Output
 
@@ -790,13 +791,13 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                       | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------- | ------------ |
-| file_url          | URL pointing to the location of the file to be submitted.                                             | Required     |
-| file_name         | Name of the file (including extension) to be analyzed.                                                | Required     |
-| document_password | The Base64 encoded password for decrypting the submitted document. sample.                            | Optional     |
-| archive_password  | The Base64 encoded password for decrypting the submitted archive.                                     | Optional     |
-| arguments         | Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. | Optional     |
+| **Argument Name** | **Description**                                                                                                                      | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| file_url          | URL pointing to the location of the file to be submitted. e.g. file_url="https://someurl.com/test.txt".                              | Required     |
+| file_name         | Name of the file (including extension) to be analyzed. e.g. file_name="some-file.txt".                                               | Required     |
+| document_password | The Base64 encoded password for decrypting the submitted document sample. e.g. document_password="dGVzdA==".                         | Optional     |
+| archive_password  | The Base64 encoded password for decrypting the submitted archive. e.g. archive_password="dGVzdA==".                                  | Optional     |
+| arguments         | Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. e.g. arguments="LS10ZXN0IA==". | Optional     |
 
 #### Context Output
 
@@ -819,12 +820,12 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                       | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------- | ------------ |
-| entry_id          | Entry ID of the file to be submitted.                                                                 | Required     |
-| document_password | The Base64 encoded password for decrypting the submitted document. sample.                            | Optional     |
-| archive_password  | The Base64 encoded password for decrypting the submitted archive.                                     | Optional     |
-| arguments         | Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. | Optional     |
+| **Argument Name** | **Description**                                                                                                                      | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| entry_id          | Entry ID of the file to be submitted. e.g. entry_id="104@49493d71".                                                                  | Required     |
+| document_password | The Base64 encoded password for decrypting the submitted document sample. e.g. document_password="dGVzdA==".                         | Optional     |
+| archive_password  | The Base64 encoded password for decrypting the submitted archive. e.g. archive_password="dGVzdA==".                                  | Optional     |
+| arguments         | Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. e.g. arguments="LS10ZXN0IA==". | Optional     |
 
 #### Context Output
 
@@ -850,9 +851,9 @@ Sends URL(s) to sandbox for analysis.
 
 #### Input
 
-| **Argument Name** | **Description**                       | **Required** |
-| ----------------- | ------------------------------------- | ------------ |
-| urls              | List of URLs to be sent for analysis. | Required     |
+| **Argument Name** | **Description**                                                                             | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------- | ------------ |
+| urls              | List of URLs to be sent for analysis. e.g. urls="https://test.com,https://dummydomain.com". | Required     |
 
 #### Context Output
 
@@ -875,9 +876,9 @@ Fetches details for a specific alert.
 
 #### Input
 
-| **Argument Name** | **Description**                      | **Required** |
-| ----------------- | ------------------------------------ | ------------ |
-| workbench_id      | Workbench ID for the alert to query. | Required     |
+| **Argument Name** | **Description**                                                                | **Required** |
+| ----------------- | ------------------------------------------------------------------------------ | ------------ |
+| workbench_id      | Workbench ID for the alert to query. e.g. workbench_id="WB-14-20190709-00003". | Required     |
 
 #### Context Output
 
@@ -910,10 +911,10 @@ Runs a polling command to retrieve the status of a sandbox analysis submission.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                   | **Required** |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| polling           | polling the task for 30 seconds interval. Default is true.                                                                        | Optional     |
-| task_id           | task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                        | **Required** |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| polling           | polling the task for 30 seconds interval. e.g. polling=true. Default is true.                                                                                                          | Optional     |
+| task_id           | task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output. e.g. task_id="012e4eac-9bd9-4e89-95db-77e02f75a611". | Required     |
 
 #### Context Output
 
@@ -947,10 +948,10 @@ Command gives the status of the running task based on the task id.
 
 #### Input
 
-| **Argument Name** | **Description**                                            | **Required** |
-| ----------------- | ---------------------------------------------------------- | ------------ |
-| polling           | polling the task for 30 seconds interval. Default is true. | Optional     |
-| task_id           | Task id of the task you would like to check.               | Required     |
+| **Argument Name** | **Description**                                                               | **Required** |
+| ----------------- | ----------------------------------------------------------------------------- | ------------ |
+| polling           | polling the task for 30 seconds interval. e.g. polling=true. Default is true. | Optional     |
+| task_id           | Task id of the task you would like to check. e.g. task_id="00000012".         | Required     |
 
 #### Context Output
 
@@ -980,10 +981,10 @@ Attaches a note to a workbench alert.
 
 #### Input
 
-| **Argument Name** | **Description**                                           | **Required** |
-| ----------------- | --------------------------------------------------------- | ------------ |
-| workbench_id      | ID of the workbench you would like to attach the note to. | Required     |
-| content           | Contents of the note to be attached.                      | Required     |
+| **Argument Name** | **Description**                                                                                     | **Required** |
+| ----------------- | --------------------------------------------------------------------------------------------------- | ------------ |
+| workbench_id      | ID of the workbench you would like to attach the note to. e.g. workbench_id="WB-14-20190709-00003". | Required     |
+| content           | Contents of the note to be attached. e.g. content="Some details for the workbench alert.".          | Required     |
 
 #### Context Output
 
@@ -1004,11 +1005,11 @@ Updates the status of a workbench alert.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                              | **Required** |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| workbench_id      | ID of the workbench you would like to update the status for.                                                                                 | Required     |
-| if_match          | Target resource will be updated only if it matches ETag of the target one. Etag is one of the outputs from get_alert_details.                | Required     |
-| status            | Status to assign to the workbench alert. Possible values are: new, in_progress, true_positive, false_positive, benign_true_positive, closed. | Required     |
+| **Argument Name** | **Description**                                                                                                                                                                 | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| workbench_id      | ID of the workbench you would like to update the status for. e.g. workbench_id="WB-14-20190709-00003".                                                                          | Required     |
+| if_match          | Target resource will be updated only if it matches ETag of the target one. Etag is one of the outputs from get_alert_details. e.g. if_match="d41d8cd98f00b204e9800998ecf8427e". | Required     |
+| status            | Status to assign to the workbench alert. e.g. status="true_positive". Possible values are: new, in_progress, true_positive, false_positive, benign_true_positive, closed.       | Required     |
 
 #### Context Output
 
@@ -1017,3 +1018,142 @@ Updates the status of a workbench alert.
 | VisionOne.Update_Status.Workbench_Id | string   | The ID of the workbench that had the status updated.                                  |
 | VisionOne.Update_Status.code         | string   | HTTP status code of updating workbench alert status.                                  |
 | VisionOne.Update_Status.message      | string   | Message notifying user that the alert status has been updated to user defined status. |
+
+### trendmicro-visionone-run-custom-script
+
+***
+Runs a custom script on the specified endpoint or agentGuid.
+
+#### Base Command
+
+`trendmicro-visionone-run-custom-script`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                                                                            | **Required** |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| block_objects     | List of object(s) made up of `filename`, `endpoint_name` or `agent_guid` and optional `description` and optional `parameter`. e.g. [{"filename":"test.ps1","endpoint_name":"test-endpoint1","description":"Run custom script","parameter":"some-string"}]. | Required     |
+
+#### Context Output
+
+| **Path**                            | **Type** | **Description**                                |
+| ----------------------------------- | -------- | ---------------------------------------------- |
+| VisionOne.Run_Custom_Script.status  | number   | Status of running custom script.               |
+| VisionOne.Run_Custom_Script.task_id | string   | Task ID generated after running custom script. |
+
+### trendmicro-visionone-get-custom-script-list
+
+***
+Fetches a list of all available custom scripts in V1 XDR Portal.
+
+#### Base Command
+
+`trendmicro-visionone-get-custom-script-list`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                          | **Required** |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Filter for retrieving a subset of the custom scripts list. e.g. {"fileName":"test-script.ps1","fileType":"powershell"}. If you want a list of all custom scripts available, run action with fields=`{}`. | Required     |
+| query_op          | The query operator used to join fields to filter query. e.g. query_op="or".                                                                                                                              | Optional     |
+
+#### Context Output
+
+| **Path**                                     | **Type** | **Description**           |
+| -------------------------------------------- | -------- | ------------------------- |
+| VisionOne.Get_Custom_Script_List.id          | string   | The id for custom script. |
+| VisionOne.Get_Custom_Script_List.description | string   | The script description.   |
+| VisionOne.Get_Custom_Script_List.filename    | string   | Name of the script.       |
+| VisionOne.Get_Custom_Script_List.filetype    | string   | File type for the script. |
+
+### trendmicro-visionone-add-custom-script
+
+***
+Adds a custom script to V1 portal in Response management under custom scripts.
+
+#### Base Command
+
+`trendmicro-visionone-add-custom-script`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                              | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------ | ------------ |
+| filename          | Name of the custom script. e.g. filename="hello.sh".                                                         | Required     |
+| filetype          | File type of custom script. e.g. filetype="bash".                                                            | Required     |
+| script_contents   | The contents of custom script to be added. script_contents="#!/bin/sh echo 'Custom script to do something'". | Required     |
+| description       | Description of the custom script. e.g. description="This script does something.".                            | Optional     |
+
+#### Context Output
+
+| **Path**                             | **Type** | **Description**                             |
+| ------------------------------------ | -------- | ------------------------------------------- |
+| VisionOne.Add_Custom_Script.id       | string   | ID generated for the added custom script.   |
+| VisionOne.Add_Custom_Script.location | string   | Location of custom script in V1 XDR portal. |
+
+### trendmicro-visionone-download-custom-script
+
+***
+Downloads the contents of a custom script based on script ID.
+
+#### Base Command
+
+`trendmicro-visionone-download-custom-script`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                              | **Required** |
+| ----------------- | -------------------------------------------------------------------------------------------- | ------------ |
+| script_id         | ID for the custom script to download. e.g. script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1". | Required     |
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                |
+| ------------------------------------- | -------- | ------------------------------ |
+| VisionOne.Download_Custom_Script.text | string   | Contents of the custom script. |
+
+### trendmicro-visionone-delete-custom-script
+
+***
+Delete a custom script based on script ID.
+
+#### Base Command
+
+`trendmicro-visionone-delete-custom-script`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                           | **Required** |
+| ----------------- | ----------------------------------------------------------------------------------------- | ------------ |
+| script_id         | ID of custom script to be deleted. e.g. script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1". | Required     |
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                 |
+| ------------------------------------- | -------- | ------------------------------- |
+| VisionOne.Delete_Custom_Script.status | string   | Success or Failure status code. |
+
+### trendmicro-visionone-update-custom-script
+
+***
+Updates the contents of a custom script based on script ID.
+
+#### Base Command
+
+`trendmicro-visionone-update-custom-script`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                             | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------- | ------------ |
+| filename          | Name of the custom script. e.g. filename="hello.sh".                                        | Required     |
+| filetype          | The filetype of custom script. e.g. filetype="bash".                                        | Required     |
+| script_id         | ID of custom script to be updated. e.g. script_id="44c99cb0-8c5f-4182-af55-62135dbe32f1".   | Required     |
+| script_contents   | The updated contents of custom script. e.g. script_contents="#!/bin/sh echo 'Hello World'". | Required     |
+| description       | Description of the custom script. e.g. description="Updating script to print Hello World.". | Optional     |
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**              |
+| ------------------------------------- | -------- | ---------------------------- |
+| VisionOne.Update_Custom_Script.status | string   | The Success or Error status. |

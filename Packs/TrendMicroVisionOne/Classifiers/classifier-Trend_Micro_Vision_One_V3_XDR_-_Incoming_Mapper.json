@@ -22,91 +22,68 @@
                 },
                 "Detected User": {
                     "complex": {
-                        "accessor": "entityValue",
-                        "filters": [
-                            [
-                                {
-                                    "left": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "impactScope.entities.entityType"
-                                        }
-                                    },
-                                    "operator": "isEqualString",
-                                    "right": {
-                                        "value": {
-                                            "simple": "account"
-                                        }
-                                    }
-                                }
-                            ]
-                        ],
-                        "root": "impactScope.entities",
+                        "accessor": "entity_value",
+                        "filters": [],
+                        "root": "impact_scope.entities",
                         "transformers": []
                     }
                 },
                 "Event Type": {
                     "complex": {
-                        "accessor": "[0].matchedFilters.[0].matchedEvents.[0].type",
+                        "accessor": "matched_events",
                         "filters": [],
-                        "root": "matchedRules",
+                        "root": "matched_rules.matched_filters",
                         "transformers": []
                     }
                 },
                 "Hostnames": {
                     "complex": {
-                        "accessor": "entityValue.name",
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "impact_scope.entities.entity_value",
+                        "transformers": []
+                    }
+                },
+                "MITRE Technique ID": {
+                    "complex": {
+                        "accessor": "mitre_technique_ids",
+                        "filters": [],
+                        "root": "matched_rules.matched_filters",
+                        "transformers": []
+                    }
+                },
+                "Technique ID": {
+                    "complex": {
                         "filters": [
                             [
                                 {
                                     "left": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "impactScope.entities.entityType"
+                                            "simple": "matched_rules.matched_filters.mitre_technique_ids"
                                         }
                                     },
-                                    "operator": "isEqualString",
-                                    "right": {
-                                        "value": {
-                                            "simple": "host"
-                                        }
-                                    }
+                                    "operator": "isExists"
                                 }
                             ]
                         ],
-                        "root": "impactScope.entities",
-                        "transformers": []
-                    }
-                },
-                "MITRE Technique ID": {
-                    "complex": {
-                        "accessor": "[0].matchedFilters.[0].mitreTechniqueIds.[0]",
-                        "filters": [],
-                        "root": "matchedRules",
-                        "transformers": []
-                    }
-                },
-                "Technique ID": {
-                    "complex": {
-                        "accessor": "mitreTechniqueIds",
-                        "filters": [],
-                        "root": "matchedRules.matchedFilters",
+                        "root": "matched_rules.matched_filters.mitre_technique_ids",
                         "transformers": []
                     }
                 },
                 "Trend Micro Vision One XDR Account Count": {
                     "complex": {
-                        "accessor": "accountCount",
+                        "accessor": "account_count",
                         "filters": [],
-                        "root": "impactScope",
+                        "root": "impact_scope",
                         "transformers": []
                     }
                 },
                 "Trend Micro Vision One XDR Desktop Count": {
                     "complex": {
-                        "accessor": "desktopCount",
+                        "accessor": "desktop_count",
                         "filters": [],
-                        "root": "impactScope",
+                        "root": "impact_scope",
                         "transformers": []
                     }
                 },
@@ -127,22 +104,78 @@
                 },
                 "Trend Micro Vision One XDR Email Address Count": {
                     "complex": {
-                        "accessor": "emailAddressCount",
+                        "accessor": "email_address_count",
                         "filters": [],
-                        "root": "impactScope",
+                        "root": "impact_scope",
                         "transformers": []
                     }
                 },
                 "Trend Micro Vision One XDR Impact Scope": {
                     "complex": {
-                        "filters": [],
-                        "root": "impactScope",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "impact_scope.desktop_count"
+                                        }
+                                    },
+                                    "operator": "isExists"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "impact_scope.server_count"
+                                        }
+                                    },
+                                    "operator": "isExists"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "impact_scope.account_count"
+                                        }
+                                    },
+                                    "operator": "isExists"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "impact_scope.email_address_count"
+                                        }
+                                    },
+                                    "operator": "isExists"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "impact_scope.entities"
+                                        }
+                                    },
+                                    "operator": "isExists"
+                                }
+                            ]
+                        ],
+                        "root": "impact_scope",
                         "transformers": [
                             {
                                 "args": {
                                     "headers": {
                                         "value": {
-                                            "simple": "accountCount, desktopCount, emailAddressCount, serverCount"
+                                            "simple": "account_count, desktop_count, email_address_count, server_count"
                                         }
                                     },
                                     "is_auto_json_transform": {},
@@ -161,7 +194,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "accountCount"
+                                            "simple": "account_count"
                                         }
                                     }
                                 },
@@ -177,7 +210,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "desktopCount"
+                                            "simple": "desktop_count"
                                         }
                                     }
                                 },
@@ -193,7 +226,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "emailAddressCount"
+                                            "simple": "email_address_count"
                                         }
                                     }
                                 },
@@ -209,7 +242,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "serverCount"
+                                            "simple": "server_count"
                                         }
                                     }
                                 },
@@ -220,8 +253,9 @@
                 },
                 "Trend Micro Vision One XDR Impacted Entities": {
                     "complex": {
+                        "accessor": "entities",
                         "filters": [],
-                        "root": "impactScope.entities",
+                        "root": "impact_scope",
                         "transformers": [
                             {
                                 "args": {
@@ -242,7 +276,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "entityId"
+                                            "simple": "entity_id"
                                         }
                                     }
                                 },
@@ -258,7 +292,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "entityType"
+                                            "simple": "entity_type"
                                         }
                                     }
                                 },
@@ -274,7 +308,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "entityValue"
+                                            "simple": "entity_value"
                                         }
                                     }
                                 },
@@ -290,7 +324,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "relatedEntities"
+                                            "simple": "related_entities"
                                         }
                                     }
                                 },
@@ -306,7 +340,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "relatedIndicators"
+                                            "simple": "related_indicator_ids"
                                         }
                                     }
                                 },
@@ -327,22 +361,6 @@
                                     }
                                 },
                                 "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {},
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "Related Indicators"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "relatedIndicatorIds"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
                             }
                         ]
                     }
@@ -351,7 +369,7 @@
                     "complex": {
                         "accessor": "entities",
                         "filters": [],
-                        "root": "impactScope",
+                        "root": "impact_scope",
                         "transformers": []
                     }
                 },
@@ -364,7 +382,7 @@
                                 "args": {
                                     "headers": {
                                         "value": {
-                                            "simple": "id, type, value, relatedEntities"
+                                            "simple": "id, type, value, related_entities"
                                         }
                                     },
                                     "is_auto_json_transform": {},
@@ -431,7 +449,7 @@
                                     },
                                     "toReplace": {
                                         "value": {
-                                            "simple": "relatedEntities"
+                                            "simple": "related_entities"
                                         }
                                     }
                                 },
@@ -448,12 +466,12 @@
                     }
                 },
                 "Trend Micro Vision One XDR Investigation Status": {
-                    "simple": "investigationStatus"
+                    "simple": "investigation_status"
                 },
                 "Trend Micro Vision One XDR Matched Rules JSON": {
                     "complex": {
                         "filters": [],
-                        "root": "matchedRules",
+                        "root": "matched_rules",
                         "transformers": []
                     }
                 },
@@ -465,7 +483,12 @@
                     }
                 },
                 "Trend Micro Vision One XDR Server Count": {
-                    "simple": "impactScope.serverCount"
+                    "complex": {
+                        "accessor": "server_count",
+                        "filters": [],
+                        "root": "impact_scope",
+                        "transformers": []
+                    }
                 },
                 "Trend Micro Vision One XDR Workbench ID": {
                     "complex": {
@@ -475,7 +498,7 @@
                     }
                 },
                 "Trend Micro Vision One XDR Workbench Link": {
-                    "simple": "workbenchLink"
+                    "simple": "workbench_link"
                 },
                 "details": {
                     "complex": {

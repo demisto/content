@@ -8,9 +8,15 @@ from TrendMicroVisionOneV3 import (
     get_endpoint_info,
     get_alert_details,
     terminate_process,
+    run_custom_script,
+    add_custom_script,
+    update_custom_script,
+    delete_custom_script,
     force_password_reset,
     restore_email_message,
     submit_urls_to_sandbox,
+    get_custom_script_list,
+    download_custom_script,
     add_to_suspicious_list,
     submit_file_to_sandbox,
     get_email_activity_data,
@@ -43,10 +49,13 @@ from pytmv1 import (
     Endpoint,
     EndpointActivity,
     GetAlertDetailsResp,
+    AddCustomScriptResp,
+    GetCustomScriptListResp,
     GetEmailActivityDataResp,
     GetEndpointActivityDataResp,
     GetEmailActivityDataCountResp,
     MsData,
+    TextResp,
     MsDataUrl,
     MultiResp,
     MultiResult,
@@ -1237,7 +1246,7 @@ def test_get_endpoint_activity_data(mocker):
         "query_op": "or",
         "select": "dpt,dst,endpointHostName",
         "get_activity_data_count": "true",
-        "fields": json.dumps({"dpt": "443", "endpointHostName": "client1"}),
+        "fields": json.dumps({"dpt": "443", "endpointHostName": "MSEDGEWIN10"}),
     }
     result = get_endpoint_activity_data(client, args)
     assert isinstance(result.outputs[0]["endpoint_host_name"], str)
@@ -1264,7 +1273,7 @@ def test_get_endpoint_activity_data_count(mocker):
         "query_op": "or",
         "select": "dpt,dst,endpointHostName",
         "get_activity_data_count": "true",
-        "fields": json.dumps({"dpt": "443", "endpointHostName": "client1"}),
+        "fields": json.dumps({"dpt": "443", "endpointHostName": "MSEDGEWIN10"}),
     }
     result = get_endpoint_activity_data_count(client, args)
     assert isinstance(result.outputs["endpoint_activity_count"], int)
@@ -1404,3 +1413,162 @@ def test_update_status(mocker):
     assert result.outputs["code"] == 204
     assert isinstance(result.outputs["message"], str)
     assert result.outputs["Workbench_Id"] == "WB-20837-20220418-00000"
+
+
+# Mock function for run custom script
+def run_custom_script_mock_response(*args, **kwargs):
+    with open("./test_data/run_custom_script.json") as f:
+        return_value: list[dict[str, Any]] = json.load(f)
+    return MultiResult(
+        result_code=ResultCode.SUCCESS,
+        response=MultiResp(items=[MsData(**data) for data in return_value]),
+    )
+
+
+def test_run_custom_script(mocker):
+    client = Mock()
+    client.run_custom_script = Mock(return_value=run_custom_script_mock_response())
+    args = {
+        "block_objects": json.dumps(
+            [
+                {
+                    "filename": "test.ps1",
+                    "endpoint_name": "custom-endpoint1",
+                    "parameter": "string",
+                    "description": "Run custom script.",
+                }
+            ]
+        )
+    }
+    result = run_custom_script(client, args)
+    assert result.outputs[0]["status"] == 202
+    assert isinstance(result.outputs[0]["task_id"], str)
+    assert result.outputs_prefix == "VisionOne.Run_Custom_Script"
+    assert result.outputs_key_field == "task_id"
+
+
+# Mock function to get custom script list
+def get_custom_script_list_mock_response(*args, **kwargs):
+    with open("./test_data/get_custom_script_list.json") as f:
+        return_value: list[dict[str, str]] = json.load(f)
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=GetCustomScriptListResp(items=[data for data in return_value]),
+    )
+
+
+def test_get_custom_script_list(mocker):
+    client = Mock()
+    client.get_custom_script_list = Mock(
+        return_value=get_custom_script_list_mock_response()
+    )
+    args = {"fields": json.dumps({"fileType": "bash"}), "query_op": "or"}
+    result = get_custom_script_list(client, args)
+    assert isinstance(result.outputs[0]["id"], str)
+    assert isinstance(result.outputs[0]["filename"], str)
+    assert isinstance(result.outputs[0]["filetype"], str)
+    assert result.outputs_prefix == "VisionOne.Get_Custom_Script_List"
+    assert result.outputs_key_field == "id"
+
+
+# Mock function to download custom script
+def download_custom_script_mock_response(*args, **kwargs):
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=TextResp(text="#!/bin/sh echo 'Add script'"),
+    )
+
+
+def test_download_custom_script(mocker):
+    client = Mock()
+    client.download_custom_script = Mock(
+        return_value=download_custom_script_mock_response()
+    )
+    args = {"script_id": "44c99cb0-8c5f-4182-af55-62135dbe32f1"}
+    result = download_custom_script(client, args)
+    assert isinstance(result.outputs["text"], str)
+    assert result.outputs_prefix == "VisionOne.Download_Custom_Script"
+    assert result.outputs_key_field == "text"
+
+
+# Mock function to delete custom script
+def delete_custom_script_mock_response(*args, **kwargs):
+    with open("./test_data/delete_custom_script.json") as f:
+        return_value: dict[str, str] = json.load(f)
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=NoContentResp(**return_value),
+    )
+
+
+def test_delete_custom_script(mocker):
+    client = Mock()
+    client.delete_custom_script = Mock(
+        return_value=delete_custom_script_mock_response()
+    )
+    args = {"script_id": "44c99cb0-8c5f-4182-af55-62135dbe32f1"}
+    result = delete_custom_script(client, args)
+    assert isinstance(result.outputs["status"], str)
+    assert result.outputs_prefix == "VisionOne.Delete_Custom_Script"
+    assert result.outputs_key_field == "status"
+
+
+# Mock function to add custom script
+def add_custom_script_mock_response(*args, **kwargs):
+    with open("./test_data/add_custom_script.json") as f:
+        return_value: dict[str, str] = json.load(f)
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=AddCustomScriptResp(**return_value),
+    )
+
+
+def test_add_custom_script(mocker):
+    client = Mock()
+    client.add_custom_script = Mock(return_value=add_custom_script_mock_response())
+    args = {
+        "file_url": "http://someurl.com/testscript.sh",
+        "filename": "test_script.sh",
+        "filetype": "bash",
+        "description": "Script to delete duplicates.",
+    }
+    mocker.patch("TrendMicroVisionOneV3.requests.get", mocked_requests_get)
+    mocker.patch("TrendMicroVisionOneV3.requests.post", mocked_requests_post)
+    result = add_custom_script(client, args)
+    assert result.outputs["id"] == "44c99cb0-8c5f-4182-af55-62135dbe32f1"
+    assert (
+        result.outputs["location"]
+        == "https://api.xdr.trendmicro.com/3.0/response/customScrips/44c99cb0-8c5f-4182-af55-62135dbe32f1"
+    )
+    assert result.outputs_prefix == "VisionOne.Add_Custom_Script"
+    assert result.outputs_key_field == "id"
+
+
+# Mock function to update custom script
+def update_custom_script_mock_response(*args, **kwargs):
+    with open("./test_data/update_custom_script.json") as f:
+        return_value: dict[str, str] = json.load(f)
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=NoContentResp(**return_value),
+    )
+
+
+def test_update_custom_script(mocker):
+    client = Mock()
+    client.update_custom_script = Mock(
+        return_value=update_custom_script_mock_response()
+    )
+    mocker.patch("TrendMicroVisionOneV3.requests.get", mocked_requests_get)
+    mocker.patch("TrendMicroVisionOneV3.requests.post", mocked_requests_post)
+    args = {
+        "filetype": "bash",
+        "filename": "test_script.sh",
+        "script_id": "44c99cb0-8c5f-4182-af55-62135dbe32f1",
+        "file_url": "http://someurl.com/test1script.sh",
+        "description": "Script to update values.",
+    }
+    result = update_custom_script(client, args)
+    assert result.outputs["status"] == "SUCCESS"
+    assert result.outputs_prefix == "VisionOne.Update_Custom_Script"
+    assert result.outputs_key_field == "status"

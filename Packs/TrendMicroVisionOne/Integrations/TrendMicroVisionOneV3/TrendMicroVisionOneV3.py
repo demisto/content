@@ -15,11 +15,13 @@ from pytmv1 import (
     AccountTaskResp,
     BaseTaskResp,
     BlockListTaskResp,
+    CustomScriptTask,
     CollectFileTaskResp,
-    EmailMessageIdTask,
-    EmailMessageTaskResp,
-    EmailMessageUIdTask,
+    CustomScriptTaskResp,
     EndpointTask,
+    EmailMessageIdTask,
+    EmailMessageUIdTask,
+    EmailMessageTaskResp,
     EndpointTaskResp,
     ExceptionObject,
     FileTask,
@@ -71,6 +73,7 @@ START = "start"
 SELECT = "select"
 END = "end"
 TOP = "top"
+FILE = "file"
 QUERY_OP = "query_op"
 FIELDS = "fields"
 ENTRY_ID = "entry_id"
@@ -83,16 +86,20 @@ TASKID = "task_id"
 REPORT_ID = "report_id"
 OBJECT_TYPE = "object_type"
 OBJECT_VALUE = "object_value"
+SCRIPT_CONTENTS = "script_contents"
 QUEUED = "queued"
 FAILED = "failed"
 RUNNING = "running"
 REJECTED = "rejected"
+PARAMETER = "parameter"
 WAITFORAPPROVAL = "waitForApproval"
 OS_TYPE = "os"
 FILEPATH = "filepath"
 FILE_PATH = "file_path"
 FILE_URL = "file_url"
 FILE_NAME = "filename"
+FILE_TYPE = "filetype"
+SCRIPT_ID = "script_id"
 DOCUMENT_PASSWORD = "document_password"
 ARCHIVE_PASSWORD = "archive_password"
 WORKBENCH_ID = "workbench_id"
@@ -111,13 +118,16 @@ RESTORE_ENDPOINT = "Restore Endpoint."
 SIGN_OUT_ACCOUNT = "Sign Out Account."
 COLLECT_FILE = "Collect Forensic File."
 ENABLE_ACCOUNT = "Enable User Account."
+ADD_CUSTOM_SCRIPT = "Add Custom Script."
 RESTORE_EMAIL = "Restore Email Message."
+RUN_CUSTOM_SCRIPT = "Run Custom Script."
 TERMINATE_PROCESS = "Terminate Process."
 DISABLE_ACCOUNT = "Disable User Account."
 ADD_SUSPICIOUS = "Add to Suspicious list."
 REMOVE_BLOCKLIST = "Remove from Blocklist."
 FAILED_CONNECTIVITY = "Connectivity failed!"
 ADD_EXCEPTION_LIST = "Add To Exception list."
+UPDATE_CUSTOM_SCRIPT = "Update Custom Script."
 QUARANTINE_EMAIL = "Quarantine Email Message."
 FORCE_PASSWORD_RESET = "Force Password Reset."
 DELETE_SUSPICIOUS = "Delete from Suspicious list."
@@ -161,6 +171,12 @@ TABLE_DOWNLOAD_INVESTIGATION_PACKAGE = "Download investigation package "
 TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST = "Download suspicious object list "
 TABLE_ADD_NOTE = "Add note to workbench alert "
 TABLE_UPDATE_STATUS = "Update workbench alert status "
+TABLE_ADD_CUSTOM_SCRIPT = "Add custom script "
+TABLE_RUN_CUSTOM_SCRIPT = "Run custom script "
+TABLE_UPDATE_CUSTOM_SCRIPT = "Update custom script "
+TABLE_DELETE_CUSTOM_SCRIPT = "Delete custom script "
+TABLE_GET_CUSTOM_SCRIPT_LIST = "Get custom script list "
+TABLE_DOWNLOAD_CUSTOM_SCRIPT = "Download custom script "
 # COMMAND NAMES
 ENABLE_USER_ACCOUNT_COMMAND = "trendmicro-visionone-enable-user-account"
 DISABLE_USER_ACCOUNT_COMMAND = "trendmicro-visionone-disable-user-account"
@@ -214,6 +230,12 @@ GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND = (
 GET_ALERT_DETAILS_COMMAND = "trendmicro-visionone-get-alert-details"
 UPDATE_STATUS_COMMAND = "trendmicro-visionone-update-status"
 ADD_NOTE_COMMAND = "trendmicro-visionone-add-note"
+ADD_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-add-custom-script"
+RUN_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-run-custom-script"
+UPDATE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-update-custom-script"
+DELETE_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-delete-custom-script"
+DOWNLOAD_CUSTOM_SCRIPT_COMMAND = "trendmicro-visionone-download-custom-script"
+GET_CUSTOM_SCRIPT_LIST_COMMAND = "trendmicro-visionone-get-custom-script-list"
 FETCH_INCIDENTS = "fetch-incidents"
 TEST_MODULE = "test-module"
 
@@ -231,16 +253,22 @@ table_name = {
     GET_ALERT_DETAILS_COMMAND: TABLE_GET_ALERT_DETAILS,
     RESTORE_EMAIL_COMMAND: TABLE_RESTORE_EMAIL_MESSAGE,
     TERMINATE_PROCESS_COMMAND: TABLE_TERMINATE_PROCESS,
+    RUN_CUSTOM_SCRIPT_COMMAND: TABLE_RUN_CUSTOM_SCRIPT,
+    ADD_CUSTOM_SCRIPT_COMMAND: TABLE_ADD_CUSTOM_SCRIPT,
     ADD_EXCEPTION_LIST_COMMAND: TABLE_ADD_EXCEPTION_LIST,
     REMOVE_BLOCKLIST_COMMAND: TABLE_REMOVE_FROM_BLOCKLIST,
     FILE_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_TO_SANDBOX,
     URLS_TO_SANDBOX_COMMAND: TABLE_SUBMIT_URLS_TO_SANDBOX,
     ENABLE_USER_ACCOUNT_COMMAND: TABLE_ENABLE_USER_ACCOUNT,
     ADD_SUSPICIOUS_LIST_COMMAND: TABLE_ADD_SUSPICIOUS_LIST,
+    UPDATE_CUSTOM_SCRIPT_COMMAND: TABLE_UPDATE_CUSTOM_SCRIPT,
+    DELETE_CUSTOM_SCRIPT_COMMAND: TABLE_DELETE_CUSTOM_SCRIPT,
     DISABLE_USER_ACCOUNT_COMMAND: TABLE_DISABLE_USER_ACCOUNT,
     FORCE_PASSWORD_RESET_COMMAND: TABLE_FORCE_PASSWORD_RESET,
     QUARANTINE_EMAIL_COMMAND: TABLE_QUARANTINE_EMAIL_MESSAGE,
     DELETE_EXCEPTION_LIST_COMMAND: TABLE_DELETE_EXCEPTION_LIST,
+    DOWNLOAD_CUSTOM_SCRIPT_COMMAND: TABLE_DOWNLOAD_CUSTOM_SCRIPT,
+    GET_CUSTOM_SCRIPT_LIST_COMMAND: TABLE_GET_CUSTOM_SCRIPT_LIST,
     DELETE_SUSPICIOUS_LIST_COMMAND: TABLE_DELETE_SUSPICIOUS_LIST,
     GET_EMAIL_ACTIVITY_DATA_COMMAND: TABLE_GET_EMAIL_ACTIVITY_DATA,
     GET_FILE_ANALYSIS_STATUS_COMMAND: TABLE_GET_FILE_ANALYSIS_STATUS,
@@ -303,7 +331,7 @@ def status_check(v1_client: pytmv1.Client, data: dict[str, Any]) -> Any:
     )
     # Assign values on a successful call
     resp_obj: pytmv1.BaseTaskResp = unwrap(task_resp.response)
-    message = resp_obj.dict()
+    message = resp_obj.model_dump()
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[CHECK_TASK_STATUS_COMMAND],
@@ -367,7 +395,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: dict[str, Any]) -
             "status": task_status,
             "report_id": analysis_resp_obj.id,
             "type": analysis_resp_obj.type,
-            "digest": digest.dict(),
+            "digest": digest.model_dump(),
             "arguments": analysis_resp_obj.arguments,
             "analysis_completion_time": analysis_resp_obj.analysis_completion_date_time,
             "risk_level": risk,
@@ -542,6 +570,7 @@ def _get_task_type(action: str) -> type[BaseTaskResp]:
             "resetPassword",
         ],
         BlockListTaskResp: ["block", "restoreBlock"],
+        CustomScriptTaskResp: ["runCustomScript", "runCustomScriptForMultiple"],
         EmailMessageTaskResp: ["quarantineMessage", "restoreMessage", "deleteMessage"],
         EndpointTaskResp: ["isolate", "restoreIsolate"],
         TerminateProcessTaskResp: ["terminateProcess"],
@@ -659,14 +688,12 @@ def enable_or_disable_user_account(
     """
     # Required Params
     account_identifiers = safe_load_json(args[ACCOUNT_IDENTIFIERS])
-    # if isinstance(account_identifiers, str):
-    #     account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: list[AccountTask] = []
     message: list[dict[str, Any]] = []
 
     if command == ENABLE_USER_ACCOUNT_COMMAND:
         # Create account task list
-        for account in account_identifiers:
+        for account in account_identifiers:  # type: ignore
             account_tasks.append(
                 AccountTask(
                     account_name=account[ACCOUNT_NAME],
@@ -681,11 +708,11 @@ def enable_or_disable_user_account(
             errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in enable_resp_obj.items]
+        message = [item.model_dump() for item in enable_resp_obj.items]
 
     if command == DISABLE_USER_ACCOUNT_COMMAND:
         # Create account task list
-        for account in account_identifiers:
+        for account in account_identifiers:  # type: ignore
             account_tasks.append(
                 AccountTask(
                     account_name=account[ACCOUNT_NAME],
@@ -700,7 +727,7 @@ def enable_or_disable_user_account(
             errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in disable_resp_obj.items]
+        message = [item.model_dump() for item in disable_resp_obj.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -733,13 +760,11 @@ def force_sign_out(
     """
     # Required Params
     account_identifiers = safe_load_json(args[ACCOUNT_IDENTIFIERS])
-    # if isinstance(account_identifiers, str):
-    #     account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: list[AccountTask] = []
     message: list[dict[str, Any]] = []
 
     # Create account task list
-    for account in account_identifiers:
+    for account in account_identifiers:  # type: ignore
         account_tasks.append(
             AccountTask(
                 account_name=account[ACCOUNT_NAME],
@@ -753,7 +778,7 @@ def force_sign_out(
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
     # Add results to message to be sent to the War Room
-    message = [item.dict() for item in resp_obj.items]
+    message = [item.model_dump() for item in resp_obj.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -787,13 +812,11 @@ def force_password_reset(
     """
     # Required Params
     account_identifiers = safe_load_json(args[ACCOUNT_IDENTIFIERS])
-    # if isinstance(account_identifiers, str):
-    #     account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: list[AccountTask] = []
     message: list[dict[str, Any]] = []
 
     # Create account task list
-    for account in account_identifiers:
+    for account in account_identifiers:  # type: ignore
         account_tasks.append(
             AccountTask(
                 account_name=account[ACCOUNT_NAME],
@@ -808,7 +831,7 @@ def force_password_reset(
         errors: list[pytmv1.MsError] = unwrap(resp.errors)
         return_error(message=f"{errors}", error=str(errors))
     # Add results to message to be sent to the War Room
-    message = [item.dict() for item in resp_obj.items]
+    message = [item.model_dump() for item in resp_obj.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -860,7 +883,7 @@ def get_endpoint_info(
         raise RuntimeError(f"Something went wrong while fetching endpoint data: {e}")
     # Load json objects to list
     for endpoint in new_endpoint_data:
-        message.append(endpoint.dict())
+        message.append(endpoint.model_dump())
     # Check if endpoint(s) returned
     if len(message) == 0:
         err_msg = f"No endpoint found. Please check endpoint {endpoint_list}."
@@ -927,7 +950,7 @@ def get_endpoint_activity_data(
     resp_obj: pytmv1.GetEndpointActivityDataResp = unwrap(resp.response)
     # Parse endpoint activity data to message list and send to war room
     for activity in resp_obj.items:
-        message.append(activity.dict())
+        message.append(activity.model_dump())
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -956,6 +979,11 @@ def get_endpoint_activity_data_count(
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    elif query_op.lower() == "and":
+        query_op = pytmv1.QueryOp.AND
     # Make rest call
     resp = v1_client.get_endpoint_activity_data_count(
         start_time=start,
@@ -1033,7 +1061,7 @@ def get_email_activity_data(
     )
     resp_obj: pytmv1.GetEmailActivityDataResp = unwrap(resp.response)
     for activity in resp_obj.items:
-        message.append(activity.dict())
+        message.append(activity.model_dump())
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1062,6 +1090,11 @@ def get_email_activity_data_count(
     end = args.get(END, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    elif query_op.lower() == "and":
+        query_op = pytmv1.QueryOp.AND
     # Make rest call
     resp = v1_client.get_email_activity_data_count(
         start_time=start,
@@ -1114,14 +1147,12 @@ def add_or_remove_from_block_list(
     """
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
-    # if isinstance(block_objects, str):
-    #     block_objects = json.loads(args[BLOCK_OBJECTS])
     block_tasks: list[ObjectTask] = []
     message: list[dict[str, Any]] = []
 
     if command == ADD_BLOCKLIST_COMMAND:
         # Create block task list
-        for obj in block_objects:
+        for obj in block_objects:  # type: ignore
             block_tasks.append(
                 ObjectTask(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
@@ -1137,11 +1168,11 @@ def add_or_remove_from_block_list(
             errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in add_block_resp_obj.items]
+        message = [item.model_dump() for item in add_block_resp_obj.items]
 
     if command == REMOVE_BLOCKLIST_COMMAND:
         # Create unblock task list
-        for obj in block_objects:
+        for obj in block_objects:  # type: ignore
             block_tasks.append(
                 ObjectTask(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
@@ -1157,7 +1188,7 @@ def add_or_remove_from_block_list(
             errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in remove_block_resp_obj.items]
+        message = [item.model_dump() for item in remove_block_resp_obj.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1230,14 +1261,12 @@ def quarantine_or_delete_email_message(
     """
     # Required Params
     email_identifiers = safe_load_json(args[EMAIL_IDENTIFIERS])
-    # if isinstance(email_identifiers, str):
-    #     email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
     message: list[dict[str, Any]] = []
     email_tasks: list[EmailMessageIdTask | EmailMessageUIdTask] = []
 
     if command == QUARANTINE_EMAIL_COMMAND:
         # Create email task list
-        for email in email_identifiers:
+        for email in email_identifiers:  # type: ignore
             if email.get(MESSAGE_ID, EMPTY_STRING):
                 email_tasks.append(
                     EmailMessageIdTask(
@@ -1262,11 +1291,11 @@ def quarantine_or_delete_email_message(
             return_error(message=f"{errs}", error=str(errs))
 
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in quarantine_resp.items]
+        message = [item.model_dump() for item in quarantine_resp.items]
 
     if command == DELETE_EMAIL_COMMAND:
         # Create email task list
-        for email in email_identifiers:
+        for email in email_identifiers:  # type: ignore
             if email.get(MESSAGE_ID, EMPTY_STRING):
                 email_tasks.append(
                     EmailMessageIdTask(
@@ -1290,7 +1319,7 @@ def quarantine_or_delete_email_message(
             errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in delete_resp.items]
+        message = [item.model_dump() for item in delete_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1327,13 +1356,11 @@ def restore_email_message(
     """
     # Required Params
     email_identifiers = safe_load_json(args[EMAIL_IDENTIFIERS])
-    # if isinstance(email_identifiers, str):
-    #     email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
     message: list[dict[str, Any]] = []
     email_tasks: list[EmailMessageIdTask | EmailMessageUIdTask] = []
 
     # Create email task list
-    for email in email_identifiers:
+    for email in email_identifiers:  # type: ignore
         if email.get(MESSAGE_ID, EMPTY_STRING):
             email_tasks.append(
                 EmailMessageIdTask(
@@ -1357,7 +1384,7 @@ def restore_email_message(
             errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in restore_resp.items]
+        message = [item.model_dump() for item in restore_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1394,14 +1421,12 @@ def isolate_or_restore_connection(
     """
     # Required Params
     endpoint_identifiers = safe_load_json(args[ENDPOINT_IDENTIFIERS])
-    # if isinstance(endpoint_identifiers, str):
-    #     endpoint_identifiers = json.loads(args[ENDPOINT_IDENTIFIERS])
     message: list[dict[str, Any]] = []
     endpt_tasks: list[EndpointTask] = []
 
     if command == ISOLATE_ENDPOINT_COMMAND:
         # Create endpoint task list
-        for endpt in endpoint_identifiers:
+        for endpt in endpoint_identifiers:  # type: ignore
             if endpt.get(ENDPOINT, EMPTY_STRING):
                 endpt_tasks.append(
                     EndpointTask(
@@ -1424,11 +1449,11 @@ def isolate_or_restore_connection(
             errs: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in isolate_endpoint_resp.items]
+        message = [item.model_dump() for item in isolate_endpoint_resp.items]
 
     if command == RESTORE_ENDPOINT_COMMAND:
         # Create endpoint task list
-        for endpt in endpoint_identifiers:
+        for endpt in endpoint_identifiers:  # type: ignore
             if endpt.get(ENDPOINT, EMPTY_STRING):
                 endpt_tasks.append(
                     EndpointTask(
@@ -1451,7 +1476,7 @@ def isolate_or_restore_connection(
             errors: list[pytmv1.MsError] = unwrap(resp.errors)
             return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in restore_endpoint_resp.items]
+        message = [item.model_dump() for item in restore_endpoint_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1484,13 +1509,11 @@ def terminate_process(
     """
     # Required Params
     process_identifiers = safe_load_json(args[PROCESS_IDENTIFIERS])
-    # if isinstance(process_identifiers, str):
-    #     process_identifiers = json.loads(args[PROCESS_IDENTIFIERS])
     process_tasks: list[ProcessTask] = []
     message: list[dict[str, Any]] = []
 
     # Create process task list
-    for process in process_identifiers:
+    for process in process_identifiers:  # type: ignore
         if process.get(ENDPOINT):
             process_tasks.append(
                 ProcessTask(
@@ -1517,7 +1540,7 @@ def terminate_process(
         errs: list[pytmv1.MsError] = unwrap(resp.errors)
         return_error(message=f"{errs}", error=str(errs))
     # Add results to message to be sent to the War Room
-    message = [item.dict() for item in process_resp.items]
+    message = [item.model_dump() for item in process_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1555,14 +1578,12 @@ def add_or_delete_from_exception_list(
     """
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
-    # if isinstance(block_objects, str):
-    #     block_objects = json.loads(args[BLOCK_OBJECTS])
     excp_tasks: list[ObjectTask] = []
     message: dict[str, Any] = {}
 
     if command == ADD_EXCEPTION_LIST_COMMAND:
         # Create exception task list
-        for obj in block_objects:
+        for obj in block_objects:  # type: ignore
             excp_tasks.append(
                 ObjectTask(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
@@ -1579,12 +1600,12 @@ def add_or_delete_from_exception_list(
             return_error(message=f"{errs}", error=str(errs))
         message = {
             "message": "success",
-            "multi_response": [item.dict() for item in add_excp_resp.items],
+            "multi_response": [item.model_dump() for item in add_excp_resp.items],
         }
 
     if command == DELETE_EXCEPTION_LIST_COMMAND:
         # Create exception task list
-        for obj in block_objects:
+        for obj in block_objects:  # type: ignore
             excp_tasks.append(
                 ObjectTask(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
@@ -1601,7 +1622,7 @@ def add_or_delete_from_exception_list(
             return_error(message=f"{errors}", error=str(errors))
         message = {
             "message": "success",
-            "multi_response": [item.dict() for item in rmv_excp_resp.items],
+            "multi_response": [item.model_dump() for item in rmv_excp_resp.items],
         }
     # Get the total count of items in exception list
     exception_count = exception_list_count(v1_client)
@@ -1638,14 +1659,12 @@ def add_to_suspicious_list(
     """
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
-    # if isinstance(block_objects, str):
-    #     block_objects = json.loads(args[BLOCK_OBJECTS])
 
     suspicious_tasks: list[SuspiciousObjectTask] = []
     message: dict[str, Any] = {}
 
     # Create suspicious task list
-    for block in block_objects:
+    for block in block_objects:  # type: ignore
         suspicious_tasks.append(
             SuspiciousObjectTask(
                 object_type=_get_ot_enum(block[OBJECT_TYPE]),
@@ -1668,7 +1687,7 @@ def add_to_suspicious_list(
     # Add results to message to be sent to the War Room
     message = {
         "message": "success",
-        "multi_response": [item.dict() for item in add_sus_resp.items],
+        "multi_response": [item.model_dump() for item in add_sus_resp.items],
         "total_items": suspicious_count,
     }
     return CommandResults(
@@ -1702,14 +1721,12 @@ def delete_from_suspicious_list(
     """
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
-    # if isinstance(block_objects, str):
-    #     block_objects = json.loads(args[BLOCK_OBJECTS])
 
     suspicious_tasks: list[ObjectTask] = []
     message: dict[str, Any] = {}
 
     # Create suspicious task list
-    for block in block_objects:
+    for block in block_objects:  # type: ignore
         suspicious_tasks.append(
             ObjectTask(
                 object_type=_get_ot_enum(block[OBJECT_TYPE]),
@@ -1728,7 +1745,7 @@ def delete_from_suspicious_list(
     # Add results to message to be sent to the War Room
     message = {
         "message": "success",
-        "multi_response": [item.dict() for item in dlt_sus_resp.items],
+        "multi_response": [item.model_dump() for item in dlt_sus_resp.items],
         "total_items": suspicious_count,
     }
     return CommandResults(
@@ -1772,7 +1789,7 @@ def get_file_analysis_status(
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
-    message = resp_obj.dict()
+    message = resp_obj.model_dump()
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1840,7 +1857,7 @@ def get_file_analysis_result(
         "status": resp.result_code,
         "id": sandbox_response.id,
         "type": sandbox_response.type,
-        "digest": digest.dict(),
+        "digest": digest.model_dump(),
         "arguments": sandbox_response.arguments,
         "risk_level": risk,
         "threat_types": sandbox_response.threat_types,
@@ -1878,14 +1895,12 @@ def collect_file(
     """
     # Required Params
     collect_files = safe_load_json(args[COLLECT_FILES])
-    # if isinstance(collect_files, str):
-    #     collect_files = json.loads(args[COLLECT_FILES])
     # Create file task list
     file_tasks: list[FileTask] = []
     message: list[dict[str, Any]] = []
 
     # Create file task list
-    for file in collect_files:
+    for file in collect_files:  # type: ignore
         if file.get(ENDPOINT, EMPTY_STRING):
             file_tasks.append(
                 FileTask(
@@ -1910,7 +1925,7 @@ def collect_file(
         errs: list[pytmv1.MsError] = resp.errors
         return_error(message=f"{errs}", error=str(errs))
 
-    message = [item.dict() for item in file_resp.items]
+    message = [item.model_dump() for item in file_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1956,7 +1971,7 @@ def download_information_collected_file(
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
-    message = resp_obj.dict()
+    message = resp_obj.model_dump()
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[DOWNLOAD_COLLECTED_FILE_COMMAND],
@@ -2122,7 +2137,7 @@ def download_suspicious_object_list(
         return_error(message=f"{err.message}", error=str(err))
     # Extract suspicious objects from response
     for item in sus_list_resp.items:
-        suspicious_objects.append(item.dict())
+        suspicious_objects.append(item.model_dump())
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -2178,7 +2193,7 @@ def submit_file_to_sandbox(
         "code": 202,
         "message": resp.result_code,
         "task_id": sub_file_resp.id,
-        "digest": digest.dict(),
+        "digest": digest.model_dump(),
         "arguments": sub_file_resp.arguments,
     }
     return CommandResults(
@@ -2241,7 +2256,7 @@ def submit_file_entry_to_sandbox(
         "entry_id": entry,
         "file_path": file_path,
         "task_id": sub_file_resp.id,
-        "digest": digest.dict(),
+        "digest": digest.model_dump(),
         "arguments": sub_file_resp.arguments,
     }
 
@@ -2281,7 +2296,7 @@ def submit_urls_to_sandbox(
         errs: list[pytmv1.MsError] = unwrap(resp.errors)
         return_error(message=f"{errs}", error=str(errs))
     for item in urls_resp.items:
-        submit_urls_resp.append(item.dict())
+        submit_urls_resp.append(item.model_dump())
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -2320,7 +2335,7 @@ def get_alert_details(
         return_error(message=f"{err.message}", error=str(err))
     # Extract values from response
     etag = alert_resp.etag
-    alert = alert_resp.alert.dict()
+    alert = alert_resp.alert.model_dump()
     # Add results to message to be sent to the War Room
     message = {"etag": etag, "alert": alert}
 
@@ -2422,6 +2437,291 @@ def update_status(
         ),
         outputs_prefix="VisionOne.Update_Status",
         outputs_key_field="Workbench_Id",
+        outputs=message,
+    )
+
+
+def run_custom_script(
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
+    """
+    Runs custom script using endpoint (hostname) or agent_guid
+    :type client: ``Client``
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required Params
+    block_objects = safe_load_json(args[BLOCK_OBJECTS])
+    script_tasks: list[CustomScriptTask] = []
+    message: list[dict[str, Any]] = []
+    # Create custom script task list
+    for script in block_objects:  # type: ignore
+        if script.get(ENDPOINT, EMPTY_STRING):
+            script_tasks.append(
+                CustomScriptTask(
+                    file_name=script[FILE_NAME],
+                    endpoint_name=script[ENDPOINT],
+                    parameter=script.get(PARAMETER, EMPTY_STRING),
+                    description=script.get(DESCRIPTION, RUN_CUSTOM_SCRIPT),
+                )
+            )
+        elif script.get(AGENT_GUID, EMPTY_STRING):
+            script_tasks.append(
+                CustomScriptTask(
+                    file_name=script[FILE_NAME],
+                    agent_guid=script[AGENT_GUID],
+                    parameter=script.get(PARAMETER, EMPTY_STRING),
+                    description=script.get(DESCRIPTION, RUN_CUSTOM_SCRIPT),
+                )
+            )
+    # Make rest call
+    resp = v1_client.run_custom_script(*script_tasks)
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        errs: list[pytmv1.MsError] = unwrap(resp.errors)
+        return_error(message=f"{errs}", error=str(errs))
+    script_resp: pytmv1.MultiResp = unwrap(resp.response)
+    # Add results to message to be sent to the War Room
+    message = [item.model_dump() for item in script_resp.items]
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[RUN_CUSTOM_SCRIPT_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Run_Custom_Script",
+        outputs_key_field="task_id",
+        outputs=message,
+    )
+
+
+def get_custom_script_list(
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
+    """
+    Fetches a list of custom scripts in Response Management under Custom Script tab
+    :type client: ``Client``
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Optional Params
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
+    # response contents for war room will be stored here
+    message: list[dict[str, Any]] = []
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    elif query_op.lower() == "and":
+        query_op = pytmv1.QueryOp.AND
+    # Make rest call
+    resp = v1_client.get_custom_script_list(op=query_op, **fields)
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
+    script_resp: pytmv1.GetCustomScriptListResp = unwrap(resp.response)
+    # Add results to message to be sent to the War Room
+    for item in script_resp.items:
+        message.append(
+            {
+                "id": item.id,
+                "description": item.description,
+                "filename": item.file_name,
+                "filetype": item.file_type.value,
+            }
+        )
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_CUSTOM_SCRIPT_LIST_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Get_Custom_Script_List",
+        outputs_key_field="id",
+        outputs=message,
+    )
+
+
+def add_custom_script(
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
+    """
+    Adds a custom script to Response Management under Custom Script tab
+    :type client: ``Client``
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required Params
+    filename = args.get(FILE_NAME, EMPTY_STRING)
+    filetype = args.get(FILE_TYPE, EMPTY_STRING)
+    description = args.get(DESCRIPTION, ADD_CUSTOM_SCRIPT)
+    script_contents = args.get(SCRIPT_CONTENTS, EMPTY_STRING)
+    # Assign the file type enum
+    if filetype.lower() == "bash":
+        filetype = pytmv1.FileType.BASH
+    elif filetype.lower() == "powershell":
+        filetype = pytmv1.FileType.POWERSHELL
+    # Take the string script contents and convert to bytes
+    byte_contents = bytes(script_contents, "utf-8")
+    # Make rest call
+    resp = v1_client.add_custom_script(
+        file_type=filetype,
+        file_name=filename,
+        file=byte_contents,
+        description=description,
+    )
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
+    script_resp: pytmv1.AddCustomScriptResp = unwrap(resp.response)
+    location: str = script_resp.location
+    id: str = location.split("/")[-1]
+    # Add results to message to be sent to the War Room
+    message: dict[str, str] = {"id": id, "location": location}
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[ADD_CUSTOM_SCRIPT_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Add_Custom_Script",
+        outputs_key_field="id",
+        outputs=message,
+    )
+
+
+def download_custom_script(
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
+    """
+    Download a custom script from Response Management under Custom Script tab
+    :type client: ``Client``
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required Params
+    script_id = args.get(SCRIPT_ID, EMPTY_STRING)
+    # Make rest call
+    resp = v1_client.download_custom_script(script_id=script_id)
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
+    # Add results to message to be sent to the War Room
+    message: dict[str, str] = {"text": unwrap(resp.response).text}
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[DOWNLOAD_CUSTOM_SCRIPT_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Download_Custom_Script",
+        outputs_key_field="text",
+        outputs=message,
+    )
+
+
+def update_custom_script(
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
+    """
+    Updates a custom script in Response Management under Custom Script tab
+    :type client: ``Client``
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required Params
+    filetype = args.get(FILE_TYPE, EMPTY_STRING)
+    filename = args.get(FILE_NAME, EMPTY_STRING)
+    script_id = args.get(SCRIPT_ID, EMPTY_STRING)
+    description = args.get(DESCRIPTION, UPDATE_CUSTOM_SCRIPT)
+    script_contents = args.get(SCRIPT_CONTENTS, EMPTY_STRING)
+    # Assign the file type enum
+    if filetype.lower() == "bash":
+        filetype = pytmv1.FileType.BASH
+    elif filetype.lower() == "powershell":
+        filetype = pytmv1.FileType.POWERSHELL
+    # Take the string script contents and convert to bytes
+    byte_contents = bytes(script_contents, "utf-8")
+    # Make rest call
+    resp = v1_client.update_custom_script(
+        file_name=filename,
+        file_type=filetype,
+        description=description,
+        file=byte_contents,
+        script_id=script_id,
+    )
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
+    # Add results to message to be sent to the War Room
+    message: dict[str, str] = {"status": unwrap(resp.result_code).value}
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[UPDATE_CUSTOM_SCRIPT_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Update_Custom_Script",
+        outputs_key_field="status",
+        outputs=message,
+    )
+
+
+def delete_custom_script(
+    v1_client: pytmv1.Client, args: dict[str, Any]
+) -> str | CommandResults:
+    """
+    Delete a custom script from Response Management under Custom Script tab
+    :type client: ``Client``
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required Params
+    script_id = args.get(SCRIPT_ID, EMPTY_STRING)
+    # Make rest call
+    resp = v1_client.delete_custom_script(script_id=script_id)
+    # Check if an error occurred during rest call
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
+    # Add results to message to be sent to the War Room
+    message: dict[str, str] = {"status": unwrap(resp.result_code).value}
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[DELETE_CUSTOM_SCRIPT_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Delete_Custom_Script",
+        outputs_key_field="status",
         outputs=message,
     )
 
@@ -2544,6 +2844,24 @@ def main():  # pragma: no cover
 
         elif command == ADD_NOTE_COMMAND:
             return_results(add_note(v1_client, args))
+
+        elif command == RUN_CUSTOM_SCRIPT_COMMAND:
+            return_results(run_custom_script(v1_client, args))
+
+        elif command == GET_CUSTOM_SCRIPT_LIST_COMMAND:
+            return_results(get_custom_script_list(v1_client, args))
+
+        elif command == ADD_CUSTOM_SCRIPT_COMMAND:
+            return_results(add_custom_script(v1_client, args))
+
+        elif command == UPDATE_CUSTOM_SCRIPT_COMMAND:
+            return_results(update_custom_script(v1_client, args))
+
+        elif command == DOWNLOAD_CUSTOM_SCRIPT_COMMAND:
+            return_results(download_custom_script(v1_client, args))
+
+        elif command == DELETE_CUSTOM_SCRIPT_COMMAND:
+            return_results(delete_custom_script(v1_client, args))
 
         elif command == CHECK_TASK_STATUS_COMMAND:
             if args.get(POLLING) == TRUE:
