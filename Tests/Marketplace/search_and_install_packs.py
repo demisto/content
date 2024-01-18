@@ -686,20 +686,20 @@ def merge_cycles(graph: DiGraph, map_cycles_nodes: dict):
     # Iterates over the edges in the graph and connects any edges pointing
     # to nodes in the cycle to the merged node instead.
     # Then removes the nodes that were part of the cycle.
-    cycles = nx.simple_cycles(graph)
     logging.debug(f"Found the following cycles in the graph: {list(nx.simple_cycles(graph))}")
-    for cycle in cycles:
+    while list(nx.simple_cycles(graph)):
+        cycle = list(nx.simple_cycles(graph))[0]
         merged_node_name = "<->".join(cycle)
-        map_cycles_nodes.update({node: "<->".join(cycle) for node in cycle})
-
+        map_cycles_nodes.update({node: "<->".join(cycle) for node in itertools.chain.from_iterable(split_cycles(cycle))})
         for node_1, node_2 in list(graph.edges()):
             if node_1 in cycle:
                 graph.add_edge(merged_node_name, node_2)
             elif node_2 in cycle:
                 graph.add_edge(node_1, merged_node_name)
+        for node in cycle:
+            graph.remove_node(node)
+    
 
-    for node in set(itertools.chain.from_iterable(cycles)):
-        graph.remove_node(node)
 
 def split_cycles(sorted_packs_to_install: list[str]) -> list[list[str]]:
     """Splits any cycles in the sorted packs list into separate packs.
@@ -971,10 +971,10 @@ def search_and_install_packs_and_their_dependencies(
     # Create subgraph only with the packs that will be installed
     graph_dependencies_for_installed_packs = nx.subgraph(
         graph_dependencies,
-        (
+        {
             map_cycles_nodes[pack] if pack in map_cycles_nodes else pack
             for pack in all_packs_and_dependencies_to_install
-        ),
+        },
     )
 
     sorted_packs_to_install = list(
