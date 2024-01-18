@@ -625,7 +625,7 @@ tasks:
       AutoCloseAlert:
         simple: "false"
       AutoContainment:
-        simple: "false"
+        simple: "True"
       AutoRecovery:
         simple: "false"
       CommentToAdd:
