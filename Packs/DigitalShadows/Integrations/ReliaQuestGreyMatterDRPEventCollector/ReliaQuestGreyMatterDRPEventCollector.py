@@ -1,3 +1,5 @@
+import time
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -23,6 +25,11 @@ FOUND_IDS_LAST_RUN = "fetched_ids"
 ''' CLIENT CLASS '''
 
 
+
+class RateLimit(Exception):
+    pass
+
+
 class ReilaQuestClient(BaseClient):
     """Client class to interact with the service API
 
@@ -37,15 +44,30 @@ class ReilaQuestClient(BaseClient):
         super().__init__(base_url=url, verify=verify_ssl, proxy=proxy, auth=(username, password))
         self.account_id = account_id
 
-    @retry(times=5, exceptions=(ConnectionError, Timeout))
+    @retry(times=5, exceptions=(ConnectionError, Timeout, RateLimit))
     def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> List[dict[str, Any]]:
         try:
-            return self._http_request(method, url_suffix=url_suffix, headers=headers or {"searchlight-account-id": self.account_id}, params=params)
+            response = self._http_request(
+                method,
+                url_suffix=url_suffix,
+                headers=headers or {"searchlight-account-id": self.account_id},
+                params=params,
+                resp_type="response",
+                ok_codes=(200, 429)
+            )
+            if response.status_code == 429:
+                rate_limit_error = f'Rate-limit when requesting {url_suffix} with params {params}, error: {response.json()},' \
+                                   f' sleeping for 60 seconds to let the api recover'
+                time.sleep(60)
+                demisto.error(rate_limit_error)
+                raise RateLimit(rate_limit_error)
+            return response.json()
         except DemistoException as error:
             if isinstance(error.exception, ConnectionError):
                 # raise connection error to re-trigger the retry for temporary connection/timeout errors
                 raise error.exception
             raise
+
 
     def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000) -> List[dict[str, Any]]:
         """
