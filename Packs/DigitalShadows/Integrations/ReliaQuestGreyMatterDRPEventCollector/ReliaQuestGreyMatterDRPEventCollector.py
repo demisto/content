@@ -215,17 +215,15 @@ def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, 
     event_nums_with_latest_created_time = get_events_with_latest_created_time(events, latest_event_time)
     demisto.info(f'event number with latest created time: {event_nums_with_latest_created_time}')
 
-    return _triage_item_ids_to_events, event_nums_with_latest_created_time, latest_event_time
+    return _triage_item_ids_to_events, event_nums_with_latest_created_time, latest_event_time.strftime(DATE_FORMAT)
 
 
-def get_events_with_latest_created_time(events: List[Dict], latest_created_event: Optional[str]) -> List[int]:
+def get_events_with_latest_created_time(events: List[Dict], latest_created_event_datetime: Optional[datetime]) -> List[int]:
     """
     Get the events with the latest created time
     """
-    if not latest_created_event:
+    if not latest_created_event_datetime:
         return []
-
-    latest_created_event_datetime = parse_event_created_time(latest_created_event)
 
     latest_created_events = []
     for event in events:
