@@ -16,14 +16,14 @@ The following XQL Queries demonstrate the XDM modeling for the ingested Infoblox
     ```
 2. **DNS Responses** 
     ```javascript
-   config timeframe = 1y  
+   config timeframe = 1H  
    | datamodel dataset = infoblox_infoblox_raw
    | filter xdm.event.type  = "DNS Response" 
    | fields xdm.source.process.name, xdm.source.process.pid, xdm.alert.severity, xdm.event.log_level, xdm.event.type, xdm.event.description, xdm.source.ipv4, xdm.source.port,  xdm.network.dns.authoritative,  xdm.network.dns.dns_question.name, xdm.network.dns.dns_question.class, xdm.network.dns.dns_question.type, xdm.network.dns.is_response,xdm.network.dns.is_truncated,  xdm.network.dns.response_code, xdm.network.dns.dns_resource_record.name, xdm.network.dns.dns_resource_record.value, xdm.network.dns.dns_resource_record.type,  xdm.network.dns.dns_resource_record.class, xdm.target.host.ipv4_addresses, xdm.target.host.ipv6_addresses, xdm.target.ipv4, xdm.target.ipv6, xdm.network.ip_protocol, xdm.event.outcome, xdm.event.outcome_reason
     ```
 3. **DHCP Events** 
     ```javascript
-   config timeframe = 1y  
+   config timeframe = 1H  
    | datamodel dataset = infoblox_infoblox_raw
    | filter xdm.event.type  = "DHCP" and xdm.network.dhcp.message_type != null
    | fields xdm.source.process.name, xdm.source.process.pid, xdm.alert.severity, xdm.event.log_level, xdm.event.type, xdm.event.description, xdm.network.dhcp.message_type, xdm.source.host.mac_addresses, xdm.source.host.device_id, xdm.source.interface, xdm.source.ipv4, xdm.intermediate.ipv4, xdm.network.dhcp.giaddr, xdm.target.ipv4, xdm.network.dhcp.siaddr, xdm.network.dhcp.chaddr, xdm.network.dhcp.ciaddr, xdm.network.dhcp.client_hostname, xdm.network.dhcp.lease, xdm.network.dhcp.requested_address, xdm.network.dhcp.yiaddr, xdm.event.operation_sub_type, xdm.session_context_id, xdm.event.outcome, xdm.event.outcome_reason
