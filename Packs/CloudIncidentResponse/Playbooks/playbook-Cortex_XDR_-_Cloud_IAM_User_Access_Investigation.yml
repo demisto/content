@@ -860,14 +860,6 @@ inputs:
   required: false
   description: The alert ID.
   playbookInputQuery:
-- key: cloudProvider
-  value: {}
-  required: false
-  description: |-
-    The CSP that triggered the alert. Usually mapped to incident field named 'cloudprovider'.
-    e.g.
-    AWS, AZURE, GCP
-  playbookInputQuery:
 - key: autoAccessKeyRemediation
   value:
     simple: "False"
@@ -902,14 +894,6 @@ inputs:
     Supports: AWS.
 
     ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
-  playbookInputQuery:
-- key: identityType
-  value: {}
-  required: false
-  description: |-
-    The type of identity involved. Usually mapped to incident field named 'cloudidentitytype'.
-    e.g.
-    IAM,SERVICE_ACCOUNT,APPLICATION
   playbookInputQuery:
 - key: AWS-accessKeyRemediationType
   value:
@@ -984,7 +968,6 @@ inputs:
 inputSections:
 - inputs:
   - alert_id
-  - cloudProvider
   name: Incident Management
   description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
 - inputs:
@@ -992,7 +975,6 @@ inputSections:
   - autoBlockIndicators
   - autoUserRemediation
   - credentialsRemediationType
-  - identityType
   name: Remediation
   description: Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
