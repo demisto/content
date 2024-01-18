@@ -74,20 +74,20 @@ token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 @app.post('/')
 async def handle_post(request: Request):
     data = ''
-    demisto.error(f'DANF in request: {Request}')
+    demisto.error(f'DANF in request: {request}')
     try:
         headers = dict(request.headers)
         type = headers['x-amz-sns-message-type']
         payload = await request.json()
         dump = json.dumps(payload)
     except Exception as e:
-        demisto.error(f'Failed to extract request {e}')
-        return "error"
+        demisto.error(f'DANF Failed to extract request {e}')
+        return "DANF error"
     # if not valid_sns_message(payload):
     #     demisto.error('Validation of SNS message failed.')
     #     return
     if type == 'SubscriptionConfirmation':
-        demisto.error('SubscriptionConfirmation request')
+        demisto.error('DANF SubscriptionConfirmation request')
         subscribe_url = payload['SubscribeURL']
         demisto.error(f'DANF SubscribeURL: {payload["SubscribeURL"]}')
         try:
