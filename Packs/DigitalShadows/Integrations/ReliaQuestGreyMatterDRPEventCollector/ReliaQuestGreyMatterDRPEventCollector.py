@@ -55,19 +55,17 @@ class ReilaQuestClient(BaseClient):
                 resp_type="response",
                 ok_codes=(200, 429)
             )
+            json_response = response.json()
             if response.status_code == 429:
-                rate_limit_error = f'Rate-limit when requesting {url_suffix} with params {params}, error: {response.json()},' \
-                                   f' sleeping for 60 seconds to let the api recover'
-                time.sleep(60)
+                rate_limit_error = f'Rate-limit when requesting {url_suffix} with params {params}, error: {json_response},'
                 demisto.error(rate_limit_error)
                 raise RateLimit(rate_limit_error)
-            return response.json()
+            return json_response
         except DemistoException as error:
             if isinstance(error.exception, ConnectionError):
                 # raise connection error to re-trigger the retry for temporary connection/timeout errors
                 raise error.exception
             raise
-
 
     def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000) -> List[dict[str, Any]]:
         """
