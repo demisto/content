@@ -1,4 +1,4 @@
-This playbook will disables indicators in XDR after they have expired from XSOAR.
+This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR (Main)". This playbook will will disable indicators in XDR after they have expired from XSOAR using a loop and querying on the "xdr_pushed" tag.
 
 ## Dependencies
 
@@ -15,14 +15,14 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 
 * Set
-* ReadFile
-* DeleteContext
 * GetIndicatorsByQuery
+* DeleteContext
+* ReadFile
 
 ### Commands
 
-* xdr-iocs-disable
 * appendIndicatorField
+* xdr-iocs-disable
 
 ## Playbook Inputs
 
@@ -42,4 +42,4 @@ There are no outputs for this playbook.
 
 ---
 
-![XDR IOCs - Disable expired IOCs in XDR (subplaybook)](../doc_files/Cortex_XDR_IOCs_-_Disable_expired_IOCs_in_XDR.png)
+![Cortex XDR IOCs - Disable expired IOCs in XDR](../doc_files/Cortex_XDR_IOCs_-_Disable_expired_IOCs_in_XDR.png)

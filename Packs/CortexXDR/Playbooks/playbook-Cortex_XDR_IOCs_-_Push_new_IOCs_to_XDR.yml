@@ -1,15 +1,17 @@
 id: Cortex XDR IOCs - Push new IOCs to XDR
 version: -1
 name: Cortex XDR IOCs - Push new IOCs to XDR
-description: Pushes new IOCs into XDR tagging them as `xdr_pushed`.
+description: This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR - Main" and should not be run on its own. This sub-playbook will retrieve IOCs according to the users query input (passed from the main playbook) and push them into XDR, and mark them as "xdr_pushed" or "xdr_not_processed" for further processing.
+tags:
+- XDR
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f952be58-de2d-48a3-80c0-a2e2b5ad85c3
+    taskid: 41de43ef-0cc6-4cf0-8c2e-6d78dd263bb2
     type: start
     task:
-      id: f952be58-de2d-48a3-80c0-a2e2b5ad85c3
+      id: 41de43ef-0cc6-4cf0-8c2e-6d78dd263bb2
       version: -1
       name: ""
       iscommand: false
@@ -23,8 +25,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 20
+          "x": 1370,
+          "y": 50
         }
       }
     note: false
@@ -36,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: fbe3146c-184b-4f43-8149-8ca8be8290c6
+    taskid: 3e3dc584-06cf-4613-8470-e75fec709b0f
     type: regular
     task:
-      id: fbe3146c-184b-4f43-8149-8ca8be8290c6
+      id: 3e3dc584-06cf-4613-8470-e75fec709b0f
       version: -1
       name: Set Done to True
       description: Set a value in context under the key you entered.
@@ -62,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 980
+          "x": 2910,
+          "y": 910
         }
       }
     note: false
@@ -75,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 454d9a70-f851-46c4-8aef-80d7233a42e7
+    taskid: ed7563d8-ccdf-45d6-86c9-e6eedf159863
     type: regular
     task:
-      id: 454d9a70-f851-46c4-8aef-80d7233a42e7
+      id: ed7563d8-ccdf-45d6-86c9-e6eedf159863
       version: -1
       name: xdr-iocs-push
       description: Push modified IOCs to Cortex XDR.
@@ -94,7 +96,7 @@ tasks:
         simple: "800"
       indicator:
         complex:
-          root: ${vetted_iocs}
+          root: ${iocs_to_push}
           transformers:
           - operator: join
             args:
@@ -106,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1900
+          "x": 1360,
+          "y": 1830
         }
       }
     note: false
@@ -119,10 +121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 08bbc3a5-3e31-4494-8840-d953b6f0f7af
+    taskid: 2e1915a9-44a0-497e-8a4c-178064229803
     type: regular
     task:
-      id: 08bbc3a5-3e31-4494-8840-d953b6f0f7af
+      id: 2e1915a9-44a0-497e-8a4c-178064229803
       version: -1
       name: Add xdr_pushed tag
       description: Appends values to the specified indicator field. Supported field types are tags and multi-select.
@@ -139,14 +141,14 @@ tasks:
       fieldValue:
         simple: xdr_pushed
       indicatorsValues:
-        simple: ${vetted_iocs}
+        simple: ${iocs_to_push}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2075
+          "x": 1360,
+          "y": 1995
         }
       }
     note: false
@@ -158,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f4b10fb1-a992-4a49-8e2b-723d7b802c56
+    taskid: 1b88681b-78d3-4db3-8173-3d4b7b42c73b
     type: regular
     task:
-      id: f4b10fb1-a992-4a49-8e2b-723d7b802c56
+      id: 1b88681b-78d3-4db3-8173-3d4b7b42c73b
       version: -1
       name: Get Indicators
       description: Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
@@ -185,7 +187,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 1370,
           "y": 195
         }
       }
@@ -198,10 +200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c039cd52-1c24-45b4-88d5-85bcaff36de0
+    taskid: 73b605c9-23c5-4e56-8757-1fd37ab3ca76
     type: regular
     task:
-      id: c039cd52-1c24-45b4-88d5-85bcaff36de0
+      id: 73b605c9-23c5-4e56-8757-1fd37ab3ca76
       version: -1
       name: Read File
       description: Load the contents of a file into context.
@@ -220,7 +222,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 1370,
           "y": 370
         }
       }
@@ -233,10 +235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 3cec4ed3-3f73-4ff6-8556-6d9d67ee32ec
+    taskid: fef29534-af61-4204-8271-1f4594c3092c
     type: regular
     task:
-      id: 3cec4ed3-3f73-4ff6-8556-6d9d67ee32ec
+      id: fef29534-af61-4204-8271-1f4594c3092c
       version: -1
       name: Set IOCs in context
       description: Set a value in context under the key you entered.
@@ -258,7 +260,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 1370,
           "y": 545
         }
       }
@@ -271,10 +273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 3d55e0ad-d31d-423c-8636-4abf7a638b65
+    taskid: ad102589-0a31-4d0c-8b50-e917b1c2d7b1
     type: condition
     task:
-      id: 3d55e0ad-d31d-423c-8636-4abf7a638b65
+      id: ad102589-0a31-4d0c-8b50-e917b1c2d7b1
       version: -1
       name: Check results
       description: Checks the IOCs got set in the context.
@@ -302,8 +304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 730
+          "x": 1370,
+          "y": 720
         }
       }
     note: false
@@ -315,10 +317,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 84bff518-e67e-4444-8e00-e285f3b05160
+    taskid: 6537ae02-847f-4a58-8d94-cd0aa7eb653f
     type: regular
     task:
-      id: 84bff518-e67e-4444-8e00-e285f3b05160
+      id: 6537ae02-847f-4a58-8d94-cd0aa7eb653f
       version: -1
       name: DeleteContext
       description: |-
@@ -344,8 +346,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2275
+          "x": 1360,
+          "y": 2180
         }
       }
     note: false
@@ -357,10 +359,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: aa1600d1-4971-46f8-8689-6a316ba82c26
+    taskid: 1c8efb79-e1e8-41cc-85d8-64d85968dbf0
     type: title
     task:
-      id: aa1600d1-4971-46f8-8689-6a316ba82c26
+      id: 1c8efb79-e1e8-41cc-85d8-64d85968dbf0
       version: -1
       name: Hashes
       type: title
@@ -377,8 +379,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -195,
-          "y": 980
+          "x": 2030,
+          "y": 910
         }
       }
     note: false
@@ -390,10 +392,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: c52fe5ae-38a5-4981-8503-7dfc74939263
+    taskid: 0f209921-b352-47d8-8f39-470bffc329a3
     type: title
     task:
-      id: c52fe5ae-38a5-4981-8503-7dfc74939263
+      id: 0f209921-b352-47d8-8f39-470bffc329a3
       version: -1
       name: IPs and Domains
       type: title
@@ -408,8 +410,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 980
+          "x": 1095,
+          "y": 910
         }
       }
     note: false
@@ -421,10 +423,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: e9b35872-7afe-4819-862d-290dfc0e9da9
+    taskid: 3f169c78-3fb8-44f9-84ec-429336d1bf10
     type: regular
     task:
-      id: e9b35872-7afe-4819-862d-290dfc0e9da9
+      id: 3f169c78-3fb8-44f9-84ec-429336d1bf10
       version: -1
       name: Set IPs and Domains in context
       description: Set a value in context under the key you entered.
@@ -439,7 +441,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: vetted_iocs
+        simple: iocs_to_push
       value:
         complex:
           root: iocs
@@ -458,8 +460,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 1380
+          "x": 1095,
+          "y": 1285
         }
       }
     note: false
@@ -471,10 +473,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: c14c9bed-3c92-43fd-8ecd-f4a56018be4d
+    taskid: 91aaaa08-34dd-49d5-8ace-4ecebbf7d7c6
     type: condition
     task:
-      id: c14c9bed-3c92-43fd-8ecd-f4a56018be4d
+      id: 91aaaa08-34dd-49d5-8ace-4ecebbf7d7c6
       version: -1
       name: Has domains or IPs
       description: Are there domains or IOCs to be pushed into XDR.
@@ -510,8 +512,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 1190
+          "x": 1095,
+          "y": 1070
         }
       }
     note: false
@@ -523,10 +525,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 3b0f6ba3-38eb-4f68-88f6-b3fe412cca76
+    taskid: 55450668-f57f-499a-83fd-0cd6f90f7869
     type: title
     task:
-      id: 3b0f6ba3-38eb-4f68-88f6-b3fe412cca76
+      id: 55450668-f57f-499a-83fd-0cd6f90f7869
       version: -1
       name: No Domains or IPs
       type: title
@@ -541,8 +543,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 1380
+          "x": 620,
+          "y": 1315
         }
       }
     note: false
@@ -554,10 +556,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 8ca3af39-5f24-4b6e-818d-313f7f0f29f1
+    taskid: 3aeb69ec-c52e-4e0e-8663-be1e863e32fd
     type: title
     task:
-      id: 8ca3af39-5f24-4b6e-818d-313f7f0f29f1
+      id: 3aeb69ec-c52e-4e0e-8663-be1e863e32fd
       version: -1
       name: Iteration finished
       type: title
@@ -569,8 +571,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2510
+          "x": 1360,
+          "y": 2355
         }
       }
     note: false
@@ -582,10 +584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: f13995ce-6dae-448f-8756-c1d72a45ac9d
+    taskid: 659faaf6-efb3-4a43-85fc-f55bf87959e9
     type: title
     task:
-      id: f13995ce-6dae-448f-8756-c1d72a45ac9d
+      id: 659faaf6-efb3-4a43-85fc-f55bf87959e9
       version: -1
       name: Done
       type: title
@@ -600,8 +602,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 2105
+          "x": 2910,
+          "y": 1660
         }
       }
     note: false
@@ -613,10 +615,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 8a06053a-a496-40d1-8c5f-1c4860368ab0
+    taskid: a21d3afe-7f4a-4145-8042-18dd335781b3
     type: title
     task:
-      id: 8a06053a-a496-40d1-8c5f-1c4860368ab0
+      id: a21d3afe-7f4a-4145-8042-18dd335781b3
       version: -1
       name: Domains and IPs done
       type: title
@@ -631,8 +633,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 1760
+          "x": 840,
+          "y": 1660
         }
       }
     note: false
@@ -644,10 +646,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 55fd0e2d-b246-4acd-8b23-f60798729e30
+    taskid: ee628c5b-575e-406f-8fc3-1d3982c32eec
     type: regular
     task:
-      id: 55fd0e2d-b246-4acd-8b23-f60798729e30
+      id: ee628c5b-575e-406f-8fc3-1d3982c32eec
       version: -1
       name: Set SHA256 in context
       description: Set a value in context under the key you entered.
@@ -662,7 +664,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: vetted_iocs
+        simple: iocs_to_push
       value:
         complex:
           root: iocs
@@ -681,8 +683,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 1380
+          "x": 1610,
+          "y": 1285
         }
       }
     note: false
@@ -694,10 +696,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 65b9afc5-9bd1-490d-885a-b0b68d576d20
+    taskid: 02c896e3-325e-45c1-8100-c031b46c348e
     type: condition
     task:
-      id: 65b9afc5-9bd1-490d-885a-b0b68d576d20
+      id: 02c896e3-325e-45c1-8100-c031b46c348e
       version: -1
       name: Has SHA256
       description: Are there SHA256 indicators to push into XDR.
@@ -730,8 +732,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 1180
+          "x": 1610,
+          "y": 1070
         }
       }
     note: false
@@ -743,10 +745,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 96274c8d-83ae-477f-8e95-688b7569b0cc
+    taskid: 3c2a3601-ec5a-4712-8a81-9ac75cab6717
     type: regular
     task:
-      id: 96274c8d-83ae-477f-8e95-688b7569b0cc
+      id: 3c2a3601-ec5a-4712-8a81-9ac75cab6717
       version: -1
       name: Set MD5 in context
       description: Set a value in context under the key you entered.
@@ -761,7 +763,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: vetted_iocs
+        simple: iocs_to_push
       value:
         complex:
           root: iocs
@@ -780,8 +782,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 1390
+          "x": 2030,
+          "y": 1285
         }
       }
     note: false
@@ -793,10 +795,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: d2565714-c22f-48e3-8da3-17eec36eb340
+    taskid: c5de179f-2c21-496f-8d33-fe4a264fe472
     type: condition
     task:
-      id: d2565714-c22f-48e3-8da3-17eec36eb340
+      id: c5de179f-2c21-496f-8d33-fe4a264fe472
       version: -1
       name: Has MD5
       description: Are there MD5 indicators to be pushed.
@@ -829,8 +831,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1170
+          "x": 2030,
+          "y": 1070
         }
       }
     note: false
@@ -842,10 +844,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 3f8cc3a2-5d83-477c-817c-aacf113c89dc
+    taskid: b44d928f-5850-41ef-84c9-721b18d6bd1d
     type: title
     task:
-      id: 3f8cc3a2-5d83-477c-817c-aacf113c89dc
+      id: b44d928f-5850-41ef-84c9-721b18d6bd1d
       version: -1
       name: Hashes Done
       type: title
@@ -860,8 +862,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -195,
-          "y": 1785
+          "x": 2030,
+          "y": 1660
         }
       }
     note: false
@@ -873,12 +875,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: c74c2b6b-0c92-4e7f-8d15-1a3b2e07bf63
+    taskid: 6b3a19d6-2a31-4c57-80b7-1e7a0060f0e5
     type: condition
     task:
-      id: c74c2b6b-0c92-4e7f-8d15-1a3b2e07bf63
+      id: 6b3a19d6-2a31-4c57-80b7-1e7a0060f0e5
       version: -1
-      name: Does not have valid SHA256 or MD5 context entry
+      name: Any non MD5, SHA256 Hash
       description: No viable hashes found.
       type: condition
       iscommand: false
@@ -914,8 +916,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -910,
-          "y": 1170
+          "x": 2450,
+          "y": 1070
         }
       }
     note: false
@@ -927,12 +929,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 6fe00351-ddc9-4ead-8727-4cc9e373c103
+    taskid: c3983277-c900-48b3-8474-c5bbc02c0f6e
     type: regular
     task:
-      id: 6fe00351-ddc9-4ead-8727-4cc9e373c103
+      id: c3983277-c900-48b3-8474-c5bbc02c0f6e
       version: -1
-      name: Add xdr_not_processed tag
+      name: Add `xdr_not_processed` tag to irrelevant hashes
       description: Appends values to the specified indicator field. Supported field types are tags and multi-select.
       script: Builtin|||appendIndicatorField
       type: regular
@@ -953,8 +955,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -910,
-          "y": 1580
+          "x": 2450,
+          "y": 1445
         }
       }
     note: false
@@ -966,12 +968,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 5ce379ba-6efa-467e-88b6-08dc0d2a12bb
+    taskid: 95fbbe7b-1f13-4dd2-8080-ae5b49350cbf
     type: regular
     task:
-      id: 5ce379ba-6efa-467e-88b6-08dc0d2a12bb
+      id: 95fbbe7b-1f13-4dd2-8080-ae5b49350cbf
       version: -1
-      name: Set SHA256 in context
+      name: Save irrelevant hashes in context for marking
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1013,8 +1015,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -910,
-          "y": 1380
+          "x": 2450,
+          "y": 1285
         }
       }
     note: false
@@ -1026,13 +1028,17 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "30_29_yes": 0.65,
+      "32_31_yes": 0.66,
+      "36_38_yes": 0.66
+    },
     "paper": {
       "dimensions": {
-        "height": 2555,
-        "width": 3060,
-        "x": -910,
-        "y": 20
+        "height": 2370,
+        "width": 2670,
+        "x": 620,
+        "y": 50
       }
     }
   }

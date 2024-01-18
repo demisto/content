@@ -1,4 +1,4 @@
-Pushes new IOCs into XDR tagging them as `xdr_pushed`.
+This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR - Main" and should not be run on its own. This sub-playbook will retrieve IOCs according to the users query input (passed from the main playbook) and push them into XDR, and mark them as "xdr_pushed" or "xdr_not_processed" for further processing.
 
 ## Dependencies
 
@@ -14,10 +14,10 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
+* ReadFile
 * DeleteContext
 * GetIndicatorsByQuery
 * Set
-* ReadFile
 
 ### Commands
 
@@ -30,8 +30,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| batch_size | The size of the batch of indicators to be pushed into XDR in every iteration |  | Optional |
-| query | The query used to search for IOCs in XSOAR |  | Required |
+| batch_size |  |  | Optional |
+| query |  |  | Required |
 
 ## Playbook Outputs
 
@@ -42,4 +42,4 @@ There are no outputs for this playbook.
 
 ---
 
-![XDR IOCs - Push new IOCs to XDR](../doc_files/Cortex_XDR_IOCs_-_Push_new_IOCs_to_XDR.png)
+![Cortex XDR IOCs - Push new IOCs to XDR](../doc_files/Cortex_XDR_IOCs_-_Push_new_IOCs_to_XDR.png)

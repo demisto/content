@@ -1,7 +1,9 @@
-id: Cortex XDR IOCs - Push new IOCs to XDR (main)
+id: Cortex XDR IOCs - Push new IOCs to XDR (Main)
 version: -1
-name: Cortex XDR IOCs - Push new IOCs to XDR (main)
-description: The playbook will "sync" IOCs into XDR by pushing new IOCs in and disabling expired IOCs.
+name: Cortex XDR IOCs - Push new IOCs to XDR (Main)
+description: This is the *main* playbook for XDR IOCs sync. The playbook will "sync" IOCs into XDR by pushing new IOCs in and disabling expired IOCs. The playbook utilizes XSOAR tags and loops in order to find IOCs using a query provided by the user. The play book will iterate over the IOCs pushing them in batches into XDR. In the second phase the playbook will disable expired  IOCs that were previously pushed into XDR. We recommend running this playbook as a Job a few times a day after disabling the integration sync function.
+tags:
+- XDR
 starttaskid: "0"
 tasks:
   "0":
@@ -140,22 +142,41 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e9284207-7a48-4542-8cd7-505134722980
+    taskid: e26dbc7b-84f7-4888-8995-c4aa00b7aef6
     type: playbook
     task:
-      id: e9284207-7a48-4542-8cd7-505134722980
+      id: e26dbc7b-84f7-4888-8995-c4aa00b7aef6
       version: -1
       name: Cortex XDR IOCs - Push new IOCs to XDR
+      description: Pushes new IOCs into XDR tagging them as `xdr_pushed`.
       playbookName: Cortex XDR IOCs - Push new IOCs to XDR
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
-    separatecontext: true
+    scriptarguments:
+      batch_size:
+        simple: ${inputs.batch_size}
+      query:
+        simple: ${inputs.query}
+    separatecontext: false
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Done}
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      exitCondition: ""
+      wait: 1
+      max: 1000
     view: |-
       {
         "position": {
@@ -172,22 +193,41 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2965870e-e76a-46af-8963-410b5f24731e
+    taskid: 105f6804-8cd4-4f0b-82b6-48f72f71091e
     type: playbook
     task:
-      id: 2965870e-e76a-46af-8963-410b5f24731e
+      id: 105f6804-8cd4-4f0b-82b6-48f72f71091e
       version: -1
       name: Cortex XDR IOCs - Disable expired IOCs in XDR
+      description: This playbook will disables indicators in XDR after they have expired from XSOAR.
       playbookName: Cortex XDR IOCs - Disable expired IOCs in XDR
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
-    separatecontext: true
+    scriptarguments:
+      batch_size:
+        simple: ${inputs.batch_size}
+      query:
+        simple: expirationStatus:expired tags:xdr_pushed and -tags:xdr_disabled
+    separatecontext: false
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Done}
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      exitCondition: ""
+      wait: 1
+      max: 1000
     view: |-
       {
         "position": {
@@ -219,19 +259,13 @@ inputs:
   value:
     simple: "4000"
   required: false
-  description: ""
+  description: This parameter will set the batch size to be pushed into XDR with every iteration of the loop.
   playbookInputQuery:
 - key: query
   value:
     simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:active and -tags:xdr_pushed and -tags:xdr_not_processed
   required: true
-  description: ""
-  playbookInputQuery:
-- key: query_expired
-  value:
-    simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:expired tags:xdr_pushed and -tags:xdr_disabled
-  required: false
-  description: ""
+  description: The query used to search for IOCs from XSOAR to be pushed into XDR. This query must include `-tags:xdr_pushed and -tags:xdr_not_processed` in order to work properly.
   playbookInputQuery:
 outputs: []
 tests:
