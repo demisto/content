@@ -2375,7 +2375,7 @@ script:
       description: The tags of the resource group.
       type: Dictionary
     - contextPath: AzureSentinel.ResourceGroup.properties
-      description: The properties of the resource group.
+      description: The properties of the resource group. TEST
       type: dictionary
   - description: Run this command if for some reason you need to rerun the authentication process.
     execution: false

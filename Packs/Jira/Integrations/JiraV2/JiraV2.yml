@@ -117,7 +117,7 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
-description: Deprecated. Use the Atlassian Jira v3 integration instead
+description: Deprecated. Use the Atlassian Jira v3 integration instead.
 display: Atlassian Jira v2 (Deprecated)
 name: jira-v2
 script:
@@ -429,7 +429,7 @@ script:
     - description: The ID of the issue to edit.
       name: issueId
       required: true
-    - description: 'The field object (in JSON format). For example {"customfield_10037": "New value"}'
+    - description: 'The field object (in JSON format). For example {"customfield_10037": "New value"}.'
       name: field_json
       required: true
     description: |-
@@ -556,7 +556,7 @@ script:
       name: role_name
     description: Adds the user to a project.
     name: jira-add-user-to-project
-  - arguments: 
+  - arguments:
     - description: An ID or key for a service project to list all organizations associated with.
       name: projectKey
       required: false
@@ -602,19 +602,15 @@ script:
     - contextPath: Ticket.Status
       description: The ticket status.
       type: String
-  dockerimage: demisto/oauthlib:1.0.0.72372
+  dockerimage: demisto/oauthlib:1.0.0.81560
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   script: ''
   subtype: python3
-
   type: python
 tests:
-
 - Jira-v2-Test
 defaultmapperin: classifier-mapper-incoming-JiraV2
 fromversion: 5.0.0
-
-
