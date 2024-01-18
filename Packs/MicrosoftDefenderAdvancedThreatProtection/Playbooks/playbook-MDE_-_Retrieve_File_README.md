@@ -1,5 +1,6 @@
 This playbook is part of the ‘Malware Investigation And Response’ pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint ID will be set from the incident field “DeviceID”.
+This playbook uses the Live Response feature to retrieve a file from an endpoint. The playbook supports a supplied machine id as an input. Otherwise, it will take the Device ID incident field.
+This playbook supports only one element to be retrieved for each task (if you want more - you must use a PB loop feature).
 
 ## Dependencies
 
@@ -15,8 +16,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* UnzipFile
 * isError
+* UnzipFile
 
 ### Commands
 

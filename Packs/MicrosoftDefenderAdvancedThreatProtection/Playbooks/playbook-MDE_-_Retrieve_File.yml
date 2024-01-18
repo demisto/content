@@ -2,7 +2,8 @@ contentitemexportablefields:
   contentitemfields: {}
 description: |-
   This playbook is part of the ‘Malware Investigation And Response’ pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-  This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint ID will be set from the incident field “DeviceID”.
+  This playbook uses the Live Response feature to retrieve a file from an endpoint. The playbook supports a supplied machine id as an input. Otherwise, it will take the Device ID incident field.
+  This playbook supports only one element to be retrieved for each task (if you want more - you must use a PB loop feature).
 id: MDE - Retrieve File
 inputs:
 - description: The file paths to be provided.
@@ -30,7 +31,7 @@ tasks:
     note: false
     quietmode: 0
     separatecontext: false
-    skipunavailable: true
+    skipunavailable: false
     task:
       brand: ''
       id: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
@@ -99,7 +100,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    skipunavailable: true
+    skipunavailable: false
     task:
       brand: ''
       description: 'Collect a file from a device. NOTE: Backslashes in the path must be escaped.'
