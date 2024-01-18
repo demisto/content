@@ -1,0 +1,30 @@
+args:
+- description: The value is an array of elements.
+  isArray: true
+  name: value
+  required: true
+- description: Provide the value from the array.
+  name: array_value
+  required: true
+comment: |-
+  This transformer will get an index of an element from an array.
+  ex:["phishing","Malware"], if we provide "Malware" to array_value argument, will get index as 1.
+commonfields:
+  id: GetIndexOfArrayValue
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.84405
+enabled: true
+name: GetIndexOfArrayValue
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
