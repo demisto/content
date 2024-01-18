@@ -94,6 +94,9 @@ class ReilaQuestClient(BaseClient):
             while len(events) < limit and "event-num" in events[-1]:
                 params.update({"event-num-after": events[-1]["event-num"]})
                 current_events = self.http_request("/triage-item-events", params=params)
+                if len(events) == 0:
+                    # if there aren't any new events, it means no pagination is needed
+                    break
                 demisto.info(f'Fetched {len(current_events)} events')
                 demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in current_events]}')
                 events.extend(current_events)
