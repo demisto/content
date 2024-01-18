@@ -67,7 +67,7 @@ class TempFile:
         os.remove(self.path)
 
 
-def http_request(method, suffix_url, data=None, files=None, query=None):
+def http_request(method, suffix_url, data=None, files=None, query=None, params=None):
     # Returns the http request
 
     url = urljoin(BASE_URL, suffix_url)
@@ -150,6 +150,18 @@ def create_ticket_request(encoded):
     return ticket_id
 
 
+def edit_links(ticket_id, member_of, members):
+    content = ""
+    if member_of:
+        content = f"MemberOf: {member_of}\n"
+    if members:
+        content = f"Members: {members}\n"
+    data = f"content={urllib.parse.quote_plus(content)}"
+
+    suffix_url = f'ticket/{ticket_id}/links'
+    return http_request('POST', suffix_url, data=data)
+
+
 def create_ticket_attachments_request(encoded, files_data):
     suffix_url = 'ticket/new'
     ticket_id = http_request('POST', suffix_url, files=files_data)
@@ -203,10 +215,6 @@ def create_ticket():
     if text:
         data += f"Text: {text}\n"
 
-    member_of = args.get('member_of')
-    if member_of:
-        data += f"MemberOf: {member_of}\n"
-
     customfields = args.get('customfields')
     if customfields:
         cf_list = customfields.split(',')
@@ -240,6 +248,11 @@ def create_ticket():
     demisto.debug(f"got ticket with id: {ticket_id}")
     if ticket_id == -1:
         raise DemistoException('Ticket creation failed')
+
+    member_of = args.get('member-of')
+    members = args.get('members')
+    if members or member_of:
+        links = edit_links(ticket_id, members, member_of)
 
     ticket_context = ({
         'ID': ticket_id,
@@ -446,53 +459,48 @@ def edit_ticket_request(ticket_id, encoded):
 
 
 def edit_ticket():
+    args = demisto.args()
     arguments_given = False
-    ticket_id = demisto.args().get('ticket-id')
+    ticket_id = args.get('ticket-id')
     content = 'ID: ' + ticket_id
     kwargs = {}
-    subject = demisto.args().get('subject')
+    subject = args.get('subject')
     if subject:
         content += '\nSubject: ' + subject
         arguments_given = True
         kwargs['Subject'] = subject
 
-    owner = demisto.args().get('owner')
+    owner = args.get('owner')
     if owner:
         content += '\nOwner: ' + owner
         arguments_given = True
         kwargs['Owner'] = owner
 
-    status = demisto.args().get('status')
+    status = args.get('status')
     if status:
         content += '\nStatus: ' + status
         arguments_given = True
         kwargs['Status'] = status
 
-    member_of = demisto.args().get('member_of')
-    if member_of:
-        content += '\nMemberOF: ' + member_of
-        arguments_given = True
-        kwargs['MemberOF'] = member_of
-
-    priority = demisto.args().get('priority')
+    priority = args.get('priority')
     if priority:
         content += '\nPriority: ' + priority
         arguments_given = True
         kwargs['Priority'] = int(priority)
 
-    final_priority = demisto.args().get('final-priority')
+    final_priority = args.get('final-priority')
     if final_priority:
         content += '\nFinalPriority: ' + final_priority
         arguments_given = True
         kwargs['FinalPriority'] = int(final_priority)
 
-    due = demisto.args().get('due')
+    due = args.get('due')
     if due:
         content += '\nDue: ' + due
         arguments_given = True
         kwargs['Due'] = due
 
-    customfields = demisto.args().get('customfields')
+    customfields = args.get('customfields')
     if customfields:
         arguments_given = True
         cf_list = customfields.split(',')
@@ -502,34 +510,46 @@ def edit_ticket():
             value = cf[equal_index + 1:]
             content += '\n' + key + value
 
+    edit_suc = False
+    member_of = args.get('member-of')
+    members = args.get('members')
+    if members or member_of:
+        links = edit_links(ticket_id, members, member_of)
+        if "200 Ok" in links.text:
+            edit_suc = True
+
     if arguments_given:
         edited_ticket = edit_ticket_request(ticket_id, f"content={urllib.parse.quote_plus(content)}")
         if "200 Ok" in edited_ticket.text:
-            ticket_context = ({
-                'ID': ticket_id,
-                'Subject': subject,
-                'State': status,
-                'Priority': priority,
-                'FinalPriority': final_priority,
-                'Owner': owner
-            })
-            ec = {
-                'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket_context
-            }
+            edit_suc = True
 
-            hr = f'Ticket {ticket_id} was edited successfully.'
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': hr,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': hr,
-                'EntryContext': ec
-            })
-        else:
-            raise DemistoException('Failed to edit ticket')
-    else:
+    elif not members and not member_of:
         raise DemistoException('No arguments were given to edit the ticket.')
+
+    if edit_suc:
+        ticket_context = ({
+            'ID': ticket_id,
+            'Subject': subject,
+            'State': status,
+            'Priority': priority,
+            'FinalPriority': final_priority,
+            'Owner': owner
+        })
+        ec = {
+            'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket_context
+        }
+
+        hr = f'Ticket {ticket_id} was edited successfully.'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': hr,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+    else:
+        raise DemistoException('Failed to edit ticket')
 
 
 def get_ticket_attachments(ticket_id):

@@ -90,8 +90,12 @@ script:
       name: initial-priority
     - description: Ticket final priority, given as number in the range 0-100.
       name: final-priority
-    - description: Ticket member_of link.
-      name: member_of
+    - description: Ticket MemberOF links.
+      isArray: true
+      name: member-of
+    - description: Ticket Members links.
+      isArray: true
+      name: members
     - description: Attachment to add to the ticket, given as Entry ID. Comma-separated values supported, e.g., entryID1,entryID2.
       isArray: true
       name: attachment
@@ -221,8 +225,12 @@ script:
       name: status
     - description: Ticket due date, in format of YYYY-MM-DD, e.g. 2011-02-24.
       name: due
-    - description: Ticket member_of link.
-      name: member_of
+    - description: Ticket MemberOF links.
+      isArray: true
+      name: member-of
+    - description: Ticket Members links.
+      isArray: true
+      name: members
     - description: 'Ticket custom fields, given in format: field1=value1,field2=value2, e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom fields, these should be created on RTIR.'
       name: customfields
     description: Modify a ticket on RTIR.
