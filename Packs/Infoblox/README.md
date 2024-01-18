@@ -30,7 +30,7 @@ The following XQL Queries demonstrate the XDM modeling for the ingested Infoblox
     ```
 
 ## Configuration on Server Side
-This section describes the configuration steps that needs to be done on your Infoblox NIOS appliance for sending event logs to Cortex XSIAM Broker VM via syslog.
+This section describes the configuration steps that need to be done on your Infoblox NIOS appliance for sending event logs to Cortex XSIAM Broker VM via syslog.
 
 1. Login to the Infoblox NIOS appliance. 
 2. From the **Grid** tab, Navigate to **Grid Manager** &rarr; **Members**, and then click **Grid Properties** &rarr; **Edit** from the Toolbar.
