@@ -101,7 +101,7 @@ class ReilaQuestClient(BaseClient):
                 demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in current_events]}')
                 events.extend(current_events)
 
-        return events
+        return events[:limit]
 
     def triage_items(self, triage_item_ids: list[str]) -> List[dict[str, Any]]:
         """
