@@ -29,7 +29,7 @@ def send_slack_notification(text: list[str]):
     """
 
     slack_token = get_env_var('SLACK_TOKEN')
-    slack_channel = "dmst-test-wait-in-line"
+    slack_channel = get_env_var('WAIT_SLACK_CHANNEL', "dmst-test-wait-in-line")
 
     text = "\n".join(text)
     client = SlackWebClient(token=slack_token)
@@ -400,7 +400,7 @@ def main():
         send_slack_notification([f"{options.gcs_locks_path}",
                                  f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
                                  f"Job ID: {options.ci_job_id}",
-                                 "Available machines:"
+                                 "Available machines:",
                                  f"{len(list_machines)}"])
     except Exception as e:
         logging.info(f"Failed to send Slack notification. Reason: {str(e)}")
@@ -416,14 +416,14 @@ def main():
         f.write(f"export CLOUD_CHOSEN_MACHINE_IDS={','.join(lock_machine_list)}")
 
     end_time = time.time()
-    duration_sec = (end_time - start_time) // 60
+    duration_minutes = (end_time - start_time) // 60
     try:
         send_slack_notification(["Lock Duration:",
                                  f"{datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')}",
                                  f"{options.gcs_locks_path}",
                                  f"Job ID: {options.ci_job_id}",
                                  "Duration:",
-                                 f"{duration_sec}"])
+                                 f"{duration_minutes}"])
     except Exception as e:
         logging.info(f"Failed to send Slack notification. Reason: {str(e)}")
 
