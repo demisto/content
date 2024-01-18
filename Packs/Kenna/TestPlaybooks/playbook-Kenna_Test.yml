@@ -823,7 +823,7 @@ tasks:
     task:
       id: 409fc94c-67db-4028-83b5-73ce62cc1cd4
       version: -1
-      name: Sleep 10 Seconds
+      name: Sleep 20 Seconds
       description: Sleep for X seconds.
       scriptName: Sleep
       type: regular
@@ -834,7 +834,7 @@ tasks:
       - "24"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
