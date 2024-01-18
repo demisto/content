@@ -140,7 +140,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
     return new_last_run, indicators
 
 
-def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, max_fetch: int, score: list,
+def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, max_fetch: int, score: list = None,
                              tlp_color=None, tags=None, is_test=False) -> list:
     """ fetch indicators from the OpenCTI
 
