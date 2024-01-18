@@ -4807,7 +4807,7 @@
                 "ewso365_dev_team"
             ],
             "external_playbook_config": {
-                "playbookID": "Phishing - Generic v5",
+                "playbookID": "Phishing - Generic v6",
                 "input_parameters": {
                     "SearchAndDelete": {
                         "simple": "True"
