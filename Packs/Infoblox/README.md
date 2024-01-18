@@ -44,7 +44,7 @@ This section describes the configuration steps that need to be done on your Info
    | **`Server Certificate`**   | To transport the logs over **Secure TCP**, upload a self-signed or a CA-signed server certificate.
    | **`Interface`**            | Select the interface through which the appliance should send the syslog messages to the Cortex XSIAM Broker VM.
    | **`Source`**               | Select whether the appliance should send only **Internal** messages, **External** messages, or both (**Any**).
-   | **`Node ID`**              | Specify the host or node identification string that would be used in the syslog message header to identify the appliance from which the syslog messages are originated from. 
+   | **`Node ID`**              | Specify the host or node identification string that would be used in the syslog message header to identify the appliance from which the syslog messages originated. 
    | **`Port`**                 | Enter the port number that the Cortex XSIAM Broker VM is listening on for receiving syslog messages from the Infoblox appliance.
    | **`Severity`**             | Select the severity level of which messages from this level and above should be sent to Cortex XSIAM.
    | **`Logging Category`**     | Select **Send selected categories** and use the arrows to move the requested logging categories from the **Available** table to the **Selected** table and vice versa. 
