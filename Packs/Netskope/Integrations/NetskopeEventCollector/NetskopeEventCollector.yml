@@ -24,6 +24,19 @@ configuration:
   section: Collect
   type: 0
   required: false
+- additionalinfo: 'Event types to be fetched by this instance. Default is: Application, Alert, Page, Audit, Network.'
+  defaultvalue: Application,Alert,Page,Audit,Network
+  display: Event Types To Fetch
+  name: event_types_to_fetch
+  options:
+  - Application
+  - Alert
+  - Page
+  - Audit
+  - Network
+  section: Collect
+  type: 16
+  required: true
 - display: Trust any certificate (not secure)
   section: Connect
   name: insecure
