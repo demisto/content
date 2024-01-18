@@ -505,7 +505,7 @@ def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[C
         max_incidents_to_display,
     ).predict()
 
-    if show_actual_incident and not similar_incidents.empty:
+    if show_actual_incident:
         command_results_list.append(
             actual_incident_results(actual_incident_df, incident_id, indicators_of_actual_incident, fields_to_display)
         )
