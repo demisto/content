@@ -28,6 +28,7 @@ def test_get_recursively():
     val = Client.get_recursively(client, mock_response_1[0][0]['indicators'][0], "value")
     assert isinstance(val, list)
     assert 'URL Watchlist' in val
+    assert 'http://kbjunktest.com/path' in val
 
 
 def test_build_indicators():
