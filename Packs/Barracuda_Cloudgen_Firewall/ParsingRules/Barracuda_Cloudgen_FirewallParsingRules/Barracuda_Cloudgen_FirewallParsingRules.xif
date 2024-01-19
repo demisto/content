@@ -13,7 +13,7 @@ filter _raw_log ~= "^.*(\d{10})\s.*BYF" OR _raw_log ~= "\S{3}\s+\S+\s\d{2}\:\d{2
 | alter
     tmp_final_time = coalesce(tmp_time1_convert, tmp_time2)
 | alter
-    tmp_diff_time = timestamp_diff(tmp_final_time , _insert_time , "DAY")
+    tmp_diff_time = timestamp_diff(tmp_final_time , _insert_time , "MILLISECOND")
 | alter
     tmp_time_after_check = if (tmp_diff_time > 0, parse_timestamp("%F %H:%M:%S%z", replace(to_string(tmp_time2), tmp_time2_gen_year, to_string(subtract (to_number(tmp_time2_gen_year), 1)))), tmp_final_time)
 | alter
