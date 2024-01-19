@@ -4,7 +4,7 @@
     "cliName": "asmprovider",
     "closeForm": false,
     "content": true,
-    "description": "Service provider for ASM asset.",
+    "description": "Service provider(s) for ASM asset.",
     "editForm": true,
     "group": 0,
     "hidden": false,
