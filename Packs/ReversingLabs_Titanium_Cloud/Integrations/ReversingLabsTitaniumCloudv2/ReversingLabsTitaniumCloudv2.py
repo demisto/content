@@ -1088,10 +1088,6 @@ def url_dynamic_analysis_results_command():
     response_json = response.json()
     results, file_results = url_dynamic_analysis_results_output(response_json=response_json, passed_url=url)
 
-    #todo
-    whole_txt = json.dumps(results.to_context())
-
-
     return_results([results, file_results])
 
 
