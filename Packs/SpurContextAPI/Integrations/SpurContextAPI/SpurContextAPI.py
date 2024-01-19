@@ -18,7 +18,9 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 
 from CommonServerUserPython import *  # noqa
 
+import ipaddress
 import urllib3
+import urllib.parse
 from typing import Any
 
 # Disable insecure warnings
@@ -42,25 +44,120 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def ip(self, ip: str) -> dict[str, str]:
+        """Returns a Spur Context API response as a flattened dictionary for the given input ip.
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
+        :type ip: ``str``
+        :param ip: ip address to enrich
 
-        :return: dict as {"dummy": dummy}
+        :return: dict
         :rtype: ``str``
         """
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        # Validate that the input is a valid IP address
+        try:
+            ipaddress.ip_address(ip)
+        except ValueError:
+            raise ValueError(f'Invalid IP address: {ip}')
+        encoded_ip = urllib.parse.quote(ip)
+        full_url = urljoin(self._base_url, "/v2/context")
+        full_url = urljoin(full_url, encoded_ip)
+        demisto.debug(f'SpurContextAPI full_url: {full_url}')
+
+        response = self._http_request(
+            method='GET',
+            full_url=full_url,
+            headers=self._headers,
+        )
+
+        # If we get a dict back from the API, we need to flatten it
+        if isinstance(response, dict):
+            response = flatten(response)
+        else:
+            raise ValueError(f'Invalid response from API: {response}')
+        return response
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def flatten(data):
+    """
+    Flatten the data from the API to a format that can be used as outputs
+    """
+    new_dict = {
+        "ip": data.get("ip", ""),
+    }
+    new_dict["organization"] = data.get("organization", "")
+    new_dict["infrastructure"] = data.get("infrastructure", "")
+    new_dict["services"] = data.get("services", "")
+    new_dict["risks"] = data.get("risks", "")
+
+    if "as" in data:
+        if "number" in data["as"]:
+            new_dict["as_number"] = data["as"]["number"]
+        if "organization" in data["as"]:
+            new_dict["as_organization"] = data["as"]["organization"]
+    else:
+        new_dict["as_number"] = ""
+        new_dict["as_organization"] = ""
+    if "client" in data:
+        client = data["client"]
+        new_dict["client_behaviors"] = client.get("behaviors", [])
+        new_dict["client_countries"] = client.get("countries", 0)
+        new_dict["client_spread"] = client.get("spread", 0)
+        new_dict["client_proxies"] = client.get("proxies", [])
+        new_dict["client_count"] = client.get("count", 0)
+        new_dict["client_types"] = client.get("types", [])
+        if "concentration" in data["client"]:
+            concentration = data["client"]["concentration"]
+            new_dict["client_concentration_country"] = concentration.get("country", "")
+            new_dict["client_concentration_city"] = concentration.get("city", "")
+            new_dict["client_concentration_geohash"] = concentration.get("geohash", "")
+            new_dict["client_concentration_density"] = concentration.get("density", 0.0)
+            new_dict["client_concentration_skew"] = concentration.get("skew", 0)
+    else:
+        new_dict["client_behaviors"] = []
+        new_dict["client_countries"] = 0
+        new_dict["client_spread"] = 0
+        new_dict["client_proxies"] = []
+        new_dict["client_count"] = 0
+        new_dict["client_types"] = []
+        new_dict["client_concentration_country"] = ""
+        new_dict["client_concentration_city"] = ""
+        new_dict["client_concentration_geohash"] = ""
+        new_dict["client_concentration_density"] = 0.0
+        new_dict["client_concentration_skew"] = 0
+    if "location" in data:
+        location = data["location"]
+        new_dict["location_country"] = location.get("country", "")
+        new_dict["location_state"] = location.get("state", "")
+        new_dict["location_city"] = location.get("city", "")
+    else:
+        new_dict["location_country"] = ""
+        new_dict["location_state"] = ""
+        new_dict["location_city"] = ""
+    if "tunnels" in data:
+        tunnel_types = []
+        tunnels_anonymous = []
+        tunnels_operator = []
+        for tunnel in data["tunnels"]:
+            if "type" in tunnel:
+                tunnel_types.append(tunnel["type"])
+            if "anonymous" in tunnel:
+                tunnels_anonymous.append(str(tunnel["anonymous"]))
+            if "operator" in tunnel:
+                tunnels_operator.append(tunnel["operator"])
+        new_dict["tunnels_type"] = tunnel_types
+        new_dict["tunnels_anonymous"] = tunnels_anonymous
+        new_dict["tunnels_operator"] = tunnels_operator
+    else:
+        new_dict["tunnels_type"] = ""
+        new_dict["tunnels_anonymous"] = ""
+        new_dict["tunnels_operator"] = ""
+
+    return new_dict
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -81,9 +178,14 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
+        full_url = urljoin(client._base_url, 'status')
+        demisto.debug(f'SpurContextAPI full_url: {full_url}')
+        client._http_request(
+            method='GET',
+            full_url=full_url,
+            headers=client._headers,
+            raise_on_status=True,
+        )
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -93,22 +195,19 @@ def test_module(client: Client) -> str:
     return message
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    ip = args.get('ip', None)
+    if not ip:
+        raise ValueError('IP not specified')
 
     # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    result = client.ip(ip)
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
+        outputs_prefix='SpurContextAPI.IP',
         outputs_key_field='',
         outputs=result,
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''
@@ -121,27 +220,17 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
+    api_key = demisto.params().get('credentials', {}).get('password')
+    base_url = "https://api.spur.us/"
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: dict = {}
+        headers: dict = {
+            "TOKEN": api_key
+        }
 
         client = Client(
             base_url=base_url,
@@ -154,10 +243,8 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'enrich':
+            return_results(ip_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

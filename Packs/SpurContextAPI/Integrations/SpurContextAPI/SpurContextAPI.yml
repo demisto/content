@@ -3,39 +3,95 @@ commonfields:
   id: SpurContextAPI
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
-  required: true
-  type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+- displaypassword: API Token
+  additionalinfo: API token for authentication with the Spur Context API.
   name: credentials
   required: true
   hiddenusername: true
   type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: 'Enrich indicators using the Spur Context API.'
 display: SpurContextAPI
 name: SpurContextAPI
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
+    - description: 'IP address to enrich.'
+      name: ip
       required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
+    description: 'The IP Enrichment command.'
+    name: enrich
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: SpurContextAPI.IP.ip
+      description: 'The JSON response from the Spur Context API.'
+      type: String
+    - contextPath: SpurContextAPI.IP.organization
+      description: 'The organization associated with the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.infrastructure
+      description: 'Infrastructure information for the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.services
+      description: 'Services information for the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.risks
+      description: 'Risks associated with the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.as_number
+      description: 'Autonomous System (AS) number associated with the IP.'
+      type: Number
+    - contextPath: SpurContextAPI.IP.as_organization
+      description: 'Organization of the Autonomous System (AS) associated with the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.client_behaviors
+      description: 'Client behaviors associated with the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.client_countries
+      description: 'Number of countries associated with the IP client.'
+      type: Number
+    - contextPath: SpurContextAPI.IP.client_spread
+      description: 'Spread metric for the IP client.'
+      type: Number
+    - contextPath: SpurContextAPI.IP.client_proxies
+      description: 'Proxies associated with the IP client.'
+      type: String
+    - contextPath: SpurContextAPI.IP.client_count
+      description: 'Count of IP clients.'
+      type: Number
+    - contextPath: SpurContextAPI.IP.client_types
+      description: 'Types of IP clients.'
+      type: String
+    - contextPath: SpurContextAPI.IP.client_concentration_country
+      description: 'Country concentration of the IP client.'
+      type: String
+    - contextPath: SpurContextAPI.IP.client_concentration_city
+      description: 'City concentration of the IP client.'
+      type: String
+    - contextPath: SpurContextAPI.IP.client_concentration_geohash
+      description: 'Geohash concentration of the IP client.'
+      type: String
+    - contextPath: SpurContextAPI.IP.client_concentration_density
+      description: 'Density concentration of the IP client.'
+      type: Number
+    - contextPath: SpurContextAPI.IP.client_concentration_skew
+      description: 'Skew concentration of the IP client.'
+      type: Number
+    - contextPath: SpurContextAPI.IP.location_country
+      description: 'Country location of the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.location_state
+      description: 'State location of the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.location_city
+      description: 'City location of the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.tunnels_type
+      description: 'Types of tunnels associated with the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.tunnels_anonymous
+      description: 'Anonymity status of tunnels associated with the IP.'
+      type: String
+    - contextPath: SpurContextAPI.IP.tunnels_operator
+      description: 'Operators of tunnels associated with the IP.'
       type: String
   runonce: false
   script: '-'
