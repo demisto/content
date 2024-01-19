@@ -21,6 +21,7 @@ VENDOR = "ReliaQuest"
 PRODUCT = "GreyMatter DRP"
 FETCHED_TIME_LAST_RUN = "time"
 FOUND_IDS_LAST_RUN = "fetched_event_numbers"
+MAX_PAGE_SIZE = 1000
 
 ''' CLIENT CLASS '''
 
@@ -69,7 +70,7 @@ class ReilaQuestClient(BaseClient):
                 raise error.exception
             raise
 
-    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = 1000) -> List[dict[str, Any]]:
+    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = MAX_PAGE_SIZE) -> List[dict[str, Any]]:
         """
         Args:
                 api docs:
@@ -79,8 +80,8 @@ class ReilaQuestClient(BaseClient):
             event_created_after (str): retrieve events occurred after a specific time (included), format:  YYYY-MM-DDThh:mm:ssTZD.
             limit (int): the maximum number of events to retrieve
         """
-
-        params: dict = {"limit": limit}
+        page_size = min(MAX_PAGE_SIZE, limit)
+        params: dict = {"limit": page_size}
         if event_created_before:
             params["event-created-before"] = event_created_before
         if event_created_after:
@@ -338,7 +339,6 @@ def dedup_fetched_events(
 
 def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[List[dict], dict[str, str]]:
 
-    _time = last_run.get("time")
     triage_item_ids_to_events, latest_created_event_numbers, latest_event_time = get_triage_item_ids_to_events(
         client, last_run=last_run, max_fetch=max_fetch)
 
@@ -385,8 +385,8 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
 
     # if latest_event_time = None, no new events were fetched, keep the same last-run until new events will be created
     new_last_run = {
-        FETCHED_TIME_LAST_RUN: latest_event_time or _time,
-        FOUND_IDS_LAST_RUN: latest_created_event_numbers
+        FETCHED_TIME_LAST_RUN: latest_event_time or last_run.get(FETCHED_TIME_LAST_RUN),
+        FOUND_IDS_LAST_RUN: latest_created_event_numbers or last_run.get(FOUND_IDS_LAST_RUN)
     }
     demisto.info(f'updated last run: {new_last_run}')
     return events, new_last_run
