@@ -1,0 +1,4 @@
+{
+  "breakingChanges":true,
+  "breakingChangesNotes":"This version introduces changes in the human readable output, context output, arguments and names of the following commands: reversinglabs-titaniumcloud-submit-for-dynamic-analysis, reversinglabs-titaniumcloud-get-dynamic-analysis-results. For more details read the release notes."
+}
