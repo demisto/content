@@ -26,9 +26,9 @@ MAX_PAGE_SIZE = 1000
 ''' CLIENT CLASS '''
 
 
-
 class RateLimit(Exception):
     pass
+
 
 
 class ReilaQuestClient(BaseClient):
@@ -58,9 +58,9 @@ class ReilaQuestClient(BaseClient):
             )
             json_response = response.json()
             if response.status_code == 429:
-                rate_limit_error = f'Rate-limit when requesting {url_suffix} with params {params}, error: {json_response}, ' \
+                rate_limit_error = f'Rate-limit when running http-request to {url_suffix} with params {params}, error: {json_response}, ' \
                                    f'sleeping for 60 seconds to let the api recover'
-                time.sleep(60)
+                time.sleep(90)
                 demisto.error(rate_limit_error)
                 raise RateLimit(rate_limit_error)
             return json_response
@@ -401,9 +401,9 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
 def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
     limit = arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
     if start_time := args.get("start_time"):
-        start_time = dateparser.parse(args.get(start_time)).strftime(DATE_FORMAT)
+        start_time = dateparser.parse(start_time).strftime(DATE_FORMAT)
     if end_time := args.get("end_time"):
-        end_time = dateparser.parse(args.get(start_time)).strftime(DATE_FORMAT)
+        end_time = dateparser.parse(end_time).strftime(DATE_FORMAT)
 
     raw_events = client.list_triage_item_events(event_created_after=start_time, event_created_before=end_time, limit=limit)
     enriched_events, _ = enrich_events(client, events=raw_events)
@@ -454,7 +454,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as exc:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{str(exc)}")
+        return_error(f"Failed to execute {command} command.\nError:\ntype:{type(exc)}, error:{str(exc)}")
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
