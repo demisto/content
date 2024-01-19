@@ -1,0 +1,222 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: QR URL Decoder
+inputs:
+- description: Parsing only the image attachments and no other file's entry IDs.
+  key: JPG or PNG Attachments
+  playbookInputQuery:
+  required: true
+  value:
+    complex:
+      accessor: EntryID
+      filters:
+      - - left:
+            iscontext: true
+            value:
+              simple: File.Extension
+          operator: inList
+          right:
+            value:
+              simple: jpg, png
+      - - left:
+            iscontext: true
+            value:
+              simple: File.Size
+          operator: lessThanOrEqual
+          right:
+            value:
+              simple: "1000000"
+      root: File
+name: QR URL Decoder
+outputs:
+- contextPath: GoQRCodeData.data
+  description: QR Code data obtained
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cccebe89-001b-4f54-88eb-fa147f738198
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: cccebe89-001b-4f54-88eb-fa147f738198
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entry_id:
+        simple: ${inputs.JPG or PNG Attachments}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Upload a PNG, GIF or JP(E)G image which is smaller than 1 MiB via the entry_id of the image file.
+      id: 1a5fcd92-3ff5-450e-820d-8fee2626121d
+      iscommand: true
+      name: Extract QR Codes from JPG and PNG attachments
+      script: '|||goqr-read-qr-code-from-file'
+      type: regular
+      version: -1
+    taskid: 1a5fcd92-3ff5-450e-820d-8fee2626121d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: GoQRCodeData.data
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e80f2d4d-41a1-4972-84f3-b981000c2879
+      iscommand: false
+      name: Is there a QR Code in the image attachment?
+      type: condition
+      version: -1
+    taskid: e80f2d4d-41a1-4972-84f3-b981000c2879
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      qrurldecoded:
+        simple: ${GoQRCodeData.data}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: de40384e-6cce-49d2-879e-625635ff1aa9
+      iscommand: true
+      name: Extract URLs from QR Codes
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: de40384e-6cce-49d2-879e-625635ff1aa9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 550
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 42395474-30a9-4bd2-8848-9748286a1164
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 42395474-30a9-4bd2-8848-9748286a1164
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 650,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
