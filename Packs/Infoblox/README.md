@@ -55,7 +55,7 @@ This section describes the configuration steps that need to be done on your Info
 5. Save the configuration and click **Restart** if it appears at the top of the screen.
 
 ### Remark
-Timestamp Parsing for syslog messages sent from Infoblox to Cortex XSIAM is supported in GMT+0 time zone. The time zone configured on the grid member should be set accordingly. See [Using a Syslog Server](https://docs.infoblox.com/space/nios86/423493735/Using+a+Syslog+Server) and [Viewing the Syslog](https://docs.infoblox.com/space/NAG8/22252249/Using+a+Syslog+Server#Viewing-the-Syslog) Infoblox docs for additional details.
+Timestamp Parsing for syslog messages sent from Infoblox to Cortex XSIAM is supported in GMT time zone. The time zone configured on the grid member should be set accordingly. See [Using a Syslog Server](https://docs.infoblox.com/space/nios86/423493735/Using+a+Syslog+Server) and [Viewing the Syslog](https://docs.infoblox.com/space/NAG8/22252249/Using+a+Syslog+Server#Viewing-the-Syslog) Infoblox docs for additional details.
 
 ## Collect Events from Vendor
 
