@@ -38,32 +38,20 @@ name: Relia Quest GreyMatter DRP EventCollector
 script:
   commands:
   - arguments:
-    - name: event_type
-      description: 'The type of events to retrieve'
-      required: true
-      auto: PREDEFINED
-      predefined:
-        - 'incident'
-        - 'alert'
-        - 'all'
-      defaultValue: 'all'
     - name: start_time
-      description: 'From which time to get the events'
+      description: 'From which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z, if not provided will retrieve the oldest events available'
       required: false
       defaultValue: '3 days ago'
     - name: end_time
-      description: 'Until which time to get the events'
+      description: 'Until which time to get the events in ISO8601 format, for example 2021-09-24T16:30:10.016Z'
       required: false
     - name: limit
       description: 'The maximum number of events to retrieve'
       required: false
       defaultValue: '200'
-    description: Manual command to fetch events and display them.
+    description: Manual command to fetch reila-quest events and display them.
     name: reila-quest-get-events
-    outputs:  # add the outputs here
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    outputs: []
   runonce: false
   script: '-'
   type: python

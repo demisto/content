@@ -182,7 +182,7 @@ def parse_event_created_time(event_date_string: str) -> datetime:
         return datetime.strptime(event_date_string, '%Y-%m-%dT%H:%M:%SZ')
 
 
-def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[dict[str, List[dict]], List[int], Optional[str]]:
+def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, List[dict]], List[int], Optional[str]]:
     """
     Maps the triage item IDs to events.
     Triage item ID can refer to multiple events.
@@ -190,8 +190,6 @@ def get_triage_item_ids_to_events(client: ReilaQuestClient, last_run: Dict[str, 
     Returns:
         {"id-1": ["event-1", "event-2"]...}
     """
-    events = client.list_triage_item_events(event_created_after=last_run.get(FETCHED_TIME_LAST_RUN), limit=max_fetch)
-    events = dedup_fetched_events(events, last_run)
     latest_event_time = None
     if events:
         latest_event_time = parse_event_created_time(events[0]["event-created"])
@@ -337,10 +335,11 @@ def dedup_fetched_events(
     return un_fetched_events
 
 
-def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[List[dict], dict[str, str]]:
+def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Optional[dict[str, Any]] = None):
+    if not last_run:
+        last_run = {}
 
-    triage_item_ids_to_events, latest_created_event_numbers, latest_event_time = get_triage_item_ids_to_events(
-        client, last_run=last_run, max_fetch=max_fetch)
+    triage_item_ids_to_events, latest_created_event_numbers, latest_event_time = get_triage_item_ids_to_events(events)
 
     alert_ids_to_triage_ids, incident_ids_to_triage_ids = enrich_events_with_triage_item(
         client, triage_item_ids_to_events=triage_item_ids_to_events
@@ -379,9 +378,9 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         triage_item_ids_to_events=triage_item_ids_to_events
     )
 
-    events = []
-    for items in triage_item_ids_to_events.values():
-        events.extend(items)
+    enriched_events = []
+    for event in triage_item_ids_to_events.values():
+        enriched_events.extend(event)
 
     # if latest_event_time = None, no new events were fetched, keep the same last-run until new events will be created
     new_last_run = {
@@ -389,7 +388,35 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         FOUND_IDS_LAST_RUN: latest_created_event_numbers or last_run.get(FOUND_IDS_LAST_RUN)
     }
     demisto.info(f'updated last run: {new_last_run}')
-    return events, new_last_run
+    return enriched_events, new_last_run
+
+
+def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[List[dict], dict[str, str]]:
+    events = client.list_triage_item_events(event_created_after=last_run.get(FETCHED_TIME_LAST_RUN), limit=max_fetch)
+    events = dedup_fetched_events(events, last_run)
+
+    return enrich_events(client, events=events, last_run=last_run)
+
+
+def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
+    limit = arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
+    if start_time := args.get("start_time"):
+        start_time = dateparser.parse(args.get(start_time)).strftime(DATE_FORMAT)
+    if end_time := args.get("end_time"):
+        end_time = dateparser.parse(args.get(start_time)).strftime(DATE_FORMAT)
+
+    raw_events = client.list_triage_item_events(event_created_after=start_time, event_created_before=end_time, limit=limit)
+    enriched_events, _ = enrich_events(client, events=raw_events)
+
+    return CommandResults(
+        outputs_prefix=f'ReliaQuest.Events',
+        outputs_key_field='event-num',
+        outputs=enriched_events,
+        raw_response=raw_events,
+        readable_output=tableToMarkdown(
+            "Relia Quest Events", t=enriched_events, headers=["event-num", "triage-item-id", "event-created"]
+        )
+    )
 
 
 def main() -> None:
@@ -420,7 +447,7 @@ def main() -> None:
             )
             demisto.setLastRun(new_last_run)
         elif command == "reila-quest-get-events":
-            pass
+            return_results(get_events_command(client, args=demisto.args()))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
