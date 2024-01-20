@@ -26,11 +26,6 @@ MAX_PAGE_SIZE = 1000
 ''' CLIENT CLASS '''
 
 
-class RateLimit(Exception):
-    pass
-
-
-
 class ReilaQuestClient(BaseClient):
     """Client class to interact with the service API
 
@@ -45,7 +40,7 @@ class ReilaQuestClient(BaseClient):
         super().__init__(base_url=url, verify=verify_ssl, proxy=proxy, auth=(username, password))
         self.account_id = account_id
 
-    @retry(times=5, exceptions=(ConnectionError, Timeout, RateLimit))
+    @retry(times=5, exceptions=(ConnectionError, Timeout))
     def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> List[dict[str, Any]]:
         try:
             response = self._http_request(
@@ -60,9 +55,24 @@ class ReilaQuestClient(BaseClient):
             if response.status_code == 429:
                 rate_limit_error = f'Rate-limit when running http-request to {url_suffix} with params {params}, error: {json_response}, ' \
                                    f'sleeping for 60 seconds to let the api recover'
-                time.sleep(90)
                 demisto.error(rate_limit_error)
-                raise RateLimit(rate_limit_error)
+                if retry_after := dateparser.parse(json_response.get("retry-after")):
+                    while datetime.now() > retry_after:
+                        demisto.debug(f'Waiting to recover from ratelimit, sleeping for 1 second')
+                        time.sleep(1)
+
+                    demisto.info(f'Recovered successfully from rate-limit when running http-request {url_suffix} with {params}')
+
+                    response = self._http_request(
+                        method,
+                        url_suffix=url_suffix,
+                        headers=headers or {"searchlight-account-id": self.account_id},
+                        params=params,
+                        resp_type="response",
+                    )
+                    response.raise_for_status()
+                    json_response = response.json()
+
             return json_response
         except DemistoException as error:
             if isinstance(error.exception, ConnectionError):
