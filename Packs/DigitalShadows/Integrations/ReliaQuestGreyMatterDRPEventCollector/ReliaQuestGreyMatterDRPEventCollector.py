@@ -61,8 +61,6 @@ class ReilaQuestClient(BaseClient):
                         demisto.debug(f'Waiting to recover from ratelimit, sleeping for 1 second')
                         time.sleep(1)
 
-                    demisto.info(f'Recovered successfully from rate-limit when running http-request {url_suffix} with {params}')
-
                     response = self._http_request(
                         method,
                         url_suffix=url_suffix,
@@ -71,6 +69,7 @@ class ReilaQuestClient(BaseClient):
                         resp_type="response",
                     )
                     response.raise_for_status()
+                    demisto.info(f'Recovered successfully from rate-limit when running http-request {url_suffix} with {params}')
                     json_response = response.json()
 
             return json_response
