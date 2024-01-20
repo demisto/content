@@ -1,7 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import zlib
 import json
 
-from CommonServerPython import *
+
 # IMPORTS
 import urllib3
 import csv
@@ -47,7 +50,7 @@ class Client(BaseClient):
 
     def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, risk_score_threshold: int = 0,
+                 polling_timeout: int = 20, proxy: bool = False, malicious_threshold: int = 65, suspicious_threshold=25, risk_score_threshold: int = 0,
                  tags: list | None = None, tlp_color: str | None = None):
         """
         Attributes:
@@ -59,7 +62,8 @@ class Client(BaseClient):
              insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
              polling_timeout: timeout of the polling request in seconds. Default: 20
              proxy: Sets whether use proxy when sending requests
-             threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
+             malicious_threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
+             suspicious_threshold: The minimum score from the feed in order to to determine whether the indicator is suspicious. Ranges up to the malicious_threshold.
              risk_score_threshold: The minimum score to filter out the ingested indicators.
              tags: A list of tags to add to indicators
              :param tlp_color: Traffic Light Protocol color
@@ -76,7 +80,8 @@ class Client(BaseClient):
         self.api_token = self.headers['X-RFToken'] = api_token
         self.services = services
         self.indicator_type = indicator_type
-        self.threshold = int(threshold) if threshold else threshold
+        self.malicious_threshold = int(malicious_threshold) if malicious_threshold else malicious_threshold
+        self.suspicious_threshold = int(suspicious_threshold) if suspicious_threshold else suspicious_threshold
         self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
         self.tags = tags
         self.tlp_color = tlp_color
@@ -259,13 +264,15 @@ class Client(BaseClient):
         Returns:
             int. The indicator's Dbot score
         """
-        dbot_score = 0
         risk_from_feed = int(risk_from_feed)
-        if risk_from_feed >= self.threshold or risk_from_feed >= 65:
+        if risk_from_feed >= self.malicious_threshold:
             dbot_score = 3
-        elif risk_from_feed >= 5:
+        elif risk_from_feed >= self.suspicious_threshold:
             dbot_score = 2
-
+        elif risk_from_feed == 0:
+            dbot_score = 1
+        else:
+            dbot_score = 0
         return dbot_score
 
     def check_indicator_risk_score(self, risk_score):
@@ -566,7 +573,8 @@ def main():  # pragma: no cover
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
-                    params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
+                    params.get('suspicious_threshold'), params.get('risk_score_threshold'), argToList(params.get('feedTags')),
+                    params.get('tlp_color'))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     # Switch case
