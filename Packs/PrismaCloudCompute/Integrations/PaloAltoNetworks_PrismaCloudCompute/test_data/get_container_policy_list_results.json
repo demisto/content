@@ -194,11 +194,11 @@
       "deniedIPsEffect": "alert",
       "deniedIPs": [
         "1.1.1.1",
-        "2.2.2.0/24"
+        "1.1.1.0/24"
       ],
       "allowedIPs": [
         "8.8.8.8",
-        "7.7.7.0/24"
+        "8.8.8.0/24"
       ],
       "listeningPorts": {
         "allowed": [
