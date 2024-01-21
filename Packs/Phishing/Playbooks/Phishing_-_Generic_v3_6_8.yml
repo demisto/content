@@ -1319,7 +1319,9 @@ tasks:
           transformers:
           - operator: uniq
       MicrosoftHeadersSeverityCheck:
-        simple: ${Email.MicrosoftHeadersSeverityCheck}
+        complex:
+          root: Email
+          accessor: MicrosoftHeadersSeverityCheck
       XDRRiskyHosts:
         complex:
           root: PaloAltoNetworksXDR
