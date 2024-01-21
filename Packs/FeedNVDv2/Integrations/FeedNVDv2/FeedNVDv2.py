@@ -74,7 +74,7 @@ def parse_cpe_command(cpes: list[str], cve_id: str) -> tuple[list[str], list[Ent
     return list(vendors | products | parts), relationships
 
 
-def test_module(client: BaseClient, params: Dict[str, Any], test_run):
+def test_module(client: BaseClient, params: Dict[str, Any]):
     """
     Performs a simple API call to NVD for CVE-2021-44228 using the provided API key
 
@@ -91,13 +91,10 @@ def test_module(client: BaseClient, params: Dict[str, Any], test_run):
         headers = {
             'apiKey': api_key
         }
-        res = client._http_request('GET', full_url='https://services.nvd.nist.gov/rest/'
+        client._http_request('GET', full_url='https://services.nvd.nist.gov/rest/'
                                    + 'json/cves/2.0?cveId=CVE-2021-44228',  # disable-secrets-detection
                                    headers=headers)
-        if test_run:
-            return_results(res)
-        else:
-            return_results('ok')
+        return_results('ok')
 
     except Exception as e:  # pylint: disable=broad-except
         return_error("Invalid API key specified in integration instance configuration"
@@ -215,7 +212,6 @@ def retrieve_cves_command(client, params, test_run):
                     if not test_run:
                         process_cves_command(params, data_items, False)
                     else:
-                        demisto.debug(print(data_items))
                         return process_cves_command(params, data_items, True)
                     total_items += len(data_items)
                     data_items = []  # type: ignore
@@ -235,6 +231,7 @@ def retrieve_cves_command(client, params, test_run):
         demisto.updateModuleHealth(str(total_items) + " CVEs retrieved")
 
     demisto.debug(f"Total NVD CVE indicators fetched {total_items}")
+    return None
 
 
 def process_cves_command(params, cve_list, test_run):
@@ -346,6 +343,7 @@ def process_cves_command(params, cve_list, test_run):
                     + f'\nLast CVE of run: {str(indicators[-1]["value"])}')
 
     demisto.createIndicators(indicators)
+    return None
 
 def fetch_indicators_command(client, params):
     """
@@ -410,10 +408,7 @@ def main() -> None:
             proxy=proxy,
         )
 
-        if command == "test-module":
-            commands[command](client, params, True)  # type: ignore
-        else:
-            commands[command](client, params)  # type: ignore
+        commands[command](client, params)  # type: ignore
 
     except Exception as e:  # pylint: disable=broad-except
         demisto.error(traceback.format_exc())  # demisto.info the traceback

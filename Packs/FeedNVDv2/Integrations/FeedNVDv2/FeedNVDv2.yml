@@ -112,7 +112,7 @@ detaileddescription: |-
 
   ---
   [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/feed-nv-dv2)
-display: FeedNVD v2
+display: National Vulnerability Database Feed v2
 image: ''
 name: FeedNVDv2
 script:
