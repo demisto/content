@@ -1,4 +1,4 @@
-from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
+from rasterize import (rasterize, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
                        RasterizeMode, RasterizeType, init_driver, rasterize_html_command)
 import demistomock as demisto
 from CommonServerPython import entryTypes
@@ -67,32 +67,7 @@ def test_rasterize_no_defunct_processes(caplog):
         defunct_process_list = [process for process in processes if 'defunct' in process]
         assert not defunct_process_list
 
-        zombies, output = find_zombie_processes()
-        assert not zombies
-        assert 'defunct' not in output
         caplog.clear()
-
-
-@pytest.mark.filterwarnings('ignore::ResourceWarning')
-def test_find_zombie_processes(mocker):
-    ps_output = '''   PID  PPID S CMD
-    1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
-   39     1 Z [soffice.bin] <defunct>
-   55     1 Z [gpgconf] <defunct>
-   57     1 Z [gpgconf] <defunct>
-   59     1 Z [gpg] <defunct>
-   61     1 Z [gpgsm] <defunct>
-   63     1 Z [gpgconf] <defunct>
-   98     1 Z [gpgconf] <defunct>
-  100     1 Z [gpgconf] <defunct>
-  102     1 Z [gpg] <defunct>
-'''
-    mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
-    mocker.patch.object(os, 'getpid', return_value=1)
-    zombies, output = find_zombie_processes()
-
-    assert len(zombies) == 9
-    assert output == ps_output
 
 
 def test_merge_options():
