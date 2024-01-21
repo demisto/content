@@ -57,12 +57,20 @@ def main():
         content_pr = get_pr_from_branch('content', release_branch_name, access_token)
         sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
 
+        if not content_pr:
+            logging.info('content pull request not created yet')
+        if not sdk_pr:
+            logging.info('demisto-sdk pull request not created yet')
+
         time.sleep(60)
         elapsed = time.time() - start
 
-    logging.info('sdk and content prs created')
-    logging.info(f'demisto-sdk pull request is {sdk_pr.get("html_url")}')
-    logging.info(f'content pull request is {content_pr.get("html_url")}')
+    if elapsed >= TIMEOUT:
+        logging.error('Timeout reached while waiting for SDK and content pull requests creation')
+        sys.exit(1)
+
+    logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
+    logging.info(f'content pull request created: {content_pr.get("html_url")}')
 
     content_pr_state = 'open'
     sdk_pr_state = 'open'
@@ -81,7 +89,7 @@ def main():
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
-        logging.error('Timeout reached while waiting for SDK and content pull requests creation')
+        logging.error('Timeout reached while waiting for SDK and content pull requests to be merged')
         sys.exit(1)
 
     # check that content pr is merged
