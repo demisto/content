@@ -167,7 +167,7 @@ class Client(CrowdStrikeClient):
                 filter_string, indicators = self.handle_first_fetch_context_or_pre_2_1_0(filter_string)
                 if indicators:
                     limit = limit - len(indicators)
-
+        demisto.debug(f'Got the filter string {filter_string=}')
         if filter_string or not fetch_command:
             demisto.debug(f'{filter_string=}')
             params = assign_params(include_deleted=self.include_deleted,
@@ -279,7 +279,7 @@ class Client(CrowdStrikeClient):
 
         parsed_indicators: list = []
         indicator: dict = {}
-
+        demisto.debug(f"Got {len(raw_response['resources'])} resources")
         for resource in raw_response['resources']:
             if not (type_ := auto_detect_indicator_type_from_cs(resource['indicator'], resource['type'])):
                 demisto.debug(f"Indicator {resource['indicator']} of type {resource['type']} is not supported in XSOAR, skipping")
@@ -310,8 +310,10 @@ class Client(CrowdStrikeClient):
             if create_relationships:
                 relationships = create_and_add_relationships(indicator, resource)
                 indicator['relationships'] = relationships
+            demisto.debug(f"Created indicator with value {resource.get('indicator')},"
+                          f" update date {resource.get('last_updated')}, and created date {resource.get('published_date')}")
             parsed_indicators.append(indicator)
-
+        demisto.debug(f"Created {len(parsed_indicators)} indicators")
         return parsed_indicators
 
     @staticmethod
@@ -515,7 +517,6 @@ def main() -> None:
     try:
         command = demisto.command()
         demisto.info(f'Command being called is {demisto.command()}')
-
         client = Client(
             credentials=credentials,
             base_url=base_url,
@@ -535,6 +536,8 @@ def main() -> None:
         )
 
         if command == 'test-module':
+            demisto.info('Hello Hello')
+            demisto.debug('Hello Hello')
             # This is the call made when pressing the integration Test button.
             result = test_module(client, args)
             return_results(result)
