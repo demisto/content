@@ -1,6 +1,5 @@
 {
     "name": "NVD Feed 2.0",
-    "description": "Feed integration for the NIST National Vulnerability Database (CVEs)",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

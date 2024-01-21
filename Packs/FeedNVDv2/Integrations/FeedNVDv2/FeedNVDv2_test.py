@@ -1,41 +1,85 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
+import ast
+from FeedNVDv2 import retrieve_cves_command, parse_cpe_command, test_module
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
-def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
-        return json.loads(f.read())
+BASE_URL = "https://services.nvd.nist.gov"  # disable-secrets-detection
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def get_test_data(command_name):
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Retrieves data from specific files for unit testing
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
+    Args:
+        command_name: The command being tested
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    Returns:
+        The formatted data from the test data file
+    """
+    # Retrieve the raw CPE sample data
+    if command_name == "parse_cpe_command":
+        with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cpe_data.txt') as f:
+            return f.read()
+    # Retrieve the expected response to the sample CPE data
+    elif command_name == "parse_cpe_command_response":
+        with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cpe_data_response.txt') as f:
+            return f.read()
+    # Otherwise this is testing the CVE processing chain (retrieve_cves_command which calls process_cves_command)
+    else:
+        with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cve_data_response.json') as f:
+            return json.loads(f.read())
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+
+def test_parse_cpe_command():
+    """
+    Test function for the parse_cpe_command command
+
+    Args:
+        None
+
+    Returns:
+        Assertions if the tests fail for tag/relationship parsing of a CPE
+    """
+    cpe_data = [get_test_data("parse_cpe_command")]
+    responses = [get_test_data("parse_cpe_command_response")]
+
+    tags, relationships = parse_cpe_command(cpe_data, "CVE-2021-44228")
+
+    respList = [item.split('\n') for item in responses]
+    tags_response, relationships_response = respList[0][0], respList[0][1]
+
+    tags_response = ast.literal_eval(tags_response)
+    relationships_response = ast.literal_eval(relationships_response)
+
+    assert all(item in tags for item in tags_response), "Tag lists are not equal"
+    assert all(item in relationships for item in relationships_response), "Relationship dictionaries are not equal"
+
+
+def test_retrieve_cves_command():
+    """
+    Test function for the retrieve_cves_command command
+
+    Args:
+        None
+
+    Returns:
+        Assertions if the returned parsed indicator doesn't match the sample data
+    """
+    params = demisto.params()
+    client = BaseClient(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        )
+
+    indicator = retrieve_cves_command(client, params, True)
+    response = [get_test_data("test_cve_processing")]
+    
+    assert all(item in indicator[0] for item in response[0]), "Indicator dictionary does not match expected response"
+
+    
+"""if __name__ in ('__main__', '__builtin__', 'builtins'):
+    # test_parse_cpe_command()
+    test_retrieve_cves_command()"""

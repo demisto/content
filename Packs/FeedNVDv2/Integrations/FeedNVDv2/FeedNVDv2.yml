@@ -3,45 +3,135 @@ commonfields:
   id: FeedNVDv2
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: apiKey
+  required: true
+  type: 9
+- additionalinfo: First CVE was published in September of 1999
+  defaultvalue: "2013-01-01"
+  display: Date to begin fetching CVEs from (YYYY-MM-DD)
+  name: start_date
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
+- additionalinfo: 'See the following URL for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev' # disable-secrets-detection
+  defaultvalue: "false"
+  display: Return only CVEs that have a known exploited vulnerability (KEV) associated with them
+  name: hasKev
+  required: false
+  type: 8
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
   required: true
-  hiddenusername: true
-  type: 9
-- display: Trust any certificate (not secure)
+  type: 15
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- defaultvalue: never
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: "true"
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: FeedNVDv2
+  type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nRejected CVEs are not ingested as part of this integration.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023. "
+detaileddescription: |-
+  ## BaseIntegration Help
+
+  Markdown file for integration configuration  help snippet. In this file add:
+
+  - Brief information about how to retrieve the API key of your product
+  - Other useful information on how to configure your integration in XSOAR
+
+  Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/feed-nv-dv2)
+display: FeedNVD v2
+image: ''
 name: FeedNVDv2
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
+    - auto: PREDEFINED
+      description: Number of days back to retrieve CVEs.
+      name: history
+      predefined:
+      - ""
       required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    description: Manually retrieve CVEs from NVD using the history parameter for number of days back to fetch.
+    name: nvd-get-indicators
+  dockerimage: demisto/python3:3.10.13.85667
+  feed: true
   runonce: false
-  script: '-'
-  type: python
+  script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
-fromversion: 5.5.0
+  type: python
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
