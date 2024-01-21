@@ -350,7 +350,13 @@ def get_urls_from_binary_file(file_path: str) -> set:
             binary_file_urls.add(mached_url[0])
     return binary_file_urls
 
-
+def get_hashes_from_binary_file(file_path: str) -> set[str]:
+    demisto.debug('Extracting hashes from binary file')
+    hashes = []
+    with open(file_path, 'rb') as file:
+        hashes = re.findall(hashRegex, str(file.read()))
+    return set(hashes)
+    
 def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str) -> Tuple[set, set]:
     """
     Extract the URLs and emails from the pdf html content.
@@ -523,6 +529,10 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
 
     # Get urls from the binary file:
     binary_file_urls = get_urls_from_binary_file(file_path)
+
+    # Get hashes from the binary file
+    binary_file_hashes = get_hashes_from_binary_file(file_path)
+    print(binary_file_hashes)
 
     # Get URLS + emails:
     annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
