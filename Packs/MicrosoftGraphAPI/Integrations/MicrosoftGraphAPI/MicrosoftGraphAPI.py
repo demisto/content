@@ -45,7 +45,7 @@ class MsGraphClient:
             'redirect_uri': redirect_uri,
             'command_prefix': "msgraph-api",
         }
-        if not (app_secret and tenant_id):
+        if not ((app_secret or (certificate_thumbprint and private_key)) and tenant_id):
             client_args['grant_type'] = DEVICE_CODE
             client_args['token_retrieval_url'] = urljoin(azure_cloud.endpoints.active_directory,
                                                          '/organizations/oauth2/v2.0/token')
