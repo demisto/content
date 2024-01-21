@@ -337,13 +337,15 @@ def fetch_mails(client: IMAPClient,
         demisto.debug(f'message_id not provided, using generated query {messages_query}')
         messages_uids = client.search(messages_query)
         demisto.debug(f"client returned {len(messages_uids)} message ids: {messages_uids=}")
-        # first fetch takes last page only (workaround as first_fetch filter is date accurate)
-        if uid_to_fetch_from == 1:
-            messages_uids = messages_uids[-limit:]
-            demisto.debug(f"limiting to the LAST {limit=} messages since uid_to_fetch_from == 1")
-        elif len(messages_uids) > limit:
-            messages_uids = messages_uids[:limit]
-            demisto.debug(f"limiting to the first {limit=} messages")
+
+        if len(messages_uids) > limit: # If there's any reason to shorten the list
+            if uid_to_fetch_from == 1:
+                # first fetch takes last page only (workaround as first_fetch filter is date accurate)
+                messages_uids = messages_uids[-limit:]
+                demisto.debug(f"limiting to the LAST {limit=} messages since uid_to_fetch_from == 1")
+            else:
+                messages_uids = messages_uids[:limit]
+                demisto.debug(f"limiting to the first {limit=} messages")
         demisto.debug(f"{messages_uids=}")
     
     fetched_email_objects = []
