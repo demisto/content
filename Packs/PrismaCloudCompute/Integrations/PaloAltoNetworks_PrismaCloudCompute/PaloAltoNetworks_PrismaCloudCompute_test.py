@@ -1779,7 +1779,7 @@ def test_get_runtime_container_audit_events_command(requests_mock):
         ("unarchive", "Incident 1111 was successfully unarchived")
     ]
 )
-def test_archive_audit_incident_command(mocker,action, response):
+def test_archive_audit_incident_command(mocker, action, response):
     """
     Given:
         - An app client object

@@ -533,7 +533,7 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="audits/runtime/container", params=params)
 
-    def archive_audit_incident(self, incident_id: [str], data: Optional[str] = None) -> List[dict]:
+    def archive_audit_incident(self, incident_id: str, data: Optional[str] = None) -> dict:
         """
         Sends a request to archive audit incident.
 
@@ -541,7 +541,7 @@ class PrismaCloudComputeClient(BaseClient):
             list[dict]: runtime container audit events information.
         """
         suffix = f'audits/incidents/acknowledge/{incident_id}'
-        return self._http_request(method="patch", url_suffix=suffix , data=data, resp_type= "response")
+        return self._http_request(method="patch", url_suffix=suffix, data=data, resp_type="response")
 
     def get_runtime_host_audit_events(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
         if all_results:
@@ -2539,14 +2539,12 @@ def archive_audit_incident_command(client: PrismaCloudComputeClient, args: dict)
         data = '{"acknowledged": true}'
     else:
         data = '{"acknowledged": false}'
-    try:
-        client.archive_audit_incident(incident_id=incident_id, data=data)
-        if "true" in data:
-            return f'Incident {incident_id} was successfully archived'
-        else:
-            return f'Incident {incident_id} was successfully unarchived'
-    except Exception as e:
-        return f'failed to run command prisma-cloud-archive-audit-incident. Error: {str(e)}'
+
+    client.archive_audit_incident(incident_id=incident_id, data=data)
+    if "true" in data:
+        return f'Incident {incident_id} was successfully archived'
+    else:
+        return f'Incident {incident_id} was successfully unarchived'
 
 
 def get_host_audit_list_command(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -2585,7 +2583,7 @@ def get_host_audit_list_command(client: PrismaCloudComputeClient, args: dict) ->
     params = assign_params(
         offset=offset, limit=limit, clusters=clusters, namespaces=namespaces, id=audit_id, profileID=profile_id,
         imageName=image_name, container=container, containerID=container_id, type=_type, effect=effect,
-        user=user, os=_os, app=app, hostname=hostname, attack_type=attack_type, severity=severity, message=message,
+        user=user, time=_time, os=_os, app=app, hostname=hostname, attack_type=attack_type, severity=severity, message=message,
     )
     if runtime_host_audit_events := client.get_runtime_host_audit_events(all_results=all_results, params=params):
         table = tableToMarkdown(
@@ -2636,7 +2634,7 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
     if runtime_container_policy_events := client.get_runtime_container_policy():
         runtime_rules = runtime_container_policy_events.get("rules")
         if len(runtime_rules) > limit and not all_results:
-            runtime_rules = runtime_rules[offset*limit:offset*limit + limit]
+            runtime_rules = runtime_rules[offset*limit:offset * limit + limit]
 
         table = tableToMarkdown(
             name="Runtime Container Policy Events Information",
@@ -2647,7 +2645,7 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
                     "Modified": audit_events.get("modified", None),
                 } for audit_events in runtime_rules
             ],
-            headers=["Name", "Owner", "Modified",],
+            headers=["Name", "Owner", "Modified"],
             removeNull=True,
         )
     else:
