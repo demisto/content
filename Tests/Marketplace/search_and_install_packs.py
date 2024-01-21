@@ -1,16 +1,15 @@
-
 import base64
 import contextlib
 import glob
+import itertools
 import json
 import os
 import re
-import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 from pathlib import Path
-from threading import Lock
 from typing import Any
+import networkx as nx
+from networkx import DiGraph
 
 import demisto_client
 from demisto_sdk.commands.common import tools
@@ -40,6 +39,8 @@ PACK_METADATA_FILE = Pack.PACK_METADATA
 GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
 
 BATCH_SIZE = 10
+PAGE_SIZE_DEFAULT = 50
+CYCLE_SEPARATOR = "<->"
 
 
 @lru_cache
@@ -101,7 +102,6 @@ def is_pack_deprecated(pack_id: str, production_bucket: bool = True,
         If 'production_bucket' is True, one of 'master_commit_hash' or 'pack_api_data' must be provided
         in order to determine whether the pack is deprecated or not.
         'commit_hash' is used to fetch pack's metadata from a specific commit hash (ex: production bucket's last commit)
-        'pack_api_data' is the API data of a specific pack item (and not the complete response with a list of packs).
 
     Args:
         pack_id (str): ID of the pack to check.
@@ -110,7 +110,6 @@ def is_pack_deprecated(pack_id: str, production_bucket: bool = True,
         commit_hash (str, optional): Commit hash branch to use if 'production_bucket' is False.
             If 'pack_api_data' is not provided, will be used for fetching 'pack_metadata.json' file from GitLab.
         pack_api_data (dict | None, optional): Marketplace API data to use if 'production_bucket' is False.
-            Needs to be the API data of a specific pack item (and not the complete response with a list of packs).
 
     Returns:
         bool: True if the pack is deprecated, False otherwise
@@ -118,7 +117,7 @@ def is_pack_deprecated(pack_id: str, production_bucket: bool = True,
     if production_bucket:
         if pack_api_data:
             try:
-                return pack_api_data['extras']['pack'].get('deprecated', False)
+                return pack_api_data["deprecated"]
 
             except Exception as ex:
                 logging.error(f"Failed to parse API response data for '{pack_id}'.\n"
@@ -165,79 +164,6 @@ def get_pack_id_from_error_with_gcp_path(error: str) -> str:
         str: The id of given pack.
     """
     return error.split('/packs/')[1].split('.zip')[0].split('/')[0]
-
-
-def create_dependencies_data_structure(response_data: dict, dependants_ids: list,
-                                       dependencies_data: list, checked_packs: list):
-    """
-    Recursively create packs' dependencies data structure for installation requests (only required and uninstalled).
-
-    Args:
-        response_data (dict): Dependencies data from the '/search/dependencies' endpoint response.
-        dependants_ids (list): A list of the dependant packs IDs.
-        dependencies_data (list): The dependencies data structure to be created.
-        checked_packs (list): Required dependants that were already found.
-    """
-    next_call_dependants_ids = []
-
-    for dependency in response_data:
-        dependants = dependency.get('dependants', {})
-
-        for dependant in dependants:
-            is_required = dependants[dependant].get('level', '') == 'required'
-
-            if all((dependant in dependants_ids, is_required, dependency['id'] not in checked_packs)):
-                dependencies_data.append(dependency)
-                next_call_dependants_ids.append(dependency['id'])
-                checked_packs.append(dependency['id'])
-
-    if next_call_dependants_ids:
-        create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
-
-
-def get_pack_dependencies(client: demisto_client,
-                          pack_id: str,
-                          attempts_count: int = 5,
-                          sleep_interval: int = 60,
-                          request_timeout: int = 900,
-                          ) -> dict | None:
-    """
-    Get pack's required dependencies.
-
-    Args:
-        client (demisto_client): The configured client to use.
-        pack_id (str): ID of the pack to get dependencies for.
-        attempts_count (int): The number of attempts to install the packs.
-        sleep_interval (int): The sleep interval, in seconds, between request retry attempts.
-        request_timeout (int): The timeout per call to the server.
-
-    Returns:
-        dict | None: API response data for the /search/dependencies endpoint. None if the request failed.
-    """
-    api_endpoint = "/contentpacks/marketplace/search/dependencies"
-    body = [{"id": pack_id}]  # Not specifying a "version" key will return the latest version of the pack.
-
-    def success_handler(response):
-        logging.success(f"Succeeded to fetch dependencies for pack '{pack_id}'")
-        return True, response
-
-    failure_massage = f"Failed to fetch dependencies for pack: {pack_id}"
-    retries_message = f"Retrying to fetch dependencies for pack: {pack_id}"
-    prior_message = f"Fetching dependencies information for pack: {pack_id} using Marketplace API"
-
-    _, data = generic_request_with_retries(client=client,
-                                           retries_message=retries_message,
-                                           exception_message=failure_massage,
-                                           prior_message=prior_message,
-                                           path=api_endpoint,
-                                           method='POST',
-                                           response_type='object',
-                                           body=body,
-                                           request_timeout=request_timeout,
-                                           attempts_count=attempts_count,
-                                           sleep_interval=sleep_interval,
-                                           success_handler=success_handler)
-    return data
 
 
 def find_malformed_pack_id(body: str) -> list:
@@ -460,113 +386,6 @@ def install_packs(client: demisto_client,
                                         )
 
 
-def search_pack_and_its_dependencies(client: demisto_client,
-                                     pack_id: str,
-                                     packs_to_install: list,
-                                     installation_request_body: list,
-                                     lock: Lock,
-                                     collected_dependencies: list,
-                                     production_bucket: bool,
-                                     commit_hash: str,
-                                     multithreading: bool = True,
-                                     list_packs_and_its_dependency_install_request_body: list | None = None,
-                                     ) -> bool:
-    """
-    Update 'packs_to_install' (a pointer to a list that's reused and updated by the function on every iteration)
-    with 'pack_id' and its dependencies, if 'pack_id' is not deprecated.
-    The way deprecation status is determined depends on the 'production_bucket' flag.
-
-    If 'production_bucket' is True, deprecation status is determined by checking the 'pack_metadata.json' file
-    in the commit hash that was used for the last upload. If it's False, the deprecation status is checking the
-    'pack_metadata.json' file locally (with changes applied on the branch).
-
-    Args:
-        client (demisto_client): The configured client to use.
-        pack_id (str): The id of the pack to be installed.
-        packs_to_install (list) A list of the packs to be installed in this iteration.
-        installation_request_body (list): A list of packs to be installed, in the request format.
-        lock (Lock): A lock object.
-        collected_dependencies (list): list of packs that are already in the list to install
-        production_bucket (bool): Whether pack deprecation status  is determined using production bucket.
-        commit_hash (str): Commit hash to use for checking pack's deprecations status if GitLab's API is used.
-            If 'pack_api_data' is not provided, will be used for fetching 'pack_metadata.json' file from GitLab.
-        multithreading (bool): Whether to install packs in parallel or not.
-            If false - install all packs in one batch.
-        list_packs_and_its_dependency_install_request_body (list | None, None): A list of pack batches (lists)
-            to use in installation requests. Each list contain one pack and its dependencies.
-    # Returns: True if we succeeded to get the dependencies, False otherwise.
-    """
-    if is_pack_deprecated(pack_id=pack_id, production_bucket=production_bucket, commit_hash=commit_hash):
-        logging.warning(f"Pack '{pack_id}' is deprecated (hidden) and will not be installed.")
-        return True
-
-    api_data = get_pack_dependencies(client=client, pack_id=pack_id)
-
-    if not api_data:
-        return False
-
-    dependencies_data: list[dict] = []
-
-    try:
-        pack_api_data = api_data['packs'][0]
-        current_packs_to_install = [pack_api_data]
-
-        create_dependencies_data_structure(response_data=api_data.get('dependencies', []),
-                                           dependants_ids=[pack_id],
-                                           dependencies_data=dependencies_data,
-                                           checked_packs=[pack_id])
-
-    except Exception as ex:
-        logging.error(f"Error: {ex}\n\nStack trace:\n{traceback.format_exc()}")
-        return False
-
-    if dependencies_data:
-        dependencies_ids = [dependency['id'] for dependency in dependencies_data]
-        logging.debug(f"Found dependencies for '{pack_id}': {dependencies_ids}")
-
-        for dependency in dependencies_data:
-            dependency_id = dependency['id']
-            is_deprecated = is_pack_deprecated(pack_id=dependency_id,
-                                               production_bucket=production_bucket, pack_api_data=dependency)
-
-            if is_deprecated:
-                logging.critical(f"Pack '{pack_id}' depends on pack '{dependency_id}' which is a deprecated pack.")
-                return False
-            current_packs_to_install.append(dependency)
-
-    with lock:
-        if not multithreading:
-            if list_packs_and_its_dependency_install_request_body is None:
-                list_packs_and_its_dependency_install_request_body = []
-            pack_and_its_dependencies = {}
-            for p in current_packs_to_install:
-                if p['id'] not in collected_dependencies:
-                    pack_and_its_dependencies.update({p['id']: p})
-
-            if pack_and_its_dependencies:
-                collected_dependencies += pack_and_its_dependencies
-                pack_and_its_dependencies_as_list = [
-                    get_pack_installation_request_data(
-                        pack_id=pack['id'],
-                        # Taking the maximum version as the dependency may be on lower version.
-                        # currentVersion is not always available and sometimes returns as "".
-                        pack_version=max(pack['currentVersion'], pack['extras']['pack']['currentVersion']))
-                    for pack in list(pack_and_its_dependencies.values())
-                ]
-                packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
-                list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
-                logging.info(
-                    f"list_packs_and_its_dependency_install_request_body: {list_packs_and_its_dependency_install_request_body} ")
-        else:  # multithreading
-            for pack in current_packs_to_install:
-                if pack['id'] not in packs_to_install:
-                    packs_to_install.append(pack['id'])
-                    installation_request_body.append(
-                        get_pack_installation_request_data(pack_id=pack['id'],
-                                                           pack_version=pack['extras']['pack']['currentVersion']))
-    return True
-
-
 def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> str:
     """
     Retrieves the latest version of pack in the bucket
@@ -742,82 +561,297 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
     return install_packs_private(client, host, pack_ids, test_pack_path)
 
 
-def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client, hostname: str | None = None,
-                                                    multithreading: bool = True,
-                                                    production_bucket: bool = True):
-    """
-    Searches for the packs from the specified list, searches their dependencies, and then
-    installs them.
+def create_graph(
+    all_packs_dependencies: dict,
+) -> DiGraph:
+    """Creates a NetworkX directed graph representing the dependencies between packs.
+
+    Iterates over the provided dictionary containing all packs dependencies and adds
+    directed edges to the graph from each dependent pack to the pack it depends on.
+    Edges are only added for mandatory dependencies.
 
     Args:
-        pack_ids (list): A list of the pack ids to search and install.
-        client (demisto_client): The client to connect to.
-        hostname (str): Hostname of instance. Using for logs.
-        multithreading (bool): Whether to use multithreading to install packs in parallel.
-            If multithreading is used, installation requests will be sent in batches of each pack and its dependencies.
-        production_bucket (bool): Whether the installation is in post update mode. Defaults to False.
-    Returns (list, bool):
-        A list of the installed packs' ids, or an empty list if is_nightly == True.
-        A flag that indicates if the operation succeeded or not.
+        all_packs_dependencies (dict): Dictionary containing pack IDs as keys and their
+                                       dependencies as the values.
+
+    Returns:
+        DiGraph: NetworkX directed graph with edges representing dependencies
+                 between packs.
     """
-    host = hostname or client.api_client.configuration.host
+    graph_dependencies = nx.DiGraph()
+    for pack_id in all_packs_dependencies:
+        pack_dependencies = all_packs_dependencies[pack_id]["dependencies"]
+        for dependence in pack_dependencies:
+            if pack_dependencies[dependence]["mandatory"]:
+                graph_dependencies.add_edge(dependence, pack_id)
+    return graph_dependencies
 
-    logging.info(f'Starting search for packs to install on: {host}')
 
-    packs_to_install: list = []  # Packs we want to install, to avoid duplications
-    installation_request_body: list = []  # Packs to install, in the request format
-    list_packs_and_its_dependency_install_request_body: list = []  # List of lists of packs to install if not using multithreading
-    # Each list contain one pack and its dependencies.
-    collected_dependencies: list = []  # List of packs that are already in the list to install.
-    master_commit_hash = get_env_var("LAST_UPLOAD_COMMIT")
+def merge_cycles(graph: DiGraph) -> dict[str, str]:
+    """Merges nodes that form cycles in the directed graph into a single node.
 
-    lock = Lock()
+    Args:
+        graph (DiGraph): The directed graph to merge cycles in.
 
-    kwargs = {
-        'client': client,
-        'packs_to_install': packs_to_install,
-        'installation_request_body': installation_request_body,
-        'lock': lock,
-        'collected_dependencies': collected_dependencies,
-        'production_bucket': production_bucket,
-        'multithreading': multithreading,
-        'list_packs_and_its_dependency_install_request_body': list_packs_and_its_dependency_install_request_body,
-        'commit_hash': master_commit_hash,
+    Returns:
+        dict[str, str]: A dictionary mapping the original node names that were part of 
+        cycles to the merged node name for that cycle.
+    """
+    logging.debug(
+        f"Found the following cycles in the graph: {list(nx.simple_cycles(graph))}"
+    )
+    map_cycles = {}
+    while list(nx.simple_cycles(graph)):
+        cycle = list(nx.simple_cycles(graph))[0]
+        merged_node_name = CYCLE_SEPARATOR.join(cycle)
+        for node_1, node_2 in list(graph.edges()):
+            if node_1 in cycle:
+                graph.add_edge(merged_node_name, node_2)
+            elif node_2 in cycle:
+                graph.add_edge(node_1, merged_node_name)
+        for node in cycle:
+            graph.remove_node(node)
+        map_cycles.update(
+            {
+                node: merged_node_name
+                for node in itertools.chain.from_iterable(split_cycles(cycle))
+            }
+        )
+    return map_cycles
+
+
+def split_cycles(list_of_nodes: list[str]) -> list[list[str]]:
+    """Splits nodes that are merged cycles into individual nodes.
+
+    Args:
+        list_of_nodes (list[str]): A list of node names,
+        where some of which are merged nodes with CYCLE_SEPARATOR.
+
+    Returns:
+        list[list[str]]: List of lists, that each list contains a single node,
+        or several nodes that were merged.
+    """
+    return [node.split(CYCLE_SEPARATOR) for node in list_of_nodes]
+
+
+def get_all_content_packs_dependencies(client: demisto_client) -> dict[str, dict]:
+    """Gets all content packs dependencies from the Marketplace API.
+
+    Iterates over all pages of pack results from the Marketplace /search API.
+    Extracts the "dependencies" field from each pack and collects them into a
+    mapping of pack ID to dependencies dict.
+
+    Args:
+        client: Demisto API client instance
+
+    Returns:
+        dict[str, dict]: Mapping of pack ID to dependencies dict with fields:
+                         "currentVersion", "dependencies", "deprecated"
+    """
+    all_packs_dependencies = {}
+    for i in itertools.count():
+        response = get_one_page_of_packs_dependencies(client, i)
+        packs = response["packs"]
+        for pack in packs:
+            all_packs_dependencies[pack["id"]] = {
+                "currentVersion": pack["currentVersion"],
+                "dependencies": pack["dependencies"],
+                "deprecated": pack["deprecated"],
+            }
+        if len(packs) < PAGE_SIZE_DEFAULT:
+            break
+    return all_packs_dependencies
+
+
+def get_one_page_of_packs_dependencies(
+    client: demisto_client,
+    page: int,
+    attempts_count: int = 5,
+    sleep_interval: int = 60,
+    request_timeout: int = 900,
+):
+    """
+    Fetches one page of pack dependencies from the Marketplace API.
+
+    Args:
+        client: The Demisto API client object
+        page: The page number to retrieve
+        attempts_count: Number of retries upon failure
+        sleep_interval: Time to sleep between retries
+        request_timeout: Request timeout period
+
+    Returns:
+        The JSON response containing the packs dependencies for the given page
+    """
+    api_endpoint = "/contentpacks/marketplace/search"
+    body = {
+        "page": page,
+        "size": PAGE_SIZE_DEFAULT,
+        "sort": [
+            {"field": "searchRank", "asc": False},
+            {"field": "updated", "acs": False},
+        ],
     }
 
-    success = True
-    if not multithreading:
-        pack_ids = sorted(pack_ids, key=lambda x: (x == "DeveloperTools", x == "Base"))
-        logging.info(f"pack_ids = {pack_ids}")
-        for pack_id in pack_ids:
-            success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
+    def success_handler(response):
+        logging.success(f"Succeeded to fetch dependencies of page {page}")
+        return True, response
 
-        batch_packs_install_request_body = create_batches(list_packs_and_its_dependency_install_request_body)
+    failure_massage = f"Failed to fetch dependencies of page: {page}"
+    retries_message = f"Retrying to fetch dependencies of page: {page}"
+    prior_message = (
+        f"Fetching dependencies information of page {page} using Marketplace API"
+    )
 
-    else:
-        with ThreadPoolExecutor(max_workers=50) as pool:
-            futures = [
-                pool.submit(
-                    search_pack_and_its_dependencies, pack_id=pack_id, **kwargs
+    _, data = generic_request_with_retries(
+        client=client,
+        retries_message=retries_message,
+        exception_message=failure_massage,
+        prior_message=prior_message,
+        path=api_endpoint,
+        method="POST",
+        response_type="object",
+        body=body,
+        request_timeout=request_timeout,
+        attempts_count=attempts_count,
+        sleep_interval=sleep_interval,
+        success_handler=success_handler,
+    )
+    return data
+
+
+def search_for_deprecated_dependencies(
+    pack_id: str,
+    dependencies_for_pack_id: set,
+    production_bucket: bool,
+    all_packs_dependencies_data: dict,
+):
+    """
+    Checks if the given pack ID has any deprecated dependencies. 
+
+    Args:
+        pack_id (str): The ID of the pack to check.
+        dependencies_for_pack_id (set): The set of dependency pack IDs for the pack.
+        production_bucket (bool): Whether production bucket is used.
+        all_packs_dependencies_data (dict): Mapping of pack ID to pack metadata.
+
+    Returns:
+        bool: False if no deprecated dependencies were found, True otherwise.
+    """
+    for dependency_pack in dependencies_for_pack_id:
+        is_deprecated = is_pack_deprecated(
+            pack_id=dependency_pack,
+            production_bucket=production_bucket,
+            pack_api_data=all_packs_dependencies_data[dependency_pack],
+        )
+        if is_deprecated:
+            logging.critical(
+                f"Pack '{pack_id}' depends on pack '{dependency_pack}' which is a deprecated pack.\n"
+                "The pack and its dependencies will not be installed"
+            )
+            return False
+    return True
+
+
+def get_packs_and_dependencies_to_install(
+    pack_ids: list,
+    graph_dependencies: DiGraph,
+    all_packs_and_dependencies_to_install: set,
+    production_bucket: bool,
+    all_packs_dependencies_data: dict,
+) -> bool:
+    """
+    Fetches packs to install along with their dependencies. Checks if any dependencies are deprecated
+    and omits packs with deprecated dependencies.
+
+    Args:
+        pack_ids (list): List of pack IDs to get dependencies for 
+        graph_dependencies (DiGraph): Dependency graph of all packs
+        all_packs_and_dependencies_to_install (set): Set to store selected packs and dependencies
+        production_bucket (bool): Whether production bucket is used
+        all_packs_dependencies_data (dict):  Mapping of pack ID to pack metadata.
+
+    Returns:
+        bool: False if any deprecated dependencies found, True otherwise
+    """
+    no_deprecated_dependencies = True
+
+    for pack_id in pack_ids:
+        dependencies_for_pack_id = nx.ancestors(graph_dependencies, pack_id)
+
+        if dependencies_for_pack_id:
+            logging.debug(
+                f"Found dependencies for '{pack_id}': {dependencies_for_pack_id}"
+            )
+            no_deprecated_dependency = search_for_deprecated_dependencies(
+                pack_id,
+                dependencies_for_pack_id,
+                production_bucket,
+                all_packs_dependencies_data,
+            )
+            if no_deprecated_dependency:
+                all_packs_and_dependencies_to_install.update(
+                    dependencies_for_pack_id | {pack_id}
                 )
-                for pack_id in pack_ids
+            else:
+                no_deprecated_dependencies = False
+        else:
+            logging.debug(f"No dependencies found for '{pack_id}'")
+
+    return no_deprecated_dependencies
+
+
+def create_install_request_body(
+    packs_to_install: list[list[str]],
+    all_packs_dependencies_data: dict[str, dict],
+) -> list[list[dict]]:
+    """Creates the request body for installing packs.
+    An inner list will contain several IDs if they are circularly dependent on each other.
+
+    Args:
+        packs_to_install: List of lists of pack IDs to install
+        all_packs_dependencies_data: Dict containing dependencies data for all packs
+
+    Returns:
+        list: Request body with installation data for the packs
+    """
+    request_body = []
+    for pack_ids in packs_to_install:
+        request_body.append(
+            [
+                get_pack_installation_request_data(
+                    pack, all_packs_dependencies_data[pack]["currentVersion"]
+                )
+                for pack in pack_ids
             ]
-            for future in as_completed(futures):
-                try:
-                    success &= future.result()
-                except Exception:  # noqa E722
-                    logging.exception(
-                        f"An exception occurred while searching for dependencies of pack '{pack_ids[futures.index(future)]}'"
-                    )
-                    success = False
-        batch_packs_install_request_body = [installation_request_body]
+        )
 
-    for packs_to_install_body in batch_packs_install_request_body:
-        pack_success, _ = install_packs(client, host, packs_to_install_body)
-        success &= pack_success
+    return request_body
 
-    return packs_to_install, success
+
+def search_for_deprecated_packs(
+    pack_ids: list[str], production_bucket: bool, commit_hash: str
+) -> None:
+    """Checks if any packs in pack_ids are deprecated and removes them from the list.
+
+    For each pack ID in pack_ids, calls is_pack_deprecated to check if that pack is deprecated.
+    If so, logs a warning and removes the pack from the pack_ids list so it will not be installed.
+
+    Args:
+        pack_ids: List of pack IDs to check.
+        production_bucket: Whether the installation is for production or not.
+        commit_hash: The git commit hash to check against.
+    """
+    for pack_id in pack_ids:
+        if is_pack_deprecated(
+            pack_id=pack_id,
+            production_bucket=production_bucket,
+            commit_hash=commit_hash,
+        ):
+            logging.warning(
+                f"Pack '{pack_id}' is deprecated (hidden) and will not be installed."
+            )
+            pack_ids.remove(pack_id)
 
 
 def create_batches(list_of_packs_and_its_dependency: list):
@@ -829,7 +863,6 @@ def create_batches(list_of_packs_and_its_dependency: list):
             where each item is another list of a pack and its dependencies.
         A list of pack batches (lists) to use in installation requests in size less than BATCH_SIZE
     """
-
     batch: list = []
     list_of_batches: list = []
     for packs_to_install_body in list_of_packs_and_its_dependency:
@@ -842,3 +875,88 @@ def create_batches(list_of_packs_and_its_dependency: list):
     list_of_batches.append(batch)
 
     return list_of_batches
+
+
+def search_and_install_packs_and_their_dependencies(
+    pack_ids: list,
+    client: demisto_client,
+    hostname: str | None = None,
+    multithreading: bool = False,
+    production_bucket: bool = True,
+):
+    """
+    Searches for the packs from the specified list, searches their dependencies, and then
+    installs them.
+
+    Args:
+        pack_ids (list): A list of the pack ids to search and install.
+        client (demisto_client): The client to connect to.
+        hostname (str): Hostname of instance. Using for logs.
+        multithreading (bool): Whether to use multithreading to install packs in parallel.
+            If multithreading is used, installation requests will be sent in batches of each pack and its dependencies.
+        production_bucket (bool): Whether the installation is in post update mode. Defaults to False.
+    Returns (list, bool):
+        A list of the installed packs IDs.
+        A flag that indicates if the operation succeeded or not.
+    """
+    host = hostname or client.api_client.configuration.host
+
+    logging.info(f"Starting search for packs to install on: {host}")
+
+    master_commit_hash = get_env_var("LAST_UPLOAD_COMMIT")
+
+    success = True
+
+    search_for_deprecated_packs(pack_ids, production_bucket, master_commit_hash)
+    if not pack_ids:
+        logging.info(f"No packs to install on: {host}")
+        return [], success
+
+    all_packs_dependencies_data = get_all_content_packs_dependencies(client)
+
+    graph_dependencies = create_graph(all_packs_dependencies_data)
+
+    all_packs_and_dependencies_to_install: set[str] = set()
+    success &= get_packs_and_dependencies_to_install(
+        pack_ids,
+        graph_dependencies,
+        all_packs_and_dependencies_to_install,
+        production_bucket,
+        all_packs_dependencies_data,
+    )
+
+    map_merged_cycles = merge_cycles(graph_dependencies)
+
+    # Create subgraph only with the packs that will be installed
+    graph_dependencies_for_installed_packs = nx.subgraph(
+        graph_dependencies,
+        {
+            map_merged_cycles[pack] if pack in map_merged_cycles else pack
+            for pack in all_packs_and_dependencies_to_install
+        },
+    )
+    logging.debug(
+        f"Get the following topological sort: {list(nx.topological_generations(graph_dependencies_for_installed_packs))}"
+    )
+    sorted_packs_to_install = split_cycles(
+        list(nx.topological_sort(graph_dependencies_for_installed_packs))
+    )
+
+    packs_to_install_request_body = create_install_request_body(
+        sorted_packs_to_install,
+        all_packs_dependencies_data,
+    )
+    logging.debug(f"{packs_to_install_request_body=}")
+
+    if multithreading:
+        batch_packs_install_request_body = [
+            list(itertools.chain.from_iterable(packs_to_install_request_body))
+        ]
+    else:
+        batch_packs_install_request_body = create_batches(packs_to_install_request_body)
+
+    for packs_to_install_body in batch_packs_install_request_body:
+        pack_success, _ = install_packs(client, host, packs_to_install_body)
+        success &= pack_success
+
+    return sorted_packs_to_install, success
