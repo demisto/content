@@ -1,10 +1,12 @@
 name: Trigger Contribution Build Arad Test
 on:
-  push
+  pull_request_target:
+    types: [labeled]
 
 jobs:
   trigget_contrib_build:
     runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'ready-for-instance-test') == true && github.event.pull_request.head.repo.fork == true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
