@@ -362,5 +362,5 @@ script:
   type: python
 defaultEnabled: true
 tests:
-  - Rasterize Test V2
+  - Rasterize Test
 fromversion: 5.0.0
