@@ -103,7 +103,7 @@ def get_earliest_events(client, start_date, offset=0):
             break
         total_results = response.get('metadata', {}).get('results', {}).get('total')
         if not total_results:
-            raise 'wrong response returned'
+            raise Exception('wrong response returned')
         offset = total_results - 500
 
     # Reverses the list of events so that the list is in ascending order

@@ -4,7 +4,6 @@ Unit testing for CiscoAMP (Advanced Malware Protection)
 import json
 import io
 import os
-from typing import Dict, List, Any
 import pytest
 from CiscoAMPEventCollector import Client
 from CommonServerPython import DemistoException
