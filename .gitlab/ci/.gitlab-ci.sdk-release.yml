@@ -68,7 +68,7 @@ trigger-content-internal-dist-nightly:
     - echo "GOLD_PIPELINE_ID = " $GOLD_PIPELINE_ID
     - echo $GOLD_PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
     - echo "content-internal-dist nightly build triggered successfully:"
-    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID
+    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID  # disable-secrets-detection
 
 
 trigger-demisto-sdk-nightly:
@@ -95,7 +95,7 @@ trigger-demisto-sdk-nightly:
     - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
     - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
     - echo "demisto-sdk nightly build triggered successfully:"
-    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/pipelines/"$SDK_PIPELINE_ID
+    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/pipelines/"$SDK_PIPELINE_ID  # disable-secrets-detection
 
 
 wait-for-content-private-nightly:
