@@ -1045,7 +1045,6 @@ class BranchTestCollector(TestCollector):
                     reason=CollectionReason.NON_CODE_FILE_CHANGED,
                     reason_description=reason_description,
                     content_item_range=content_item.version_range if content_item else None,
-                    only_to_install=True
                 )
 
         if file_type in ONLY_UPLOAD_PACK_FILE_TYPES:
