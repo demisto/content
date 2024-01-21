@@ -1,6 +1,6 @@
 name: Trigger Contribution Build Arad Test
 on:
-  workflow_dispatch
+  push
 
 jobs:
   trigget_contrib_build:
