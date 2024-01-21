@@ -15,6 +15,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 urllib3.disable_warnings()
 
 API_SUFFIX = 'https://api.github.com/repos/demisto/demisto-sdk'
+SDK_WORKFLOW_SUFFIX = 'https://github.com/demisto/demisto-sdk/actions/runs/'
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
 
@@ -133,7 +134,7 @@ def main():
         key=lambda x: datetime.strptime(x["created_at"], "%Y-%m-%dT%H:%M:%SZ"),
     ).get('id')
 
-    logging.info(f'SDK changelog workflow id is: {workflow_id}')
+    logging.info(f'SDK changelog workflow triggered successfully: {SDK_WORKFLOW_SUFFIX}{workflow_id}')
 
     # initialize timer
     start = time.time()
