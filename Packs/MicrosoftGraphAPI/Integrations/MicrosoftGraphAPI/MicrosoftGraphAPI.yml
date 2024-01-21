@@ -179,7 +179,7 @@ script:
     execution: false
     name: msgraph-api-auth-reset
     arguments: []
-  - description: Generate the login url used for Authorization code flow.
+  - description: Generate the login URL used for Authorization code flow.
     name: msgraph-api-generate-login-url
     arguments: []
   dockerimage: demisto/crypto:1.0.0.85869

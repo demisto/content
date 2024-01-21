@@ -48,7 +48,7 @@ For more information, refer to the following [article](https://xsoar.pan.dev/doc
 4. 
     | **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
     |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-    | Azure Cloud                                                            | When selecting the Custom option, the Azure AD endpoint parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication\#using-national-cloud                                                                                               | False        |
+    | Azure Cloud                                                            | See option table below.                                                                                                                                                                                                                                                                                                                                | False        |
     | Application ID                                                         |                                                                                                                                                                                                                                                                                                                                                        | False        |
     | Application Secret (Required for using Self Deployed Azure app)        |                                                                                                                                                                                                                                                                                                                                                        | False        |
     | Tenant ID (Required for using Self Deployed Azure app)                 |                                                                                                                                                                                                                                                                                                                                                        | False        |
@@ -83,7 +83,7 @@ For more information, refer to the following [article](https://xsoar.pan.dev/doc
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these command from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### msgraph-api-auth-start
@@ -97,7 +97,7 @@ Should be used after running the ***msgraph-api-auth-start*** command.
 
 ### msgraph-api-test
 ***
-Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
+Tests connectivity to Microsoft.
 
 ### msgraph-api-request
 ***
@@ -140,6 +140,10 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-api-generate-login-url
+***
+Generate the login URL used for Authorization code flow.
 
 #### Base Command
 
