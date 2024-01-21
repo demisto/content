@@ -3099,16 +3099,6 @@
             "pid_threshold": 200
         },
         {
-            "integrations": [
-                "Rasterize v2 Pre-Release",
-                "Image OCR"
-            ],
-            "playbookID": "Rasterize Test V2",
-            "fromversion": "5.0.0",
-            "memory_threshold": 300,
-            "pid_threshold": 200
-        },
-        {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest",
             "fromversion": "5.0.0",

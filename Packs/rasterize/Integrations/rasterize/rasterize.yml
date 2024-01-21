@@ -49,7 +49,6 @@ configuration:
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: "true"
     type: 8
     additionalinfo: null
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
@@ -356,7 +355,7 @@ script:
         - contextPath: InfoFile.Type
           description: The type of the image/pdf file.
           type: string
-  dockerimage: demisto/chromium:120.0.6099.84386
+  dockerimage: demisto/chromium:120.0.6099.84996
   runonce: false
   script: "-"
   subtype: python3
