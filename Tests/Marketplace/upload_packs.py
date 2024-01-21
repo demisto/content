@@ -132,6 +132,8 @@ def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: boo
     Returns:
         bool: whether the operation succeeded.
     """
+    logging.debug('update_index_folder')
+
     task_status = False
     index_pack_path = os.path.join(index_folder_path, pack.name)
     pack_versions_to_keep = pack_versions_to_keep or []
@@ -1228,7 +1230,6 @@ def main():
 
     # iterating over packs that are for the current marketplace
     for pack in packs_objects_list:
-        pack.is_modified = False
         logging.debug(f"Starts iterating over pack '{pack.name}' which is{' not ' if not pack.is_modified else ' '}modified")
 
         if not pack.load_pack_metadata():
@@ -1282,7 +1283,6 @@ def main():
                 continue
 
         if not update_index_folder(index_folder_path=index_folder_path, pack=pack, pack_versions_to_keep=pack_versions_to_keep):
-            logging.debug('update_index_folder')
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
             pack.cleanup()
             continue

@@ -378,7 +378,7 @@ class Pack:
 
     @property
     def is_modified(self):
-        return self._is_modified
+        return False
 
     @property
     def marketplaces(self):
