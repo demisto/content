@@ -1722,6 +1722,8 @@ class Pack:
             self._tags = set(pack_metadata.get(Metadata.TAGS) or [])
             self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
             self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
+            self._keywords = set(pack_metadata.get(Metadata.TAGS) or [])
+            self._categories = set(pack_metadata.get(Metadata.CATEGORIES) or [])
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
