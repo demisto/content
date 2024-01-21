@@ -943,6 +943,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     Returns: The Splunk Job
     """
     job = None
+    demisto.debug(f"notable data is: {notable_data}")
     if search := notable_data.get("drilldown_search") or notable_data.get("drilldown_searches", ""):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
         if searchable_query := build_drilldown_search(
