@@ -392,8 +392,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time)  # type: ignore[operator]
-                .strftime(XSOAR_DATE_FORMAT),  # type: ignore[union-attr,operator]
+    next_run = {'last_fetch': latest_created_time.strftime(XSOAR_DATE_FORMAT),  # type: ignore[union-attr,operator]
                 'last_fetched_incidents': last_fetched_incidents}
     demisto.debug(f'XSOAR Mirroring: Setting next run to: {next_run}')
     return next_run, incidents_result
@@ -733,7 +732,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+        demisto.debug(f'Got the following delta keys {list(parsed_args.delta)}')
 
     demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n')
 
@@ -898,13 +897,30 @@ def main() -> None:  # pragma: no cover
             proxy=proxy
         )
 
-        if command == 'test-module':
-            if params.get('isFetch'):
-                fetch_incidents(
+        match command:
+            case 'test-module':
+                if params.get('isFetch'):
+                    fetch_incidents(
+                        client=client,
+                        max_results=max_results,
+                        last_run={},
+                        last_fetch=first_fetch_time,
+                        first_fetch_time=first_fetch_time,
+                        query=query,
+                        mirror_direction=params.get('mirror_direction'),
+                        mirror_tag=list(mirror_tags),
+                        mirror_playbook_id=params.get('mirror_playbook_id', True),
+                        fetch_incident_history=params.get('fetch_incident_history', False),
+                    )
+                return_results(test_module(client, first_fetch_time))
+
+            case 'fetch-incidents':
+                last_run: dict = demisto.getLastRun()
+                next_run, incidents = fetch_incidents(
                     client=client,
                     max_results=max_results,
-                    last_run={},
-                    last_fetch=first_fetch_time,
+                    last_run=last_run,
+                    last_fetch=last_run.get("last_fetch"),
                     first_fetch_time=first_fetch_time,
                     query=query,
                     mirror_direction=params.get('mirror_direction'),
@@ -912,53 +928,28 @@ def main() -> None:  # pragma: no cover
                     mirror_playbook_id=params.get('mirror_playbook_id', True),
                     fetch_incident_history=params.get('fetch_incident_history', False),
                 )
-            return_results(test_module(client, first_fetch_time))
 
-        elif command == 'fetch-incidents':
-            last_run: dict = demisto.getLastRun()
-            next_run, incidents = fetch_incidents(
-                client=client,
-                max_results=max_results,
-                last_run=last_run,
-                last_fetch=last_run.get("last_fetch"),
-                first_fetch_time=first_fetch_time,
-                query=query,
-                mirror_direction=params.get('mirror_direction'),
-                mirror_tag=list(mirror_tags),
-                mirror_playbook_id=params.get('mirror_playbook_id', True),
-                fetch_incident_history=params.get('fetch_incident_history', False),
-            )
+                demisto.setLastRun(next_run)
+                demisto.incidents(incidents)
 
-            #  --- TEMP ---
-            next_run.update({
-                'ids': [i['dbotMirrorId'] for i in incidents],
-                'len': len(incidents)
-            })
-            #  ------------
+            case 'xsoar-search-incidents':
+                return_results(search_incidents_command(client, args))
 
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
+            case 'xsoar-get-incident':
+                return_results(get_incident_command(client, args))
 
-        elif command == 'xsoar-search-incidents':
-            return_results(search_incidents_command(client, args))
+            case 'get-mapping-fields':
+                return_results(get_mapping_fields_command(client))
 
-        elif command == 'xsoar-get-incident':
-            return_results(get_incident_command(client, args))
+            case 'get-remote-data':
+                return_results(get_remote_data_command(client, args, params))
 
-        elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command(client))
+            case 'update-remote-system':
+                return_results(update_remote_system_command(client, args, mirror_tags))
 
-        elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args, params))
+            case _:
+                raise NotImplementedError('Command not implemented')
 
-        elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args, mirror_tags))
-
-        else:
-            raise NotImplementedError('Command not implemented')
-
-    except NotImplementedError:
-        raise
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
