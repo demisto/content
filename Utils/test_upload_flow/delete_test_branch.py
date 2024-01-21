@@ -32,7 +32,7 @@ def main():
 
         logging.info(f"Start deleting branch: '{branch}'")
         repo.git.push('--set-upstream',
-                      f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
+                      f'https://GITLAB_PUSH_TOKEN:{args.gitlab_token}@'  # disable-secrets-detection
                       f'{GITLAB_SERVER_HOST}/{GITLAB_PROJECT_NAMESPACE}/content.git',  # disable-secrets-detection
                       f":{branch}")
 
