@@ -168,7 +168,7 @@ def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     ('Application', ['application']),
     ('Alert, Page, Audit', ['alert', 'page', 'audit']),
     (['Application', 'Audit', 'Network'], ['application', 'audit', 'network']),
-    (ALL_SUPPORTED_EVENT_TYPES, ALL_SUPPORTED_EVENT_TYPES),
+    (None, ALL_SUPPORTED_EVENT_TYPES),
 ])
 def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, expected_value):
     """

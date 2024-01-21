@@ -302,12 +302,9 @@ def handle_event_types_to_fetch(event_types_to_fetch) -> list[str]:
     """ Handle event_types_to_fetch parameter.
         Transform the event_types_to_fetch parameter into a pythonic list with lowercase values.
     """
-    def format_event_type_name(event_name: str) -> str:
-        return event_name.lower()
-
     return argToList(
-        arg=event_types_to_fetch,
-        transform=format_event_type_name,
+        arg=event_types_to_fetch if event_types_to_fetch else ALL_SUPPORTED_EVENT_TYPES,
+        transform=lambda x: x.lower(),
     )
 
 
@@ -325,7 +322,7 @@ def main() -> None:  # pragma: no cover
         proxy = params.get('proxy', False)
         max_fetch: int = arg_to_number(params.get('max_fetch')) or 10000
         vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
-        event_types_to_fetch = handle_event_types_to_fetch(params.get('event_types_to_fetch', ALL_SUPPORTED_EVENT_TYPES))
+        event_types_to_fetch = handle_event_types_to_fetch(params.get('event_types_to_fetch'))
         demisto.debug(f'Event types that will be fetched in this instance: {event_types_to_fetch}')
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')

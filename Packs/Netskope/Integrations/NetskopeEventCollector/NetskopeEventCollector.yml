@@ -29,7 +29,7 @@ configuration:
   name: event_types_to_fetch
   type: 16
   required: false
-  additionalinfo: 'Event types to be fetched by this instance. Default is: Application, Alert, Page, Audit, Network.'
+  additionalinfo: 'Event types to fetch. Default is all available types: Application, Alert, Page, Audit, Network.'
   defaultvalue: Application,Alert,Page,Audit,Network
   options:
   - Application
