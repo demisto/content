@@ -352,21 +352,6 @@ def terminate_chrome(browser):
     demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
 
     threading.excepthook = excepthook_recv_loop
-    # try:
-    #     demisto.debug('terminate_chrome, Creating new_tab')
-    #     tab = browser.new_tab()
-    #     demisto.debug(f'terminate_chrome, starting {tab=}')
-    #     tab.start()
-
-    #     demisto.debug('terminate_chrome, closing browser')
-    #     tab.Browser.close()
-    #     demisto.debug('terminate_chrome, closed browser')
-    # except Exception as ex:
-    #     demisto.info(f'Failed to terminate Chrome due to {ex}')
-    # finally:
-    #     demisto.debug('terminate_chrome, Ckearing port file')
-    #     # Keep the file
-    #     write_info_file(PORT_FILE_PATH, '')
 
     if CHROME_PROCESS:
         demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
