@@ -63,9 +63,11 @@ create-release-branch:
 #    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
 #  script:
 #    - echo "RELEASE_VERSION="$RELEASE_VERSION
-#    - export PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -ch $SLACK_CHANNEL -sdk $RELEASE_VERSION | jq .id)
-#    - echo "PIPELINE_ID = " $PIPELINE_ID
-#    - echo $PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
+#    - export GOLD_PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -ch $SLACK_CHANNEL -sdk $RELEASE_VERSION | jq .id)
+#    - echo "GOLD_PIPELINE_ID = " $GOLD_PIPELINE_ID
+#    - echo $GOLD_PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
+#    - echo "content-internal-dist nightly build triggered successfully:"
+#    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID
 ##    -
 ##    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
 ##    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
@@ -94,6 +96,8 @@ create-release-branch:
 #    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g | jq .id)
 #    - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
 #    - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
+#    - echo "demisto-sdk nightly build triggered successfully:"
+#    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/pipelines/"$SDK_PIPELINE_ID
 ##    -
 ##    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
 ##    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
@@ -136,9 +140,9 @@ create-release-branch:
 #    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
 #  script:
 #    - exit 1
-#    - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt)
-#    - echo "PIPELINE_ID =" $PIPELINE_ID
-#    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1738
+#    - GOLD_PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt)
+#    - echo "GOLD_PIPELINE_ID =" $GOLD_PIPELINE_ID
+#    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $GOLD_PIPELINE_ID -pid 1738
 #
 #
 #wait-for-demisto-sdk-nightly:
@@ -157,9 +161,9 @@ create-release-branch:
 #    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
 #  script:
 #    - exit 1
-#    - PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt)
-#    - echo "PIPELINE_ID =" $PIPELINE_ID
-#    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $PIPELINE_ID -pid 1061
+#    - SDK_PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt)
+#    - echo "SDK_PIPELINE_ID =" $SDK_PIPELINE_ID
+#    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $SDK_PIPELINE_ID -pid 1061
 
 
 create-release-pull-request:
