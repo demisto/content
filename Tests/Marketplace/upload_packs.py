@@ -1208,7 +1208,7 @@ def main():
 
     # if it's not a regular upload-flow, then upload only collected/modified packs
     packs_objects_list = all_packs_objects_list if is_regular_upload_flow \
-        else [p for p in all_packs_objects_list if p.is_modified]
+        else [p for p in all_packs_objects_list if p.name == "Zoom"]
     logging.info(f"Packs list is: {[p.name for p in packs_objects_list]}")
 
     # taking care of private packs
