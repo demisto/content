@@ -1,4 +1,4 @@
-from rasterize import (rasterize, get_chrome_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
+from rasterize import (rasterize, get_chrome_options, CHROME_OPTIONS, rasterize_image_command,
                        RasterizeMode, RasterizeType, init_driver, rasterize_html_command)
 import demistomock as demisto
 from CommonServerPython import entryTypes
@@ -71,17 +71,17 @@ def test_rasterize_no_defunct_processes(caplog):
 
 
 def test_get_chrome_options():
-    res = get_chrome_options(DEFAULT_CHROME_OPTIONS, '')
-    assert res == DEFAULT_CHROME_OPTIONS
-    res = get_chrome_options(DEFAULT_CHROME_OPTIONS, '[--disable-dev-shm-usage],--disable-auto-reload, --headless')
+    res = get_chrome_options(CHROME_OPTIONS, '')
+    assert res == CHROME_OPTIONS
+    res = get_chrome_options(CHROME_OPTIONS, '[--disable-dev-shm-usage],--disable-auto-reload, --headless')
     assert '--disable-dev-shm-usage' not in res
     assert '--no-sandbox' in res  # part of default options
     assert '--disable-auto-reload' in res
     assert len([x for x in res if x == '--headless']) == 1  # should have only one headless option
-    res = get_chrome_options(DEFAULT_CHROME_OPTIONS, r'--user-agent=test\,comma')
+    res = get_chrome_options(CHROME_OPTIONS, r'--user-agent=test\,comma')
     assert len([x for x in res if x.startswith('--user-agent')]) == 1
     assert '--user-agent=test,comma' in res
-    res = get_chrome_options(DEFAULT_CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
+    res = get_chrome_options(CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
 
