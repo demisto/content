@@ -1702,7 +1702,8 @@ def get_file_name_and_content(entry_id: str) -> tuple[str, bytes]:
     return file_name, file_bytes
 
 
-def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str, json_issue: dict) -> requests.Response:
+def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str,
+                       issue_fields: dict[str, Any]) -> requests.Response:
     """This function is in charge of receiving a status of an issue and try to apply it, if it can't, it will throw an error.
 
     Args:
@@ -1721,14 +1722,15 @@ def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name
     statuses_name = [transition.get('to', {}).get('name', '') for transition in all_transitions]
     for i, status in enumerate(statuses_name):
         if status.lower() == status_name.lower():
-            json_data = {'transition': {"id": str(all_transitions[i].get('id', ''))}} | json_issue
+            json_data = {'transition': {"id": str(all_transitions[i].get('id', ''))}} | issue_fields
             return client.transition_issue(
                 issue_id_or_key=issue_id_or_key, json_data=json_data
             )
     raise DemistoException(f'Status "{status_name}" not found. \nValid statuses are: {statuses_name} \n')
 
 
-def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transition_name: str, json_issue: dict) -> requests.Response:
+def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transition_name: str,
+                           issue_fields: dict[str, Any]) -> requests.Response:
     """In charge of receiving a transition to perform on an issue and try to apply it, if it can't, it will throw an error.
 
     Args:
@@ -1747,7 +1749,7 @@ def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transit
     transitions_name = [transition.get('name', '') for transition in all_transitions]
     for i, transition in enumerate(transitions_name):
         if transition.lower() == transition_name.lower():
-            json_data = {'transition': {"id": str(all_transitions[i].get('id', ''))}} | json_issue
+            json_data = {'transition': {"id": str(all_transitions[i].get('id', ''))}} | issue_fields
             return client.transition_issue(
                 issue_id_or_key=issue_id_or_key, json_data=json_data
             )
@@ -1980,7 +1982,7 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
 
     # Arrangement of the issue fields
     action = args.get("action", "rewrite")
-    issue_fields = {}
+    issue_fields: dict[str, Any] = {}
     if action == "rewrite":
         issue_fields = create_issue_fields(
             client=client,
@@ -1993,13 +1995,15 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
             client=client, issue_args=args, issue_id_or_key=issue_id_or_key
         )
 
+    demisto.debug(f"Updating the issue with the issue fields: {issue_fields}")
+
     if status:
         demisto.debug(f"Updating the status to: {status}")
         apply_issue_status(
             client=client,
             issue_id_or_key=issue_id_or_key,
             status_name=status,
-            json_issue=issue_fields,
+            issue_fields=issue_fields,
         )
     elif transition:
         demisto.debug(f"Updating the status using the transition: {transition}")
@@ -2007,10 +2011,9 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
             client=client,
             issue_id_or_key=issue_id_or_key,
             transition_name=transition,
-            json_issue=issue_fields,
+            issue_fields=issue_fields,
         )
     elif issue_fields:
-        demisto.debug(f"Updating the issue with the issue fields: {issue_fields}")
         client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
     else:
         return CommandResults(
