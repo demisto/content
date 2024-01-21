@@ -3,7 +3,7 @@ on:
   pull_request_target:
     types: [labeled]
     branches:
-      - 'AradCarmi/**'
+      - 'contrib/AradCarmi**'
 
 jobs:
   trigget_contrib_build:
