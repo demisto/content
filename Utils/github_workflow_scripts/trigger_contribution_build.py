@@ -21,9 +21,11 @@ def arguments_handler():
     parser.add_argument('-p', '--pr_number', help='The PR number to check if it includes secrets.')
     parser.add_argument('-b', '--base_branch', help='The Base branch name.')
     parser.add_argument('-c', '--contrib_branch', help='The contribution branch name.')
+    parser.add_argument('-cr', '--contrib_repo', help='The contribution contrib repository.')
     parser.add_argument('-u', '--username', help='The instance username.')
     parser.add_argument('-s', '--password', help='The instance password.')
     parser.add_argument('-gs', '--gold_server_url', help='The content gold instance url.')
+
     return parser.parse_args()
 
 
@@ -31,6 +33,7 @@ def trigger_generic_webhook(options):
     pr_number = options.pr_number
     base_branch = options.base_branch
     contrib_branch = options.contrib_branch
+    contrib_repo = options.contrib_repo
     username = options.username
     password = options.password
     gold_server_url = options.gold_server_url
@@ -40,6 +43,7 @@ def trigger_generic_webhook(options):
     body = {
         "name": "GenericWebhook_trigger_contribution_build",
         "raw_json": {"BaseBranch": base_branch, "PullRequestNumber": pr_number, "ContribBranch": contrib_branch,
+                     "ContribRepo": contrib_repo,
                      "ProjectID": GITLAB_PROJECT_ID},
     }
     # post to Content Gold
