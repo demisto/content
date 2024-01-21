@@ -13,6 +13,7 @@ create-release-branch:
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
+    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version " $RELEASE_VERSION " has started"
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
 
@@ -68,9 +69,6 @@ trigger-content-internal-dist-nightly:
     - echo $GOLD_PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
     - echo "content-internal-dist nightly build triggered successfully:"
     - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID
-#    -
-#    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
-#    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
 
 
 trigger-demisto-sdk-nightly:
@@ -98,10 +96,6 @@ trigger-demisto-sdk-nightly:
     - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
     - echo "demisto-sdk nightly build triggered successfully:"
     - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/pipelines/"$SDK_PIPELINE_ID
-#    -
-#    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "test message"
-#    - ./Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct $CI_TOKEN
-
 
 
 wait-for-content-private-nightly:
