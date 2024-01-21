@@ -125,7 +125,7 @@ tasks:
       fromDate:
         simple: 5 minutes ago
       indicatorsTypes:
-        simple: ip
+        simple: IP
       maxIncidentsToDisplay:
         simple: "10"
       query:
