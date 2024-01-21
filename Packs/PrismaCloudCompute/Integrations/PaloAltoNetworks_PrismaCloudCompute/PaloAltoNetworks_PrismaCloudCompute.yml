@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.85667
   isfetch: true
   runonce: false
   script: "-"
@@ -2738,7 +2738,7 @@ script:
         required: true
       - auto: PREDEFINED
         name: action
-        description: Action for the command. archive - incident will be archived, unarchive - incident will be unarchived
+        description: Action for the command. archive - incident will be archived, unarchive - incident will be unarchived.
         predefined:
           - "archive"
           - "unarchive"
@@ -2820,7 +2820,7 @@ script:
         description: The attack type.
         type: String
       - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.attackTechniques
-        description: Attack technique of the event
+        description: Attack technique of the event.
         type: Unknown
       - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.collections
         description: The collections.

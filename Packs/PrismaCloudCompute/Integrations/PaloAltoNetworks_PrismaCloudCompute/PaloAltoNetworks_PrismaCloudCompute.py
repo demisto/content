@@ -548,7 +548,7 @@ class PrismaCloudComputeClient(BaseClient):
             return self._get_all_results(url_suffix="audits/runtime/host", params=params)
         return self._http_request(method="GET", url_suffix="audits/runtime/host", params=params)
 
-    def get_runtime_container_policy(self) -> List[dict]:
+    def get_runtime_container_policy(self) -> dict:
         return self._http_request(method="GET", url_suffix="policies/runtime/container")
 
 
@@ -2534,7 +2534,7 @@ def archive_audit_incident_command(client: PrismaCloudComputeClient, args: dict)
         Returns:
             string: A string that indicates success or failure
     """
-    incident_id = args.get("incident_id")
+    incident_id = args.get("incident_id") or ""
     if args.get("action") == "archive":
         data = '{"acknowledged": true}'
     else:
@@ -2634,7 +2634,7 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
     if runtime_container_policy_events := client.get_runtime_container_policy():
         runtime_rules = runtime_container_policy_events.get("rules")
         if len(runtime_rules) > limit and not all_results:
-            runtime_rules = runtime_rules[offset*limit:offset * limit + limit]
+            runtime_rules = runtime_rules[offset * limit:offset * limit + limit]
 
         table = tableToMarkdown(
             name="Runtime Container Policy Events Information",
