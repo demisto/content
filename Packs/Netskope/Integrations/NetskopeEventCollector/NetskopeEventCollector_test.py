@@ -162,3 +162,30 @@ def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     mocker.patch.object(dateparser, "parse", return_value=first_fetch)
     last_run = setup_last_run(last_run_dict, ALL_SUPPORTED_EVENT_TYPES)
     assert all(val.get('operation') == expected_operation_value for key, val in last_run.items())
+
+
+@pytest.mark.parametrize('event_types_to_fetch_param, expected_value', [
+    ('Application', ['application']),
+    ('Alert, Page, Audit', ['alert', 'page', 'audit']),
+    (['Application', 'Audit', 'Network'], ['application', 'audit', 'network']),
+    (ALL_SUPPORTED_EVENT_TYPES, ALL_SUPPORTED_EVENT_TYPES),
+])
+def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, expected_value):
+    """
+    Given:
+        Case a: event_types_to_fetch parameter has a single value
+        Case b: event_types_to_fetch parameter has multiple values
+        Case c: event_types_to_fetch parameter is a pythonic list
+        Case d: event_types_to_fetch parameter is None
+
+    When:
+        Handling the event_types_to_fetch parameter
+
+    Then:
+        - Make sure the parameter converts into a valid pythonic list
+        - The values are lowercase
+        - In the case event_types_to_fetch in None, default ALL_SUPPORTED_EVENT_TYPES is used as parameter
+
+    """
+    from NetskopeEventCollector import handle_event_types_to_fetch
+    assert handle_event_types_to_fetch(event_types_to_fetch_param) == expected_value

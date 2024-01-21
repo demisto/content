@@ -1,10 +1,10 @@
 from typing import Any
 
 import urllib3
+from CommonServerUserPython import *  # noqa
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -298,8 +298,17 @@ def get_events_command(client: Client, args: dict[str, Any], last_run: dict) -> 
     return results, events
 
 
-def format_event_type_name(event_name: str) -> str:
-    return event_name.lower()
+def handle_event_types_to_fetch(event_types_to_fetch) -> list[str]:
+    """ Handle event_types_to_fetch parameter.
+        Transform the event_types_to_fetch parameter into a pythonic list with lowercase values.
+    """
+    def format_event_type_name(event_name: str) -> str:
+        return event_name.lower()
+
+    return argToList(
+        arg=event_types_to_fetch,
+        transform=format_event_type_name,
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -316,10 +325,7 @@ def main() -> None:  # pragma: no cover
         proxy = params.get('proxy', False)
         max_fetch: int = arg_to_number(params.get('max_fetch')) or 10000
         vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
-        event_types_to_fetch = argToList(
-            arg=params.get('event_types_to_fetch', ALL_SUPPORTED_EVENT_TYPES),
-            transform=format_event_type_name,
-        )
+        event_types_to_fetch = handle_event_types_to_fetch(params.get('event_types_to_fetch', ALL_SUPPORTED_EVENT_TYPES))
         demisto.debug(f'Event types that will be fetched in this instance: {event_types_to_fetch}')
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')
