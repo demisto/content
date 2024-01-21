@@ -597,11 +597,10 @@ tasks:
                     defaultValue:
                       value:
                         simple: defaultValue
-                - operator: StringifyArray
             iscontext: true
           right:
             value:
-              simple: '[{"lastName":"Doe","name":"John"}]'
+              simple: '{"lastName":"Doe","name":"John"}'
     continueonerrortype: ""
     view: |-
       {

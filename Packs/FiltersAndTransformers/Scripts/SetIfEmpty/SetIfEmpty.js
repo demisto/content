@@ -24,7 +24,7 @@ function isValueEmpty(value) {
 function getValueToSet(value) {
     const applyIfEmpty = toBoolean(args.applyIfEmpty);
 
-    if (value === null || (applyIfEmpty && isValueEmpty(value))) {
+    if (value == null || (applyIfEmpty && isValueEmpty(value))) {
         value = args.defaultValue;
     }
 
@@ -36,8 +36,19 @@ function getValueToSet(value) {
 
 
 function main() {
-    let value = args.value;
-    return getValueToSet(value);
+    let values = argToList(args.value);
+    if (!Array.isArray(values)) {
+        values = [values];
+    }
+    var res = [];
+
+    let index = 0;
+    do {
+        res.push({ContentsFormat: formats.text, Type: entryTypes.note, Contents: getValueToSet(values[index])});
+        index++;
+    } while (index < values.length);
+
+    return res;
 }
 
 
