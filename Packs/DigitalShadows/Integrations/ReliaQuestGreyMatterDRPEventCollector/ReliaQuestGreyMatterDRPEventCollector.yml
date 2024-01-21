@@ -51,7 +51,10 @@ script:
       defaultValue: '200'
     description: Manual command to fetch reila-quest events and display them.
     name: reila-quest-get-events
-    outputs: []
+    outputs:
+    - contextPath: ReilaQuest.Events
+      description: A list of events.
+      type: Unknown
   runonce: false
   script: '-'
   type: python
