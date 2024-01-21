@@ -3,7 +3,6 @@
 """
 
 import json
-import io
 import copy
 import demistomock as demisto
 import pytest
@@ -18,7 +17,7 @@ def handle_calling_context(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -1711,7 +1710,7 @@ def test_expanse_get_certificate_by_query(requests_mock):
     assert result[-1].outputs_key_field == "id"
     assert result[-1].outputs == mock_certs["data"][: int(MOCK_LIMIT)]
 
-    certs_sha256 = set([base64.urlsafe_b64decode(c['certificate']['pemSha256']).hex() for c in mock_certs['data']])
+    certs_sha256 = {base64.urlsafe_b64decode(c['certificate']['pemSha256']).hex() for c in mock_certs['data']}
     for indicator in result[:-1]:
         assert isinstance(indicator.indicator, Common.Certificate)
         assert indicator.indicator.sha256 == indicator.indicator.dbot_score.indicator
@@ -1747,7 +1746,7 @@ def test_certificate_command(requests_mock, mocker):
         f"https://example.com/api/v2/assets/certificates/{MOCK_CERT_HASH}", json=mock_certificate_data
     )
 
-    mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data})
+    mocker.patch('ExpanseV2.demisto.searchIndicators', return_value={'iocs': mock_ioc_data, "total": len(mock_ioc_data)})
 
     result = certificate_command(client, {'certificate': mock_ioc_data[0]['CustomFields']['sha256']})
     first = result[0].to_context()

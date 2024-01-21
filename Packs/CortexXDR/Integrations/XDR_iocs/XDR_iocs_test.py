@@ -130,6 +130,7 @@ class TestGetRequestsKwargs:
 
 class TestPrepareCommands:
 
+    @freeze_time('2022-04-14T00:00:00Z')
     def test_prepare_get_changes(self):
         """
             Given:
@@ -219,7 +220,7 @@ class TestCreateFile:
             Then:
                 - Verify sync file data.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         expected_data = ''
@@ -290,7 +291,7 @@ class TestCreateFile:
                 - Verify iocs to keep file data.
         """
 
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         create_file_iocs_to_keep(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         expected_data = ' '
@@ -375,7 +376,8 @@ class TestDemistoIOCToXDR:
     data_test_demisto_types_to_xdr = [
         ('File', 'HASH'),
         ('IP', 'IP'),
-        ('Domain', 'DOMAIN_NAME')
+        ('Domain', 'DOMAIN_NAME'),
+        ('URL', 'PATH')
     ]
 
     @pytest.mark.parametrize('demisto_type, xdr_type', data_test_demisto_types_to_xdr)
@@ -580,7 +582,7 @@ class TestXDRIOCToDemisto:
             Then:
                 - IOC in demisto format.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         output = xdr_ioc_to_demisto(xdr_ioc)
         del output['rawJSON']
         assert output == demisto_ioc, f'xdr_ioc_to_demisto({xdr_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'    # noqa: E501
@@ -660,7 +662,7 @@ class TestCommands:
     def test_get_changes(self, mocker):
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
         mocker.patch.object(demisto, 'createIndicators')
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
@@ -704,10 +706,10 @@ class TestParams:
             Then:
                 - IOC in demisto format.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         mocker.patch.object(demisto, 'params', return_value=param_value)
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         outputs = mocker.patch.object(demisto, 'createIndicators')
         Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
         Client.tlp_color = demisto.params().get('tlp_color')

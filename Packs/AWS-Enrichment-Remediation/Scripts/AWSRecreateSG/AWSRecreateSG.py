@@ -9,6 +9,28 @@ from random import randint
 ROLE_SESSION_NAME = "xsoar-session"
 
 
+def get_context_path(context: dict, path: str):
+    """Get a context output ignoring the DT suffix.
+
+    Args:
+        context (dict): The context output with DT paths as keys.
+        path (str): The outputs prefix path without the DT transform under which the required data is held.
+
+    Return:
+        (Any): The context data under the prefix.
+
+    Example:
+        >>> output = demisto.executeCommand('aws-ec2-describe-addresses')
+        >>> output
+        {'Contents': {'path.to.data(val.Id && val.Id == obj.Id)': [1, 2, 3, 4]}}
+        >>> get_context_path(output, 'path.to.data')
+        [1, 2, 3, 4]
+    """
+    return context.get(
+        next((key for key in context if key.partition('(')[0] == path), None)
+    )
+
+
 def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
     """
     If there are rules with ranges of ports, split them up
@@ -71,7 +93,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
     Returns:
         Dict: Dict of the new SG to be used
     """
-    info = sg_info[0]['Contents']['AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)'][0]
+    info = get_context_path(sg_info[0]['Contents'], 'AWS.EC2.SecurityGroups')[0]  # type: ignore
     recreate_list = []
     # Keep track of change in SG or not.
     change = False
@@ -83,7 +105,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                 if (
                     rule['FromPort'] == port
                     and port == rule['ToPort']
-                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
                     and rule['IpProtocol'] == protocol
                 ):
                     change = True
@@ -96,7 +118,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                     change = True
                 elif (
                     rule['FromPort'] <= port and port <= rule['ToPort']
-                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
                     and rule['IpProtocol'] == protocol
                 ):  # noqa: E127
                     fixed = split_rule(rule, port, protocol)
@@ -107,7 +129,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                 else:
                     new_rule = (str([rule])).replace("'", "\"")
                     recreate_list.append(new_rule)
-            elif rule.get('IpRanges') and rule['IpRanges'][0].get('CidrIp') == "0.0.0.0/0":
+            elif rule.get('IpRanges') and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"]):
                 fixed = split_rule(rule, port, protocol)
                 change = True
                 for rule_fix in fixed:
@@ -272,10 +294,8 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str, region: st
     match = False
     for instance in instance_info:
         # Check if returned error, in the case of multiple integration instances only one should pass.
-        if not isError(instance) and \
-           instance.get('Contents').get('AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces'):
-            interfaces = instance.get('Contents').get(
-                'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces')
+        interfaces = get_context_path(instance.get('Contents'), 'AWS.EC2.Instances')[0].get('NetworkInterfaces')  # type: ignore
+        if not isError(instance) and interfaces:
             mapping_dict = {}
             for interface in interfaces:
                 if interface.get('Association') and interface.get('Association').get('PublicIp') == public_ip:

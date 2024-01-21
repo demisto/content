@@ -2004,12 +2004,14 @@ def get_message_metadata(message_id):
             'FileName': attachment.get('filename'),
             'SHA256': attachment.get('sha256'),
             'ID': attachment.get('id'),
-            'Size': attachment.get('size')
+            'Size': attachment.get('size'),
+            'Extension': attachment.get('extension')
         })
         attachments_contents.append(
             'FileName: {}, SHA256: {}, ID: {}, Size: {}'.format(str(attachment.get('filename')),
                                                                 str(attachment.get('sha256')),
-                                                                str(attachment.get('id')), str(attachment.get('size')))
+                                                                str(attachment.get('id')),
+                                                                str(attachment.get('size')))
         )
 
     contents = {
@@ -2065,8 +2067,9 @@ def get_message_metadata_request(message_id):
 
 def download_attachment():
     attachment_id = demisto.args().get('attachmentID')
+    attachment_name = demisto.args().get('attachmentName')
     attachment_file = download_attachment_request(attachment_id)
-    return fileResult(attachment_id, attachment_file)
+    return fileResult(attachment_name if attachment_name else attachment_id, attachment_file)
 
 
 def download_attachment_request(attachment_id):

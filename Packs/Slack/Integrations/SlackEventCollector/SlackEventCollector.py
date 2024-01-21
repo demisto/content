@@ -50,62 +50,49 @@ class Client(BaseClient):
     def handle_pagination_first_batch(self, query_params: dict, last_run: dict) -> tuple[list, str | None]:
         """
         Makes the first logs API call in the current fetch run.
-        If `first_id` exists in the lastRun obj, finds it in the response and
+        If `last_search_stop_point` exists in the lastRun obj, finds it in the response and
         returns only the subsequent events (that weren't collected yet).
         """
-        query_params['cursor'] = last_run.pop('cursor', None)
-        try:
-            _, events, cursor = self.get_logs(query_params)
-        except DemistoException as e:
-            if 'Bad Request' in str(e):
-                demisto.debug('was returned: Error in API call [400] - Bad Request')
-                events, cursor = self.handle_pagination_first_batch_bad_cursor(query_params, last_run)
-            else:
-                raise Exception(e)
+        if last_id := last_run.get('last_id'):
+            # Maintain compatibility when moving from versions 3.3.0 and lower to 3.4.0 by updating the 'last-run'.
+            # This code should only be performed once for each integration instance,
+            # when upgrading the pack from version 3.3.0 or lower to 3.4.0 or higher.
+            last_run['last_fetched_event'] = {'last_event_id': last_id, 'last_event_time': None}
+            last_run.pop('last_id')
 
-        if last_run.get('first_id'):
-            for idx, event in enumerate(events):
-                if event.get('id') == last_run['first_id']:
-                    events = events[idx:]
-                    break
-            last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
-        return events, cursor
-
-    def handle_pagination_first_batch_bad_cursor(self, query_params: dict, last_run: dict) -> tuple[list, str | None]:
-        """
-        When we receive a "bad request" error
-        We try to rerun the request without the cursor
-        and go through the pages until we reach the first_id
-        """
-        query_params.pop('cursor')
-        query_params['latest'] = last_run.get('first_created_at', None)
+        cursor = last_run.pop('cursor', None)
+        last_event = last_run.get('last_fetched_event', None)
+        if cursor:
+            query_params['cursor'] = cursor
+            query_params.pop('oldest')
+        elif last_event:
+            query_params['oldest'] = last_event.get('last_event_time')
         _, events, cursor = self.get_logs(query_params)
-        while last_run.get('first_id'):
-            for idx, event in enumerate(events):
-                if event.get('id') == last_run['first_id']:
-                    events = events[idx:]
-                    last_run.pop('first_id')  # removing to make sure it won't be used in future runs
-                    break
-            else:
-                query_params['cursor'] = cursor
-                _, events, cursor = self.get_logs(query_params)
 
-            continue
+        if last_run.get('last_search_stop_point_event_id'):
+            for idx, event in enumerate(events):
+                if event.get('id') == last_run['last_search_stop_point_event_id']:
+                    events = events[idx:]
+                    break
+            last_run.pop('last_search_stop_point_event_id', None)  # removing to make sure it won't be used in future runs
         return events, cursor
 
     def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> list[dict]:
         """
         Aggregates logs using cursor-based pagination, until one of the following occurs:
-        1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
-           In both cases, clears the cursor from the lastRun obj, updates `last_id` to know where
-           to stop in the next runs and returns the aggragated logs.
+        1. Encounters an event that was already fetched in a previous run / reaches all the resolutes.
+           In both cases, clears the cursor (if exist) from the lastRun obj, updates `event_last_id` and `event_last_time`
+           to know where to stop in the next runs and returns the aggragated logs.
 
         2. Reaches the user-defined limit (parameter).
-           In this case, stores the last used cursor and the id of the next event to collect (`first_id`)
+           In this case, stores the last used cursor and the id of the next event to collect (`last_search_stop_point`)
+           and if it is the first run in this search it saves the newest event details as 'newest_event_fetched'
+           to be used when the cursor is exhausted and a new search query should be performed.
            and returns the events that have been accumulated so far.
 
         3. Reaches a rate limit.
            In this case, stores the last cursor used in the lastRun obj
+           if it is the first run in this search it saves the newest event details as 'newest_event_fetched'
            and returns the events that have been accumulated so far.
         """
         aggregated_logs: list[dict] = []
@@ -114,17 +101,17 @@ class Client(BaseClient):
         query_params['limit'] = 200  # recommended limit value by Slack
         try:
             events, cursor = self.handle_pagination_first_batch(query_params, last_run)
+            last_event_id = last_run.get('last_fetched_event', {}).get('last_event_id')
             while events:
                 for event in events:
-                    if event.get('id') == last_run.get('last_id'):
+                    if event.get('id') == last_event_id:
                         demisto.debug('Encountered an event that was already fetched - stopping.')
                         cursor = None
                         break
 
                     if len(aggregated_logs) == user_defined_limit:
                         demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
-                        last_run['first_id'] = event.get('id')
-                        last_run['first_created_at'] = event.get('date_create')
+                        last_run['last_search_stop_point_event_id'] = event.get('id')
                         cursor = query_params.get('cursor')
                         break
 
@@ -146,11 +133,39 @@ class Client(BaseClient):
                 raise e
             demisto.debug('Reached API rate limit, storing last used cursor.')
             cursor = query_params['cursor']
+            last_run['cursor'] = cursor
 
-        last_run['cursor'] = cursor
-        if not cursor and aggregated_logs:
-            # we need to know where to stop in the next runs
-            last_run['last_id'] = aggregated_logs[0].get('id')
+        if aggregated_logs:
+            '''
+            If didn't fetch logs, we are not changing the last run
+            If fetched logs, There are 4 scenarios
+                1. This run we did a new query and finished fetching all the events,
+                    so we save the newest event as 'last_fetched_event'.
+                2. We did a new query this time and did not finish fetching all the events,
+                    so we save the newest event as 'newest_event_fetched'
+                    and the 'cursor' (if exists) and last_search_stop_point_event_id for the next run.
+                3. We continued to fetch events by 'cursor' and finished fetching them all,
+                    saving the 'newest_event_fetched' as 'last_fetched_event'.
+                4. We continued to fetch events by 'cursor', and we still haven't finished fetching them all,
+                    so we only need to save the 'cursor' (if exists), and last_search_stop_point_event_id.
+            '''
+            if not last_run.get('newest_event_fetched'):
+                newest_event = {'last_event_id': aggregated_logs[0].get('id'),
+                                'last_event_time': aggregated_logs[0].get('date_create')}
+                if cursor:
+                    last_run['newest_event_fetched'] = newest_event
+                    last_run['cursor'] = cursor
+                elif last_run.get('last_search_stop_point_event_id'):  # if the 'user defined limit' is less than the page size,
+                    # then there won't be a curser, but we haven't finished bringing all the events yet
+                    last_run['newest_event_fetched'] = newest_event
+                else:
+                    last_run['last_fetched_event'] = newest_event
+            else:
+                if cursor:
+                    last_run['cursor'] = cursor
+                elif not last_run.get('last_search_stop_point_event_id'):
+                    last_run['last_fetched_event'] = last_run['newest_event_fetched']
+                    last_run.pop('newest_event_fetched')
 
         return aggregated_logs
 

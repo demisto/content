@@ -7,10 +7,13 @@ repos:
   - id: check-json
   - id: check-yaml
   - id: check-ast
+    min_py_version: '3.7'
   - id: check-merge-conflict
   - id: debug-statements
     language_version: python3
+    min_py_version: '3.7'
   - id: name-tests-test
+    min_py_version: '3.7'
     files: .+_test.py$
 - repo: https://github.com/python-poetry/poetry
   rev: 1.6.1
@@ -31,12 +34,14 @@ repos:
   rev: v2.1.2
   hooks:
   - id: pycln
+    min_py_version: '3.7'
     args:
     - --all
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: v0.0.272
   hooks:
   - id: ruff
+    min_py_version: '3.7'
     args:
     - --fix
     args:nightly:
@@ -47,6 +52,10 @@ repos:
   rev: v2.0.4
   hooks:
   - id: autopep8
+    exclude_support_level:ci:
+    - community
+    exclude_support_level:nightly:
+    - community
 - repo: local
   hooks:
   - id: pylint-in-docker
@@ -71,7 +80,6 @@ repos:
       arg_name: --rcfile
       file_name: .pylintrc
     skip:commit: true
-
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
@@ -83,21 +91,25 @@ repos:
     language: docker
     files: Packs\/.*_test\.py$
     exclude: test_data
+    env:
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
     - /src/Tests/scripts/script_runner.py
+    - coverage
+    - run
+    - -p
+    - --source=.
+    - -m
     - pytest
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
-    - --cov=.
-    - --cov-report=
     - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
-
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
@@ -145,7 +157,6 @@ repos:
     language: script
     pass_filenames: false
     skip:commit: true
-
   - id: validate
     name: validate
     description: validate content
@@ -156,7 +167,6 @@ repos:
     language: system
     require_serial: true
     skip:commit: true
-    
   - id: format
     name: format
     description: Format non-code files, to comply with XSOAR standards.
@@ -224,6 +234,7 @@ repos:
   rev: v1.6.0
   hooks:
   - id: sourcery
+    config_file: .sourcery.yaml
     args:
     - --no-summary
     - --diff
@@ -242,6 +253,7 @@ repos:
   rev: v0.982
   hooks:
   - id: mypy
+    min_py_version: '3.7'
     args:
     - --ignore-missing-imports
     - --check-untyped-defs
@@ -277,7 +289,7 @@ repos:
     - decorator==5.1.1 ; python_version >= "3.8" and python_version < "3.11"
     - defusedxml==0.7.1 ; python_version >= "3.8" and python_version < "3.11"
     - demisto-py==3.2.13 ; python_version >= "3.8" and python_version < "3.11"
-    - demisto-sdk==1.25.0 ; python_version >= "3.8" and python_version < "3.11"
+    - demisto-sdk==1.25.3 ; python_version >= "3.8" and python_version < "3.11"
     - dictdiffer==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
     - dictor==0.1.12 ; python_version >= "3.8" and python_version < "3.11"
     - distlib==0.3.7 ; python_version >= "3.8" and python_version < "3.11"
@@ -319,6 +331,7 @@ repos:
     - jsonschema==4.19.2 ; python_version >= "3.8" and python_version < "3.11"
     - junitparser==3.1.0 ; python_version >= "3.8" and python_version < "3.11"
     - lazy-object-proxy==1.9.0 ; python_version >= "3.8" and python_version < "3.11"
+    - lxml==5.1.0 ; python_version >= "3.8" and python_version < "3.11"
     - mccabe==0.6.1 ; python_version >= "3.8" and python_version < "3.11"
     - mergedeep==1.3.4 ; python_version >= "3.8" and python_version < "3.11"
     - more-itertools==9.1.0 ; python_version >= "3.8" and python_version < "3.11"
