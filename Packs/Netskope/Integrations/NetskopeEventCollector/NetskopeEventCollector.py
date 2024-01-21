@@ -1,4 +1,4 @@
-from typing import Any, Dict, Tuple
+from typing import Any
 
 import urllib3
 
@@ -79,7 +79,7 @@ def honor_rate_limiting(headers, endpoint):
                     time.sleep(1)
 
     except ValueError as ve:
-        logging.error("Value error when honoring the rate limiting wait time {} {}".format(headers, str(ve)))
+        logging.error(f"Value error when honoring the rate limiting wait time {headers} {str(ve)}")
 
 
 def populate_parsing_rule_fields(event: dict, event_type: str):
@@ -236,7 +236,7 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
     return events, False
 
 
-def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_SIZE) -> Tuple[list, dict]:
+def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_SIZE) -> tuple[list, dict]:
     """
     Iterates over all supported event types and call the handle data export logic. Once each event type is done the operation for
     next run is set to 'next'.
@@ -277,7 +277,7 @@ def test_module(client: Client, last_run: dict, max_fetch: int) -> str:
     return 'ok'
 
 
-def get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
+def get_events_command(client: Client, args: dict[str, Any], last_run: dict) -> tuple[CommandResults, list]:
     limit = arg_to_number(args.get('limit')) or MAX_EVENTS_PAGE_SIZE
     events, _ = get_all_events(client=client, last_run=last_run, limit=limit)
 
@@ -300,6 +300,7 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> 
 
 def format_event_type_name(event_name: str) -> str:
     return event_name.lower()
+
 
 ''' MAIN FUNCTION '''
 
