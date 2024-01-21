@@ -12,7 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Cisco", "AMP", "Secure Endpoint"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

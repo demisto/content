@@ -1,0 +1,32 @@
+[MODEL: dataset = "cisco_secure_endpoint_raw"]
+alter
+        external_ip = computer -> external_ip,
+        network_addresses_ips = arraymap(computer -> network_addresses[], "@element" -> ip),
+        first_ip_network_addresses = json_extract_scalar(arrayindex(computer -> network_addresses[], 0), "$.ip")
+| alter
+        xdm.event.id = to_string(id),
+        xdm.event.type = event_type,
+        xdm.event.description = concat(file -> file_name, " - ", file -> disposition),
+        xdm.alert.original_threat_id = detection_id,
+        xdm.alert.severity = severity,
+        xdm.alert.original_threat_name = detection,
+        xdm.alert.name = detection,
+        xdm.source.host.hostname = computer -> hostname,
+        xdm.source.agent.identifier = connector_guid,
+        xdm.intermediate.ipv4 = if(external_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", external_ip, null),
+        xdm.intermediate.ipv6 = if(external_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", external_ip, null),
+        xdm.source.ipv4 = if(first_ip_network_addresses ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", first_ip_network_addresses, null),
+        xdm.source.ipv6 = if(first_ip_network_addresses ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", first_ip_network_addresses, null),
+        xdm.source.host.ipv4_addresses = arrayfilter(network_addresses_ips, "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
+        xdm.source.host.ipv6_addresses = arrayfilter(network_addresses_ips, "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),
+        xdm.source.host.mac_addresses = arraymap(computer -> network_addresses[], "@element" -> mac),
+        xdm.target.file.filename = file -> file_name,
+        xdm.target.file.path = file -> file_path,
+        xdm.target.file.md5 = file -> identity.md5,
+        xdm.target.file.sha256 = file -> identity.sha256,
+        xdm.source.process.pid = to_integer(file -> parent.process_id),
+        xdm.source.process.executable.filename = file -> parent.file_name,
+        xdm.source.process.executable.md5 = file -> parent.identity.md5,
+        xdm.source.process.executable.sha256 = file -> parent.identity.sha256,
+        xdm.alert.mitre_tactics = arraymap(tactics -> [], trim("@element", "\"")),
+        xdm.alert.mitre_techniques = arraymap(techniques -> [], trim("@element", "\""));
