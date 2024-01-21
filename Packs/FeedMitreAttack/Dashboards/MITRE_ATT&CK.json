@@ -1,6 +1,7 @@
 {
     "id": "MITRE ATT&CK",
     "version": -1,
+    "test": true,
     "fromVersion": "6.0.0",
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
