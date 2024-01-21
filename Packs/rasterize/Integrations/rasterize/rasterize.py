@@ -200,7 +200,7 @@ class PychromeEventHandler:
             except pychrome.exceptions.PyChromeException as pce:
                 demisto.info(f'Exception when Frame stopped loading: {frameId}, {pce}')
 
-    def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # pylint: disable=unused-argument
+    def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
         if requestId and not self.request_id:
             self.request_id = requestId
 
