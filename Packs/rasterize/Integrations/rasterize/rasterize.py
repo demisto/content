@@ -144,7 +144,7 @@ class TabLifecycleManager:
             raise ex
         return self.tab
 
-    def __exit__(self, exc_type, exc_val, exc_tb):  # pylint: disable=unused-argument
+    def __exit__(self, exc_type, exc_val, exc_tb):  # noqa: F841
         if self.tab:
             tab_id = self.tab.id
             # Suppressing exceptions that might happen after the tab was closed.
