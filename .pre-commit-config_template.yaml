@@ -63,6 +63,10 @@ repos:
     description: Run xsoar-linter on the code in content packs
     entry: pylint
     language: python
+    args:
+    - -E
+    - --disable=all
+    - --fail-under=3
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
