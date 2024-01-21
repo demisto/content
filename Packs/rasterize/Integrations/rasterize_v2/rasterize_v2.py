@@ -349,23 +349,31 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
 
 def terminate_chrome(browser):
     global CHROME_PROCESS
+    demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
 
-    try:
-        tab = browser.new_tab()
-        tab.start()
+    threading.excepthook = excepthook_recv_loop
+    # try:
+    #     demisto.debug('terminate_chrome, Creating new_tab')
+    #     tab = browser.new_tab()
+    #     demisto.debug(f'terminate_chrome, starting {tab=}')
+    #     tab.start()
 
-        threading.excepthook = excepthook_recv_loop
+    #     demisto.debug('terminate_chrome, closing browser')
+    #     tab.Browser.close()
+    #     demisto.debug('terminate_chrome, closed browser')
+    # except Exception as ex:
+    #     demisto.info(f'Failed to terminate Chrome due to {ex}')
+    # finally:
+    #     demisto.debug('terminate_chrome, Ckearing port file')
+    #     # Keep the file
+    #     write_info_file(PORT_FILE_PATH, '')
 
-        tab.Browser.close()
-    except Exception as ex:
-        demisto.info(f'Failed to terminate Chrome due to {ex}')
-    finally:
-        # Keep the file
-        write_info_file(PORT_FILE_PATH, '')
+    if CHROME_PROCESS:
+        demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
+        CHROME_PROCESS.kill()
+        CHROME_PROCESS = None
 
-        if CHROME_PROCESS:
-            CHROME_PROCESS.kill()
-            CHROME_PROCESS = None
+    demisto.debug('terminate_chrome, Finish')
 
 
 def ensure_chrome_running():  # pragma: no cover
@@ -866,6 +874,7 @@ def get_width_height(args: dict):
 
 def main():  # pragma: no cover
     demisto.debug(f"main, {demisto.command()=}")
+    threading.excepthook = excepthook_recv_loop
     try:
         if demisto.command() == 'test-module':
             module_test()
