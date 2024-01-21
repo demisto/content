@@ -3617,7 +3617,8 @@
             "instance_names": [
                 "Create Test Incidents - Phishing Mock"
             ],
-            "timeout": 300
+            "timeout": 300,
+            "is_mockable": false
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
