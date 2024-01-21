@@ -7,3 +7,7 @@ ignore=PR101
 [file:Infoblox.yml]
 ignore=MR108
 
+[known_words]
+DHCP
+DNS
+mappings
