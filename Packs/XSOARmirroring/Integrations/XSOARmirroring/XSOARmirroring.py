@@ -1,7 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
+import json
+import requests
+import dateparser
 from datetime import timedelta
+from typing import Any
+import urllib3
 
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -22,7 +29,6 @@ MIRROR_DIRECTION = {
 }
 XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 MIRROR_RESET = 'XSOARMirror_mirror_reset'
-
 
 ''' CLIENT CLASS '''
 
@@ -347,12 +353,14 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_result: dict[str, Any] = {}
         incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
-        incident_result['dbotMirrorTags'] = mirror_tag or None  # type: ignore
+        incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
         incident_result['dbotMirrorId'] = incident['id']
 
-        fields = FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
-        if not mirror_playbook_id:
-            fields.remove('playbookId')
+        if mirror_playbook_id:
+            fields = FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
+        else:
+            fields = [field for field in FIELDS_TO_COPY_FROM_REMOTE_INCIDENT
+                      if field != 'playbookId']
 
         for key, value in incident.items():
             if key in fields:
@@ -361,7 +369,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_result['rawJSON'] = json.dumps(incident)
 
         file_attachments = []
-        if incident.get('attachment') and incident.get('investigationId'):
+        if incident.get('attachment') and len(incident.get('attachment', [])) > 0 and incident.get('investigationId'):
             entries = client.get_incident_entries(
                 incident_id=incident['investigationId'],  # type: ignore
                 from_date=0,
@@ -377,7 +385,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
                     file_result = fileResult(entry['file'], file_entry_content)
                     if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
                         if file_result['Type'] == EntryType.ERROR:
-                            raise Exception(f"Error getting attachment: {file_result.get('Contents', '')}")
+                            raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
 
                         file_attachments.append({
                             'path': file_result.get('FileID', ''),
@@ -392,7 +400,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time.strftime(XSOAR_DATE_FORMAT),  # type: ignore[union-attr,operator]
+    next_run = {'last_fetch': (latest_created_time)  # type: ignore[operator]
+                .strftime(XSOAR_DATE_FORMAT),  # type: ignore[union-attr,operator]
                 'last_fetched_incidents': last_fetched_incidents}
     demisto.debug(f'XSOAR Mirroring: Setting next run to: {next_run}')
     return next_run, incidents_result
@@ -573,6 +582,13 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     return all_mappings
 
 
+def demisto_debug(msg):
+    if demisto.params().get('debug_mode'):
+        demisto.info(msg)
+    else:
+        demisto.debug(msg)
+
+
 def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> GetRemoteDataResponse:
     """get-remote-data command: Returns an updated incident and entries
 
@@ -590,7 +606,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
 
     :rtype: ``List[Dict[str, Any]]``
     """
-    demisto.debug(f'##### get-remote-data args: {json.dumps(args, indent=4)}')
+    demisto_debug(f'##### get-remote-data args: {json.dumps(args, indent=4)}')
     incident = None
     try:
         args['lastUpdate'] = arg_to_timestamp(
@@ -599,7 +615,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
             required=True
         )
         remote_args = GetRemoteDataArgs(args)
-        demisto.debug(f'Getting update for remote [{remote_args.remote_incident_id}]')
+        demisto_debug(f'Getting update for remote [{remote_args.remote_incident_id}]')
 
         categories = argToList(params.get('categories', None))
         tags = argToList(params.get('tags', None))
@@ -623,8 +639,8 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
             remote_args.last_update = occurred + 1
             # in case new entries created less than a minute after incident creation
 
-        demisto.debug(f'tags: {tags}')
-        demisto.debug(f'tags: {categories}')
+        demisto_debug(f'tags: {tags}')
+        demisto_debug(f'tags: {categories}')
         integration_context = get_integration_context()
         XSOARMirror_mirror_reset: dict = json.loads(integration_context.get(MIRROR_RESET, '{}'))
         is_incident_update_after_reset = False
@@ -732,7 +748,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     if parsed_args.delta:
-        demisto.debug(f'Got the following delta keys {list(parsed_args.delta)}')
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
     demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n')
 
@@ -851,34 +867,26 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
 
 
 def main() -> None:  # pragma: no cover
-
     params = demisto.params()
-    args = demisto.args()
 
     api_key_id, api_key, base_url = validate_and_prepare_basic_params(params)
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = arg_to_datetime(params.get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
+    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
 
-    proxy = params.get('proxy', False)
+    proxy = demisto.params().get('proxy', False)
+    demisto.debug(f'Command being called is {demisto.command()}')
+    mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
+        if demisto.params().get('mirror_tag') else set()
 
-    command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
-
-    mirror_tags = set(
-        params.get('mirror_tag', '').split(',')
-        if params.get('mirror_tag')
-        else ()
-    )
-
-    query = params.get('query') or ''
-    disable_from_same_integration = params.get('disable_from_same_integration')
+    query = demisto.params().get('query', '') or ''
+    disable_from_same_integration = demisto.params().get('disable_from_same_integration')
     if disable_from_same_integration:
         query += ' -sourceBrand:"XSOAR Mirroring"'
 
     max_results = arg_to_number(
-        arg=params.get('max_fetch'),
+        arg=demisto.params().get('max_fetch'),
         arg_name='max_fetch'
     )
     if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
@@ -897,61 +905,61 @@ def main() -> None:  # pragma: no cover
             proxy=proxy
         )
 
-        match command:
-            case 'test-module':
-                if params.get('isFetch'):
-                    fetch_incidents(
-                        client=client,
-                        max_results=max_results,
-                        last_run={},
-                        last_fetch=first_fetch_time,
-                        first_fetch_time=first_fetch_time,
-                        query=query,
-                        mirror_direction=params.get('mirror_direction'),
-                        mirror_tag=list(mirror_tags),
-                        mirror_playbook_id=params.get('mirror_playbook_id', True),
-                        fetch_incident_history=params.get('fetch_incident_history', False),
-                    )
-                return_results(test_module(client, first_fetch_time))
-
-            case 'fetch-incidents':
-                last_run: dict = demisto.getLastRun()
-                next_run, incidents = fetch_incidents(
+        if demisto.command() == 'test-module':
+            if demisto.params().get('isFetch'):
+                fetch_incidents(
                     client=client,
                     max_results=max_results,
-                    last_run=last_run,
-                    last_fetch=last_run.get("last_fetch"),
+                    last_run=demisto.getLastRun(),
+                    last_fetch=demisto.getLastRun().get("last_fetch"),
                     first_fetch_time=first_fetch_time,
                     query=query,
-                    mirror_direction=params.get('mirror_direction'),
+                    mirror_direction=demisto.params().get('mirror_direction'),
                     mirror_tag=list(mirror_tags),
-                    mirror_playbook_id=params.get('mirror_playbook_id', True),
-                    fetch_incident_history=params.get('fetch_incident_history', False),
+                    mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
+                    fetch_incident_history=demisto.params().get('fetch_incident_history', False),
                 )
 
-                demisto.setLastRun(next_run)
-                demisto.incidents(incidents)
+            return_results(test_module(client, first_fetch_time))
 
-            case 'xsoar-search-incidents':
-                return_results(search_incidents_command(client, args))
+        elif demisto.command() == 'fetch-incidents':
+            next_run, incidents = fetch_incidents(
+                client=client,
+                max_results=max_results,
+                last_run=demisto.getLastRun(),
+                last_fetch=demisto.getLastRun().get("last_fetch"),
+                first_fetch_time=first_fetch_time,
+                query=query,
+                mirror_direction=demisto.params().get('mirror_direction'),
+                mirror_tag=list(mirror_tags),
+                mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
+                fetch_incident_history=demisto.params().get('fetch_incident_history', False),
+            )
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
 
-            case 'xsoar-get-incident':
-                return_results(get_incident_command(client, args))
+        elif demisto.command() == 'xsoar-search-incidents':
+            return_results(search_incidents_command(client, demisto.args()))
 
-            case 'get-mapping-fields':
-                return_results(get_mapping_fields_command(client))
+        elif demisto.command() == 'xsoar-get-incident':
+            return_results(get_incident_command(client, demisto.args()))
 
-            case 'get-remote-data':
-                return_results(get_remote_data_command(client, args, params))
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields_command(client))
 
-            case 'update-remote-system':
-                return_results(update_remote_system_command(client, args, mirror_tags))
+        elif demisto.command() == 'get-remote-data':
+            return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
 
-            case _:
-                raise NotImplementedError('Command not implemented')
+        elif demisto.command() == 'update-remote-system':
+            return_results(update_remote_system_command(client, demisto.args(), mirror_tags))
 
+        else:
+            raise NotImplementedError('Command not implemented')
+
+    except NotImplementedError:
+        raise
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
