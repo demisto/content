@@ -221,7 +221,7 @@ def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, List[di
 
     demisto.info(f'Last event was created in {latest_event_time}')
     event_nums_with_latest_created_time = get_events_with_latest_created_time(events, latest_event_time)
-    demisto.info(f'event number with latest created time: {event_nums_with_latest_created_time}')
+    demisto.info(f'event numbers with latest created time: {event_nums_with_latest_created_time}')
 
     return _triage_item_ids_to_events, event_nums_with_latest_created_time, latest_event_time.strftime(DATE_FORMAT)
 
@@ -455,7 +455,7 @@ def main() -> None:
                 product=PRODUCT
             )
             demisto.setLastRun(new_last_run)
-        elif command == "reila-quest-get-events":
+        elif command == "relia-quest-get-events":
             return_results(get_events_command(client, args=demisto.args()))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')

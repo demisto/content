@@ -50,7 +50,7 @@ script:
       required: false
       defaultValue: '200'
     description: Manual command to fetch reila-quest events and display them.
-    name: reila-quest-get-events
+    name: relia-quest-get-events
     outputs:
     - contextPath: ReilaQuest.Events
       description: A list of events.
