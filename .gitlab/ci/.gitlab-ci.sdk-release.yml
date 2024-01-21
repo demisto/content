@@ -13,7 +13,7 @@ create-release-branch:
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
-    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version " $RELEASE_VERSION " has started"
+    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version "$RELEASE_VERSION" has started"
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
 
