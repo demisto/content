@@ -2029,7 +2029,7 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
