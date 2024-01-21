@@ -626,13 +626,13 @@ class TestJiraEditIssueCommand:
         mocker.patch.object(client, 'get_transitions', return_value=transitions_raw_response)
         mocker.patch.object(client, 'transition_issue', return_value=requests.Response())
         command_args = args | {'issue_key': 'dummy_key', 'description': 'dummy description', 'project_key': 'dummy_project_key',
-                'project_id': 'dummy_project_id',
-                'labels': 'label1,label2', 'components': 'comp1,comp2',
-                'customfield_1': 'dummy custom field'}
+                               'project_id': 'dummy_project_id',
+                               'labels': 'label1,label2', 'components': 'comp1,comp2',
+                               'customfield_1': 'dummy custom field'}
         # The transition ID is 21 since the mocked transition 'In Development' has an ID of 21 and the status
         # 'Selected for development' correlates to the transition 'In Development', which as stated, has an ID of 21
         expected_issue_fields = {'transition': {'id': '21'},
-                                'fields': {'description': 'dummy description', 'project':
+                                 'fields': {'description': 'dummy description', 'project':
                                             {'key': 'dummy_project_key', 'id':
                                              'dummy_project_id'}, 'labels': ['label1', 'label2'],
                                             'components': [{'name': 'comp1'}, {'name': 'comp2'}],
