@@ -1,5 +1,5 @@
 This is the Cisco AMP event collector integration for XSIAM.
-This integration was integrated and tested with version xx of CiscoAMPEventCollector.
+This integration was integrated and tested with version v1 of CiscoAMPEventCollector.
 
 ## Configure Cisco AMP Event Collector on Cortex XSOAR
 

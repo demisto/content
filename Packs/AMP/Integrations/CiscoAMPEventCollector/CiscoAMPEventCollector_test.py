@@ -133,7 +133,6 @@ def test_fetch_events_with_no_new_incidents(
                                           "previous_ids": ["6159258594551267595"]
                                        },
                                        params={
-                                          'first_fetch_time': "2023-11-01T23:17:39.000Z",
                                           'max_events_per_fetch': 100
                                        })
 

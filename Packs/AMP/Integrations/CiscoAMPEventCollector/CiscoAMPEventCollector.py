@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -101,7 +101,10 @@ def get_earliest_events(client, start_date, offset=0):
         # Check if there are more pages to fetch
         if "next" not in response["metadata"]["links"]:
             break
-        offset = response['metadata']['results']['total'] - 500
+        total_results = response.get('metadata', {}).get('results', {}).get('total')
+        if not total_results:
+            raise 'wrong response returned'
+        offset = total_results - 500
 
     # Reverses the list of events so that the list is in ascending order
     # so that the earliest event will be the first in the list
@@ -114,41 +117,41 @@ def iterate_events(events, max_events_per_fetch, previous_ids, last_fetch_timest
 
     # Copy the previous_ids list to manage the events list suspected of being duplicates for the next fetch
     new_previous_ids = previous_ids.copy()
-    retrieve_events: list[dict[str, Any]] = []
+    filtered_events: list[dict[str, Any]] = []
     for event in events:
-        # Break once the maximum number of retrieve_events has been achieved.
-        if len(retrieve_events) >= max_events_per_fetch:
+        # Break once the maximum number of filtered_events has been achieved.
+        if len(filtered_events) >= max_events_per_fetch:
             demisto.debug('We reached the "max_events_per_fetch" requested by the user')
             break
 
-        # Skip if the incident ID has been fetched already.
-        if (incident_id := str(event.get("id"))) in previous_ids:
-            demisto.debug(f'skip {event} as it is in the previous_ids')
+        # Skip if the event ID has been fetched already.
+        if (event_id := str(event.get("id"))) in previous_ids:
+            demisto.debug(f'skipping {event_id} as it was appear in previous_ids, which means it was already fetched')
             continue
 
-        event_timestamp = event["timestamp"] * 1000
-        event.update({'_time': event['timestamp']})
-        retrieve_events.append(event)
+        event_timestamp = arg_to_number(event.get('timestamp'), required=True, arg_name='event.timestamp') * 1000
+        event.update({'_time': timestamp_to_datestring(event.get('timestamp'), is_utc=True)})
+        filtered_events.append(event)
 
         # Update the latest event time that was fetched.
         # And accordingly initializing the list of `previous_ids`
         # to the ids that belong to the time of the last event received
         if event_timestamp > last_fetch_timestamp:
             demisto.debug('updating the last run')
-            new_previous_ids = {incident_id}
+            new_previous_ids = {event_id}
             last_fetch_timestamp = event_timestamp
 
         # Adding the event ID when the event time is equal to the last received event
         elif event_timestamp == last_fetch_timestamp:
             demisto.debug('adding id to the "new_previous_ids"')
-            new_previous_ids.add(incident_id)
+            new_previous_ids.add(event_id)
 
     last_run = {
         "last_fetch": timestamp_to_datestring(last_fetch_timestamp, is_utc=True),
         "previous_ids": list(new_previous_ids),
     }
 
-    return last_run, retrieve_events
+    return last_run, filtered_events
 
 
 def fetch_events(client: Client, params: dict, last_run: dict):
@@ -156,12 +159,12 @@ def fetch_events(client: Client, params: dict, last_run: dict):
        Fetches events from CiscoAMP API.
     """
     max_events_per_fetch = arg_to_number(params.get('max_events_per_fetch')) or 1000
-    retrieve_events = []
+    filtered_events = []
     while max_events_per_fetch:
         demisto.debug(f'{last_run=}')
         start_date = last_run.get("last_fetch")
-        if start_date is None:
-            start_date = dateparser.parse('1 week').strftime(ISO_8601_FORMAT)
+        if not start_date:
+            start_date = dateparser.parse('now').strftime(ISO_8601_FORMAT)
 
         last_fetch_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
         demisto.debug(f'Getting events from: {start_date}')
@@ -170,18 +173,18 @@ def fetch_events(client: Client, params: dict, last_run: dict):
         previous_ids = set(last_run.get("previous_ids", []))
 
         events = get_earliest_events(client, start_date)
-        demisto.debug(f'get {len(events)} events from request')
+        demisto.debug(f'Received {len(events)} events from request')
         last_run, events = iterate_events(events, max_events_per_fetch, previous_ids, last_fetch_timestamp)
-        demisto.debug(f'remained {len(events)} after filtering')
+        demisto.debug(f'Remained {len(events)} after filtering')
 
-        retrieve_events += events
+        filtered_events += events
 
         if not events:
             break
-        max_events_per_fetch -= len(retrieve_events)
+        max_events_per_fetch -= len(filtered_events)
 
-    demisto.debug(f'Fetched {len(retrieve_events)} events.')
-    return last_run, retrieve_events
+    demisto.debug(f'Fetched {len(filtered_events)} events.')
+    return last_run, filtered_events
 
 
 ''' MAIN FUNCTION '''
@@ -197,14 +200,14 @@ def main() -> None:
     client_id = params.get('credentials').get('identifier')
     api_key = params.get('credentials').get('password')
     server_url = urljoin(params.get('url'))
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get("proxy", False)
     should_push_events = argToBoolean(args.get('should_push_events', False))
 
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(client_id=client_id, api_key=api_key,
-                        server_url=server_url, proxy=proxy, verify=(not verify_certificate))
+                        server_url=server_url, proxy=proxy, verify=verify_certificate)
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))

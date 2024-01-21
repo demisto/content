@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-ectionOrder:
+sectionOrder:
 - Connect
 - Collect
 commonfields:
@@ -16,9 +16,10 @@ configuration:
   required: true
   displaypassword: API Key
   type: 9
+  section: Connect
 - defaultvalue: 1000
   section: Collect
-  display: Max events number per fetch
+  display: Max events per fetch
   name: max_events_per_fetch
   required: false
   type: 0
