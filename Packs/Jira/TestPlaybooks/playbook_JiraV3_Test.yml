@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 147426cd-0b21-4fb1-888b-2cc674e43c37
+    taskid: 40dbd0ad-ae98-4065-8537-77972083e57b
     type: start
     task:
-      id: 147426cd-0b21-4fb1-888b-2cc674e43c37
+      id: 40dbd0ad-ae98-4065-8537-77972083e57b
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8cfaee12-40a3-442f-8757-17cef639a878
+    taskid: 4d5e1589-f83a-48c1-8968-5066e41840fa
     type: regular
     task:
-      id: 8cfaee12-40a3-442f-8757-17cef639a878
+      id: 4d5e1589-f83a-48c1-8968-5066e41840fa
       version: -1
       name: Delete Context
       description: |-
@@ -78,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 315e9678-edb9-4ce9-86d1-74f3f5c24db5
+    taskid: 596f47ce-fccd-4563-8219-126bd6f4cd0a
     type: regular
     task:
-      id: 315e9678-edb9-4ce9-86d1-74f3f5c24db5
+      id: 596f47ce-fccd-4563-8219-126bd6f4cd0a
       version: -1
       name: Create First Issue
       description: Creates a new issue in Jira.
@@ -123,10 +123,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 787fb3a7-46f3-4dea-88f5-5661895dbf54
+    taskid: 96ea8dd2-36d0-4141-85b6-9f739fb10315
     type: regular
     task:
-      id: 787fb3a7-46f3-4dea-88f5-5661895dbf54
+      id: 96ea8dd2-36d0-4141-85b6-9f739fb10315
       version: -1
       name: Jira Get Issue
       description: Fetches an issue from Jira.
@@ -162,10 +162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f8d7c2f6-395d-48fc-8cd4-1001231bad85
+    taskid: 230a9400-74dc-4001-8b24-7dd1d60e5d65
     type: condition
     task:
-      id: f8d7c2f6-395d-48fc-8cd4-1001231bad85
+      id: 230a9400-74dc-4001-8b24-7dd1d60e5d65
       version: -1
       name: Verify Context Fields
       type: condition
@@ -237,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a524cd02-45e4-45e8-898e-829693a22206
+    taskid: 4b11bebb-7b9a-4225-893c-78f6ada5f6e1
     type: regular
     task:
-      id: a524cd02-45e4-45e8-898e-829693a22206
+      id: 4b11bebb-7b9a-4225-893c-78f6ada5f6e1
       version: -1
       name: Delete Second Issue
       description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted
@@ -261,7 +261,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6055
+          "y": 6230
         }
       }
     note: false
@@ -273,10 +273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: fbd254ad-5381-436d-81ed-7008fc40bb6e
+    taskid: fe77cbc5-e4a5-44e3-871f-a22fc2bfdc99
     type: regular
     task:
-      id: fbd254ad-5381-436d-81ed-7008fc40bb6e
+      id: fe77cbc5-e4a5-44e3-871f-a22fc2bfdc99
       version: -1
       name: Add Comment
       description: Adds a new comment to an existing Jira issue.
@@ -312,10 +312,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 203038d4-c4c9-4616-84ce-4a259d033433
+    taskid: 4d5f601e-e6cc-454d-819e-6582392e831f
     type: regular
     task:
-      id: 203038d4-c4c9-4616-84ce-4a259d033433
+      id: 4d5f601e-e6cc-454d-819e-6582392e831f
       version: -1
       name: Jira Add Web Link
       description: Creates (or updates) an issue link.
@@ -339,7 +339,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2410
+          "y": 2585
         }
       }
     note: false
@@ -351,10 +351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f549edf2-dec9-4895-8918-600a307dfd90
+    taskid: 03eeb000-fc27-42a9-81f8-d90409f0266a
     type: regular
     task:
-      id: f549edf2-dec9-4895-8918-600a307dfd90
+      id: 03eeb000-fc27-42a9-81f8-d90409f0266a
       version: -1
       name: File Create For Upload
       description: |
@@ -377,7 +377,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2585
+          "y": 2760
         }
       }
     note: false
@@ -389,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 2c5883cf-1966-4bbc-8530-7813a260630c
+    taskid: 0701d837-7f27-4270-86ef-f7dfaddcd7be
     type: regular
     task:
-      id: 2c5883cf-1966-4bbc-8530-7813a260630c
+      id: 0701d837-7f27-4270-86ef-f7dfaddcd7be
       version: -1
       name: Jira Upload File
       description: Uploads a file attachment to an issue.
@@ -416,7 +416,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2760
+          "y": 2935
         }
       }
     note: false
@@ -428,10 +428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 69f9baec-a71b-45c8-8274-9c9d7bba4f23
+    taskid: 4ead9e28-1eab-48b5-837d-35cde5fbe0bd
     type: regular
     task:
-      id: 69f9baec-a71b-45c8-8274-9c9d7bba4f23
+      id: 4ead9e28-1eab-48b5-837d-35cde5fbe0bd
       version: -1
       name: Jira Issue Query With Custom Fields
       description: Queries Jira issues.
@@ -453,7 +453,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5005
+          "y": 5180
         }
       }
     note: false
@@ -465,10 +465,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: af5bf13b-712d-4b5c-89ad-818642731613
+    taskid: a01669d5-541f-4bb6-8d00-2a9022de1a61
     type: condition
     task:
-      id: af5bf13b-712d-4b5c-89ad-818642731613
+      id: a01669d5-541f-4bb6-8d00-2a9022de1a61
       version: -1
       name: Verify Context Fields With Custom Fields
       type: condition
@@ -508,7 +508,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5180
+          "y": 5355
         }
       }
     note: false
@@ -520,10 +520,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 49f78608-b80f-4e3e-8e1a-16bcf569e550
+    taskid: 60888ab7-2cf1-4908-86dc-2380d118ec73
     type: regular
     task:
-      id: 49f78608-b80f-4e3e-8e1a-16bcf569e550
+      id: 60888ab7-2cf1-4908-86dc-2380d118ec73
       version: -1
       name: Jira Edit Issue With Rewrite Action
       description: Modifies an issue in Jira.
@@ -539,8 +539,6 @@ tasks:
         simple: Integration
       issue_id:
         simple: ${Ticket.Id}
-      status:
-        simple: Backlog
       summary:
         simple: Edited Test Playbook Summary
     separatecontext: false
@@ -561,10 +559,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 50966d4e-19fe-4fb6-89a7-6cd312b67a25
+    taskid: 3e0c6c40-cda6-4c29-8b78-2d6ccef38c8c
     type: regular
     task:
-      id: 50966d4e-19fe-4fb6-89a7-6cd312b67a25
+      id: 3e0c6c40-cda6-4c29-8b78-2d6ccef38c8c
       version: -1
       name: Create Second Issue
       description: Creates a new issue in Jira.
@@ -598,7 +596,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4130
+          "y": 4305
         }
       }
     note: false
@@ -610,10 +608,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e185193f-2d8d-4e7a-82b0-d910cb891efa
+    taskid: a22e8845-1600-4dac-8e35-8cf4b2dc723e
     type: regular
     task:
-      id: e185193f-2d8d-4e7a-82b0-d910cb891efa
+      id: a22e8845-1600-4dac-8e35-8cf4b2dc723e
       version: -1
       name: Jira Edit Issue With Append Action
       description: Modifies an issue in Jira.
@@ -623,7 +621,7 @@ tasks:
       brand: Jira V3
     nexttasks:
       '#none#':
-      - "8"
+      - "66"
     scriptarguments:
       action:
         simple: append
@@ -651,10 +649,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 5a0fa622-6d1c-40b1-8938-4e227e662b80
+    taskid: 2c715c15-525d-457c-8f7f-6d14e73bdd7f
     type: regular
     task:
-      id: 5a0fa622-6d1c-40b1-8938-4e227e662b80
+      id: 2c715c15-525d-457c-8f7f-6d14e73bdd7f
       version: -1
       name: Get Comments
       description: Returns the comments added to a ticket.
@@ -686,10 +684,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 4c2a2610-ef03-4858-80d4-8825ec0d286b
+    taskid: 1bf8ba3e-b359-4b84-8130-cd017ac37506
     type: condition
     task:
-      id: 4c2a2610-ef03-4858-80d4-8825ec0d286b
+      id: 1bf8ba3e-b359-4b84-8130-cd017ac37506
       version: -1
       name: Verify Comment Content
       type: condition
@@ -727,10 +725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 4b445a2b-1d4c-44d2-84c3-0eea93f4a95c
+    taskid: 2484ab80-0cfb-4d59-8507-c0c7ebc9161e
     type: regular
     task:
-      id: 4b445a2b-1d4c-44d2-84c3-0eea93f4a95c
+      id: 2484ab80-0cfb-4d59-8507-c0c7ebc9161e
       version: -1
       name: Get Issue With Attachments
       description: Fetches an issue from Jira.
@@ -752,7 +750,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2935
+          "y": 3110
         }
       }
     note: false
@@ -764,10 +762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 8e8f729a-36c1-4798-8ad3-008dfc3343d7
+    taskid: ac734df0-4b7c-4627-852a-8f7c2406bbd9
     type: condition
     task:
-      id: 8e8f729a-36c1-4798-8ad3-008dfc3343d7
+      id: ac734df0-4b7c-4627-852a-8f7c2406bbd9
       version: -1
       name: Verify Attachment Name
       type: condition
@@ -801,7 +799,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3110
+          "y": 3285
         }
       }
     note: false
@@ -813,10 +811,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 22f8c31e-a271-4a46-8581-b9b06a75aeac
+    taskid: 10a74b16-9504-4a30-8a39-08ab5008b525
     type: regular
     task:
-      id: 22f8c31e-a271-4a46-8581-b9b06a75aeac
+      id: 10a74b16-9504-4a30-8a39-08ab5008b525
       version: -1
       name: Delete First Issue
       description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted
@@ -837,7 +835,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6055
+          "y": 6230
         }
       }
     note: false
@@ -849,10 +847,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 9a18c4d6-ff7c-4fa7-85d0-403d0899e608
+    taskid: f8cb9180-903f-42b3-8f3a-7b92eff88e54
     type: regular
     task:
-      id: 9a18c4d6-ff7c-4fa7-85d0-403d0899e608
+      id: f8cb9180-903f-42b3-8f3a-7b92eff88e54
       version: -1
       name: Get Account ID
       description: Gets the account ID for a given user attribute.
@@ -872,7 +870,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6230
+          "y": 6405
         }
       }
     note: false
@@ -884,10 +882,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: c0e401db-3727-4e99-82c4-cfaf3cca3af1
+    taskid: a8b1357a-1de7-4412-853e-452f38da59ba
     type: condition
     task:
-      id: c0e401db-3727-4e99-82c4-cfaf3cca3af1
+      id: a8b1357a-1de7-4412-853e-452f38da59ba
       version: -1
       name: Verify Account ID
       type: condition
@@ -913,7 +911,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6405
+          "y": 6580
         }
       }
     note: false
@@ -925,10 +923,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5ad5b745-97d8-4134-8741-3d7f80cefa49
+    taskid: 2ffdf670-dbab-44de-82a1-87117fcc6fd9
     type: regular
     task:
-      id: 5ad5b745-97d8-4134-8741-3d7f80cefa49
+      id: 2ffdf670-dbab-44de-82a1-87117fcc6fd9
       version: -1
       name: Get Transitions
       description: Lists all possible transitions for a given ticket.
@@ -948,7 +946,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4305
+          "y": 4480
         }
       }
     note: false
@@ -960,10 +958,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 51f656cc-a96c-421c-8d03-405d3926fbce
+    taskid: b4f2842f-6791-4420-832c-525e1c65904e
     type: condition
     task:
-      id: 51f656cc-a96c-421c-8d03-405d3926fbce
+      id: b4f2842f-6791-4420-832c-525e1c65904e
       version: -1
       name: Verify Transitions
       type: condition
@@ -986,7 +984,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4480
+          "y": 4655
         }
       }
     note: false
@@ -998,10 +996,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 787f6d9f-19f5-4337-8fe0-a0997d0eed25
+    taskid: f15f81b4-b6ff-496e-833e-f0fb55f33f3d
     type: title
     task:
-      id: 787f6d9f-19f5-4337-8fe0-a0997d0eed25
+      id: f15f81b4-b6ff-496e-833e-f0fb55f33f3d
       version: -1
       name: Second Part of Test
       type: title
@@ -1016,7 +1014,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6580
+          "y": 6755
         }
       }
     note: false
@@ -1028,10 +1026,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 21392d7f-6a7d-4251-89c8-00f1529caaa7
+    taskid: 14e0c3b3-9443-470e-89f7-19f4c0dd54df
     type: title
     task:
-      id: 21392d7f-6a7d-4251-89c8-00f1529caaa7
+      id: 14e0c3b3-9443-470e-89f7-19f4c0dd54df
       version: -1
       name: First Part of Test
       type: title
@@ -1058,10 +1056,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 5fbf49d0-ae8d-4344-8c66-787e1892aeb2
+    taskid: 8d9ed7bb-991e-4e39-80a2-05c809a92323
     type: regular
     task:
-      id: 5fbf49d0-ae8d-4344-8c66-787e1892aeb2
+      id: 8d9ed7bb-991e-4e39-80a2-05c809a92323
       version: -1
       name: Get Issue Attachment
       description: Download attachments for a specific issue (Will download a file
@@ -1082,7 +1080,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3460
+          "y": 3635
         }
       }
     note: false
@@ -1094,10 +1092,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 6fa2a477-00e6-47f8-83b9-7dd372051b8a
+    taskid: 5a2fdd41-070b-4c9c-819c-f17ef16babc7
     type: condition
     task:
-      id: 6fa2a477-00e6-47f8-83b9-7dd372051b8a
+      id: 5a2fdd41-070b-4c9c-819c-f17ef16babc7
       version: -1
       name: Verify Attachment Name
       type: condition
@@ -1123,7 +1121,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3635
+          "y": 3810
         }
       }
     note: false
@@ -1135,10 +1133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 0d87ed9e-1e5c-4a91-8745-ca2916c55216
+    taskid: ce893a95-69b9-481c-8acf-b44920a00838
     type: regular
     task:
-      id: 0d87ed9e-1e5c-4a91-8745-ca2916c55216
+      id: ce893a95-69b9-481c-8acf-b44920a00838
       version: -1
       name: Delete Comment
       description: Delete a comment that's part of an issue.
@@ -1160,7 +1158,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3810
+          "y": 3985
         }
       }
     note: false
@@ -1172,10 +1170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 61dfa984-414b-44ba-8fa8-5a8cd785adcd
+    taskid: 874991c1-6fa0-473d-8494-b09087442fc4
     type: regular
     task:
-      id: 61dfa984-414b-44ba-8fa8-5a8cd785adcd
+      id: 874991c1-6fa0-473d-8494-b09087442fc4
       version: -1
       name: Edit Comment
       description: Edit a comment that's part of an issue.
@@ -1211,10 +1209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: d1f5d17c-b965-4579-8164-f550fed0a70c
+    taskid: b01c4ea7-1b77-4fb2-8ea1-2a46da02bb61
     type: condition
     task:
-      id: d1f5d17c-b965-4579-8164-f550fed0a70c
+      id: b01c4ea7-1b77-4fb2-8ea1-2a46da02bb61
       version: -1
       name: Verify Comment Content
       type: condition
@@ -1252,10 +1250,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: de5d7c1e-9e68-4f52-8c17-72d84eca9184
+    taskid: 55556f4b-f59f-4acd-84e1-647b5378a943
     type: regular
     task:
-      id: de5d7c1e-9e68-4f52-8c17-72d84eca9184
+      id: 55556f4b-f59f-4acd-84e1-647b5378a943
       version: -1
       name: Delete InfoFile Context
       description: |-
@@ -1280,7 +1278,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3285
+          "y": 3460
         }
       }
     note: false
@@ -1292,10 +1290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: b6aecc60-a8ed-46bf-8f11-eb04a7df2d5c
+    taskid: eaa9734d-9476-43b9-84b5-06d5eea21acc
     type: regular
     task:
-      id: b6aecc60-a8ed-46bf-8f11-eb04a7df2d5c
+      id: eaa9734d-9476-43b9-84b5-06d5eea21acc
       version: -1
       name: Get Issue Links
       description: Returns a list of all issue link types.
@@ -1312,7 +1310,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5355
+          "y": 5530
         }
       }
     note: false
@@ -1324,10 +1322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: a8355c4d-dacf-4f82-8faf-f0f4d77e8b05
+    taskid: c4ebf690-c3e3-47af-81e1-a7a2ec4fbd96
     type: regular
     task:
-      id: a8355c4d-dacf-4f82-8faf-f0f4d77e8b05
+      id: c4ebf690-c3e3-47af-81e1-a7a2ec4fbd96
       version: -1
       name: Create Issue to Issue Link
       description: Use this command to create a link between two issues.
@@ -1351,7 +1349,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5530
+          "y": 5705
         }
       }
     note: false
@@ -1363,10 +1361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 78efa0e4-c26a-4912-899f-bd1128bbb264
+    taskid: 627a6e87-ee72-4acd-8488-c1bcf87dfa00
     type: regular
     task:
-      id: 78efa0e4-c26a-4912-899f-bd1128bbb264
+      id: 627a6e87-ee72-4acd-8488-c1bcf87dfa00
       version: -1
       name: List Issue Fields
       description: This command returns the issue fields, both system and custom fields.
@@ -1388,7 +1386,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4655
+          "y": 4830
         }
       }
     note: false
@@ -1400,10 +1398,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 7f2b28c0-09f1-4a18-8064-a8498340f843
+    taskid: 84a963d9-2472-4879-8209-5af14c6ec981
     type: condition
     task:
-      id: 7f2b28c0-09f1-4a18-8064-a8498340f843
+      id: 84a963d9-2472-4879-8209-5af14c6ec981
       version: -1
       name: Verify Issue Fields
       type: condition
@@ -1429,7 +1427,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4830
+          "y": 5005
         }
       }
     note: false
@@ -1441,10 +1439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: ba422457-f46d-4a53-8e39-013e03dbe58b
+    taskid: 6ccb9ca9-1610-48d4-8ea4-ed946469243e
     type: title
     task:
-      id: ba422457-f46d-4a53-8e39-013e03dbe58b
+      id: 6ccb9ca9-1610-48d4-8ea4-ed946469243e
       version: -1
       name: Create Second Issue
       type: title
@@ -1459,7 +1457,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3985
+          "y": 4160
         }
       }
     note: false
@@ -1471,10 +1469,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 86b2a7ab-c8c1-4f28-81c8-fe6f0a1b6e9e
+    taskid: 45464feb-1b01-46b9-81aa-333dc212ebcf
     type: title
     task:
-      id: 86b2a7ab-c8c1-4f28-81c8-fe6f0a1b6e9e
+      id: 45464feb-1b01-46b9-81aa-333dc212ebcf
       version: -1
       name: Create First Issue
       type: title
@@ -1501,10 +1499,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: c29b47a3-0f8e-498c-8bd9-cc592765074c
+    taskid: 212152a5-543f-4cf0-8ca5-81b861f8e607
     type: regular
     task:
-      id: c29b47a3-0f8e-498c-8bd9-cc592765074c
+      id: 212152a5-543f-4cf0-8ca5-81b861f8e607
       version: -1
       name: Boards List
       description: Get board data. If board_id is given, then only the board that
@@ -1528,7 +1526,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6900
+          "y": 7075
         }
       }
     note: false
@@ -1540,10 +1538,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 0679f176-14ad-403d-8d2e-e18591167547
+    taskid: ec69dfce-5392-4323-87d8-f750974fae9b
     type: condition
     task:
-      id: 0679f176-14ad-403d-8d2e-e18591167547
+      id: ec69dfce-5392-4323-87d8-f750974fae9b
       version: -1
       name: Verify Boards List
       type: condition
@@ -1566,7 +1564,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7075
+          "y": 7250
         }
       }
     note: false
@@ -1578,10 +1576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: b0f33e65-cfa5-4d6e-8ffd-a6c40e2c1095
+    taskid: 85899a4e-18e0-486b-8b2b-71f1f3b825bb
     type: regular
     task:
-      id: b0f33e65-cfa5-4d6e-8ffd-a6c40e2c1095
+      id: 85899a4e-18e0-486b-8b2b-71f1f3b825bb
       version: -1
       name: Backlog Issues of Board
       description: Get issues from backlog of specific board. For Jira OnPrem, the
@@ -1602,7 +1600,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7250
+          "y": 7425
         }
       }
     note: false
@@ -1614,10 +1612,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 7f13f7bc-1b3d-4c1b-8239-b7dbee509b1d
+    taskid: 76d3ce47-2f5a-4f1c-8afa-7fc0ac27fc55
     type: regular
     task:
-      id: 7f13f7bc-1b3d-4c1b-8239-b7dbee509b1d
+      id: 76d3ce47-2f5a-4f1c-8afa-7fc0ac27fc55
       version: -1
       name: Delete Context
       description: |-
@@ -1642,7 +1640,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6725
+          "y": 6900
         }
       }
     note: false
@@ -1654,10 +1652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: c49e6eac-c2ce-406d-86bc-4f8982426b8b
+    taskid: 8874f0fd-12e6-45ee-8ec6-234a187b500e
     type: condition
     task:
-      id: c49e6eac-c2ce-406d-86bc-4f8982426b8b
+      id: 8874f0fd-12e6-45ee-8ec6-234a187b500e
       version: -1
       name: Verify Issues of Backlog
       type: condition
@@ -1680,7 +1678,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7425
+          "y": 7600
         }
       }
     note: false
@@ -1692,10 +1690,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 99c01b83-c792-4177-8a72-cca21bec7994
+    taskid: 34983495-77c9-47bd-85fd-a236ed6f8d61
     type: regular
     task:
-      id: 99c01b83-c792-4177-8a72-cca21bec7994
+      id: 34983495-77c9-47bd-85fd-a236ed6f8d61
       version: -1
       name: Issues to Sprints
       description: Moves issues to a sprint, for a given sprint ID. Issues can only
@@ -1718,7 +1716,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9350
+          "y": 9525
         }
       }
     note: false
@@ -1730,10 +1728,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 645a8395-5b60-4235-880d-97ed1c7f722c
+    taskid: 4f55d3b6-6b4d-4c4a-8f98-04aa960ed825
     type: regular
     task:
-      id: 645a8395-5b60-4235-880d-97ed1c7f722c
+      id: 4f55d3b6-6b4d-4c4a-8f98-04aa960ed825
       version: -1
       name: Move Issues to Board
       description: Moves issues from backlog to board, the command does not work with
@@ -1757,7 +1755,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5705
+          "y": 5880
         }
       }
     note: false
@@ -1769,10 +1767,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: e25a416e-df4b-42dc-8c15-f2df91debfd6
+    taskid: 02aa585c-1e8e-45fe-87ff-421cb13762a7
     type: regular
     task:
-      id: e25a416e-df4b-42dc-8c15-f2df91debfd6
+      id: 02aa585c-1e8e-45fe-87ff-421cb13762a7
       version: -1
       name: Move Issues to Backlog
       description: Moves issues to backlog. If the issues supplied are NOT part of
@@ -1797,7 +1795,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5880
+          "y": 6055
         }
       }
     note: false
@@ -1809,10 +1807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 3b97309c-ce53-4ff4-85ad-d4902fc41815
+    taskid: 138a7716-6154-4bf1-8bdf-a77ea5f174f9
     type: regular
     task:
-      id: 3b97309c-ce53-4ff4-85ad-d4902fc41815
+      id: 138a7716-6154-4bf1-8bdf-a77ea5f174f9
       version: -1
       name: Move Issues to Backlog
       description: Moves issues to backlog. If the issues supplied are NOT part of
@@ -1836,7 +1834,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9525
+          "y": 9700
         }
       }
     note: false
@@ -1848,10 +1846,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 9cfc4537-2ec3-4a1f-8df8-19f811b3000c
+    taskid: b5f45044-a930-447f-87f7-637a04477f49
     type: title
     task:
-      id: 9cfc4537-2ec3-4a1f-8df8-19f811b3000c
+      id: b5f45044-a930-447f-87f7-637a04477f49
       version: -1
       name: Done
       type: title
@@ -1863,7 +1861,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9700
+          "y": 9875
         }
       }
     note: false
@@ -1875,10 +1873,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: c6ed47fb-056f-4d03-8534-4adfd82eacee
+    taskid: ef04c0ac-c7b0-4108-8eee-b32aa99c219f
     type: regular
     task:
-      id: c6ed47fb-056f-4d03-8534-4adfd82eacee
+      id: ef04c0ac-c7b0-4108-8eee-b32aa99c219f
       version: -1
       name: Get Issues of Board
       description: Get all issues from a specific board
@@ -1902,7 +1900,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7600
+          "y": 7775
         }
       }
     note: false
@@ -1914,10 +1912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: fef06aba-5225-4694-8d0d-59ad48605993
+    taskid: f402db2e-2010-4c28-831e-1a19ad8cd48c
     type: condition
     task:
-      id: fef06aba-5225-4694-8d0d-59ad48605993
+      id: f402db2e-2010-4c28-831e-1a19ad8cd48c
       version: -1
       name: Verify Issues of Board
       type: condition
@@ -1940,7 +1938,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7775
+          "y": 7950
         }
       }
     note: false
@@ -1952,10 +1950,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 5d76f574-6440-47d0-824c-48d8540c5f62
+    taskid: 17710a1d-06ef-4d48-8f29-db2c26b596d7
     type: regular
     task:
-      id: 5d76f574-6440-47d0-824c-48d8540c5f62
+      id: 17710a1d-06ef-4d48-8f29-db2c26b596d7
       version: -1
       name: Get Sprints of Board
       description: Get all sprints of a specific board.
@@ -1975,7 +1973,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7950
+          "y": 8125
         }
       }
     note: false
@@ -1987,10 +1985,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 6560f4d4-6bb7-40b8-8c19-e777f043aacc
+    taskid: a0e7551b-7722-449d-8e5f-ae6945fd364b
     type: condition
     task:
-      id: 6560f4d4-6bb7-40b8-8c19-e777f043aacc
+      id: a0e7551b-7722-449d-8e5f-ae6945fd364b
       version: -1
       name: Verify Sprints of Board
       type: condition
@@ -2013,7 +2011,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8125
+          "y": 8300
         }
       }
     note: false
@@ -2025,10 +2023,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 43ff5596-bef4-4338-81d4-528cf8543e60
+    taskid: e03bcea1-89f6-421e-84ba-8641d16951cc
     type: regular
     task:
-      id: 43ff5596-bef4-4338-81d4-528cf8543e60
+      id: e03bcea1-89f6-421e-84ba-8641d16951cc
       version: -1
       name: Get Epics of Board
       description: Get all epics from a specific board
@@ -2050,7 +2048,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8300
+          "y": 8475
         }
       }
     note: false
@@ -2062,10 +2060,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 63c32dfa-44f1-49f0-8cf8-e3227714f918
+    taskid: 69fe8764-2a74-4d5a-86ac-597ad1d64466
     type: condition
     task:
-      id: 63c32dfa-44f1-49f0-8cf8-e3227714f918
+      id: 69fe8764-2a74-4d5a-86ac-597ad1d64466
       version: -1
       name: Verify Epics of Board
       description: Get all epics from a specific board
@@ -2089,7 +2087,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8475
+          "y": 8650
         }
       }
     note: false
@@ -2101,10 +2099,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 6d92c911-9103-4184-8a45-51c37ec4bf2f
+    taskid: ca357e90-028a-448b-8de6-6c3a8f041a59
     type: regular
     task:
-      id: 6d92c911-9103-4184-8a45-51c37ec4bf2f
+      id: ca357e90-028a-448b-8de6-6c3a8f041a59
       version: -1
       name: Get Issues of Sprint
       description: Get all issues in a sprint.
@@ -2124,7 +2122,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8650
+          "y": 8825
         }
       }
     note: false
@@ -2136,10 +2134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: da96f279-7fd5-4d61-8593-80205c703ced
+    taskid: 6774c2ec-4ff5-491a-86a8-484efeebb3ba
     type: condition
     task:
-      id: da96f279-7fd5-4d61-8593-80205c703ced
+      id: 6774c2ec-4ff5-491a-86a8-484efeebb3ba
       version: -1
       name: Verify Issues of Sprint
       type: condition
@@ -2162,7 +2160,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8825
+          "y": 9000
         }
       }
     note: false
@@ -2174,10 +2172,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 8a3e7028-afef-4767-8d5a-6ce4c83e0d8e
+    taskid: 6301e91b-b8ee-4d4e-8e69-fc8d2e1e4307
     type: regular
     task:
-      id: 8a3e7028-afef-4767-8d5a-6ce4c83e0d8e
+      id: 6301e91b-b8ee-4d4e-8e69-fc8d2e1e4307
       version: -1
       name: Get Issues of Epic
       description: Get all issues that belong to an epic (Child Issues).
@@ -2197,7 +2195,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9000
+          "y": 9175
         }
       }
     note: false
@@ -2209,10 +2207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: bce4d220-fcd8-4b07-8209-96e56dc24b05
+    taskid: b94ac711-8837-40c0-8f44-8e1c6ea2635a
     type: condition
     task:
-      id: bce4d220-fcd8-4b07-8209-96e56dc24b05
+      id: b94ac711-8837-40c0-8f44-8e1c6ea2635a
       version: -1
       name: Verify Issues of Epic
       type: condition
@@ -2235,7 +2233,46 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9175
+          "y": 9350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: bdbcbff4-f0c5-4e86-8b14-468167b4c7ca
+    type: regular
+    task:
+      id: bdbcbff4-f0c5-4e86-8b14-468167b4c7ca
+      version: -1
+      name: Jira Edit Issue Status With Fields
+      description: Modifies an issue in Jira.
+      script: Jira V3|||jira-edit-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      issue_id:
+        simple: ${Ticket.Id}
+      issue_json:
+        simple: '{\"fields\": {\"customfield_10102\":\"Dummy draft reason\"}}'
+      status:
+        simple: Draft
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2410
         }
       }
     note: false
