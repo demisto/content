@@ -14,7 +14,7 @@ from Tests.scripts.common import get_properties_for_test_suite, FAILED_TO_COLOR_
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
     generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link, \
-    jira_sanitize_file_name, jira_color_text
+    jira_sanitize_file_name, jira_color_text, transition_jira_ticket_to_unresolved
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
@@ -50,6 +50,7 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
             logging.info(f"Skipping updating Jira issue {jira_issue.key} as it has no failures or errors "
                          f"and the Jira ticket is resolved with resolution:{resolution}")
             return None
+        transition_jira_ticket_to_unresolved(jira_server, jira_issue)
         jira_server.add_comment(issue=jira_issue, body=description)
     else:
         if test_suite.failures == 0 and test_suite.errors == 0:

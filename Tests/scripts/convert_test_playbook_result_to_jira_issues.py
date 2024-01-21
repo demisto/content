@@ -80,6 +80,7 @@ def create_jira_issue(jira_server: JIRA,
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen, jira_issue)
 
     if jira_issue is not None:
+        # transition_jira_ticket_to_unresolved()
         jira_server.add_comment(issue=jira_issue, body=description)
     else:
         jira_issue = jira_server.create_issue(project=JIRA_PROJECT_ID,
