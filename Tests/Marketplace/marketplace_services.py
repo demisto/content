@@ -391,8 +391,9 @@ class Pack:
     @property
     def statistics_metadata(self):
         return {
+            Metadata.KEY_WORDS: list(self._keywords or []),
+            Metadata.CATEGORIES: list(self._categories or []),
             Metadata.DOWNLOADS: self.downloads_count,
-            Metadata.KEY_WORDS: self._keywords,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.TAGS: list(self._tags or []),
             Metadata.INTEGRATIONS: self._related_integration_images
@@ -1722,7 +1723,7 @@ class Pack:
             self._tags = set(pack_metadata.get(Metadata.TAGS) or [])
             self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
             self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
-            self._keywords = set(pack_metadata.get(Metadata.TAGS) or [])
+            self._keywords = set(pack_metadata.get(Metadata.KEY_WORDS) or [])
             self._categories = set(pack_metadata.get(Metadata.CATEGORIES) or [])
 
             if 'xsoar' in self.marketplaces:
