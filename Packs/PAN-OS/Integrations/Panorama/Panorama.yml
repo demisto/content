@@ -880,7 +880,9 @@ script:
     - description: The tags for the new service.
       isArray: true
       name: tags
-    description: Creates a service.
+    description: >
+     Creates a service.
+     Note: overrides the service if it already exists.
     deprecated: true
     name: panorama-create-service
     outputs:
