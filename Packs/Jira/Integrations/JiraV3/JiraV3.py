@@ -1710,12 +1710,13 @@ def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name
         client (JiraBaseClient): The Jira client.
         issue_id_or_key (str): The issue id or key.
         status_name (str): The name of the status to transition to.
+        issue_fields (dict[str, Any]): Other issue fields to edit while applying the status.
 
     Raises:
         DemistoException: If the given status name was not found or not valid.
 
     Returns:
-        Any: _description_
+        Any: Raw response of the API request.
     """
     res_transitions = client.get_transitions(issue_id_or_key=issue_id_or_key)
     all_transitions = res_transitions.get('transitions', [])
@@ -1737,12 +1738,13 @@ def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transit
         client (JiraBaseClient): The Jira client.
         issue_id_or_key (str): The issue id or key.
         transition_name (str): The name of the transition to apply.
+        issue_fields (dict[str, Any]): Other issue fields to edit while applying the transition.
 
     Raises:
         DemistoException: If the given transition was not found or not valid.
 
     Returns:
-        Any: _description_
+        Any: Raw response of the API request.
     """
     res_transitions = client.get_transitions(issue_id_or_key=issue_id_or_key)
     all_transitions = res_transitions.get('transitions', [])
