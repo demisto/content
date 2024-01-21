@@ -75,7 +75,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client.get_events()
+        fetch_events(client,{}, {})
     except Exception as e:
         if 'Unauthorized' in str(e):
             return 'Authorization Error: make sure the Client ID and API Key are correctly set'

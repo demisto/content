@@ -77,16 +77,21 @@ def test_fetch_events(
 ):
     """
     Given:
-        - args: last_run, limit.
+        - cass 1: we have "last_fetch" and "previous ids" with several ids.
+        - cass 2: last run is empty.
+        - cass 3: we have "last_fetch" and "previous_ids" with one id.
     When:
-        - run `fetch_events` function.
+        - run `fetch_events` function and we got.
+        - cass 1: several event of new and old.
+        - cass 2: 2 new events with the same 'last_fetch' that was not fetched already.
+        - cass 3: new event with the same 'last_fetch' as one that was fetched already.
     Then:
-        - Ensure in case previous_ids is provided it does not fetch
-          the incidents with ids already fetched.
-        - Ensure that when there are two incidents with the same time
+        - cass 1: Ensure in case previous_ids is provided it does not fetch
+          the events with ids already fetched.
+        - cass 2: Ensure that when there are two events with the same time
           the previous_ids returned contains both ids.
-        - Ensure that when the last incident retrieved has the same time
-          as the incident with the id provided in previous_ids
+        - cass 3: Ensure that when the last event retrieved has the same time
+          as the event with the id provided in previous_ids
           then it returns both ids.
     """
     mock_response_1 = load_mock_response("incidents_response_1.json")
