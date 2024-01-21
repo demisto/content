@@ -6,7 +6,7 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
-- `Sites.ReadWrite.All`: Provides read and write access to all sites.
+- `Sites.ReadWrite.All`: Provides read and write access to all sites.<\br>
 `Client Credentials Flow` - Application permission.
 `Authorization Code Flow` - Delegated permission.
 
@@ -90,7 +90,7 @@ Deletes an item from OneDrive.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.ReadWrite.All - Application`
+Client Credentials Flow - `Files.ReadWrite.All - Application`<\br>
 Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
