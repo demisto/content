@@ -85,7 +85,7 @@ def main():
         logging.info(f'The pipeline status is {pipeline_status}. See pipeline here: {pipeline_url}')
         sys.exit(1)
 
-    logging.info(f'The pipeline has finished. See pipeline here: {pipeline_url}')
+    logging.success(f'The pipeline has finished. See pipeline here: {pipeline_url}')
 
 
 if __name__ == "__main__":

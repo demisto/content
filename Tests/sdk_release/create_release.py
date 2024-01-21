@@ -91,7 +91,7 @@ def main():
         logging.error(response.text)
         sys.exit(1)
 
-    logging.info(f"Demisto SDK v{release_branch_name} released successfully!")
+    logging.success(f"Demisto SDK v{release_branch_name} released successfully!")
 
 
 if __name__ == "__main__":

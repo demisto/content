@@ -165,7 +165,7 @@ def main():
         logging.error(job_data)
         sys.exit(1)
 
-    logging.info('Retrieve SDK changelog workflow finished successfully')
+    logging.success('Retrieve SDK changelog workflow finished successfully')
 
 
 if __name__ == "__main__":

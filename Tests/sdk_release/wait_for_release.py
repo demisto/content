@@ -50,7 +50,7 @@ def main():
         logging.error('Timeout reached while waiting for SDK release artifacts')
         sys.exit(1)
 
-    logging.info(f'SDK release version {release_branch_name} is out')
+    logging.success(f'SDK release version {release_branch_name} is out')
 
 
 if __name__ == "__main__":
