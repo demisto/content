@@ -1,3 +1,5 @@
+import requests
+
 from CommonServerPython import *
 
 import json
@@ -19,11 +21,18 @@ def client() -> ReilaQuestClient:
     )
 
 
-def create_triage_items_events(num_of_events: int, start_time: str, offset: int = 3) -> List[Dict]:
+def create_mocked_response(response: List[Dict], status_code: int = 200) -> requests.Response:
+    mocked_response = requests.Response()
+    mocked_response._content = json.dumps(response).encode('utf-8')
+    mocked_response.status_code = status_code
+    return mocked_response
+
+
+def create_triage_items_events(num_of_events: int, start_time: str, offset: int = 3, start_event_num: int = 1) -> tuple[requests.Response, List[Dict]]:
     start_datetime = dateparser.parse(start_time)
     events = []
 
-    for event_num in range(1, num_of_events + 1):
+    for event_num in range(start_event_num, num_of_events + start_event_num):
         seconds_offset = (event_num - 1) // offset
         event_created = start_datetime + timedelta(seconds=seconds_offset)
         event_created_str = event_created.strftime(DATE_FORMAT)
@@ -35,8 +44,7 @@ def create_triage_items_events(num_of_events: int, start_time: str, offset: int 
                 "triage-item-id": event_num,
             }
         )
-    events[len(events) - 1].pop("event-num")
-    return events
+    return create_mocked_response(events), events
 
 
 def create_triage_items_from_events(events: List[Dict], item_type: str) -> List[Dict]:
@@ -56,7 +64,7 @@ def create_triage_items_from_events(events: List[Dict], item_type: str) -> List[
     return triaged_items
 
 
-def create_incidents_and_alerts_from_triaged_items(triaged_alert_ids: List[Dict], item_type: str, amount_of_assets: int = 0) -> List[Dict]:
+def create_incidents_and_alerts_from_triaged_items(triaged_alert_ids: List[Dict], item_type: str, amount_of_assets: int = 0) -> tuple[requests.Response, List[Dict]]:
     if item_type not in {"incident-id", "alert-id"}:
         raise ValueError(f'item-type {item_type} must be one of incident-id/alert-id')
     events = []
@@ -76,16 +84,18 @@ def create_incidents_and_alerts_from_triaged_items(triaged_alert_ids: List[Dict]
             event_copy["unique_id"] = i
             event["assets"].append({"id": hashlib.sha256(json.dumps(event_copy, sort_keys=True).encode()).hexdigest()})
 
-    return events
+    return create_mocked_response(events), events
 
 
-def create_assets(assets: List[Dict]) -> List[Dict]:
-    return [
-        {
-            "id": asset.get("id"),
-            "type": f"asset-{asset.get('id')}"
-        } for asset in assets
-    ]
+def create_assets(assets: List[Dict]) -> requests.Response:
+    return create_mocked_response(
+        [
+            {
+                "id": asset.get("id"),
+                "type": f"asset-{asset.get('id')}"
+            } for asset in assets
+        ]
+    )
 
 
 def test_the_test_module(requests_mock, client: ReilaQuestClient):
@@ -97,19 +107,18 @@ def test_the_test_module(requests_mock, client: ReilaQuestClient):
     assert test_module(client) == "ok"
 
 
-
 class TestFetchEvents:
 
     def test_fetch_events_no_last_run_single_iteration_sanity_test(self, client: ReilaQuestClient, mocker):
         from ReliaQuestGreyMatterDRPEventCollector import fetch_events
-        events = create_triage_items_events(100, start_time="2020-09-24T16:30:10.016Z")
+        events_response, events = create_triage_items_events(100, start_time="2020-09-24T16:30:10.016Z")
         triaged_alerts = create_triage_items_from_events(events[0:50], item_type="alert-id")
         triaged_incidents = create_triage_items_from_events(events[50:100], item_type="incident-id")
 
-        alerts = create_incidents_and_alerts_from_triaged_items(
+        alerts_response, alerts = create_incidents_and_alerts_from_triaged_items(
             triaged_alerts, item_type="alert-id", amount_of_assets=3
         )
-        incidents = create_incidents_and_alerts_from_triaged_items(
+        incidents_response, incidents = create_incidents_and_alerts_from_triaged_items(
             triaged_incidents, item_type="incident-id", amount_of_assets=3
         )
 
@@ -120,10 +129,19 @@ class TestFetchEvents:
         for incident in incidents:
             assets.extend(incident["assets"])
 
-        assets = create_assets(assets)
+        assets_response = create_assets(assets)
 
         mocker.patch.object(
-            client, "_http_request", side_effect=[events, triaged_alerts + triaged_incidents, alerts, incidents, assets]
+            client,
+            "_http_request",
+            side_effect=[
+                events_response,
+                create_mocked_response([]),  # empty response to stop pagination
+                create_mocked_response(triaged_alerts + triaged_incidents),
+                alerts_response,
+                incidents_response,
+                assets_response
+            ]
         )
 
         events, last_run = fetch_events(client, last_run={})
