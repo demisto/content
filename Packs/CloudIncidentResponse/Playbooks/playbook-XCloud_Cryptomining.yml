@@ -110,8 +110,8 @@ tasks:
       id: b3b786b8-c446-4170-8557-722d96186c75
       version: -1
       name: Set the alert severity to Low
-      description: Optionally increases the alert severity to the new value if it is greater than the existing severity.
-      scriptName: IncreaseAlertSeverity
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
       type: regular
       iscommand: false
       brand: ""
@@ -1507,6 +1507,7 @@ inputSections:
   - autoBlockIndicators
   - autoResourceRemediation
   - autoUserRemediation
+  - credentialsRemediationType
   name: Remediation
   description: Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
