@@ -1,9 +1,12 @@
 import json
 import os
 from pathlib import Path
+from pytest_mock import MockFixture
 
 import requests
 
+import networkx as nx
+from networkx import DiGraph
 import demisto_client
 import pytest
 import timeout_decorator
@@ -322,23 +325,23 @@ def test_is_pack_deprecated_using_marketplace_api_data():
     Then: Validate the result is as expected
     """
     mock_pack_api_data = {
-        "id": "TestPack",
-        "name": "TestPack",
-        "extras": {
-            "pack": {},
+        "TestPack": {
+            "currentVersion": "1",
+            "dependencies": [],
+            "deprecated": False
         },
     }
 
     # Check missing "hidden" field results in a default value of False
-    assert not script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
+    assert not script.is_pack_deprecated("TestPack", production_bucket=True, pack_api_data=mock_pack_api_data['TestPack'])
 
     # Check normal case of hidden pack
-    mock_pack_api_data["extras"]["pack"]["deprecated"] = True
-    assert script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
+    mock_pack_api_data["TestPack"]["deprecated"] = True
+    assert script.is_pack_deprecated("TestPack", production_bucket=True, pack_api_data=mock_pack_api_data['TestPack'])
 
     # Check normal case of non-hidden pack
-    mock_pack_api_data["extras"]["pack"]["deprecated"] = False
-    assert not script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
+    mock_pack_api_data["TestPack"]["deprecated"] = False
+    assert not script.is_pack_deprecated("TestPack", production_bucket=True, pack_api_data=mock_pack_api_data['TestPack'])
 
 
 def test_fetch_pack_metadata_from_gitlab(mocker):
@@ -503,3 +506,338 @@ class TestFindMalformedPackId:
     def test_additional_info(self):
         error_msg = '{"errors": ["invalid version 1.0.0 for pack with ID pack1 some additional info"]}'
         assert script.find_malformed_pack_id(error_msg) == ['pack1']
+
+
+def test_create_graph_empty():
+    """
+    Given:
+        An empty dictionary of pack dependencies
+    When:
+        create_graph is called
+    Then:
+        An empty DiGraph is returned
+    """
+    all_packs_dependencies = {}
+
+    graph = script.create_graph(all_packs_dependencies)
+
+    assert isinstance(graph, DiGraph)
+    assert len(graph) == 0
+
+
+def test_create_graph_single_dependency():
+    """
+    Given:
+        A dictionary with a single pack and dependency
+    When:
+        create_graph is called
+    Then:
+        A DiGraph with a single edge is returned
+    """
+    all_packs_dependencies = {"PackA": {"dependencies": {"PackB": {"mandatory": True}}}}
+
+    graph = script.create_graph(all_packs_dependencies)
+
+    assert isinstance(graph, DiGraph)
+    assert len(graph.edges()) == 1
+    assert ("PackB", "PackA") in graph.edges()
+
+
+def test_create_graph_multiple_dependencies():
+    """
+    Given:
+        A dictionary with multiple packs and dependencies
+    When:
+        create_graph is called
+    Then:
+        A DiGraph with multiple edges is returned
+    """
+    all_packs_dependencies = {
+        "PackA": {
+            "dependencies": {"PackB": {"mandatory": True}, "PackC": {"mandatory": True}}
+        },
+        "PackB": {"dependencies": {"PackD": {"mandatory": True}}},
+        "PackC": {"dependencies": {}},
+    }
+
+    graph = script.create_graph(all_packs_dependencies)
+
+    assert isinstance(graph, DiGraph)
+    assert len(graph.edges()) == 3
+    assert ("PackB", "PackA") in graph.edges()
+    assert ("PackC", "PackA") in graph.edges()
+    assert ("PackD", "PackB") in graph.edges()
+
+
+def test_merge_cycles_direct_single_cycle():
+    """
+    Given:
+        A directed graph with a direct cycle between two nodes
+    When:
+        merge_cycles is called on that graph
+    Then:
+        The nodes in the cycle are merged into a single node
+    """
+    graph = nx.DiGraph()
+    edges = [
+        ("PackB", "PackA"),
+        ("PackC", "PackB"),
+        ("PackB", "PackC"),
+        ("PackD", "PackC"),
+    ]
+    graph.add_edges_from(edges)
+    merged_nodes = ("PackB", "PackC")
+
+    assert all(pack in graph.nodes() for pack in merged_nodes)
+    assert len(graph) == 4
+    assert len(graph.edges()) == len(edges)
+
+    merged_nodes_map = script.merge_cycles(graph)
+    merged_node_name = merged_nodes_map["PackB"]
+
+    assert merged_node_name in graph.nodes()
+    assert all(pack in merged_nodes_map for pack in merged_nodes)
+    assert all(pack not in graph.nodes() for pack in merged_nodes)
+    assert len(merged_nodes_map) == 2
+    assert len(graph) == 3
+    assert len(graph.edges()) == 2
+
+
+def test_merge_cycles_single_wide_cycle():
+    """
+    Given:
+        A directed graph with a single cycle created by three nodes
+    When:
+        merge_cycles is called on that graph
+    Then:
+        The nodes in the cycle are merged into a single node
+    """
+    graph = nx.DiGraph()
+    edges = [
+        ("PackB", "PackA"),
+        ("PackC", "PackB"),
+        ("PackD", "PackC"),
+        ("PackB", "PackD"),
+        ("PackD", "PackE"),
+    ]
+    graph.add_edges_from(edges)
+    merged_nodes = ("PackB", "PackC", "PackD")
+
+    assert all(pack in graph.nodes() for pack in merged_nodes)
+    assert len(graph) == 5
+    assert len(graph.edges()) == len(edges)
+
+    merged_nodes_map = script.merge_cycles(graph)
+    merged_node_name = merged_nodes_map["PackB"]
+
+    assert merged_node_name in graph.nodes()
+    assert all(pack in merged_nodes_map for pack in merged_nodes)
+    assert all(pack not in graph.nodes() for pack in merged_nodes)
+    assert len(merged_nodes_map) == 3
+    assert len(graph) == 3
+    assert len(graph.edges()) == 2
+
+
+def test_merge_cycles_node_with_multiple_cycles():
+    """
+    Given:
+        A directed graph with a node that have multiple cycles
+        The node 'PackC' have two cycles, one with PackB and one with PackD.
+    When:
+        merge_cycles is called on that graph
+    Then:
+        The nodes in each cycle are merged into separate single nodes
+    """
+    graph = nx.DiGraph()
+    edges = [
+        ("PackB", "PackA"),
+        ("PackC", "PackB"),
+        ("PackB", "PackC"),
+        ("PackD", "PackC"),
+        ("PackC", "PackD"),
+        ("PackE", "PackD"),
+    ]
+    graph.add_edges_from(edges)
+    merged_nodes = ("PackB", "PackC", "PackD")
+
+    assert all(pack in graph.nodes() for pack in merged_nodes)
+    assert len(graph) == 5
+    assert len(graph.edges()) == len(edges)
+
+    merged_nodes_map = script.merge_cycles(graph)
+    merged_node_name = merged_nodes_map["PackB"]
+
+    assert merged_node_name in graph.nodes()
+    assert all(pack in merged_nodes_map for pack in merged_nodes)
+    assert all(pack not in graph.nodes() for pack in merged_nodes)
+    assert len(merged_nodes_map) == 3
+    assert len(graph) == 3
+    assert len(graph.edges()) == 2
+
+
+@pytest.mark.parametrize(
+    "list_of_nodes, expected",
+    (
+        (["PackA", "PackB<->PackC"], [["PackA"], ["PackB", "PackC"]]),
+        (["PackX"], [["PackX"]]),
+        ([], []),
+    ),
+)
+def test_split_cycles(list_of_nodes, expected):
+    """
+    Given:
+        A list of nodes, some of which are merged cycles
+    When:
+        Calling split_cycles
+    Then:
+        Returns a list of lists, with merged cycles split
+    """
+    result = script.split_cycles(list_of_nodes)
+    assert result == expected
+
+
+def test_get_all_content_packs_dependencies(mocker: MockFixture):
+    """
+    Given:
+        A demisto client instance
+    When:
+        get_all_content_packs_dependencies is called and iterates over pages
+    Then:
+        Pack dependencies are extracted correctly across pages
+    """
+    # Mock client and responses
+    client = mocker.Mock()
+    mock_request = [
+        {
+            "packs": [
+                {
+                    "id": "Pack1",
+                    "dependencies": {},
+                    "currentVersion": "",
+                    "deprecated": "",
+                },
+                {
+                    "id": "Pack2",
+                    "dependencies": {},
+                    "currentVersion": "",
+                    "deprecated": "",
+                },
+            ]
+        },
+        {
+            "packs": [
+                {
+                    "id": "Pack3",
+                    "dependencies": {},
+                    "currentVersion": "",
+                    "deprecated": "",
+                }
+            ]
+        },
+    ]
+    mocker.patch.object(
+        script, "get_one_page_of_packs_dependencies", side_effect=mock_request
+    )
+    script.PAGE_SIZE_DEFAULT = 2
+
+    # Call function and test
+    result = script.get_all_content_packs_dependencies(client)
+
+    assert len(result) == 3
+    assert all(pack in result for pack in ("Pack1", "Pack2", "Pack3"))
+
+
+def test_get_all_content_packs_dependencies_empty(mocker: MockFixture):
+    """
+    Given:
+        A demisto client instance
+    When:
+        The search API returns no results
+    Then:
+        An empty dict is returned
+    """
+    client = mocker.Mock()
+    mocker.patch.object(
+        script, "get_one_page_of_packs_dependencies", return_value={"packs": []}
+    )
+
+    result = script.get_all_content_packs_dependencies(client)
+
+    assert result == {}
+
+
+def test_get_one_page_of_packs_dependencies_success(mocker: MockFixture):
+    """
+    Given:
+        A demisto client and page number
+    When:
+        Calling get_one_page_of_packs_dependencies
+    Then:
+        - Make API call with correct params
+        - Return API response
+    """
+    client = mocker.Mock()
+    page = 1
+
+    mocker.patch.object(
+        script, "generic_request_with_retries", return_value=(True, {"packs": []})
+    )
+
+    result = script.get_one_page_of_packs_dependencies(client, page)
+
+    assert result == {"packs": []}
+
+
+def test_search_for_deprecated_dependencies_with_deprecated_dependency(
+    mocker: MockFixture,
+):
+    """
+    Given:
+        - Pack ID
+        - Set of dependency pack IDs containing a deprecated pack
+        - Pack metadata mapping containing deprecated pack metadata
+    When:
+        Calling search_for_deprecated_dependencies
+    Then:
+        - Returns False
+        - Logs critical message about deprecated dependency
+    """
+    pack_id = "TestPack"
+    dependencies = {"Pack1", "Pack2"}
+    dependencies_data = {"Pack1": {"deprecated": True}, "Pack2": {"deprecated": False}}
+    logging = mocker.patch.object(script, "logging")
+
+    assert (
+        script.search_for_deprecated_dependencies(
+            pack_id, dependencies, True, dependencies_data
+        )
+        is False
+    )
+
+    logging.critical.assert_called_with(mocker.ANY)
+
+
+def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker):
+    """
+    Given:
+        - Pack ID
+        - Set of dependency pack IDs with no deprecated packs
+        - Pack metadata mapping with no deprecated packs
+    When:
+        Calling search_for_deprecated_dependencies
+    Then:
+        - Returns True
+        - Does not log any critical messages
+    """
+    pack_id = "TestPack"
+    dependencies = {"Pack1", "Pack2"}
+    dependencies_data = {"Pack1": {"deprecated": False}, "Pack2": {"deprecated": False}}
+    logging = mocker.patch.object(script, "logging")
+
+    assert (
+        script.search_for_deprecated_dependencies(
+            pack_id, dependencies, True, dependencies_data
+        )
+        is True
+    )
+    logging.critical.assert_not_called()

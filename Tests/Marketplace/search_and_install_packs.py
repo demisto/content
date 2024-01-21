@@ -594,7 +594,7 @@ def merge_cycles(graph: DiGraph) -> dict[str, str]:
         graph (DiGraph): The directed graph to merge cycles in.
 
     Returns:
-        dict[str, str]: A dictionary mapping the original node names that were part of 
+        dict[str, str]: A dictionary mapping the original node names that were part of
         cycles to the merged node name for that cycle.
     """
     logging.debug(
@@ -727,7 +727,7 @@ def search_for_deprecated_dependencies(
     all_packs_dependencies_data: dict,
 ):
     """
-    Checks if the given pack ID has any deprecated dependencies. 
+    Checks if the given pack ID has any deprecated dependencies.
 
     Args:
         pack_id (str): The ID of the pack to check.
@@ -765,7 +765,7 @@ def get_packs_and_dependencies_to_install(
     and omits packs with deprecated dependencies.
 
     Args:
-        pack_ids (list): List of pack IDs to get dependencies for 
+        pack_ids (list): List of pack IDs to get dependencies for
         graph_dependencies (DiGraph): Dependency graph of all packs
         all_packs_and_dependencies_to_install (set): Set to store selected packs and dependencies
         production_bucket (bool): Whether production bucket is used
@@ -881,7 +881,7 @@ def search_and_install_packs_and_their_dependencies(
     pack_ids: list,
     client: demisto_client,
     hostname: str | None = None,
-    multithreading: bool = False,
+    multithreading: bool = True,
     production_bucket: bool = True,
 ):
     """
