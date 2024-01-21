@@ -26,6 +26,8 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument(
         '-ch', '--slack_channel', help='The slack channel in which to send the notification', default=CONTENT_CHANNEL
     )
+    parser.add_argument('-a', '--allow-failure',
+                        help="Allow posting message to fail in case the channel doesn't exist", required=True)
     return parser.parse_args()
 
 
@@ -39,7 +41,7 @@ def build_link_to_message(response: SlackResponse) -> str:
 
 
 def main():
-    install_logging('Slack_Notifier.log')
+    install_logging('SlackNotifier.log')
     options = options_handler()
     computed_slack_channel = options.slack_channel
     slack_token = options.slack_token
