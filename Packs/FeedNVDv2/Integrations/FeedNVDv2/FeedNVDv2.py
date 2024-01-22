@@ -170,7 +170,7 @@ def retrieve_cves_command(client, params, test_run):
         url += '&hasKev'
 
     while exceeds_span and last_mod_end_date and last_mod_start_date:
-        delta = (last_mod_end_date - last_mod_start_date).days  # type: ignore
+        delta = (last_mod_end_date - last_mod_start_date).days  # type: ignore[TypeError]
         if delta > 120:
             last_mod_end_date = last_mod_start_date + timedelta(days=120)  # type: ignore
         else:
