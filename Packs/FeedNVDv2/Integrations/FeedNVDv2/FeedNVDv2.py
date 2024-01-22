@@ -118,7 +118,7 @@ def retrieve_cves_command(client, params, test_run):
     command = demisto.command()
     api_key = params.get('apiKey', {}).get('password')
     has_kev = params.get('hasKev') or None  # type: ignore
-    s_date = params.get('start_date')
+    s_date = str(params.get('start_date'))
     try:
         datetime.date.fromisoformat(s_date)  # type: ignore
     except ValueError:
