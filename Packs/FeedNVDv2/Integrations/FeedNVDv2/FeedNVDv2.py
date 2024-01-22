@@ -19,7 +19,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000"  # ISO8601 format with UTC, default in XSOAR
 
 
-def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelationship]]:
+def parse_cpe_command(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelationship]]:
     """
     Parses a CPE to return the correct tags and relationships needed for the CVE.
 
@@ -100,7 +100,7 @@ def test_module(client: BaseClient, params: Dict[str, Any]):
                      + "\nError Message: " + str(e))    # noqa: UP034
 
 
-def retrieve_cves(client, params):
+def retrieve_cves_command(client, params):
     """
     Iteratively retrieves CVEs from NVD from the specified modification date
     through the date the fetch-indicators or nvd-get-indicators command is 
@@ -204,7 +204,7 @@ def retrieve_cves(client, params):
 
                     param['startIndex'] += results_per_page  # type: ignore
 
-                    process_cves(params, data_items)
+                    process_cves_command(params, data_items)
                     total_items += len(data_items)
                     data_items = []  # type: ignore
 
@@ -225,7 +225,7 @@ def retrieve_cves(client, params):
     demisto.debug(f"Total NVD CVE indicators fetched {total_items}")
 
 
-def process_cves(params, cve_list):
+def process_cves_command(params, cve_list):
     """
     Iteratively processes the retrieved CVEs from retrieve_cves function
     and parses the returned JSON into the required XSOAR data structure
@@ -309,7 +309,7 @@ def process_cves(params, cve_list):
             fields["cvsstable"] = metrics
 
         if cpes:
-            tags, relationships = parse_cpe([d['CPE'] for d in cpes], cve.get('cve').get('id'))
+            tags, relationships = parse_cpe_command([d['CPE'] for d in cpes], cve.get('cve').get('id'))
             if feed_tags:
                 tags.append(str(feed_tags))
 
@@ -348,7 +348,7 @@ def fetch_indicators_command(client, params):
 
     fetch_start = datetime.datetime.now(datetime.timezone.utc)  # type: ignore[attr-defined]
 
-    retrieve_cves(client, params)
+    retrieve_cves_command(client, params)
 
     fetch_finish = datetime.datetime.now(datetime.timezone.utc)  # type: ignore[attr-defined]
 

@@ -10,6 +10,7 @@
     ],
     "tags": [],
     "useCases": [],
+    "description": "CVE feed from the National Vulnerability Database",
     "keywords": [],
     "marketplaces": [
         "xsoar",
