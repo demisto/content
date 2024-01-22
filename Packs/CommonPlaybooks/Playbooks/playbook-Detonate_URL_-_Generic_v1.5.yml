@@ -21,9 +21,10 @@ description: |-
   - CrowdStrike Falcon Intelligence Sandbox
   - OPSWAT Filescan
   - ANYRUN
-  -  VirusTotal
+  - VirusTotal
   - Anomali ThreatStream
-  - Hatching Triage.
+  - Hatching Triage
+  - ThreatGrid 
 starttaskid: "0"
 tasks:
   "0":

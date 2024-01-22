@@ -15,9 +15,10 @@ Supported integrations:
 - CrowdStrike Falcon Intelligence Sandbox
 - OPSWAT Filescan
 - ANYRUN
--  VirusTotal
+- VirusTotal
 - Anomali ThreatStream
-- Hatching Triage.
+- Hatching Triage
+- ThreatGrid 
 
 ## Dependencies
 
@@ -25,20 +26,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Detonate URL - Hatching Triage
-* Detonate URL - ThreatGrid v2
-* Detonate URL - Group-IB TDS Polygon
-* Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
+* Detonate URL - FireEye AX
 * Detonate URL - VMRay
-* Detonate URL - ANYRUN
-* Detonate URL - SecneurX Analysis
 * Detonate URL - WildFire v2.2
+* Detonate URL - SecneurX Analysis
+* Detonate URL - ANYRUN
+* Detonate URL - VirusTotal (API v3)
+* Detonate URL - Group-IB TDS Polygon
 * Detonate URL - Lastline v2
 * Detonate URL - ThreatStream
-* Detonate URL - FireEye AX
+* Detonate URL - ThreatGrid v2
 * Detonate URL - Cuckoo
 * Detonate URL - McAfee ATD
-* Detonate URL - VirusTotal (API v3)
+* Detonate URL - Hatching Triage
+* Detonate URL - CrowdStrike Falcon Intelligence Sandbox v2
 
 ### Integrations
 
@@ -50,8 +51,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* joe-submit-url
 * opswat-filescan-scan-url
+* joe-submit-url
 
 ## Playbook Inputs
 
