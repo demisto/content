@@ -351,11 +351,6 @@ def terminate_chrome(browser):
     global CHROME_PROCESS
     demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
 
-    allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-    demisto.debug(f'allTimeSamplingProfile before termination {allTimeSamplingProfile=}')
-    browserSamplingProfile = tab.Memory.getBrowserSamplingProfile()
-    demisto.debug(f'browserSamplingProfile before termination {browserSamplingProfile=}')
-
     threading.excepthook = excepthook_recv_loop
 
     if CHROME_PROCESS:
