@@ -129,6 +129,12 @@ script:
       - 'false'
     - description: The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes.
       name: af_cookie
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-search-samples
     polling: true
@@ -273,6 +279,12 @@ script:
       name: time_after
     - description: 'The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59.'
       name: time_before
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. The `polling` argument was added in XSOAR 6.2.0. It enables handling the search in a single command, rather than using the `Autofocus Query Samples, Sessions and Tags` Playbook.
     polling: true
     name: autofocus-search-sessions
@@ -332,8 +344,15 @@ script:
     - description: The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes.
       name: af_cookie
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns results of a previous samples search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-samples-search-results
+    polling: true
     outputs:
     - contextPath: AutoFocus.SamplesResults.Size
       description: The file size in bytes.
@@ -408,8 +427,15 @@ script:
     - description: The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes.
       name: af_cookie
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns results of a previous sessions search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-sessions-search-results
+    polling: true
     outputs:
     - contextPath: AutoFocus.SessionsResults.FileName
       description: The name of the file..
@@ -457,8 +483,15 @@ script:
     - description: The session ID.
       name: session_id
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Get session details by session ID.
     name: autofocus-get-session-details
+    polling: true
     outputs:
     - contextPath: AutoFocus.Sessions.FileName
       description: The file name.
@@ -508,8 +541,15 @@ script:
       predefined:
       - 'True'
       - 'False'
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns properties, behaviors, and activities observed for a sample. Run the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
     name: autofocus-sample-analysis
+    polling: true
     outputs:
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Http
       description: HTTP requests made when the sample was executed.
@@ -542,8 +582,15 @@ script:
     - description: The public tag name. Can be retrieved from the top-tags command.
       name: tag_name
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns details about the given tag.
     name: autofocus-tag-details
+    polling: true
     outputs:
     - contextPath: AutoFocus.Tag.TagName
       description: The simple name of the tag.
@@ -637,6 +684,12 @@ script:
       predefined:
       - 'True'
       - 'False'
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Performs a search to identify the most popular tags. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-top-tags-search
     polling: true
@@ -669,8 +722,15 @@ script:
     - description: 'The AF Cookie for retrieving results of previous search. Note: The AF Cookie expires 120 seconds after the search completes.'
       name: af_cookie
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns the results of a previous top tags search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-top-tags-results
+    polling: true
     outputs:
     - contextPath: AutoFocus.TopTagsResults.Count
       description: The number of samples that matched this tag.
@@ -1096,8 +1156,15 @@ script:
     - description: The label of the exported list.
       name: label
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: rate_limit_auto_retry
+      predefined:
+      - 'true'
+      - 'false'
     description: Gets export list indicators from AutoFocus.
     name: autofocus-get-export-list-indicators
+    polling: true
     outputs:
     - contextPath: AutoFocus.ExportListIndicator.Type
       description: 'The indicator type in the export list. '

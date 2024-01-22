@@ -257,28 +257,64 @@ ERROR_DICT = {
 
 if PARAMS.get('mark_as_malicious'):
     verdicts = argToList(PARAMS.get('mark_as_malicious'))
-    for verdict in verdicts:
-        VERDICTS_TO_DBOTSCORE[verdict] = 3
-
-METRIC = Literal[
-    'success', 'quota_error', 'general_error',
-    'auth_error', 'service_error', 'connection_error',
-    'proxy_error', 'ssl_error', 'timeout_error'
-]
+    VERDICTS_TO_DBOTSCORE.update(dict.fromkeys(verdicts, 3))
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def return_metric(metric: METRIC):
+class RateLimitExceededError(BaseException):
+
+    def __init__(self, api_res: dict) -> None:
+        super().__init__()
+        self.api_res = api_res
+        self.daily_points_remaining = dict_safe_get(
+            api_res, ('bucket_info', 'daily_points_remaining'), 0)
+
+
+def rerun_command_if_required(e: RateLimitExceededError, rate_limit_auto_retry: bool, command: str, args: dict):
+
+    if not (rate_limit_auto_retry and e.daily_points_remaining):
+        return_error(
+            'Error in API call to AutoFocus:\n'
+            f'Message: {e.api_res.get("message")}\n'
+            f'Bucket Info: {e.api_res.get("bucket_info")}'
+        )
+    return_results(CommandResults(
+        readable_output='API Rate limit exceeded. Rerunning command in 1 minute.',
+        scheduled_command=ScheduledCommand(
+            command=command,
+            next_run_in_seconds=60,
+            args=args,
+        )
+    ))
+
+
+def return_execution_metric(metric: Literal[
+    'success', 'quota_error', 'general_error',
+    'auth_error', 'service_error', 'connection_error',
+    'proxy_error', 'ssl_error', 'timeout_error'
+]):
     execution_metrics = ExecutionMetrics(**{metric: 1})
     if execution_metrics.metrics is not None and execution_metrics.is_supported():
         return_results(execution_metrics.metrics)
 
 
+def return_api_metrics(res_obj: dict):
+    if bucket_info := res_obj.get('bucket_info'):
+        readable_output = tableToMarkdown(
+            'Autofocus API Points',
+            {
+                'Total number of points allowed per day': bucket_info.get('daily_points'),
+                'Remaining number of points per day': bucket_info.get('daily_points_remaining'),
+                'Timestamp for when the current daily allotment started': bucket_info.get('daily_bucket_start'),
+            }
+        )
+        return_results(CommandResults(readable_output=readable_output))
+
+
 def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):
-    ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    interval_in_secs = arg_to_number(args.get('interval_in_seconds', 60))
     if 'af_cookie' not in args:
         # create new search
         command_results = search_function(args)
@@ -291,12 +327,12 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
                 'polling': True,
                 **args
             }
-            scheduled_command = ScheduledCommand(
+            command_results.scheduled_command = ScheduledCommand(
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
-                timeout_in_seconds=600)
-            command_results.scheduled_command = scheduled_command
+                timeout_in_seconds=600
+            )
             return command_results
         else:
             # continue to look for search results
@@ -324,40 +360,39 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
 
 def parse_response(resp, err_operation):
     try:
+        res_json = resp.json()
+        return_api_metrics(res_json)  # type: ignore
+
         # Handle error responses gracefully
         if demisto.params().get('handle_error', True) and resp.status_code == 409:
-            return_metric('service_error')
+            return_execution_metric('service_error')
             raise Exception("Response status code: 409 \nRequested sample not found")
-        res_json = resp.json()
+
         resp.raise_for_status()
 
         if 'x-trace-id' in resp.headers:
             # this debug log was request by autofocus team for debugging on their end purposes
             demisto.debug(f'x-trace-id: {resp.headers["x-trace-id"]}')
 
-        return_metric('success')
+        return_execution_metric('success')
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
-        return_metric('general_error')
+        return_execution_metric('general_error')
         err_msg = f'{err_operation}: {res_json.get("message")}'
         if res_json.get("message").find('Requested sample not found') != -1:
-            demisto.results(err_msg)
-            sys.exit(0)
+            raise DemistoException(err_msg)
         elif res_json.get("message").find("AF Cookie Not Found") != -1:
-            demisto.results(err_msg)
-            sys.exit(0)
+            raise DemistoException(err_msg)
         elif err_operation == 'Tag details operation failed' and \
                 res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
-            demisto.results(err_msg)
-            sys.exit(0)
+            raise DemistoException(err_msg)
         else:
             return return_error(err_msg)
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        return_metric('general_error')
-        demisto.results(f'{err_operation}: {err}')
-        sys.exit(0)
+        return_execution_metric('general_error')
+        raise DemistoException(f'{err_operation}: {err}')
 
 
 def http_request(url_suffix, method='POST', data={}, err_operation=None):
@@ -373,8 +408,10 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
         )
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
-        return_metric('connection_error')
+        return_execution_metric('connection_error')
         raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
+    if res.status_code == 503:
+        raise RateLimitExceededError(res)
     return parse_response(res, err_operation)
 
 
@@ -679,7 +716,7 @@ def autofocus_top_tags_search(scope, tag_class_display, private, public, commodi
             }
         ]
     }
-    tag_scopes = list()
+    tag_scopes = []
     if private:
         tag_scopes.append('private')
     if public:
@@ -969,16 +1006,16 @@ def search_indicator(indicator_type, indicator_value):
         result.raise_for_status()
         result_json = result.json()
 
-        return_metric('success')
+        return_execution_metric('success')
 
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
-        return_metric('connection_error')
+        return_execution_metric('connection_error')
         return_error(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
 
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        return_metric('general_error')
+        return_execution_metric('general_error')
         try:
             if demisto.params().get('handle_error', True) and result.status_code == 404:
                 return {
@@ -1337,7 +1374,7 @@ def sample_analysis_command():
     args = demisto.args()
     sample_id = args.get('sample_id')
     os = args.get('os')
-    filter_data = False if args.get('filter_data') == 'False' else True
+    filter_data = args.get('filter_data') != 'False'
     analysis = sample_analysis(sample_id, os, filter_data)
     context = createContext(analysis, keyTransform=string_to_context_key)
     demisto.results({
@@ -1698,7 +1735,6 @@ def search_file_command(file, reliability, create_relationships):
             outputs_prefix='AutoFocus.File',
             outputs_key_field='IndicatorValue',
             outputs=autofocus_file_output,
-
             readable_output=md,
             raw_response=raw_res,
             indicator=file,
@@ -1853,12 +1889,13 @@ def get_export_list_command(args):
 
     hr = tableToMarkdown(f"Export list {args.get('label')}", indicators, headers=['Type', 'Value'])
 
-    return_outputs(hr, {'AutoFocus.Indicator(val.Value == obj.Value && val.Type == obj.Type)': indicators,
-                        'IP(obj.Address == val.Address)': context_ip,
-                        'URL(obj.Data == val.Data)': context_url,
-                        'File(obj.SHA256 == val.SHA256)': context_file,
-                        'Domain(obj.Name == val.Name)': context_domain},
-                   results)
+    return_outputs(hr, {
+        'AutoFocus.Indicator(val.Value == obj.Value && val.Type == obj.Type)': indicators,
+        'IP(obj.Address == val.Address)': context_ip,
+        'URL(obj.Data == val.Data)': context_url,
+        'File(obj.SHA256 == val.SHA256)': context_file,
+        'Domain(obj.Name == val.Name)': context_domain
+    }, results)
 
 
 def main():
@@ -1871,17 +1908,16 @@ def main():
     else:
         raise Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
-    import yaml
+    # Remove proxy if not set to true in params
+    handle_proxy()
+    args = demisto.args() | {
+        'reliability': reliability,
+        'create_relationships': create_relationships,
+    }
+    rate_limit_auto_retry = args.pop('rate_limit_auto_retry', False)
+
     try:
-        demisto.debug(type(demisto.callingContext))
-        demisto.debug(type(demisto.context()))
-        demisto.debug(f'callingContext = {yaml.safe_dump(demisto.callingContext)}')
-        demisto.debug(f'context = {yaml.safe_dump(demisto.context())}')
-        # Remove proxy if not set to true in params
-        handle_proxy()
-        args = {k: v for (k, v) in demisto.args().items() if v}
-        args['reliability'] = reliability
-        args['create_relationships'] = create_relationships
+
         match command:
             case 'test-module':
                 # This is the call made when pressing the integration test button.
@@ -1928,8 +1964,10 @@ def main():
                 return_results(search_file_command(**args))
             case _:
                 raise NotImplementedError(f'Command {command!r} is not implemented.')
-        demisto.debug(f'callingContext = {yaml.safe_dump(demisto.callingContext)}')
-        demisto.debug(f'context = {yaml.safe_dump(demisto.context())}')
+
+    except RateLimitExceededError as e:
+        rerun_command_if_required(e, argToBoolean(rate_limit_auto_retry), command=command, args=args)
+
     except Exception as e:
         return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
 
