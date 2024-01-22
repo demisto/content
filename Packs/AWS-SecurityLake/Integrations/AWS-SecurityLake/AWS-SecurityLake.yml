@@ -3,10 +3,6 @@ commonfields:
   id: AWS Security Lake
   version: -1
 configuration:
-- name: name
-  display: Name
-  required: true
-  type: 0
 - name: roleArn
   display: Role Arn
   required: false
@@ -557,6 +553,13 @@ script:
       defaultValue: ""
       predefined:
       - ""
+    - name: QueryExecutionId
+      hidden: true
+      description: ID of the newly created query. Used internally for polling.
+    - name: hide_polling_output
+      hidden: true
+      description: ""
+    polling: true
     outputs:
     - contextPath: AWS.Athena.Query.QueryExecutionId
       description: The unique identifier for each query execution.
@@ -725,6 +728,13 @@ script:
       defaultValue: ""
       predefined:
       - ""
+    - name: QueryExecutionId
+      hidden: true
+      description: ID of the newly created query. Used internally for polling.
+    - name: hide_polling_output
+      hidden: true
+      description: ""
+    polling: true
     outputs:
     - contextPath: AWS.Athena.Query.QueryExecutionId
       description: The unique identifier for each query execution.
@@ -850,10 +860,11 @@ script:
       predefined:
       - ""
     - name: severity
-      description: The severity of searchingto search related events for.
+      description: The severity of search related events for.
       required: true
       isArray: false
       defaultValue: ""
+      auto: PREDEFINED
       predefined:
       - 0-Unknown
       - 1-Informational
@@ -900,6 +911,13 @@ script:
       defaultValue: ""
       predefined:
       - ""
+    - name: QueryExecutionId
+      hidden: true
+      description: ID of the newly created query. Used internally for polling.
+    - name: hide_polling_output
+      hidden: true
+      description: ""
+    polling: true
     outputs:
     - contextPath: AWS.Athena.Query.QueryExecutionId
       description: The unique identifier for each query execution.

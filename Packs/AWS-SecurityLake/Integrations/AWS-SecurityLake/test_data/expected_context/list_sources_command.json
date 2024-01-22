@@ -1,7 +1,6 @@
 {
-    "AWS.SecurityLake.DataLakeSource(val.DataLakeArn && val.DataLakeArn == obj.DataLakeArn)":{
-        "DataLakeArn": "test",
-        "DataLakeSources": [
+    "AWS.SecurityLake.DataLakeSource.DataLakeArn": "test",
+    "AWS.SecurityLake.DataLakeSource.DataLakeSources":[
             {
                 "account": "test",
                 "eventClasses": [
@@ -16,7 +15,7 @@
                 ]
             }
         ]
-    },
-    "AWS.SecurityLake.DataLakeSourceNextToken": "test"
+,
+    "AWS.SecurityLake(true)": {"DataLakeSourceNextToken": "test"}
 
 }

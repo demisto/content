@@ -5,5 +5,5 @@
             "Type": "LAMBDA"
         }
     ],
-    "AWS.SecurityLake.CatalogNextToken": "test"
+    "AWS.SecurityLake(true)" :{"CatalogNextToken": "test"}
 }

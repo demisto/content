@@ -8,5 +8,5 @@
             }
         }
     ],
-    "AWS.SecurityLake.DatabaseNextToken": "test"
+    "AWS.SecurityLake(true)": {"DatabaseNextToken": "test"}
 }

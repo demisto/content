@@ -1,8 +1,16 @@
-## BaseIntegration Help
+Before you can use the AWS Athena integration in XSOAR, you need to perform several configuration steps in your AWS environment.
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Prerequisites
+- Attach an instance profile with the required permissions to the XSOAR server or engine that is running 
+on your AWS environment.
+- Instance profile requires minimum permission: sts:AssumeRole.
+- Instance profile requires permission to assume the roles needed by the AWS integrations.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### Configure AWS Settings
+1. Create an IAM Role for the Instance Profile.
+2. Attach a Role to the Instance Profile.
+3. Configure the Necessary IAM Roles that the AWS Integration Can Assume.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+For detailed instructions, see the [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
+Command descriptions, input descriptions, and output descriptions are taken from the Amazon ACM documentation. For more information, see the [Amazon Athena documention](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/athena.html) or the [AWS Security Lake documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/securitylake.html).

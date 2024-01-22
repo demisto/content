@@ -77,8 +77,8 @@ def test_execute_query_command(mocker):
     expected_context_execution_details = load_test_data('expected_context', 'get_query_execution_command.json')
     expected_context_results = load_test_data('expected_context', 'get_query_results_command.json')
     expected_context = {
-        'Query': expected_context_execution_details,
-        'QueryResults': expected_context_results
+        'AWS.SecurityLake.Query': expected_context_execution_details,
+        'AWS.SecurityLake.QueryResults': expected_context_results
     }
     assert result.outputs == expected_context
 
@@ -109,15 +109,15 @@ def test_general_command(mocker, command, file_name, client_command):
 
 QUEYRY_COMMANDS = [(AWSSecurityLake.mfalogin_query_command, 
                     {"database": "test_db", "table": "test_table", "user_name": "1234"},
-                    "SELECT * FROM <test_db>.<test_table> WHERE CAST(actor.user.name AS VARCHAR) = '1234';",
+                    "SELECT * FROM test_db.test_table WHERE CAST(actor.user.name AS VARCHAR) = '1234';",
                     'MfaLoginQueryResults'),
                    (AWSSecurityLake.source_ip_query_command, 
                     {"database": "test_db", "table": "test_table", "ip_src": "1234"},
-                    "SELECT * FROM <test_db>.<test_table> WHERE CAST(src_endpoint.ip AS VARCHAR) = '1234';",
+                    "SELECT * FROM test_db.test_table WHERE CAST(src_endpoint.ip AS VARCHAR) = '1234';",
                     'SourceIPQueryResults'),
                    (AWSSecurityLake.guardduty_activity_query_command, 
                     {"database": "test_db", "table": "test_table", "severity": "1"},
-                    "SELECT * FROM <test_db>.<test_table> WHERE severity_id = 1;",
+                    "SELECT * FROM test_db.test_table WHERE severity = '1';",
                     'GuardDutyActivityQueryResults')]
 
 @pytest.mark.parametrize("command, args, query, query_results_context_key", QUEYRY_COMMANDS)
