@@ -11,6 +11,7 @@ configuration:
   defaultvalue: https://127.0.0.1
   type: 0
   required: true
+  additionalinfo: For Cortex XSOAR 8 or Cortex XSIAM, use the Copy API URL button on the API Keys page. For Cortex XSOAR 6, use the server URL.
 - display: API Key ID
   displaypassword: API Key
   name: creds_apikey
