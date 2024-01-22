@@ -26,6 +26,15 @@ def get_pr_from_branch(repository, branch, access_token):
     return None
 
 
+def get_pr_by_id(repository, pr_id, access_token):
+    url = PR_BY_ID_TEMPLATE.format(repository, pr_id)
+    res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'}, verify=False)
+    if res.status_code != 200:
+        sys.exit(1)
+
+    return res.json()
+
+
 def options_handler():
     parser = argparse.ArgumentParser(description='Creates release pull request for demisto-sdk.')
 
@@ -73,14 +82,16 @@ def main():
     logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
     logging.info(f'content pull request created: {content_pr.get("html_url")}')
 
+    content_pr_id = content_pr.get('number')
+    sdk_pr_id = sdk_pr.get('number')
     content_pr_state = 'open'
     sdk_pr_state = 'open'
 
     # wait to content pr and sdk pr to be closed
     while (sdk_pr_state == 'open' or content_pr_state == 'open') and elapsed < TIMEOUT:
-        # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
-        content_pr = get_pr_from_branch('content', '1.25.3', access_token)  # TODO: remove this line
-        sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
+        content_pr = get_pr_by_id('content', content_pr_id, access_token)
+        sdk_pr = get_pr_by_id('demisto-sdk', sdk_pr_id, access_token)
+
         content_pr_state = content_pr.get('state')
         sdk_pr_state = sdk_pr.get('state')
 
