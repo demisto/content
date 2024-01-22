@@ -1237,11 +1237,10 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
 
     # Handle first time fetch
     last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
-
     latest_created_time = cast(int, last_fetch)
-    # because some values are not populated immediately at alert creation time,
-    # we will add an additional offset to increase the likelihood that these are available
     latest_created_time = latest_created_time
+
+    demisto.debug(f"CortexXpanse - last fetched alert timestamp: {str(last_fetch)}")
 
     incidents = []
 
@@ -1277,6 +1276,10 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
             latest_created_time = incident_created_time
 
     next_run = {'last_fetch': latest_created_time}
+
+    demisto.debug(f"CortexXpanse - Number of incidents: {len(incidents)}")
+    demisto.debug(f"CortexXpanse - Next run after incidents fetching: : {next_run}")
+
     return next_run, incidents
 
 
@@ -1362,6 +1365,13 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
+
+        integration_context = demisto.getIntegrationContext()
+        if 'xpanse_integration_severity' in integration_context:
+            xpanse_integration_severity = integration_context.get('xpanse_integration_severity')
+            if xpanse_integration_severity != severity:
+                demisto.setIntegrationContext({"xpanse_integration_severity": severity})
+                demisto.debug(demisto.debug(f"CortexXpanse - Integration Severity: {severity}"))
 
         commands = {
             'asm-list-external-service': list_external_service_command,
