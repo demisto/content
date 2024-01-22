@@ -319,7 +319,7 @@ script:
     - description: 'comma separated string containing Hostname, IP, macAddress or agentGuid of the endpoint(s) to query. e.g. endpoint="test-endpoint1,demo-endpoint2".'
       name: endpoint
       required: true
-    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. query_op=or.'
+    - description: "Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. query_op=or."
       name: query_op
       required: true
       auto: PREDEFINED
@@ -363,7 +363,7 @@ script:
     - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
       name: fields
       required: true
-    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. query_op=or.'
+    - description: "Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. query_op=or."
       name: query_op
       auto: PREDEFINED
       predefined:
@@ -374,7 +374,7 @@ script:
       name: start
     - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".'
       name: end
-    - description: 'Number of records displayed on a page. e.g. top=5.'
+    - description: "Number of records displayed on a page. e.g. top=5."
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName".'
       name: select
@@ -514,7 +514,7 @@ script:
     - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get).'
       name: fields
       required: true
-    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. query_op=or.'
+    - description: "Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. query_op=or."
       name: query_op
       auto: PREDEFINED
       predefined:
@@ -548,7 +548,7 @@ script:
       name: start
     - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z".'
       name: end
-    - description: 'Number of records displayed on a page. e.g. top=5.'
+    - description: "Number of records displayed on a page. e.g. top=5."
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses".'
       name: select
@@ -604,7 +604,7 @@ script:
     - description: 'Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get).'
       name: fields
       required: true
-    - description: 'Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. query_op=and.'
+    - description: "Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. query_op=and."
       name: query_op
       auto: PREDEFINED
       predefined:
@@ -1241,9 +1241,6 @@ script:
     - contextPath: VisionOne.Add_Custom_Script.id
       description: ID generated for the added custom script.
       type: string
-    - contextPath: VisionOne.Add_Custom_Script.location
-      description: Location of custom script in V1 XDR portal.
-      type: string
     description: Adds a custom script to V1 portal in Response management under custom scripts.
     name: trendmicro-visionone-add-custom-script
   - arguments:
@@ -1287,7 +1284,7 @@ script:
       type: string
     description: Updates the contents of a custom script based on script ID.
     name: trendmicro-visionone-update-custom-script
-  dockerimage: demisto/pytmv1:0.7.6.85123
+  dockerimage: demisto/pytmv1:0.7.6.85935
   isFetchSamples: true
   isfetch: true
   script: ''
