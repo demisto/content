@@ -17,11 +17,12 @@ configuration:
   name: url
   required: true
   type: 0
-- display: X-API-Key
+- displaypassword: X-API-Key
   hidden: false
   name: apiKey
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
 - display: Use system proxy settings
   hidden: false
   name: proxy
