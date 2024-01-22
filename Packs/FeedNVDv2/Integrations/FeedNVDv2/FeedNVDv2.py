@@ -120,10 +120,10 @@ def retrieve_cves_command(client, params, test_run):
     has_kev = params.get('hasKev') or None  # type: ignore
     s_date: str = params.get('start_date') # type: ignore
     try:
-        datetime.date.fromisoformat(s_date)  # type: ignore[ValueError,TypeError,attr-defined]
+        datetime.date.fromisoformat(s_date)  # type: ignore[ValueError, TypeError, attr-defined]
     except ValueError:
         return_error("Incorrect date format specified. Should be in the format of YYYY-MM-DD")
-    start_date = datetime.datetime.strptime(s_date, "%Y-%m-%d")  # type: ignore[ValueError,TypeError,attr-defined]
+    start_date = datetime.datetime.strptime(s_date, "%Y-%m-%d")  # type: ignore[ValueError, TypeError, attr-defined]
 
     exceeds_span = True
     url = "/rest/json/cves/2.0/?noRejected"
