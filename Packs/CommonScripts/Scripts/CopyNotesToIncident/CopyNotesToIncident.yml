@@ -2,6 +2,8 @@ args:
 - description: Incident ID to copy notes to.
   name: target_incident
   required: true
+- description: Whether auto extract the indicators from the notes.
+  name: auto_extract
 - description: Replicate only notes with these tags (array or comma separated).
   isArray: true
   name: tags
