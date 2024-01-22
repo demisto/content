@@ -285,7 +285,7 @@ def fetch_indicators(client: Client):
     '''
     args = {}
     last_run = demisto.getLastRun()
-    is_first_fetch = True
+    is_first_fetch = None
     if isinstance(last_run, dict):
         last_fetch_time = last_run.get('lastRun_{}'.format(client.collection_name), None)
 
@@ -295,6 +295,7 @@ def fetch_indicators(client: Client):
     else:
         last_fetch_time = datetime.utcnow() - timedelta(days=client.initial_interval)      # type: ignore
         args['begin'] = str(last_fetch_time.replace(tzinfo=pytz.UTC))
+        is_first_fetch = True
 
     args['end'] = str(datetime.utcnow().replace(tzinfo=pytz.UTC))
 
