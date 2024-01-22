@@ -118,9 +118,9 @@ def retrieve_cves_command(client, params, test_run):
     command = demisto.command()
     api_key = params.get('apiKey', {}).get('password')
     has_kev = params.get('hasKev') or None  # type: ignore
-    s_date = str(params.get('start_date'))
+    s_date = params.get('start_date') # type: ignore
     try:
-        datetime.date.fromisoformat(s_date)  # type: ignore
+        datetime.date.fromisoformat(s_date)  # type: ignore[ValueError]
     except ValueError:
         return_error("Incorrect date format specified. Should be in the format of YYYY-MM-DD")
     start_date = datetime.datetime.strptime(s_date, "%Y-%m-%d")  # type: ignore[attr-defined]
@@ -197,7 +197,7 @@ def retrieve_cves_command(client, params, test_run):
                 if not test_run:
                     res = client._http_request('GET', url, params=param, headers=headers, timeout=300)
                 else:
-                    with open('./test_data/test_cve_data.json', encoding='utf-8') as f:
+                    with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cve_data.json', encoding='utf-8') as f:
                         res = json.loads(f.read())
                 # Check to see if there are any errors
                 if "error" in res:
