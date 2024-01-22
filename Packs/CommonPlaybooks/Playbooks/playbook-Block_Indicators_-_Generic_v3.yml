@@ -822,11 +822,16 @@ tasks:
           - operator: uniq
           - operator: SetIfEmpty
             args:
-              applyIfEmpty: {}
+              applyIfEmpty:
+                value:
+                  simple: "false"
               defaultValue:
                 value:
                   simple: No indicators to block
-    separatecontext: false
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
     reputationcalc: 2
     continueonerrortype: ""
     view: |-
@@ -911,10 +916,16 @@ tasks:
           - operator: uniq
           - operator: SetIfEmpty
             args:
-              applyIfEmpty: {}
+              applyIfEmpty:
+                value:
+                  simple: "false"
               defaultValue:
                 value:
                   simple: No indicators to block
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
