@@ -1,5 +1,5 @@
 id: ee9c6990-ddb1-4482-8246-8ff1842bdb52
-version: 3
+version: 7
 vcShouldKeepItemLegacyProdMachine: false
 name: AWS_-_SecurityLake_Test_Playbook
 starttaskid: "0"
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
@@ -48,13 +48,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     scriptarguments:
       catalog_name:
         simple: ${AWS.SecurityLake.Catalog.CatalogName}
@@ -89,8 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 370
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -117,7 +117,6 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-      - "5"
     scriptarguments:
       catalog_name:
         simple: ${AWS.SecurityLake.Catalog.CatalogName}
@@ -128,8 +127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 545
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -154,13 +153,16 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -189,7 +191,89 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3b3284b2-84e6-4212-8ac7-9709eea9d918
+    type: condition
+    task:
+      id: 3b3284b2-84e6-4212-8ac7-9709eea9d918
+      version: -1
+      name: Validate catalog
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.SecurityLake.Catalog.CatalogName
+            iscontext: true
+          right:
+            value:
+              simple: AwsDataCatalog
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 807591e1-1bf6-48de-8f27-a38a52f3fa7d
+    type: condition
+    task:
+      id: 807591e1-1bf6-48de-8f27-a38a52f3fa7d
+      version: -1
+      name: Validate databases
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: AWS.SecurityLake.Database
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 720
         }
       }
@@ -205,8 +289,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 810,
+        "height": 1290,
+        "width": 380,
         "x": 50,
         "y": 50
       }
