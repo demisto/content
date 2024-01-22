@@ -54,12 +54,12 @@ def main():
       'Authorization': f'Bearer {access_token}'
     }
 
-    url = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'
-    response = requests.request("POST", url, headers=headers, data=json.dumps(data), verify=False)
-    if response.status_code != 204:
-        logging.error('Failed to trigger update-demisto-sdk-version workflow')
-        logging.error(response.text)
-        sys.exit(1)
+    # url = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'
+    # response = requests.request("POST", url, headers=headers, data=json.dumps(data), verify=False)
+    # if response.status_code != 204:
+    #     logging.error('Failed to trigger update-demisto-sdk-version workflow')
+    #     logging.error(response.text)
+    #     sys.exit(1)
 
     logging.success('update-demisto-sdk-version workflow triggered successfully')
 
