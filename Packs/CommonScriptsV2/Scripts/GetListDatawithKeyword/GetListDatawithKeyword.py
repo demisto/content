@@ -12,6 +12,7 @@ def get_data(key_word, json_data):
         for key,value in json_data[i].items():
             if key_word in value:
                 result_data.append(json_data[i])
+                break
     return result_data
 
 
