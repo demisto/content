@@ -3801,14 +3801,12 @@ inputs:
     This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
 inputSections:
-- name: Role and Assignment
-  description:  Parameters defining user responsibilities and task allocations.
-  inputs:
+- inputs:
   - Role
   - OnCall
-- name: Search and Delete Functionality
-  description: Input criteria to locate specific entries and actions to remove them.
-  inputs:
+  name: Role and Assignment
+  description: Parameters defining user responsibilities and task allocations.
+- inputs:
   - SearchAndDelete
   - SearchAndDeleteIntegration
   - O365DeleteType
@@ -3823,9 +3821,9 @@ inputSections:
   - InternalDomains
   - GetOriginalEmail
   - OriginalAuthenticationHeader
-- name: Analysis and Threat Detection
-  description: Parameters for examining data, identifying, and assessing security threats.
-  inputs:
+  name: Email Verification and Classification
+  description: Criteria and actions for authenticating email sources and categorizing by content.
+- inputs:
   - BlockIndicators
   - DetonateURL
   - InternalRange
@@ -3833,15 +3831,17 @@ inputSections:
   - DBotPredictURLPhishingURLsNumber
   - EmailFileToExtract
   - HuntEmailIndicators
-- name: Incident Management and User Engagement
-  description: Input settings for handling security events and involving end-users in the resolution process.
-  inputs:
+  name: Analysis and Threat Detection
+  description: Parameters for examining data, identifying, and assessing security threats.
+- inputs:
   - EmailHuntingCreateNewIncidents
   - ListenerMailbox
   - SendMailInstance
   - UserEngagement
   - TakeManualActions
   - KeyWordsToSearch
+  name: Incident Management and User Engagement
+  description: Input settings for handling security events and involving end-users in the resolution process.
 outputs: []
 tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
