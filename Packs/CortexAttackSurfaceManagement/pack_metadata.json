@@ -80,6 +80,10 @@
         "GCP-IAM": {
             "mandatory": false,
             "display_name": "GCP-IAM"
+        },
+        "MicrosoftGraphUser": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph User"
         }
     },
     "marketplaces": [
