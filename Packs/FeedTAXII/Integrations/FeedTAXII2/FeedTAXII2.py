@@ -74,13 +74,14 @@ def fetch_indicators_command(
         if client.collection_to_fetch
         else None
     )
-
+    demisto.debug(f"last fetch time is: {last_fetch_time}")
     if not client.collection_to_fetch:
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
         indicators: list = []
         for collection in client.collections:
+            demisto.debug("fetching from group of collections")
             client.collection_to_fetch = collection
             added_after = get_added_after(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
@@ -96,7 +97,9 @@ def fetch_indicators_command(
                     break
     else:
         # fetch from a single collection
+        demisto.debug("fetching from one collection")
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
+        demisto.debug(f"running build iterator with added after: {added_after}")
         indicators = client.build_iterator(limit, added_after=added_after)
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
