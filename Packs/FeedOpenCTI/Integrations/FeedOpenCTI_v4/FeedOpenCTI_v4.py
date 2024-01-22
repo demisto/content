@@ -102,7 +102,6 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
     demisto.debug(f'{OPENCTI_LOGS} - in get_indicators - {filters=}')
     observables = client.stix_cyber_observable.list(filters=filters, after=last_run_id, first=limit,
                                                     withPagination=True)
-    demisto.debug(f'{OPENCTI_LOGS} - in get_indicators - raw indicators = {observables}')
     new_last_run = observables.get('pagination').get('endCursor')
     demisto.debug(f'{OPENCTI_LOGS} - in get_indicators - {new_last_run=}')
 
@@ -136,7 +135,7 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: 
             indicator['score'] = 3
 
         indicators.append(indicator)
-    demisto.debug(f'{OPENCTI_LOGS} - in get_indicators - final indicators : {indicators}')
+    demisto.debug(f'{OPENCTI_LOGS} - in get_indicators - sum of indicators: {len(indicators)}')
     return new_last_run, indicators
 
 
@@ -167,7 +166,7 @@ def fetch_indicators_command(client: OpenCTIApiClient, indicator_types: list, ma
         # we submit the indicators in batches
         for b in batch(indicators_list, batch_size=2000):
             demisto.createIndicators(b)
-            demisto.debug(f'{OPENCTI_LOGS} - in fetch_indicators_command - successful fetch, batch number = {b=}')
+            demisto.debug(f'{OPENCTI_LOGS} - in fetch_indicators_command - indicators created successfully.')
 
     return indicators_list
 
