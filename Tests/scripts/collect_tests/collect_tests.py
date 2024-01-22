@@ -249,6 +249,7 @@ class CollectionResult:
                             skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
                         )
                 test_marketplaces = conf.tests_to_marketplace_set[test]  # type: ignore[union-attr]
+                logger.debug(f"{test_marketplaces=}, {conf.marketplace=}") # TODO
                 if test_marketplaces and (conf.marketplace not in test_marketplaces):  # type: ignore[union-attr]
                     raise IncompatibleTestMarketplaceException(test_name=test,
                                                                test_marketplaces=test_marketplaces,
