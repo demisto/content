@@ -425,7 +425,7 @@ def test_reputation_command_unknown_indicator(
 
     # The second (command_results[1]) is the one containing the command output
     assert command_results[1].outputs_prefix == "SEKOIAIntelligenceCenter.IndicatorContext"
-    assert command_results[1].readable_output == f"### {input_indicator} of type {expected_stix_type} is an unknown indicator."
+    assert command_results[1].readable_output == "No results found."
     assert command_results[1].outputs["items"] == []
     assert command_results[1].outputs == {"indicator": {"value": input_indicator, "type": expected_stix_type}, "items": []}
     assert command_results[1].raw_response == mock_response

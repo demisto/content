@@ -655,7 +655,7 @@ def get_indicator_context_command(client: Client, args: dict[str, str]) -> list[
     outputs = {"indicator": indicator, "items": indicator_context.get("items", [])}
 
     if indicator_context["items"] == []:
-        markdown = f"### {indicator['value']} of type {indicator['type']} is an unknown indicator."
+        markdown = "No results found."
     else:
         # Format output
         markdown = indicator_context_to_markdown(indicator_context)
