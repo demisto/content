@@ -1,6 +1,6 @@
 import json
 import ast
-from FeedNVDv2 import retrieve_cves_command, parse_cpe_command, test_module
+from FeedNVDv2 import retrieve_cves_command, parse_cpe_command
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -20,15 +20,15 @@ def get_test_data(command_name):
     """
     # Retrieve the raw CPE sample data
     if command_name == "parse_cpe_command":
-        with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cpe_data.txt') as f:
+        with open('./test_data/test_cpe_data.txt') as f:
             return f.read()
     # Retrieve the expected response to the sample CPE data
     elif command_name == "parse_cpe_command_response":
-        with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cpe_data_response.txt') as f:
+        with open('./test_data/test_cpe_data_response.txt') as f:
             return f.read()
     # Otherwise this is testing the CVE processing chain (retrieve_cves_command which calls process_cves_command)
     else:
-        with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cve_data_response.json') as f:
+        with open('./test_data/test_cve_data_response.json') as f:
             return json.loads(f.read())
 
 
@@ -72,14 +72,14 @@ def test_retrieve_cves_command():
         base_url=BASE_URL,
         verify=False,
         proxy=False,
-        )
+    )
 
     indicator = retrieve_cves_command(client, params, True)
     response = [get_test_data("test_cve_processing")]
-    
+
     assert all(item in indicator[0] for item in response[0]), "Indicator dictionary does not match expected response"
 
-    
+
 """if __name__ in ('__main__', '__builtin__', 'builtins'):
     # test_parse_cpe_command()
     test_retrieve_cves_command()"""
