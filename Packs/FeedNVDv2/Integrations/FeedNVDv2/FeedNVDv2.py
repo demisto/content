@@ -187,12 +187,12 @@ def retrieve_cves_command(client, params, test_run):
 
         # Collect all the indicators together
         while iteration_count < total_results:
-            demisto.debug(print(f'\n\nlastModStartDate: {last_mod_start_date.strftime(DATE_FORMAT)}'
+            demisto.debug(f'\n\nlastModStartDate: {last_mod_start_date.strftime(DATE_FORMAT)}'
                           + f'\nlastModEndDate: {last_mod_end_date.strftime(DATE_FORMAT)}'
                           + f'\nFetch Iteration: {str(iteration)}' + '\nIteration Count: '
                           + f'{str(iteration_count)}\nTotal Results for Iteration: '
                           + f'{str(total_results)}\nCurrent Total Fetched Indicator Count: '
-                          + f'{str(total_items)}\n\n'))
+                          + f'{str(total_items)}\n\n')
             try:
                 if not test_run:
                     res = client._http_request('GET', url, params=param, headers=headers, timeout=300)
