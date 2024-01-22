@@ -2279,7 +2279,8 @@
             "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
             "fromversion": "5.0.0",
-            "timeout": 1600
+            "timeout": 1600,
+            "marketplaces": "marketplacev2"
         },
         {
             "integrations": "Microsoft_Graph_Files",

@@ -752,6 +752,7 @@ class TestCollector(ABC):
             logger.debug(f'{content_item_path} has no marketplaces set, '
                          f'using default={DEFAULT_MARKETPLACES_WHEN_MISSING}')
             content_item_marketplaces = DEFAULT_MARKETPLACES_WHEN_MISSING
+        logger.debug(f"{content_item_marketplaces=}, {content_item_path=}")
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
@@ -762,6 +763,7 @@ class TestCollector(ABC):
                 # _collect_xsiam_and_modeling_pack function.
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
+                    logger.debug(f"test")
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
