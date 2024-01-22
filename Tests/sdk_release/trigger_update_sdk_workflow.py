@@ -11,6 +11,8 @@ from Tests.scripts.utils import logging_wrapper as logging
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+SLACK_CHANGELOG_FILE = 'CHANGELOG_SLACK.txt'
+
 SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
         ':alert: Please run in the terminal\n' \
         '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/demisto/content ~/dev/demisto/demisto-sdk`\n' \
@@ -54,19 +56,19 @@ def main():
       'Authorization': f'Bearer {access_token}'
     }
 
-    # url = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'
-    # response = requests.request("POST", url, headers=headers, data=json.dumps(data), verify=False)
-    # if response.status_code != 204:
-    #     logging.error('Failed to trigger update-demisto-sdk-version workflow')
-    #     logging.error(response.text)
-    #     sys.exit(1)
+    url = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'
+    response = requests.request("POST", url, headers=headers, data=json.dumps(data), verify=False)
+    if response.status_code != 204:
+        logging.error('Failed to trigger update-demisto-sdk-version workflow')
+        logging.error(response.text)
+        sys.exit(1)
 
     logging.success('update-demisto-sdk-version workflow triggered successfully')
 
     changelog_text = get_changelog_text(release_branch_name, text_format='slack')
 
     changelog_text = SLACK_RELEASE_MESSAGE.format(release_branch_name, changelog_text)
-    changelog_file = os.path.join(artifacts_folder, 'CHANGELOG_SLACK.txt')
+    changelog_file = os.path.join(artifacts_folder, SLACK_CHANGELOG_FILE)
 
     with open(changelog_file, "w") as f:
         f.write(str(changelog_text))
