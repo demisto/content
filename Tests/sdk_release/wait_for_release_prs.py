@@ -61,23 +61,22 @@ def main():
 
     logging.info('Waiting for sdk and content release ull requests creation')
 
-    # wait to content pr and sdk pr to be open
-    while (not sdk_pr or not content_pr) and elapsed < TIMEOUT:
+    # wait to content pr to be open
+    while not content_pr and elapsed < TIMEOUT:
         # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
         content_pr = get_pr_from_branch('content', '1.25.3', access_token)  # TODO: remove this line
-        sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
 
         if not content_pr:
             logging.info('content pull request not created yet')
-        if not sdk_pr:
-            logging.info('demisto-sdk pull request not created yet')
 
         time.sleep(60)
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
-        logging.error('Timeout reached while waiting for SDK and content pull requests creation')
+        logging.error('Timeout reached while waiting for content pull requests creation')
         sys.exit(1)
+
+    sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
 
     logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
     logging.info(f'content pull request created: {content_pr.get("html_url")}')

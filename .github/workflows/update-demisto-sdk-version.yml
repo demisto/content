@@ -38,7 +38,7 @@ jobs:
         python-version: '3.10'
         cache: 'poetry'
         
-    - name: Create brnach
+    - name: Create branch
       run: |
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
