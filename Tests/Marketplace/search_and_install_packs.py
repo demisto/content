@@ -1,5 +1,6 @@
 import base64
 import contextlib
+from datetime import datetime
 import glob
 import itertools
 import json
@@ -27,6 +28,8 @@ from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
                                                     load_json)
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.scripts.utils import logging_wrapper as logging
+
+from demisto_sdk.commands.test_content.ParallelLoggingManager import ARTIFACTS_PATH
 
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'  # noqa: E501
                                      r'+\.zip$')
@@ -587,22 +590,24 @@ def create_graph(
     return graph_dependencies
 
 
-def merge_cycles(graph: DiGraph) -> dict[str, str]:
-    """Merges nodes that form cycles in the directed graph into a single node.
+def merge_cycles(graph: DiGraph) -> tuple[dict[str, str], DiGraph]:
+    """Merges nodes that are part of cycles in the directed graph into a single node.
 
     Args:
-        graph (DiGraph): The directed graph to merge cycles in.
+        graph (DiGraph): The directed graph to find and merge cycles in.
 
     Returns:
-        dict[str, str]: A dictionary mapping the original node names that were part of
-        cycles to the merged node name for that cycle.
+        tuple[dict[str, str], DiGraph]: A tuple with:
+            - A dict mapping the original node names to the merged node name
+            - The modified graph with cycles merged
+    Note:
+        The function returns the graph for visibility, even though the original graph changes.
     """
     logging.debug(
         f"Found the following cycles in the graph: {list(nx.simple_cycles(graph))}"
     )
     map_cycles = {}
-    while list(nx.simple_cycles(graph)):
-        cycle = list(nx.simple_cycles(graph))[0]
+    while cycle := next(nx.simple_cycles(graph), None):
         merged_node_name = CYCLE_SEPARATOR.join(cycle)
         for node_1, node_2 in list(graph.edges()):
             if node_1 in cycle:
@@ -611,13 +616,15 @@ def merge_cycles(graph: DiGraph) -> dict[str, str]:
                 graph.add_edge(node_1, merged_node_name)
         for node in cycle:
             graph.remove_node(node)
+
         map_cycles.update(
             {
                 node: merged_node_name
                 for node in itertools.chain.from_iterable(split_cycles(cycle))
             }
         )
-    return map_cycles
+    logging.debug(f"{map_cycles=}")
+    return map_cycles, graph
 
 
 def split_cycles(list_of_nodes: list[str]) -> list[list[str]]:
@@ -756,25 +763,24 @@ def search_for_deprecated_dependencies(
 def get_packs_and_dependencies_to_install(
     pack_ids: list,
     graph_dependencies: DiGraph,
-    all_packs_and_dependencies_to_install: set,
     production_bucket: bool,
     all_packs_dependencies_data: dict,
-) -> bool:
+) -> tuple[bool, set]:
     """
-    Fetches packs to install along with their dependencies. Checks if any dependencies are deprecated
-    and omits packs with deprecated dependencies.
+    Fetches all dependencies for the given list of pack IDs and returns the packs and dependencies that should be installed.
 
     Args:
-        pack_ids (list): List of pack IDs to get dependencies for
-        graph_dependencies (DiGraph): Dependency graph of all packs
-        all_packs_and_dependencies_to_install (set): Set to store selected packs and dependencies
-        production_bucket (bool): Whether production bucket is used
-        all_packs_dependencies_data (dict):  Mapping of pack ID to pack metadata.
+        pack_ids (list): List of pack IDs to get dependencies for 
+        graph_dependencies (DiGraph): Dependency graph  
+        production_bucket (bool): Whether the production bucket is used
+        all_packs_dependencies_data (dict): Data about all packs and dependencies
 
     Returns:
-        bool: False if any deprecated dependencies found, True otherwise
+        no_deprecated_dependencies (bool): Whether any deprecated dependencies were found
+        all_packs_and_dependencies_to_install (set): Set containing all packs and dependencies that should be installed
     """
     no_deprecated_dependencies = True
+    all_packs_and_dependencies_to_install: set[str] = set()
 
     for pack_id in pack_ids:
         dependencies_for_pack_id = nx.ancestors(graph_dependencies, pack_id)
@@ -798,7 +804,7 @@ def get_packs_and_dependencies_to_install(
         else:
             logging.debug(f"No dependencies found for '{pack_id}'")
 
-    return no_deprecated_dependencies
+    return no_deprecated_dependencies, all_packs_and_dependencies_to_install
 
 
 def create_install_request_body(
@@ -829,19 +835,22 @@ def create_install_request_body(
     return request_body
 
 
-def search_for_deprecated_packs(
+def filter_deprecated_packs(
     pack_ids: list[str], production_bucket: bool, commit_hash: str
-) -> None:
-    """Checks if any packs in pack_ids are deprecated and removes them from the list.
+) -> list[str]:
+    """Filters out deprecated packs from the pack_ids list.
 
-    For each pack ID in pack_ids, calls is_pack_deprecated to check if that pack is deprecated.
-    If so, logs a warning and removes the pack from the pack_ids list so it will not be installed.
+    Checks if each pack ID in pack_ids is deprecated by calling is_pack_deprecated.
+    If a pack is deprecated, logs a warning and does not include it in the returned list.
 
     Args:
-        pack_ids: List of pack IDs to check.
+        pack_ids: List of pack IDs to filter.
         production_bucket: Whether the installation is for production or not.
         commit_hash: The git commit hash to check against.
+    Returns:
+        List of pack IDs with deprecated packs filtered out.
     """
+    filtered_packs_id = []
     for pack_id in pack_ids:
         if is_pack_deprecated(
             pack_id=pack_id,
@@ -851,7 +860,10 @@ def search_for_deprecated_packs(
             logging.warning(
                 f"Pack '{pack_id}' is deprecated (hidden) and will not be installed."
             )
-            pack_ids.remove(pack_id)
+        else:
+            filtered_packs_id.append(pack_id)
+
+    return filtered_packs_id
 
 
 def create_batches(list_of_packs_and_its_dependency: list):
@@ -877,11 +889,33 @@ def create_batches(list_of_packs_and_its_dependency: list):
     return list_of_batches
 
 
+def save_graph_dot_file_log(graph: DiGraph, file_name: str) -> None:
+    """Saves a graph visualization as a .dot file to the logs directory.
+
+    Args:
+        graph (DiGraph): The networkx DiGraph to save.
+        file_name (str): The name to use for the saved .dot file.
+
+    Returns:
+        None: Returns nothing.
+
+    Note:
+        The saved .dot file can be read back into a graph object using networkx:
+        `graph = nx.nx_agraph.read_dot(file_path)`
+    """
+
+    file_name = f"{datetime.utcnow().strftime('%H:%M:%S')}_{file_name}"
+    log_file_path = Path(ARTIFACTS_PATH) / 'logs' / file_name
+
+    nx.nx_agraph.write_dot(graph, log_file_path)
+    logging.debug(f"Saving graph view to {log_file_path}")
+
+
 def search_and_install_packs_and_their_dependencies(
     pack_ids: list,
     client: demisto_client,
     hostname: str | None = None,
-    multithreading: bool = True,
+    install_packs_in_batches: bool = False,
     production_bucket: bool = True,
 ):
     """
@@ -907,7 +941,7 @@ def search_and_install_packs_and_their_dependencies(
 
     success = True
 
-    search_for_deprecated_packs(pack_ids, production_bucket, master_commit_hash)
+    pack_ids = filter_deprecated_packs(pack_ids, production_bucket, master_commit_hash)
     if not pack_ids:
         logging.info(f"No packs to install on: {host}")
         return [], success
@@ -916,25 +950,26 @@ def search_and_install_packs_and_their_dependencies(
 
     graph_dependencies = create_graph(all_packs_dependencies_data)
 
-    all_packs_and_dependencies_to_install: set[str] = set()
-    success &= get_packs_and_dependencies_to_install(
+    no_deprecated_dependencies, all_packs_and_dependencies_to_install = get_packs_and_dependencies_to_install(
         pack_ids,
         graph_dependencies,
-        all_packs_and_dependencies_to_install,
         production_bucket,
         all_packs_dependencies_data,
     )
+    success &= no_deprecated_dependencies
 
-    map_merged_cycles = merge_cycles(graph_dependencies)
+    map_merged_cycles, merged_graph_dependencies = merge_cycles(graph_dependencies)
 
     # Create subgraph only with the packs that will be installed
     graph_dependencies_for_installed_packs = nx.subgraph(
-        graph_dependencies,
+        merged_graph_dependencies,
         {
             map_merged_cycles[pack] if pack in map_merged_cycles else pack
             for pack in all_packs_and_dependencies_to_install
         },
     )
+    save_graph_dot_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs.dot")
+
     logging.debug(
         f"Get the following topological sort: {list(nx.topological_generations(graph_dependencies_for_installed_packs))}"
     )
@@ -948,12 +983,12 @@ def search_and_install_packs_and_their_dependencies(
     )
     logging.debug(f"{packs_to_install_request_body=}")
 
-    if multithreading:
+    if install_packs_in_batches:
+        batch_packs_install_request_body = create_batches(packs_to_install_request_body)
+    else:
         batch_packs_install_request_body = [
             list(itertools.chain.from_iterable(packs_to_install_request_body))
         ]
-    else:
-        batch_packs_install_request_body = create_batches(packs_to_install_request_body)
 
     for packs_to_install_body in batch_packs_install_request_body:
         pack_success, _ = install_packs(client, host, packs_to_install_body)

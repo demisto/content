@@ -156,7 +156,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker, use_multithread
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
                                                                                       client=client,
-                                                                                      multithreading=use_multithreading,
+                                                                                      install_packs_in_batches=use_multithreading,
                                                                                       production_bucket=True)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
@@ -165,7 +165,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker, use_multithread
 
     installed_packs, _ = script.search_and_install_packs_and_their_dependencies(pack_ids=bad_pack_ids,
                                                                                 client=client,
-                                                                                multithreading=use_multithreading,
+                                                                                install_packs_in_batches=use_multithreading,
                                                                                 production_bucket=True)
     assert bad_pack_ids[0] not in installed_packs
 
@@ -195,7 +195,7 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker, erro
 
     _, success = script.search_and_install_packs_and_their_dependencies(pack_ids=['HelloWorld'],
                                                                         client=client,
-                                                                        multithreading=use_multithreading,
+                                                                        install_packs_in_batches=use_multithreading,
                                                                         production_bucket=True)
     assert success is False
 
@@ -592,15 +592,15 @@ def test_merge_cycles_direct_single_cycle():
     assert len(graph) == 4
     assert len(graph.edges()) == len(edges)
 
-    merged_nodes_map = script.merge_cycles(graph)
+    merged_nodes_map, merged_graph = script.merge_cycles(graph)
     merged_node_name = merged_nodes_map["PackB"]
 
-    assert merged_node_name in graph.nodes()
+    assert merged_node_name in merged_graph.nodes()
     assert all(pack in merged_nodes_map for pack in merged_nodes)
-    assert all(pack not in graph.nodes() for pack in merged_nodes)
+    assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
     assert len(merged_nodes_map) == 2
-    assert len(graph) == 3
-    assert len(graph.edges()) == 2
+    assert len(merged_graph) == 3
+    assert len(merged_graph.edges()) == 2
 
 
 def test_merge_cycles_single_wide_cycle():
@@ -627,15 +627,15 @@ def test_merge_cycles_single_wide_cycle():
     assert len(graph) == 5
     assert len(graph.edges()) == len(edges)
 
-    merged_nodes_map = script.merge_cycles(graph)
+    merged_nodes_map, merged_graph = script.merge_cycles(graph)
     merged_node_name = merged_nodes_map["PackB"]
 
-    assert merged_node_name in graph.nodes()
+    assert merged_node_name in merged_graph.nodes()
     assert all(pack in merged_nodes_map for pack in merged_nodes)
-    assert all(pack not in graph.nodes() for pack in merged_nodes)
+    assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
     assert len(merged_nodes_map) == 3
-    assert len(graph) == 3
-    assert len(graph.edges()) == 2
+    assert len(merged_graph) == 3
+    assert len(merged_graph.edges()) == 2
 
 
 def test_merge_cycles_node_with_multiple_cycles():
@@ -664,15 +664,15 @@ def test_merge_cycles_node_with_multiple_cycles():
     assert len(graph) == 5
     assert len(graph.edges()) == len(edges)
 
-    merged_nodes_map = script.merge_cycles(graph)
+    merged_nodes_map, merged_graph = script.merge_cycles(graph)
     merged_node_name = merged_nodes_map["PackB"]
 
-    assert merged_node_name in graph.nodes()
+    assert merged_node_name in merged_graph.nodes()
     assert all(pack in merged_nodes_map for pack in merged_nodes)
-    assert all(pack not in graph.nodes() for pack in merged_nodes)
+    assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
     assert len(merged_nodes_map) == 3
-    assert len(graph) == 3
-    assert len(graph.edges()) == 2
+    assert len(merged_graph) == 3
+    assert len(merged_graph.edges()) == 2
 
 
 @pytest.mark.parametrize(
@@ -805,7 +805,7 @@ def test_search_for_deprecated_dependencies_with_deprecated_dependency(
     pack_id = "TestPack"
     dependencies = {"Pack1", "Pack2"}
     dependencies_data = {"Pack1": {"deprecated": True}, "Pack2": {"deprecated": False}}
-    logging = mocker.patch.object(script, "logging")
+    mocker.patch.object(script, "logging")
 
     assert (
         script.search_for_deprecated_dependencies(
@@ -814,7 +814,7 @@ def test_search_for_deprecated_dependencies_with_deprecated_dependency(
         is False
     )
 
-    logging.critical.assert_called_with(mocker.ANY)
+    script.logging.critical.assert_called_with(mocker.ANY)
 
 
 def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker):
@@ -832,7 +832,7 @@ def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker):
     pack_id = "TestPack"
     dependencies = {"Pack1", "Pack2"}
     dependencies_data = {"Pack1": {"deprecated": False}, "Pack2": {"deprecated": False}}
-    logging = mocker.patch.object(script, "logging")
+    mocker.patch.object(script, "logging")
 
     assert (
         script.search_for_deprecated_dependencies(
@@ -840,4 +840,4 @@ def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker):
         )
         is True
     )
-    logging.critical.assert_not_called()
+    script.logging.critical.assert_not_called()
