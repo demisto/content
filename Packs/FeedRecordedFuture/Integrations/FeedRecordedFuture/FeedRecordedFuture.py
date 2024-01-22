@@ -50,7 +50,7 @@ class Client(BaseClient):
 
     def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False, malicious_threshold: int = 65, suspicious_threshold=25, risk_score_threshold: int = 0,
+                 polling_timeout: int = 20, proxy: bool = False, malicious_threshold: int = 65, suspicious_threshold: int=25, risk_score_threshold: int = 0,
                  tags: list | None = None, tlp_color: str | None = None):
         """
         Attributes:
