@@ -11,27 +11,39 @@
 2. Click the **Copy URL** button in the top right corner.
 </~XSIAM>
 
-<~XSOAR>
-
-In version 8.0.0 and above:
+<~XSOAR_SAAS>
 1. Go to Settings -> API Keys.
 2. Click the **+New Key** button in the top right corner.
 3. Generate a key of type **Advanced**.
 4. Copy and paste the key.
 5. From the ID column, copy the Key ID.
+</~XSOAR_SAAS>
 
-In version 6.x.x:
+<~XSOAR_ON_PREM>
 1. Go to Settings -> Integrations -> API Keys.
 2. Click the **Get your key** button in the top left corner.
 3. Generate a key.
 4. Copy and paste the key.
+</~XSOAR_ON_PREM>
 
 ### URL
-In Cortex XSOAR 8.0.0 and above
+<~XSOAR_SAAS>
 1. Go to **Settings & Info** > **Settings** > **Integrations** > **API Keys**.
 2. Click the **Copy URL** button in the top right corner.
+<~XSOAR_SAAS>
 
-In Corex XSOAR 6.x.x, enter the server URL.
-</~XSOAR>
+<~XSOAR_ON_PREM>
+Enter the server URL.
+</~XSOAR_ON_PREM>
 
-Provide API Key ID when using<~XSIAM> Cortex XSIAM </~XSIAM><~XSOAR> Cortex XSOAR 8.0.0 and above. If the version is 6.x.x, you can leave it empty </~XSOAR>.
+<~XSOAR_SAAS>
+You must provide an API Key ID. 
+<~XSOAR_SAAS>
+
+<~XSIAM>
+You must provide an API Key ID.
+</~XSIAM>
+
+<~XSOAR_ON_PREM>
+You do not need to provide an API Key ID.
+</~XSOAR_ON_PREM>
