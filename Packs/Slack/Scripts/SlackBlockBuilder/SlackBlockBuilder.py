@@ -120,9 +120,10 @@ class BlockCarrier:
             elif block.get('type') == 'section':
                 if 'accessory' in block:
                     sec_action_id: str = block.get('accessory', {}).get('type', '')
-                    block['block_id'] = sec_action_id + '_' + str(action_id_int)
-                    block['accessory']['action_id'] = sec_action_id + str(action_id_int)
-                    action_id_int += 1
+                    if not sec_action_id == 'image':
+                        block['block_id'] = sec_action_id + '_' + str(action_id_int)
+                        block['accessory']['action_id'] = sec_action_id + str(action_id_int)
+                        action_id_int += 1
 
     def _add_submit_button(self):
         """Adds a submit button with a known action_id
