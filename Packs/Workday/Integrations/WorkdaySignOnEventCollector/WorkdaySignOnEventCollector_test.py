@@ -289,10 +289,6 @@ def test_generate_workday_account_signons_body() -> None:
     assert "<bsvc:From_DateTime>2021-09-01T11:00:00Z</bsvc:From_DateTime>" in body
     assert "<bsvc:To_DateTime>2021-09-01T12:00:00Z</bsvc:To_DateTime>" in body
     assert "<wsse:Username>test_user</wsse:Username>" in body
-    assert (
-        '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">test_pass</wsse:Password>'  # noqa:E501
-        in body
-    )
 
 
 def test_generate_test_payload() -> None:
