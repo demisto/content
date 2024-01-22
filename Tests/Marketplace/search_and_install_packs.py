@@ -770,8 +770,8 @@ def get_packs_and_dependencies_to_install(
     Fetches all dependencies for the given list of pack IDs and returns the packs and dependencies that should be installed.
 
     Args:
-        pack_ids (list): List of pack IDs to get dependencies for 
-        graph_dependencies (DiGraph): Dependency graph  
+        pack_ids (list): List of pack IDs to get dependencies for
+        graph_dependencies (DiGraph): Dependency graph
         production_bucket (bool): Whether the production bucket is used
         all_packs_dependencies_data (dict): Data about all packs and dependencies
 
@@ -968,7 +968,7 @@ def search_and_install_packs_and_their_dependencies(
             for pack in all_packs_and_dependencies_to_install
         },
     )
-    save_graph_dot_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs.dot")
+    # save_graph_dot_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs.dot")
 
     logging.debug(
         f"Get the following topological sort: {list(nx.topological_generations(graph_dependencies_for_installed_packs))}"
