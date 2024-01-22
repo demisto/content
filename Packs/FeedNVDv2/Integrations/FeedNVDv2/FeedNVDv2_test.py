@@ -82,4 +82,5 @@ def test_retrieve_cves_command():
 
 """if __name__ in ('__main__', '__builtin__', 'builtins'):
     # test_parse_cpe_command()
-    test_retrieve_cves_command()"""
+    test_retrieve_cves_command()
+"""

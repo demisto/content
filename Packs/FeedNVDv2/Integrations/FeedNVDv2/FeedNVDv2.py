@@ -123,7 +123,7 @@ def retrieve_cves_command(client, params, test_run):
         datetime.date.fromisoformat(str(s_date))  # type: ignore
     except ValueError:
         return_error("Incorrect date format specified. Should be in the format of YYYY-MM-DD")
-    start_date = datetime.datetime.strptime(s_date, "%Y-%m-%d")  # type: ignore[attr-defined]
+    start_date = datetime.datetime.strptime(str(s_date), "%Y-%m-%d")  # type: ignore[attr-defined]
 
     exceeds_span = True
     url = "/rest/json/cves/2.0/?noRejected"
@@ -340,7 +340,7 @@ def process_cves_command(params, cve_list, test_run):
         return indicators
     else:
         demisto.debug(f'First CVE of run: {str(indicators[0]["value"])}'
-                    + f'\nLast CVE of run: {str(indicators[-1]["value"])}')
+                      + f'\nLast CVE of run: {str(indicators[-1]["value"])}')
 
         demisto.createIndicators(indicators)
         return None
