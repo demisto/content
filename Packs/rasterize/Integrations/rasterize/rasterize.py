@@ -580,7 +580,7 @@ def rasterize_thread(browser, chrome_port, path: str,
             return None
 
 
-def rasterize(path: str,
+def perform_rasterize(path: str,
               rasterize_type: RasterizeType = RasterizeType.PNG,
               wait_time: int = DEFAULT_WAIT_TIME,
               offline_mode: bool = False,
@@ -673,7 +673,7 @@ def rasterize_image_command():
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output, _ = rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
+        output, _ = perform_rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
                               rasterize_type=RasterizeType.PDF, full_screen=full_screen)
         res = []
         for current_output in output:
@@ -697,7 +697,7 @@ def rasterize_email_command():  # pragma: no cover
 
     path = f'file://{os.path.realpath(f.name)}'
 
-    rasterize_output, _ = rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
+    rasterize_output, _ = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
                                     offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=rasterize_output[0])
@@ -778,7 +778,7 @@ def rasterize_html_command():
     file_path = demisto.getFilePath(entry_id).get('path')
     os.rename(f'./{file_path}', 'file.html')
 
-    output, _ = rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
+    output, _ = perform_rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
                           rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=output[0])
@@ -796,7 +796,7 @@ def module_test():  # pragma: no cover
         file_path = f'file://{os.path.realpath(test_file.name)}'
 
         # Rasterize the file
-        rasterize(path=file_path)
+        perform_rasterize(path=file_path)
 
     demisto.results('ok')
 
@@ -817,7 +817,7 @@ def rasterize_command():  # pragma: no cover
         file_extension = "pdf"
     file_name = f'{file_name}.{file_extension}'  # type: ignore
 
-    rasterize_output, response_body = rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
+    rasterize_output, response_body = perform_rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
                                                 navigation_timeout=navigation_timeout, include_url=include_url,
                                                 full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")

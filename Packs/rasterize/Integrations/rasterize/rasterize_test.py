@@ -24,7 +24,7 @@ def test_rasterize_email_image(caplog, capfd, mocker):
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize, 'support_multithreading')
-        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
+        perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         caplog.clear()
 
 
@@ -35,7 +35,7 @@ def test_rasterize_email_pdf(caplog, capfd, mocker):
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize, 'support_multithreading')
-        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
+        perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         caplog.clear()
 
 
@@ -46,7 +46,7 @@ def test_rasterize_email_pdf_offline(caplog, capfd, mocker):
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize, 'support_multithreading')
-        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
+        perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         caplog.clear()
 
 
@@ -57,7 +57,7 @@ def test_rasterize_no_defunct_processes(caplog, capfd, mocker):
         path = os.path.realpath(f.name)
         f.flush()
         mocker.patch.object(rasterize, 'support_multithreading')
-        rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
+        perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
         process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    universal_newlines=True)
         processes_str, _ = process.communicate()
@@ -93,7 +93,7 @@ def test_rasterize_large_html(capfd, mocker):
     with capfd.disabled():
         path = os.path.realpath('test_data/large.html')
         mocker.patch.object(rasterize, 'support_multithreading')
-        res = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
+        res = perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG)
         assert res
 
 
@@ -155,7 +155,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
     time.sleep(1)  # give time to the servrer to start
     with capfd.disabled():
         mocker.patch.object(rasterize, 'support_multithreading')
-        rasterize('http://localhost:10888', width=250, height=250,
+        perform_rasterize('http://localhost:10888', width=250, height=250,
                   rasterize_type=RasterizeType.PNG, navigation_timeout=5)
         assert return_error_mock.call_count == 1
         # call_args last call with a tuple of args list and kwargs
@@ -163,7 +163,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
         # assert 'Timeout exception' in err_msg
         return_error_mock.reset_mock()
         # test that with a higher value we get a response
-        assert rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG)
+        assert perform_rasterize('http://localhost:10888', width=250, height=250, rasterize_type=RasterizeType.PNG)
         assert not return_error_mock.called
 
 
@@ -302,6 +302,6 @@ class TestRasterizeIncludeUrl:
             f.flush()
 
             mocker.patch.object(rasterize, 'support_multithreading')
-            image = rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG,
+            image = perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PNG,
                               include_url=include_url)
             assert image
