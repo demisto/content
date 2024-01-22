@@ -264,6 +264,9 @@ class Client(BaseClient):
         Returns:
             int. The indicator's Dbot score
         """
+
+        if self.malicious_threshold <= self.suspicious_threshold:
+            raise DemistoException('The Suspicious Threshold must be less than the Malicious Threshold.')
         risk_from_feed = int(risk_from_feed)
         if risk_from_feed >= self.malicious_threshold:
             dbot_score = 3
@@ -271,7 +274,7 @@ class Client(BaseClient):
             dbot_score = 2
         elif risk_from_feed == 0:
             dbot_score = 1
-        else:
+        else: # 0 < risk_from_feed < self.suspicious_threshold
             dbot_score = 0
         return dbot_score
 
