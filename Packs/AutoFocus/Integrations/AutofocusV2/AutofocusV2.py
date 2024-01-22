@@ -4,7 +4,6 @@ from CommonServerPython import *
 
 import socket
 import traceback
-from typing import Literal
 from collections.abc import Callable
 
 ''' GLOBALS/PARAMS '''
@@ -260,6 +259,10 @@ if PARAMS.get('mark_as_malicious'):
     VERDICTS_TO_DBOTSCORE.update(dict.fromkeys(verdicts, 3))
 
 
+EXECUTION_METRICS = ExecutionMetrics()
+API_POINTS_TABLE = CommandResults()
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -268,41 +271,40 @@ class RateLimitExceededError(BaseException):
     def __init__(self, api_res: dict) -> None:
         super().__init__()
         self.api_res = api_res
-        self.daily_points_remaining = dict_safe_get(
-            api_res, ('bucket_info', 'daily_points_remaining'), 0)
 
 
-def rerun_command_if_required(e: RateLimitExceededError, rate_limit_auto_retry: bool, command: str, args: dict):
+def return_metrics():
+    if EXECUTION_METRICS.metrics is not None and ExecutionMetrics.is_supported():
+        return_results(EXECUTION_METRICS.metrics)
+    if API_POINTS_TABLE.readable_output:
+        return_results(API_POINTS_TABLE)
 
-    if not (rate_limit_auto_retry and e.daily_points_remaining):
-        return_error(
-            'Error in API call to AutoFocus:\n'
-            f'Message: {e.api_res.get("message")}\n'
-            f'Bucket Info: {e.api_res.get("bucket_info")}'
+
+def rerun_command_if_required(api_res: dict, rate_limit_auto_retry: bool, command: str, args: dict):
+    daily_points_remaining = dict_safe_get(api_res, ('bucket_info', 'daily_points_remaining'), 0)
+    if not (rate_limit_auto_retry and daily_points_remaining):
+        results = CommandResults(
+            readable_output=(
+                'Error in API call to AutoFocus:\n'
+                f'Message: {api_res.get("message")}\n'
+                f'Bucket Info: {api_res.get("bucket_info")}'),
+            entry_type=EntryType.ERROR
         )
-    return_results(CommandResults(
-        readable_output='API Rate limit exceeded. Rerunning command in 1 minute.',
-        scheduled_command=ScheduledCommand(
-            command=command,
-            next_run_in_seconds=60,
-            args=args,
+    else:
+        results = CommandResults(
+            readable_output='API Rate limit exceeded. Rerunning command in 1 minute.',
+            scheduled_command=ScheduledCommand(
+                command=command,
+                next_run_in_seconds=60,
+                args=args,
+            )
         )
-    ))
+    return_results(results)
 
 
-def return_execution_metric(metric: Literal[
-    'success', 'quota_error', 'general_error',
-    'auth_error', 'service_error', 'connection_error',
-    'proxy_error', 'ssl_error', 'timeout_error'
-]):
-    execution_metrics = ExecutionMetrics(**{metric: 1})
-    if execution_metrics.metrics is not None and execution_metrics.is_supported():
-        return_results(execution_metrics.metrics)
-
-
-def return_api_metrics(res_obj: dict):
+def save_api_metrics(res_obj: dict):
     if bucket_info := res_obj.get('bucket_info'):
-        readable_output = tableToMarkdown(
+        API_POINTS_TABLE.readable_output = tableToMarkdown(
             'Autofocus API Points',
             {
                 'Total number of points allowed per day': bucket_info.get('daily_points'),
@@ -310,7 +312,6 @@ def return_api_metrics(res_obj: dict):
                 'Timestamp for when the current daily allotment started': bucket_info.get('daily_bucket_start'),
             }
         )
-        return_results(CommandResults(readable_output=readable_output))
 
 
 def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):
@@ -358,14 +359,16 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
     return command_results
 
 
-def parse_response(resp, err_operation):
+def parse_response(resp: requests.Response, err_operation: str | None) -> dict:
     try:
         res_json = resp.json()
-        return_api_metrics(res_json)  # type: ignore
+        save_api_metrics(res_json)  # type: ignore
+        if resp.status_code == 503:
+            raise RateLimitExceededError(res_json)
 
         # Handle error responses gracefully
         if demisto.params().get('handle_error', True) and resp.status_code == 409:
-            return_execution_metric('service_error')
+            EXECUTION_METRICS.service_error += 1
             raise Exception("Response status code: 409 \nRequested sample not found")
 
         resp.raise_for_status()
@@ -374,24 +377,15 @@ def parse_response(resp, err_operation):
             # this debug log was request by autofocus team for debugging on their end purposes
             demisto.debug(f'x-trace-id: {resp.headers["x-trace-id"]}')
 
-        return_execution_metric('success')
+        EXECUTION_METRICS.success += 1
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
-        return_execution_metric('general_error')
-        err_msg = f'{err_operation}: {res_json.get("message")}'
-        if res_json.get("message").find('Requested sample not found') != -1:
-            raise DemistoException(err_msg)
-        elif res_json.get("message").find("AF Cookie Not Found") != -1:
-            raise DemistoException(err_msg)
-        elif err_operation == 'Tag details operation failed' and \
-                res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
-            raise DemistoException(err_msg)
-        else:
-            return return_error(err_msg)
+        EXECUTION_METRICS.general_error += 1
+        raise DemistoException(f'{err_operation}: {res_json.get("message")}')
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        return_execution_metric('general_error')
+        EXECUTION_METRICS.general_error += 1
         raise DemistoException(f'{err_operation}: {err}')
 
 
@@ -399,6 +393,8 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     data.update({'apiKey': API_KEY})
     try:
+        
+        # --- TEMP ---
         # from concurrent.futures import ThreadPoolExecutor
 
         # with ThreadPoolExecutor() as e:
@@ -425,10 +421,8 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
         )
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
-        return_execution_metric('connection_error')
+        EXECUTION_METRICS.connection_error += 1
         raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
-    if res.status_code == 503:
-        raise RateLimitExceededError(res.json())
     return parse_response(res, err_operation)
 
 
@@ -717,7 +711,7 @@ def autofocus_tag_details(tag_name):
 
 def validate_tag_scopes(private, public, commodity, unit42):
     if not private and not public and not commodity and not unit42:
-        return_error('Add at least one Tag scope by setting `commodity`, `private`, `public` or `unit42` to True')
+        raise DemistoException('Add at least one Tag scope by setting `commodity`, `private`, `public` or `unit42` to True')
 
 
 def autofocus_top_tags_search(scope, tag_class_display, private, public, commodity, unit42):
@@ -982,7 +976,7 @@ def children_list_generator(field_name, operator, val_list):
 
 def validate_no_query_and_indicators(query, arg_list):
     if query and any(arg_list):
-        return_error(
+        raise DemistoException(
             'The search command can either run a search using a custom query '
             'or use the builtin arguments, but not both'
         )
@@ -992,12 +986,12 @@ def validate_no_multiple_indicators_for_search(arg_dict):
     used_arg = None
     for arg, val in arg_dict.items():
         if val and used_arg:
-            return_error(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
+            raise DemistoException(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
                          f'{arg}. For multiple indicator types use the custom query')
         elif val:
             used_arg = arg
     if not used_arg:
-        return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
+        raise DemistoException('In order to perform a samples/sessions search, a query or an indicator must be given.')
     return used_arg
 
 
@@ -1023,16 +1017,19 @@ def search_indicator(indicator_type, indicator_value):
         result.raise_for_status()
         result_json = result.json()
 
-        return_execution_metric('success')
+        save_api_metrics(result_json)
+        EXECUTION_METRICS.success += 1
+        if result.status_code == 503:
+            raise RateLimitExceededError(result_json)
 
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
-        return_execution_metric('connection_error')
-        return_error(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
+        EXECUTION_METRICS.connection_error += 1
+        raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
 
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        return_execution_metric('general_error')
+        EXECUTION_METRICS.general_error += 1
         try:
             if demisto.params().get('handle_error', True) and result.status_code == 404:
                 return {
@@ -1047,14 +1044,14 @@ def search_indicator(indicator_type, indicator_value):
             text_error = {}
         error_message = text_error.get('message')
         if error_message:
-            return_error(f'Request Failed with status: {result.status_code}.\n'
+            raise DemistoException(f'Request Failed with status: {result.status_code}.\n'
                          f'Reason is: {error_message}.')
         elif str(result.status_code) in ERROR_DICT:
-            return_error(f'Request Failed with status: {result.status_code}.\n'
+            raise DemistoException(f'Request Failed with status: {result.status_code}.\n'
                          f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
         else:
             err_msg = f'Request Failed with message: {err}.'
-        return_error(err_msg)
+        raise DemistoException(err_msg)
 
     return result_json
 
@@ -1282,7 +1279,7 @@ def search_sessions_command(args):
 
     if time_range:
         if from_time or to_time:
-            return_error("The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' "
+            raise DemistoException("The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' "
                          "arguments.")
         else:
             from_time, to_time = time_range.split(',')
@@ -1982,11 +1979,13 @@ def main():
                 raise NotImplementedError(f'Command {command!r} is not implemented.')
 
     except RateLimitExceededError as e:
-        rerun_command_if_required(
-            e, argToBoolean(args.get('rate_limit_auto_retry', False)), command=command, args=args)
+        rerun_command_if_required(e.api_res, argToBoolean(args.get('rate_limit_auto_retry', False)), command=command, args=args)
 
     except Exception as e:
         return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
+
+    finally:
+        return_metrics()
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
