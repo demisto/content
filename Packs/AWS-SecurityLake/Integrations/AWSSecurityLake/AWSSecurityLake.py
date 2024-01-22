@@ -41,6 +41,7 @@ def parse_rows_response(rows_data: list[dict]) -> list[dict]:
 
     return result_data
 
+
 def determine_client_service_name(command: str):
     """determines the needed client service name based on the command.
 
@@ -55,6 +56,7 @@ def determine_client_service_name(command: str):
     else:
         return AWS_SERVICE_NAME
 
+
 def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_outputs: Any, page_outputs_key: str):
     """Creates a dict for CommandResults.output with the next token.
     """
@@ -63,8 +65,9 @@ def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_out
             page_outputs,
         'AWS.SecurityLake(true)': {f'{outputs_prefix}NextToken': next_token},
     }
-    
+
     return remove_empty_elements(outputs)
+
 
 def parse_table_metadata(table_metadata_list: list):
     """Parses the table metadata from the response.
@@ -80,9 +83,8 @@ Returns:
             metadata['CreateTime'] = create_time.strftime("%Y-%m-%d %H:%M:%S")
         if last_access_time := metadata.get('LastAccessTime'):
             metadata['LastAccessTime'] = last_access_time.strftime("%Y-%m-%d %H:%M:%S")
-    
-    
-    
+
+
 # --- API Call Functions --- #
 
 
@@ -151,6 +153,7 @@ def module_test_command(client) -> str | CommandResults:
     else:
         raise DemistoException(f'Error: {response}')
 
+
 @polling_function(
     name=demisto.command(),
     interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
@@ -211,6 +214,7 @@ def execute_query_command(args: dict, query_results_context_key: str, client):
         continue_to_poll=False,
     )
 
+
 def list_catalogs_command(client, args: dict):
     """Lists the data catalogs in the current Amazon Web Services account.
 
@@ -218,27 +222,27 @@ def list_catalogs_command(client, args: dict):
         client : aws client object
         args (dict): command argument - nextToken, limit, workGroup
     """
-    
+
     args_to_request = {"NextToken": args.get('next_token'),
-                        "MaxResults": arg_to_number(args.get('limit')),
-                        "WorkGroup": args.get('work_group')}
-    
-    
+                       "MaxResults": arg_to_number(args.get('limit')),
+                       "WorkGroup": args.get('work_group')}
+
     response = client.list_data_catalogs(**remove_empty_elements(args_to_request))
-    
+
     catalogs = response.get('DataCatalogsSummary')
     next_token = response.get('NextToken')
     context_output = next_token_output_dict('Catalog', next_token, catalogs, 'CatalogName')
-    
+
     return CommandResults(
         outputs=context_output,
         raw_response=response,
-        readable_output=tableToMarkdown('AWS Security Data Lake Catalogs', 
+        readable_output=tableToMarkdown('AWS Security Data Lake Catalogs',
                                         response.get('DataCatalogsSummary'),
                                         headerTransform=pascalToSpace,
                                         removeNull=True)
     )
-    
+
+
 def list_databases_command(client, args: dict):
     """Lists the databases in the specified data catalog.
     Args:
@@ -246,26 +250,26 @@ def list_databases_command(client, args: dict):
         args (dict): command argument
     """
     args_to_request = {"NextToken": args.get('next_token'),
-                        "MaxResults": arg_to_number(args.get('limit')),
-                        "WorkGroup": args.get('work_group'),
-                        "CatalogName":args.get('catalog_name')}
-    
-    
+                       "MaxResults": arg_to_number(args.get('limit')),
+                       "WorkGroup": args.get('work_group'),
+                       "CatalogName": args.get('catalog_name')}
+
     response = client.list_databases(**remove_empty_elements(args_to_request))
-    
+
     databases = response.get('DatabaseList')
     next_token = response.get('NextToken')
     context_output = next_token_output_dict('Database', next_token, databases, 'Name')
-    
+
     return CommandResults(
         outputs=context_output,
         raw_response=response,
-        readable_output=tableToMarkdown('AWS Security Data Lake Databases', 
+        readable_output=tableToMarkdown('AWS Security Data Lake Databases',
                                         response.get('DatabaseList'),
                                         headers=['Name'],
                                         headerTransform=pascalToSpace,
                                         removeNull=True)
     )
+
 
 def list_table_metadata_command(client, args: dict):
     """Lists the metadata for the tables in the specified data catalog database.
@@ -274,33 +278,33 @@ def list_table_metadata_command(client, args: dict):
         client : aws client object
         args (dict): command argument
     """
-    
+
     args_to_request = {"NextToken": args.get('next_token'),
-                        "MaxResults": arg_to_number(args.get('limit')),
-                        "WorkGroup": args.get('work_group'),
-                        "CatalogName": args.get('catalog_name'),
-                        "DatabaseName": args.get('database_name'),
-                        "Expression": args.get('expression')
-                        }
-    
+                       "MaxResults": arg_to_number(args.get('limit')),
+                       "WorkGroup": args.get('work_group'),
+                       "CatalogName": args.get('catalog_name'),
+                       "DatabaseName": args.get('database_name'),
+                       "Expression": args.get('expression')
+                       }
+
     response = client.list_table_metadata(**remove_empty_elements(args_to_request))
     parse_table_metadata(response.get('TableMetadataList'))
-    
+
     metadata_list = response.get('TableMetadataList')
     next_token = response.get('NextToken')
     context_output = next_token_output_dict('TableMetadata', next_token, metadata_list, 'Name')
-    
 
     return CommandResults(
         outputs=context_output,
         raw_response=response,
-        readable_output=tableToMarkdown('AWS Security Data Lake Databases', 
+        readable_output=tableToMarkdown('AWS Security Data Lake Databases',
                                         metadata_list,
                                         headers=['Name', 'TableType', 'Columns', 'PartitionKeys'],
                                         headerTransform=pascalToSpace,
                                         removeNull=True)
     )
-    
+
+
 def mfalogin_query_command(client, args: dict):
     """Running aws-security-lake-query-execute command with query_string:
 SELECT * FROM <{database}>.<{table}>
@@ -317,6 +321,7 @@ WHERE CAST(actor.user.name AS VARCHAR) = '{user_name}';
     result = execute_query_command(client=client, args=args, query_results_context_key='MfaLoginQueryResults')
     return result
 
+
 def source_ip_query_command(client, args: dict):
     """Running aws-security-lake-query-execute command with query_string:
 SELECT * FROM <{database}>.<{table}>
@@ -332,6 +337,7 @@ WHERE CAST(src_endpoint.ip AS VARCHAR) = '{ip_src}';
     args['query_string'] = f"SELECT * FROM {database}.{table} WHERE CAST(src_endpoint.ip AS VARCHAR) = '{ip_src}';"
     return execute_query_command(client=client, args=args, query_results_context_key='SourceIPQueryResults')
 
+
 def guardduty_activity_query_command(client, args: dict):
     """Running aws-security-lake-query-execute command with query_string:
         SELECT * FROM <{database}>.<{table}> WHERE severity = '{severity}';
@@ -346,7 +352,8 @@ def guardduty_activity_query_command(client, args: dict):
     args['query_string'] = f"SELECT * FROM {database}.{table} WHERE severity = '{severity}';"
     return execute_query_command(client=client, args=args, query_results_context_key='GuardDutyActivityQueryResults')
 
-def list_sources_command(client, args:dict):
+
+def list_sources_command(client, args: dict):
     """Retrieves a snapshot of the current Region.
 
     Args:
@@ -354,35 +361,36 @@ def list_sources_command(client, args:dict):
         args (dict): command argument
     """
     args_to_request = {"accounts": argToList(args.get('accounts')),
-                        "maxResults": arg_to_number(args.get('limit')),
-                        "nextToken": args.get('next_token')}
-    
+                       "maxResults": arg_to_number(args.get('limit')),
+                       "nextToken": args.get('next_token')}
+
     response = client.get_data_lake_sources(**remove_empty_elements(args_to_request))
-    
+
     next_token = response.get('nextToken')
     outputs = {
         'AWS.SecurityLake.DataLakeSource.DataLakeArn': response.get('dataLakeArn'),
         'AWS.SecurityLake.DataLakeSource.DataLakeSources': response.get('dataLakeSources'),
         'AWS.SecurityLake(true)': {'DataLakeSourceNextToken': next_token},
     }
-    
+
     return CommandResults(
         outputs=remove_empty_elements(outputs),
         raw_response=response,
-        readable_output=tableToMarkdown('AWS Security Data Lake Catalogs', 
+        readable_output=tableToMarkdown('AWS Security Data Lake Catalogs',
                                         response.get('dataLakeSources'),
                                         headers=['account', 'sourceName'],
                                         headerTransform=pascalToSpace,
                                         removeNull=True))
 
-def list_data_lakes_command(client, args:dict):
+
+def list_data_lakes_command(client, args: dict):
     """Retrieves the Amazon Security Lake configuration object for the specified Amazon Web Services Regions.
 
     Args:
         client : aws client object
         args (dict): command argument
     """
-    
+
     response = client.list_data_lakes(regions=argToList(args.get('regions')))
     outputs = remove_empty_elements(response.get('dataLakes'))
     return CommandResults(
@@ -390,11 +398,11 @@ def list_data_lakes_command(client, args:dict):
         outputs_key_field='dataLakeArn',
         outputs=outputs,
         raw_response=response,
-        readable_output=tableToMarkdown('AWS Security Data Lakes', 
+        readable_output=tableToMarkdown('AWS Security Data Lakes',
                                         outputs,
                                         headerTransform=pascalToSpace))
-    
-    
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -409,7 +417,7 @@ def main():  # pragma: no cover
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries', 5)
-    
+
     validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                     aws_secret_access_key)
 
@@ -421,7 +429,7 @@ def main():  # pragma: no cover
                                aws_role_policy=None, aws_access_key_id=aws_access_key_id,
                                aws_secret_access_key=aws_secret_access_key,
                                verify_certificate=verify_certificate, timeout=timeout, retries=retries)
-        
+
         service = determine_client_service_name(command=command)
 
         client = aws_client.aws_session(
@@ -436,31 +444,31 @@ def main():  # pragma: no cover
 
         if command == 'test-module':
             result = module_test_command(client)
-            
+
         elif command == 'aws-security-lake-query-execute':
-            result = execute_query_command(client=client, args=args, query_results_context_key='QueryResults') # type: ignore
-            
+            result = execute_query_command(client=client, args=args, query_results_context_key='QueryResults')  # type: ignore
+
         elif command == 'aws-security-lake-data-catalogs-list':
             result = list_catalogs_command(client=client, args=args)
-        
+
         elif command == 'aws-security-lake-databases-list':
             result = list_databases_command(client=client, args=args)
-            
+
         elif command == 'aws-security-lake-table-metadata-list':
             result = list_table_metadata_command(client=client, args=args)
-        
+
         elif command == 'aws-security-lake-user-mfalogin-query':
-            result = mfalogin_query_command(client=client, args=args) # type: ignore
-            
+            result = mfalogin_query_command(client=client, args=args)  # type: ignore
+
         elif command == 'aws-security-lake-source-ip-query':
-            result = source_ip_query_command(client=client, args=args) # type: ignore
-            
+            result = source_ip_query_command(client=client, args=args)  # type: ignore
+
         elif command == 'aws-security-lake-guardduty-activity-query':
-            result = guardduty_activity_query_command(client=client, args=args) # type: ignore
-        
+            result = guardduty_activity_query_command(client=client, args=args)  # type: ignore
+
         elif command == 'aws-security-lake-data-sources-list':
             result = list_sources_command(client=client, args=args)
-        
+
         elif command == 'aws-security-lake-data-lakes-list':
             result = list_data_lakes_command(client=client, args=args)
         else:

@@ -59,12 +59,12 @@ configuration:
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
 - name: proxy
   display: Use system proxy settings
   required: false
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
 description: "Amazon Security Lake is a fully managed security data lake service."
 display: AWS-SecurityLake
@@ -1190,7 +1190,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.83094
+  dockerimage: demisto/boto3py3:1.0.0.85857
   feed: false
   isfetch: false
 fromversion: 6.10.0
