@@ -213,9 +213,9 @@ create-content-pull-request:
 #    - python3 ./Tests/sdk_release/wait_for_release.py -b 1.25.3
     - python3 ./Tests/sdk_release/trigger_update_sdk_workflow.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -r $REVIEWER --artifacts-folder ${ARTIFACTS_FOLDER}
 #    - python3 ./Tests/sdk_release/wait_for_release_prs.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - SLACK_MESSAGE=$(head -n 1 ${ARTIFACTS_FOLDER}/CHANGELOG_SLACK.txt)
+    - SLACK_MESSAGE=$(head ${ARTIFACTS_FOLDER}/CHANGELOG_SLACK.txt)
     - echo "SLACK_MESSAGE =" $SLACK_MESSAGE
-    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t $SLACK_MESSAGE --allow-failure "${SLACK_ALLOW_FAILURE}"
+    - python3 ./Tests/scripts/gitlab_slack_notifier_copy.py -s "${SLACK_TOKEN}" -t "${SLACK_MESSAGE}" --allow-failure "${SLACK_ALLOW_FAILURE}"
     - section_end "Create content pr"
 
 
