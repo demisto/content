@@ -2,9 +2,9 @@ id: Cortex Data Lake - Traffic Indicators Hunting
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cortex Data Lake - Traffic Indicators Hunting
+name: Strata Logging Service - Traffic Indicators Hunting
 description: |
-  This playbook queries Cortex Data Lake (CDL) for traffic indicators, including IP addresses, geolocations, URLs, domains, and ports.
+  This playbook queries Strata Logging Service (SLS) for traffic indicators, including IP addresses, geolocations, URLs, domains, and ports.
 
   Note that multiple search values should be separated by commas only (without spaces or any special characters).
 starttaskid: "0"
@@ -181,8 +181,8 @@ tasks:
     task:
       id: cfb39812-c740-458c-8ce4-1add6c2f8452
       version: -1
-      name: Query Cortex Data Lake - URL Logs
-      description: Searches the Cortex Data Lake URL log table.
+      name: Query Strata Logging Service - URL Logs
+      description: Searches the Strata Logging Service URL log table.
       script: Cortex Data Lake|||cdl-query-url-logs
       type: regular
       iscommand: true
@@ -320,7 +320,7 @@ tasks:
     task:
       id: e9868ddc-0232-44c3-8d33-d28eb04caf56
       version: -1
-      name: 'Query Cortex Data Lake - Traffic Logs '
+      name: 'Query Strata Logging Service - Traffic Logs '
       description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session.
       script: Cortex Data Lake|||cdl-query-traffic-logs
       type: regular
@@ -460,7 +460,7 @@ tasks:
     task:
       id: c4b975e0-6813-4f41-8eb8-1356f90d3399
       version: -1
-      name: Query Cortex Data Lake - Threat Logs
+      name: Query Strata Logging Service - Threat Logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
       script: Cortex Data Lake|||cdl-query-threat-logs
       type: regular
@@ -783,7 +783,7 @@ tasks:
     task:
       id: c6f74ede-a9e9-464a-873f-e045e8501603
       version: -1
-      name: Query Cortex Data Lake - File Data Logs (Destination Port)
+      name: Query Strata Logging Service - File Data Logs (Destination Port)
       description: Searches the Cortex firewall.file_data table.
       script: Cortex Data Lake|||cdl-query-file-data
       type: regular
@@ -905,7 +905,7 @@ tasks:
     task:
       id: bc907ace-2f9c-48d8-81cc-927ac566faff
       version: -1
-      name: Query Cortex Data Lake - File Data Logs (Source Port)
+      name: Query Strata Logging Service - File Data Logs (Source Port)
       description: Searches the Cortex firewall.file_data table.
       script: Cortex Data Lake|||cdl-query-file-data
       type: regular
@@ -1277,7 +1277,7 @@ tasks:
     task:
       id: fd1540fd-3f9f-40ac-829d-34f8a20e5fb4
       version: -1
-      name: Query Cortex Data Lake - File Data Logs (Destination IP)
+      name: Query Strata Logging Service - File Data Logs (Destination IP)
       description: Searches the Cortex firewall.file_data table.
       script: Cortex Data Lake|||cdl-query-file-data
       type: regular
@@ -1399,7 +1399,7 @@ tasks:
     task:
       id: 4f1f374c-f02f-45e0-870a-936ca461f79b
       version: -1
-      name: Query Cortex Data Lake - File Data Logs (Source IP)
+      name: Query Strata Logging Service - File Data Logs (Source IP)
       description: Searches the Cortex firewall.file_data table.
       script: Cortex Data Lake|||cdl-query-file-data
       type: regular
@@ -1521,7 +1521,7 @@ tasks:
     task:
       id: 87c470f4-3139-42ac-8509-abbed8eaf680
       version: -1
-      name: 'Query Cortex Data Lake - Traffic Logs '
+      name: 'Query Strata Logging Service - Traffic Logs '
       description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session.
       script: Cortex Data Lake|||cdl-query-traffic-logs
       type: regular
@@ -1661,7 +1661,7 @@ tasks:
     task:
       id: e2f21be8-01f9-41b0-8eb6-a992419d7fd6
       version: -1
-      name: Query Cortex Data Lake - Threat Logs
+      name: Query Strata Logging Service - Threat Logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
       script: Cortex Data Lake|||cdl-query-threat-logs
       type: regular
@@ -1801,8 +1801,8 @@ tasks:
     task:
       id: 5f4f5430-c4b7-485f-859c-182e8837ab3f
       version: -1
-      name: Query Cortex Data Lake - URL Logs
-      description: Searches the Cortex Data Lake URL log table.
+      name: Query Strata Logging Service - URL Logs
+      description: Searches the Strata Logging Service URL log table.
       script: Cortex Data Lake|||cdl-query-url-logs
       type: regular
       iscommand: true
@@ -2164,7 +2164,7 @@ tasks:
     task:
       id: a892553b-92bc-49a3-8a6f-22956c814bc3
       version: -1
-      name: Query Cortex Data Lake - File Data Logs
+      name: Query Strata Logging Service - File Data Logs
       description: Searches the Cortex firewall.file_data table.
       script: Cortex Data Lake|||cdl-query-file-data
       type: regular
@@ -2286,8 +2286,8 @@ tasks:
     task:
       id: 182bb192-55cc-4482-8f58-56c4f687ff6a
       version: -1
-      name: Query Cortex Data Lake - URL Logs
-      description: Searches the Cortex Data Lake URL log table.
+      name: Query Strata Logging Service - URL Logs
+      description: Searches the Strata Logging Service URL log table.
       script: Cortex Data Lake|||cdl-query-url-logs
       type: regular
       iscommand: true
@@ -2607,7 +2607,7 @@ tasks:
     task:
       id: 6b92fd2f-9677-4d1e-8fa4-2444dc950a0b
       version: -1
-      name: Query Cortex Data Lake - File Data Logs (Destination Geolocation)
+      name: Query Strata Logging Service - File Data Logs (Destination Geolocation)
       description: Searches the Cortex firewall.file_data table.
       script: Cortex Data Lake|||cdl-query-file-data
       type: regular
@@ -2816,7 +2816,7 @@ tasks:
     task:
       id: 9684574b-f90e-4fc3-84a0-72c127c68597
       version: -1
-      name: Query Cortex Data Lake - File Data Logs (Source Geolocation)
+      name: Query Strata Logging Service - File Data Logs (Source Geolocation)
       description: Searches the Cortex firewall.file_data table.
       script: Cortex Data Lake|||cdl-query-file-data
       type: regular
@@ -3084,7 +3084,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination IP addresses.
+    A single or multiple IP addresses to search for within Strata Logging Service. Used for both source and destination IP addresses.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -3092,7 +3092,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for  within Cortex Data Lake.
+    Single or multiple URLs and/or domains to search for  within Strata Logging Service.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -3100,7 +3100,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple country names or codes to search for  within Cortex Data Lake. Used for both source and destination geolocations.
+    A single or multiple country names or codes to search for  within Strata Logging Service. Used for both source and destination geolocations.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -3108,7 +3108,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination ports.
+    A single or multiple IP addresses to search for within Strata Logging Service. Used for both source and destination ports.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -3124,7 +3124,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Specify the query start time at which to perform a search within Cortex Data Lake.
+    Specify the query start time at which to perform a search within Strata Logging Service.
 
     For example, start_time="2018-04-26 00:00:00"
   playbookInputQuery:
@@ -3132,7 +3132,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Specify the query end time at which to perform a search within Cortex Data Lake.
+    Specify the query end time at which to perform a search within Strata Logging Service.
 
     For example, end_time="2018-04-26 00:00:00"
   playbookInputQuery:
@@ -3150,7 +3150,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.
+    Filter network traffic logs that should be retrieved from Strata Logging Service based on firewall action.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -3158,19 +3158,19 @@ inputs:
   value: {}
   required: false
   description: |-
-    Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.
+    Filter network traffic logs to be retrieved from Strata Logging Service based on security policy rule names that the network traffic matches.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
 outputs:
 - contextPath: CDL.HuntingResults
-  description: Event log objects and fields that were retrieved from Cortex Data Lake (CDL).
+  description: Event log objects and fields that were retrieved from Strata Logging Service (SLS).
   type: string
 - contextPath: CDL.HuntingResults.TimeGenerated
   description: Time when the log was generated on the firewall's data plane.
   type: number
 - contextPath: CDL.HuntingResults.LogTime
-  description: Time the log was received in Cortex Data Lake.
+  description: Time the log was received in Strata Logging Service.
   type: number
 - contextPath: CDL.HuntingResults.IngestionTime
   description: Ingestion time of the log.
