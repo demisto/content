@@ -72,6 +72,7 @@ tasks:
         complex:
           root: inputs.ImageName
     separatecontext: false
+    reputationcalc: 1
     continueonerrortype: ""
     view: |-
       {
@@ -84,7 +85,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -328,6 +329,7 @@ tasks:
         complex:
           root: inputs.Hostname
     separatecontext: false
+    reputationcalc: 1
     continueonerrortype: ""
     view: |-
       {
@@ -340,7 +342,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
