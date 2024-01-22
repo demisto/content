@@ -82,8 +82,8 @@ tasks:
       - "21"
       - "19"
       - "9"
-      - "7"
       - "8"
+      - "7"
       - "6"
       - "4"
       - "23"
@@ -842,7 +842,21 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "1_12_yes": 0.51,
+      "1_13_yes": 0.71,
+      "1_14_yes": 0.82,
+      "1_15_yes": 0.86,
+      "1_16_yes": 0.88,
+      "1_17_yes": 0.9,
+      "1_19_yes": 0.9,
+      "1_21_yes": 0.9,
+      "1_23_yes": 0.9,
+      "1_4_yes": 0.89,
+      "1_6_yes": 0.84,
+      "1_7_yes": 0.83,
+      "1_9_yes": 0.57
+    },
     "paper": {
       "dimensions": {
         "height": 585,
