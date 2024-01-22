@@ -350,6 +350,10 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
 def terminate_chrome(browser):
     global CHROME_PROCESS
     demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
+    allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+    demisto.debug(f'{allTimeSamplingProfile=}')
+    browserSamplingProfile = tab.Memory.getBrowserSamplingProfile()
+    demisto.debug(f'{browserSamplingProfile=}')
 
     threading.excepthook = excepthook_recv_loop
 
@@ -413,6 +417,10 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 
     try:
         demisto.debug(f'Starting tab navigation to given path: {path} on {tab.id=}')
+        allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+        demisto.debug(f'{allTimeSamplingProfile=} on {tab.id=}')
+        browserSamplingProfile = tab.Memory.getBrowserSamplingProfile()
+        demisto.debug(f'{browserSamplingProfile=} on {tab.id=}')
 
         if navigation_timeout > 0:
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
@@ -428,6 +436,10 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
 
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
+        allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+        demisto.debug(f'{allTimeSamplingProfile=} on {tab.id=}')
+        browserSamplingProfile = tab.Memory.getBrowserSamplingProfile()
+        demisto.debug(f'{browserSamplingProfile=} on {tab.id=}')
         return tab_event_handler
 
     except pychrome.exceptions.TimeoutException as ex:
@@ -479,6 +491,10 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         demisto.debug(f"Screenshot image of {path=} on {tab.id=}, available after {operation_time} seconds.")
     else:
         demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available available after {operation_time} seconds.")
+    allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+    demisto.debug(f'{allTimeSamplingProfile=} on {tab.id=}')
+    browserSamplingProfile = tab.Memory.getBrowserSamplingProfile()
+    demisto.debug(f'{browserSamplingProfile=} on {tab.id=}')
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
