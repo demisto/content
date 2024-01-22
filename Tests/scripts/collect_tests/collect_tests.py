@@ -1018,7 +1018,8 @@ class BranchTestCollector(TestCollector):
 
         pack_id = find_pack_folder(path).name
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
-
+        logger.debug(f"{file_type=}")
+        logger.debug(f"{(file_type in FileType.TEST_PLAYBOOK)=}")
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             content_item_range = content_item.version_range if content_item else None
 
@@ -1030,6 +1031,8 @@ class BranchTestCollector(TestCollector):
 
             else:
                 # install pack without collecting tests.
+                logger.debug("install pack without collecting tests.")
+
                 return self._collect_pack(
                     pack_id=pack_id,
                     reason=CollectionReason.NON_CODE_FILE_CHANGED,
@@ -1038,6 +1041,8 @@ class BranchTestCollector(TestCollector):
                 )
 
         if file_type in ONLY_UPLOAD_PACK_FILE_TYPES:
+            logger.debug("ONLY_UPLOAD_PACK_FILE_TYPES")
+
             return self._collect_pack(
                 pack_id=pack_id,
                 reason=CollectionReason.README_FILE_CHANGED,
@@ -1046,6 +1051,7 @@ class BranchTestCollector(TestCollector):
             )
 
         if content_item:
+            logger.debug(f"{content_item=}")
             try:
                 '''
                 Upon reaching this part, we know the file is a content item (and not release note config, scheme, etc.)
@@ -1084,6 +1090,7 @@ class BranchTestCollector(TestCollector):
                 reason_description = f'no specific tests for {relative_path} were found'
 
         elif path.suffix == '.yml':  # file_type is often None in these cases
+            logger.debug("_collect_yml")
             return self._collect_yml(path)  # checks for containing folder (content item type)
 
         elif file_type is None:
