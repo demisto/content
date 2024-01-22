@@ -48,13 +48,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Recovery Plan
-* Eradication Plan
-* Enrichment for Verdict
+* Handle False Positive Alerts
 * Endpoint Investigation Plan
 * Containment Plan
 * Ticket Management - Generic
-* Handle False Positive Alerts
+* Eradication Plan
+* Enrichment for Verdict
+* Recovery Plan
 
 ### Integrations
 
