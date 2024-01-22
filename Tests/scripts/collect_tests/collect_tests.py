@@ -754,14 +754,13 @@ class TestCollector(ABC):
             content_item_marketplaces = DEFAULT_MARKETPLACES_WHEN_MISSING
 
         match self.marketplace:
-            case MarketplaceVersions.MarketplaceV2:
+            case MarketplaceVersions.MarketplaceV2: # TODO
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
                 # However only xsiam component files will be collected anyway in
                 # _collect_xsiam_and_modeling_pack function.
-                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
-                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
+                if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
