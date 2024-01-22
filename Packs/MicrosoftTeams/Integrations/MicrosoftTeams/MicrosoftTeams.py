@@ -2740,7 +2740,7 @@ def generate_login_url_command():
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
-and paste it in your instance configuration under the **Authorization code** parameterr.
+and paste it in your instance configuration under the **Authorization code** parameter.
     """
     return_results(CommandResults(readable_output=result_msg))
 
