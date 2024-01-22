@@ -27,6 +27,12 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- name: onprem
+  display: On-Premise 
+  type: 8
+  additionalinfo: Only use Features that are available in On-Premise installations
+  required: false
+  defaultvalue: 'false'
 - name: create_relationships
   display: Create relationships
   type: 8
@@ -879,9 +885,6 @@ script:
       defaultValue: '30'
     - name: encrypt_with_password
       description: The password with which to encrypt the analysis.
-    - name: export_to_jbxview
-      description: Whether to export the analysis to JBXView.
-      defaultValue: 'false'
     - name: email_notification
       description: Send an email notification once the analysis completes.
       defaultValue: 'false'
@@ -1141,9 +1144,6 @@ script:
       defaultValue: '30'
     - name: encrypt_with_password
       description: The password with which to encrypt the analysis.
-    - name: export_to_jbxview
-      description: Whether to export the analysis to JBXView.
-      defaultValue: 'false'
     - name: email_notification
       description: Send an email notification once the analysis completes.
       defaultValue: 'false'
@@ -1252,7 +1252,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.83426
+  dockerimage: demisto/vendors-sdk:1.0.0.86010
 fromversion: 6.8.0
 tests:
 - testplaybook- JoeSecuirtyV2
