@@ -99,6 +99,7 @@ class Client(object):
                 try:
                     data = self.get_recursively(eachres['observables']['observables'][0], 'value')
                 except Exception:
+                    demisto.debug(f'Found indicator without observable field: {eachres}')
                     continue
 
             if multi_data:
@@ -178,7 +179,7 @@ class Client(object):
                     taxii_data.append(response)
 
                     count += 1
-                    if count >= 35:
+                    if count >= arg_to_number(args.get('limit', 30)):
                         break
 
         except Exception as e:

@@ -79,7 +79,7 @@ configuration:
 - display: Indicator Fetch Limit
   name: limit
   type: 0
-  additionalinfo: Provide value to limit the indicator to be fetched per iteration
+  additionalinfo: Provide value to limit the indicator to be fetched per iteration (Limit higher than 30 is not recommended)
   required: false
 - display: Collection Name
   name: collection
