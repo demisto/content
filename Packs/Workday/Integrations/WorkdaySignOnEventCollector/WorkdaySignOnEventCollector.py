@@ -1,6 +1,9 @@
+import hashlib
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from xml.sax.saxutils import escape
+import base64
 
 import urllib3
 
@@ -97,9 +100,30 @@ class Client(BaseClient):
         super().__init__(
             base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers
         )
+
+        create_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        nonce = os.urandom(16)
+        base64_binary = base64.b64encode(nonce).decode("ascii")
+
         self.tenant_name = tenant_name
-        self.username = username
-        self.password = password
+        self.username = escape(username)
+        self.password = self.create_password_digest(nonce, password, create_time)
+        self.base64_binary = base64_binary
+        self.create_time = create_time
+
+    def create_password_digest(self, nonce: bytes, password: str, create_time: str) -> str:
+        """ Encode the password to base64 according to Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
+        Args:
+            nonce: bytes - A nonce is a random value that the sender creates to include in each UsernameToken that it sends.
+            password: str - The password.
+            create_time: str - The creation time of nonce.
+
+        Returns:
+            A digest password in base64.
+        """
+        hash_object = hashlib.sha1(nonce + create_time.encode("utf-8") + password.encode("utf-8"))  # nosec
+        digest_string = hash_object.digest()
+        return base64.b64encode(digest_string).decode("ascii")
 
     def generate_workday_account_signons_body(
         self,
@@ -133,7 +157,9 @@ class Client(BaseClient):
                     <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
                         <wsse:UsernameToken wsu:Id="UsernameToken-BF23D830F28697AA1614674076904673">
                             <wsse:Username>{self.username}</wsse:Username>
-                            <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{self.password}</wsse:Password>
+                            <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">{self.password}</wsse:Password>
+                            <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">{self.base64_binary}</wsse:Nonce>
+                            <wsu:Created>{self.create_time}</wsu:Created>
                         </wsse:UsernameToken>
                     </wsse:Security>
                 </soapenv:Header>
@@ -166,7 +192,9 @@ class Client(BaseClient):
                     <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
                         <wsse:UsernameToken wsu:Id="UsernameToken-BF23D830F28697AA1614674076904673">
                             <wsse:Username>{self.username}</wsse:Username>
-                            <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{self.password}</wsse:Password>
+                            <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">{self.password}</wsse:Password>
+                            <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">{self.base64_binary}</wsse:Nonce>
+                            <wsu:Created>{self.create_time}</wsu:Created>
                         </wsse:UsernameToken>
                     </wsse:Security>
                 </soapenv:Header>
