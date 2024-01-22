@@ -15,14 +15,14 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("-p", "--path", nargs="?", default='.',
                         help="Content directory path, default is current directory.")
     parser.add_argument("-tb", "--test-branch", nargs="?",
-                        help="The content test branch name to create and test on.")
+                        help="The content test branch name to delete.")
     parser.add_argument("-g", "--gitlab-token",
                         help="Gitlab token for deleting the test branch.")
     return parser.parse_args()
 
 
 def main():
-    install_logging('create_test_branch.log', logger=logging)
+    install_logging('delete_test_branch.log', logger=logging)
 
     args = parse_arguments()
     repo = Repo(args.path)
