@@ -690,7 +690,7 @@ def rasterize_image_command():
 
     with open(file_path, 'rb') as f:
         output, _ = perform_rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
-                              rasterize_type=RasterizeType.PDF, full_screen=full_screen)
+                                      rasterize_type=RasterizeType.PDF, full_screen=full_screen)
         res = []
         for current_output in output:
             res.append(fileResult(filename=file_name, data=current_output, file_type=entryTypes['entryInfoFile']))
@@ -714,7 +714,7 @@ def rasterize_email_command():  # pragma: no cover
     path = f'file://{os.path.realpath(f.name)}'
 
     rasterize_output, _ = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
-                                    offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
+                                            offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=rasterize_output[0])
 
@@ -795,7 +795,7 @@ def rasterize_html_command():
     os.rename(f'./{file_path}', 'file.html')
 
     output, _ = perform_rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
-                          rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
+                                  rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=output[0])
     if rasterize_type == 'png':
@@ -834,8 +834,8 @@ def rasterize_command():  # pragma: no cover
     file_name = f'{file_name}.{file_extension}'  # type: ignore
 
     rasterize_output, response_body = perform_rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
-                                                navigation_timeout=navigation_timeout, include_url=include_url,
-                                                full_screen=full_screen)
+                                                        navigation_timeout=navigation_timeout, include_url=include_url,
+                                                        full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
 
     if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
