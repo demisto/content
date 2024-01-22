@@ -62,7 +62,7 @@ def main():
 
     try:
         response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
+            channel=computed_slack_channel, text=title, username=SLACK_USERNAME
         )
         link = build_link_to_message(response)
         logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
