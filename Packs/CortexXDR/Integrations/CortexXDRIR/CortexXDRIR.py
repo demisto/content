@@ -4,6 +4,7 @@ import hashlib
 import secrets
 import string
 from itertools import zip_longest
+from urllib.error import HTTPError
 
 from CoreIRApiModule import *
 
@@ -652,6 +653,21 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
+def api_call_try(client, args):
+    demisto.debug('MAI BELLE before try')
+    try:
+        raw_incident = client.get_multiple_incidents_extra_data(args.get('incident_id'))
+        demisto.info(f'MAI BELLE MAI after new api call{raw_incident} ')
+        use_get_incident_extra_data = int(raw_incident.get('incident', {}).get('replay',{}).get('alert_count')) > \
+                                      int(raw_incident.get('incident', {}).get('replay',{}).get('number_in_config'))
+        return raw_incident, use_get_incident_extra_data
+    except HTTPError as e:
+        demisto.debug(f'MAI BELLE The api call using get_multiple_incidents_extra_data got internal error, switching to\
+            the old call {e}')
+        return {}, False
+
+
+
 def get_incident_extra_data_command(client, args):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
@@ -666,19 +682,24 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-
+    # raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident = client.get_multiple_incidents_extra_data(incident_id)
-    if len(raw_incident.get('incident', {}).get('incident_id').get('alerts').get('data')) >=50:
+    raw_incident ,use_get_incident_extra_data = api_call_try(client,args) 
+    demisto.debug(f'MAI BELLE Mai bool{use_get_incident_extra_data}  raw {raw_incident}')
+    
+    demisto.debug('MAI BELLE Mai after try- except ') 
+    if  not use_get_incident_extra_data:
+        demisto.debug('MAI OLD call')
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-    incident = raw_incident.get('incident')
-    incident_id = incident.get('incident_id')
-    raw_alerts = raw_incident.get('alerts').get('data')
+        demisto.debug(f'MAI after OLD api call{raw_incident}' )
+    incident = raw_incident.get('incident', {})
+    incident_id = incident.get('incident_id' , {})
+    raw_alerts = raw_incident.get('alerts', {}).get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
         alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    file_artifacts = raw_incident.get('file_artifacts').get('data')
-    network_artifacts = raw_incident.get('network_artifacts').get('data')
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
 
     readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
 
@@ -1253,7 +1274,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-
+    
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
@@ -1276,7 +1297,6 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
-
     try:
         if command == 'test-module':
             client.test_module(first_fetch_time)
