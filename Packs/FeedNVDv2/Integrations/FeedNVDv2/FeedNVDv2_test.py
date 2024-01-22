@@ -88,7 +88,7 @@ def test_retrieve_cves_command():
       'proxy': 'False',
       'feedTags': '',
       'apiKey': {'identifier': '',
-                      'password': '380c5f21-2256-47b8-a43a-6080e445cf39'}
+                'password': '380c5f21-2256-47b8-a43a-6080e445cf39'}
     }
     client = BaseClient(
         base_url=BASE_URL,
@@ -102,6 +102,6 @@ def test_retrieve_cves_command():
     assert all(item in indicator[0] for item in response[0]), "Indicator dictionary does not match expected response"
 
 
-""" if __name__ in ('__main__', '__builtin__', 'builtins'):
+"""if __name__ in ('__main__', '__builtin__', 'builtins'):
     # test_parse_cpe_command()
     test_retrieve_cves_command()"""

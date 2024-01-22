@@ -197,7 +197,7 @@ def retrieve_cves_command(client, params, test_run):
                 if not test_run:
                     res = client._http_request('GET', url, params=param, headers=headers, timeout=300)
                 else:
-                    with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cve_data.json', encoding='utf-8') as f:
+                    with open('./test_data/test_cve_data.json', encoding='utf-8') as f:
                         res = json.loads(f.read())
                 # Check to see if there are any errors
                 if "error" in res:
