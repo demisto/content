@@ -250,7 +250,11 @@ class CollectionResult:
                         )
                 test_marketplaces = conf.tests_to_marketplace_set[test]  # type: ignore[union-attr]
                 logger.debug(f"{test_marketplaces=}, {conf.marketplace=}") # TODO
-                if test_marketplaces and (conf.marketplace not in test_marketplaces):  # type: ignore[union-attr]
+                if test_marketplaces and (
+                    (conf.marketplace not in test_marketplaces) or
+                    # For XSIAM machines we collect tests that have not xsoar marketplace.
+                    # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces, will run on xsiam machines only.
+                    (MarketplaceVersions.MarketplaceV2 in test_marketplaces and MarketplaceVersions.XSOAR in test_marketplaces)):
                     raise IncompatibleTestMarketplaceException(test_name=test,
                                                                test_marketplaces=test_marketplaces,
                                                                expected_marketplace=conf.marketplace)  # type: ignore[union-attr]
@@ -757,6 +761,7 @@ class TestCollector(ABC):
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
+                # TODO - remove comment?
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
