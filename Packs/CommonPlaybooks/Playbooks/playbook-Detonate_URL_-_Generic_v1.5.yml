@@ -46,7 +46,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 170
         }
       }
     note: false
@@ -72,7 +72,22 @@ tasks:
       '#default#':
       - "20"
       "yes":
-      - "2"
+      - "22"
+      - "12"
+      - "13"
+      - "14"
+      - "15"
+      - "16"
+      - "17"
+      - "21"
+      - "19"
+      - "9"
+      - "7"
+      - "8"
+      - "6"
+      - "4"
+      - "3"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -88,59 +103,13 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 180
+          "y": 320
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 3868d472-e5f4-4714-8c58-5c8f95d6b626
-    type: title
-    task:
-      id: 3868d472-e5f4-4714-8c58-5c8f95d6b626
-      version: -1
-      name: Detonate URL - VirusTotal (API v3)
-      description: Detonate URL through VirusTotal (API v3) integration.
-      playbookId: Detonate URL - VirusTotal (API v3)
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-      - "4"
-      - "6"
-      - "7"
-      - "8"
-      - "9"
-      - "12"
-      - "13"
-      - "14"
-      - "15"
-      - "16"
-      - "17"
-      - "19"
-      - "21"
-      - "22"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -880,17 +849,53 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 156ee7d3-6235-4011-85fe-32e8d2154de1
+    type: regular
+    task:
+      id: 156ee7d3-6235-4011-85fe-32e8d2154de1
+      version: -1
+      name: Detonate URL - JoeSecurity
+      description: Submit an URL for sandbox analysis.
+      script: '|||joe-submit-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2490,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "1_2_yes": 0.47
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 705,
-        "width": 6250,
-        "x": -2060,
-        "y": 50
+        "height": 585,
+        "width": 6680,
+        "x": -2490,
+        "y": 170
       }
     }
   }
