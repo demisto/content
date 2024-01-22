@@ -2,7 +2,6 @@ category: Endpoint
 commonfields:
   id: AMPv2
   version: -1
-  test: test
 configuration:
 - defaultvalue: https://api.amp.cisco.com
   display: Server URL
