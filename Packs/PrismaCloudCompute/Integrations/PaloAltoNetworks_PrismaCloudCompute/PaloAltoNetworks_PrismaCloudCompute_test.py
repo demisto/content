@@ -1787,7 +1787,8 @@ def test_archive_audit_incident_command(mocker, action, response):
     When:
         - Calling 'prisma-cloud-archive-audit-incident' command
     Then:
-        - Ensure the outputs of the archive action are correct
+        - Ensure the outputs of the archive action are "incident was successfully archived"
+          when action is unarchive "incident was successfully unarchived"
     """
 
     from PaloAltoNetworks_PrismaCloudCompute import archive_audit_incident_command, PrismaCloudComputeClient

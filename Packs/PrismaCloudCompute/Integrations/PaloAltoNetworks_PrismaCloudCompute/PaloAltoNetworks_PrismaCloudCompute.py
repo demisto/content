@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib.parse
@@ -2535,16 +2537,9 @@ def archive_audit_incident_command(client: PrismaCloudComputeClient, args: dict)
             string: A string that indicates success or failure
     """
     incident_id = args.get("incident_id") or ""
-    if args.get("action") == "archive":
-        data = '{"acknowledged": true}'
-    else:
-        data = '{"acknowledged": false}'
-
-    client.archive_audit_incident(incident_id=incident_id, data=data)
-    if "true" in data:
-        return f'Incident {incident_id} was successfully archived'
-    else:
-        return f'Incident {incident_id} was successfully unarchived'
+    data = {'acknowledged': True if args.get("action") == "archive" else False}
+    client.archive_audit_incident(incident_id=incident_id, data=json.dumps(data))
+    return f'Incident {incident_id} was successfully  {"archived" if args.get("action") == "archive" else "unarchived"}'
 
 
 def get_host_audit_list_command(client: PrismaCloudComputeClient, args: dict) -> CommandResults:

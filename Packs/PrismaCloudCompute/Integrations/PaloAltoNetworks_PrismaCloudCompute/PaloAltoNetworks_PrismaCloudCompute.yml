@@ -2743,10 +2743,6 @@ script:
           - "archive"
           - "unarchive"
         defaultValue: "archive"
-    outputs:
-      - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.test
-        description: The operating system of the container.
-        type: String
   - name: prisma-cloud-compute-runtime-host-audit-events-list
     description: Retrieves the runtime host audit events.
     arguments:
