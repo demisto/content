@@ -120,7 +120,7 @@ def retrieve_cves_command(client, params, test_run):
     has_kev = params.get('hasKev') or None  # type: ignore
     s_date = params.get('start_date')
     try:
-        datetime.date.fromisoformat(s_date)  # type: ignore
+        datetime.date.fromisoformat(str(s_date))  # type: ignore
     except ValueError:
         return_error("Incorrect date format specified. Should be in the format of YYYY-MM-DD")
     start_date = datetime.datetime.strptime(s_date, "%Y-%m-%d")  # type: ignore[attr-defined]
@@ -187,12 +187,12 @@ def retrieve_cves_command(client, params, test_run):
 
         # Collect all the indicators together
         while iteration_count < total_results:
-            demisto.debug(f'\n\nlastModStartDate: {last_mod_start_date.strftime(DATE_FORMAT)}'
+            demisto.debug(print(f'\n\nlastModStartDate: {last_mod_start_date.strftime(DATE_FORMAT)}'
                           + f'\nlastModEndDate: {last_mod_end_date.strftime(DATE_FORMAT)}'
                           + f'\nFetch Iteration: {str(iteration)}' + '\nIteration Count: '
                           + f'{str(iteration_count)}\nTotal Results for Iteration: '
                           + f'{str(total_results)}\nCurrent Total Fetched Indicator Count: '
-                          + f'{str(total_items)}\n\n')
+                          + f'{str(total_items)}\n\n'))
             try:
                 if not test_run:
                     res = client._http_request('GET', url, params=param, headers=headers, timeout=300)
@@ -338,12 +338,12 @@ def process_cves_command(params, cve_list, test_run):
 
     if test_run:
         return indicators
+    else:
+        demisto.debug(f'First CVE of run: {str(indicators[0]["value"])}'
+                    + f'\nLast CVE of run: {str(indicators[-1]["value"])}')
 
-    demisto.debug(f'First CVE of run: {str(indicators[0]["value"])}'
-                  + f'\nLast CVE of run: {str(indicators[-1]["value"])}')
-
-    demisto.createIndicators(indicators)
-    return None
+        demisto.createIndicators(indicators)
+        return None
 
 
 def fetch_indicators_command(client, params):
