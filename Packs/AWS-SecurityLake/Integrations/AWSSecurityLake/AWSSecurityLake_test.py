@@ -3,7 +3,7 @@ import importlib
 import json
 from pathlib import Path
 
-AWSSecurityLake = importlib.import_module("AWS-SecurityLake")
+AWSSecurityLake = importlib.import_module("AWSSecurityLake")
 
 
 class MockClient:
@@ -117,8 +117,8 @@ QUEYRY_COMMANDS = [(AWSSecurityLake.mfalogin_query_command,
                     "SELECT * FROM test_db.test_table WHERE CAST(src_endpoint.ip AS VARCHAR) = '1234';",
                     'SourceIPQueryResults'),
                    (AWSSecurityLake.guardduty_activity_query_command,
-                    {"database": "test_db", "table": "test_table", "severity": "1"},
-                    "SELECT * FROM test_db.test_table WHERE severity = '1';",
+                    {"database": "test_db", "table": "test_table", "severity": "5-Critical"},
+                    "SELECT * FROM test_db.test_table WHERE severity = 'Critical';",
                     'GuardDutyActivityQueryResults')]
 
 
