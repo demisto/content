@@ -67,7 +67,29 @@ def test_retrieve_cves_command():
     Returns:
         Assertions if the returned parsed indicator doesn't match the sample data
     """
-    params = demisto.params()
+    params = {
+      'cpeName': None,
+      'cvssV2Metrics': None,
+      'cvssV2Severity': None,
+      'cvssV3Metrics': None,
+      'cvssV3Severity': None,
+      'hasCertAlerts': False,
+      'hasKev': False,
+      'isVulnerable': False,
+      'keywordSearch': None,
+      'keywordExactMatch': False,
+      'lastModStartDate': None,
+      'lastModEndDate': None,
+      'pubStartDate': None,
+      'pubEndDate': None,
+      'noRejected': None,
+      'start_date': '1999-07-01',
+      'insecure': 'True',
+      'proxy': 'False',
+      'feedTags': '',
+      'apiKey': {'identifier': '',
+                      'password': '380c5f21-2256-47b8-a43a-6080e445cf39'}
+    }
     client = BaseClient(
         base_url=BASE_URL,
         verify=False,
