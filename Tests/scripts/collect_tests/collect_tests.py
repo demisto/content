@@ -254,7 +254,8 @@ class CollectionResult:
                     (conf.marketplace not in test_marketplaces) or
                     # For XSIAM machines we collect tests that have not xsoar marketplace.
                     # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces, will run on xsiam machines only.
-                    (MarketplaceVersions.MarketplaceV2 in test_marketplaces and MarketplaceVersions.XSOAR in test_marketplaces)):
+                    (conf.marketplace == MarketplaceVersions.MarketplaceV2 and
+                     (MarketplaceVersions.MarketplaceV2 in test_marketplaces and MarketplaceVersions.XSOAR in test_marketplaces))):  # noqa: E501
                     raise IncompatibleTestMarketplaceException(test_name=test,
                                                                test_marketplaces=test_marketplaces,
                                                                expected_marketplace=conf.marketplace)  # type: ignore[union-attr]
