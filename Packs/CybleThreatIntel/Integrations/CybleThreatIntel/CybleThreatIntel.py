@@ -179,7 +179,7 @@ class Client(object):
                     taxii_data.append(response)
 
                     count += 1
-                    if count >= arg_to_number(args.get('limit', 30)):
+                    if count == arg_to_number(args.get('limit', 30)):
                         break
 
         except Exception as e:

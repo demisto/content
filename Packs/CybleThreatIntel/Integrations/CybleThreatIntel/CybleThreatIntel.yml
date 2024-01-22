@@ -117,7 +117,7 @@ script:
     arguments:
     - name: limit
       description: Number of records to fetch. Using a smaller limit will get faster responses.
-      defaultValue: "50"
+      defaultValue: "30"
     - name: begin
       description: 'Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S)).'
     - name: end
