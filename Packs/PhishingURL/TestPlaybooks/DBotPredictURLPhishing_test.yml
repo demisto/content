@@ -274,7 +274,7 @@ tasks:
     task:
       id: 1a11e5e7-62fd-46c9-834b-b57b74c87f1e
       version: -1
-      name: Apply URL Phishing savey.co.il
+      name: Apply URL Phishing website.com
       description: Predict phishing URLs using pre-trained model.
       scriptName: DBotPredictURLPhishing
       type: regular
@@ -285,7 +285,7 @@ tasks:
       - "9"
     scriptarguments:
       urls:
-        simple: savey.co.il
+        simple: website.com
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -309,7 +309,7 @@ tasks:
     task:
       id: b2f274e2-618d-4725-855e-aa73b1e152fa
       version: -1
-      name: Verify prediction savey.co.il
+      name: Verify prediction website.com
       type: condition
       iscommand: false
       brand: ""
