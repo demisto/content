@@ -52,82 +52,82 @@ name: IRIS DFIR
 script:
   commands:
   - arguments: []
-    description: IRIS Command to get the last case information
+    description: IRIS Command to get the last case information.
     name: iris-get-last-case-id
     outputs:
     - contextPath: IRIS.case_soc_id
-      description: SOC ID ticket case
+      description: SOC ID ticket case.
       type: string
     - contextPath: IRIS.case_id
-      description: case ID ticket number
+      description: case ID ticket number.
       type: number
     - contextPath: IRIS.case_description
-      description: case description
+      description: case description.
       type: string
     - contextPath: IRIS.opened_by
-      description: case opened by
+      description: case opened by.
     - contextPath: IRIS.owner
-      description: case owner
+      description: case owner.
     - contextPath: IRIS.classification_id
-      description: case classification ID
+      description: case classification ID.
       type: number
     - contextPath: IRIS.state_name
-      description: case state name
+      description: case state name.
       type: string
     - contextPath: IRIS.case_open_date
-      description: case open date
+      description: case open date.
     - contextPath: IRIS.case_name
-      description: case name
+      description: case name.
       type: string
     - contextPath: IRIS.client_name
-      description: case client name
+      description: case client name.
       type: string
     - contextPath: IRIS.classification
-      description: case classification
+      description: case classification.
       type: string
     - contextPath: IRIS.case_uuid
-      description: case uuid
+      description: case uuid.
       type: string
     - contextPath: IRIS.state_id
-      description: case state ID
+      description: case state ID.
       type: string
     - contextPath: IRIS.access_level
-      description: case access level
+      description: case access level.
       type: string
   - arguments: []
-    description: Return a list of all IRIS DFIR cases
+    description: Return a list of all IRIS DFIR cases.
     name: iris-get-all-cases
     outputs:
     - contextPath: IRIS.case_soc_id
-      description: SOC ID ticket case
+      description: SOC ID ticket case.
     - contextPath: IRIS.case_id
-      description: case ID ticket number
+      description: case ID ticket number.
       type: number
     - contextPath: IRIS.case_description
-      description: case description
+      description: case description.
     - contextPath: IRIS.opened_by
-      description: case opened by
+      description: case opened by.
     - contextPath: IRIS.owner
-      description: case owner
+      description: case owner.
     - contextPath: IRIS.classification_id
-      description: case classification ID
+      description: case classification ID.
       type: number
     - contextPath: IRIS.state_name
-      description: case state name
+      description: case state name.
     - contextPath: IRIS.case_open_date
-      description: case open date
+      description: case open date.
     - contextPath: IRIS.case_name
-      description: case name
+      description: case name.
     - contextPath: IRIS.client_name
-      description: case client name
+      description: case client name.
     - contextPath: IRIS.classification
-      description: case classification
+      description: case classification.
     - contextPath: IRIS.case_uuid
-      description: case uuid
+      description: case uuid.
     - contextPath: IRIS.state_id
-      description: case state ID
+      description: case state ID.
     - contextPath: IRIS.access_level
-      description: case access level
+      description: case access level.
   - arguments:
     - description: Provide Case ID.
       name: case_id
@@ -137,40 +137,40 @@ script:
     name: iris-close-case-id
     outputs:
     - contextPath: IRIS.case_name
-      description: case name
+      description: case name.
     - contextPath: IRIS.case_soc_id
-      description: case soc ID
+      description: case soc ID.
     - contextPath: IRIS.open_date
-      description: case open date
+      description: case open date.
     - contextPath: IRIS.close_date
-      description: case close date
+      description: case close date.
   - arguments:
-    - description: case ID
+    - description: case ID.
       name: case_id
     description: Reopen a specific case by ID.
     name: iris-reopen-case-id
     outputs:
     - contextPath: IRIS.case_soc_id
-      description: case soc ID
+      description: case soc ID.
     - contextPath: IRIS.case_id
-      description: case ID
+      description: case ID.
     - contextPath: IRIS.close_date
-      description: case close date
+      description: case close date.
     - contextPath: IRIS.open_date
-      description: case open date
+      description: case open date.
     - contextPath: IRIS.case_name
-      description: case name
+      description: case name.
     - contextPath: IRIS.closing_note
-      description: case closing note
+      description: case closing note.
   - arguments:
-    - description: Case ID
+    - description: Case ID.
       name: case_id
       required: true
-    - description: Case name
+    - description: Case name.
       name: case_name
       required: true
     - auto: PREDEFINED
-      description: Case state
+      description: Case state.
       name: case_state
       predefined:
       - In progress
@@ -182,44 +182,44 @@ script:
       - Reporting
       - Closed
       required: true
-    description: Change case state status
+    description: Change case state status.
     name: iris-change-case-state
     outputs:
     - contextPath: IRIS.case_id
-      description: Case ID
+      description: Case ID.
       type: number
     - contextPath: IRIS.case_name
-      description: Case name
+      description: Case name.
       type: string
     - contextPath: IRIS.case_state
-      description: Case state
+      description: Case state.
       type: string
   - arguments:
-    - description: Case ID
+    - description: Case ID.
       name: case_id
       required: true
-    - description: Notes group tittle
+    - description: Notes group tittle.
       name: group_title
       required: true
-    description: Creates notes group
+    description: Creates notes group.
     name: iris-create-notes-group
   - arguments:
-    - description: Case ID
+    - description: Case ID.
       name: case_id
       required: true
-    - description: Note tittle
+    - description: Note tittle.
       name: note_title
       required: true
-    - description: Note content
+    - description: Note content.
       name: note_content
       required: true
-    - description: Group ID
+    - description: Group ID.
       name: group_id
       required: true
     description: Add a new note to an existing group.
     name: iris-add-new-note-to-group
   - arguments:
-    - description: Case ID
+    - description: Case ID.
       name: case_id
       required: true
     description: Get a list of the notes and groups.
@@ -269,6 +269,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 6.9.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
