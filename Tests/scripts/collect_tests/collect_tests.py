@@ -554,7 +554,7 @@ class TestCollector(ABC):
             # we do want to install packs in this case (tests are not collected in this case anyway)
             logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
                         f'collecting to make sure it is installed properly.')
-        except IncompatibleMarketplaceException:
+        except IncompatibleMarketplaceException: # todo
             is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
                 MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
 
@@ -761,9 +761,7 @@ class TestCollector(ABC):
                 # will run on xsiam machines only.
                 # However only xsiam component files will be collected anyway in
                 # _collect_xsiam_and_modeling_pack function.
-                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
-                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
-                    logger.debug(f"test")
+                if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
@@ -1012,7 +1010,7 @@ class BranchTestCollector(TestCollector):
         try:
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
-        except IncompatibleMarketplaceException:
+        except IncompatibleMarketplaceException: # TODO
             if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
                 raise
         except NonDictException:
