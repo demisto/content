@@ -5,7 +5,7 @@ args:
   name: Keyword
   required: true
 comment: |-
-  Retrieve a list of keywords containing given substring for a given list of json objects
+   Retrieve a list dict objects that have values that contain given substring for a given list of json objects
   [
       {
       "folder": "abc",
