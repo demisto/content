@@ -20,9 +20,7 @@ SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
-    parser.add_argument('-t', '--message_title', help='The message title', required=True)
-    parser.add_argument('-c', '--color', help='The message block color(good/danger/warning)')
-    parser.add_argument('-l', '--link', help='The title link')
+    parser.add_argument('-t', '--message_text', help='The message text', required=True)
     parser.add_argument(
         '-ch', '--slack_channel', help='The slack channel in which to send the notification', default=CONTENT_CHANNEL
     )
@@ -45,24 +43,16 @@ def main():
     options = options_handler()
     computed_slack_channel = options.slack_channel
     slack_token = options.slack_token
-    title = options.message_title
-    color = options.color
-    link = options.link
+    text = options.message_text
 
     slack_client = WebClient(token=slack_token)
 
     logging.info(f"Sending Slack message to slack channel:{computed_slack_channel}, "
                  f"allowing failure:{options.allow_failure}")
 
-    slack_msg_data = [{
-        'color': color,
-        'title': title,
-        'title_link': link
-    }]
-
     try:
         response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, text=title, username=SLACK_USERNAME
+            channel=computed_slack_channel, text=text, username=SLACK_USERNAME
         )
         link = build_link_to_message(response)
         logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
