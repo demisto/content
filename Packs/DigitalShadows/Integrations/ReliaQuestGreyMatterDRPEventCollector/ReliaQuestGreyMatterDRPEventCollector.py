@@ -53,11 +53,11 @@ class ReilaQuestClient(BaseClient):
             )
             json_response = response.json()
             if response.status_code == 429:
-                rate_limit_error = f'Rate-limit when running http-request to {url_suffix} with params {params}, error: {json_response}, ' \
-                                   f'sleeping for 60 seconds to let the api recover'
+                rate_limit_error = f'Rate-limit when running http-request to {url_suffix} with params {params}, error: {json_response}'
                 demisto.error(rate_limit_error)
                 if retry_after := dateparser.parse(json_response.get("retry-after")):
-                    while datetime.now() > retry_after:
+                    demisto.debug(f'now: {datetime.now(timezone.utc).astimezone()}, retry-after: {retry_after}')
+                    while datetime.now(timezone.utc).astimezone() > retry_after:
                         demisto.debug(f'Waiting to recover from ratelimit, sleeping for 1 second')
                         time.sleep(1)
 

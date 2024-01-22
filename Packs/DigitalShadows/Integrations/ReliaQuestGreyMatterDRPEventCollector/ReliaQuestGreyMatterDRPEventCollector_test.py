@@ -1,12 +1,12 @@
-import requests
 
 from CommonServerPython import *
 
-import json
 import pytest
 import hashlib
 from ReliaQuestGreyMatterDRPEventCollector import DATE_FORMAT, ReilaQuestClient
 import json
+from freezegun import freeze_time
+from ReliaQuestGreyMatterDRPEventCollector import FOUND_IDS_LAST_RUN
 
 TEST_URL = "https://test.com/api"
 
@@ -21,7 +21,7 @@ def client() -> ReilaQuestClient:
     )
 
 
-def create_mocked_response(response: List[Dict], status_code: int = 200) -> requests.Response:
+def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) -> requests.Response:
     mocked_response = requests.Response()
     mocked_response._content = json.dumps(response).encode('utf-8')
     mocked_response.status_code = status_code
@@ -99,6 +99,17 @@ def create_assets(assets: List[Dict]) -> requests.Response:
 
 
 def test_the_test_module(requests_mock, client: ReilaQuestClient):
+    """
+    Given:
+     - a single event
+     - api returns 200 ok
+
+    When:
+     - running test-module
+
+    Then:
+     - make sure the test is successful.
+    """
     from ReliaQuestGreyMatterDRPEventCollector import test_module
     requests_mock.get(
         f"{TEST_URL}/triage-item-events?limit=1",
@@ -107,9 +118,46 @@ def test_the_test_module(requests_mock, client: ReilaQuestClient):
     assert test_module(client) == "ok"
 
 
+@freeze_time("2020-09-24T16:30:10.016Z")
+def test_http_request_rate_limits(mocker, client: ReilaQuestClient):
+    """
+    Given:
+     - api rate limit reached
+     - api informs to try a resend the request after a milisecond
+     - second api response 200 ok
+
+    When:
+     - running http_request
+
+    Then:
+     - make sure the response is returned properly
+    """
+    mocked_responses = [
+        create_mocked_response({"retry-after": "2020-09-24T16:30:10.017Z"}, status_code=429),
+        create_mocked_response([{"test": "test"}])
+    ]
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=mocked_responses
+    )
+    assert client.http_request("suffix") == [{"test": "test"}]
+
+
 class TestFetchEvents:
 
-    def test_fetch_events_no_last_run_single_iteration_sanity_test(self, client: ReilaQuestClient, mocker):
+    def test_fetch_events_no_last_run_single_iteration_sanity_test(self, mocker, client: ReilaQuestClient):
+        """
+        Given:
+         - 100 events
+         - no last run
+
+        When:
+         - running the entire fetch-events flow
+
+        Then:
+         - make sure the events are enriched as expected
+        """
         from ReliaQuestGreyMatterDRPEventCollector import fetch_events
         events_response, events = create_triage_items_events(100, start_time="2020-09-24T16:30:10.016Z")
         triaged_alerts = create_triage_items_from_events(events[0:50], item_type="alert-id")
@@ -146,6 +194,7 @@ class TestFetchEvents:
 
         events, last_run = fetch_events(client, last_run={})
 
+        assert last_run[FOUND_IDS_LAST_RUN] == [100]
         for event in events[0:50]:
             assert event["triage-item"]
             assert event["alert"]
@@ -155,3 +204,5 @@ class TestFetchEvents:
             assert event["triage-item"]
             assert event["incident"]
             assert event["assets"]
+
+    def test_fetch_events_no_last_run_single_iteration_sanity_test(self, mocker, client: ReilaQuestClient):
