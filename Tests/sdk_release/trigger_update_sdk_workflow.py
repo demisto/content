@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
         ':alert: Please run in the terminal\n' \
         '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/demisto/content ~/dev/demisto/demisto-sdk`\n' \
-        'Change log```{}```'
+        'Change log\n```\n{}\n```'
 
 
 def options_handler():
