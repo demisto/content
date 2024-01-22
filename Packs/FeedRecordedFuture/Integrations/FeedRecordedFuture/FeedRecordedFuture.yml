@@ -149,7 +149,7 @@ configuration:
   name: suspicious_threshold
   type: 0
   required: false
-- additionalinfo: If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR.
+- additionalinfo: If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR. Scores greater than the IOC Risk Score Threshold and less than the Suspicious Threshold will have an unknown verdict.
   defaultvalue: '0'
   display: IOC Risk Score Threshold
   name: risk_score_threshold
