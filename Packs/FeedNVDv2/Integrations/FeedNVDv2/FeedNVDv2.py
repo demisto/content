@@ -120,7 +120,7 @@ def retrieve_cves_command(client, params, test_run):
     has_kev = params.get('hasKev') or None  # type: ignore
     s_date = params.get('start_date')
     try:
-        datetime.date.fromisoformat(s_date)  # type: ignore[attr-defined]
+        datetime.date.fromisoformat(s_date)  # type: ignore
     except ValueError:
         return_error("Incorrect date format specified. Should be in the format of YYYY-MM-DD")
     start_date = datetime.datetime.strptime(s_date, "%Y-%m-%d")  # type: ignore[attr-defined]
