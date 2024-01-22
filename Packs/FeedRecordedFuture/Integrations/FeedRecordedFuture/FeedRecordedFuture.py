@@ -85,6 +85,10 @@ class Client(BaseClient):
         self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
         self.tags = tags
         self.tlp_color = tlp_color
+
+        if self.malicious_threshold <= self.suspicious_threshold:
+            raise DemistoException('The Suspicious Threshold must be less than the Malicious Threshold.')
+        
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
 
     def _build_request(self, service, indicator_type, risk_rule: str | None = None) -> requests.PreparedRequest:
@@ -264,9 +268,6 @@ class Client(BaseClient):
         Returns:
             int. The indicator's Dbot score
         """
-
-        if self.malicious_threshold <= self.suspicious_threshold:
-            raise DemistoException('The Suspicious Threshold must be less than the Malicious Threshold.')
         risk_from_feed = int(risk_from_feed)
         if risk_from_feed >= self.malicious_threshold:
             dbot_score = 3
