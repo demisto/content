@@ -86,7 +86,6 @@ tasks:
       - "8"
       - "6"
       - "4"
-      - "3"
       - "23"
     separatecontext: false
     conditions:
@@ -104,52 +103,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 320
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 7631e811-c7ae-4c2b-895b-793922894b45
-    type: playbook
-    task:
-      id: 7631e811-c7ae-4c2b-895b-793922894b45
-      version: -1
-      name: Check if URL exists
-      description: Checks if there is a URL to detonate.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      URL:
-        complex:
-          root: inputs.URL
-          transformers:
-          - operator: uniq
-      interval:
-        simple: "10"
-      timeout:
-        simple: "60"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -2060,
-          "y": 510
         }
       }
     note: false
@@ -876,7 +829,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2490,
+          "x": -2060,
           "y": 510
         }
       }
@@ -893,8 +846,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 585,
-        "width": 6680,
-        "x": -2490,
+        "width": 6250,
+        "x": -2060,
         "y": 170
       }
     }
