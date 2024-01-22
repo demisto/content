@@ -1,0 +1,28 @@
+{
+    "fromVersion": "5.0.0",
+    "autorun": true,
+    "color": "#01A2EC",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "IRIS_DFIR_Incidents",
+    "layout": "IRIS_incident_layout",
+    "locked": false,
+    "name": "IRIS_DFIR_Incidents",
+    "onChangeRepAlg": 0,
+    "playbookId": "IrisGetCase",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0
+}
