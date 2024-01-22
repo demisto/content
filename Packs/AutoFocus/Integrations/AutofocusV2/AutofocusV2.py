@@ -399,6 +399,23 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     data.update({'apiKey': API_KEY})
     try:
+        # from concurrent.futures import ThreadPoolExecutor
+
+        # with ThreadPoolExecutor() as e:
+        #     for i in e.map(
+        #         lambda _: requests.request(
+        #             method=method,
+        #             url=BASE_URL + url_suffix,
+        #             verify=USE_SSL,
+        #             data=json.dumps(data),
+        #             headers=HEADERS
+        #         ),
+        #         (j for j in range(10_000))
+        #     ):
+        #         ...
+
+        # return_results('Complete. running polling.')
+
         res = requests.request(
             method=method,
             url=BASE_URL + url_suffix,
@@ -411,7 +428,7 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
         return_execution_metric('connection_error')
         raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
     if res.status_code == 503:
-        raise RateLimitExceededError(res)
+        raise RateLimitExceededError(res.json())
     return parse_response(res, err_operation)
 
 
@@ -1914,7 +1931,6 @@ def main():
         'reliability': reliability,
         'create_relationships': create_relationships,
     }
-    rate_limit_auto_retry = args.pop('rate_limit_auto_retry', False)
 
     try:
 
@@ -1966,7 +1982,8 @@ def main():
                 raise NotImplementedError(f'Command {command!r} is not implemented.')
 
     except RateLimitExceededError as e:
-        rerun_command_if_required(e, argToBoolean(rate_limit_auto_retry), command=command, args=args)
+        rerun_command_if_required(
+            e, argToBoolean(args.get('rate_limit_auto_retry', False)), command=command, args=args)
 
     except Exception as e:
         return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
