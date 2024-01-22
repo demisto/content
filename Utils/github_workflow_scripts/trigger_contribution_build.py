@@ -57,6 +57,7 @@ def trigger_generic_webhook(options):
 
 
 def main():
+    print("Dan")
     options = arguments_handler()
     trigger_generic_webhook(options)
 
