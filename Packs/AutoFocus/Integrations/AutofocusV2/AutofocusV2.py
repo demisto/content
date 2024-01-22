@@ -364,6 +364,7 @@ def parse_response(resp: requests.Response, err_operation: str | None) -> dict:
         res_json = resp.json()
         save_api_metrics(res_json)  # type: ignore
         if resp.status_code == 503:
+            EXECUTION_METRICS.quota_error += 1
             raise RateLimitExceededError(res_json)
 
         # Handle error responses gracefully
@@ -1018,8 +1019,8 @@ def search_indicator(indicator_type, indicator_value):
         result_json = result.json()
 
         save_api_metrics(result_json)
-        EXECUTION_METRICS.success += 1
         if result.status_code == 503:
+            EXECUTION_METRICS.quota_error += 1
             raise RateLimitExceededError(result_json)
 
     # Handle with connection error
@@ -1053,6 +1054,7 @@ def search_indicator(indicator_type, indicator_value):
             err_msg = f'Request Failed with message: {err}.'
         raise DemistoException(err_msg)
 
+    EXECUTION_METRICS.success += 1
     return result_json
 
 
