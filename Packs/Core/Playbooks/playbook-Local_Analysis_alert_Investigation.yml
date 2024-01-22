@@ -850,7 +850,7 @@ tasks:
     scriptarguments:
       endpoint_ids:
         complex:
-          root: inputs.agentID
+          root: inputs.AgentID
       windows_file_paths:
         complex:
           root: inputs.Path
@@ -1006,7 +1006,7 @@ tasks:
         simple: 'False'
       EndpointID:
         complex:
-          root: inputs.agentID
+          root: inputs.AgentID
       FileContainment:
         simple: 'True'
       FileHash:
@@ -1094,7 +1094,7 @@ tasks:
         simple: 'True'
       agentID:
         complex:
-          root: inputs.agentID
+          root: inputs.AgentID
       timeRange:
         simple: 2 hours ago
     separatecontext: false
@@ -1151,7 +1151,7 @@ tasks:
         simple: 'True'
       EndpointID:
         complex:
-          root: inputs.agentID
+          root: inputs.AgentID
       FileContainment:
         simple: 'True'
       FileHash:
@@ -1270,7 +1270,7 @@ tasks:
           root: inputs.AutoEradication
       EndpointID:
         complex:
-          root: inputs.agentID
+          root: inputs.AgentID
       FilePath:
         complex:
           root: alert
@@ -1355,7 +1355,7 @@ tasks:
           root: inputs.SHA256
       endpointID:
         complex:
-          root: inputs.agentID
+          root: inputs.AgentID
       releaseFile:
         simple: 'False'
       unIsolateEndpoint:
@@ -2314,7 +2314,7 @@ inputs:
   required: false
   description: Comment for the ticket.
   playbookInputQuery:
-- key: agentID
+- key: AgentID
   value:
     complex:
       root: alert
@@ -2322,6 +2322,57 @@ inputs:
   required: false
   description: The agent ID's of the endpoints in the alert
   playbookInputQuery:
+inputSections:
+- inputs:
+  - AutoCloseAlert
+  - ShouldManualReviewFP
+  - AgentID
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - Query
+  - SHA256
+  - Path
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - GraywareAsMalware
+  - ShouldRescanBenign
+  name: Investigation
+  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+- inputs:
+  - AutoEradication
+  - AutoContainment
+  - FileRemediation
+  - AutoRecovery
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - ShouldOpenTicket
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  - description
+  - addCommentPerEndpoint
+  - CommentToAdd
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - Local Analysis alert Investigation - Test

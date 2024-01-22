@@ -41,14 +41,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Eradication Plan
-* Ticket Management - Generic
-* Recovery Plan
-* Wildfire Detonate and Analyze File
-* Endpoint Investigation Plan
-* Handle False Positive Alerts
-* Enrichment for Verdict
 * Containment Plan
+* Handle False Positive Alerts
+* Ticket Management - Generic
+* Wildfire Detonate and Analyze File
+* Enrichment for Verdict
+* Endpoint Investigation Plan
+* Eradication Plan
+* Recovery Plan
 
 ### Integrations
 
@@ -56,17 +56,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* GetTime
 * UnzipFile
+* GetTime
 
 ### Commands
 
-* setParentIncidentFields
-* internal-wildfire-get-report
+* core-retrieve-file-details
 * closeInvestigation
 * core-report-incorrect-wildfire
+* internal-wildfire-get-report
+* setParentIncidentFields
 * core-retrieve-files
-* core-retrieve-file-details
 
 ## Playbook Inputs
 
