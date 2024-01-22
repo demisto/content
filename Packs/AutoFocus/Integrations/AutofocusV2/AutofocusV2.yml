@@ -352,7 +352,6 @@ script:
       - 'false'
     description: Returns results of a previous samples search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-samples-search-results
-    polling: true
     outputs:
     - contextPath: AutoFocus.SamplesResults.Size
       description: The file size in bytes.
@@ -423,6 +422,7 @@ script:
     - contextPath: AutoFocus.SamplesResults.ID
       description: ID of sample search.
       type: String
+    polling: true
   - arguments:
     - description: The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes.
       name: af_cookie
@@ -435,7 +435,6 @@ script:
       - 'false'
     description: Returns results of a previous sessions search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-sessions-search-results
-    polling: true
     outputs:
     - contextPath: AutoFocus.SessionsResults.FileName
       description: The name of the file..
@@ -479,6 +478,7 @@ script:
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Session seen.
       type: Date
+    polling: true
   - arguments:
     - description: The session ID.
       name: session_id
@@ -491,7 +491,6 @@ script:
       - 'false'
     description: Get session details by session ID.
     name: autofocus-get-session-details
-    polling: true
     outputs:
     - contextPath: AutoFocus.Sessions.FileName
       description: The file name.
@@ -520,6 +519,7 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
+    polling: true
   - arguments:
     - description: The SHA256 hash of the sample to analyze.
       name: sample_id
@@ -549,7 +549,6 @@ script:
       - 'false'
     description: Returns properties, behaviors, and activities observed for a sample. Run the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
     name: autofocus-sample-analysis
-    polling: true
     outputs:
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Http
       description: HTTP requests made when the sample was executed.
@@ -578,6 +577,7 @@ script:
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
       description: The mutex created when the programs start is listed with the parent process if the sample generates other program threads when executed in the analysis environment.
       type: Unknown
+    polling: true
   - arguments:
     - description: The public tag name. Can be retrieved from the top-tags command.
       name: tag_name
@@ -590,7 +590,6 @@ script:
       - 'false'
     description: Returns details about the given tag.
     name: autofocus-tag-details
-    polling: true
     outputs:
     - contextPath: AutoFocus.Tag.TagName
       description: The simple name of the tag.
@@ -625,6 +624,7 @@ script:
     - contextPath: AutoFocus.Tag.Description
       description: Tag description.
       type: String
+    polling: true
   - arguments:
     - auto: PREDEFINED
       description: Scope of the search. Can be "industry", "organization", "all", or "global".
@@ -730,7 +730,6 @@ script:
       - 'false'
     description: Returns the results of a previous top tags search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-top-tags-results
-    polling: true
     outputs:
     - contextPath: AutoFocus.TopTagsResults.Count
       description: The number of samples that matched this tag.
@@ -747,6 +746,7 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    polling: true
   - arguments:
     - default: true
       description: IP address to check.
@@ -1164,7 +1164,6 @@ script:
       - 'false'
     description: Gets export list indicators from AutoFocus.
     name: autofocus-get-export-list-indicators
-    polling: true
     outputs:
     - contextPath: AutoFocus.ExportListIndicator.Type
       description: 'The indicator type in the export list. '
@@ -1184,7 +1183,8 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.10.13.75921
+    polling: true
+  dockerimage: demisto/python3:3.10.13.85667
   runonce: false
   script: '-'
   subtype: python3
