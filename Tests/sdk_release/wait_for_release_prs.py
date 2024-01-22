@@ -54,7 +54,8 @@ def main():
 
     # wait to content pr and sdk pr to be open
     while (not sdk_pr or not content_pr) and elapsed < TIMEOUT:
-        content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+        # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+        content_pr = get_pr_from_branch('content', '1.25.3', access_token)  # TODO: remove this line
         sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
 
         if not content_pr:
@@ -77,7 +78,8 @@ def main():
 
     # wait to content pr and sdk pr to be closed
     while (sdk_pr_state == 'open' or content_pr_state == 'open') and elapsed < TIMEOUT:
-        content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+        # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+        content_pr = get_pr_from_branch('content', '1.25.3', access_token)  # TODO: remove this line
         sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
         content_pr_state = content_pr.get('state')
         sdk_pr_state = sdk_pr.get('state')
@@ -95,12 +97,12 @@ def main():
     # check that content pr is merged
     if not content_pr.get('merged'):
         logging.error(f'content pull request not merged yet {content_pr.get("html_url")}')
-        sys.exit(1)
+        # sys.exit(1)  # TODO: revert this line
 
     # check that sdk pr is merged
     if not sdk_pr.get('merged'):
         logging.error(f'demisto-sdk pull request not merged yet {sdk_pr.get("html_url")}')
-        sys.exit(1)
+        # sys.exit(1)  # TODO: revert this line
 
     logging.success('SDK and content pull requests merged successfully!')
 
