@@ -44,7 +44,7 @@ def trigger_generic_webhook(options):
     body = {
         "name": "GenericWebhook_trigger_contribution_build",
         "raw_json": {"BaseBranch": base_branch, "PullRequestNumber": pr_number, "ContribBranch": contrib_branch,
-                     "ProjectID": GITLAB_PROJECT_ID, "ContribRepo": contrib_repo},
+                     "ContribRepo": contrib_repo, "ProjectID": GITLAB_PROJECT_ID},
     }
     # post to Content Gold
     res = requests.post(contribution_build_instance_url, json=body, auth=(username, password))
