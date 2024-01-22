@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "A breaking change has occurred due to modifications in the Pycti library. We now support OpenCTI from version 5.12.17 and above, and lower versions may encounter issues."
+}
