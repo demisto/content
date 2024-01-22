@@ -162,7 +162,7 @@ def parse_network_response(response: dict) -> dict:
 
 def parse_file_response(response: dict) -> dict:
     file = response.get('file')
-    reputation = response.get('reputation')
+    reputation = response.get('reputation', 'UNKNOWN')
     actors = response.get('actors', [])
 
     response = {'indicator': file, 'reputation': reputation, 'actors': actors}
@@ -299,7 +299,8 @@ def file_reputation_command(client: Client, args: Dict[str, Any]) -> List[Comman
         dbot_score = Common.DBotScore(indicator=result['indicator'],
                                       indicator_type=DBotScoreType.FILE,
                                       integration_name=INTEGRATION_NAME,
-                                      score=severity
+                                      score=severity[0],
+                                      malicious_description=severity[1]
                                       )
 
         file = Common.File(sha256=result['indicator'], dbot_score=dbot_score)
