@@ -536,8 +536,6 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            demisto.info('Hello Hello')
-            demisto.debug('Hello Hello')
             # This is the call made when pressing the integration Test button.
             result = test_module(client, args)
             return_results(result)
