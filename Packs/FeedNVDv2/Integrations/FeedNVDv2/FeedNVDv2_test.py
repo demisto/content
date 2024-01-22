@@ -83,7 +83,7 @@ def test_retrieve_cves_command():
       'pubStartDate': None,
       'pubEndDate': None,
       'noRejected': None,
-      'start_date': '1999-07-01',
+      'start_date': '2021-11-01',
       'insecure': 'True',
       'proxy': 'False',
       'feedTags': '',
@@ -102,6 +102,6 @@ def test_retrieve_cves_command():
     assert all(item in indicator[0] for item in response[0]), "Indicator dictionary does not match expected response"
 
 
-"""if __name__ in ('__main__', '__builtin__', 'builtins'):
+""" if __name__ in ('__main__', '__builtin__', 'builtins'):
     # test_parse_cpe_command()
     test_retrieve_cves_command()"""
