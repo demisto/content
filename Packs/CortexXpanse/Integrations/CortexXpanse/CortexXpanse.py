@@ -9,7 +9,6 @@ urllib3.disable_warnings()
 
 DEFAULT_SEARCH_LIMIT = 100
 MAX_ALERTS = 100  # max alerts per fetch
-ONE_HOUR = 3600
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 V1_URL_SUFFIX = "/public_api/v1"
 V2_URL_SUFFIX = "/public_api/v2"
@@ -1242,7 +1241,7 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
     latest_created_time = cast(int, last_fetch)
     # because some values are not populated immediately at alert creation time,
     # we will add an additional offset to increase the likelihood that these are available
-    latest_created_time = latest_created_time + ONE_HOUR
+    latest_created_time = latest_created_time
 
     incidents = []
 
