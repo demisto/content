@@ -3801,9 +3801,7 @@ inputs:
   description: Used only when searching and deleting emails in O365. A comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the O365ExchangeLocation input.
   playbookInputQuery:
 inputSections:
-- name: Role and Assignment
-  description:  Parameters defining user responsibilities and task allocations.
-  inputs:
+- inputs:
   - Role
   - OnCall
   - GetOriginalEmail
