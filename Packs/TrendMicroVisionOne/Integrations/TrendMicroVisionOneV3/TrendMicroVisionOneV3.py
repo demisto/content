@@ -11,30 +11,23 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, TypeVar
 import pytmv1
 from pytmv1 import (
-    AccountTask,
-    AccountTaskResp,
-    BaseTaskResp,
-    BlockListTaskResp,
-    CustomScriptTask,
-    CollectFileTaskResp,
-    CustomScriptTaskResp,
-    EndpointTask,
-    EmailMessageIdTask,
-    EmailMessageUIdTask,
-    EmailMessageTaskResp,
-    EndpointTaskResp,
-    ExceptionObject,
-    FileTask,
-    InvestigationStatus,
-    ObjectTask,
-    ObjectType,
-    ProcessTask,
-    ResultCode,
-    SaeAlert,
-    SuspiciousObject,
-    SuspiciousObjectTask,
-    TerminateProcessTaskResp,
     TiAlert,
+    SaeAlert,
+    ObjectType,
+    ResultCode,
+    ObjectRequest,
+    AccountRequest,
+    EndpointRequest,
+    ExceptionObject,
+    SuspiciousObject,
+    CollectFileRequest,
+    CollectFileTaskResp,
+    CustomScriptRequest,
+    InvestigationStatus,
+    EmailMessageIdRequest,
+    EmailMessageUIdRequest,
+    SuspiciousObjectRequest,
+    TerminateProcessRequest,
 )
 
 """CONSTANTS"""
@@ -313,24 +306,15 @@ def status_check(v1_client: pytmv1.Client, data: dict[str, Any]) -> Any:
     message: dict[str, Any] = {}
 
     # Make rest call
-    resp = v1_client.get_base_task_result(task_id, poll, poll_time_sec)  # type: ignore
+    resp = v1_client.task.get_result(
+        task_id=task_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
+    )
     # Check if error response is returned
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
-    # Get the task action type that will be used to
-    # fetch task class which is used in get_task_result
-    status_resp: pytmv1.BaseTaskResp = unwrap(resp.response)
-    action: pytmv1.TaskAction = status_resp.action
-    # Make rest call using task class to get final result
-    task_resp = v1_client.get_task_result(
-        class_=_get_task_type(action),
-        task_id=task_id,
-        poll=poll,
-        poll_time_sec=poll_time_sec,  # type: ignore
-    )
     # Assign values on a successful call
-    resp_obj: pytmv1.BaseTaskResp = unwrap(task_resp.response)
+    resp_obj: pytmv1.BaseTaskResp = unwrap(resp.response)
     message = resp_obj.model_dump()
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -356,7 +340,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: dict[str, Any]) -
     task_id = data.get(TASKID, EMPTY_STRING)
     message: dict[str, Any] = {}
     # Make rest call
-    resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
+    resp = v1_client.sandbox.get_submission_status(submit_id=task_id)
     resp_obj: pytmv1.SandboxSubmissionStatusResp = unwrap(resp.response)
     # Check if error response is returned
     if _is_pytmv1_error(resp.result_code):
@@ -366,7 +350,7 @@ def sandbox_submission_polling(v1_client: pytmv1.Client, data: dict[str, Any]) -
     task_status = resp_obj.status
     file_entry = Common.File(sha256=None, md5=None, sha1=None, dbot_score=None)
     if task_status.lower() == SUCCEEDED:
-        analysis_resp = v1_client.get_sandbox_analysis_result(submit_id=task_id)
+        analysis_resp = v1_client.sandbox.get_analysis_result(submit_id=task_id)
         if _is_pytmv1_error(analysis_resp.result_code):
             error: pytmv1.Error = unwrap(analysis_resp.error)
             return_error(message=f"{error.message}", error=str(error))
@@ -440,7 +424,7 @@ def exception_list_count(v1_client: pytmv1.Client) -> int:
     #
     # Make rest call
     try:
-        v1_client.consume_exception_list(
+        v1_client.object.consume_exception(
             lambda exception: new_exceptions.append(exception)
         )
     except Exception as err:
@@ -459,7 +443,7 @@ def suspicious_list_count(v1_client: pytmv1.Client) -> int:
 
     # Make rest call
     try:
-        v1_client.consume_suspicious_list(
+        v1_client.object.consume_suspicious(
             lambda suspicious: new_suspicious.append(suspicious)
         )
     except Exception as err:
@@ -508,7 +492,7 @@ def get_workbench_histories(v1_client: pytmv1.Client, start, end) -> list:
 
     # Make rest call
     try:
-        v1_client.consume_alert_list(
+        v1_client.alert.consume(
             _filter_alerts,
             start_time=formatted_start,
             end_time=formatted_end,
@@ -545,7 +529,7 @@ def incident_severity_to_dbot_score(severity: str) -> int:
 
 # returns initialized pytmv1 client used to make rest calls
 def _get_client(name: str, api_key: str, base_url: str) -> pytmv1.Client:
-    return pytmv1.client(name, api_key, base_url)
+    return pytmv1.init(name, api_key, base_url)
 
 
 # Checks the api response for error
@@ -558,28 +542,6 @@ def _get_ot_enum(obj_type: str) -> ObjectType:
     if obj_type.upper() not in ObjectType.__members__:
         raise RuntimeError(f"Please check object type: {obj_type}")
     return ObjectType[obj_type.upper()]
-
-
-# Use response action type and return task class associated
-def _get_task_type(action: str) -> type[BaseTaskResp]:
-    task_dict: dict[Any, list[str]] = {
-        AccountTaskResp: [
-            "enableAccount",
-            "disableAccount",
-            "forceSignOut",
-            "resetPassword",
-        ],
-        BlockListTaskResp: ["block", "restoreBlock"],
-        CustomScriptTaskResp: ["runCustomScript", "runCustomScriptForMultiple"],
-        EmailMessageTaskResp: ["quarantineMessage", "restoreMessage", "deleteMessage"],
-        EndpointTaskResp: ["isolate", "restoreIsolate"],
-        TerminateProcessTaskResp: ["terminateProcess"],
-    }
-
-    for task, task_values in task_dict.items():
-        if action in task_values:
-            return task
-    raise ValueError
 
 
 def run_polling_command(
@@ -658,7 +620,7 @@ def test_module(v1_client: pytmv1.Client) -> str:
     """
 
     # Make rest call
-    resp = v1_client.check_connectivity()
+    resp = v1_client.system.check_connectivity()
     if _is_pytmv1_error(resp.result_code):
         return FAILED_CONNECTIVITY
     return "ok"
@@ -688,20 +650,20 @@ def enable_or_disable_user_account(
     """
     # Required Params
     account_identifiers = safe_load_json(args[ACCOUNT_IDENTIFIERS])
-    account_tasks: list[AccountTask] = []
+    account_tasks: list[AccountRequest] = []
     message: list[dict[str, Any]] = []
 
     if command == ENABLE_USER_ACCOUNT_COMMAND:
         # Create account task list
         for account in account_identifiers:  # type: ignore
             account_tasks.append(
-                AccountTask(
+                AccountRequest(
                     account_name=account[ACCOUNT_NAME],
                     description=account.get(DESCRIPTION, ENABLE_ACCOUNT),
                 )
             )
         # Make rest call
-        resp = v1_client.enable_account(*account_tasks)
+        resp = v1_client.account.enable(*account_tasks)
         enable_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -714,13 +676,13 @@ def enable_or_disable_user_account(
         # Create account task list
         for account in account_identifiers:  # type: ignore
             account_tasks.append(
-                AccountTask(
+                AccountRequest(
                     account_name=account[ACCOUNT_NAME],
                     description=account.get(DESCRIPTION, DISABLE_ACCOUNT),
                 )
             )
         # Make rest call
-        resp = v1_client.disable_account(*account_tasks)
+        resp = v1_client.account.disable(*account_tasks)
         disable_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -760,19 +722,19 @@ def force_sign_out(
     """
     # Required Params
     account_identifiers = safe_load_json(args[ACCOUNT_IDENTIFIERS])
-    account_tasks: list[AccountTask] = []
+    account_tasks: list[AccountRequest] = []
     message: list[dict[str, Any]] = []
 
     # Create account task list
     for account in account_identifiers:  # type: ignore
         account_tasks.append(
-            AccountTask(
+            AccountRequest(
                 account_name=account[ACCOUNT_NAME],
                 description=account.get(DESCRIPTION, SIGN_OUT_ACCOUNT),
             )
         )
     # Make rest call
-    resp = v1_client.sign_out_account(*account_tasks)
+    resp = v1_client.account.sign_out(*account_tasks)
     resp_obj: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
@@ -812,19 +774,19 @@ def force_password_reset(
     """
     # Required Params
     account_identifiers = safe_load_json(args[ACCOUNT_IDENTIFIERS])
-    account_tasks: list[AccountTask] = []
+    account_tasks: list[AccountRequest] = []
     message: list[dict[str, Any]] = []
 
     # Create account task list
     for account in account_identifiers:  # type: ignore
         account_tasks.append(
-            AccountTask(
+            AccountRequest(
                 account_name=account[ACCOUNT_NAME],
                 description=account.get(DESCRIPTION, FORCE_PASSWORD_RESET),
             )
         )
     # Make rest call
-    resp = v1_client.reset_password_account(*account_tasks)
+    resp = v1_client.account.reset(*account_tasks)
     resp_obj: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
@@ -874,7 +836,7 @@ def get_endpoint_info(
         query_op = pytmv1.QueryOp.AND
     # Make rest call
     try:
-        v1_client.consume_endpoint_data(
+        v1_client.endpoint.consume_data(
             lambda endpoint_data: new_endpoint_data.append(endpoint_data),
             query_op,
             *endpoint_list,
@@ -939,7 +901,7 @@ def get_endpoint_activity_data(
     if activity_count > 5000:
         return_error("Please refine search, this query returns more than 5K results.")
     # Make rest call
-    resp = v1_client.get_endpoint_activity_data(
+    resp = v1_client.endpoint.list_activity(
         start_time=start,
         end_time=end,
         top=top,
@@ -947,7 +909,7 @@ def get_endpoint_activity_data(
         op=query_op,
         **fields,
     )
-    resp_obj: pytmv1.GetEndpointActivityDataResp = unwrap(resp.response)
+    resp_obj: pytmv1.ListEndpointActivityResp = unwrap(resp.response)
     # Parse endpoint activity data to message list and send to war room
     for activity in resp_obj.items:
         message.append(activity.model_dump())
@@ -985,7 +947,7 @@ def get_endpoint_activity_data_count(
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
     # Make rest call
-    resp = v1_client.get_endpoint_activity_data_count(
+    resp = v1_client.endpoint.get_activity_count(
         start_time=start,
         end_time=end,
         top=500,
@@ -993,7 +955,7 @@ def get_endpoint_activity_data_count(
         op=query_op,
         **fields,
     )
-    resp_obj: pytmv1.GetEndpointActivityDataCountResp = unwrap(resp.response)
+    resp_obj: pytmv1.GetEndpointActivitiesCountResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
@@ -1051,7 +1013,7 @@ def get_email_activity_data(
     if activity_count > 5000:
         return_error("Please refine search, this query returns more than 5K results.")
     # Make rest call
-    resp = v1_client.get_email_activity_data(
+    resp = v1_client.email.list_activity(
         start_time=start,
         end_time=end,
         top=top,
@@ -1059,7 +1021,7 @@ def get_email_activity_data(
         op=query_op,
         **fields,
     )
-    resp_obj: pytmv1.GetEmailActivityDataResp = unwrap(resp.response)
+    resp_obj: pytmv1.ListEmailActivityResp = unwrap(resp.response)
     for activity in resp_obj.items:
         message.append(activity.model_dump())
 
@@ -1096,7 +1058,7 @@ def get_email_activity_data_count(
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
     # Make rest call
-    resp = v1_client.get_email_activity_data_count(
+    resp = v1_client.email.get_activity_count(
         start_time=start,
         end_time=end,
         top=500,
@@ -1104,7 +1066,7 @@ def get_email_activity_data_count(
         op=query_op,
         **fields,
     )
-    resp_obj: pytmv1.GetEmailActivityDataCountResp = unwrap(resp.response)
+    resp_obj: pytmv1.GetEmailActivitiesCountResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
@@ -1147,21 +1109,21 @@ def add_or_remove_from_block_list(
     """
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
-    block_tasks: list[ObjectTask] = []
+    block_tasks: list[ObjectRequest] = []
     message: list[dict[str, Any]] = []
 
     if command == ADD_BLOCKLIST_COMMAND:
         # Create block task list
         for obj in block_objects:  # type: ignore
             block_tasks.append(
-                ObjectTask(
+                ObjectRequest(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
                     object_value=obj[OBJECT_VALUE],
                     description=obj.get(DESCRIPTION, ADD_BLOCKLIST),
                 )
             )
         # Make rest call
-        resp = v1_client.add_to_block_list(*block_tasks)
+        resp = v1_client.object.add_block(*block_tasks)
         add_block_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -1174,14 +1136,14 @@ def add_or_remove_from_block_list(
         # Create unblock task list
         for obj in block_objects:  # type: ignore
             block_tasks.append(
-                ObjectTask(
+                ObjectRequest(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
                     object_value=obj[OBJECT_VALUE],
                     description=obj.get(DESCRIPTION, REMOVE_BLOCKLIST),
                 )
             )
         # Make rest call
-        resp = v1_client.remove_from_block_list(*block_tasks)
+        resp = v1_client.object.delete_block(*block_tasks)
         remove_block_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -1262,28 +1224,28 @@ def quarantine_or_delete_email_message(
     # Required Params
     email_identifiers = safe_load_json(args[EMAIL_IDENTIFIERS])
     message: list[dict[str, Any]] = []
-    email_tasks: list[EmailMessageIdTask | EmailMessageUIdTask] = []
+    email_tasks: list[EmailMessageIdRequest | EmailMessageUIdRequest] = []
 
     if command == QUARANTINE_EMAIL_COMMAND:
         # Create email task list
         for email in email_identifiers:  # type: ignore
             if email.get(MESSAGE_ID, EMPTY_STRING):
                 email_tasks.append(
-                    EmailMessageIdTask(
+                    EmailMessageIdRequest(
                         message_id=email[MESSAGE_ID],
-                        description=email.get(DESCRIPTION, QUARANTINE_EMAIL),
                         mail_box=email.get(MAILBOX, EMPTY_STRING),
+                        description=email.get(DESCRIPTION, QUARANTINE_EMAIL),
                     )
                 )
             elif email.get(UNIQUE_ID, EMPTY_STRING):
                 email_tasks.append(
-                    EmailMessageUIdTask(
+                    EmailMessageUIdRequest(
                         unique_id=email[UNIQUE_ID],
                         description=email.get(DESCRIPTION, QUARANTINE_EMAIL),
                     )
                 )
         # Make rest call
-        resp = v1_client.quarantine_email_message(*email_tasks)
+        resp = v1_client.email.quarantine(*email_tasks)
         quarantine_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -1298,21 +1260,21 @@ def quarantine_or_delete_email_message(
         for email in email_identifiers:  # type: ignore
             if email.get(MESSAGE_ID, EMPTY_STRING):
                 email_tasks.append(
-                    EmailMessageIdTask(
+                    EmailMessageIdRequest(
                         message_id=email[MESSAGE_ID],
-                        description=email.get(DESCRIPTION, DELETE_EMAIL),
                         mail_box=email.get(MAILBOX, EMPTY_STRING),
+                        description=email.get(DESCRIPTION, DELETE_EMAIL),
                     )
                 )
             elif email.get(UNIQUE_ID, EMPTY_STRING):
                 email_tasks.append(
-                    EmailMessageUIdTask(
+                    EmailMessageUIdRequest(
                         unique_id=email[UNIQUE_ID],
                         description=email.get(DESCRIPTION, DELETE_EMAIL),
                     )
                 )
         # Make rest call
-        resp = v1_client.delete_email_message(*email_tasks)
+        resp = v1_client.email.delete(*email_tasks)
         delete_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -1357,13 +1319,13 @@ def restore_email_message(
     # Required Params
     email_identifiers = safe_load_json(args[EMAIL_IDENTIFIERS])
     message: list[dict[str, Any]] = []
-    email_tasks: list[EmailMessageIdTask | EmailMessageUIdTask] = []
+    email_tasks: list[EmailMessageIdRequest | EmailMessageUIdRequest] = []
 
     # Create email task list
     for email in email_identifiers:  # type: ignore
         if email.get(MESSAGE_ID, EMPTY_STRING):
             email_tasks.append(
-                EmailMessageIdTask(
+                EmailMessageIdRequest(
                     message_id=email[MESSAGE_ID],
                     description=email.get(DESCRIPTION, RESTORE_EMAIL),
                     mail_box=email.get(MAILBOX, EMPTY_STRING),
@@ -1371,13 +1333,13 @@ def restore_email_message(
             )
         elif email.get(UNIQUE_ID, EMPTY_STRING):
             email_tasks.append(
-                EmailMessageUIdTask(
+                EmailMessageUIdRequest(
                     unique_id=email[UNIQUE_ID],
                     description=email.get(DESCRIPTION, RESTORE_EMAIL),
                 )
             )
         # Make rest call
-        resp = v1_client.restore_email_message(*email_tasks)
+        resp = v1_client.email.restore(*email_tasks)
         restore_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -1422,27 +1384,27 @@ def isolate_or_restore_connection(
     # Required Params
     endpoint_identifiers = safe_load_json(args[ENDPOINT_IDENTIFIERS])
     message: list[dict[str, Any]] = []
-    endpt_tasks: list[EndpointTask] = []
+    endpt_tasks: list[EndpointRequest] = []
 
     if command == ISOLATE_ENDPOINT_COMMAND:
         # Create endpoint task list
         for endpt in endpoint_identifiers:  # type: ignore
             if endpt.get(ENDPOINT, EMPTY_STRING):
                 endpt_tasks.append(
-                    EndpointTask(
+                    EndpointRequest(
                         endpoint_name=endpt[ENDPOINT],
                         description=endpt.get(DESCRIPTION, ISOLATE_ENDPOINT),
                     )
                 )
             elif endpt.get(AGENT_GUID, EMPTY_STRING):
                 endpt_tasks.append(
-                    EndpointTask(
+                    EndpointRequest(
                         agent_guid=endpt[AGENT_GUID],
                         description=endpt.get(DESCRIPTION, ISOLATE_ENDPOINT),
                     )  # type: ignore
                 )
         # Make rest call
-        resp = v1_client.isolate_endpoint(*endpt_tasks)
+        resp = v1_client.endpoint.isolate(*endpt_tasks)
         isolate_endpoint_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -1456,20 +1418,20 @@ def isolate_or_restore_connection(
         for endpt in endpoint_identifiers:  # type: ignore
             if endpt.get(ENDPOINT, EMPTY_STRING):
                 endpt_tasks.append(
-                    EndpointTask(
+                    EndpointRequest(
                         endpoint_name=endpt[ENDPOINT],
                         description=endpt.get(DESCRIPTION, RESTORE_ENDPOINT),
                     )
                 )
             elif endpt.get(AGENT_GUID, EMPTY_STRING):
                 endpt_tasks.append(
-                    EndpointTask(
+                    EndpointRequest(
                         agent_guid=endpt[AGENT_GUID],
                         description=endpt.get(DESCRIPTION, RESTORE_ENDPOINT),
                     )  # type: ignore
                 )
         # Make rest call
-        resp = v1_client.restore_endpoint(*endpt_tasks)
+        resp = v1_client.endpoint.restore(*endpt_tasks)
         restore_endpoint_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -1509,31 +1471,31 @@ def terminate_process(
     """
     # Required Params
     process_identifiers = safe_load_json(args[PROCESS_IDENTIFIERS])
-    process_tasks: list[ProcessTask] = []
+    process_tasks: list[TerminateProcessRequest] = []
     message: list[dict[str, Any]] = []
 
     # Create process task list
     for process in process_identifiers:  # type: ignore
         if process.get(ENDPOINT):
             process_tasks.append(
-                ProcessTask(
-                    endpoint_name=process[ENDPOINT],
+                TerminateProcessRequest(
                     file_sha1=process[FILE_SHA1],
-                    description=process.get(DESCRIPTION, TERMINATE_PROCESS),
+                    endpoint_name=process[ENDPOINT],
                     file_name=process.get(FILE_NAME, EMPTY_STRING),
+                    description=process.get(DESCRIPTION, TERMINATE_PROCESS),
                 )
             )
         elif process.get(AGENT_GUID):
             process_tasks.append(
-                ProcessTask(
-                    agent_guid=process[AGENT_GUID],
+                TerminateProcessRequest(
                     file_sha1=process[FILE_SHA1],
-                    description=process.get(DESCRIPTION, TERMINATE_PROCESS),
+                    agent_guid=process[AGENT_GUID],
                     file_name=process.get(FILE_NAME, EMPTY_STRING),
+                    description=process.get(DESCRIPTION, TERMINATE_PROCESS),
                 )  # type: ignore
             )
     # Make rest call
-    resp = v1_client.terminate_process(*process_tasks)
+    resp = v1_client.endpoint.terminate_process(*process_tasks)
     process_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
@@ -1578,21 +1540,21 @@ def add_or_delete_from_exception_list(
     """
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
-    excp_tasks: list[ObjectTask] = []
+    excp_tasks: list[ObjectRequest] = []
     message: dict[str, Any] = {}
 
     if command == ADD_EXCEPTION_LIST_COMMAND:
         # Create exception task list
         for obj in block_objects:  # type: ignore
             excp_tasks.append(
-                ObjectTask(
+                ObjectRequest(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
                     object_value=obj[OBJECT_VALUE],
                     description=obj.get(DESCRIPTION, ADD_EXCEPTION_LIST),
                 )
             )
         # Make rest call
-        resp = v1_client.add_to_exception_list(*excp_tasks)
+        resp = v1_client.object.add_exception(*excp_tasks)
         add_excp_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
@@ -1607,14 +1569,14 @@ def add_or_delete_from_exception_list(
         # Create exception task list
         for obj in block_objects:  # type: ignore
             excp_tasks.append(
-                ObjectTask(
+                ObjectRequest(
                     object_type=_get_ot_enum(obj[OBJECT_TYPE]),
                     object_value=obj[OBJECT_VALUE],
                     description=obj.get(DESCRIPTION, DELETE_EXCEPTION_LIST),
                 )
             )
         # Make rest call
-        resp = v1_client.remove_from_exception_list(*excp_tasks)
+        resp = v1_client.object.delete_exception(*excp_tasks)
         rmv_excp_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred for each call
         if _is_pytmv1_error(resp.result_code):
@@ -1660,13 +1622,13 @@ def add_to_suspicious_list(
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
 
-    suspicious_tasks: list[SuspiciousObjectTask] = []
+    suspicious_tasks: list[SuspiciousObjectRequest] = []
     message: dict[str, Any] = {}
 
     # Create suspicious task list
     for block in block_objects:  # type: ignore
         suspicious_tasks.append(
-            SuspiciousObjectTask(
+            SuspiciousObjectRequest(
                 object_type=_get_ot_enum(block[OBJECT_TYPE]),
                 object_value=block[OBJECT_VALUE],
                 scan_action=block.get(SCAN_ACTION, BLOCK),
@@ -1676,7 +1638,7 @@ def add_to_suspicious_list(
             )
         )
     # Make rest call
-    resp = v1_client.add_to_suspicious_list(*suspicious_tasks)
+    resp = v1_client.object.add_suspicious(*suspicious_tasks)
     add_sus_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
@@ -1722,20 +1684,20 @@ def delete_from_suspicious_list(
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
 
-    suspicious_tasks: list[ObjectTask] = []
+    suspicious_tasks: list[ObjectRequest] = []
     message: dict[str, Any] = {}
 
     # Create suspicious task list
     for block in block_objects:  # type: ignore
         suspicious_tasks.append(
-            ObjectTask(
+            ObjectRequest(
                 object_type=_get_ot_enum(block[OBJECT_TYPE]),
                 object_value=block[OBJECT_VALUE],
                 description=block.get(DESCRIPTION, DELETE_SUSPICIOUS),
             )
         )
     # Make rest call
-    resp = v1_client.remove_from_suspicious_list(*suspicious_tasks)
+    resp = v1_client.object.delete_suspicious(*suspicious_tasks)
     dlt_sus_resp: pytmv1.MultiResp = unwrap(resp.response)
     if _is_pytmv1_error(resp.result_code):
         errs: list[pytmv1.MsError] = unwrap(resp.errors)
@@ -1782,7 +1744,7 @@ def get_file_analysis_status(
     message: dict[str, Any] = {}
 
     # Make rest call
-    resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
+    resp = v1_client.sandbox.get_submission_status(submit_id=task_id)
     resp_obj: pytmv1.SandboxSubmissionStatusResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
@@ -1824,7 +1786,7 @@ def get_file_analysis_result(
     message: dict[str, Any] = {}
 
     # Make rest call
-    resp = v1_client.get_sandbox_analysis_result(
+    resp = v1_client.sandbox.get_analysis_result(
         submit_id=report_id,
         poll=poll,
         poll_time_sec=poll_time_sec,  # type: ignore
@@ -1896,14 +1858,14 @@ def collect_file(
     # Required Params
     collect_files = safe_load_json(args[COLLECT_FILES])
     # Create file task list
-    file_tasks: list[FileTask] = []
+    file_tasks: list[CollectFileRequest] = []
     message: list[dict[str, Any]] = []
 
     # Create file task list
     for file in collect_files:  # type: ignore
         if file.get(ENDPOINT, EMPTY_STRING):
             file_tasks.append(
-                FileTask(
+                CollectFileRequest(
                     endpoint_name=file[ENDPOINT],
                     file_path=file[FILE_PATH],
                     description=file.get(DESCRIPTION, COLLECT_FILE),
@@ -1911,14 +1873,14 @@ def collect_file(
             )
         elif file.get(AGENT_GUID, EMPTY_STRING):
             file_tasks.append(
-                FileTask(
+                CollectFileRequest(
                     agent_guid=file[AGENT_GUID],
                     file_path=file[FILE_PATH],
                     description=file.get(DESCRIPTION, COLLECT_FILE),
                 )  # type: ignore
             )
     # Make rest call
-    resp = v1_client.collect_file(*file_tasks)
+    resp = v1_client.endpoint.collect_file(*file_tasks)
     file_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
@@ -1959,7 +1921,7 @@ def download_information_collected_file(
     poll = argToBoolean(args.get(POLL, TRUE))
     poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
     # Make rest call
-    resp = v1_client.get_task_result(
+    resp = v1_client.task.get_result_class(
         task_id=task_id,
         class_=CollectFileTaskResp,
         poll=poll,
@@ -2009,7 +1971,7 @@ def download_analysis_report(
     file_name = f"{name}_{datetime.now(timezone.utc).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.pdf"
 
     # Make rest call
-    resp = v1_client.download_sandbox_analysis_result(
+    resp = v1_client.sandbox.download_analysis_result(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
     analysis_resp: pytmv1.BytesResp = unwrap(resp.response)
@@ -2069,7 +2031,7 @@ def download_investigation_package(
     file_name = f"{name}_{datetime.now(timezone.utc).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.zip"
 
     # Make rest call
-    resp = v1_client.download_sandbox_investigation_package(
+    resp = v1_client.sandbox.download_investigation_package(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
     investigation_resp: pytmv1.BytesResp = unwrap(resp.response)
@@ -2127,10 +2089,10 @@ def download_suspicious_object_list(
     suspicious_objects: list[dict[str, str]] = []
 
     # Make rest call
-    resp = v1_client.get_sandbox_suspicious_list(
+    resp = v1_client.sandbox.list_suspicious(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
-    sus_list_resp: pytmv1.SandboxSuspiciousListResp = unwrap(resp.response)
+    sus_list_resp: pytmv1.ListSandboxSuspiciousResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
@@ -2175,7 +2137,7 @@ def submit_file_to_sandbox(
     # Get file contents
     _file = requests.get(file_url, allow_redirects=True, timeout=30)
     # Make rest call
-    resp = v1_client.submit_file_to_sandbox(
+    resp = v1_client.sandbox.submit_file(
         file=_file.content,
         file_name=file_name,
         document_password=document_pass,
@@ -2235,7 +2197,7 @@ def submit_file_entry_to_sandbox(
     with open(file_path, "rb") as f:
         contents = f.read()
     # Make rest call
-    resp = v1_client.submit_file_to_sandbox(
+    resp = v1_client.sandbox.submit_file(
         file=contents,
         file_name=file_name,
         document_password=document_pass,
@@ -2289,7 +2251,7 @@ def submit_urls_to_sandbox(
     urls: list[str] = argToList(args[URLS])
     submit_urls_resp: list[dict[str, Any]] = []
     # Make rest call
-    resp = v1_client.submit_urls_to_sandbox(*urls)
+    resp = v1_client.sandbox.submit_url(*urls)
     urls_resp: pytmv1.MultiUrlResp = unwrap(resp.response)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
@@ -2327,15 +2289,15 @@ def get_alert_details(
     workbench_id: str = args.get(WORKBENCH_ID, EMPTY_STRING)
     message: dict[str, Any] = {}
     # Make rest call
-    resp = v1_client.get_alert_details(alert_id=workbench_id)
-    alert_resp: pytmv1.GetAlertDetailsResp = unwrap(resp.response)
+    resp = v1_client.alert.get(alert_id=workbench_id)
+    alert_resp: pytmv1.GetAlertResp = unwrap(resp.response)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
     # Extract values from response
     etag = alert_resp.etag
-    alert = alert_resp.alert.model_dump()
+    alert = alert_resp.data.model_dump()
     # Add results to message to be sent to the War Room
     message = {"etag": etag, "alert": alert}
 
@@ -2368,7 +2330,7 @@ def add_note(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandRes
     message: dict[str, Any] = {}
 
     # Make rest call
-    resp = v1_client.add_alert_note(alert_id=workbench_id, note=content)
+    resp = v1_client.note.add(alert_id=workbench_id, note=content)
     note_resp: pytmv1.AddAlertNoteResp = unwrap(resp.response)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
@@ -2378,7 +2340,7 @@ def add_note(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandRes
     message = {
         "code": 201,
         "message": f"Note has been successfully added to {workbench_id}",
-        "note_id": note_resp.note_id(),
+        "note_id": note_resp.note_id,
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -2415,7 +2377,7 @@ def update_status(
     # Assign enum status
     status = InvestigationStatus[sts]
     # Make rest call
-    resp = v1_client.edit_alert_status(
+    resp = v1_client.alert.update_status(
         alert_id=workbench_id, status=status, if_match=if_match
     )
     # Check if an error occurred during rest call
@@ -2455,13 +2417,13 @@ def run_custom_script(
     """
     # Required Params
     block_objects = safe_load_json(args[BLOCK_OBJECTS])
-    script_tasks: list[CustomScriptTask] = []
+    script_tasks: list[CustomScriptRequest] = []
     message: list[dict[str, Any]] = []
     # Create custom script task list
     for script in block_objects:  # type: ignore
         if script.get(ENDPOINT, EMPTY_STRING):
             script_tasks.append(
-                CustomScriptTask(
+                CustomScriptRequest(
                     file_name=script[FILE_NAME],
                     endpoint_name=script[ENDPOINT],
                     parameter=script.get(PARAMETER, EMPTY_STRING),
@@ -2470,7 +2432,7 @@ def run_custom_script(
             )
         elif script.get(AGENT_GUID, EMPTY_STRING):
             script_tasks.append(
-                CustomScriptTask(
+                CustomScriptRequest(
                     file_name=script[FILE_NAME],
                     agent_guid=script[AGENT_GUID],
                     parameter=script.get(PARAMETER, EMPTY_STRING),
@@ -2478,7 +2440,7 @@ def run_custom_script(
                 )
             )
     # Make rest call
-    resp = v1_client.run_custom_script(*script_tasks)
+    resp = v1_client.script.run(*script_tasks)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         errs: list[pytmv1.MsError] = unwrap(resp.errors)
@@ -2522,20 +2484,20 @@ def get_custom_script_list(
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
     # Make rest call
-    resp = v1_client.get_custom_script_list(op=query_op, **fields)
+    resp = v1_client.script.list(op=query_op, **fields)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
-    script_resp: pytmv1.GetCustomScriptListResp = unwrap(resp.response)
+    script_resp: pytmv1.ListCustomScriptsResp = unwrap(resp.response)
     # Add results to message to be sent to the War Room
     for item in script_resp.items:
         message.append(
             {
                 "id": item.id,
-                "description": item.description,
                 "filename": item.file_name,
                 "filetype": item.file_type.value,
+                "description": item.description,
             }
         )
     return CommandResults(
@@ -2573,13 +2535,11 @@ def add_custom_script(
         filetype = pytmv1.FileType.BASH
     elif filetype.lower() == "powershell":
         filetype = pytmv1.FileType.POWERSHELL
-    # Take the string script contents and convert to bytes
-    byte_contents = bytes(script_contents, "utf-8")
     # Make rest call
-    resp = v1_client.add_custom_script(
+    resp = v1_client.script.add(
         file_type=filetype,
         file_name=filename,
-        file=byte_contents,
+        file_content=script_contents,
         description=description,
     )
     # Check if an error occurred during rest call
@@ -2587,10 +2547,9 @@ def add_custom_script(
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
     script_resp: pytmv1.AddCustomScriptResp = unwrap(resp.response)
-    location: str = script_resp.location
-    id: str = location.split("/")[-1]
+    id: str = script_resp.script_id
     # Add results to message to be sent to the War Room
-    message: dict[str, str] = {"id": id, "location": location}
+    message: dict[str, str] = {"id": id}
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[ADD_CUSTOM_SCRIPT_COMMAND],
@@ -2619,7 +2578,7 @@ def download_custom_script(
     # Required Params
     script_id = args.get(SCRIPT_ID, EMPTY_STRING)
     # Make rest call
-    resp = v1_client.download_custom_script(script_id=script_id)
+    resp = v1_client.script.download(script_id=script_id)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
@@ -2662,14 +2621,12 @@ def update_custom_script(
         filetype = pytmv1.FileType.BASH
     elif filetype.lower() == "powershell":
         filetype = pytmv1.FileType.POWERSHELL
-    # Take the string script contents and convert to bytes
-    byte_contents = bytes(script_contents, "utf-8")
     # Make rest call
-    resp = v1_client.update_custom_script(
+    resp = v1_client.script.update(
         file_name=filename,
         file_type=filetype,
         description=description,
-        file=byte_contents,
+        file_content=script_contents,
         script_id=script_id,
     )
     # Check if an error occurred during rest call
@@ -2706,7 +2663,7 @@ def delete_custom_script(
     # Required Params
     script_id = args.get(SCRIPT_ID, EMPTY_STRING)
     # Make rest call
-    resp = v1_client.delete_custom_script(script_id=script_id)
+    resp = v1_client.script.delete(script_id=script_id)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
