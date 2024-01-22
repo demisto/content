@@ -1,14 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-
-
-
-
-
-
-
 import traceback
 import requests
 import urllib3
@@ -22,15 +14,16 @@ verify_cert = not demisto.params().get('insecure', False)
 proxies = handle_proxy()
 
 
-state_phases = { 'In progress': 2,
-                 'Opened': 3,
-                 'Containement': 4,
-                 'Eradication': 5,
-                 'Recovery': 6,
-                 'Post-Incident': 7,
-                 'Reporting': 8,
-                 'Closed': 9
+state_phases = {'In progress': 2,
+                'Opened': 3,
+                'Containement': 4,
+                'Eradication': 5,
+                'Recovery': 6,
+                'Post-Incident': 7,
+                'Reporting': 8,
+                'Closed': 9
                 }
+
 
 class DFIRIrisAPI:
     def __init__(self, api_endpoint, api_key):
@@ -76,12 +69,11 @@ class DFIRIrisAPI:
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
 
-
     def close_case(self, case_id):
 
         response = requests.post(f'{self.api_endpoint}/manage/cases/close/{case_id}', headers=self.headers,
-                                verify=verify_cert, proxies=proxies
-                                )
+                                 verify=verify_cert, proxies=proxies
+                                 )
 
         if response.status_code == 200:
             cases = response.json()
@@ -92,12 +84,11 @@ class DFIRIrisAPI:
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
 
-
     def reopen_case(self, case_id):
 
         response = requests.post(f'{self.api_endpoint}/manage/cases/reopen/{case_id}', headers=self.headers,
-                                verify=verify_cert, proxies=proxies
-                                )
+                                 verify=verify_cert, proxies=proxies
+                                 )
 
         if response.status_code == 200:
             cases = response.json()
@@ -113,12 +104,11 @@ class DFIRIrisAPI:
         body = {
             "case_name": case_name,
             "state_id": state_phases[case_state]
-            }
+        }
 
         response = requests.post(f'{self.api_endpoint}/manage/cases/update/{case_id}', headers=self.headers,
-                                verify=verify_cert, proxies=proxies, json=body
-                                )
-
+                                 verify=verify_cert, proxies=proxies, json=body
+                                 )
 
         if response.status_code == 200:
             cases = response.json()
@@ -134,11 +124,11 @@ class DFIRIrisAPI:
         body = {
             "group_title": group_title,
             "cid": case_id
-            }
+        }
 
         response = requests.post(f'{self.api_endpoint}/case/notes/groups/add', headers=self.headers,
-                                verify=verify_cert, proxies=proxies, json=body
-                                )
+                                 verify=verify_cert, proxies=proxies, json=body
+                                 )
 
         if response.status_code == 200:
             cases = response.json()
@@ -149,7 +139,6 @@ class DFIRIrisAPI:
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
 
-
     def add_new_note_to_group(self, case_id, note_title, note_content, group_id):
 
         body = {
@@ -157,11 +146,11 @@ class DFIRIrisAPI:
             "cid": case_id,
             "note_content": note_content,
             "group_id": group_id
-            }
+        }
 
         response = requests.post(f'{self.api_endpoint}/case/notes/add', headers=self.headers,
-                                verify=verify_cert, proxies=proxies, json=body
-                                )
+                                 verify=verify_cert, proxies=proxies, json=body
+                                 )
 
         if response.status_code == 200:
             cases = response.json()
@@ -219,30 +208,27 @@ class DFIRIrisAPI:
 
 
 ''' COMMAND FUNCTIONS '''
+
+
 def fetch_incidents(dfir_iris, params):
-
     context = demisto.getLastRun()
-
     cases = dfir_iris.get_all_cases()
 
     incidentLastCaseID = int(params.get('incidentLastCaseID', 0))
     LastCaseId = context.get('lastCaseId', incidentLastCaseID)
 
-
-
     incidents = []
     for case in cases:
         if case['case_id'] == LastCaseId:
-            demisto.info(f'The case number is the same, do not continue the process')
+            demisto.info('The case number is the same, do not continue the process')
             break
         elif case['case_id'] < LastCaseId:
-            demisto.info(f'The previous case was deleted, do not continue the process')
+            demisto.info('The previous case was deleted, do not continue the process')
             break
         else:
             incident = {
-
-                'name': case['case_name'], # name is required field, must be set
-                'rawJSON': json.dumps(case) # the original event, this will allow mapping of the event in the mapping stage. Don't forget to `json.dumps`
+                'name': case['case_name'],
+                'rawJSON': json.dumps(case)
             }
 
             incidents.append(incident)
@@ -303,9 +289,7 @@ def process_get_all_cases(dfir_iris, args: Dict[str, Any]) -> CommandResults:
 
 
 def process_close_case(dfir_iris, args: Dict[str, Any]) -> CommandResults:
-
     case_id = args.get("case_id")
-
     results_str = dfir_iris.close_case(case_id)
 
     readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
@@ -317,12 +301,10 @@ def process_close_case(dfir_iris, args: Dict[str, Any]) -> CommandResults:
         outputs=results_str,
     )
 
+
 def process_reopen_case(dfir_iris, args: Dict[str, Any]) -> CommandResults:
-
     case_id = args.get("case_id")
-
     results_str = dfir_iris.reopen_case(case_id)
-
     readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
 
     return CommandResults(
@@ -332,8 +314,8 @@ def process_reopen_case(dfir_iris, args: Dict[str, Any]) -> CommandResults:
         outputs=results_str,
     )
 
-def process_update_case_state(dfir_iris, args: Dict[str, Any]) -> CommandResults:
 
+def process_update_case_state(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     case_name = args.get("case_name")
     case_state = args.get("case_state")
@@ -349,13 +331,12 @@ def process_update_case_state(dfir_iris, args: Dict[str, Any]) -> CommandResults
         outputs=results_str,
     )
 
-def process_create_notes_group(dfir_iris, args: Dict[str, Any]) -> CommandResults:
 
+def process_create_notes_group(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     group_title = args.get("group_title")
 
     results_str = dfir_iris.create_notes_group(case_id, group_title)
-
     readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
 
     return CommandResults(
@@ -365,15 +346,14 @@ def process_create_notes_group(dfir_iris, args: Dict[str, Any]) -> CommandResult
         outputs=results_str,
     )
 
-def process_add_new_note_to_group(dfir_iris, args: Dict[str, Any]) -> CommandResults:
 
+def process_add_new_note_to_group(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     note_title = args.get("note_title")
     note_content = args.get("note_content")
     group_id = args.get("group_id")
 
     results_str = dfir_iris.add_new_note_to_group(case_id, note_title, note_content, group_id)
-
     readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
 
     return CommandResults(
@@ -383,12 +363,11 @@ def process_add_new_note_to_group(dfir_iris, args: Dict[str, Any]) -> CommandRes
         outputs=results_str,
     )
 
-def process_get_list_of_groups_and_notes(dfir_iris, args: Dict[str, Any]) -> CommandResults:
 
+def process_get_list_of_groups_and_notes(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
 
     results_str = dfir_iris.get_list_of_groups_and_notes(case_id)
-
     readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
 
     return CommandResults(
@@ -398,10 +377,9 @@ def process_get_list_of_groups_and_notes(dfir_iris, args: Dict[str, Any]) -> Com
         outputs=results_str,
     )
 
+
 def process_get_list_of_iocs(dfir_iris, args: Dict[str, Any]) -> CommandResults:
-
     case_id = args.get("case_id")
-
     results_str = dfir_iris.get_list_of_iocs(case_id)
 
     readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
@@ -413,13 +391,12 @@ def process_get_list_of_iocs(dfir_iris, args: Dict[str, Any]) -> CommandResults:
         outputs=results_str,
     )
 
-def process_get_ioc_content(dfir_iris, args: Dict[str, Any]) -> CommandResults:
 
+def process_get_ioc_content(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     ioc_id = args.get("ioc_id")
 
     results_str = dfir_iris.get_ioc_content(case_id, ioc_id)
-
     readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
 
     return CommandResults(
@@ -437,7 +414,6 @@ def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
     command = demisto.command()
-    args = demisto.args()
 
     demisto.info(f'Command being called is {command}')
     try:
@@ -490,7 +466,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-
-
-
