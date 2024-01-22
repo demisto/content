@@ -25,7 +25,7 @@ def test_get_indicators(mocker):
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
     _, indicators = get_indicators(client, indicator_types=['registry key', 'account'], limit=10)
     assert len(indicators) == 2
-    
+
 
 def test_get_indicators__filters(mocker):
     """Tests get_indicators function filters
@@ -35,13 +35,13 @@ def test_get_indicators__filters(mocker):
         -  the get_indicators function is called
     Then
         - validate the filters that are sent to the API are correct.
-    
+
     """
     client = Client
     mock_request = mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
-    _, indicators = get_indicators(client, indicator_types=['registry key', 'account'],score=[1, 2], limit=10)
+    _, indicators = get_indicators(client, indicator_types=['registry key', 'account'], score=[1, 2], limit=10)
     assert mock_request.call_args[1]['filters'] == {
-        'mode': 'and', 'filters': [{'key': 'entity_type', 'values': ['Windows-Registry-Key', 
+        'mode': 'and', 'filters': [{'key': 'entity_type', 'values': ['Windows-Registry-Key',
                                                                      'User-Account'],
                                     'operator': 'eq', 'mode': 'or'},
                                    {'key': 'x_opencti_score', 'values': [1, 2],
