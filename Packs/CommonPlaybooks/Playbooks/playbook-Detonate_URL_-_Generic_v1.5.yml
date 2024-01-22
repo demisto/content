@@ -87,6 +87,7 @@ tasks:
       - "6"
       - "4"
       - "23"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -837,6 +838,38 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 79a510af-3640-415e-85bd-b9cf42ace798
+    type: playbook
+    task:
+      id: 79a510af-3640-415e-85bd-b9cf42ace798
+      version: -1
+      name: Detonate URL - ThreatGrid v2
+      playbookName: Detonate URL - ThreatGrid v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2470,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
