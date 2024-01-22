@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 REGEX = re.compile(r"^(.*) \[(#\d+)\]\((http.*)\)")
 
 
-def get_changelog_text(release_branch_name, format='markdown'):
+def get_changelog_text(release_branch_name, text_format='markdown'):
     # get release changelog
     url = f"https://raw.githubusercontent.com/demisto/demisto-sdk/{release_branch_name}/CHANGELOG.md"
     response = requests.request("GET", url, verify=False)
@@ -33,16 +33,16 @@ def get_changelog_text(release_branch_name, format='markdown'):
             # Ignoring the mypy error because the regex must match
             change_parts = REGEX.match(change).groups()  # type: ignore[union-attr]
 
-            if format == 'markdown':
+            if text_format == 'markdown':
                 releases.append(
                     f"{change_parts[0]} [{change_parts[1]}]({change_parts[2]})"
                 )
-            elif format == 'slack':
+            elif text_format == 'slack':
                 releases.append(
                     f"{change_parts[0]} <{change_parts[2]}|{change_parts[1]}>"
                 )
             else:
-                logging.error(f'The format {format} is not supported')
+                logging.error(f'The format {text_format} is not supported')
                 exit(1)
 
         except Exception as e:
@@ -76,7 +76,7 @@ def main():
         'tag_name': f'v{release_branch_name}',
         'name': f'v{release_branch_name}',
         'body': get_changelog_text(release_branch_name),
-        'draft': True, ############# TODO: CHANGE TO False
+        'draft': True,  # TODO: CHANGE TO False
         'target_commitish': release_branch_name
     })
 

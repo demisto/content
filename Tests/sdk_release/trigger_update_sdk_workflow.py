@@ -1,6 +1,7 @@
 import requests
 import json
 import sys
+import os
 import argparse
 import urllib3
 from create_release import get_changelog_text
@@ -10,6 +11,11 @@ from Tests.scripts.utils import logging_wrapper as logging
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
+        ':alert: Please run in the terminal\n' \
+        '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/demisto/content ~/dev/demisto/demisto-sdk`\n' \
+        'Change log```{}```'
+
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Triggers update-demisto-sdk-version workflow')
@@ -17,7 +23,7 @@ def options_handler():
     parser.add_argument('-t', '--access_token', help='Github access token', required=True)
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
     parser.add_argument('-r', '--reviewer', help='The reviewer of the pull request', required=True)
-
+    parser.add_argument('--artifacts-folder', help='Artifacts folder to create the CHANGELOG_SLACK.txt file', required=True)
     options = parser.parse_args()
     return options
 
@@ -29,11 +35,12 @@ def main():
     release_branch_name = options.release_branch_name
     access_token = options.access_token
     reviewer = options.reviewer
+    artifacts_folder = options.artifacts_folder
 
     inputs = {
         'reviewer': reviewer,
         # 'release_version': release_branch_name,
-        'release_version': '1.25.0', #TODO: remove this line
+        'release_version': '1.25.0',  # TODO: remove this line
         'release_changes': get_changelog_text(release_branch_name)
     }
 
@@ -55,6 +62,14 @@ def main():
         sys.exit(1)
 
     logging.success('update-demisto-sdk-version workflow triggered successfully')
+
+    changelog_text = get_changelog_text(release_branch_name, text_format='slack')
+
+    changelog_text = SLACK_RELEASE_MESSAGE.format(release_branch_name, changelog_text)
+    changelog_file = os.path.join(artifacts_folder, 'CHANGELOG_SLACK.txt')
+
+    with open(changelog_file, "w") as f:
+        f.write(str(changelog_text))
 
 
 if __name__ == "__main__":
