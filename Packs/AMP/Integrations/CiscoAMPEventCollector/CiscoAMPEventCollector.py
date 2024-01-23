@@ -14,6 +14,8 @@ VENDOR = 'cisco'
 PRODUCT = 'secure endpoint'
 INTEGRATION_NAME = 'Cisco AMP Event Collector'
 
+FIRST_FETCH = 'one hour'
+
 ''' CLIENT CLASS '''
 
 
@@ -62,7 +64,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -75,7 +77,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        fetch_events(client, {}, {})
+        fetch_events(client, params, {})
     except Exception as e:
         if 'Unauthorized' in str(e):
             return 'Authorization Error: make sure the Client ID and API Key are correctly set'
@@ -89,7 +91,7 @@ def get_events(client, args):
        Gets events from Guardicore API.
     """
 
-    _, events = fetch_events(client=client, params=args, last_run={'last_fetch': args.get('from_date', '1 month')})
+    _, events = fetch_events(client=client, params=args, last_run={'last_fetch': args.get('from_date', FIRST_FETCH)})
     hr = tableToMarkdown(name='Events', t=events)
     return events, CommandResults(readable_output=hr)
 
@@ -166,7 +168,7 @@ def fetch_events(client: Client, params: dict, last_run: dict):
         if start_date:
             start_date = dateparser.parse(start_date).strftime(ISO_8601_FORMAT)   # type: ignore[union-attr]
         else:
-            start_date = dateparser.parse('one month').strftime(ISO_8601_FORMAT)   # type: ignore[union-attr]
+            start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)   # type: ignore[union-attr]
         last_fetch_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
         demisto.debug(f'Getting events from: {start_date}')
 
@@ -211,7 +213,7 @@ def main() -> None:
                         server_url=server_url, proxy=proxy, verify=verify_certificate)
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+            return_results(test_module(client,params))
 
         elif command == 'cisco-amp-get-events':
             events, results = get_events(client, args)  # type: ignore
