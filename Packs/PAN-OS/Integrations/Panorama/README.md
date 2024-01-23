@@ -219,6 +219,7 @@ The equivalent `!pan-os` command is:
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+> **_NOTE:_**  The "create" commands function as UPSERT (UPDATE and INSERT), overriding existing data with new data if it already exists.
 
 1. [Run any command supported in the Panorama API: pan-os](#pan-os)
 2. [Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context: panorama-get-predefined-threats-list](#pan-os-get-predefined-threats-list)
