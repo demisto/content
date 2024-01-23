@@ -52,7 +52,6 @@ def main():
     access_token = options.access_token
     release_branch_name = options.release_branch_name
 
-    sdk_pr = None
     content_pr = None
 
     # initialize timer
@@ -64,7 +63,7 @@ def main():
     # wait to content pr to be open
     while not content_pr and elapsed < TIMEOUT:
         # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
-        content_pr = get_pr_from_branch('content', '1.25.3', access_token)  # TODO: remove this line
+        content_pr = get_pr_from_branch('content', '1.25.0', access_token)  # TODO: remove this line
 
         if not content_pr:
             logging.info('content pull request not created yet')

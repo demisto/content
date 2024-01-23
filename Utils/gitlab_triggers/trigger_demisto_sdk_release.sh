@@ -83,5 +83,5 @@ curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[RELEASE_VERSION]=${_release_version}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" | jq .web_url)
 
-echo "SDK release flow started"
+echo "SDK release flow started:"
 echo $URL

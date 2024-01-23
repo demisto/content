@@ -42,7 +42,7 @@ def main():
     inputs = {
         'reviewer': reviewer,
         # 'release_version': release_branch_name,
-        'release_version': '1.25.3',  # TODO: remove this line
+        'release_version': '1.25.0',  # TODO: remove this line
         'release_changes': get_changelog_text(release_branch_name)
     }
 

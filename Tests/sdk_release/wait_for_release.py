@@ -36,8 +36,6 @@ def main():
 
     release_branch_name = '1.25.3'  # TODO: remove this line
 
-
-
     while f'demisto_sdk-{release_branch_name}' not in demisto_sdk_versions and elapsed < TIMEOUT:
         res = requests.get(ARTIFACTS_URL, verify=False)
         if res.status_code != 200:

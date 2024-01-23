@@ -172,10 +172,10 @@ create-release-pull-request:
   extends:
     - .release-sdk
     - .default-job-settings
-#  needs:
-#    - wait-for-demisto-sdk-nightly
-#    - wait-for-content-private-nightly
-#    - wait-for-content-internal-dist-nightly
+  needs:
+    - wait-for-demisto-sdk-nightly
+    - wait-for-content-private-nightly
+    - wait-for-content-internal-dist-nightly
   when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
