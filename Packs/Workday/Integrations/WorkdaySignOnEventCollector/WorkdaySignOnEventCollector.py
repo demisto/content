@@ -93,7 +93,7 @@ class Client(BaseClient):
         proxy: bool,
         tenant_name: str,
         username: str,
-        password: str,
+        password: str,  # nosec
     ):
         headers = {"content-type": "text/xml;charset=UTF-8"}
 
@@ -111,7 +111,7 @@ class Client(BaseClient):
         self.base64_binary = base64_binary
         self.create_time = create_time
 
-    def create_password_digest(self, nonce: bytes, password: str, create_time: str) -> str:
+    def create_password_digest(self, nonce: bytes, password: str, create_time: str) -> str:  # nosec
         """ Encode the password to base64 according to Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
         Args:
             nonce: bytes - A nonce is a random value that the sender creates to include in each UsernameToken that it sends.
@@ -531,7 +531,7 @@ def main() -> None:  # pragma: no cover
     url = f"{base_url}/ccx/service/{tenant_name}/Identity_Management/{API_VERSION}"
 
     username = params.get("credentials", {}).get("identifier")
-    password = params.get("credentials", {}).get("password")
+    password = params.get("credentials", {}).get("password")  # nosec
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)

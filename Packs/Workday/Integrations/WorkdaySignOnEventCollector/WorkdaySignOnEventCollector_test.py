@@ -687,7 +687,7 @@ def test_create_password_digest():
     )
     create_time = "2021-09-01T11:00:00Z"
     nonce = b'e{\xbc\xe3#\xde\x9d\x0cc\x84\x87\xf1t\xfb2b'
-    password = "test_pass"
+    password = "test_pass"  # nosec
     expected_password_digest = '36DHoLb1sU2A9AWBMo3PQSndab0mKXtZrwEX9k91+pg='
     result = client.create_password_digest(nonce, password, create_time)
     assert result == expected_password_digest
@@ -715,7 +715,7 @@ def test_create_password_digest_special_char():
     )
     create_time = "2021-09-01T11:00:00Z"
     nonce = b'e{\xbc\xe3#\xde\x9d\x0cc\x84\x87\xf1t\xfb2b'
-    password = "pass&"
+    password = "pass&"  # nosec
     expected_password_digest = 'd1bSnwBwN3/+KtQiocuBLkyc7HmBVanqv/3x+TOnD64='
     result = client.create_password_digest(nonce, password, create_time)
     assert result == expected_password_digest
