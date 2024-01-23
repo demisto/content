@@ -2786,7 +2786,7 @@ script:
         description: A comma-separated list of hostnames.
         isArray: true
       - name: time
-        description: Time is used to filter by audit time.
+        description: Time is used to filter by audit time, format '%Y-%m-%dT%H:%M:%S.%SZ'.
       - name: attack_type
         description: AttackTypes is used to filter by runtime audit attack type.
       - name: limit

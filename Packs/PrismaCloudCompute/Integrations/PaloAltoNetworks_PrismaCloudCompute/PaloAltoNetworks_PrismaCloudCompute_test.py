@@ -1784,11 +1784,14 @@ def test_archive_audit_incident_command(mocker, action, response):
     Given:
         - An app client object
         - Relevant arguments
+            - first case - action is 'archive'
+            - second case - action is 'unarchive'
     When:
         - Calling 'prisma-cloud-archive-audit-incident' command
     Then:
-        - Ensure the outputs of the archive action are "incident was successfully archived"
-          when action is unarchive "incident was successfully unarchived"
+        - Ensure the outputs of the archive action are as expected
+            - first case: "incident was successfully archived"
+            - second case:  "incident was successfully unarchived"
     """
 
     from PaloAltoNetworks_PrismaCloudCompute import archive_audit_incident_command, PrismaCloudComputeClient

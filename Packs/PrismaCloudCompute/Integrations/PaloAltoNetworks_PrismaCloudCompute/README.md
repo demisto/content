@@ -4132,7 +4132,7 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 | search            | Term to search for. | Optional | 
 | limit             | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
 | offset            | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
-| all_results       | Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often. | Optional | 
+| all_results       | Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
