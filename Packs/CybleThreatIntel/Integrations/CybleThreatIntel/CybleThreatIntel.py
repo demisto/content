@@ -143,7 +143,7 @@ class Client(object):
         else:
             return {}
 
-    def get_taxii(self, args: Dict[str, Any], is_first_fetch: bool = True):
+    def get_taxii(self, args: Dict[str, Any], is_first_fetch: bool = False):
         """
         Fetch Taxii events for the given parameters
         :param args: arguments which would be used to fetch feed
