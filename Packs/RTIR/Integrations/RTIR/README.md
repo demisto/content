@@ -473,27 +473,27 @@
 </tr>
 <tr>
 <td style="width: 132px;">member-of</td>
-<td style="width: 589px;">Modified ticket MembersOF links</td>
+<td style="width: 589px;">Modified ticket MembersOF ID</td>
 </tr>
 <tr>
 <td style="width: 132px;">members</td>
-<td style="width: 589px;">Modified ticket Members links</td>
+<td style="width: 589px;">Modified ticket Members ID</td>
 </tr>
 <tr>
 <td style="width: 132px;">depends-on</td>
-<td style="width: 589px;">Modified ticket DependedOn links</td>
+<td style="width: 589px;">Modified ticket DependedOn ID</td>
 </tr>
 <tr>
 <td style="width: 132px;">depended-on-by</td>
-<td style="width: 589px;">Modified ticket DependedOnBy links</td>
+<td style="width: 589px;">Modified ticket DependedOnBy ID</td>
 </tr>
 <tr>
 <td style="width: 132px;">refers-to</td>
-<td style="width: 589px;">Modified ticket RefersTo links</td>
+<td style="width: 589px;">Modified ticket RefersTo ID</td>
 </tr>
 <tr>
 <td style="width: 132px;">referred-to-by</td>
-<td style="width: 589px;">Modified ticket ReferredToBy links</td>
+<td style="width: 589px;">Modified ticket ReferredToBy ID</td>
 </tr>
 <tr>
 <td>due</td>
