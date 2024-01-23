@@ -9,7 +9,7 @@ result_data=[]
 
 def get_data(key_word, json_data):
     for i in range(len(json_data)):
-        for key,value in json_data[i].items():
+        for value in json_data[i].values():
             if key_word in value:
                 result_data.append(json_data[i])
                 break
