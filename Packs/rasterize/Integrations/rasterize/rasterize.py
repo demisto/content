@@ -179,12 +179,14 @@ class PychromeEventHandler:
         self.tab_ready_event = tab_ready_event
         self.start_frame = None
 
-    def frame_started_loading(self, frameId):
+    def page_frame_started_loading(self, frameId):
+        demisto.debug(f'PychromeEventHandler.page_frame_started_loading, {frameId=}')
         if not self.start_frame:
             self.start_frame = frameId
             demisto.debug(f'Frame started loading: {frameId}')
 
-    def frame_stopped_loading(self, frameId):
+    def page_frame_stopped_loading(self, frameId):
+        demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {frameId=}')
         if self.start_frame == frameId:
             try:
                 with self.screen_lock:
@@ -201,8 +203,12 @@ class PychromeEventHandler:
                 demisto.info(f'Exception when Frame stopped loading: {frameId}, {pce}')
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
+        demisto.debug(f'PychromeEventHandler.network_data_received, {requestId=}')
         if requestId and not self.request_id:
+            demisto.debug(f'PychromeEventHandler.network_data_received, Using {requestId=}')
             self.request_id = requestId
+        else:
+            demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
 
 # endregion
 
@@ -401,9 +407,12 @@ def ensure_chrome_running():  # pragma: no cover
 def setup_tab_event(browser, tab):
     tab_ready_event = Event()
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
+
+    tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
-    tab.Page.frameStartedLoading = tab_event_handler.frame_started_loading
-    tab.Page.frameStoppedLoading = tab_event_handler.frame_stopped_loading
+
+    tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
+    tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
 
     return tab_event_handler, tab_ready_event
 
@@ -415,9 +424,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         demisto.debug(f'Starting tab navigation to given path: {path} on {tab.id=}')
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-        demisto.debug(f'allTimeSamplingProfile before navigation {allTimeSamplingProfile=}')
-        browserSamplingProfile = tab.Memory.getBrowserSamplingProfile()
-        demisto.debug(f'browserSamplingProfile before navigation {browserSamplingProfile=}')
+        demisto.debug(f'allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}')
+        heapUsage = tab.Runtime.getHeapUsage()
+        demisto.debug(f'heapUsage before navigation {heapUsage=} on {tab.id=}')
 
         if navigation_timeout > 0:
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
@@ -435,9 +444,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-        demisto.debug(f'allTimeSamplingProfile after navigation {allTimeSamplingProfile=}')
-        browserSamplingProfile = tab.Memory.getBrowserSamplingProfile()
-        demisto.debug(f'browserSamplingProfile after navigation {browserSamplingProfile=}')
+        demisto.debug(f'allTimeSamplingProfile after navigation {allTimeSamplingProfile=} on {tab.id=}')
+        heapUsage = tab.Runtime.getHeapUsage()
+        demisto.debug(f'heapUsage after navigation {heapUsage=} on {tab.id=}')
 
         return tab_event_handler
 
@@ -492,9 +501,9 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available available after {operation_time} seconds.")
 
     allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-    demisto.debug(f'allTimeSamplingProfile after screenshot {allTimeSamplingProfile=}')
-    browserSamplingProfile = tab.Memory.getBrowserSamplingProfile()
-    demisto.debug(f'browserSamplingProfile after screenshot {browserSamplingProfile=}')
+    demisto.debug(f'allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}')
+    heapUsage = tab.Runtime.getHeapUsage()
+    demisto.debug(f'heapUsage after screenshot {heapUsage=} on {tab.id=}')
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
@@ -519,13 +528,16 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     response_body = None
     if include_source:
         request_id, operation_time = backoff(tab_event_handler.request_id)
+        demisto.debug('screenshot_image, include_source, {request_id=}, {operation_time=}')
         if request_id:
             demisto.debug(f"request_id available after {operation_time} seconds.")
         else:
             demisto.info(f"request_id not available available after {operation_time} seconds.")
         demisto.debug(f"Got {request_id=} after {operation_time} seconds.")
+
         try:
             response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
+            demisto.debug('screenshot_image, include_source, {response_body=}')
         except Exception as ex:
             demisto.info(f'Failed to get page body due to {ex}')
             raise ex
@@ -839,7 +851,7 @@ def rasterize_command():  # pragma: no cover
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
 
     if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
-        output = {'image_b64': base64.b64encode(rasterize_output).decode('utf8'),
+        output = {'image_b64': base64.b64encode(rasterize_output[0]).decode('utf8'),
                   'html': response_body, 'current_url': url}
         demisto.results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
     else:
