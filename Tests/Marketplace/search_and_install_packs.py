@@ -590,7 +590,7 @@ def create_graph(
     return graph_dependencies
 
 
-def merge_cycles(graph: DiGraph) -> tuple[dict[str, str], DiGraph]:
+def merge_cycles(graph: DiGraph) -> DiGraph:
     """Merges nodes that are part of cycles in the directed graph into a single node.
 
     Args:
@@ -606,7 +606,6 @@ def merge_cycles(graph: DiGraph) -> tuple[dict[str, str], DiGraph]:
     logging.debug(
         f"Found the following cycles in the graph: {list(nx.simple_cycles(graph))}"
     )
-    map_cycles = {}
     while cycle := next(nx.simple_cycles(graph), None):
         merged_node_name = CYCLE_SEPARATOR.join(cycle)
         for node_1, node_2 in list(graph.edges()):
@@ -617,14 +616,7 @@ def merge_cycles(graph: DiGraph) -> tuple[dict[str, str], DiGraph]:
         for node in cycle:
             graph.remove_node(node)
 
-        map_cycles.update(
-            {
-                node: merged_node_name
-                for node in itertools.chain.from_iterable(split_cycles(cycle))
-            }
-        )
-    logging.debug(f"{map_cycles=}")
-    return map_cycles, graph
+    return graph
 
 
 def split_cycles(list_of_nodes: list[str]) -> list[list[str]]:
@@ -932,6 +924,13 @@ def search_and_install_packs_and_their_dependencies(
     Returns (list, bool):
         A list of the installed packs IDs.
         A flag that indicates if the operation succeeded or not.
+
+    High-level flow of the function:
+        1. Filter out deprecated packs from the given pack IDs.
+        2. Get all packs dependency data using the Demisto client.
+        3. Create a dependency graph using the all_packs_dependencies_data.
+        4. Get list of all packs and their dependencies to install from the graph.
+        5. Merge packs with circular dependencies into single, to make DAG graph.
     """
     host = hostname or client.api_client.configuration.host
 
@@ -949,6 +948,7 @@ def search_and_install_packs_and_their_dependencies(
     all_packs_dependencies_data = get_all_content_packs_dependencies(client)
 
     graph_dependencies = create_graph(all_packs_dependencies_data)
+    save_graph_dot_file_log(graph_dependencies, "graph_dependencies_all_content.dot")
 
     no_deprecated_dependencies, all_packs_and_dependencies_to_install = get_packs_and_dependencies_to_install(
         pack_ids,
@@ -958,23 +958,20 @@ def search_and_install_packs_and_their_dependencies(
     )
     success &= no_deprecated_dependencies
 
-    map_merged_cycles, merged_graph_dependencies = merge_cycles(graph_dependencies)
-
     # Create subgraph only with the packs that will be installed
     graph_dependencies_for_installed_packs = nx.subgraph(
-        merged_graph_dependencies,
-        {
-            map_merged_cycles[pack] if pack in map_merged_cycles else pack
-            for pack in all_packs_and_dependencies_to_install
-        },
-    )
-    # save_graph_dot_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs.dot")
+        graph_dependencies, all_packs_and_dependencies_to_install
+    ).copy()
+    save_graph_dot_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs.dot")
+
+    merged_graph_dependencies = merge_cycles(graph_dependencies_for_installed_packs)
+    save_graph_dot_file_log(merged_graph_dependencies, "merged_graph_dependencies.dot")
 
     logging.debug(
-        f"Get the following topological sort: {list(nx.topological_generations(graph_dependencies_for_installed_packs))}"
+        f"Get the following topological sort: {list(nx.topological_generations(merged_graph_dependencies))}"
     )
     sorted_packs_to_install = split_cycles(
-        list(nx.topological_sort(graph_dependencies_for_installed_packs))
+        list(nx.topological_sort(merged_graph_dependencies))
     )
 
     packs_to_install_request_body = create_install_request_body(
