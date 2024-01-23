@@ -2856,6 +2856,8 @@ def handle_user_unassignment(update_args):
 
 
 def handle_outgoing_issue_closure(remote_args):
+    incident_id = remote_args.remote_incident_id
+    demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {remote_args=}")
     update_args = remote_args.delta
     current_remote_status = remote_args.data.get('status') if remote_args.data else None
     # force closing remote incident only if:
@@ -2865,9 +2867,10 @@ def handle_outgoing_issue_closure(remote_args):
        current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
 
         if close_notes := update_args.get('closeNotes'):
+            demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {close_notes=}")
             update_args['resolve_comment'] = close_notes
         update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
-        demisto.debug(f"Closing Remote incident with status {update_args['status']}")
+        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident {incident_id=} with status {update_args['status']}")
 
 
 def get_update_args(remote_args):
