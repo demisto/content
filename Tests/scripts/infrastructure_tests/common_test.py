@@ -15,7 +15,7 @@ def test_get_person_in_charge(mocker):
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
-    commit.title = 'Merge branch \'master\' into branch-name (#123)'
+    commit.title = 'Fix a bug (#123)'
 
     result = get_person_in_charge(commit)
     assert result == NAME_AND_PR_URL
@@ -32,7 +32,7 @@ def test_get_person_in_charge__multiple_IDs(mocker):
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
-    commit.title = 'Merge branch \'master\' into branch-name (#456) (#123)'
+    commit.title = 'Fix a bug (#456) (#123)'
 
     result = get_person_in_charge(commit)
     assert result == NAME_AND_PR_URL
@@ -49,7 +49,7 @@ def test_get_person_in_charge__no_parenthesis(mocker):
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
-    commit.title = 'Merge branch \'master\' into branch-name #123'
+    commit.title = 'Fix a bug #123'
 
     result = get_person_in_charge(commit)
     assert result == NAME_AND_PR_URL
@@ -66,7 +66,7 @@ def test_get_person_in_charge__no_number_sign(mocker):
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
-    commit.title = 'Merge branch \'master\' into branch-name (123)'
+    commit.title = 'Fix a bug (123)'
 
     result = get_person_in_charge(commit)
     assert result == (None, None)
