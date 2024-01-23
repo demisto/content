@@ -291,6 +291,7 @@ def rerun_command_if_required(api_res: dict, rate_limit_auto_retry: bool, comman
             entry_type=EntryType.ERROR
         )
     else:
+        args['rate_limit_auto_retry'] = 'false'
         results = CommandResults(
             readable_output='API Rate limit exceeded.\nRerunning command:',
             scheduled_command=ScheduledCommand(
