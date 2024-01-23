@@ -20,7 +20,8 @@ SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
-    parser.add_argument('-t', '--message_text', help='The message text', required=True)
+    parser.add_argument('-t', '--message_text', help='The message text')
+    parser.add_argument('-f', '--file', help='File path with the text to send')
     parser.add_argument(
         '-ch', '--slack_channel', help='The slack channel in which to send the notification', default=CONTENT_CHANNEL
     )
@@ -44,6 +45,21 @@ def main():
     computed_slack_channel = options.slack_channel
     slack_token = options.slack_token
     text = options.message_text
+    text_file = options.file
+
+    if not text and not text_file:
+        logging.error('One of the arguments --message_text or --file must be provided, none given')
+        exit(1)
+    elif not text:
+        # read the text from the file
+        try:
+            file = open(text_file, "r")
+            text = file.read()
+        except Exception as e:
+            logging.error(f'Failed to read from file {text_file}, error: {str(e)}')
+            exit(1)
+        finally:
+            file.close()
 
     slack_client = WebClient(token=slack_token)
 
