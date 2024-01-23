@@ -102,11 +102,11 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'get_integration_context', return_value={})
         actual_edl, original_indicators_count = edl.get_edl_on_demand()
 
-        with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
+        with open(edl.EDL_ON_DEMAND_CACHE_PATH) as f:
             expected_edl = f.read()
 
         assert actual_edl == expected_edl
-        assert edl.EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE == original_indicators_count
+        assert original_indicators_count == edl.EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
 
     def test_get_edl_on_demand__with_refresh_signal(self, mocker):
         """
@@ -127,7 +127,7 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'create_new_edl', return_value=(expected_edl, 1))
         actual_edl, _ = edl.get_edl_on_demand()
 
-        with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
+        with open(edl.EDL_ON_DEMAND_CACHE_PATH) as f:
             cached_edl = f.read()
             assert actual_edl == expected_edl == cached_edl
 
@@ -228,7 +228,7 @@ class TestHelperFunctions:
                       {"value": "*.co.uk", "indicator_type": "Domain"},  # tld
                       {"value": "*.google.com", "indicator_type": "Domain"},  # no tld
                       {"value": "aא.com", "indicator_type": "URL"}]  # no ascii
-        f = '\n'.join((json.dumps(indicator) for indicator in indicators))
+        f = '\n'.join(json.dumps(indicator) for indicator in indicators)
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=2)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=(io.StringIO(f), 6))
         edl_v, _ = edl.create_new_edl(request_args)
@@ -272,7 +272,7 @@ class TestHelperFunctions:
                       {"value": "*.co.uk", "indicator_type": "Domain"},  # tld
                       {"value": "*.google.com", "indicator_type": "Domain"},  # no tld
                       {"value": "aא.com", "indicator_type": "URL"}]  # no ascii
-        f = '\n'.join((json.dumps(indicator) for indicator in indicators))
+        f = '\n'.join(json.dumps(indicator) for indicator in indicators)
 
         # create_new_edl with no offset
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8)
@@ -299,7 +299,7 @@ class TestHelperFunctions:
         """
         from EDL import create_json_out_format, RequestArguments
         returned_output = []
-        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
+        with open('test_data/demisto_url_iocs.json') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
             # strips port numbers
@@ -328,7 +328,7 @@ class TestHelperFunctions:
           - assert the result
         """
         from EDL import create_csv_out_format, RequestArguments
-        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
+        with open('test_data/demisto_url_iocs.json') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
                                             url_protocol_stripping=True)
@@ -353,7 +353,7 @@ class TestHelperFunctions:
           - assert the result
         """
         from EDL import create_mwg_out_format, RequestArguments
-        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
+        with open('test_data/demisto_url_iocs.json') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
                                             url_protocol_stripping=True)
@@ -381,7 +381,7 @@ class TestHelperFunctions:
         """
         from EDL import create_proxysg_out_format, RequestArguments, create_proxysg_all_category_out_format
         files_by_category = {}
-        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
+        with open('test_data/demisto_url_iocs.json') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
         request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,

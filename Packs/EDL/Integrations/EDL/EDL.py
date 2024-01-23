@@ -341,6 +341,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
         tuple[IO | IO[str], int]: A tuple of indicators in the requested format (IO | IO[str]),
             and the total number of indicators found by indicator_searcher (int).
     """
+    indicators = []
     f = tempfile.TemporaryFile(mode='w+t')
     list_fields = replace_field_name_to_output_format(request_args.fields_to_present)
     headers_was_writen = False
@@ -351,6 +352,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
             fetched_iocs = ioc_res.get('iocs') or []
             for ioc in fetched_iocs:
                 ioc_counter += 1
+                indicators.append(ioc.get('value'))
                 if request_args.out_format == FORMAT_PROXYSG:
                     files_by_category = create_proxysg_out_format(ioc, files_by_category, request_args)
 
@@ -382,7 +384,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
             if version.get('platform') == 'x2' or is_demisto_version_ge('8'):
                 raise SystemExit('Encountered issue in Elastic Search query. Restarting container and trying again.')
 
-    demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
+    demisto.debug(f"edl: Completed IOC search & format, found {ioc_counter} IOCs. Their contents: {indicators}")
     if request_args.out_format == FORMAT_JSON:
         f.write(']')
     elif request_args.out_format == FORMAT_PROXYSG:
@@ -760,13 +762,17 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             new_line = '\n'
     iocs.close()
     if len(ipv4_formatted_indicators) > 0:
+        demisto.debug(f"edl: Original IPv4 indicators: {ipv4_formatted_indicators}")
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
+        demisto.debug(f"edl: Formatted IPv4 indicators: {ipv4_formatted_indicators}")
         for ip in ipv4_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
 
     if len(ipv6_formatted_indicators) > 0:
+        demisto.debug(f"edl: Original IPv6 indicators: {ipv6_formatted_indicators}")
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
+        demisto.debug(f"edl: Formatted IPv6 indicators: {ipv6_formatted_indicators}")
         for ip in ipv6_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
