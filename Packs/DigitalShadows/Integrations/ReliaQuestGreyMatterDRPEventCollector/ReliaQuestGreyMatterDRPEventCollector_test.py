@@ -206,3 +206,4 @@ class TestFetchEvents:
             assert event["assets"]
 
     def test_fetch_events_no_last_run_single_iteration_sanity_test(self, mocker, client: ReilaQuestClient):
+        pass

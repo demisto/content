@@ -21,9 +21,17 @@ VENDOR = "ReliaQuest"
 PRODUCT = "GreyMatter DRP"
 FETCHED_TIME_LAST_RUN = "time"
 FOUND_IDS_LAST_RUN = "fetched_event_numbers"
+RATE_LIMIT_LAST_RUN = "rate_limit_retry_after"
 MAX_PAGE_SIZE = 1000
 
 ''' CLIENT CLASS '''
+
+
+class RateLimitError(Exception):
+
+    def __init__(self, message: str, retry_after: str):
+        self.retry_after = retry_after
+        super().__init__(message)
 
 
 class ReilaQuestClient(BaseClient):
@@ -53,24 +61,27 @@ class ReilaQuestClient(BaseClient):
             )
             json_response = response.json()
             if response.status_code == 429:
-                rate_limit_error = f'Rate-limit when running http-request to {url_suffix} with params {params}, error: {json_response}'
-                demisto.error(rate_limit_error)
-                if retry_after := dateparser.parse(json_response.get("retry-after")):
-                    demisto.debug(f'now: {datetime.now(timezone.utc).astimezone()}, retry-after: {retry_after}')
-                    while datetime.now(timezone.utc).astimezone() > retry_after:
-                        demisto.debug(f'Waiting to recover from ratelimit, sleeping for 1 second')
-                        time.sleep(1)
+                raise RateLimitError(
+                    f'Rate-limit when running http-request to {url_suffix} with params {params}, error: {json_response}',
+                    retry_after=json_response.get("retry-after", "")
+                )
 
-                    response = self._http_request(
-                        method,
-                        url_suffix=url_suffix,
-                        headers=headers or {"searchlight-account-id": self.account_id},
-                        params=params,
-                        resp_type="response",
-                    )
-                    response.raise_for_status()
-                    demisto.info(f'Recovered successfully from rate-limit when running http-request {url_suffix} with {params}')
-                    json_response = response.json()
+                # if retry_after := dateparser.parse(json_response.get("retry-after")):
+                #     demisto.debug(f'now: {datetime.now(timezone.utc).astimezone()}, retry-after: {retry_after}')
+                #     while datetime.now(timezone.utc).astimezone() > retry_after:
+                #         demisto.debug(f'Waiting to recover from ratelimit, sleeping for 1 second')
+                #         time.sleep(1)
+                #
+                #     response = self._http_request(
+                #         method,
+                #         url_suffix=url_suffix,
+                #         headers=headers or {"searchlight-account-id": self.account_id},
+                #         params=params,
+                #         resp_type="response",
+                #     )
+                #     response.raise_for_status()
+                #     demisto.info(f'Recovered successfully from rate-limit when running http-request {url_suffix} with {params}')
+                #     json_response = response.json()
 
             return json_response
         except DemistoException as error:
@@ -79,7 +90,7 @@ class ReilaQuestClient(BaseClient):
                 raise error.exception
             raise
 
-    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = MAX_PAGE_SIZE) -> List[dict[str, Any]]:
+    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = MAX_PAGE_SIZE):
         """
         Args:
                 api docs:
@@ -96,22 +107,17 @@ class ReilaQuestClient(BaseClient):
         if event_created_after:
             params["event-created-after"] = event_created_after
 
-        events = self.http_request("/triage-item-events", params=params)
-        demisto.info(f'Fetched {len(events)} events')
-        demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in events]}')
-
-        if events:
-            while len(events) < limit and "event-num" in events[-1]:
-                params.update({"event-num-after": events[-1]["event-num"]})
-                current_events = self.http_request("/triage-item-events", params=params)
-                if len(current_events) == 0:
-                    # if there aren't any new events, it means no pagination is needed
-                    break
-                demisto.info(f'Fetched {len(current_events)} events')
-                demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in current_events]}')
-                events.extend(current_events)
-
-        return events[:limit]
+        amount_of_fetched_events = 0
+        while amount_of_fetched_events < limit:
+            events = self.http_request("/triage-item-events", params=params)
+            if len(events) == 0:
+                break
+            amount_of_fetched_events += len(events)
+            end_index = amount_of_fetched_events - limit if amount_of_fetched_events > limit else MAX_PAGE_SIZE
+            events = events[0: end_index]
+            demisto.info(f'Fetched {len(events)} events')
+            demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in events]}')
+            yield events
 
     def triage_items(self, triage_item_ids: list[str]) -> List[dict[str, Any]]:
         """
@@ -357,8 +363,8 @@ def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Option
     alert_ids = list(alert_ids_to_triage_ids.keys())
     incident_ids = list(incident_ids_to_triage_ids.keys())
 
-    demisto.info(f'Fetched the following alerts {alert_ids}')
-    demisto.info(f'Fetched the following incidents {incident_ids}')
+    demisto.info(f'Fetched the following alerts IDs: {alert_ids}')
+    demisto.info(f'Fetched the following incidents IDs: {incident_ids}')
 
     alerts = client.get_alerts_by_ids(alert_ids)
     incidents = client.get_incident_ids(incident_ids)
@@ -400,11 +406,29 @@ def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Option
     return enriched_events, new_last_run
 
 
-def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH) -> tuple[List[dict], dict[str, str]]:
-    events = client.list_triage_item_events(event_created_after=last_run.get(FETCHED_TIME_LAST_RUN), limit=max_fetch)
-    events = dedup_fetched_events(events, last_run)
+def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
+    new_last_run = last_run.copy()
+    try:
+        retry_after = dateparser.parse(last_run.get(RATE_LIMIT_LAST_RUN))
+        now = datetime.now(timezone.utc).astimezone()
+        demisto.debug(f'now: {now}, retry-after: {retry_after}')
+        if retry_after and now < retry_after:
+            demisto.debug(
+                f'Waiting for the api to recover from rate-limit, need to wait {(retry_after - now).total_seconds()} seconds'
+            )
+            return
+        for events in client.list_triage_item_events(event_created_after=last_run.get(FETCHED_TIME_LAST_RUN), limit=max_fetch):
+            enriched_events, new_last_run = enrich_events(
+                client, events=dedup_fetched_events(events, last_run=last_run), last_run=last_run
+            )
+            send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(new_last_run)
+    except RateLimitError as rate_limit_error:
+        demisto.error(str(rate_limit_error))
+        new_last_run.update(
+            {RATE_LIMIT_LAST_RUN: rate_limit_error.retry_after}
+        )
 
-    return enrich_events(client, events=events, last_run=last_run)
 
 
 def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
@@ -414,16 +438,19 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
     if end_time := args.get("end_time"):
         end_time = dateparser.parse(end_time).strftime(DATE_FORMAT)
 
-    raw_events = client.list_triage_item_events(event_created_after=start_time, event_created_before=end_time, limit=limit)
-    enriched_events, _ = enrich_events(client, events=raw_events)
+    events = []
+
+    for current_events in client.list_triage_item_events(event_created_after=start_time, event_created_before=end_time, limit=limit):
+        current_enriched_events, _ = enrich_events(client, events=current_events)
+        events.extend(current_enriched_events)
 
     return CommandResults(
         outputs_prefix=f'ReliaQuest.Events',
         outputs_key_field='event-num',
-        outputs=enriched_events,
-        raw_response=raw_events,
+        outputs=events,
+        raw_response=events,
         readable_output=tableToMarkdown(
-            "Relia Quest Events", t=enriched_events, headers=["event-num", "triage-item-id", "event-created"]
+            "Relia Quest Events", t=events, headers=["event-num", "triage-item-id", "event-created"]
         )
     )
 
@@ -448,13 +475,7 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == "fetch-events":
-            events, new_last_run = fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
-            demisto.setLastRun(new_last_run)
+            fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
         elif command == "relia-quest-get-events":
             return_results(get_events_command(client, args=demisto.args()))
         else:
