@@ -402,7 +402,6 @@ def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Option
         FETCHED_TIME_LAST_RUN: latest_event_time or last_run.get(FETCHED_TIME_LAST_RUN),
         FOUND_IDS_LAST_RUN: latest_created_event_numbers or last_run.get(FOUND_IDS_LAST_RUN)
     }
-    demisto.info(f'updated last run: {new_last_run}')
     return enriched_events, new_last_run
 
 
@@ -422,12 +421,15 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
                 client, events=dedup_fetched_events(events, last_run=last_run), last_run=last_run
             )
             send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT)
+            demisto.info(f'Sent the following events {[event.get("event-num") for event in events]} successfully')
             demisto.setLastRun(new_last_run)
+            demisto.info(f'updated the last run to {new_last_run}')
     except RateLimitError as rate_limit_error:
         demisto.error(str(rate_limit_error))
         new_last_run.update(
             {RATE_LIMIT_LAST_RUN: rate_limit_error.retry_after}
         )
+        demisto.info(f'updated the last run from {last_run} to {new_last_run} after rate-limit')
 
 
 
