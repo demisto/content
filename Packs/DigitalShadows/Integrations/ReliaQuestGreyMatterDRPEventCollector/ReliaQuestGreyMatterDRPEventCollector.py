@@ -423,7 +423,7 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
             send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT)
             demisto.info(f'Sent the following events {[event.get("event-num") for event in events]} successfully')
             demisto.setLastRun(new_last_run)
-            demisto.info(f'updated the last run to {new_last_run}')
+            demisto.info(f'updated the last run from {last_run} to {new_last_run} successfully')
     except RateLimitError as rate_limit_error:
         demisto.error(str(rate_limit_error))
         new_last_run.update(
