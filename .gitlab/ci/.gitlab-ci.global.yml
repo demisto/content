@@ -464,7 +464,8 @@
         else
           if [[ "$CI_COMMIT_BRANCH" != "master" ]]; then
             # skip running `lint -g` on master
-            demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" --check-dependent-api-module --docker-image ${DOCKER}
+            echo "Running pre-commit -a"
+            demisto-sdk pre-commit -a xsoar-linter
           fi
         fi
       
