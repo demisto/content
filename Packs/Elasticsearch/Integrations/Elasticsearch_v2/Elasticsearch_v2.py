@@ -516,7 +516,7 @@ def integration_health_check(proxies):
     else:
         # check that we can reach any indexes in the supplied server URL
         test_general_query(es)
-    return_results("Testing was successful.")
+    return "Testing was successful."
 
 
 def incident_label_maker(source):
