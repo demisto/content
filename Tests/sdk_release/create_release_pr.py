@@ -24,6 +24,7 @@ def options_handler():
 
     parser.add_argument('-t', '--access_token', help='Github access token', required=True)
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
+    parser.add_argument('-d', '--is_draft', help='Is draft pull request')
 
     options = parser.parse_args()
     return options
@@ -35,8 +36,14 @@ def main():
     options = options_handler()
     access_token = options.access_token
     release_branch_name = options.release_branch_name
+    is_draft = options.is_draft
 
-    logging.info(f'Preparing to create Pull request to release branch {release_branch_name}')
+    if is_draft and is_draft.lower() in ("yes", "true", "y"):
+        is_draft = True
+        logging.info(f'Preparing to create draft Pull request to release branch {release_branch_name}')
+    else:
+        is_draft = False
+        logging.info(f'Preparing to create Pull request to release branch {release_branch_name}')
 
     headers = {
         'Authorization': f'Bearer {access_token}',
@@ -85,7 +92,8 @@ def main():
         'base': 'master',
         'head': release_branch_name,
         'title': f'Demisto-sdk release {release_branch_name}',
-        'body': ''
+        'body': '',
+        'draft': is_draft
     }
     url = f'{API_SUFFIX}/pulls'
     response = requests.request('POST', url, data=json.dumps(data), headers=headers, verify=False)

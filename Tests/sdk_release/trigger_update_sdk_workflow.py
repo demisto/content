@@ -26,6 +26,7 @@ def options_handler():
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
     parser.add_argument('-r', '--reviewer', help='The reviewer of the pull request', required=True)
     parser.add_argument('--artifacts-folder', help='Artifacts folder to create the CHANGELOG_SLACK.txt file', required=True)
+    parser.add_argument('-d', '--is_draft', help='Is draft pull request')
     options = parser.parse_args()
     return options
 
@@ -38,12 +39,19 @@ def main():
     access_token = options.access_token
     reviewer = options.reviewer
     artifacts_folder = options.artifacts_folder
+    is_draft = options.is_draft
+
+    if is_draft and is_draft.lower() in ("yes", "true", "y"):
+        is_draft = True
+    else:
+        is_draft = False
 
     inputs = {
         'reviewer': reviewer,
         # 'release_version': release_branch_name,
         'release_version': '1.25.0',  # TODO: remove this line
-        'release_changes': get_changelog_text(release_branch_name)
+        'release_changes': get_changelog_text(release_branch_name),
+        'is_draft': is_draft
     }
 
     data = {

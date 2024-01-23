@@ -58,7 +58,7 @@ def main():
     start = time.time()
     elapsed: float = 0
 
-    logging.info('Waiting for sdk and content release ull requests creation')
+    logging.info('Waiting for sdk and content release pull requests creation')
 
     # wait to content pr to be open
     while not content_pr and elapsed < TIMEOUT:

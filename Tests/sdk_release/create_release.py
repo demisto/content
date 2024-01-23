@@ -57,7 +57,7 @@ def options_handler():
 
     parser.add_argument('-t', '--access_token', help='Github access token', required=True)
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
-
+    parser.add_argument('-d', '--is_draft', help='Is draft release')
     options = parser.parse_args()
     return options
 
@@ -68,15 +68,21 @@ def main():
     options = options_handler()
     release_branch_name = options.release_branch_name
     access_token = options.access_token
+    is_draft = options.is_draft
 
-    logging.info(f"Preparing to release Demisto SDK version {release_branch_name}")
+    if is_draft and is_draft.lower() in ("yes", "true", "y"):
+        is_draft = True
+        logging.info(f"Preparing to create draft release for Demisto SDK version {release_branch_name}")
+    else:
+        is_draft = False
+        logging.info(f"Preparing to release Demisto SDK version {release_branch_name}")
 
     url = 'https://api.github.com/repos/demisto/demisto-sdk/releases'
     data = json.dumps({
         'tag_name': f'v{release_branch_name}',
         'name': f'v{release_branch_name}',
         'body': get_changelog_text(release_branch_name),
-        'draft': True,  # TODO: CHANGE TO False
+        'draft': is_draft,
         'target_commitish': release_branch_name
     })
 

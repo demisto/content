@@ -18,6 +18,7 @@ if [ "$#" -lt "1" ]; then
   [-ch, --slack-channel] A Slack channel to send notifications to. Default is dmst-sdk-release.
   [-b, --branch]         The branch name. Default is master branch.
   [-r, --reviewer]         Github username of the release owner.
+  [-d, --is-draft]         Whether to create draft release form not. Default is FALSE.
   "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection  TODO
   exit 1
@@ -25,6 +26,7 @@ fi
 
 _branch="master"
 _slack_channel="dmst-sdk-release"
+_is_draft="FALSE"
 
 # Parsing the user inputs.
 
@@ -51,6 +53,9 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -d|--is-draft) _is_draft="$2"
+    shift
+    shift;;
 
   esac
 done
@@ -81,6 +86,7 @@ curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[CI_TOKEN]=${_ci_token}" \
     --form "variables[REVIEWER]=${_reviewer}" \
     --form "variables[RELEASE_VERSION]=${_release_version}" \
+    --form "variables[IS_DRAFT]=${_is_draft}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" | jq .web_url)
 
 echo "SDK release flow started:"

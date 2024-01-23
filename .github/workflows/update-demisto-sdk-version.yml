@@ -14,6 +14,11 @@ on:
         description: The SDK release changes
         required: true
         type: string
+      is_draft:
+        description: Is draft pull request
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -57,6 +62,12 @@ jobs:
       run: |
         git commit -m "poetry files" -a
         git push origin ${{ inputs.release_version }}
-        gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "${{ inputs.release_changes }}" --reviewer ${{ inputs.reviewer }} -l "docs-approved"
+        if ${{ inputs.is_draft == true }}; then
+          echo "creating draft release pull request"
+          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "${{ inputs.release_changes }}" --reviewer ${{ inputs.reviewer }} -l "docs-approved" --draft
+        else
+          echo "creating release pull request"
+          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "${{ inputs.release_changes }}" --reviewer ${{ inputs.reviewer }} -l "docs-approved"
+        fi
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}

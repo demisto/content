@@ -180,9 +180,10 @@ create-release-pull-request:
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
+    IS_DRAFT: $IS_DRAFT
   script:
     - section_start "Create sdk release pr" --collapsed
-    - python3 ./Tests/sdk_release/create_release_pr.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - python3 ./Tests/sdk_release/create_release_pr.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -d $IS_DRAFT
     - section_end "Create sdk release pr"
 
 deploy-sdk-to-pypi:
@@ -196,9 +197,10 @@ deploy-sdk-to-pypi:
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
+    IS_DRAFT: $IS_DRAFT
   script:
     - section_start "Deploy SDK release" --collapsed
-    - python3 ./Tests/sdk_release/create_release.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - python3 ./Tests/sdk_release/create_release.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -d $IS_DRAFT
     - section_end "Deploy SDK release"
 
 create-content-pull-request:
