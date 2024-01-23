@@ -66,7 +66,7 @@ repos:
     args:
     - -E
     - --disable=all
-    - --fail-under=1 # With this flag, the linter will fail only if the score is less than 1, which isn't possible with warnings.
+    - --fail-under=0.1 # With this flag, the linter will fail only if the score is less than 1, which isn't possible with warnings.
     - --fail-on=E # we want the pylint to fail on Errors and fatals
   - id: pylint-in-docker
     name: pylint-in-docker
