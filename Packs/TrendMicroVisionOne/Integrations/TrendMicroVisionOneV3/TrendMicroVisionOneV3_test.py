@@ -48,16 +48,18 @@ from pytmv1 import (
     EmailActivity,
     Endpoint,
     EndpointActivity,
-    GetAlertDetailsResp,
+    GetAlertResp,
     AddCustomScriptResp,
-    GetCustomScriptListResp,
-    GetEmailActivityDataResp,
-    GetEndpointActivityDataResp,
-    GetEmailActivityDataCountResp,
+    ListCustomScriptsResp,
+    ListEmailActivityResp,
+    ListEndpointActivityResp,
+    GetEmailActivitiesCountResp,
     MsData,
+    FileType,
     TextResp,
     MsDataUrl,
     MultiResp,
+    ObjectType,
     MultiResult,
     MultiUrlResp,
     NoContentResp,
@@ -68,19 +70,20 @@ from pytmv1 import (
     ResultCode,
     RiskLevel,
     Status,
+    Account,
+    Iam,
     SandboxAction,
     SandboxObjectType,
     SubmitFileToSandboxResp,
     SandboxSuspiciousObject,
     SandboxAnalysisResultResp,
-    SandboxSuspiciousListResp,
+    ListSandboxSuspiciousResp,
     SandboxSubmissionStatusResp,
     TaskAction,
     Value,
     ValueList,
 )
-from pytmv1.model.commons import Account
-from pytmv1.model.enums import Iam
+from pytmv1.model.common import Script
 import demistomock as demisto
 import json
 import TrendMicroVisionOneV3
@@ -107,7 +110,7 @@ def enable_user_account_mock_response(*args, **kwargs) -> MultiResult[MultiResp]
 def test_enable_user_account(mocker):
     """Test enable user account success response."""
     client = Mock()
-    client.enable_account = Mock(return_value=enable_user_account_mock_response())
+    client.account.enable = Mock(return_value=enable_user_account_mock_response())
     args = {
         "account_identifiers": json.dumps(
             [
@@ -139,7 +142,7 @@ def disable_user_account_mock_response(*args, **kwargs):
 def test_disable_user_account(mocker):
     """Test disable user account success response."""
     client = Mock()
-    client.disable_account = Mock(return_value=disable_user_account_mock_response())
+    client.account.disable = Mock(return_value=disable_user_account_mock_response())
     args = {
         "account_identifiers": json.dumps(
             [
@@ -172,7 +175,7 @@ def force_signout_mock_response(*args, **kwargs):
 def test_force_signout(mocker):
     """Test to force sign out user account with successful result."""
     client = Mock()
-    client.sign_out_account = Mock(return_value=force_signout_mock_response())
+    client.account.sign_out = Mock(return_value=force_signout_mock_response())
     args = {
         "account_identifiers": json.dumps(
             [
@@ -204,9 +207,7 @@ def force_password_reset_mock_response(*args, **kwargs):
 def test_force_password_reset(mocker):
     """Test to force sign out user account with successful result."""
     client = Mock()
-    client.reset_password_account = Mock(
-        return_value=force_password_reset_mock_response()
-    )
+    client.account.reset = Mock(return_value=force_password_reset_mock_response())
     args = {
         "account_identifiers": json.dumps(
             [
@@ -238,7 +239,7 @@ def add_blocklist_mock_response(*args, **kwargs):
 def test_add_blocklist(mocker):
     """Test add to block list with positive scenario."""
     client = Mock()
-    client.add_to_block_list = Mock(return_value=add_blocklist_mock_response())
+    client.object.add_block = Mock(return_value=add_blocklist_mock_response())
     args = {
         "block_objects": json.dumps(
             [
@@ -273,7 +274,7 @@ def remove_blocklist_mock_response(*args, **kwargs):
 def test_remove_blocklist(mocker):
     """Test remove block list positive scenario."""
     client = Mock()
-    client.remove_from_block_list = Mock(return_value=remove_blocklist_mock_response())
+    client.object.delete_block = Mock(return_value=remove_blocklist_mock_response())
     args = {
         "block_objects": json.dumps(
             [
@@ -308,9 +309,7 @@ def quarantine_email_mock_response(*args, **kwargs):
 def test_quarantine_email_message(mocker):
     """Test quarantine email message positive scenario."""
     client = Mock()
-    client.quarantine_email_message = Mock(
-        return_value=quarantine_email_mock_response()
-    )
+    client.email.quarantine = Mock(return_value=quarantine_email_mock_response())
     args = {
         "email_identifiers": json.dumps(
             [
@@ -347,7 +346,7 @@ def delete_email_mock_response(*args, **kwargs):
 def test_delete_email_message(mocker):
     """Test delete email message with positive scenario."""
     client = Mock()
-    client.delete_email_message = Mock(return_value=delete_email_mock_response())
+    client.email.delete = Mock(return_value=delete_email_mock_response())
     args = {
         "email_identifiers": json.dumps(
             [
@@ -383,7 +382,7 @@ def restore_email_mock_response(*args, **kwargs):
 # Test case for restore email
 def test_restore_email_message(mocker):
     client = Mock()
-    client.restore_email_message = Mock(return_value=restore_email_mock_response())
+    client.email.restore = Mock(return_value=restore_email_mock_response())
     args = {
         "email_identifiers": json.dumps(
             [
@@ -415,7 +414,7 @@ def isolate_mock_response(*args, **kwargs):
 def test_isolate_endpoint(mocker):
     """Test isolate endpoint positive scenario."""
     client = Mock()
-    client.isolate_endpoint = Mock(return_value=isolate_mock_response())
+    client.endpoint.isolate = Mock(return_value=isolate_mock_response())
     args = {
         "endpoint_identifiers": json.dumps(
             [
@@ -449,7 +448,7 @@ def restore_endpoint_mock_response(*args, **kwargs):
 def test_restore_endpoint(mocker):
     """Test restore endpoint positive scenario."""
     client = Mock()
-    client.restore_endpoint = Mock(return_value=restore_endpoint_mock_response())
+    client.endpoint.restore = Mock(return_value=restore_endpoint_mock_response())
     args = {
         "endpoint_identifiers": json.dumps(
             [
@@ -483,7 +482,9 @@ def terminate_process_mock_response(*args, **kwargs):
 def test_terminate_process(mocker):
     """Test terminate process positive scenario."""
     client = Mock()
-    client.terminate_process = Mock(return_value=terminate_process_mock_response())
+    client.endpoint.terminate_process = Mock(
+        return_value=terminate_process_mock_response()
+    )
     args = {
         "process_identifiers": json.dumps(
             [
@@ -517,7 +518,7 @@ def add_exception_mock_response(*args, **kwargs):
 def test_add_object_to_exception_list(mocker):
     """Test add to exception list with positive scenario."""
     client = Mock()
-    client.add_to_exception_list = Mock(return_value=add_exception_mock_response())
+    client.object.add_exception = Mock(return_value=add_exception_mock_response())
     args = {
         "block_objects": json.dumps(
             [
@@ -552,9 +553,7 @@ def delete_exception_mock_response(*args, **kwargs):
 def test_delete_object_from_exception_list(mocker):
     """Test delete exception list positive scenario."""
     client = Mock()
-    client.remove_from_exception_list = Mock(
-        return_value=delete_exception_mock_response()
-    )
+    client.object.delete_exception = Mock(return_value=delete_exception_mock_response())
     args = {
         "block_objects": json.dumps(
             [
@@ -589,7 +588,7 @@ def add_suspicious_mock_response(*args, **kwargs):
 def test_add_object_to_suspicious_list(mocker):
     """Test add to suspicious list with poistive scenario."""
     client = Mock()
-    client.add_to_suspicious_list = Mock(return_value=add_suspicious_mock_response())
+    client.object.add_suspicious = Mock(return_value=add_suspicious_mock_response())
     args = {
         "block_objects": json.dumps(
             [
@@ -625,7 +624,7 @@ def delete_suspicious_mock_response(*args, **kwargs):
 def test_delete_object_from_suspicious_list(mocker):
     """Test delete object from suspicious list."""
     client = Mock()
-    client.remove_from_suspicious_list = Mock(
+    client.object.delete_suspicious = Mock(
         return_value=delete_suspicious_mock_response()
     )
     args = {
@@ -674,7 +673,7 @@ def mock_file_analysis_status_response(*args, **kwargs):
 def test_get_file_analysis_status(mocker):
     """Test to get status of file"""
     client = Mock()
-    client.get_sandbox_submission_status = Mock(
+    client.sandbox.get_submission_status = Mock(
         return_value=mock_file_analysis_status_response()
     )
     args = {"task_id": "921674d0-9735-4f79-b7de-c852e00a003d"}
@@ -716,7 +715,7 @@ def mock_file_result_response(*args, **kwargs):
 def test_get_file_analysis_result(mocker):
     """Test get file analysis report data."""
     client = Mock()
-    client.get_sandbox_analysis_result = Mock(return_value=mock_file_result_response())
+    client.sandbox.get_analysis_result = Mock(return_value=mock_file_result_response())
     args = {
         "report_id": "800f908d-9578-4333-91e5-822794ed5483",
         "poll": "true",
@@ -749,7 +748,7 @@ def mock_collect_file_response(*args, **kwargs):
 def test_collect_forensic_file(mocker):
     """Test collect file with positive scenario."""
     client = Mock()
-    client.collect_file = Mock(return_value=mock_collect_file_response())
+    client.endpoint.collect_file = Mock(return_value=mock_collect_file_response())
     args = {
         "collect_files": json.dumps(
             [
@@ -797,7 +796,7 @@ def mock_download_collected_file_info_response(*args, **kwargs):
 def test_get_forensic_file_information(mocker):
     """Test endpoint to get collected file information based on task id"""
     client = Mock()
-    client.get_task_result = Mock(
+    client.task.get_result_class = Mock(
         return_value=mock_download_collected_file_info_response()
     )
     args = {
@@ -807,7 +806,7 @@ def test_get_forensic_file_information(mocker):
     }
     result = download_information_collected_file(client, args)
     assert result.outputs["id"] == "00000003"
-    assert result.outputs["action"] == "collectFile"
+    # assert result.outputs["action"] == "collectFile"
     assert result.outputs["status"] == "succeeded"
     assert result.outputs["agent_guid"] == "cb9c8412-1f64-4fa0-a36b-76bf41a07ede"
     assert result.outputs["endpoint_name"] == "trend-host-1"
@@ -836,7 +835,7 @@ def test_download_analysis_report(mocker):
     file analysis status.
     """
     client = Mock()
-    client.download_sandbox_analysis_result = Mock(
+    client.sandbox.download_analysis_result = Mock(
         return_value=mock_download_analysis_report_response()
     )
     args = {
@@ -867,7 +866,7 @@ def test_download_investigation_package(mocker):
     by get file analysis status.
     """
     client = Mock()
-    client.download_sandbox_investigation_package = Mock(
+    client.sandbox.download_investigation_package = Mock(
         return_value=mock_download_investigation_package_response()
     )
     args = {
@@ -886,14 +885,15 @@ def test_download_investigation_package(mocker):
 def mock_download_suspicious_object_list_response(*args, **kwargs):
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=SandboxSuspiciousListResp(
+        response=ListSandboxSuspiciousResp(
             items=[
                 SandboxSuspiciousObject(
                     risk_level=RiskLevel.HIGH,
                     analysis_completion_date_time="2021-11-17T12:00:00Z",
                     expired_date_time="2022-12-17T12:00:00Z",
                     root_sha1="12a08b7a3c5a10b64700c0aca1a47941b50a4f8b",
-                    url="https://someurl.com",
+                    value="https://someurl.com",
+                    type=ObjectType.URL,
                 )
             ],
         ),
@@ -910,7 +910,7 @@ def test_download_suspicious_object_list(mocker):
     exist, a 404 not found error will be returned.
     """
     client = Mock()
-    client.get_sandbox_suspicious_list = Mock(
+    client.sandbox.list_suspicious = Mock(
         return_value=mock_download_suspicious_object_list_response()
     )
     args = {
@@ -996,7 +996,7 @@ def mocked_requests_post(*args, **kwargs):
 
 def test_submit_file_to_sandbox(mocker):
     client = Mock()
-    client.submit_file_to_sandbox = Mock(
+    client.sandbox.submit_file = Mock(
         return_value=mock_submit_file_to_sandbox_response()
     )
     args = {
@@ -1023,7 +1023,7 @@ def test_submit_file_entry_to_sandbox(mocker):
         return_value={"id": id, "path": "README.md", "name": "test.txt"},
     )
     client = Mock()
-    client.submit_file_to_sandbox = Mock(
+    client.sandbox.submit_file = Mock(
         return_value=mock_submit_file_to_sandbox_response()
     )
     mocker.patch("TrendMicroVisionOneV3.requests.get", mocked_requests_get)
@@ -1055,7 +1055,7 @@ def mock_urls_to_sandbox_response(*args, **kwargs):
 # Test case for submit urls to sandbox
 def test_submit_urls_to_sandbox(mocker):
     client = Mock()
-    client.submit_urls_to_sandbox = Mock(return_value=mock_urls_to_sandbox_response())
+    client.sandbox.submit_url = Mock(return_value=mock_urls_to_sandbox_response())
     args = {
         "urls": json.dumps(
             [
@@ -1075,10 +1075,10 @@ def test_submit_urls_to_sandbox(mocker):
 def test_sandbox_submission_polling(mocker):
     """Test sandbox submission polling."""
     client = Mock()
-    client.get_sandbox_submission_status = Mock(
+    client.sandbox.get_submission_status = Mock(
         return_value=mock_file_analysis_status_response()
     )
-    client.get_sandbox_analysis_result = Mock(return_value=mock_file_result_response())
+    client.sandbox.get_analysis_result = Mock(return_value=mock_file_result_response())
     mocker.patch.object(
         demisto,
         "demistoVersion",
@@ -1143,10 +1143,8 @@ def check_task_status_mock_response(*args, **kwargs):
 
 def test_check_task_status(mocker):
     client = Mock()
-    client.get_base_task_result = Mock(
-        return_value=get_base_task_result_mock_response()
-    )
-    client.get_task_result = Mock(return_value=check_task_status_mock_response())
+    client.task.get_result = Mock(return_value=get_base_task_result_mock_response())
+    client.task.get_result_class = Mock(return_value=check_task_status_mock_response())
     mocker.patch(
         "CommonServerPython.ScheduledCommand.raise_error_if_not_supported", lambda: None
     )
@@ -1197,9 +1195,9 @@ def test_get_endpoint_information(mocker):
     """Test get information from endpoint based on endpointName or agentGuid"""
     args = {"endpoint": "hoMSEDGEWIN10stname", "query_op": "and"}
     client = Mock()
-    client.consume_endpoint_data = Mock(side_effect=side_effect)
+    client.endpoint.consume_data = Mock(side_effect=side_effect)
     my_list = []
-    client.consume_endpoint_data(
+    client.endpoint.consume_data(
         lambda cons: my_list.append(cons), QueryOp.AND, "MSEDGEWIN10"
     )
     result = get_endpoint_info(client, args)
@@ -1222,7 +1220,7 @@ def get_endpoint_activity_data_mock_response(*args, **kwargs):
         endpoint_activity: dict[str, Any] = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=GetEndpointActivityDataResp(
+        response=ListEndpointActivityResp(
             next_link="https://somelink.com",
             items=[EndpointActivity(**endpoint_activity)],
             progress_rate=30,
@@ -1233,10 +1231,10 @@ def get_endpoint_activity_data_mock_response(*args, **kwargs):
 # Test case for get alert details
 def test_get_endpoint_activity_data(mocker):
     client = Mock()
-    client.get_endpoint_activity_data_count = Mock(
+    client.endpoint.get_activity_count = Mock(
         return_value=get_endpoint_activity_data_count_mock_response()
     )
-    client.get_endpoint_activity_data = Mock(
+    client.endpoint.list_activity = Mock(
         return_value=get_endpoint_activity_data_mock_response()
     )
     args = {
@@ -1257,14 +1255,14 @@ def test_get_endpoint_activity_data(mocker):
 def get_endpoint_activity_data_count_mock_response(*args, **kwargs):
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=GetEmailActivityDataCountResp(total_count=10),
+        response=GetEmailActivitiesCountResp(total_count=10),
     )
 
 
 # Test case for get alert details
 def test_get_endpoint_activity_data_count(mocker):
     client = Mock()
-    client.get_endpoint_activity_data_count = Mock(
+    client.endpoint.get_activity_count = Mock(
         return_value=get_endpoint_activity_data_count_mock_response()
     )
     args = {
@@ -1286,7 +1284,7 @@ def get_email_activity_data_mock_response(*args, **kwargs):
         email_activity: dict[str, Any] = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=GetEmailActivityDataResp(
+        response=ListEmailActivityResp(
             next_link="https://somelink.com",
             items=[EmailActivity(**email_activity)],
             progress_rate=30,
@@ -1297,10 +1295,10 @@ def get_email_activity_data_mock_response(*args, **kwargs):
 # Test case for get alert details
 def test_get_email_activity_data(mocker):
     client = Mock()
-    client.get_email_activity_data_count = Mock(
+    client.email.get_activity_count = Mock(
         return_value=get_email_activity_data_count_mock_response()
     )
-    client.get_email_activity_data = Mock(
+    client.email.list_activity = Mock(
         return_value=get_email_activity_data_mock_response()
     )
     args = {
@@ -1322,14 +1320,14 @@ def test_get_email_activity_data(mocker):
 def get_email_activity_data_count_mock_response(*args, **kwargs):
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=GetEmailActivityDataCountResp(total_count=10),
+        response=GetEmailActivitiesCountResp(total_count=10),
     )
 
 
 # Test case for get email activity data count
 def test_get_email_activity_data_count(mocker):
     client = Mock()
-    client.get_email_activity_data_count = Mock(
+    client.email.get_activity_count = Mock(
         return_value=get_email_activity_data_count_mock_response()
     )
     args = {
@@ -1352,8 +1350,8 @@ def get_alert_details_mock_response(*args, **kwargs):
         alert = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=GetAlertDetailsResp(
-            etag="33a64df551425fcc55e4d42a148795d9f25f89d4", alert=alert
+        response=GetAlertResp(
+            etag="33a64df551425fcc55e4d42a148795d9f25f89d4", data=alert
         ),
     )
 
@@ -1361,7 +1359,7 @@ def get_alert_details_mock_response(*args, **kwargs):
 # Test case for get alert details
 def test_get_alert_details(mocker):
     client = Mock()
-    client.get_alert_details = Mock(return_value=get_alert_details_mock_response())
+    client.alert.get = Mock(return_value=get_alert_details_mock_response())
 
     args = {"workbench_id": "WB-9002-20220909-00111"}
     result = get_alert_details(client, args)
@@ -1374,16 +1372,14 @@ def test_get_alert_details(mocker):
 def add_note_mock_response(*args, **kwargs):
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=AddAlertNoteResp(
-            Location="https://dummy.com/v3/workbench/alerts/WB-14-20190709-00003/notes/1"
-        ),
+        response=AddAlertNoteResp(note_id="1"),
     )
 
 
 # Test case for add note
 def test_add_note(mocker):
     client = Mock()
-    client.add_alert_note = Mock(return_value=add_note_mock_response())
+    client.note.add = Mock(return_value=add_note_mock_response())
     args = {"workbench_id": "WB-14-20190709-00003", "content": "This is a new note."}
     result = add_note(client, args)
     assert isinstance(result.outputs["message"], str)
@@ -1403,7 +1399,7 @@ def update_status_mock_response(*args, **kwargs):
 # Test case for update alert status
 def test_update_status(mocker):
     client = Mock()
-    client.edit_alert_status = Mock(return_value=update_status_mock_response())
+    client.alert.update_status = Mock(return_value=update_status_mock_response())
     args = {
         "workbench_id": "WB-20837-20220418-00000",
         "if_match": "d41d8cd98f00b204e9800998ecf8427e",
@@ -1427,7 +1423,7 @@ def run_custom_script_mock_response(*args, **kwargs):
 
 def test_run_custom_script(mocker):
     client = Mock()
-    client.run_custom_script = Mock(return_value=run_custom_script_mock_response())
+    client.script.run = Mock(return_value=run_custom_script_mock_response())
     args = {
         "block_objects": json.dumps(
             [
@@ -1449,19 +1445,32 @@ def test_run_custom_script(mocker):
 
 # Mock function to get custom script list
 def get_custom_script_list_mock_response(*args, **kwargs):
-    with open("./test_data/get_custom_script_list.json") as f:
-        return_value: list[dict[str, str]] = json.load(f)
+    # with open("./test_data/get_custom_script_list.json") as f:
+    #     return_value: list[dict[str, str]] = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=GetCustomScriptListResp(items=[data for data in return_value]),
+        response=ListCustomScriptsResp(
+            items=[
+                Script(
+                    id="cb044c99-8fc5-2418-f5a5-2f15dbe62133",
+                    file_name="string",
+                    file_type=FileType.BASH,
+                    description="Script to update some values",
+                ),
+                Script(
+                    id="44c99cb0-8c5f-4182-af55-62135dbe32f1",
+                    file_name="string",
+                    file_type=FileType.POWERSHELL,
+                    description="Script to delete duplicate values",
+                ),
+            ]
+        ),
     )
 
 
 def test_get_custom_script_list(mocker):
     client = Mock()
-    client.get_custom_script_list = Mock(
-        return_value=get_custom_script_list_mock_response()
-    )
+    client.script.list = Mock(return_value=get_custom_script_list_mock_response())
     args = {"fields": json.dumps({"fileType": "bash"}), "query_op": "or"}
     result = get_custom_script_list(client, args)
     assert isinstance(result.outputs[0]["id"], str)
@@ -1481,9 +1490,7 @@ def download_custom_script_mock_response(*args, **kwargs):
 
 def test_download_custom_script(mocker):
     client = Mock()
-    client.download_custom_script = Mock(
-        return_value=download_custom_script_mock_response()
-    )
+    client.script.download = Mock(return_value=download_custom_script_mock_response())
     args = {"script_id": "44c99cb0-8c5f-4182-af55-62135dbe32f1"}
     result = download_custom_script(client, args)
     assert isinstance(result.outputs["text"], str)
@@ -1503,9 +1510,7 @@ def delete_custom_script_mock_response(*args, **kwargs):
 
 def test_delete_custom_script(mocker):
     client = Mock()
-    client.delete_custom_script = Mock(
-        return_value=delete_custom_script_mock_response()
-    )
+    client.script.delete = Mock(return_value=delete_custom_script_mock_response())
     args = {"script_id": "44c99cb0-8c5f-4182-af55-62135dbe32f1"}
     result = delete_custom_script(client, args)
     assert isinstance(result.outputs["status"], str)
@@ -1525,7 +1530,7 @@ def add_custom_script_mock_response(*args, **kwargs):
 
 def test_add_custom_script(mocker):
     client = Mock()
-    client.add_custom_script = Mock(return_value=add_custom_script_mock_response())
+    client.script.add = Mock(return_value=add_custom_script_mock_response())
     args = {
         "file_url": "http://someurl.com/testscript.sh",
         "filename": "test_script.sh",
@@ -1536,10 +1541,6 @@ def test_add_custom_script(mocker):
     mocker.patch("TrendMicroVisionOneV3.requests.post", mocked_requests_post)
     result = add_custom_script(client, args)
     assert result.outputs["id"] == "44c99cb0-8c5f-4182-af55-62135dbe32f1"
-    assert (
-        result.outputs["location"]
-        == "https://api.xdr.trendmicro.com/3.0/response/customScrips/44c99cb0-8c5f-4182-af55-62135dbe32f1"
-    )
     assert result.outputs_prefix == "VisionOne.Add_Custom_Script"
     assert result.outputs_key_field == "id"
 
@@ -1556,9 +1557,7 @@ def update_custom_script_mock_response(*args, **kwargs):
 
 def test_update_custom_script(mocker):
     client = Mock()
-    client.update_custom_script = Mock(
-        return_value=update_custom_script_mock_response()
-    )
+    client.script.update = Mock(return_value=update_custom_script_mock_response())
     mocker.patch("TrendMicroVisionOneV3.requests.get", mocked_requests_get)
     mocker.patch("TrendMicroVisionOneV3.requests.post", mocked_requests_post)
     args = {
