@@ -1408,7 +1408,7 @@ script:
       name: groupsIds
     - description: Search for items that match the given terms.
       name: search
-    - description: Search only within the allowed comma-separated field values. When not specified, the default behavior is to search group by names only. The following are Group fields values allowed to be searched:- name,description
+    - description: Search only within the allowed comma-separated field values. When not specified, the default behavior is to search group by names only. The following are Group fields values allowed to be searched:- name,description.
       name: searchFields
     - description: List the items that match the given domain.
       name: domain
@@ -1448,7 +1448,7 @@ script:
       description: 'Count of items.'
       type: Number
     - contextPath: SophosCentral.UserGroups.source.type
-      description: "Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory"
+      description: "Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory."
       type: String
     - contextPath: SophosCentral.UserGroups.usersTotal
       description: 'Total count of users.'
@@ -1497,7 +1497,7 @@ script:
       description: 'Count of items.'
       type: Number
     - contextPath: SophosCentral.UserGroups.source.type
-      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory'
+      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
       type: String
     - contextPath: SophosCentral.UserGroups.usersTotal
       description: 'Total count of users.'
@@ -1529,7 +1529,7 @@ script:
     - description: Comma-separated list of User UUIDs. Maximum 1000 unique User IDs are allowed (You can retrieve the userIds from the sophos-central-users-list).
       isArray: true
       name: userIds
-    description: Creates a new “custom” (Centrally Managed) Group
+    description: Creates a new “custom” (Centrally Managed) Group.
     name: sophos-central-usergroups-create
     outputs:
     - contextPath: SophosCentral.UserGroups.id
@@ -1551,7 +1551,7 @@ script:
       description: 'Count of items.'
       type: Number
     - contextPath: SophosCentral.UserGroups.source.type
-      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory'
+      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
       type: String
     - contextPath: SophosCentral.UserGroups.usersTotal
       description: 'Total count of users.'
@@ -1605,7 +1605,7 @@ script:
       description: 'Count of items.'
       type: Number
     - contextPath: SophosCentral.UserGroups.source.type
-      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory'
+      description: 'Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
       type: String
     - contextPath: SophosCentral.UserGroups.usersTotal
       description: 'Total count of users.'
@@ -1651,7 +1651,7 @@ script:
       predefined:
       - server
       - computer
-    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command).
       isArray: true
       name: endpointIds
     description: Create a new endpoint group.
@@ -1754,7 +1754,7 @@ script:
       description: 'When the group was updated.'
       type: Date
   - arguments:
-    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command).
       name: groupId
       required: true
     description: Get endpoints in a group.
@@ -1821,10 +1821,10 @@ script:
       description: 'Date and time (UTC) when the endpoint last communicated with Sophos Central.'
       type: Date
   - arguments:
-    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command).
       name: groupId
       required: true
-    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command).
       isArray: true
       name: endpointIds
       required: true
@@ -1841,10 +1841,10 @@ script:
       description: 'Unique group ID.'
       type: String
   - arguments:
-    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command).
       name: groupId
       required: true
-    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command).
       isArray: true
       name: endpointIds
       required: true
@@ -1864,10 +1864,10 @@ script:
       description: 'List of removed EndpointIds from the group.'
       type: String
   - arguments:
-    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command).
       name: groupId
       required: true
-    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command)
+    - description: Comma-separated list of endpoint IDs. (You can retrieve endpoint IDs from sophos-central-endpoint-list command).
       name: endpointId
       required: true
     description: Remove endpoint from a group.
@@ -1914,7 +1914,7 @@ script:
       description: 'Group description.'
       type: String
   - arguments:
-    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command)
+    - description: UUID of Endpoint group ID.(You can retrieve endpoint group-id from sophos-central-group-list command).
       name: groupId
       required: true
     description: Delete an endpoint group by ID.
@@ -1958,31 +1958,31 @@ script:
     description: Get all endpoint policy.
     outputs:
     - contextPath: SophosCentral.PolicyAndEnumeration.id
-      description: 'Policy ID'
+      description: 'Policy ID.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.feature
-      description: 'Feature'
+      description: 'Feature.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.settings
-      description: 'Settings'
+      description: 'Settings.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.orderPriority
-      description: 'Order priority'
+      description: 'Order priority.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.name
-      description: 'Name'
+      description: 'Name.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.enforced
-      description: 'Enforced (T|F)'
+      description: 'Enforced (T|F).'
       type: Boolean
     - contextPath: SophosCentral.PolicyAndEnumeration.typeSingle
-      description: 'Type Single'
+      description: 'Type Single.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.typeGroup
-      description: 'Type Group'
+      description: 'Type Group.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.lastModified
-      description: 'Last Modified'
+      description: 'Last Modified.'
       type: String
   - arguments:
     - description: The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command.
@@ -1993,31 +1993,31 @@ script:
     description: Get details of Policy by id.
     outputs:
     - contextPath: SophosCentral.PolicyAndEnumeration.id
-      description: 'Policy ID'
+      description: 'Policy ID.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.feature
-      description: 'Feature'
+      description: 'Feature.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.settings
-      description: 'Settings'
+      description: 'Settings.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.orderPriority
-      description: 'Order priority'
+      description: 'Order priority.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.name
-      description: 'Name'
+      description: 'Name.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.enforced
-      description: 'Enforced (T|F)'
+      description: 'Enforced (T|F).'
       type: Boolean
     - contextPath: SophosCentral.PolicyAndEnumeration.typeSingle
-      description: 'Type Single'
+      description: 'Type Single.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.typeGroup
-      description: 'Type Group'
+      description: 'Type Group.'
       type: String
     - contextPath: SophosCentral.PolicyAndEnumeration.lastModified
-      description: 'Last Modified'
+      description: 'Last Modified.'
       type: String
   - arguments:
     - description: The policy ID. You can find the policy_id by executing the `sophos-central-endpoint-policy-search` command.
@@ -2105,7 +2105,7 @@ script:
       name: searchFields
     - description: List the items that match the given domain.
       name: domain
-    - description: 'Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory'
+    - description: 'Types of sources of directory information. The following values are allowed: custom, activeDirectory, azureActiveDirectory.'
       name: sourceType
       predefined:
       - custom
@@ -2398,7 +2398,7 @@ script:
     - contextPath: SophosCentral.DeletedUsers.deletedUserId
       description: Deleted User's Id.
       type: String
-  dockerimage: demisto/python3:3.10.12.67728
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'
