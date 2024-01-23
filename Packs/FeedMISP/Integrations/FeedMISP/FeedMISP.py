@@ -583,7 +583,7 @@ def main():
     timeout = arg_to_number(params.get('timeout')) or 60
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    fetch_limit = arg_to_number(params.get('limit', '2000'))
+    fetch_limit = arg_to_number(params.get('limit')) or 2000
     command = demisto.command()
     args = demisto.args()
 
