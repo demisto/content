@@ -402,7 +402,7 @@ tasks:
       HostContainment:
         simple: "True"
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       UserContainment:
         simple: "False"
     separatecontext: false

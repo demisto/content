@@ -1,0 +1,29 @@
+{
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Varonis SaaS Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "varonissaascontainsmaliciousexternalip",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_varonissaascontainsmaliciousexternalip",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Varonis SaaS Contains Malicious External IP",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false
+}
