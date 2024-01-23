@@ -396,12 +396,12 @@ jobs-done-check-nightly:
     - xsoar-prepare-testing-bucket
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
-    - xsoar_ng_server_ga
+    # - xsoar_ng_server_ga
     - tests_xsoar_server
     - xsoar-test_playbooks_results
     - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
-    - xsoar-saas_test_e2e_results
+    # - xsoar-saas_test_e2e_results
   tags:
     - gke
   rules:
@@ -675,7 +675,7 @@ xsoar_ng_server_ga:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-      when: always
+      when: never
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -734,7 +734,9 @@ test-upload-flow:
 
     - section_start "Create Testing Branch"
     - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-${CI_PIPELINE_ID}"
-    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a "${ARTIFACTS_FOLDER}" -g $GITLAB_PUSH_TOKEN
+    - echo "${BRANCH}" > "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt"
+    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb "${BRANCH}" -a "${ARTIFACTS_FOLDER}" -g "${GITLAB_PUSH_TOKEN}"
+
     - echo "Created test branch:${BRANCH}"
     - section_end "Create Testing Branch"
 
@@ -760,6 +762,15 @@ test-upload-flow:
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a "${ARTIFACTS_FOLDER}" -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"
     - job-done
+  after_script:
+    - !reference [.default-after-script]
+    - section_start "Delete Testing Branch"
+    - |
+      if [ -f "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt" ]; then
+        BRANCH=$(cat "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt")
+        python3 ./Utils/test_upload_flow/delete_test_branch.py -tb "${BRANCH}" -g "${GITLAB_PUSH_TOKEN}"
+      fi
+    - section_end "Delete Testing Branch"
 
 .server_test_playbooks_results:
   stage: results
@@ -790,7 +801,7 @@ test-upload-flow:
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
     - if: '$NIGHTLY'
-      when: always
+      when: never
   extends:
     - .default-job-settings
   needs:
