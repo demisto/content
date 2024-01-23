@@ -5,9 +5,10 @@ from CommonServerPython import *  # noqa: F401
 from typing import Dict, Any
 import traceback
 
-result_data=[]
+
 
 def get_data(key_word, json_data):
+    result_data=[]
     for i in range(len(json_data)):
         for value in json_data[i].values():
             if key_word in value:
