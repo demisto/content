@@ -2931,37 +2931,6 @@ script:
     - contextPath: Core.UserGroup.source
       description: Type of user group.
       type: String
-  - arguments:
-    - description: A comma-separated list of one or more role names in your environment for which you want detailed information.
-      name: role_names
-      required: true
-    name: core-list-roles
-    description: Retrieve information about one or more roles created in your environment.
-    outputs:
-    - contextPath: Core.Role.pretty_name
-      description: Name of the role as it appears in the management console.
-      type: String
-    - contextPath: Core.Role.permissions
-      description: List of permissions associated with this role.
-      type: array
-    - contextPath: Core.Role.insert_time
-      description: Timestamp of when the role was created.
-      type: Number
-    - contextPath: Core.Role.update_time
-      description: Timestamp of when the role was last updated.
-      type: Number
-    - contextPath: Core.Role.created_by
-      description: Email of the user who created the role.
-      type: String
-    - contextPath: Core.Role.description
-      description: Description of the role, if available.
-      type: String
-    - contextPath: Core.Role.groups
-      description: Group names associated with the role.
-      type: array
-    - contextPath: Core.Role.users
-      description: Email address of users associated with the role.
-      type: array
   runonce: false
   script: '-'
   subtype: python3
