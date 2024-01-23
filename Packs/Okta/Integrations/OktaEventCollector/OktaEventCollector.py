@@ -1,6 +1,8 @@
-from CommonServerPython import *
 from http import HTTPStatus
 from typing import cast
+
+from CommonServerPython import *
+
 VENDOR = "okta"
 PRODUCT = "okta"
 FETCH_LIMIT = 1000
@@ -16,17 +18,21 @@ class Client(BaseClient):
                    }
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
-    def get_events(self, since: int, limit: int = FETCH_LIMIT):
-        params = {
-            "sortOrder": "ASCENDING",
-            "since": since,
-            "limit": limit,
-        }
-        return self._http_request(url_suffix='/api/v1/logs', method='GET', headers=self._headers, params=params)
+    def get_events(self, since: int, limit: int = FETCH_LIMIT, next_link_url: str = ''):
+        if next_link_url:
+            return self._http_request(full_url=next_link_url, method='GET', headers=self._headers, resp_type='response')
+        else:
+            params = {
+                "sortOrder": "ASCENDING",
+                "since": since,
+                "limit": limit,
+            }
+            return self._http_request(url_suffix='/api/v1/logs', method='GET', headers=self._headers, params=params,
+                                      resp_type='response')
 
 
 def get_events_command(client: Client, total_events_to_fetch, since,
-                       last_object_ids: List[str] = None) -> tuple[List[dict], int]:  # pragma: no cover
+                       last_object_ids: list[str] = [], next_link: str = '') -> tuple[List[dict], int, str]:  # pragma: no cover
     """
     Fetches events from the okta api until the total_events_to_fetch is reached or no more events are available.
     if 429:TOO_MANY_REQUESTS is returned, will return the stored_events so far and the x-rate-limit-reset
@@ -48,8 +54,12 @@ def get_events_command(client: Client, total_events_to_fetch, since,
     while len(stored_events) < total_events_to_fetch and should_continue:
         demisto.debug(f"stored_events collected: {len(stored_events)}")
         try:
-            events = client.get_events(since=since, limit=num_of_events_to_fetch)  # type: ignore
-            if events:
+            if next_link:
+                response = client.get_events(since=since, limit=num_of_events_to_fetch, next_link_url=next_link)  # type: ignore
+            else:
+                response = client.get_events(since=since, limit=num_of_events_to_fetch)  # type: ignore
+
+            if events := json.loads(response.text):
                 demisto.debug(f'received {len(events)} number of events.')
                 if len(events) < num_of_events_to_fetch:
                     demisto.debug(f"Number of events collected is smaller than: {num_of_events_to_fetch} \
@@ -77,14 +87,20 @@ def get_events_command(client: Client, total_events_to_fetch, since,
                 demisto.debug(f'fetch-events Got 429. okta rate limit headers:\n \
                 x-rate-limit-remaining: {res.headers["x-rate-limit-remaining"]}\n \
                     x-rate-limit-reset: {res.headers["x-rate-limit-reset"]}\n')
-                return stored_events, int(res.headers['x-rate-limit-reset'])
-            return stored_events, 0
+                return stored_events, int(res.headers['x-rate-limit-reset']), next_link
+            return stored_events, 0, next_link
         except Exception as exc:
             demisto.error(f'Unexpected error.\n{traceback.format_exc()}')
             if len(stored_events) == 0:
                 raise exc
-            return stored_events, 0
-    return stored_events, 0
+            return stored_events, 0, next_link
+
+        if url := response.links.get('next'):
+            next_link = url.get('url')
+        else:
+            next_link = ''
+
+    return stored_events, 0, next_link
 
 
 def remove_duplicates(events: list, ids: list) -> list:
@@ -94,9 +110,13 @@ def remove_duplicates(events: list, ids: list) -> list:
     return [event for event in events if event['uuid'] not in ids]
 
 
-def get_last_run(events: List[dict], last_run_after) -> dict:
+def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
     """
-    Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
+    Build the last_run dictionary for the next fetch:
+        it returns 3 keys:
+        - after: the time to query from.
+        - ids: a list of ids to prevent duplications.
+        - next_link: a string representing the next request link if available, or an empty string if not.
     """
     ids = []
     # gets the last event time
@@ -106,19 +126,21 @@ def get_last_run(events: List[dict], last_run_after) -> dict:
             break
         ids.append(event.get('uuid'))
     last_time = datetime.strptime(str(last_time).lower().replace('z', ''), '%Y-%m-%dt%H:%M:%S.%f')
-    return {'after': last_time.isoformat(), 'ids': ids}
+    return {'after': last_time.isoformat(), 'ids': ids, 'next_link': next_link}
 
 
 def fetch_events(client: Client,
                  start_time_epoch: int,
                  events_limit: int,
                  last_run_after,
-                 last_object_ids: List[str] = None) -> List[dict]:  # pragma: no cover
+                 last_object_ids: list[str] = [],
+                 next_link: str = '') -> tuple[list[dict], str]:   # pragma: no cover
     while True:
-        events, epoch_time_to_continue_fetch = get_events_command(client=client,
-                                                                  total_events_to_fetch=events_limit,
-                                                                  since=last_run_after,
-                                                                  last_object_ids=last_object_ids)
+        events, epoch_time_to_continue_fetch, next_link = get_events_command(client=client,
+                                                                             total_events_to_fetch=events_limit,
+                                                                             since=last_run_after,
+                                                                             last_object_ids=last_object_ids,
+                                                                             next_link=next_link)
         if epoch_time_to_continue_fetch == 0:
             break
 
@@ -129,7 +151,7 @@ def fetch_events(client: Client,
             time.sleep(sleep_time)  # pylint: disable=E9003
         else:
             break
-    return events
+    return events, next_link
 
 
 def main():  # pragma: no cover
@@ -167,15 +189,16 @@ def main():  # pragma: no cover
             after = cast(datetime, dateparser.parse(demisto_params['after'].strip()))
             last_run = demisto.getLastRun()
             last_object_ids = last_run.get('ids')
+            next_link = last_run.get('next_link')
             if 'after' not in last_run:
                 last_run_after = after.isoformat()  # type: ignore
             else:
                 last_run_after = last_run['after']
-            events = fetch_events(client, start_time_epoch, events_limit,
-                                  last_run_after=last_run_after, last_object_ids=last_object_ids)
+            events, next_link = fetch_events(client, start_time_epoch, events_limit,
+                                             last_run_after=last_run_after, last_object_ids=last_object_ids, next_link=next_link)
             demisto.debug(f'sending_events_to_xsiam: {len(events)}')
             send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(get_last_run(events, last_run_after))
+            demisto.setLastRun(get_last_run(events, last_run_after, next_link))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
