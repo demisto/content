@@ -1,8 +1,9 @@
 category: Vulnerability Management
 sectionOrder:
 - Connect
-- Collect - events
-- Collect - assets
+- Collect
+#- Collect - events
+#- Collect - assets
 commonfields:
   id: Tenable.io
   version: -1
@@ -52,13 +53,13 @@ configuration:
 - display: Events Settings
   name: events
   type: 20
-  section: Collect - events
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
-  section: Collect - events
+  section: Collect
 - additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
   defaultvalue: '1000'
   display: Max Fetch
@@ -66,11 +67,11 @@ configuration:
   type: 0
   required: false
   advanced: true
-  section: Collect - events
+  section: Collect
 - display: Assets Settings
   name: assets
   type: 20
-  section: Collect - assets
+  section: Collect
 - display: Vulnerability severity
   additionalinfo: The severity of the vulnerabilities to include in the export.
   name: severity
@@ -82,14 +83,14 @@ configuration:
   - critical
   type: 16
   required: false
-  section: Collect - assets
+  section: Collect
 - defaultvalue: '720'
   display: Assets and vulnerabilities fetch interval
   name: assetsFetchInterval
   type: 19
   required: false
   advanced: true
-  section: Collect - assets
+  section: Collect
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable Vulnerability Management (formerly Tenable.io)
 name: Tenable.io
