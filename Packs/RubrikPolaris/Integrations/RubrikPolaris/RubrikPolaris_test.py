@@ -2411,9 +2411,9 @@ def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, li
             page_token.update({"has_next_upn_page": False})
     assert response.raw_response == response_data.get('raw_response')
     assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
-           remove_empty_elements(outputs)
+        remove_empty_elements(outputs)
     assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == \
-           remove_empty_elements(page_token)
+        remove_empty_elements(page_token)
     assert response.readable_output == hr_data
 
 
@@ -2471,7 +2471,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(clie
     assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
         remove_empty_elements(response_data.get('outputs_when_not_whitelisted'))
     assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == \
-           remove_empty_elements(response_data.get('page_token_2'))
+        remove_empty_elements(response_data.get('page_token_2'))
     assert response.readable_output == hr_data
 
 
@@ -2545,7 +2545,7 @@ def test_rubrik_sonar_user_access_get_command_success(client, requests_mock):
 
     assert response.raw_response == response_data.get('raw_response')
     assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
-           remove_empty_elements(response_data.get('outputs'))
+        remove_empty_elements(response_data.get('outputs'))
     assert response.readable_output == hr_data
 
 
@@ -2648,9 +2648,9 @@ def test_rubrik_sonar_file_context_list_command_success(client, requests_mock):
 
     assert response.raw_response == response_data.get('raw_response')
     assert response.outputs.get(f'{OUTPUT_PREFIX["FILE_CONTEXT"]}(val.stdPath == obj.stdPath)') == \
-           remove_empty_elements(response_data.get('outputs'))
+        remove_empty_elements(response_data.get('outputs'))
     assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_FILE_CONTEXT"]}(val.name == obj.name)') == \
-           remove_empty_elements(response_data.get('page_token'))
+        remove_empty_elements(response_data.get('page_token'))
     assert response.readable_output == hr_data
 
 
@@ -2680,9 +2680,9 @@ def test_rubrik_sonar_file_context_list_command_success_when_not_whitelisted(cli
 
     assert response.raw_response == response_data.get('raw_response_when_not_whitelisted')
     assert response.outputs.get(f'{OUTPUT_PREFIX["FILE_CONTEXT"]}(val.stdPath == obj.stdPath)') == \
-           remove_empty_elements(response_data.get('outputs_when_not_whitelisted'))
+        remove_empty_elements(response_data.get('outputs_when_not_whitelisted'))
     assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_FILE_CONTEXT"]}(val.name == obj.name)') == \
-           remove_empty_elements(response_data.get('page_token'))
+        remove_empty_elements(response_data.get('page_token'))
     assert response.readable_output == hr_data
 
 
