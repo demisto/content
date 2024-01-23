@@ -132,6 +132,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -282,6 +283,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -347,6 +349,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -430,6 +433,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -486,6 +490,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -544,6 +549,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -585,6 +591,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -687,6 +694,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -725,6 +733,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -1159,6 +1168,7 @@ script:
     - defaultValue: 'false'
       description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
       name: rate_limit_auto_retry
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'

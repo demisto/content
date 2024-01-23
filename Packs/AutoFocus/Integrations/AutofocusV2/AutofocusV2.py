@@ -292,7 +292,7 @@ def rerun_command_if_required(api_res: dict, rate_limit_auto_retry: bool, comman
         )
     else:
         results = CommandResults(
-            readable_output='API Rate limit exceeded. Rerunning command in 1 minute.',
+            readable_output='API Rate limit exceeded.\nRerunning command:',
             scheduled_command=ScheduledCommand(
                 command=command,
                 next_run_in_seconds=60,
@@ -394,7 +394,7 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     data.update({'apiKey': API_KEY})
     try:
-        
+
         # --- TEMP ---
         # from concurrent.futures import ThreadPoolExecutor
 
@@ -424,6 +424,7 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     except requests.exceptions.ConnectionError as err:
         EXECUTION_METRICS.connection_error += 1
         raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
+
     return parse_response(res, err_operation)
 
 
@@ -575,24 +576,24 @@ def validate_if_line_needed(category, info_line):
         risk_index = category_indexes.get('risk')  # type: ignore
         risk = line_values[risk_index].strip()
         # only lines with risk higher the informational are considered
-        return not risk == 'informational'
+        return risk != 'informational'
     elif category == 'registry':
         action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         # Only lines with actions SetValueKey, CreateKey or RegSetValueEx are considered
-        return action == 'SetValueKey' or action == 'CreateKey' or action == 'RegSetValueEx'
+        return action in ('SetValueKey', 'CreateKey', 'RegSetValueEx')
     elif category == 'file':
         action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         benign_count = info_line.get('b') if info_line.get('b') else 0
         malicious_count = info_line.get('m') if info_line.get('m') else 0
         # Only lines with actions Create or CreateFileW where malicious count is grater than benign count are considered
-        return (action == 'Create' or action == 'CreateFileW') and malicious_count > benign_count
+        return action in ('Create', 'CreateFileW') and malicious_count > benign_count
     elif category == 'process':
         action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         # Only lines with actions created, CreateKey or CreateProcessInternalW are considered
-        return action == 'created' or action == 'CreateProcessInternalW'
+        return action in ('created', 'CreateProcessInternalW')
     else:
         return True
 
@@ -711,7 +712,7 @@ def autofocus_tag_details(tag_name):
 
 
 def validate_tag_scopes(private, public, commodity, unit42):
-    if not private and not public and not commodity and not unit42:
+    if not any((private, public, commodity, unit42)):
         raise DemistoException('Add at least one Tag scope by setting `commodity`, `private`, `public` or `unit42` to True')
 
 
@@ -860,7 +861,7 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     result_object_filtered = {}
     if af_params_dict and isinstance(result_object, dict) and isinstance(af_params_dict, dict):
-        for key in result_object.keys():
+        for key in result_object:
             if key in af_params_dict.values():  # type: ignore
                 result_object_filtered[key] = result_object.get(key)
     return result_object_filtered
@@ -1014,14 +1015,15 @@ def search_indicator(indicator_type, indicator_value):
             params=params
         )
 
-        # Handle error responses gracefully
-        result.raise_for_status()
         result_json = result.json()
 
         save_api_metrics(result_json)
         if result.status_code == 503:
             EXECUTION_METRICS.quota_error += 1
             raise RateLimitExceededError(result_json)
+
+        # Handle error responses gracefully
+        result.raise_for_status()
 
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
@@ -1932,7 +1934,6 @@ def main():
     }
 
     try:
-
         match command:
             case 'test-module':
                 # This is the call made when pressing the integration test button.
