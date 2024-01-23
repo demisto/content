@@ -853,7 +853,7 @@ def rasterize_command():  # pragma: no cover
     if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
         output = {'image_b64': base64.b64encode(rasterize_output[0]).decode('utf8'),
                   'html': response_body, 'current_url': url}
-        demisto.results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
+        return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
     else:
         res = []
         for current_output in rasterize_output:
