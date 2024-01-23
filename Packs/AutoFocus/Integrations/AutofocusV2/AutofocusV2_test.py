@@ -604,14 +604,16 @@ def test_metrics(mocker):
     from AutofocusV2 import main
 
     class MockResponse:
-        json = lambda: {'bucket_info': {  # noqa: E731
-            "minute_points": 200,
-            "daily_points": 30000,
-            "minute_points_remaining": 0,
-            "daily_points_remaining": 4578,
-            "minute_bucket_start": "2015-09-02 10:55:33",
-            "daily_bucket_start": "2015-09-01 17:08:40",
-        }}
+        @staticmethod
+        def json():
+            return {'bucket_info': {
+                "minute_points": 200,
+                "daily_points": 30000,
+                "minute_points_remaining": 0,
+                "daily_points_remaining": 4578,
+                "minute_bucket_start": "2015-09-02 10:55:33",
+                "daily_bucket_start": "2015-09-01 17:08:40",
+            }}
         status_code = 503
 
     mocker.patch.object(demisto, 'command', return_value='autofocus-top-tags-search')
@@ -633,7 +635,7 @@ def test_metrics(mocker):
         verify=True
     )
     assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded.\nRerunning command:'
-    assert return_results_mock.call_args_list[0][0][0].scheduled_command.args == {
+    assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
         'unit42': 'True', 'class': 'Actor', 'rate_limit_auto_retry': 'false'
     }
     assert return_results_mock.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]

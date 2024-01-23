@@ -247,11 +247,11 @@ VERDICTS_TO_DBOTSCORE = {
 }
 
 ERROR_DICT = {
-    '404': 'Invalid URL.',
-    '408': 'Invalid URL.',
-    '409': 'Invalid message or missing parameters.',
-    '500': 'Internal error.',
-    '503': 'Rate limit exceeded.'
+    404: 'Invalid URL.',
+    408: 'Invalid URL.',
+    409: 'Invalid message or missing parameters.',
+    500: 'Internal error.',
+    503: 'Rate limit exceeded.'
 }
 
 if PARAMS.get('mark_as_malicious'):
@@ -989,8 +989,9 @@ def validate_no_multiple_indicators_for_search(arg_dict):
     used_arg = None
     for arg, val in arg_dict.items():
         if val and used_arg:
-            raise DemistoException(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
-                         f'{arg}. For multiple indicator types use the custom query')
+            raise DemistoException(
+                f'The search command can receive one indicator type at a time, two were given: {used_arg}, {arg}.'
+                ' For multiple indicator types use the custom query')
         elif val:
             used_arg = arg
     if not used_arg:
@@ -1048,11 +1049,11 @@ def search_indicator(indicator_type, indicator_value):
             text_error = {}
         error_message = text_error.get('message')
         if error_message:
-            raise DemistoException(f'Request Failed with status: {result.status_code}.\n'
-                         f'Reason is: {error_message}.')
-        elif str(result.status_code) in ERROR_DICT:
-            raise DemistoException(f'Request Failed with status: {result.status_code}.\n'
-                         f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
+            raise DemistoException(
+                f'Request Failed with status: {result.status_code}.\nReason is: {error_message}.')
+        elif result.status_code in ERROR_DICT:
+            raise DemistoException(
+                f'Request Failed with status: {result.status_code}.\nReason is: {ERROR_DICT[result.status_code]}.')
         else:
             err_msg = f'Request Failed with message: {err}.'
         raise DemistoException(err_msg)
@@ -1284,8 +1285,8 @@ def search_sessions_command(args):
 
     if time_range:
         if from_time or to_time:
-            raise DemistoException("The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' "
-                         "arguments.")
+            raise DemistoException(
+                "The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' arguments.")
         else:
             from_time, to_time = time_range.split(',')
 
