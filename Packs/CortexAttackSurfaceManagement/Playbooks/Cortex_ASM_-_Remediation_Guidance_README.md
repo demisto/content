@@ -10,15 +10,16 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* Cortex Attack Surface Management
 
 ### Scripts
 
-Set
+* Set
 
 ### Commands
 
-This playbook does not use any commands.
+* asm-get-attack-surface-rule
+* setAlert
 
 ## Playbook Inputs
 
@@ -39,4 +40,5 @@ This playbook does not use any commands.
 ## Playbook Image
 
 ---
+
 ![Cortex ASM - Remediation Guidance](../doc_files/Cortex_ASM_-_Remediation_Guidance.png)
