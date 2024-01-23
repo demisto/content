@@ -778,24 +778,25 @@
             "reflectDimensions": true
         },
         {
-            "id": "8469e000-52db-11ed-af6a-eb2c495cab55",
+            "id": "e3006ae0-23cc-11ee-bc30-99ab8f4422d3",
             "forceRange": false,
             "x": 8,
             "y": 9,
-            "i": "636b8130-3a83-11ed-a458-1bc96ed59c0e",
+            "i": "e3006ae0-23cc-11ee-bc30-99ab8f4422d3",
             "w": 4,
             "h": 2,
             "widget": {
-                "id": "4a54be5f-0a1c-4a25-8b7b-7c4c340326b6",
+                "id": "c63390c0-0c5e-4906-8b44-a748e6a639ee",
                 "version": 1,
                 "cacheVersn": 0,
-                "modified": "2022-10-23T11:08:08.285884451Z",
-                "packID": "",
-                "packName": "",
-                "itemVersion": "",
-                "fromServerVersion": "",
+                "modified": "2023-07-16T11:10:20.740319Z",
+                "packID": "JoeSecurity",
+                "packName": "Joe Security",
+                "itemVersion": "1.1.9",
+                "fromServerVersion": "6.5.0",
                 "toServerVersion": "",
-                "propagationLabels": [
+                "propagationLabels": [],
+                "packPropagationLabels": [
                     "all"
                 ],
                 "definitionId": "",
@@ -917,8 +918,8 @@
         {
             "forceRange": false,
             "h": 3,
-            "i": "8b069d10-b976-11ee-a9c5-5fad22aabd80",
-            "id": "8b069d10-b976-11ee-a9c5-5fad22aabd80",
+            "i": "0a993750-ef32-11ed-a72f-dd3156f45ab2",
+            "id": "0a993750-ef32-11ed-a72f-dd3156f45ab2",
             "reflectDimensions": true,
             "w": 4,
             "widget": {
@@ -932,23 +933,254 @@
                     "fromDateLicense": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byFrom": "hours",
-                        "byTo": "days",
+                        "byFrom": "days",
+                        "byTo": "",
                         "field": "",
-                        "fromValue": 3,
-                        "toValue": 0
+                        "fromValue": 0,
+                        "toValue": null
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "definitionId": "",
-                "fromServerVersion": "",
-                "id": "0821903b-1099-4f3d-8c30-12345d8c5c07",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "2024-01-14T16:57:28.451017133Z",
-                "name": "API Call Results for Autofocus",
+                "fromServerVersion": "6.5.0",
+                "id": "c63390c0-0c5e-4906-8b44-a748e6a639ea",
+                "isPredefined": true,
+                "itemVersion": "3.0.0",
+                "modified": "2023-05-10T12:54:41.634649071Z",
+                "name": "API Call Results for Rapid7 Threat Command",
+                "packID": "IntSight",
+                "packName": "Rapid7 - Threat Command (IntSights)",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            },
+                            "Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Success"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(d)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {
+                        "type": "max"
+                    },
+                    "showOthers": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "Request Counts"
+                },
+                "prevName": "API Call Results for Rapid7 Threat Command",
+                "propagationLabels": [],
+                "query": "type:integration and instance:\"rapid7_threat_command_instance_1\" or \"rapid7_threat_command_instance_1_copy\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 8
+        },
+        {
+            "id": "9e8acc20-8d3a-11ee-a736-df621984533b",
+            "forceRange": false,
+            "x": 4,
+            "y": 11,
+            "i": "9e8acc20-8d3a-11ee-a736-df621984533b",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "API Call Results for Email Hippo",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-10-30T10:01:15.237569307Z",
                 "packID": "",
                 "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "API Call Results for Email Hippo",
+                "prevName": "API Call Results for Email Hippo",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "type:integration and instance:\"Email Hippo_instance_1\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "hours",
+                        "toValue": 0,
+                        "fromValue": 3,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "customGroupBy": [
+                        null,
+                        {
+                            " Success": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "Successful",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": " Success"
+                            },
+                            "General Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "GeneralError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "General Error"
+                            },
+                            "Quota Error": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "apiResponseType",
+                                            "operator": "isEqualCaseString",
+                                            "right": "QuotaError",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Quota Error"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "modified(h)",
+                        "apiResponseType"
+                    ],
+                    "keys": [
+                        "sum|totalAPICalls"
+                    ],
+                    "referenceLine": {},
+                    "timeFrame": "hours",
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "Time",
+                    "yAxisLabel": "Request Counts"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "c4d4f820-b9fd-11ee-9dd7-37fe5ed8a2cc",
+            "forceRange": false,
+            "x": 0,
+            "y": 11,
+            "i": "c4d4f820-b9fd-11ee-9dd7-37fe5ed8a2cc",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "0821903b-1099-4f3d-8c30-12345d8c5c07",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2024-01-14T16:57:28.451017133Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "API Call Results for Autofocus",
+                "prevName": "API Call Results for Autofocus",
+                "dataType": "metrics",
+                "widgetType": "line",
+                "query": "type:integration  and name:\"AutoFocus V2\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "hours",
+                        "toValue": 0,
+                        "fromValue": 3,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "customGroupBy": [
                         null,
@@ -1007,20 +1239,9 @@
                     "xAxisLabel": "Time",
                     "yAxisLabel": "Request Counts"
                 },
-                "prevName": "API Call Results for Autofocus",
-                "propagationLabels": [
-                    "all"
-                ],
-                "query": "type:integration  and name:\"AutoFocus V2\"",
-                "shouldCommit": false,
-                "toServerVersion": "",
-                "vcShouldIgnore": false,
-                "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 1,
-                "widgetType": "line"
+                "category": ""
             },
-            "x": 0,
-            "y": 8
+            "reflectDimensions": true
         }
     ],
     "fromVersion": "6.8.0",
