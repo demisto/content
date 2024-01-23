@@ -61,11 +61,14 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
     )
 
 
-def list_operations_command(client: AzureResourceGraphClient) -> CommandResults:
+def list_operations_command(client: AzureResourceGraphClient, args: dict[str, Any]) -> CommandResults:
+    limit = arg_to_number(args.get('limit')) or 50
+
     response = client.list_operations()
     value = response.get('value')
+
     operations = []
-    for operation in value:
+    for operation in value[:limit]:
         operation_context = {
             'Name': operation.get('name'),
             'Display': operation.get('display')
@@ -120,12 +123,12 @@ def main():
     ok_codes = (200, 201, 202, 204)
 
     commands_without_args: Dict[Any, Any] = {
-        'test-module': test_module,
-        'azure-rg-list-operations': list_operations_command
+        'test-module': test_module
     }
 
     commands_with_args: Dict[Any, Any] = {
-        'azure-rg-query': query_resources_command
+        'azure-rg-query': query_resources_command,
+        'azure-rg-list-operations': list_operations_command
     }
 
     commands_with_args_and_params: Dict[Any, Any] = {

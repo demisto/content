@@ -52,11 +52,14 @@ def test_client_api_calls(mocker, function_name, data_file_name, args):
     assert result == data
 
 
-def test_list_operations_command(mocker):
+@pytest.mark.parametrize("limit, expected_number_of_operations", [(1, 1), (50, 8)])
+def test_list_operations_command(mocker, limit, expected_number_of_operations):
     operations_data = util_load_json('./test_data/test_list_operations_output.json')
     mocker.patch.object(client, 'list_operations', return_value=operations_data)
-    command_results = list_operations_command(client)
+    args: dict = {"limit": limit}
+    command_results = list_operations_command(client, args)
     assert command_results.outputs[0]["Name"] == "Microsoft.ResourceGraph/operations/read"
+    assert len(command_results.outputs) == expected_number_of_operations
 
 
 @pytest.mark.parametrize(
