@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any, Dict
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -36,7 +36,7 @@ class Client(BaseClient):
             auth=(client_id, api_key),
         )
 
-    def get_events(self, start_date: str = None, limit: int = None, offset: int = None) -> Dict[str, Any]:
+    def get_events(self, start_date: str = None, limit: int = None, offset: int = None) -> dict[str, Any]:
         """
         Get a list of events.
         Args:
@@ -75,7 +75,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        fetch_events(client,{}, {})
+        fetch_events(client, {}, {})
     except Exception as e:
         if 'Unauthorized' in str(e):
             return 'Authorization Error: make sure the Client ID and API Key are correctly set'
@@ -89,7 +89,7 @@ def get_events(client, args):
        Gets events from Guardicore API.
     """
 
-    _, events = fetch_events(client=client, params=args, last_run={'last_fetch': args.get('from_date', '1 second')})
+    _, events = fetch_events(client=client, params=args, last_run={'last_fetch': args.get('from_date', '1 month')})
     hr = tableToMarkdown(name='Events', t=events)
     return events, CommandResults(readable_output=hr)
 
@@ -130,7 +130,7 @@ def iterate_events(events, max_events_per_fetch, previous_ids, last_fetch_timest
             continue
 
         event_timestamp = arg_to_number(event.get('timestamp'), required=True, arg_name='event.timestamp') * 1000
-        event.update({'_time': timestamp_to_datestring(event.get('timestamp'), is_utc=True)})
+        event.update({'_time': timestamp_to_datestring(event.get('timestamp')*1000, is_utc=True)})
         filtered_events.append(event)
 
         # Update the latest event time that was fetched.
@@ -163,9 +163,10 @@ def fetch_events(client: Client, params: dict, last_run: dict):
     while max_events_per_fetch:
         demisto.debug(f'{last_run=}')
         start_date = last_run.get("last_fetch")
-        if not start_date:
-            start_date = dateparser.parse('now').strftime(ISO_8601_FORMAT)
-
+        if start_date:
+            start_date = dateparser.parse(start_date).strftime(ISO_8601_FORMAT)   # type: ignore[union-attr]
+        else:
+            start_date = dateparser.parse('one month').strftime(ISO_8601_FORMAT)   # type: ignore[union-attr]
         last_fetch_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
         demisto.debug(f'Getting events from: {start_date}')
 

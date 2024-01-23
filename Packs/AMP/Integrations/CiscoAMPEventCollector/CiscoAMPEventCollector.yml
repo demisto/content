@@ -6,7 +6,7 @@ commonfields:
   id: CiscoAMPEventCollector
   version: -1
 configuration:
-- display: Server URL (e.g. https://some_url.com)
+- display: Server URL (e.g., https://url.com)
   name: url
   required: true
   type: 0
@@ -21,6 +21,7 @@ configuration:
   section: Collect
   display: Max events per fetch
   name: max_events_per_fetch
+  advanced: true
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -28,12 +29,14 @@ configuration:
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
-description: This is the Cisco AMP event collector integration for XSIAM.
+  advanced: true
+description: This is the Cisco AMP event collector integration for Cortex XSIAM.
 display: Cisco AMP Event Collector
 name: CiscoAMPEventCollector
 script:
@@ -55,7 +58,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: From date to get events from.
+      description: Date from which to get events.
       name: from_date
       required: false
     deprecated: false
