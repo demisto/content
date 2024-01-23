@@ -1484,7 +1484,7 @@ def test_get_custom_script_list(mocker):
 def download_custom_script_mock_response(*args, **kwargs):
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=TextResp(text="#!/bin/sh echo 'Add script'"),
+        response=TextResp(text="#!/bin/sh echo 'Download script'"),
     )
 
 
@@ -1493,7 +1493,7 @@ def test_download_custom_script(mocker):
     client.script.download = Mock(return_value=download_custom_script_mock_response())
     args = {"script_id": "44c99cb0-8c5f-4182-af55-62135dbe32f1"}
     result = download_custom_script(client, args)
-    assert isinstance(result.outputs["text"], str)
+    assert result.outputs["text"] == "#!/bin/sh echo 'Download script'"
     assert result.outputs_prefix == "VisionOne.Download_Custom_Script"
     assert result.outputs_key_field == "text"
 
