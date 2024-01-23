@@ -8,6 +8,7 @@ import base64
 import json
 import urllib3
 from datetime import datetime
+from create_release import get_changelog_text
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -175,6 +176,19 @@ def main():
         sys.exit(1)
 
     logging.success('Retrieve SDK changelog workflow finished successfully')
+
+    # update the release PR body
+    data = {
+        'body': get_changelog_text(release_branch_name),
+    }
+    url = f'{API_SUFFIX}/pulls/{pr_number}'
+    response = requests.request('PATCH', url, data=json.dumps(data), headers=headers, verify=False)
+    if response.status_code != 200:
+        logging.error(f'Failed to update pull request: {pr_url}')
+        logging.error(response.text)
+        sys.exit(1)
+
+    logging.success('SDK pull request updated successfully with the changelog')
 
 
 if __name__ == "__main__":
