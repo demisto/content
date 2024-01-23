@@ -63,7 +63,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Input
 
-None
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of operations to return (Default is 50). | Optional | 
 
 #### Context Output
 
@@ -73,7 +75,7 @@ None
 
 #### Command Example
 
-`!azure-rg-list-operations`
+`!azure-rg-list-operations limit=50`
 
 #### Context Example
 
