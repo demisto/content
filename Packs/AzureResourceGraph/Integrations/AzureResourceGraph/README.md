@@ -19,12 +19,12 @@ For more details about the authentication used in this integration, see [Microso
 ### Client Credentials Flow
 
 ---
-Follow these steps for client-credentials configuration.
+Follow these steps for [client-credentials configuration](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#client-credentials-flow).
 
 1. In the instance configuration, select the **Use a self-deployed Azure application - Client Credentials Authorization Flow** checkbox.
-2. Enter your Client ID in the **ID / Client ID** parameter. 
-3. Enter your Client Secret in the **Key / Client Secret** parameter.
-4. Enter your Tenant ID in the **Tenant ID** parameter.
+2. Enter your Client ID in the **ID (Client ID)** parameter. 
+3. Enter your Client Secret in the **Key (Client Secret)** parameter.
+4. Enter your Tenant ID in the **Token (Tenant ID)** parameter.
 5. Click **Test** to validate the URLs, token, and connection.
 
 ## Configure Azure Resource Graph on Cortex XSOAR
