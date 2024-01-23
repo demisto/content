@@ -378,7 +378,7 @@ tasks:
     task:
       id: 49251589-6db7-4c7a-8cfb-125eb93b2ada
       version: -1
-      name: Disable iocs using xdr-iocs-disable
+      name: Disable IOCs using xdr-iocs-disable
       description: Disables IOCs in the XDR server.
       script: Cortex XDR - IOC|||xdr-iocs-disable
       type: regular
