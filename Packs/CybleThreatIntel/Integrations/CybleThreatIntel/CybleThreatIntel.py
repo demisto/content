@@ -37,7 +37,7 @@ class Client(object):
         self.feedReliability = params.get('feedReliability', "")
         self.tlp_color = params.get('tlp_color', "")
         self.initial_interval = arg_to_number(params.get('initial_interval', '1'))
-        self.limit = arg_to_number(params.get('limit', ''))
+        self.limit = arg_to_number(params.get('limit', '30'))
         self.verify_certificate = not argToBoolean(params.get('insecure', False))
         self.proxy = argToBoolean(params.get('proxy', False))
 
@@ -179,7 +179,7 @@ class Client(object):
                     taxii_data.append(response)
 
                     count += 1
-                    if count == arg_to_number(args.get('limit', 30)):
+                    if count >= args.get('limit'):
                         break
 
         except Exception as e:
