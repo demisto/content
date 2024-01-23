@@ -14,7 +14,7 @@ create-release-branch:
     GITHUB_TOKEN: $GITHUB_TOKEN
   script:
     - section_start "Create release branch" --collapsed
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version "$RELEASE_VERSION" has started" --allow-failure "${SLACK_ALLOW_FAILURE}"
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version `"$RELEASE_VERSION"` has started" --allow-failure "${SLACK_ALLOW_FAILURE}"
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
     - section_end "Create release branch"
@@ -166,6 +166,21 @@ wait-for-demisto-sdk-nightly:
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $SDK_PIPELINE_ID -pid 1061
     - section_end "Wait for SDK nightly build"
 
+slack-notify:
+  stage: wait-for-build-to-finish
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  allow_failure: true
+  needs:
+    - wait-for-demisto-sdk-nightly
+    - wait-for-content-private-nightly
+    - wait-for-content-internal-dist-nightly
+  script:
+    - section_start "Slack notify" --collapsed
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "All nightlies has been finished, please check their status and continue with the release" --allow-failure "${SLACK_ALLOW_FAILURE}"
+    - section_end "Slack notify"
+
 
 create-release-pull-request:
   stage: release-flow
@@ -173,9 +188,7 @@ create-release-pull-request:
     - .release-sdk
     - .default-job-settings
   needs:
-    - wait-for-demisto-sdk-nightly
-    - wait-for-content-private-nightly
-    - wait-for-content-internal-dist-nightly
+    - slack-notify
   when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
@@ -221,9 +234,7 @@ create-content-pull-request:
     - python3 ./Tests/sdk_release/wait_for_release.py -b $RELEASE_VERSION
     - python3 ./Tests/sdk_release/trigger_update_sdk_workflow.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -r $REVIEWER --artifacts-folder ${ARTIFACTS_FOLDER}
     - python3 ./Tests/sdk_release/wait_for_release_prs.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - SLACK_MESSAGE=$(head ${ARTIFACTS_FOLDER}/CHANGELOG_SLACK.txt)
-    - echo "SLACK_MESSAGE =" $SLACK_MESSAGE
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "${SLACK_MESSAGE}" --allow-failure "${SLACK_ALLOW_FAILURE}"
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -f ${ARTIFACTS_FOLDER}/CHANGELOG_SLACK.txt --allow-failure "${SLACK_ALLOW_FAILURE}"
     - section_end "Create content pr"
 
 
