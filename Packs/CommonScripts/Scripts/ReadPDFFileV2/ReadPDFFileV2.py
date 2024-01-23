@@ -247,7 +247,7 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
 
 def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: list, emails: list, images: list[str],
                                max_images: int,
-                               hash_contexts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+                               hash_contexts: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
     """Builds an entry object for the main script flow"""
     pdf_file = {"EntryID": entry_id}
     # Add Text to file entity
