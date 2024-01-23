@@ -80,6 +80,7 @@ Searches for samples. To view the results provide polling=true, or run the `auto
 | last_updated | The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 | af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
@@ -171,6 +172,7 @@ Searches for sessions. To view the results provide polling=true, or run the `aut
 | time_after | The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional | 
 | time_before | The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need for `autofocus-sessions-search-results`.
@@ -242,6 +244,7 @@ Returns the results of a previous samples search.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Required | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -378,6 +381,7 @@ Returns the results of a previous session's search.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | af_cookie | The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes. | Required | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -493,6 +497,7 @@ Returns session details by session ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | session_id | The ID of the session. | Required | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -560,6 +565,7 @@ Returns properties, behaviors, and activities observed for a sample. Runs the co
 | sample_id | The SHA256 hash of the sample to analyze. | Required | 
 | os | The analysis environment. Can be "win7", "winxp", "android", "static_analyzer", "mac", or "bare_metal". | Optional | 
 | filter_data | Whether to smartly filter the data. If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance. The recommended setting is "True". | Optional | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -922,6 +928,7 @@ Returns details about the given tag.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tag_name | The public tag name. Can be retrieved from the top-tags command. | Required | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -991,6 +998,7 @@ Performs a search to identify the most popular tags.
 | unit42 | Whether the tag scope is "Unit42". If "True", the tag scope is unit42. The default is "False". | Optional | 
 | af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
@@ -1051,6 +1059,7 @@ Returns the results of a previous top tags search.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | af_cookie | The AF Cookie for retrieving results of the previous search. The AF Cookie expires 120 seconds after the search completes. | Required | 
+| rate_limit_auto_retry | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
