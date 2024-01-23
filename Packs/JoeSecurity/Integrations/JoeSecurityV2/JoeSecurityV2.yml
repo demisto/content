@@ -579,7 +579,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  - name: joe-list–lia-countries
+  - name: joe-list-lia-countries
     arguments: []
     description: Retrieve a list of localized internet anonymization countries.
     outputs:
@@ -885,6 +885,10 @@ script:
       defaultValue: '30'
     - name: encrypt_with_password
       description: The password with which to encrypt the analysis.
+    - name: export_to_jbxview
+      description: Whether to export the analysis to JBXView.
+      defaultValue: 'false'
+      deprecated: true
     - name: email_notification
       description: Send an email notification once the analysis completes.
       defaultValue: 'false'
@@ -1144,6 +1148,10 @@ script:
       defaultValue: '30'
     - name: encrypt_with_password
       description: The password with which to encrypt the analysis.
+    - name: export_to_jbxview
+      description: Whether to export the analysis to JBXView.
+      defaultValue: 'false'
+      deprecated: true
     - name: email_notification
       description: Send an email notification once the analysis completes.
       defaultValue: 'false'
