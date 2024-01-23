@@ -5,9 +5,8 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 
 
-
 def get_data(key_word, json_data):
-    result_data=[]
+    result_data = []
     for i in range(len(json_data)):
         for value in json_data[i].values():
             if key_word in value:
@@ -20,24 +19,23 @@ def get_data(key_word, json_data):
 
 
 def main():
-    args= demisto.args()
+    args = demisto.args()
     key_word = args.get('Keyword', "")
-    json_data = argToList(args.get('value',[]))
+    json_data = argToList(args.get('value', []))
     try:
-        res = get_data(key_word,json_data)
-        md = tableToMarkdown("List Data",res)
+        res = get_data(key_word, json_data)
+        md = tableToMarkdown("List Data", res)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': res,
             'ContentsFormat': formats['json'],
             'HumanReadable': md,
-            'ReadableContentsFormat' : formats['markdown'],
-            'EntryContext':{'ListData':res}
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {'ListData': res}
         })
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
-
 
 
 ''' ENTRY POINT '''
@@ -45,4 +43,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
