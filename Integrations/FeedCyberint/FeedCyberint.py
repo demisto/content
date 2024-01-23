@@ -6,6 +6,8 @@ from CommonServerPython import *
 
 urllib3.disable_warnings()
 
+DATE_FORMAT = "%Y-%m-%d"
+
 
 class Client(BaseClient):
     """
@@ -22,18 +24,16 @@ class Client(BaseClient):
         self._cookies = {"access_token": access_token}
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-    def build_iterator(self) -> List:
+    def build_iterator(self, date_time: str = None) -> List:
         """
         Retrieves all entries from the feed.
 
         Returns:
             A list of objects, containing the indicators.
         """
-        date_time = str((datetime.now().strftime("%Y-%m-%d")))
-
         response = self._http_request(
             method="GET",
-            url_suffix=date_time,
+            url_suffix=date_time or get_current_time(),
             cookies=self._cookies,
             resp_type="text",
             timeout=70,
@@ -79,6 +79,7 @@ def fetch_indicators(
     indicator_types: list[str],
     confidence_from: int,
     severity_from: int,
+    date_time: str = None,
     feed_tags: List = [],
     limit: int = -1,
 ) -> List[Dict]:
@@ -93,7 +94,7 @@ def fetch_indicators(
     Returns:
         Indicators.
     """
-    iterator = client.build_iterator()
+    iterator = client.build_iterator(date_time)
     indicators = []
 
     for item in iterator:
@@ -198,8 +199,23 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     confidence_from = arg_to_number(params.get("confidence_from"))
     feed_names = argToList(params.get("feed_name"))
     indicator_types = argToList(params.get("indicator_type"))
+    fetch_interval = arg_to_number(params.get("feedFetchInterval"))
 
-    return fetch_indicators(
+    indicators = []
+
+    if is_x_minutes_ago_yesterday(fetch_interval):
+        indicators = fetch_indicators(
+            client=client,
+            date_time=get_yesterday_time(),
+            tlp_color=tlp_color,
+            feed_tags=feed_tags,
+            feed_names=feed_names,
+            indicator_types=indicator_types,
+            severity_from=severity_from,
+            confidence_from=confidence_from,
+        )
+
+    indicators += fetch_indicators(
         client=client,
         tlp_color=tlp_color,
         feed_tags=feed_tags,
@@ -208,6 +224,24 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
         severity_from=severity_from,
         confidence_from=confidence_from,
     )
+    return indicators
+
+
+def get_current_time() -> str:
+    return datetime.now().strftime(DATE_FORMAT)
+
+
+def get_yesterday_time() -> str:
+    current_time = datetime.now()
+    yesterday = current_time - timedelta(days=1)
+    return yesterday.strftime(DATE_FORMAT)
+
+
+def is_x_minutes_ago_yesterday(minutes: int) -> bool:
+    current_time = datetime.now()
+    x_minutes_ago = current_time - timedelta(minutes=minutes)
+    yesterday = current_time - timedelta(days=1)
+    return x_minutes_ago.date() == yesterday.date()
 
 
 def main():
@@ -234,18 +268,12 @@ def main():
         )
 
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
         elif command == "cyberint-get-indicators":
-            # This is the command that fetches a limited number of indicators from the feed source
-            # and displays them in the war room.
             return_results(get_indicators_command(client, params, args))
 
         elif command == "fetch-indicators":
-            # This is the command that initiates a request to the feed endpoint and create new indicators objects from
-            # the data fetched. If the integration instance is configured to fetch indicators, then this is the command
-            # that will be executed at the specified feed fetch interval.
             indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
@@ -253,7 +281,6 @@ def main():
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 

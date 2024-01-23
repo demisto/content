@@ -94,11 +94,6 @@ configuration:
   name: severity_from
   type: 0
   required: false
-# - additionalinfo: The date or number of days from when to start fetching indicators.
-#   display: First fetch
-#   name: first_fetch
-#   type: 0
-#   required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -116,7 +111,7 @@ configuration:
   required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "30"
+  defaultvalue: "240"
   type: 19
   required: false
 - additionalinfo: Supports CSV values.
