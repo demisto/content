@@ -1,0 +1,192 @@
+{
+	"description": "Maps incoming CTM360 CyberBlindspot incidents.",
+	"feed": false,
+	"id": "CTM360-CyberBlindspot - Incoming Mapper",
+	"mapping": {
+		"Brand Abuse": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Detection URL": {
+					"simple": "subject"
+				}
+			}
+		},
+		"CyberBlindspot Generic": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Remediation SLA": {
+					"simple": "coa"
+				},
+				"Source Create time": {
+					"simple": "created_date"
+				},
+				"Threat Family Name": {
+					"simple": "type"
+				},
+				"details": {
+					"simple": "remarks"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "name",
+						"transformers": []
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"CyberBlindspot Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"CTM360 CyberBlindspot Course of Action": {
+					"simple": "CustomFields.cbs_coa"
+				},
+				"External Status": {
+					"simple": "externalstatus"
+				},
+				"Ticket Number": {
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorDirection": {
+					"simple": "xsoar_mirroring.mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "xsoar_mirroring.mirror_instance"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "name",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "occurred",
+						"transformers": []
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Domain Infringement": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Detection URL": {
+					"simple": "subject"
+				}
+			}
+		},
+		"Exposed Email Address": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Detection URL": {
+					"simple": "subject"
+				}
+			}
+		},
+		"Indicator Feed": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Detection URL": {
+					"complex": {
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "subject"
+										}
+									},
+									"operator": "match",
+									"right": {
+										"isContext": false,
+										"value": {
+											"simple": "(?i)\\b(?:(?P\u003cfull_url\u003e(?P\u003cscheme\u003e(?:https?|hxxps?|s?ftps?|meows?)\\[?[:-]]?(?://|\\\\|3A__)|mailto:)?(?P\u003chost\u003e(?P\u003cusername\u003e[\\p{L}][-_\\p{L}\\d\\[\\]]+@)?(?P\u003csimple_domain\u003e(?:[-\\d\\p{L}]+\\[?\\.\\]?)+(?P\u003ctld\u003e[\\p{L}][-\\p{L}\\d\\[\\]]+)[.]?)|(?P\u003cIPv4\u003e(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|(?P\u003cIPv6\u003e\\[?(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(?:\\])?))(?P\u003cport\u003e:[\\d]+)?(?P\u003cpath\u003e[/*#?]+(?:[?\\d\\p{L}+\u0026@'#%=~_\\/$!:.;*–—―\\-|\\[\\]]*|[(][\\-\\d\\p{L}+\u0026@#\\/%=~_$?!:,;*–—―|\\[\\]]*[)])*))|(?P\u003cscheme_and_domain_only\u003e(?:(?:https?|hxxps?|s?ftps?|meows?)\\[?[:-]]?(?://|\\\\|3A__)|mailto:)(?:(?:[\\p{L}][-_\\p{L}\\d\\[\\]]+@)?(?:(?:[-\\d\\p{L}]+\\[?\\.\\]?)+(?:[\\p{L}][-\\p{L}\\d\\[\\]]+)[.]?)|(?:(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))|(?:\\[?(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(?:\\])?))))"
+										}
+									}
+								}
+							]
+						],
+						"root": "subject",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Subdomain Infringement": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Detection URL": {
+					"simple": "subject"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"CTM360 CyberBlindspot Course of Action": {
+					"simple": "CustomFields.cbs_coa"
+				},
+				"External Status": {
+					"simple": "externalstatus"
+				},
+				"Ticket Number": {
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorDirection": {
+					"simple": "xsoar_mirroring.mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "xsoar_mirroring.mirror_instance"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "name",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "occurred",
+						"transformers": []
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "CTM360-CyberBlindspot - Incoming Mapper",
+	"type": "mapping-incoming",
+	"version": -1,
+    "fromVersion": "6.10.0"
+}
