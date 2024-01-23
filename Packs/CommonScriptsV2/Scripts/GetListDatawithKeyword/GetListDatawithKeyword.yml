@@ -5,7 +5,7 @@ args:
   name: Keyword
   required: true
 comment: |-
-   Retrieve a list of dict objects that have values that contain given substring for a given list of json objects
+   Retrieve a list of dict objects that have values that contain given substring for a given list of json objects. Example: if search with keyword "test" and following list is given, 
   [
       {
       "folder": "abc",
@@ -20,6 +20,7 @@ comment: |-
       "username": "admin"
       }
   ]
+  then it will return first and second json objects.
 commonfields:
   id: GetListDatawithKeyword
   version: -1
