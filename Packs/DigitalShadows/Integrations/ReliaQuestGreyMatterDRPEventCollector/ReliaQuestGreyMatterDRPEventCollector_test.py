@@ -6,7 +6,7 @@ import hashlib
 from ReliaQuestGreyMatterDRPEventCollector import DATE_FORMAT, ReilaQuestClient
 import json
 from freezegun import freeze_time
-from ReliaQuestGreyMatterDRPEventCollector import FOUND_IDS_LAST_RUN
+from ReliaQuestGreyMatterDRPEventCollector import FOUND_IDS_LAST_RUN, RATE_LIMIT_LAST_RUN
 
 TEST_URL = "https://test.com/api"
 
@@ -146,7 +146,7 @@ def test_http_request_rate_limits(mocker, client: ReilaQuestClient):
 
 class TestFetchEvents:
 
-    def test_fetch_events_no_last_run_single_iteration_sanity_test(self, mocker, client: ReilaQuestClient):
+    def test_fetch_events_no_last_run_single_iteration_sanity_test(self, mocker):
         """
         Given:
          - 100 events
@@ -225,3 +225,34 @@ class TestFetchEvents:
             assert event["triage-item"]
             assert event["incident"]
             assert event["assets"]
+
+    def test_fetch_events_sanity_rate_limit_error(self, mocker):
+
+        import ReliaQuestGreyMatterDRPEventCollector
+
+        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value={})
+        mocker.patch.object(demisto, "error")
+        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        mocker.patch.object(
+            demisto, 'params',
+            return_value={
+                "url": TEST_URL,
+                "credentials": {
+                    "identifier": "1234",
+                    "password": "1234",
+                },
+                "max_fetch_events": 200
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(
+            ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
+            "_http_request",
+            side_effect=[
+                create_mocked_response(response={"retry-after": "2024-01-18T10:22:00Z"}, status_code=429),
+            ]
+        )
+        ReliaQuestGreyMatterDRPEventCollector.main()
+        assert send_events_mocker.call_count == 0
+        assert set_last_run_mocker.call_args[0][0][RATE_LIMIT_LAST_RUN] == "2024-01-18T10:22:00Z"

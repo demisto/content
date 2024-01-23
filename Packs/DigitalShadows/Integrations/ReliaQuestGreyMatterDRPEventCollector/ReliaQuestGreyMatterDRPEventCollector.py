@@ -65,23 +65,6 @@ class ReilaQuestClient(BaseClient):
                     retry_after=json_response.get("retry-after", "")
                 )
 
-                # if retry_after := dateparser.parse(json_response.get("retry-after")):
-                #     demisto.debug(f'now: {datetime.now(timezone.utc).astimezone()}, retry-after: {retry_after}')
-                #     while datetime.now(timezone.utc).astimezone() > retry_after:
-                #         demisto.debug(f'Waiting to recover from ratelimit, sleeping for 1 second')
-                #         time.sleep(1)
-                #
-                #     response = self._http_request(
-                #         method,
-                #         url_suffix=url_suffix,
-                #         headers=headers or {"searchlight-account-id": self.account_id},
-                #         params=params,
-                #         resp_type="response",
-                #     )
-                #     response.raise_for_status()
-                #     demisto.info(f'Recovered successfully from rate-limit when running http-request {url_suffix} with {params}')
-                #     json_response = response.json()
-
             return json_response
         except DemistoException as error:
             if isinstance(error.exception, ConnectionError):
