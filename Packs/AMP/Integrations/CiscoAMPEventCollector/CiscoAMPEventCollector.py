@@ -131,8 +131,9 @@ def iterate_events(events, max_events_per_fetch, previous_ids, last_fetch_timest
             demisto.debug(f'skipping {event_id} as it was appear in previous_ids, which means it was already fetched')
             continue
 
-        event_timestamp = arg_to_number(event.get('timestamp'), required=True, arg_name='event.timestamp') * 1000
-        event.update({'_time': timestamp_to_datestring(event.get('timestamp')*1000, is_utc=True)})
+        event_timestamp = arg_to_number(event.get('timestamp') * 1000, required=True, arg_name='event.timestamp')
+
+        event.update({'_time': timestamp_to_datestring(event.get('timestamp') * 1000, is_utc=True)})
         filtered_events.append(event)
 
         # Update the latest event time that was fetched.
@@ -213,7 +214,7 @@ def main() -> None:
                         server_url=server_url, proxy=proxy, verify=verify_certificate)
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client,params))
+            return_results(test_module(client, params))
 
         elif command == 'cisco-amp-get-events':
             events, results = get_events(client, args)  # type: ignore

@@ -6,7 +6,6 @@ import io
 import os
 import pytest
 from CiscoAMPEventCollector import Client
-from CommonServerPython import DemistoException
 
 API_KEY = "API_Key"
 CLIENT_ID = "Client_ID"
@@ -24,7 +23,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     """
     path = os.path.join("test_data", file_name)
 
-    with io.open(path, mode="r", encoding="utf-8") as mock_file:
+    with open(path, encoding="utf-8") as mock_file:
         if os.path.splitext(file_name)[1] == ".json":
             return json.loads(mock_file.read())
 
@@ -38,7 +37,7 @@ def mock_client() -> Client:
     Returns:
         Client: Connection to client.
     """
-    return Client(server_url=SERVER_URL, api_key=API_KEY, client_id=CLIENT_ID,  proxy=False, verify=False)
+    return Client(server_url=SERVER_URL, api_key=API_KEY, client_id=CLIENT_ID, proxy=False, verify=False)
 
 
 @pytest.mark.parametrize(
@@ -59,7 +58,7 @@ def mock_client() -> Client:
         ),
         (
             {
-                "last_fetch": "test",
+                "last_fetch": "1 day",
                 "previous_ids": ["6159258594551267592"]
             },
             1,
@@ -133,14 +132,13 @@ def test_fetch_events_with_no_new_incidents(
 
     next_run, incidents = fetch_events(client=mock_client,
                                        last_run={
-                                          "last_fatch": "2023-11-15T00:00:00.000Z",
-                                          "previous_ids": ["6159258594551267595"]
+                                           "last_fatch": "2023-11-15T00:00:00.000Z",
+                                           "previous_ids": ["6159258594551267595"]
                                        },
                                        params={
-                                          'max_events_per_fetch': 100
+                                           'max_events_per_fetch': 100
                                        })
 
     # Validate response
     assert "6159258594551267595" in next_run["previous_ids"]
     assert len(incidents) == 0
-
