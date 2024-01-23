@@ -2539,7 +2539,7 @@ def archive_audit_incident_command(client: PrismaCloudComputeClient, args: dict)
     incident_id = args.get("incident_id") or ""
     data = {'acknowledged': True if args.get("action") == "archive" else False}
     client.archive_audit_incident(incident_id=incident_id, data=json.dumps(data))
-    return f'Incident {incident_id} was successfully  {"archived" if args.get("action") == "archive" else "unarchived"}'
+    return f'Incident {incident_id} was successfully {"archived" if args.get("action") == "archive" else "unarchived"}'
 
 
 def get_host_audit_list_command(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
