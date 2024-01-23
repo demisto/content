@@ -1,0 +1,48 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
+import traceback
+
+
+
+def get_data(key_word, json_data):
+    result_data=[]
+    for i in range(len(json_data)):
+        for value in json_data[i].values():
+            if key_word in value:
+                result_data.append(json_data[i])
+                break
+    return result_data
+
+
+''' MAIN FUNCTION '''
+
+
+def main():
+    args= demisto.args()
+    key_word = args.get('Keyword', "")
+    json_data = argToList(args.get('value',[]))
+    try:
+        res = get_data(key_word,json_data)
+        md = tableToMarkdown("List Data",res)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': md,
+            'ReadableContentsFormat' : formats['markdown'],
+            'EntryContext':{'ListData':res}
+        })
+    except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+
+
+
+''' ENTRY POINT '''
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
+

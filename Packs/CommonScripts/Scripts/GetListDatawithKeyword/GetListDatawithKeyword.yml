@@ -1,0 +1,44 @@
+args:
+- description: The list of json objects.
+  name: value
+- description: The substring to look for in the data.
+  name: Keyword
+  required: true
+comment: |-
+   Retrieve a list of dict objects that have values that contain given substring for a given list of json objects. Example: if search with keyword "test" and following list is given, 
+    [
+        {
+        "folder": "abc",
+        "username": "test"
+        },
+        {
+        "folder": "def",
+        "username": "test123"
+        },
+        {
+        "folder": "ghi",
+        "username": "admin"
+        }
+    ]
+    then it will return first and second json objects.
+commonfields:
+  id: GetListDatawithKeyword
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: docker.io/demisto/python3:3.10.13.83255
+enabled: true
+name: GetListDatawithKeyword
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- general
+- transformer
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
