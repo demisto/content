@@ -516,6 +516,7 @@ def integration_health_check(proxies):
     else:
         # check that we can reach any indexes in the supplied server URL
         test_general_query(es)
+    return_results("Testing was successful.")
 
 
 def incident_label_maker(source):
@@ -904,6 +905,8 @@ def main():
             return_results(search_eql_command(demisto.args(), proxies))
         elif demisto.command() == 'es-index':
             return_results(index_document_command(demisto.args(), proxies))
+        elif demisto.command() == 'es-integration_health_check':
+            return_results(integration_health_check(proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
