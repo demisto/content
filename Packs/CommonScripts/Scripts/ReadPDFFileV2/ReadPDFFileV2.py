@@ -251,7 +251,7 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
 
 def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: list, emails: list, images: list[str],
                                max_images: int,
-                               file_hashes: dict[str, set[Any]]) -> list[dict[str, Any]]:
+                               hash_contexts: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Builds an entry object for the main script flow"""
     pdf_file = {"EntryID": entry_id}
     # Add Text to file entity
@@ -307,6 +307,8 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
         indicators_map = json.loads(indicators_map)
         if emails:
             indicators_map["Email"] = emails
+        if hash_contexts:
+            indicators_map['Hashes'] = hash_contexts
     except json.JSONDecodeError:
         pass
     ec = build_readpdf_entry_context(indicators_map)
@@ -335,6 +337,8 @@ def build_readpdf_entry_context(indicators_map: Any) -> dict:
             for email in indicators_map["Email"]:
                 ec_email.append({"Email": email})
             ec["Account"] = ec_email
+        if 'Hashes' in indicators_map:
+            ec['Hashes'] = indicators_map['Hashes']
     return ec
 
 
@@ -351,21 +355,6 @@ def get_urls_from_binary_file(file_path: str) -> set:
             binary_file_urls.add(mached_url[0])
     return binary_file_urls
 
-def get_hashes_from_file(file_path: str) -> dict[str, set[Any]]:
-    demisto.debug('Extracting hashes from binary file')
-    hashes: dict[str, set[Any]] = {}
-    pdf = PyPDF2.PdfReader(file_path, strict=False)
-    page_count = len(pdf.pages)
-    for page_index in range(page_count):
-        page = pdf.pages[page_index]
-        page_text = page.extract_text()
-        hashes['sha1'] = set(re.findall(sha1Regex, page_text)).union(hashes.get('sha1', set()))
-        hashes['sha256'] = set(re.findall(sha256Regex, page_text)).union(hashes.get('sha256', set()))
-        hashes['sha512'] = set(re.findall(sha512Regex, page_text)).union(hashes.get('sha512', set()))
-        hashes['md5'] = set(re.findall(md5Regex, page_text)).union(hashes.get('md5', set()))
-    
-    return hashes
-    
 def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str) -> Tuple[set, set]:
     """
     Extract the URLs and emails from the pdf html content.
@@ -559,11 +548,37 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
 
     return urls_ec, emails_ec
 
-def extract_hashes_from_pdf_file(file_path: str) -> dict[str, set[Any]]:
-     # Get hashes from the binary file
-    file_hashes = get_hashes_from_file(file_path)
-    print(file_hashes)
-    return file_hashes
+def extract_hash_contexts_from_pdf_file(file_path: str) -> list[dict[str, Any]]:
+    hash_contexts: list[dict[str, Any]] = []
+    # Get hashes from the binary file
+    hashes_in_file = get_hashes_from_file(file_path)
+    for hash_type, hashes in hashes_in_file.items():
+        if hashes:
+            hash_contexts.extend(convert_hash_to_context(hash_type, hashes))
+    return hash_contexts
+
+def convert_hash_to_context(hash_type: str, hashes: set[Any]) -> list[dict[str, Any]]:
+    hash_context: list[dict[str, Any]] = []
+    for hash in hashes:
+        hash_context.append({'type': hash_type,
+                             'value': hash})
+    return hash_context
+
+def get_hashes_from_file(file_path: str) -> dict[str, set[Any]]:
+    demisto.debug('Extracting hashes from file')
+    hashes: dict[str, set[Any]] = {}
+    with open(file_path, 'rb') as pdf_file:
+        pdf = PyPDF2.PdfReader(pdf_file, strict=False)
+        page_count = len(pdf.pages)
+        for page_index in range(page_count):
+            page = pdf.pages[page_index]
+            page_text = page.extract_text()
+            hashes['SHA1'] = set(re.findall(sha1Regex, page_text)).union(hashes.get('SHA1', set()))
+            hashes['SHA256'] = set(re.findall(sha256Regex, page_text)).union(hashes.get('SHA256', set()))
+            hashes['SHA512'] = set(re.findall(sha512Regex, page_text)).union(hashes.get('SHA512', set()))
+            hashes['MD5'] = set(re.findall(md5Regex, page_text)).union(hashes.get('MD5', set()))
+    
+    return hashes
 
 def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: str = '',
                              user_password: str = '') -> str:
@@ -592,6 +607,8 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
                                                  dec_file_path=f'{working_dir}/DecWorkingReadPDF.pdf',
                                                  encrypted=encrypted,
                                                  user_password=user_password)
+        # Get hash contexts
+        hash_contexts = extract_hash_contexts_from_pdf_file(cpy_file_path)
 
         # Get text:
         pdf_text_output_path = f"{working_dir}/PDFText.txt"
@@ -599,9 +616,6 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 
         # Get URLS + emails:
         urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
-
-        # Get Hashes
-        file_hashes = extract_hashes_from_pdf_file(cpy_file_path)
 
         # Get images:
         images = get_images_paths_in_path(working_dir)
@@ -612,7 +626,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
                                                           emails_ec,
                                                           images,
                                                           max_images=max_images,
-                                                          file_hashes)
+                                                          hash_contexts=hash_contexts)
 
         return_results(readpdf_entry_object)
     else:

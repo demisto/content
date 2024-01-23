@@ -12,6 +12,38 @@ def open_html_file(file):
     with open(file, encoding='utf-8') as f:
         return f.read()
 
+def test_extract_hash_contexts():
+    """
+    Given
+        - A PDF with hashes in it.
+    When
+        - Trying extract the hashes from the file.
+    Then
+        - Validate that the hashes were extracted successfully.
+    """
+    from ReadPDFFileV2 import extract_hash_contexts_from_pdf_file
+    expected_hash_contexts = [{'type': 'SHA1', 'value': 'aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d'},
+                              {'type': 'SHA256', 'value': '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824'},
+                              {'type': 'SHA256', 'value': '8732331accf45f86a00ca823cb24d9806ec1380846a337ac86b4fe6f9d06f1f5'},
+                              {'type': 'MD5', 'value': '5d41402abc4b2a76b9719d911017c592'}]
+    hash_contexts = extract_hash_contexts_from_pdf_file(f'{CWD}/pdf-with-hashes.pdf')
+    assert hash_contexts == expected_hash_contexts
+
+def test_hash_contexts_in_return_results():
+    """
+    Given
+        - A hash context to add to the entry context.
+    When
+        - Building the entry context.
+    Then
+        - Validate that the hash context was added.
+    """
+    from ReadPDFFileV2 import build_readpdf_entry_context
+    hashes = {'Hashes':[
+        {'type': 'SHA1', 'value': 'aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d'},
+        {'type': 'MD5', 'value': '5d41402abc4b2a76b9719d911017c592'}]}
+    entry_context = build_readpdf_entry_context(hashes)
+    assert entry_context == hashes
 
 def test_urls_are_found_correctly(mocker):
     """
