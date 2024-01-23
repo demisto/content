@@ -1,7 +1,7 @@
 id: Cortex XDR IOCs - Disable expired IOCs in XDR
 version: -1
 name: Cortex XDR IOCs - Disable expired IOCs in XDR
-description: This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR (Main)". This playbook will will disable indicators in XDR after they have expired from XSOAR using a loop and querying on the "xdr_pushed" tag.
+description: This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR (Main)". This playbook disables indicators in Cortex XDR after they expire from Cortex XSOAR using a loop and querying on the "xdr_pushed" tag.
 tags:
 - XDR
 starttaskid: "0"
