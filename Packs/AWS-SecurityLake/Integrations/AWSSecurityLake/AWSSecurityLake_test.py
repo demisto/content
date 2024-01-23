@@ -125,9 +125,9 @@ QUEYRY_COMMANDS = [(AWSSecurityLake.mfalogin_query_command,
 @pytest.mark.parametrize("command, args, query, query_results_context_key", QUEYRY_COMMANDS)
 def test_query_creation_commands(mocker, command, args, query, query_results_context_key):
     """
-    Given: Command arguments 
-    When: Running query generating command
-    Then: Validate correct values are generated when calling the execute_query_command
+    Given: Command arguments.
+    When: Running query generating command.
+    Then: Validate correct values are generated when calling the execute_query_command.
     """
     client = MockClient()
     execute_command = mocker.patch.object(AWSSecurityLake, "execute_query_command")

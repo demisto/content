@@ -1190,7 +1190,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.85857
+  dockerimage: demisto/boto3py3:1.0.0.86056
   feed: false
   isfetch: false
 fromversion: 6.10.0
