@@ -13,7 +13,7 @@ def mock_demisto(mocker):
 
 def test_main_with_campaign(mock_demisto, mocker):
     """
-    Given the incident contains an email campaign 
+    Given the incident contains an email campaign
     When main is called
     Then the number of campaign incidents is displayed
     """

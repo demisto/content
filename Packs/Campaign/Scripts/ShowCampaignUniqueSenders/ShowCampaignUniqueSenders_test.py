@@ -32,7 +32,7 @@ def test_happy_path(mock_demisto):
 def test_no_campaign_data(mock_demisto):
     """
     Given the executeCommand returns empty campaign incidents
-    When ShowCampaignUniqueSenders is executed  
+    When ShowCampaignUniqueSenders is executed
     Then demisto.results is called with 0 senders message
     """
     mock_demisto.executeCommand.return_value = [{'Contents': {'context': {'EmailCampaign': {'incidents': []}}}}]

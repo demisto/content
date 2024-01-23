@@ -7,7 +7,7 @@ import demistomock as demisto
 def test_main_success(mocker):
     """
     Given a list of relationship IDs as input
-    When deleteRelationships command executes successfully 
+    When deleteRelationships command executes successfully
     Then return success results
     """
     mocker.patch('DeleteIndicatorRelationships.is_error', return_value=False)
@@ -21,9 +21,9 @@ def test_main_success(mocker):
 
 def test_main_failure(mocker):
     """
-    Given a list of relationship IDs as input 
+    Given a list of relationship IDs as input
     When deleteRelationships command fails
-    Then return error  
+    Then return error
     """
     mocker.patch.object(demisto, 'args', return_value={'ids': [1, 2]})
     mocker.patch.object(demisto, 'executeCommand', return_value=[{"Type": entryTypes['error'], 'Contents': 'test'}])
