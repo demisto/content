@@ -1,0 +1,373 @@
+category: Network Security
+commonfields:
+  id: Zimperium V2
+  version: -1
+configuration:
+- defaultvalue: https://ziap.zimperium.com
+  display: Server URL (e.g. https://ziap.zimperium.com)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Client ID
+  name: credentials
+  type: 9
+  required: true
+  displaypassword: Client Secret
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Fetch Query. e.g, severity=CRITICAL
+  name: fetch_query
+  type: 0
+  required: false
+  section: Collect
+- defaultvalue: '50'
+  display: Max fetch
+  name: max_fetch
+  type: 0
+  required: false
+  section: Collect
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: fetch_time
+  type: 0
+  required: false
+  section: Collect
+- display: 'Advanced: Minutes to look back when fetching'
+  name: look_back
+  type: 0
+  required: false
+  defaultvalue: 1
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+description: Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device.
+name: Zimperium V2
+fromversion: 6.0.0
+display: Zimperium V2
+script:
+  commands:
+  - arguments:
+    - description: The ID of the user to search.
+      name: user_id
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    - description: Used to filter the user data by the Team the user belongs to.
+      name: team_id
+    description: Search users.
+    name: zimperium-users-search
+    outputs:
+    - contextPath: Zimperium.Users.id
+      description: The user id.
+      type: String
+  - arguments:
+    - description: The search criteria for the list of devices reported after this date.
+      name: after
+    - description: The search criteria for the list of devices reported before this date
+      name: before
+    - description: The device model.
+      name: model
+    - description: This is used to filter the data to their respective teams.
+      name: team_name
+    - description: The bundle identifier of the app.
+      name: bundle_id
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Search devices.
+    name: zimperium-devices-search
+    outputs:
+    - contextPath: Zimperium.Device
+      description: Application name.
+      type: String
+  - arguments:
+    - description: The device id to search.
+      name: device_id
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Search devices.
+    name: zimperium-device-get-by-id
+    outputs:
+    - contextPath: Zimperium.Device
+      description: Application name.
+      type: String
+  - arguments:
+    - description: The Id to get the app version JSON report. Can be retrieved using the zimperium-app-version-list command, in the field "Zimperium.AppVersion.id".
+      name: app_version_id
+      required: true
+    description: Gets a report.
+    name: zimperium-report-get
+    outputs:
+    - contextPath: Zimperium.Report.id
+      description: The report id.
+      type: Unknown
+  - arguments:
+    - description: The after date in the criteria that the threat occurred.
+      name: after
+      required: true
+    - description: The before date in the criteria that the threat occurred.
+      name: before
+    - description: Free text, the table is available on pages 467-468 of the Zimperium API documentation.
+      name: search_params
+    - description: Used to filter the user data by the Team the user belongs to.
+      name: team_id
+    - auto: PREDEFINED
+      predefined:
+        - ios
+        - android
+      description: Used to filter on the operating system.
+      name: os
+    - auto: PREDEFINED
+      predefined:
+      - LOW
+      - NORMAL
+      - ELEVATED
+      - CRITICAL
+      description:
+      name: severity
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Search threats.
+    name: zimperium-threat-search
+    outputs:
+    - contextPath: Zimperium.Threat.id
+      description: The id of the threat.
+      type: String
+  - arguments:
+    - description: The Bundle ID of the app to get its app version.
+      name: bundle_id
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: List App versions.
+    name: zimperium-app-version-list
+    outputs:
+    - contextPath: Zimperium.AppVersion.id
+      description: The id of the threat.
+      type: String
+  - arguments:
+    - description: The ID of the CVE which is input.
+      name: cve_id
+      required: true
+    - description: The after date in the criteria that the threat occurred.
+      name: after
+    - description: The before date in the criteria that the threat occurred.
+      name: before
+    - description: Used to filter the user data by the Team the user belongs to.
+      name: team_id
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Gets a devices associated with a specific CVE.
+    name: zimperium-devices-cve-get
+    outputs:
+    - contextPath: Zimperium.DeviceCVE.id
+      description: The id of the cve.
+      type: Stringv
+  - arguments:
+    - description: The name of the version which is input. Can be retrieved using zimperium-devices-search command under "Zimperium.Device.os.version".
+      name: os_version
+      required: true
+    - description: The date of the patch for a specific version. The date format is YYYY-MM-DD. This field is only applicable to Android. If you give this field then only CVEs for Android are returned since this value does not apply to iOS.
+      name: os_patch_date
+    - auto: PREDEFINED
+      predefined:
+        - true
+        - false
+      description: This is used to request the devices that have been deleted.
+      name: deleted
+    - description: The after date in the criteria that the threat occurred.
+      name: after
+    - description: The before date in the criteria that the threat occurred.
+      name: before
+    - description: This is used to filter the data to their respective teams.
+      name: team_id
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Gets a devices associated with a specific OS version
+    name: zimperium-devices-os-version
+    outputs:
+    - contextPath: Zimperium.DeviceOsVersion.id
+      description: The id of device.
+      type: String
+  - arguments:
+    - description: The Device id to get CVE's for.
+      name: device_id
+      required: true
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Gets the CVEs associated with a specific device.
+    name: zimperium-cve-devices-get
+    outputs:
+    - contextPath: Zimperium.CVEDevice.id
+      description: The id of the device.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      predefined:
+        - EMM
+        - ZIPS
+      description: The module parameter is required to get the groups related to EMM connection.
+      name: module
+    description: Get policy groups.
+    name: zimperium-policy-group-list
+    outputs:
+    - contextPath: Zimperium.PolicyGroup.id
+      description: The group id.
+      type: String
+  - arguments:
+    - description: The identifier of the policy. Can be retrieved using zimperium-policy-group-list in the Zimperium.PolicyGroup.privacyId field.
+      name: policy_id
+      required: true
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Get privacy policy by its identifier.
+    name: zimperium-policy-privacy-get
+    outputs:
+    - contextPath: Zimperium.PolicyPrivacy.id
+      description: The identifier of the policy.
+      type: String
+  - arguments:
+    - description: The identifier of the policy. Can be retrieved using zimperium-policy-group-list in the Zimperium.PolicyGroup.trmId field.
+      name: policy_id
+      required: true
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Get threat policy by its identifier.
+    name: zimperium-policy-threat-get
+    outputs:
+    - contextPath: Zimperium.PolicyThreat.id
+      description: The identifier of the policy.
+      type: String
+  - arguments:
+    - description: The identifier of the policy. Can be retrieved using zimperium-policy-group-list in the Zimperium.PolicyGroup.phishingPolicyId field.
+      name: policy_id
+      required: true
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: Get threat policy by its identifier.
+    name: zimperium-policy-phishing-get
+    outputs:
+    - contextPath: Zimperium.PolicyPhising.id
+      description: The identifier of the policy.
+      type: String
+  - arguments:
+    - description: The identifier of the policy. Can be retrieved using zimperium-policy-group-list in the Zimperium.PolicyGroup.appSettingsId field.
+      name: app_settings_policy_id
+      required: true
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    description: List App versions.
+    name: zimperium-policy-app-settings-get
+    outputs:
+    - contextPath: Zimperium.PolicyAppSetting.id
+      description: The identifier of the policy.
+      type: String
+  - arguments:
+    - description: Maximum number of results to retrieve in each page. Default is 10.
+      name: page_size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    - defaultValue: '50'
+      description: Maximum number of results to retrieve in each page. Default is 10.
+      name: limit
+    - description: Used to filter the data by the Team the user belongs to. If you provide this the query returns matching entries plus the policies without a team.
+      name: team_id
+    description: Get policy device inactivity list.
+    name: zimperium-policy-device-inactivity-list
+    outputs:
+    - contextPath: Zimperium.PolicyDeviceInactivity.teamId
+      description: The ID of the team.
+      type: String
+  dockerimage: demisto/python3:3.10.13.72123
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- ZimperiumV2_Test
+defaultmapperin: Zimperium-mapper
+defaultclassifier: Zimperium
