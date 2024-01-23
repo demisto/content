@@ -1,14 +1,15 @@
-"""RubrikSonarSetIncidentSeverityUsingUserRiskLevel Script for Cortex XSOAR (aka Demisto)."""
-
 from typing import Dict
 
 import demistomock as demisto
 from CommonServerPython import *
 
 INCIDENT_SEVERITY_INT_TO_NAME = {
+    0: 'Unknown',
+    0.5: 'Info',
     1: 'Low',
     2: 'Medium',
-    3: 'High'
+    3: 'High',
+    4: 'Critical'
 }
 
 ''' COMMAND FUNCTION '''
@@ -34,7 +35,8 @@ def set_incident_severity_using_risk_level_command(args: Dict[str, Any]) -> Comm
         raise DemistoException('Not able to get the correct value for the current incident severity.')
     if current_severity > 2:
         return CommandResults(
-            readable_output='The current severity is already high or critical, no need to update the severity.')
+            readable_output=f'The current severity is already {INCIDENT_SEVERITY_INT_TO_NAME[current_severity]}, '
+                            'no need to update the severity.')
 
     if 'HIGH_RISK' in risk_levels:
         new_severity = 3
@@ -50,8 +52,8 @@ def set_incident_severity_using_risk_level_command(args: Dict[str, Any]) -> Comm
         return CommandResults(
             readable_output=f"Increased the incident severity to {INCIDENT_SEVERITY_INT_TO_NAME[new_severity]}.")
     else:
-        return CommandResults(
-            readable_output="No users with a risk level higher than the current incident severity.")
+        return CommandResults(readable_output="No users with a risk level higher than the current incident "
+                                              f"severity ({INCIDENT_SEVERITY_INT_TO_NAME[current_severity]}).")
 
 
 ''' MAIN FUNCTION '''

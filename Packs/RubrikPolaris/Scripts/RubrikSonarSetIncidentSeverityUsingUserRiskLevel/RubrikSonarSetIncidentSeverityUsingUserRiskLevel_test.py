@@ -39,22 +39,20 @@ def test_set_incident_severity_using_risk_level_command_with_success(mocker):
 
     Checks the output of the command function with the expected output.
     """
-    # Mock the demisto.args() function to return an argument with mocked values.
-    mocker.patch.object(demisto, 'args', return_value={
-        'risk_levels': 'HIGH_RISK'
-    })
+    args = {'risk_levels': 'HIGH_RISK'}
 
     # Mock the demisto.incident() function to return an incident with mocked values.
-    mocker.patch.object(demisto, 'incident', return_value={
-        'severity': 1
-    })
+    mocker.patch.object(demisto, 'incident', return_value={'severity': 1})
 
+    response = RubrikSonarSetIncidentSeverityUsingUserRiskLevel.set_incident_severity_using_risk_level_command(args)
     # Mock the return_results() function to capture the output
-    mocker.patch('RubrikSonarSetIncidentSeverityUsingUserRiskLevel.return_results')
+    mocker.patch('RubrikSonarSetIncidentSeverityUsingUserRiskLevel.return_results', return_value=response)
 
     RubrikSonarSetIncidentSeverityUsingUserRiskLevel.main()
 
     assert RubrikSonarSetIncidentSeverityUsingUserRiskLevel.return_results.call_count == 1
+    assert (RubrikSonarSetIncidentSeverityUsingUserRiskLevel.return_results.return_value.
+            readable_output == 'Increased the incident severity to High.')
 
 
 @pytest.mark.parametrize("risk_levels, severity", [('HIGH_RISK', 'High'), ('MEDIUM_RISK', 'Medium')])
@@ -87,8 +85,7 @@ def test_set_incident_severity_using_risk_level_command_with_high_incident_sever
     response = RubrikSonarSetIncidentSeverityUsingUserRiskLevel.set_incident_severity_using_risk_level_command(
         {'risk_levels': 'HIGH_RISK'})
 
-    assert (response.readable_output == 'The current severity is already high or critical'
-                                        ', no need to update the severity.')
+    assert (response.readable_output == 'The current severity is already High, no need to update the severity.')
 
 
 @pytest.mark.parametrize("risk_levels", ['LOW_RISK', 'NO_RISK'])
@@ -105,4 +102,4 @@ def test_set_incident_severity_using_risk_level_command_with_high_severity_compa
     response = RubrikSonarSetIncidentSeverityUsingUserRiskLevel.set_incident_severity_using_risk_level_command(
         {'risk_levels': risk_levels})
 
-    assert response.readable_output == 'No users with a risk level higher than the current incident severity.'
+    assert response.readable_output == 'No users with a risk level higher than the current incident severity (Medium).'

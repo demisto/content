@@ -2352,9 +2352,30 @@ def test_gps_vm_recover_files_command_success(client, requests_mock, empty_respo
         assert response.readable_output == gps_vm_recover_files_hr
 
 
-@pytest.mark.parametrize("empty_response, limit, page_number",
-                         [(True, 1, 1), (False, 1, 1), (False, 1, 2), (False, 2, 1)])
-def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, empty_response, limit, page_number):
+def test_rubrik_sonar_user_access_list_command_success_with_empty_response(client, requests_mock):
+    """
+    Test case scenario for rubrik_sonar_user_access_list_command with valid case and empty response.
+
+    When:
+        - Calling rubrik_sonar_user_access_list_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_sonar_user_access_list_command
+
+    # Load test data
+    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                "test_data/sonar_user_access_list_response.json"))
+
+    args = {"sort_order": "ASC", "limit": 1, "page_number": 1, "include_whitelisted_results": True,
+            "user_email": "demo"}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('empty_response')}])
+    response = rubrik_sonar_user_access_list_command(client, args=args)
+    assert response.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('user accesses')
+
+
+@pytest.mark.parametrize("limit, page_number", [(1, 1), (1, 2), (2, 1)])
+def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, limit, page_number):
     """
     Test case scenario for rubrik_sonar_user_access_list_command with valid case.
 
@@ -2368,36 +2389,32 @@ def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, em
     # Load test data
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_user_access_list_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           f"test_data/sonar_user_access_list_response_hr_{limit}.md"), 'r') as f:
-        hr_data = f.read()
+    if limit == 1 and page_number == 2:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                               "test_data/sonar_user_access_list_response_hr_2_2.md"), 'r') as f:
+            hr_data = f.read()
+    else:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                               f"test_data/sonar_user_access_list_response_hr_{limit}.md"), 'r') as f:
+            hr_data = f.read()
 
     args = {"sort_order": "ASC", "limit": limit, "page_number": page_number, "include_whitelisted_results": True,
             "user_email": "demo"}
-    if empty_response:
-        requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('empty_response')}])
-        response = rubrik_sonar_user_access_list_command(client, args=args)
-        assert response.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('user accesses')
-    else:
-        requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
-        response = rubrik_sonar_user_access_list_command(client, args=args)
-        outputs = response_data.get('outputs')
-        page_token = response_data.get(f'page_token_{limit}')
-        if limit == 1:
-            outputs = [outputs[page_number - 1]]
-            if page_number == 2:
-                hr_data = hr_data.replace("1-1 out of 2", "2-2 out of 2")
-                hr_data = hr_data.replace("demo", "demo2")
-                hr_data = hr_data.replace("Demo", "Demo2")
-                hr_data = hr_data.replace("0001", "0002")
-                hr_data += f"\n{MESSAGES['NEXT_PAGE_TOKEN'].format('cursor_2')}"
-                page_token.update({"has_next_upn_page": False})
-        assert response.raw_response == response_data.get('raw_response')
-        assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
-               remove_empty_elements(outputs)
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == \
-               remove_empty_elements(page_token)
-        assert response.readable_output == hr_data
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
+    response = rubrik_sonar_user_access_list_command(client, args=args)
+    outputs = response_data.get('outputs')
+    page_token = response_data.get(f'page_token_{limit}')
+    if limit == 1:
+        outputs = [outputs[page_number - 1]]
+        if page_number == 2:
+            page_token.update({"has_next_upn_page": False})
+    assert response.raw_response == response_data.get('raw_response')
+    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
+           remove_empty_elements(outputs)
+    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == \
+           remove_empty_elements(page_token)
+    assert response.readable_output == hr_data
 
 
 def test_rubrik_sonar_user_access_list_command_success_with_invalid_user_email(client, requests_mock):
@@ -2481,8 +2498,29 @@ def test_rubrik_sonar_user_access_list_command_with_invalid_args(client, args, e
     assert str(e.value) == error
 
 
-@pytest.mark.parametrize("empty_response", [True, False])
-def test_rubrik_sonar_user_access_get_command_success(client, requests_mock, empty_response):
+def test_rubrik_sonar_user_access_get_command_success_with_empty_response(client, requests_mock):
+    """
+    Test case scenario for rubrik_sonar_user_access_get_command with valid case and empty response.
+
+    When:
+        - Calling rubrik_sonar_user_access_get_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_sonar_user_access_get_command
+
+    # Load test data
+    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                "test_data/sonar_user_access_get_response.json"))
+
+    args = {"user_id": "S-1-0-01-0000000000-0000000000-000000000-0001", "include_whitelisted_results": True}
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('empty_response')}])
+    response = rubrik_sonar_user_access_get_command(client, args=args)
+    assert response.readable_output == MESSAGES["NO_RESPONSE"]
+
+
+def test_rubrik_sonar_user_access_get_command_success(client, requests_mock):
     """
     Test case scenario for rubrik_sonar_user_access_get_command with valid case.
 
@@ -2501,18 +2539,14 @@ def test_rubrik_sonar_user_access_get_command_success(client, requests_mock, emp
         hr_data = f.read()
 
     args = {"user_id": "S-1-0-01-0000000000-0000000000-000000000-0001", "include_whitelisted_results": True}
-    if empty_response:
-        requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('empty_response')}])
-        response = rubrik_sonar_user_access_get_command(client, args=args)
-        assert response.readable_output == MESSAGES["NO_RESPONSE"]
-    else:
-        requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
-        response = rubrik_sonar_user_access_get_command(client, args=args)
 
-        assert response.raw_response == response_data.get('raw_response')
-        assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
-            remove_empty_elements(response_data.get('outputs'))
-        assert response.readable_output == hr_data
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
+    response = rubrik_sonar_user_access_get_command(client, args=args)
+
+    assert response.raw_response == response_data.get('raw_response')
+    assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
+           remove_empty_elements(response_data.get('outputs'))
+    assert response.readable_output == hr_data
 
 
 def test_rubrik_sonar_user_access_get_command_success_when_not_whitelisted(client, requests_mock):
@@ -2565,8 +2599,30 @@ def test_rubrik_sonar_user_access_get_command_with_invalid_args(client, args, er
     assert str(e.value) == error
 
 
-@pytest.mark.parametrize("empty_response", [True, False])
-def test_rubrik_sonar_file_context_list_command_success(client, requests_mock, empty_response):
+def test_rubrik_sonar_file_context_list_command_success_with_empty_response(client, requests_mock):
+    """
+    Test case scenario for rubrik_sonar_file_context_list_command with valid case and empty response.
+
+    When:
+        - Calling rubrik_sonar_file_context_list_command.
+    Then:
+        - Verifies mock response with actual response.
+    """
+    from RubrikPolaris import rubrik_sonar_file_context_list_command
+
+    # Load test data
+    response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                                "test_data/sonar_file_context_list_response.json"))
+
+    args = {"object_id": "1", "snapshot_id": "1",
+            "sort_order": "ASC", "limit": "1", "include_whitelisted_results": True}
+
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('empty_response')}])
+    response = rubrik_sonar_file_context_list_command(client, args=args)
+    assert response.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('file contexts')
+
+
+def test_rubrik_sonar_file_context_list_command_success(client, requests_mock):
     """
     Test case scenario for rubrik_sonar_file_context_list_command with valid case.
 
@@ -2586,20 +2642,16 @@ def test_rubrik_sonar_file_context_list_command_success(client, requests_mock, e
 
     args = {"object_id": "1", "snapshot_id": "1",
             "sort_order": "ASC", "limit": "1", "include_whitelisted_results": True}
-    if empty_response:
-        requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('empty_response')}])
-        response = rubrik_sonar_file_context_list_command(client, args=args)
-        assert response.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('file contexts')
-    else:
-        requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
-        response = rubrik_sonar_file_context_list_command(client, args=args)
 
-        assert response.raw_response == response_data.get('raw_response')
-        assert response.outputs.get(f'{OUTPUT_PREFIX["FILE_CONTEXT"]}(val.stdPath == obj.stdPath)') == \
-               remove_empty_elements(response_data.get('outputs'))
-        assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_FILE_CONTEXT"]}(val.name == obj.name)') == \
-               remove_empty_elements(response_data.get('page_token'))
-        assert response.readable_output == hr_data
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
+    response = rubrik_sonar_file_context_list_command(client, args=args)
+
+    assert response.raw_response == response_data.get('raw_response')
+    assert response.outputs.get(f'{OUTPUT_PREFIX["FILE_CONTEXT"]}(val.stdPath == obj.stdPath)') == \
+           remove_empty_elements(response_data.get('outputs'))
+    assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_FILE_CONTEXT"]}(val.name == obj.name)') == \
+           remove_empty_elements(response_data.get('page_token'))
+    assert response.readable_output == hr_data
 
 
 def test_rubrik_sonar_file_context_list_command_success_when_not_whitelisted(client, requests_mock):

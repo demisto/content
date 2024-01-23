@@ -6,6 +6,7 @@ from typing import Tuple
 
 from rubrik_polaris.rubrik_polaris import PolarisClient
 from rubrik_polaris.exceptions import ProxyException
+import math
 import urllib3
 import traceback
 from datetime import date
@@ -648,7 +649,7 @@ def process_activity_nodes(activity_nodes: list, processed_incident):
     return processed_incident
 
 
-def calc_pages(total_count: int, per_page_count: int):
+def calc_pages(total_count: int, per_page_count: int) -> int:
     """
     Calculates the number of pages required to display all the items,
     considering the number of items to be displayed per page
@@ -660,7 +661,7 @@ def calc_pages(total_count: int, per_page_count: int):
     Returns:
         int: The total number of pages.
     """
-    return -(-total_count // per_page_count)
+    return math.ceil(total_count / per_page_count)
 
 
 def prepare_context_hr_object_search(response: dict):
@@ -3491,17 +3492,17 @@ def rubrik_sonar_user_access_list_command(client: PolarisClient, args: Dict[str,
 
     :return: CommandResult object.
     """
-    user_name = args.get("user_name") or ""
-    user_email = args.get("user_email") or ""
-    search_time_period: datetime = arg_to_datetime(args.get("search_time_period") or "7 days",  # type: ignore
+    user_name = args.get("user_name", "")
+    user_email = args.get("user_email", "")
+    search_time_period: datetime = arg_to_datetime(args.get("search_time_period", "7 days"),  # type: ignore
                                                    arg_name="search_time_period")
     if search_time_period.tzinfo is None:
         search_time_period = search_time_period.replace(tzinfo=timezone.utc)
     search_time_period_iso = search_time_period.replace(microsecond=0).isoformat()
-    risk_levels = argToList(args.get("risk_levels")) or []
-    group_id = args.get("group_id") or ""
+    risk_levels = argToList(args.get("risk_levels", []))
+    group_id = args.get("group_id", "")
     include_whitelisted_results = argToBoolean(args.get("include_whitelisted_results", False))
-    principal_summary_category = args.get("principal_summary_category") or DEFAULT_PRINCIPAL_SUMMARY_CATEGORY
+    principal_summary_category = args.get("principal_summary_category", DEFAULT_PRINCIPAL_SUMMARY_CATEGORY)
     page_number = arg_to_number(args.get('page_number', 1), 'page_number')
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT), 'limit')
     sort_by = args.get('sort_by', DEFAULT_USER_ACCESS_SORT_BY)
@@ -3589,12 +3590,12 @@ def rubrik_sonar_user_access_get_command(client: PolarisClient, args: Dict[str, 
     :return: CommandResult object.
     """
     user_id = validate_required_arg("user_id", args.get("user_id"))
-    search_time_period: datetime = arg_to_datetime(args.get("search_time_period") or "7 days",  # type: ignore
+    search_time_period: datetime = arg_to_datetime(args.get("search_time_period", "7 days"),  # type: ignore
                                                    arg_name="search_time_period")
     if search_time_period.tzinfo is None:
         search_time_period = search_time_period.replace(tzinfo=timezone.utc)
     search_time_period_iso = search_time_period.replace(microsecond=0).isoformat()
-    historical_delta_days = arg_to_number(args.get("historical_delta_days") or '7', arg_name="historical_delta_days",
+    historical_delta_days = arg_to_number(args.get("historical_delta_days", '7'), arg_name="historical_delta_days",
                                           required=True)
     include_whitelisted_results = argToBoolean(args.get("include_whitelisted_results", False))
 
@@ -3653,8 +3654,8 @@ def rubrik_sonar_file_context_list_command(client: PolarisClient, args: Dict[str
     """
     object_id = validate_required_arg("object_id", args.get("object_id"))
     snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
-    file_name = args.get("file_name") or ""
-    file_path = args.get("file_path") or ""
+    file_name = args.get("file_name", "")
+    file_path = args.get("file_path", "")
     user_id = args.get("user_id")
     user_ids = []
     if user_id:
