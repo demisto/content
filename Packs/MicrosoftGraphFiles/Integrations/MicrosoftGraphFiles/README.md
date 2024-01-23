@@ -443,7 +443,7 @@ Returns the list of document libraries (drives) available for a target site.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.Read.All - Application`<br />
+Client Credentials Flow - `Files.Read.All - Application`  
 Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
