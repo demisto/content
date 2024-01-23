@@ -198,7 +198,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set
+    from typing import Optional, Dict, List, Any, Union, Set, cast
 
     from urllib3 import disable_warnings
     disable_warnings()
@@ -8958,10 +8958,7 @@ if 'requests' in sys.modules:
                             self.client_error_handler(res)
                     except Exception as e:
                         if update_metrics:
-                            if self._is_quota_error(self, res):
-                                self.execution_metrics.quota_error += 1
-                            else:
-                                self.execution_metrics.general_error += 1
+                            self.update_metrics(res)
                         raise e
                 if update_metrics:
                     self.execution_metrics.success += 1
@@ -8989,10 +8986,12 @@ if 'requests' in sys.modules:
                     raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
                                            .format(resp_type, res.content), exception, res)
             except requests.exceptions.ConnectTimeout as exception:
+                self.execution_metrics.timeout_error += 1
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
+                self.execution_metrics.ssl_error += 1
                 # in case the "Trust any certificate" is already checked
                 if not self._verify:
                     raise
@@ -9000,10 +8999,12 @@ if 'requests' in sys.modules:
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ProxyError as exception:
+                self.execution_metrics.proxy_error += 1
                 err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                           ' selected, try clearing the checkbox.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ConnectionError as exception:
+                self.execution_metrics.connection_error += 1
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
@@ -9020,15 +9021,44 @@ if 'requests' in sys.modules:
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
 
-        def _is_quota_error(self, response):
-            """ Checks if the response indicates quota error.
-            :type response: ``requests.Response``
-            :param response: Response from API after the request for which to check the status.
+        def update_metrics(self, res):
+            if self._is_quota_error(self, res):
+                self.execution_metrics.quota_error += 1
+            elif self._is_auth_error(self, res):
+                self.execution_metrics.auth_error += 1
+            elif self._is_service_error(self, res):
+                self.execution_metrics.service_error += 1
+            elif self._is_connection_error(self, res):
+                self.execution_metrics.connection_error += 1
+            elif self._is_proxy_error(self, res):
+                self.execution_metrics.proxy_error += 1
+            elif self._is_ssl_error(self, res):
+                self.execution_metrics.ssl_error += 1
+            elif self._is_timeout_error(self, res):
+                self.execution_metrics.timeout_error += 1
+            else:
+                self.execution_metrics.general_error += 1
 
-            :return: Whether or not the status code of the response indicates quota error.
-            :rtype: ``bool``
-            """
-            return response.status_code == 429  # can be overriden
+        def _is_quota_error(self, response):
+            return response.status_code == 429
+
+        def _is_auth_error(self, response):
+            return False
+
+        def _is_service_error(self, response):
+            return False
+
+        def _is_connection_error(self, response):
+            return False
+
+        def _is_proxy_error(self, response):
+            return False
+
+        def _is_ssl_error(self, response):
+            return False
+
+        def _is_timeout_error(self, response):
+            return False
 
         def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.
@@ -9067,6 +9097,10 @@ if 'requests' in sys.modules:
                 err_msg += '\n{}'.format(res.text)
                 raise DemistoException(err_msg, res=res)
 
+        def execution_metrics_results(self):
+            """ Returns execution metrics results.
+            """
+            return cast(CommandResults, self.execution_metrics.metrics)
 
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.
