@@ -71,19 +71,17 @@ if [ -z "$_reviewer" ]; then
 fi
 
 
-echo "ci_token=" $_ci_token
-echo "slack_channel=" $_slack_channel
-echo "branch=" $_branch
-echo "release_version=" $_release_version
-echo "reviewer=" $_reviewer
-
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source "${SCRIPT_DIR}/trigger_build_url.sh"
 
+export URL=$(
 curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[SDK_RELEASE]=true" \
     --form "variables[BRANCH_NAME]=${_branch}" \
     --form "variables[CI_TOKEN]=${_ci_token}" \
     --form "variables[REVIEWER]=${_reviewer}" \
     --form "variables[RELEASE_VERSION]=${_release_version}" \
-    --form "variables[SLACK_CHANNEL]=${_slack_channel}"  | jq
+    --form "variables[SLACK_CHANNEL]=${_slack_channel}" | jq .web_url)
+
+echo "SDK release flow started"
+echo $URL
