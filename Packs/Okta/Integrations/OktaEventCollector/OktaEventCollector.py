@@ -44,22 +44,25 @@ def get_events_command(client: Client, total_events_to_fetch, since,
     stored_events: list = []
     num_of_events_to_fetch = FETCH_LIMIT if total_events_to_fetch > FETCH_LIMIT else total_events_to_fetch
     demisto.debug(f"num of events to fetch: {num_of_events_to_fetch} since: {since}")
-    while len(stored_events) < total_events_to_fetch:
+    should_continue = True
+    while len(stored_events) < total_events_to_fetch and should_continue:
         demisto.debug(f"stored_events collected: {len(stored_events)}")
         try:
             events = client.get_events(since=since, limit=num_of_events_to_fetch)  # type: ignore
             if events:
                 demisto.debug(f'received {len(events)} number of events.')
+                if len(events) < num_of_events_to_fetch:
+                    demisto.debug(f"Number of events collected is smaller than: {num_of_events_to_fetch} \
+                        will stop after current fetch.")
+                    should_continue = False
                 since = events[-1]['published']
                 if last_object_ids:
                     events = remove_duplicates(events, last_object_ids)  # type: ignore
+                    demisto.debug(f'Number of events after dedup {len(events)}')
                 if not events:
                     demisto.debug('Events are empty after dedup will break.')
                     break
                 stored_events.extend(events)
-                if len(events) < num_of_events_to_fetch:
-                    demisto.debug(f"Number of events collected is smaller than: {num_of_events_to_fetch} will break.")
-                    break
             else:
                 demisto.debug('Didnt receive any events from the api.')
                 break
