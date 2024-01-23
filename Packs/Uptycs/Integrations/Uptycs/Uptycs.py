@@ -271,7 +271,6 @@ def uptycs_get_upt_day(start_time):
 def uptycs_poll_queryjob_status(args: dict, job_id) -> PollResult:
     api_call = ("/queryjobs/%s" % job_id)
     status = restcall('get', api_call).get('status')
-    readable_output = None
 
     if status in ['FINISHED']:
         return PollResult(
@@ -298,14 +297,11 @@ def uptycs_get_queryjob_results(job_id):
         api_call = ("/queryjobs/%s/results?limit=%s&offset=%s" % (job_id, limit, offset))
         output = restcall('get', api_call)
         offset += limit
-        if output.get('items'):
-            rows = output.get('items')
-            final_output.extend(remove_context_entries(rows, ['rowData']))
-            if len(rows) < limit:
-                return [entry['rowData'] for entry in final_output]
-        else:
-            # unknown or empty output
-            return_error("Invalid/Empty query job output")
+
+        rows = output.get('items', [])
+        final_output.extend(remove_context_entries(rows, ['rowData']))
+        if len(rows) < limit:
+            return [entry['rowData'] for entry in final_output]
     return
 
 
