@@ -925,12 +925,17 @@ def search_and_install_packs_and_their_dependencies(
         A list of the installed packs IDs.
         A flag that indicates if the operation succeeded or not.
 
-    High-level flow of the function:
+    Flow of the function:
         1. Filter out deprecated packs from the given pack IDs.
         2. Get all packs dependency data using the Demisto client.
-        3. Create a dependency graph using the all_packs_dependencies_data.
+        3. Create a dependency graph (for all the content) using the all_packs_dependencies_data.
         4. Get list of all packs and their dependencies to install from the graph.
-        5. Merge packs with circular dependencies into single, to make DAG graph.
+        5. Create subgraph of packs to install and their dependencies.
+        6. Merge packs with circular dependencies into single, to make DAG graph.
+        7. Get a sorted list of packs to install based on the DAG graph, using topological sort.
+        8. Create the request body to install packs by calling create_install_request_body.
+        9. Create batches of packs to install if install_packs_in_batches is True.
+        10. Install packs using the Demisto client.
     """
     host = hostname or client.api_client.configuration.host
 

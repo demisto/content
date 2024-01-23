@@ -817,7 +817,7 @@ def test_search_for_deprecated_dependencies_with_deprecated_dependency(
     script.logging.critical.assert_called_with(mocker.ANY)
 
 
-def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker):
+def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker: MockFixture):
     """
     Given:
         - Pack ID
@@ -841,3 +841,134 @@ def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker):
         is True
     )
     script.logging.critical.assert_not_called()
+
+
+def test_get_packs_and_dependencies_to_install_no_deprecated(mocker: MockFixture):
+    """
+    Given
+    - Pack ID
+    - Dependency IDs
+    - Production bucket flag
+    - Packs dependencies data
+    When
+    - Getting packs and dependencies to install
+    - Mocking search for deprecated dependencies
+    Then
+    - Ensure correct return value with no deprecated dependencies
+    """
+    mocker.patch.object(script, 'search_for_deprecated_dependencies',
+                        return_value=True)
+
+    pack_id = "PackA"
+    dependencies = ["Dep1", "Dep2"]
+    production_bucket = True
+    dependencies_data = {}
+
+    pack_ids = [pack_id]
+    graph_dependencies = DiGraph([(d, pack_id) for d in dependencies])
+
+    result = script.get_packs_and_dependencies_to_install(
+        pack_ids, graph_dependencies, production_bucket, dependencies_data)
+
+    assert result == (True, {pack_id, *dependencies})
+
+
+def test_get_packs_and_dependencies_to_install_deprecated(mocker: MockFixture):
+    """
+    Given
+    - Pack ID 
+    - Dependency IDs
+    - Production bucket flag
+    - Packs dependencies data
+    When
+    - Getting packs and dependencies to install
+    - Mocking search finding deprecated dependencies
+    Then  
+    - Ensure empty dependencies set returned
+    - Ensure no deprecated dependencies flag set to False
+    """
+    mocker.patch.object(script, 'search_for_deprecated_dependencies',
+                        return_value=False)
+
+    pack_id = "PackA"
+    dependencies = ["Dep1", "Dep2"]
+    production_bucket = True
+    dependencies_data = {}
+
+    pack_ids = [pack_id]
+    graph_dependencies = DiGraph([(d, pack_id) for d in dependencies])
+
+    result = script.get_packs_and_dependencies_to_install(
+        pack_ids, graph_dependencies, production_bucket, dependencies_data)
+
+    assert result == (False, set())
+
+
+def test_create_install_request_body():
+    """
+    Given
+    - A list of packs to install 
+    - Dependencies data for packs
+    When
+    - Calling create_install_request_body
+    Then 
+    - Validate returned request body contains correct data
+    """
+    packs_to_install = [['HelloWorld'], ['TestPack']]
+    packs_deps_data = {
+        'HelloWorld': {'currentVersion': '1.0.0'},
+        'TestPack': {'currentVersion': '2.0.0'}
+    }
+    result = script.create_install_request_body(packs_to_install, packs_deps_data)
+
+    assert len(result) == 2
+    assert result[0][0]['id'] == 'HelloWorld'
+    assert result[1][0]['id'] == 'TestPack'
+
+
+def test_filter_deprecated_packs(mocker: MockFixture):
+    """
+    Given
+    - A list of pack IDs, some deprecated and some not
+    - Production bucket boolean
+    - Commit hash
+
+    When
+    - Calling filter_deprecated_packs
+
+    Then 
+    - Deprecated packs are filtered from the list
+    - Warning is logged for deprecated packs
+    - List without deprecated packs is returned
+    """
+    pack_ids = ['pack1', 'deprecated_pack', 'pack2']
+    production_bucket = True
+    commit_hash = '1234abcd'
+
+    mocker.patch.object(script, 'is_pack_deprecated', side_effect=[False, True, False])
+    mocker.patch.object(script, 'logging')
+
+    result = script.filter_deprecated_packs(pack_ids, production_bucket, commit_hash)
+
+    assert result == ['pack1', 'pack2']
+    script.logging.warning.assert_called_with("Pack 'deprecated_pack' is deprecated (hidden) and will not be installed.")
+
+
+@pytest.mark.parametrize("list_of_packs, expected", [
+    ([["pack1"], ["pack2", "pack3"]], [["pack1", "pack2", "pack3"]]),
+    ([["pack1"], ["pack2", "pack3"], ["pack4"]], [["pack1", "pack2", "pack3", "pack4"]]),
+    ([["pack1"], ["pack2", "pack3"], ["pack4", "pack5", "pack6"]], [["pack1", "pack2", "pack3"], ["pack4", "pack5", "pack6"]])
+])
+def test_create_batches(mocker: MockFixture, list_of_packs, expected):
+    """
+    Given
+    - A list of packs and dependencies
+
+    When
+    - Running create_batches
+
+    Then 
+    - Ensure the correct batches are created based on the batch size
+    """
+    mocker.patch.object(script, "BATCH_SIZE", 5)
+    assert script.create_batches(list_of_packs) == expected
