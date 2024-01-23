@@ -728,7 +728,7 @@ def rasterize_email_command():  # pragma: no cover
     rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
                                             offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
 
-    res = fileResult(filename=file_name, data=rasterize_output[0])
+    res = fileResult(filename=file_name, data=rasterize_output[0][0])
 
     if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
         res['Type'] = entryTypes['image']
