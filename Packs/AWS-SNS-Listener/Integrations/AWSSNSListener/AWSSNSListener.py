@@ -8,6 +8,7 @@ from fastapi import FastAPI, Request
 from fastapi.security import HTTPBasic
 from fastapi.security.api_key import APIKeyHeader
 import requests
+PARAMS: dict = demisto.params()
 # import base64
 # from M2Crypto import X509
 
@@ -17,6 +18,26 @@ sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
+
+
+def handle_teams_proxy_and_ssl():
+    demisto.error("DANF in handle_teams_proxy_and_ssl")
+    proxies = None
+    use_ssl = not PARAMS.get('insecure', False)
+    if not is_demisto_version_ge('8.0.0'):
+        return proxies, use_ssl
+    CRTX_HTTP_PROXY = os.environ.get('CRTX_HTTP_PROXY', None)
+    demisto.error(f"DANF CRTX_HTTP_PROXY: {CRTX_HTTP_PROXY}")
+    if CRTX_HTTP_PROXY:
+        proxies = {
+            "http": CRTX_HTTP_PROXY,
+            "https": CRTX_HTTP_PROXY
+        }
+        use_ssl = True
+    return proxies, use_ssl
+
+
+PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
 
 
 # def valid_sns_message(sns_payload):
@@ -91,7 +112,7 @@ async def handle_post(request: Request):
         subscribe_url = payload['SubscribeURL']
         demisto.error(f'DANF SubscribeURL: {payload["SubscribeURL"]}')
         try:
-            response = requests.get(subscribe_url)
+            response = requests.get(subscribe_url, verify=True, proxies=PROXIES)
         except Exception as e:
             demisto.error(f'DANF error is SubscribeURL: {e}')
             return f"fail to send sub url {e}"
@@ -137,22 +158,22 @@ async def handle_post(request: Request):
 
 
 def main():
-    params = demisto.params()
+    # PARAMS = demisto.params()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         try:
-            port = params.get('longRunningPort')
+            port = PARAMS.get('longRunningPort')
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'test-module':
-            longRunningPort = params.get('longRunningPort')
+            longRunningPort = PARAMS.get('longRunningPort')
             print(longRunningPort) if longRunningPort else print('no longRunningPort')
             return_results("ok")
         elif demisto.command() == 'long-running-execution':
             demisto.debug('Started long-running-execution.')
             while True:
-                certificate = params.get('certificate', '')
-                private_key = params.get('key', '')
+                certificate = PARAMS.get('certificate', '')
+                private_key = PARAMS.get('key', '')
 
                 certificate_path = ''
                 private_key_path = ''
