@@ -439,7 +439,14 @@ def construct_slack_msg(triggering_workflow: str,
         # No color is needed in case of success, as it's controlled by the color of the test failures' indicator.
 
     title += title_append
-    return [{
+    slack_msg_start = []
+    if shame_message:
+        shame_title, shame_value, shame_color = shame_message
+        slack_msg_start.append({
+            "title": f"{shame_title}\n{shame_value}",
+            "color": shame_color
+})
+    return slack_msg_start +[{
         'fallback': title,
         'color': color,
         'title': title,
@@ -561,21 +568,23 @@ def main():
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
-            # Since commits are in ascending order, previous commit is the one after the current commit.
-            previous_commit = list_of_commits[current_commit_index + 1]
-            current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
-            previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
-            if current_pipeline and previous_pipeline:
-                pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
-                logging.info(
-                    f"Checking pipeline {current_pipeline}, the commit is {current_commit} "
-                    f"and the pipeline change status is: {pipeline_changed_status}"
-                )
-                if pipeline_changed_status is not None:
-                    shame_message = create_shame_message(
-                        current_commit, pipeline_changed_status, options.name_mapping_path
+            # If the current commit is the last commit in the list, there is no previous commit, 
+            # since commits are in ascending order
+            if current_commit_index != len(list_of_commits) - 1:
+                previous_commit = list_of_commits[current_commit_index + 1]
+                current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
+                previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
+                if current_pipeline and previous_pipeline:
+                    pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
+                    logging.info(
+                        f"Checking pipeline {current_pipeline}, the commit is {current_commit} "
+                        f"and the pipeline change status is: {pipeline_changed_status}"
                     )
-                    computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+                    if pipeline_changed_status is not None:
+                        shame_message = create_shame_message(
+                            current_commit, pipeline_changed_status, options.name_mapping_path
+                        )
+                        computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
             computed_slack_channel = "dmst-build-test"
     slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
