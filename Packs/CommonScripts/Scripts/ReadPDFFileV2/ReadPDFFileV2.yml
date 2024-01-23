@@ -11,10 +11,10 @@ args:
 comment: |-
   Load a PDF file's content and metadata into context.
 commonfields:
-  id: ReadPDFFileV2Test
+  id: ReadPDFFileV2
   version: -1
 enabled: true
-name: ReadPDFFileV2Test
+name: ReadPDFFileV2
 outputs:
 - contextPath: URL.Data
   description: A list of URLs that were extracted from the PDF file.
