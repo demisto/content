@@ -4,7 +4,7 @@ commonfields:
 name: AMP
 display: AMP
 category: Endpoint
-description: Uses CISCO AMP Endpoint
+description: Uses CISCO AMP Endpoint test 4
 configuration:
 - display: Server URL (e.g. https://api.amp.cisco.com)
   name: server
