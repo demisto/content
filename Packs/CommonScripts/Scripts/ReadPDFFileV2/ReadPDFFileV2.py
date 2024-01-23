@@ -116,7 +116,7 @@ def run_shell_command(command: str, *args) -> bytes:
     """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
     demisto.debug(f'Running the shell command {cmd=}')
-    completed_process = subprocess.run( # noqa: UP022
+    completed_process = subprocess.run(  # noqa: UP022
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     exit_codes = completed_process.returncode
