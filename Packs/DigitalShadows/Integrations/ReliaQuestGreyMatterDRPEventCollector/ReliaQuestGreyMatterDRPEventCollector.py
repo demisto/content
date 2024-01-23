@@ -1,4 +1,3 @@
-import time
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -449,7 +448,7 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
         events.extend(current_enriched_events)
 
     return CommandResults(
-        outputs_prefix=f'ReliaQuest.Events',
+        outputs_prefix='ReliaQuest.Events',
         outputs_key_field='event-num',
         outputs=events,
         raw_response=events,
