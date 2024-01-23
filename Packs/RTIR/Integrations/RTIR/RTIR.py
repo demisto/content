@@ -150,12 +150,22 @@ def create_ticket_request(encoded):
     return ticket_id
 
 
-def edit_links(ticket_id, member_of, members):
+def edit_links(ticket_id, member_of, members, depends_on, depended_on_by, refers_to, referred_to_by):
+
     content = ""
     if member_of:
         content = f"MemberOf: {member_of}\n"
     if members:
         content = f"Members: {members}\n"
+    if depends_on:
+        content = f"DependsOn: {depends_on}\n"
+    if depended_on_by:
+        content = f"DependedOnBy: {depended_on_by}\n"
+    if refers_to:
+        content = f"RefersTo: {refers_to}\n"
+    if referred_to_by:
+        content = f"ReferredToBy: {referred_to_by}\n"
+
     data = f"content={urllib.parse.quote_plus(content)}"
 
     suffix_url = f'ticket/{ticket_id}/links'
@@ -251,8 +261,13 @@ def create_ticket():
 
     member_of = args.get('member-of')
     members = args.get('members')
-    if members or member_of:
-        links = edit_links(ticket_id, members, member_of)
+    depends_on = args.get('depends-on')
+    depended_on_by = args.get('depended-on-by')
+    refers_to = args.get('refers-to')
+    referred_to_by = args.get('referred-to-by')
+
+    if members or member_of or depends_on or depended_on_by or refers_to or referred_to_by:
+        links = edit_links(ticket_id, members, member_of, depends_on, depended_on_by, refers_to, referred_to_by)
 
     ticket_context = ({
         'ID': ticket_id,
@@ -513,8 +528,13 @@ def edit_ticket():
     edit_succeeded = False
     member_of = args.get('member-of')
     members = args.get('members')
-    if members or member_of:
-        links = edit_links(ticket_id, members, member_of)
+    depends_on = args.get('depends-on')
+    depended_on_by = args.get('depended-on-by')
+    refers_to = args.get('refers-to')
+    referred_to_by = args.get('referred-to-by')
+
+    if members or member_of or depends_on or depended_on_by or refers_to or referred_to_by:
+        links = edit_links(ticket_id, members, member_of, depends_on, depended_on_by, refers_to, referred_to_by)
         if "200 Ok" in links.text:
             edit_succeeded = True
 

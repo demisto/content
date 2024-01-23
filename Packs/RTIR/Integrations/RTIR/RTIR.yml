@@ -96,6 +96,18 @@ script:
     - description: Ticket Members links.
       isArray: true
       name: members
+    - description: Ticket DependedOn links.
+      isArray: true
+      name: depends-on
+    - description: Ticket DependedOnBy links.
+      isArray: true
+      name: depended-on-by
+    - description: Ticket RefersTo links.
+      isArray: true
+      name: refers-to
+    - description: Ticket ReferredToBy links.
+      isArray: true
+      name: referred-to-by
     - description: Attachment to add to the ticket, given as Entry ID. Comma-separated values supported, e.g., entryID1,entryID2.
       isArray: true
       name: attachment
@@ -231,6 +243,18 @@ script:
     - description: Ticket Members links.
       isArray: true
       name: members
+    - description: Ticket DependedOn links.
+      isArray: true
+      name: depends-on
+    - description: Ticket DependedOnBy links.
+      isArray: true
+      name: depended-on-by
+    - description: Ticket RefersTo links.
+      isArray: true
+      name: refers-to
+    - description: Ticket ReferredToBy links.
+      isArray: true
+      name: referred-to-by
     - description: 'Ticket custom fields, given in format: field1=value1,field2=value2, e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom fields, these should be created on RTIR.'
       name: customfields
     description: Modify a ticket on RTIR.

@@ -480,6 +480,22 @@
 <td style="width: 589px;">Modified ticket Members links</td>
 </tr>
 <tr>
+<td style="width: 132px;">depends-on</td>
+<td style="width: 589px;">Modified ticket DependedOn links</td>
+</tr>
+<tr>
+<td style="width: 132px;">depended-on-by</td>
+<td style="width: 589px;">Modified ticket DependedOnBy links</td>
+</tr>
+<tr>
+<td style="width: 132px;">refers-to</td>
+<td style="width: 589px;">Modified ticket RefersTo links</td>
+</tr>
+<tr>
+<td style="width: 132px;">referred-to-by</td>
+<td style="width: 589px;">Modified ticket ReferredToBy links</td>
+</tr>
+<tr>
 <td>due</td>
 <td>
 <p>Modified ticket due date, in the following format: YYYY-MM-DD.</p>
