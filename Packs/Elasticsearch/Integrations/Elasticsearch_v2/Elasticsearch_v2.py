@@ -464,6 +464,10 @@ def test_func(proxies):
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
+    demisto.results('ok')
+    
+
+def integration_health_check(proxies):
     # build general Elasticsearch class
     es = elasticsearch_builder(proxies)
 
@@ -512,8 +516,6 @@ def test_func(proxies):
     else:
         # check that we can reach any indexes in the supplied server URL
         test_general_query(es)
-
-    demisto.results('ok')
 
 
 def incident_label_maker(source):
