@@ -6,7 +6,7 @@ from ANYRUN import generate_dbotscore
 from ANYRUN import taskid_from_url
 HEADERS = {'Authorization': 'Basic Og=='}
 USE_SSL = False
-s = 3
+s = 4
 
 
 @pytest.fixture(scope="module")
