@@ -1,5 +1,5 @@
 args:
-- description: The value is an array of elements
+- description: The array which we want to search
   isArray: true
   name: value
 - description: The item whos index we want to find
