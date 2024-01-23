@@ -36,16 +36,8 @@ function getValueToSet(value) {
 
 
 function main() {
-    let values = args.value;
-    if (!values || (Array.isArray(values) && values.length === 0) || (values.constructor == Object && Object.keys(values).length === 0)) {
-        values = [null];
-    }
-    values = argToList(values);
-
-    for (let i = 0; i < values.length; i++) {
-        values[i] = getValueToSet(values[i]);
-    }
-    return values;
+    let value = args.value;
+    return getValueToSet(value);
 }
 
 
