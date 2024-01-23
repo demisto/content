@@ -809,7 +809,7 @@ def rasterize_html_command():
     output = perform_rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
                                   rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
 
-    res = fileResult(filename=file_name, data=output[0])
+    res = fileResult(filename=file_name, data=output[0][0])
     if rasterize_type == 'png':
         res['Type'] = entryTypes['image']
     return_results(res)
