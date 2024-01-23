@@ -67,7 +67,7 @@ class TempFile:
         os.remove(self.path)
 
 
-def http_request(method, suffix_url, data=None, files=None, query=None, params=None):
+def http_request(method, suffix_url, data=None, files=None, query=None):
     # Returns the http request
 
     url = urljoin(BASE_URL, suffix_url)
@@ -156,15 +156,15 @@ def edit_links(ticket_id, member_of, members, depends_on, depended_on_by, refers
     if member_of:
         content = f"MemberOf: {member_of}\n"
     if members:
-        content = f"Members: {members}\n"
+        content += f"Members: {members}\n"
     if depends_on:
-        content = f"DependsOn: {depends_on}\n"
+        content += f"DependsOn: {depends_on}\n"
     if depended_on_by:
-        content = f"DependedOnBy: {depended_on_by}\n"
+        content += f"DependedOnBy: {depended_on_by}\n"
     if refers_to:
-        content = f"RefersTo: {refers_to}\n"
+        content += f"RefersTo: {refers_to}\n"
     if referred_to_by:
-        content = f"ReferredToBy: {referred_to_by}\n"
+        content += f"ReferredToBy: {referred_to_by}\n"
 
     data = f"content={urllib.parse.quote_plus(content)}"
 
@@ -267,7 +267,7 @@ def create_ticket():
     referred_to_by = args.get('referred-to-by')
 
     if members or member_of or depends_on or depended_on_by or refers_to or referred_to_by:
-        links = edit_links(ticket_id, members, member_of, depends_on, depended_on_by, refers_to, referred_to_by)
+        edit_links(ticket_id, members, member_of, depends_on, depended_on_by, refers_to, referred_to_by)
 
     ticket_context = ({
         'ID': ticket_id,
