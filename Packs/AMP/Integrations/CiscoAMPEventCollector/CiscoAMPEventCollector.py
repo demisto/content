@@ -133,7 +133,7 @@ def iterate_events(events, max_events_per_fetch, previous_ids, last_fetch_timest
 
         event_timestamp = arg_to_number(event.get('timestamp') * 1000, required=True, arg_name='event.timestamp')
 
-        event.update({'_time': timestamp_to_datestring(event.get('timestamp') * 1000, is_utc=True)})
+        event.update({'_time': timestamp_to_datestring(event_timestamp, is_utc=True)})
         filtered_events.append(event)
 
         # Update the latest event time that was fetched.

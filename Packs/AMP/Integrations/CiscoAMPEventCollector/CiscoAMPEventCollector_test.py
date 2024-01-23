@@ -1,6 +1,8 @@
 """
 Unit testing for CiscoAMP (Advanced Malware Protection)
 """
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import io
 import os
@@ -142,3 +144,23 @@ def test_fetch_events_with_no_new_incidents(
     # Validate response
     assert "6159258594551267595" in next_run["previous_ids"]
     assert len(incidents) == 0
+
+
+def test_test_module(mock_client, mocker):
+    """
+    Given:
+        - params and a successful response.
+    When:
+        - run `test-module` function.
+    Then:
+        - Ensure it pass successfully.
+    """
+    mock_response = load_mock_response("incidents_response_3.json")
+    mocker.patch.object(Client, 'get_events', return_value=mock_response)
+    mocker.patch.object(demisto, 'params', return_value={'credentials': {'identifier': 1234, 'password': 1234},
+                                                         'url': 'https://some_url.com'})
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    from CiscoAMPEventCollector import main
+
+    main()
