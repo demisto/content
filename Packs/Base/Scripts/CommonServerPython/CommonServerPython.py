@@ -8729,6 +8729,8 @@ if 'requests' in sys.modules:
             system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
             self.timeout = float(entity_timeout or system_timeout or timeout)
 
+            self.execution_metrics = ExecutionMetrics()
+
         def __del__(self):
             try:
                 self._session.close()
@@ -8819,7 +8821,8 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, params_parser=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, params_parser=None, update_metrics=False,
+                          **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -8948,10 +8951,20 @@ if 'requests' in sys.modules:
                 )
                 # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    if error_handler:
-                        error_handler(res)
-                    else:
-                        self.client_error_handler(res)
+                    try:
+                        if error_handler:
+                            error_handler(res)
+                        else:
+                            self.client_error_handler(res)
+                    except Exception as e:
+                        if update_metrics:
+                            if self._is_quota_error(self, res):
+                                self.execution_metrics.quota_error += 1
+                            else:
+                                self.execution_metrics.general_error += 1
+                        raise e
+                if update_metrics:
+                    self.execution_metrics.success += 1
 
                 if not empty_valid_codes:
                     empty_valid_codes = [204]
@@ -9006,6 +9019,16 @@ if 'requests' in sys.modules:
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
+
+        def _is_quota_error(self, response):
+            """ Checks if the response indicates quota error.
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the status.
+
+            :return: Whether or not the status code of the response indicates quota error.
+            :rtype: ``bool``
+            """
+            return response.status_code == 429  # can be overriden
 
         def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.
