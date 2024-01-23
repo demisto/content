@@ -569,9 +569,8 @@ def urlscan_submit_command(client):
     items_to_schedule: list = []
     rate_limit_reset_after: int = 60
 
-    search_only = argToBoolean(demisto.args().get("search_only", False))
     urls = argToList(demisto.args().get('url'))
-    if search_only or IS_SYNC_MODE:
+    if IS_SYNC_MODE:
         args = ((client, url, command_results, execution_metrics) for url in urls)
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             executor.map(lambda p: urlscan_search_only(*p), args)
@@ -619,7 +618,7 @@ def urlscan_search_only(client: Client, url: str, command_results: list, executi
     found_result = False
     for result in response.get("results", []):
         page = result.get("page", {})
-        if page.get("url").rstrip("/") == url.rstrip("/"):
+        if page.get("url").rstrip("/").endswith(url.rstrip("/")):
             format_results(
                 client,
                 result["task"]["uuid"],
@@ -831,6 +830,7 @@ def format_http_transaction_list(client):
 
 def main():
     params = demisto.params()
+
     api_key = params.get('apikey') or (params.get('creds_apikey') or {}).get('password', '')
     # to safeguard the visibility of the scan,
     # if the customer did not choose a visibility, we will set it to private by default.

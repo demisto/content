@@ -294,13 +294,6 @@ script:
       - "false"
       - "true"
       defaultValue: "false"
-    - name: search_only
-      description: Whether to searching for existing scans only, and not submitting a new scan.
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      defaultValue: "false"
     description: Submits a URL to scan.
     name: url
     outputs:
