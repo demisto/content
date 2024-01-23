@@ -1,7 +1,7 @@
 args:
 - description: The array which we want to search
   isArray: true
-  name: value
+  name: array_object
 - description: The item whos index we want to find
   name: item_to_find
   required: true
