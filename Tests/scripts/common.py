@@ -274,7 +274,6 @@ def get_person_in_charge(commit):
         return name, pr
     else:
         return None, None
-    
 
 
 def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
@@ -354,7 +353,7 @@ def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[Projec
 
 
 def create_shame_message(current_commit: ProjectCommit,
-                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str]| None:
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str] | str:
     """
     Create a shame message for the person in charge of the commit.
     """
@@ -368,7 +367,7 @@ def create_shame_message(current_commit: ProjectCommit,
         color = "danger" if pipeline_changed_status else "good"
         emoji = ":cry:" if pipeline_changed_status else ":muscle:"
         shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
-                     f" That was done in this {slack_link(pr,'PR.')}", color)
+                         f" That was done in this {slack_link(pr,'PR.')}", color)
     return shame_message
 
 

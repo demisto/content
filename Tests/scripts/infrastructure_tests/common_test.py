@@ -4,6 +4,8 @@ from requests_mock import MockerCore
 
 
 NAME_AND_PR_URL = ('John Doe', 'https://github.com/demisto/content/pull/123')
+
+
 def test_get_person_in_charge(mocker):
     """
     Given:
@@ -19,8 +21,8 @@ def test_get_person_in_charge(mocker):
 
     result = get_person_in_charge(commit)
     assert result == NAME_AND_PR_URL
-    
-    
+
+
 def test_get_person_in_charge__multiple_IDs(mocker):
     """
     Given:
@@ -219,7 +221,7 @@ def test_get_reviewer__no_reviewer(requests_mock: MockerCore):
     pr_url = 'https://github.com/owner/repo/pull/123'
     response = []
     requests_mock.get('https://api.github.com/repos/owner/repo/pulls/123/reviews', json=response)
-    
+
     result = get_reviewer(pr_url)
     assert result is None
 
@@ -237,7 +239,7 @@ def test_get_reviewer__second_reviewer_approved(requests_mock: MockerCore):
     response = [{"Jon": "test", "state": "test", "user": {"login": "Jon"}},
                 {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}]
     requests_mock.get('https://api.github.com/repos/owner/repo/pulls/123/reviews', json=response)
-    
+
     result = get_reviewer(pr_url)
     assert result == "Jane Doe"
 
@@ -255,7 +257,7 @@ def test_get_reviewer__two_reviewers_approved(requests_mock: MockerCore):
     response = [{"Jon": "test", "state": "APPROVED", "user": {"login": "Jon"}},
                 {"Jane Doe": "test", "state": "APPROVED", "user": {"login": "Jane Doe"}}]
     requests_mock.get('https://api.github.com/repos/owner/repo/pulls/123/reviews', json=response)
-    
+
     result = get_reviewer(pr_url)
     assert result == "Jon"
 
