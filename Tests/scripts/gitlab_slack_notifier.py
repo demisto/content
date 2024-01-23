@@ -445,8 +445,8 @@ def construct_slack_msg(triggering_workflow: str,
         slack_msg_start.append({
             "title": f"{shame_title}\n{shame_value}",
             "color": shame_color
-})
-    return slack_msg_start +[{
+        })
+    return slack_msg_start + [{
         'fallback': title,
         'color': color,
         'title': title,
@@ -568,7 +568,7 @@ def main():
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
-            # If the current commit is the last commit in the list, there is no previous commit, 
+            # If the current commit is the last commit in the list, there is no previous commit,
             # since commits are in ascending order
             if current_commit_index != len(list_of_commits) - 1:
                 previous_commit = list_of_commits[current_commit_index + 1]

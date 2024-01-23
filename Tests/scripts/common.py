@@ -366,7 +366,7 @@ def create_shame_message(current_commit: ProjectCommit,
         color = "danger" if pipeline_changed_status else "good"
         emoji = ":cry:" if pipeline_changed_status else ":muscle:"
         return (f"Hi @{name},  You {msg} the build! {emoji} ",
-                         f" That was done in this {slack_link(pr,'PR.')}", color)
+                f" That was done in this {slack_link(pr,'PR.')}", color)
     return None
 
 
