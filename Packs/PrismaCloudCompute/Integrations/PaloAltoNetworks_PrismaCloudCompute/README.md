@@ -4757,12 +4757,6 @@ Acknowledges an incident and moves it to an archived state.
 | incident_id | Incident ID. | Required | 
 | action | Action for the command. archive - incident will be archived, unarchive - incident will be unarchived. Possible values are: archive, unarchive. Default is archive. | Optional | 
 
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloudCompute.RuntimeContainerAuditEvents.test | String | The operating system of the container. | 
-
 #### Command example
 ```!prisma-cloud-archive-audit-incident incident_id="1111"```
 #### Human Readable Output
