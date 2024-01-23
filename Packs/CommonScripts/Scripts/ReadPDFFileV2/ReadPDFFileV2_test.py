@@ -12,6 +12,7 @@ def open_html_file(file):
     with open(file, encoding='utf-8') as f:
         return f.read()
 
+
 def test_extract_hash_contexts():
     """
     Given
@@ -29,6 +30,7 @@ def test_extract_hash_contexts():
     hash_contexts = extract_hash_contexts_from_pdf_file(f'{CWD}/pdf-with-hashes.pdf')
     assert hash_contexts == expected_hash_contexts
 
+
 def test_hash_contexts_in_return_results():
     """
     Given
@@ -39,11 +41,12 @@ def test_hash_contexts_in_return_results():
         - Validate that the hash context was added.
     """
     from ReadPDFFileV2 import build_readpdf_entry_context
-    hashes = {'Hashes':[
+    hashes = {'Hashes': [
         {'type': 'SHA1', 'value': 'aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d'},
         {'type': 'MD5', 'value': '5d41402abc4b2a76b9719d911017c592'}]}
     entry_context = build_readpdf_entry_context(hashes)
     assert entry_context == hashes
+
 
 def test_urls_are_found_correctly(mocker):
     """

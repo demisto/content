@@ -9,7 +9,6 @@ import stat
 import re
 import shutil
 import json
-from typing import List, Set, Tuple
 from pikepdf import Pdf, PasswordError
 import contextlib
 import io
@@ -27,7 +26,6 @@ class PdfPermissionsException(Exception):
     Every exception class that is in charge of catching errors that occur when trying to
     extract data from the PDF must inherit this class
     """
-    pass
 
 
 class PdfCopyingProtectedException(PdfPermissionsException):
@@ -36,7 +34,6 @@ class PdfCopyingProtectedException(PdfPermissionsException):
     a `copy-protected` file (Copy-protected files are files that prevent us from copy its content)
     This is relevant since we run a command that copies the content of the pdf file into a text file.
     """
-    pass
 
 
 class PdfInvalidCredentialsException(PdfPermissionsException):
@@ -44,7 +41,6 @@ class PdfInvalidCredentialsException(PdfPermissionsException):
     This class is in charge of catching errors that occur when we try to decrypt an encrypted
     pdf file with the wrong password.
     """
-    pass
 
 
 # Error class for shell errors
@@ -121,7 +117,7 @@ def run_shell_command(command: str, *args) -> bytes:
     cmd = [command] + list(args)
     demisto.debug(f'Running the shell command {cmd=}')
     completed_process = subprocess.run(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        cmd, capture_output=True
     )
     exit_codes = completed_process.returncode
     error_string = completed_process.stderr.decode('utf-8')
@@ -159,9 +155,9 @@ def get_files_names_in_path(path: str, name_of_file: str, full_path: bool = Fals
     return res
 
 
-def get_images_paths_in_path(path: str) -> List[str]:
+def get_images_paths_in_path(path: str) -> list[str]:
     """Gets images paths from path"""
-    res: List[str] = []
+    res: list[str] = []
     for img_type in IMG_FORMATS:
         img_format = f"*.{img_type}"
         res.extend(get_files_names_in_path(path, img_format, True))
@@ -258,7 +254,7 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
     pdf_file["Text"] = text
 
     # Add Metadata to file entity
-    for k in metadata.keys():
+    for k in metadata:
         pdf_file[k] = metadata[k]
 
     md = "### Metadata\n"
@@ -355,7 +351,8 @@ def get_urls_from_binary_file(file_path: str) -> set:
             binary_file_urls.add(mached_url[0])
     return binary_file_urls
 
-def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str) -> Tuple[set, set]:
+
+def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str) -> tuple[set, set]:
     """
     Extract the URLs and emails from the pdf html content.
 
@@ -390,6 +387,8 @@ def extract_url_from_annot_object(annot_object: Any):
             if isinstance(url, PyPDF2.generic.IndirectObject):
                 url = url.get_object()
             return url
+        return None
+    return None
 
 
 def extract_url(extracted_object: Any):
@@ -465,7 +464,7 @@ def extract_urls_and_emails_from_annot_objects(annot_objects: list | Any):
     return urls, emails
 
 
-def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
+def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
     """
     Extracts the URLs and Emails from the pdf's Annots (Annotations and Commenting) using PyPDF2 package.
     Args:
@@ -473,8 +472,8 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     Returns:
         Tuple[set, set]: A set includes the URLs that were found, A set includes the Emails that were found.
     """
-    all_urls: Set[str] = set()
-    all_emails: Set[str] = set()
+    all_urls: set[str] = set()
+    all_emails: set[str] = set()
     output_capture = io.StringIO()
     with open(file_path, 'rb') as pdf_file:
         # The following context manager was added so we could redirect error messages to the server logs since
@@ -514,7 +513,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     return all_urls, all_emails
 
 
-def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> Tuple[list, list]:
+def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> tuple[list, list]:
     """
     Extract URLs and Emails from the PDF file.
     Args:
@@ -548,6 +547,7 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
 
     return urls_ec, emails_ec
 
+
 def extract_hash_contexts_from_pdf_file(file_path: str) -> list[dict[str, Any]]:
     hash_contexts: list[dict[str, Any]] = []
     # Get hashes from the binary file
@@ -557,12 +557,14 @@ def extract_hash_contexts_from_pdf_file(file_path: str) -> list[dict[str, Any]]:
             hash_contexts.extend(convert_hash_to_context(hash_type, hashes))
     return hash_contexts
 
+
 def convert_hash_to_context(hash_type: str, hashes: set[Any]) -> list[dict[str, Any]]:
     hash_context: list[dict[str, Any]] = []
     for hash in hashes:
         hash_context.append({'type': hash_type,
                              'value': hash})
     return hash_context
+
 
 def get_hashes_from_file(file_path: str) -> dict[str, set[Any]]:
     demisto.debug('Extracting hashes from file')
@@ -577,8 +579,9 @@ def get_hashes_from_file(file_path: str) -> dict[str, set[Any]]:
             hashes['SHA256'] = set(re.findall(sha256Regex, page_text)).union(hashes.get('SHA256', set()))
             hashes['SHA512'] = set(re.findall(sha512Regex, page_text)).union(hashes.get('SHA512', set()))
             hashes['MD5'] = set(re.findall(md5Regex, page_text)).union(hashes.get('MD5', set()))
-    
+
     return hashes
+
 
 def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: str = '',
                              user_password: str = '') -> str:
