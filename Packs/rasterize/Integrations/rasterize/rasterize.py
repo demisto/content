@@ -673,9 +673,9 @@ def perform_rasterize(path: str,
 
             # Get the results
             for current_thread in rasterization_threads:
-                rasterization_results.append(current_thread.result()[0])
+                rasterization_results.append(current_thread.result())
 
-            return rasterization_results, None
+            return rasterization_results
 
     else:
         message = 'Could not use local Chrome for rasterize command'
@@ -701,11 +701,11 @@ def rasterize_image_command():
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output, _ = perform_rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
+        output = perform_rasterize(path=f'file://{os.path.realpath(f.name)}', width=width, height=height,
                                       rasterize_type=RasterizeType.PDF, full_screen=full_screen)
         res = []
         for current_output in output:
-            res.append(fileResult(filename=file_name, data=current_output, file_type=entryTypes['entryInfoFile']))
+            res.append(fileResult(filename=file_name, data=current_output[0], file_type=entryTypes['entryInfoFile']))
         demisto.results(res)
 
 
@@ -725,7 +725,7 @@ def rasterize_email_command():  # pragma: no cover
 
     path = f'file://{os.path.realpath(f.name)}'
 
-    rasterize_output, _ = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
+    rasterize_output = perform_rasterize(path=path, rasterize_type=rasterize_type, width=width, height=height,
                                             offline_mode=offline, navigation_timeout=navigation_timeout, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=rasterize_output[0])
@@ -806,7 +806,7 @@ def rasterize_html_command():
     file_path = demisto.getFilePath(entry_id).get('path')
     os.rename(f'./{file_path}', 'file.html')
 
-    output, _ = perform_rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
+    output = perform_rasterize(path=f"file://{os.path.realpath('file.html')}", width=width, height=height,
                                   rasterize_type=rasterize_type, wait_time=wait_time, full_screen=full_screen)
 
     res = fileResult(filename=file_name, data=output[0])
@@ -845,26 +845,27 @@ def rasterize_command():  # pragma: no cover
         file_extension = "pdf"
     file_name = f'{file_name}.{file_extension}'  # type: ignore
 
-    rasterize_output, response_body = perform_rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
+    rasterize_output = perform_rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
                                                         navigation_timeout=navigation_timeout, include_url=include_url,
                                                         full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
+    for current_rasterize_output in rasterize_output:
+        demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
 
-    if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
-        output = {'image_b64': base64.b64encode(rasterize_output[0]).decode('utf8'),
-                  'html': response_body, 'current_url': url}
-        return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
-    else:
-        res = []
-        for current_output in rasterize_output:
-            current_res = fileResult(filename=file_name, data=current_output, file_type=entryTypes['entryInfoFile'])
+        if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
+            output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
+                    'html': current_rasterize_output[1], 'current_url': url}
+            return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
+        else:
+            res = []
+            current_res = fileResult(filename=file_name, data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
 
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
                 current_res['Type'] = entryTypes['image']
 
             res.append(current_res)
 
-        demisto.results(res)
+            demisto.results(res)
 
 # endregion
 
