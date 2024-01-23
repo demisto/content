@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 import pytest
 import hashlib
-from ReliaQuestGreyMatterDRPEventCollector import DATE_FORMAT, ReilaQuestClient
+from ReliaQuestGreyMatterDRPEventCollector import DATE_FORMAT, ReilaQuestClient, RateLimitError
 import json
 from freezegun import freeze_time
 from ReliaQuestGreyMatterDRPEventCollector import FOUND_IDS_LAST_RUN, RATE_LIMIT_LAST_RUN
@@ -118,8 +118,7 @@ def test_the_test_module(requests_mock, client: ReilaQuestClient):
     assert test_module(client) == "ok"
 
 
-@freeze_time("2020-09-24T16:30:10.016Z")
-def test_http_request_rate_limits(mocker, client: ReilaQuestClient):
+def test_http_request_rate_limit(mocker, client: ReilaQuestClient):
     """
     Given:
      - api rate limit reached
@@ -134,14 +133,52 @@ def test_http_request_rate_limits(mocker, client: ReilaQuestClient):
     """
     mocked_responses = [
         create_mocked_response({"retry-after": "2020-09-24T16:30:10.017Z"}, status_code=429),
-        create_mocked_response([{"test": "test"}])
     ]
     mocker.patch.object(
         client,
         "_http_request",
         side_effect=mocked_responses
     )
-    assert client.http_request("suffix") == [{"test": "test"}]
+    with pytest.raises(RateLimitError):
+        client.http_request("suffix")
+
+
+@pytest.mark.parametrize(
+    "limit, num_of_events",
+    [
+        (200, 1000),
+        (1500, 1000),
+        (100, 100),
+        (10000, 15000)
+    ],
+)
+def test_list_triage_item_events(client: ReilaQuestClient, mocker, limit: int, num_of_events: int):
+    """
+    Given:
+     - maximum limit & actual number of events exist in the api
+
+    When:
+     - running list_triage_item_events
+
+    Then:
+     - make sure the right amount of events is returned
+    """
+    mocked_responses = []
+
+    for i in range(1, num_of_events + 1, 1000):
+        mocked_responses.append(create_triage_items_events(min(1000, num_of_events, limit), start_time="2020-09-24T16:30:10.016Z", start_event_num=i)[0])
+
+    mocked_responses.append(create_mocked_response([]))
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=mocked_responses
+    )
+    fetched_events = []
+    for events in client.list_triage_item_events(limit=limit):
+        fetched_events.extend(events)
+
+    assert len(fetched_events) == min(num_of_events, limit)
 
 
 class TestFetchEvents:
@@ -227,7 +264,16 @@ class TestFetchEvents:
             assert event["assets"]
 
     def test_fetch_events_sanity_rate_limit_error(self, mocker):
+        """
+        Given:
+         - api rate limit error
 
+        When:
+         - running the entire fetch-events flow
+
+        Then:
+         - make sure all the last run saves the retry-after
+        """
         import ReliaQuestGreyMatterDRPEventCollector
 
         send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
