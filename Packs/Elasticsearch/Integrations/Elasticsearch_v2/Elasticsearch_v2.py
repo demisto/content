@@ -433,7 +433,7 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_func(proxies):
+def test_connectivity_auth(proxies):
     headers = {
         'Content-Type': "application/json"
     }
@@ -464,10 +464,14 @@ def test_func(proxies):
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
+
+def test_func(proxies):
+    test_connectivity_auth(proxies)
     demisto.results('ok')
 
 
 def integration_health_check(proxies):
+    test_connectivity_auth(proxies)
     # build general Elasticsearch class
     es = elasticsearch_builder(proxies)
 
