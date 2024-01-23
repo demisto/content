@@ -2630,32 +2630,6 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 >| dummy | The user(s) have full access. | ADMIN |  |  |
 
 
-### core-set-user-role
-
-***
-Add one or more users to a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
-
-#### Base Command
-
-`core-set-user-role`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_emails | A comma-separated list of one or more user emails of users you want to add to a role. | Required | 
-| role_name | Name of the role you want to add a user to. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-#### Command example
-```!core-set-user-role role_name=dummy user_emails=dummy```
-#### Human Readable Output
-
->Role was updated successfully for 1 user.
-
 ### core-remove-user-role
 
 ***

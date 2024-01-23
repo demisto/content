@@ -467,7 +467,7 @@ def main():  # pragma: no cover
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
 
-        elif command in ('core-set-user-role', 'core-remove-user-role'):
+        elif command == 'core-remove-user-role':
             return_results(change_user_role_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
