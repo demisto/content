@@ -353,11 +353,10 @@ def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[Projec
 
 
 def create_shame_message(current_commit: ProjectCommit,
-                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str] | str:
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str] | None:
     """
     Create a shame message for the person in charge of the commit.
     """
-    shame_message = ""
     name, pr = get_person_in_charge(current_commit)
     if name and pr:
         if name == CONTENT_BOT:
@@ -366,9 +365,9 @@ def create_shame_message(current_commit: ProjectCommit,
         msg = "broke" if pipeline_changed_status else "fixed"
         color = "danger" if pipeline_changed_status else "good"
         emoji = ":cry:" if pipeline_changed_status else ":muscle:"
-        shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
+        return (f"Hi @{name},  You {msg} the build! {emoji} ",
                          f" That was done in this {slack_link(pr,'PR.')}", color)
-    return shame_message
+    return None
 
 
 def slack_link(url: str, text: str) -> str:
