@@ -433,7 +433,7 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_func(proxies):
+def test_connectivity_auth(proxies):
     headers = {
         'Content-Type': "application/json"
     }
@@ -464,6 +464,14 @@ def test_func(proxies):
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
+
+def test_func(proxies):
+    test_connectivity_auth(proxies)
+    demisto.results('ok')
+
+
+def integration_health_check(proxies):
+    test_connectivity_auth(proxies)
     # build general Elasticsearch class
     es = elasticsearch_builder(proxies)
 
@@ -512,8 +520,7 @@ def test_func(proxies):
     else:
         # check that we can reach any indexes in the supplied server URL
         test_general_query(es)
-
-    demisto.results('ok')
+    return "Testing was successful."
 
 
 def incident_label_maker(source):
@@ -902,6 +909,8 @@ def main():
             return_results(search_eql_command(demisto.args(), proxies))
         elif demisto.command() == 'es-index':
             return_results(index_document_command(demisto.args(), proxies))
+        elif demisto.command() == 'es-integration-health-check':
+            return_results(integration_health_check(proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
