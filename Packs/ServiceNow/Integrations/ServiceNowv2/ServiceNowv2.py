@@ -2161,7 +2161,7 @@ def fetch_incidents(client: Client) -> list:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
     if client.use_display_value:
-        query_params['sysparm_display_value'] = True
+        query_params['sysparm_display_value'] = True  # type: ignore[assignment]
 
     demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
     demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
