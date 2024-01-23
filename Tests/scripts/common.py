@@ -267,9 +267,14 @@ def get_person_in_charge(commit):
         pr: The GitHub PR link for the Gitlab commit.
     """
     name = commit.author_name
-    pr_number = commit.title.split()[-1][2:-1]
-    pr = f"https://github.com/demisto/content/pull/{pr_number}"
-    return name, pr
+    # pr number is always the last id in the commit title, starts with a number sign, may or may not be in parenthesis.
+    pr_number = commit.title.split("#")[-1].strip("()")
+    if pr_number.isnumeric():
+        pr = f"https://github.com/demisto/content/pull/{pr_number}"
+        return name, pr
+    else:
+        return None, None
+    
 
 
 def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
@@ -317,7 +322,7 @@ def get_reviewer(pr_url: str) -> str | None:
 
         # Get reviewers
         reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
-        reviews_response = requests.get(reviews_url, verify=False)
+        reviews_response = requests.get(reviews_url)
         reviews_data = reviews_response.json()
 
         # Find the reviewer who provided approval
@@ -340,27 +345,29 @@ def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
             return mapping["names"].get(name, name)
 
 
-def get_commit_by_sha(commit_sha: str, list_of_commits: list) -> ProjectCommit | None:
+def get_commit_by_sha(commit_sha: str, list_of_commits: list) -> list[ProjectCommit] | None:
     return next((commit for commit in list_of_commits if commit.id == commit_sha), None)
 
 
-def get_pipeline_by_commit(commit, list_of_pipelines):
+def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[ProjectPipeline]) -> ProjectPipeline | None:
     return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)
 
 
 def create_shame_message(current_commit: ProjectCommit,
-                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str]:
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str]| None:
     """
     Create a shame message for the person in charge of the commit.
     """
+    shame_message = ""
     name, pr = get_person_in_charge(current_commit)
-    if name == CONTENT_BOT:
-        name = get_reviewer(pr)
-    name = get_slack_user_name(name, name_mapping_path)
-    msg = "broke" if pipeline_changed_status else "fixed"
-    color = "danger" if pipeline_changed_status else "good"
-    emoji = ":cry:" if pipeline_changed_status else ":muscle:"
-    shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
+    if name and pr:
+        if name == CONTENT_BOT:
+            name = get_reviewer(pr)
+        name = get_slack_user_name(name, name_mapping_path)
+        msg = "broke" if pipeline_changed_status else "fixed"
+        color = "danger" if pipeline_changed_status else "good"
+        emoji = ":cry:" if pipeline_changed_status else ":muscle:"
+        shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
                      f" That was done in this {slack_link(pr,'PR.')}", color)
     return shame_message
 
