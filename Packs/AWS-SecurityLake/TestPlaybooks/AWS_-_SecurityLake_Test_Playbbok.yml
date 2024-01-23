@@ -1,6 +1,5 @@
-id: ee9c6990-ddb1-4482-8246-8ff1842bdb52
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: AWS_-_SecurityLake_Test_Playbook
+version: -1
 name: AWS_-_SecurityLake_Test_Playbook
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -108,8 +108,7 @@ tasks:
       id: d6c1317e-6083-4a1e-869f-2f5df2813220
       version: -1
       name: List table metadata
-      description: Lists the metadata for the tables in the specified data catalog
-        database.
+      description: Lists the metadata for the tables in the specified data catalog database.
       script: '|||aws-security-lake-table-metadata-list'
       type: regular
       iscommand: true
@@ -146,9 +145,7 @@ tasks:
       id: 59f35a9e-8445-4e06-8576-818148e1b0a2
       version: -1
       name: List sources
-      description: Retrieves a snapshot of the current Region, including whether Amazon
-        Security Lake is enabled for those accounts and which sources Security Lake
-        is collecting data from.
+      description: Retrieves a snapshot of the current Region, including whether Amazon Security Lake is enabled for those accounts and which sources Security Lake is collecting data from.
       script: '|||aws-security-lake-data-sources-list'
       type: regular
       iscommand: true
@@ -180,8 +177,7 @@ tasks:
       id: 93606b8e-6e73-4a60-885e-2ec46f092773
       version: -1
       name: List data Lakes
-      description: Retrieves the Amazon Security Lake configuration object for the
-        specified Amazon Web Services Regions.
+      description: Retrieves the Amazon Security Lake configuration object for the specified Amazon Web Services Regions.
       script: '|||aws-security-lake-data-lakes-list'
       type: regular
       iscommand: true
@@ -299,3 +295,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.10.0
+description: ''
