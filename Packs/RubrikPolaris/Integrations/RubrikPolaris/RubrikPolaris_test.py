@@ -2389,26 +2389,18 @@ def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, li
     # Load test data
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_user_access_list_response.json"))
-    if limit == 1 and page_number == 2:
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                               "test_data/sonar_user_access_list_response_hr_2_2.md"), 'r') as f:
-            hr_data = f.read()
-    else:
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                               f"test_data/sonar_user_access_list_response_hr_{limit}.md"), 'r') as f:
-            hr_data = f.read()
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           f"test_data/sonar_user_access_list_response_hr_{limit}_{page_number}.md"), 'r') as f:
+        hr_data = f.read()
 
     args = {"sort_order": "ASC", "limit": limit, "page_number": page_number, "include_whitelisted_results": True,
             "user_email": "demo"}
 
     requests_mock.post(BASE_URL_GRAPHQL, [{"json": response_data.get('raw_response')}])
     response = rubrik_sonar_user_access_list_command(client, args=args)
-    outputs = response_data.get('outputs')
-    page_token = response_data.get(f'page_token_{limit}')
-    if limit == 1:
-        outputs = [outputs[page_number - 1]]
-        if page_number == 2:
-            page_token.update({"has_next_upn_page": False})
+    outputs = response_data.get(f'outputs_{limit}_{page_number}')
+    page_token = response_data.get(f'page_token_{limit}_{page_number}')
+
     assert response.raw_response == response_data.get('raw_response')
     assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
         remove_empty_elements(outputs)
@@ -2436,7 +2428,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_invalid_user_email(c
     args = {"sort_order": "ASC", "limit": "1",
             "user_email": "invalid_user_email", "next_page_token": "cursor_1"}
 
-    page_token = remove_empty_elements(response_data.get('page_token_2'))
+    page_token = remove_empty_elements(response_data.get('page_token_2_1'))
 
     response = rubrik_sonar_user_access_list_command(client, args=args)
     assert response.readable_output == MESSAGES['NO_RECORDS_FOUND'].format(
@@ -2459,7 +2451,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(clie
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_user_access_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_user_access_list_response_hr_2.md"), 'r') as f:
+                           "test_data/sonar_user_access_list_response_hr_2_1.md"), 'r') as f:
         hr_data = f.read()
 
     args = {"sort_order": "Asc", "limit": "2", "include_whitelisted_results": False}
@@ -2471,7 +2463,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(clie
     assert response.outputs.get(f'{OUTPUT_PREFIX["USER_ACCESS"]}(val.principalId == obj.principalId)') == \
         remove_empty_elements(response_data.get('outputs_when_not_whitelisted'))
     assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_USER_ACCESS"]}(val.name == obj.name)') == \
-        remove_empty_elements(response_data.get('page_token_2'))
+        remove_empty_elements(response_data.get('page_token_2_1'))
     assert response.readable_output == hr_data
 
 

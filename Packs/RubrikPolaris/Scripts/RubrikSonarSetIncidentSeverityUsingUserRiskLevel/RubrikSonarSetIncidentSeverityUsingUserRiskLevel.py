@@ -26,6 +26,7 @@ def set_incident_severity_using_risk_level_command(args: Dict[str, Any]) -> Comm
     """
     risk_levels: list = argToList(args.get('risk_levels'))
 
+    # If there are no risk levels are available in the argument, we will only show a message to user.
     if not risk_levels:
         return CommandResults(readable_output='No risk_levels specified to update the incident severity.')
 
