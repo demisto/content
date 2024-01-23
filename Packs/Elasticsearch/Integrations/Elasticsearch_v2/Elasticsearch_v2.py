@@ -465,7 +465,7 @@ def test_func(proxies):
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
     demisto.results('ok')
-    
+
 
 def integration_health_check(proxies):
     # build general Elasticsearch class
@@ -905,7 +905,7 @@ def main():
             return_results(search_eql_command(demisto.args(), proxies))
         elif demisto.command() == 'es-index':
             return_results(index_document_command(demisto.args(), proxies))
-        elif demisto.command() == 'es-integration_health_check':
+        elif demisto.command() == 'es-integration-health-check':
             return_results(integration_health_check(proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
