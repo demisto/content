@@ -3337,7 +3337,7 @@ Get List of Uptycs detections
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Uptycs.Detections.id | string | Uptycs id of detection |
+| Uptycs.Detections.id | string | Uptycs ID of detection |
 | Uptycs.Detections.displayName | string | Uptycs detection name |
 | Uptycs.Detections.severity | string | Uptycs detection severity |
 | Uptycs.Detections.signals | number | Number of signals associated with the detection |
@@ -3416,7 +3416,7 @@ Get details of an Uptycs detection
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Uptycs.Detection.id | string | Uptycs id of detection |
+| Uptycs.Detection.id | string | Uptycs ID of detection |
 | Uptycs.Detection.displayName | string | Uptycs detection name |
 | Uptycs.Detection.score | number | Uptycs detection score |
 | Uptycs.Detection.severity | string | Uptycs detection severity |
@@ -3432,7 +3432,8 @@ Get details of an Uptycs detection
 | Uptycs.Detection.assignedTo | string | Id of the user that the detection was assigned to |
 | Uptycs.Detection.assignedUserName | string | Username of the user that the detection was assigned to |
 | Uptycs.Detection.createdAt | date | Created at time of the detection |
-| Uptycs.Detection.alerts_and_events | string | Details of alerts and events assocated for the detection |
+| Uptycs.Detection.alerts | string | Details of alerts assocated for the detection |
+| Uptycs.Detection.events | string | Details of events assocated for the detection |
 
 ##### Command Example
 `uptycs-get-detection-details detection_id="0049641c-1645-4b98-830f-7f1ce783bfcc"`
@@ -3458,7 +3459,8 @@ Get details of an Uptycs detection
             "assignedTo": "0049641c-1645-4b98-830f-7f1ce783bfcc",
             "assignedUserName": "uptycs_user",
             "createdAt": "2019-07-02 11:41:25.915",
-            "alerts_and_events": "Event 1, Alert 1, Event 2, Alert 2"
+            "alerts": "Alert 1, Alert 2",
+            "events": "Event 1, Event 2"
         }
     ]
 }
@@ -3466,9 +3468,9 @@ Get details of an Uptycs detection
 
 ##### Human Readable Output
 ### Uptycs detections
-|id|displayName|score|severity|signals|status|tacticCount|tactics|assetHostName|assetId|agentType|resourceType|note|assignedTo|assignedUserName|createdAt|alerts_and_events|
+|id|displayName|score|severity|signals|status|tacticCount|tactics|assetHostName|assetId|agentType|resourceType|note|assignedTo|assignedUserName|createdAt|alerts|events|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|0049641c-1645-4b98-830f-7f1ce783bfcc|Uptycs test detection|5|medium|5|open|5|credential access|kyle-mbp-work|984d4a7a-9f3a-580a-a3ef-2841a561669b|asset|asset|test note|0049641c-1645-4b98-830f-7f1ce783bfcc|uptycs_user|2019-07-02 11:41:25.915|Event 1, Alert 1, Event 2, Alert 2|
+|0049641c-1645-4b98-830f-7f1ce783bfcc|Uptycs test detection|5|medium|5|open|5|credential access|kyle-mbp-work|984d4a7a-9f3a-580a-a3ef-2841a561669b|asset|asset|test note|0049641c-1645-4b98-830f-7f1ce783bfcc|uptycs_user|2019-07-02 11:41:25.915|Alert 1, Alert 2|Event 1, Event 2|
 
 
 

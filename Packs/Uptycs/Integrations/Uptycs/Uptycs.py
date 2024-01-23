@@ -262,24 +262,32 @@ def uptycs_get_upt_day(start_time):
 """COMMAND FUNCTIONS"""
 
 
-def uptycs_poll_queryjob_status(job_id, query):
+@polling_function(
+    name="QueryJobStatus",
+    interval=10,
+    timeout=120,
+    poll_message="Uptycs query execution in progress",
+    requires_polling_arg=False,
+)
+def uptycs_poll_queryjob_status(args: dict, job_id) -> PollResult:
     api_call = ("/queryjobs/%s" % job_id)
-    elapsed = 0
-    while elapsed < 120:
-        status = restcall('get', api_call).get('status')
-        if status in ['FINISHED']:
-            break
-        elif status in ['ERROR']:
-            return_error("Invalid query: %s , status %s" % (query, status))
-        elif status in ['QUEUED', 'RUNNING']:
-            time.sleep(10)
-            elapsed += 10
-        else:
-            # unknown status
-            return_error("Invalid query job status: {0}".format(status))
-        if elapsed >= 120:
-            return_error("Query timeout elapsed")
-    return
+    status = restcall('get', api_call).get('status')
+    readable_output = None
+
+    if status in ['FINISHED']:
+        return PollResult(
+               response=None,
+               continue_to_poll=False)
+    elif status in ['QUEUED', 'RUNNING']:
+        return PollResult(
+               response=None,
+               continue_to_poll=True,
+               partial_result=CommandResults(readable_output=f"Query is still running. Current status: '{status}'."),
+               )
+    return PollResult(
+               response=None,
+               continue_to_poll=False,
+               )
 
 
 def uptycs_get_queryjob_results(job_id):
@@ -318,8 +326,10 @@ def uptycs_run_query():
         demisto.info('created queryjob')
         if response.get('id'):
             # poll query job status
-            uptycs_poll_queryjob_status(response.get('id'), query)
-            return uptycs_get_queryjob_results(response.get('id'))
+            job_id = response.get('id')
+            args = { 'job_id': job_id, 'query': query }
+            uptycs_poll_queryjob_status(args, job_id)
+            return uptycs_get_queryjob_results(job_id)
         return_error('unable to create uptycs query job')
     else:
         api_call = '/assets/query'
@@ -387,8 +397,10 @@ def uptycs_get_query_results(query_type, query):
     response = restcall(http_method, api_call, json=post_data)
     if response.get('id'):
         # poll query job status
-        uptycs_poll_queryjob_status(response.get('id'), query)
-        return uptycs_get_queryjob_results(response.get('id'))
+        job_id = response.get('id')
+        args = { 'job_id': job_id, 'query': query }
+        uptycs_poll_queryjob_status(args, job_id)
+        return uptycs_get_queryjob_results(job_id)
     return_error('unable to create uptycs query job')
 
 
@@ -458,31 +470,32 @@ def uptycs_get_detections():
     http_method = 'get'
     api_call = "/detections"
 
+    args = demisto.args()
     query_parameters = []
-    limit = demisto.args().get('limit')
+    limit = args.get('limit')
     if limit != -1 and limit is not None:
         query_parameters.append("limit=%s" % limit)
 
-    offset = demisto.args().get('offset')
-    if offset != -1 and offset is not None:
+    offset = args.get('offset')
+    if offset is not None:
         query_parameters.append("offset=%s" % offset)
 
     filters = []
-    severity = demisto.args().get('severity')
-    if severity != -1 and severity is not None:
+    severity = args.get('severity')
+    if severity is not None:
         filters.append('"severity":{"in":["%s"]}' % severity)
 
-    status = demisto.args().get('status')
-    if status != -1 and status is not None:
+    status = args.get('status')
+    if status is not None:
         filters.append('"status":{"in":["%s"]}' % status)
 
-    asset_type = demisto.args().get('asset_type')
-    if asset_type != -1 and asset_type is not None:
+    asset_type = args.get('asset_type')
+    if asset_type is not None:
         filters.append('"agentType":{"in":["%s"]}' % asset_type)
 
-    time_ago = demisto.args().get('time_ago')
-    start_window = demisto.args().get('start_window')
-    end_window = demisto.args().get('end_window')
+    time_ago = args.get('time_ago')
+    start_window = args.get('start_window')
+    end_window = args.get('end_window')
 
     if time_ago is not None or (start_window is not None or end_window is not None):
         begin, end = uptycs_parse_date_range(time_ago, start_window, end_window)
@@ -535,7 +548,7 @@ def uptycs_get_detection_details():
     api_call = "/detections/"
     detection_id = demisto.args().get('detection_id')
 
-    if detection_id != -1 and detection_id is not None:
+    if detection_id is not None:
         api_call = ("%s%s" % (api_call, detection_id))
 
     return restcall(http_method, api_call)
@@ -543,56 +556,55 @@ def uptycs_get_detection_details():
 
 def uptycs_get_detection_details_command():
     query_results = uptycs_get_detection_details()
-    detection = query_results.get('detection')
+    context = query_results.get('detection')
     final_alerts = []
-    detection_url = 'https://' + DOMAIN + '/ui/detections/' + demisto.args().get('detection_id')
-    display_name = get_href_link(detection["displayName"], detection_url)
+    detection_url = 'https://' + DOMAIN + '/ui/detections/' + context.get('id', '')
 
     for alert in query_results.get('alerts').get('items'):
-        alert_text = alert['alertTime'] + '<br>Alert - ' + alert['alertRuleName']
-        alert_text += '<br>\tscore - ' + alert['score'] + '<br>\t'
-        alert_text += alert['key'] + ' : ' + alert['value'] + '<br>\t'
-        alert_text += get_href_link('Go to Alert details', 'https://' + DOMAIN + '/ui/alerts/' + alert['id'])
+        alert_text = alert.get('alertTime', "") + '<br>Alert - ' + alert.get('alertRuleName', "")
+        alert_text += '<br>\tscore - ' + alert.get('score', "") + '<br>\t'
+        alert_text += alert.get('key', "") + ' : ' + alert.get('value', "") + '<br>\t'
+        alert_text += get_href_link('Go to Alert details', 'https://' + DOMAIN + '/ui/alerts/' + alert.get('id', ""))
         final_alerts.append(alert_text + '<br>')
 
     for event in query_results.get('events').get('items'):
-        event_text = event['event_time'] + '\nEvent - '
+        event_text = event.get('event_time', "") + '\nEvent - '
         if 'eventRule' in event:
-            event_text += event['eventRule']['name']
+            event_text += event.get('eventRule').get('name', "")
         elif 'event_name' in event:
-            event_text += event['event_name']
+            event_text += event.get('event_name', "")
         if 'score' in event:
-            event_text += '\n\tscore - ' + str(event['score'])
+            event_text += '\n\tscore - ' + str(event.get('score', ""))
         elif 'severity' in event:
-            event_text += '\n\tseverity - ' + event['severity']
+            event_text += '\n\tseverity - ' + event.get('severity', "")
         if event.get('key') and event.get('value'):
-            event_text += '\n\t' + event['key'] + ' : ' + event['value']
+            event_text += '\n\t' + event.get('key', "") + ' : ' + event.get('value', "")
         final_alerts.append(event_text + '\n')
 
-    context = {'id': detection['id'],
-               'displayName': display_name,
-               'score': detection['score'],
-               'severity': detection['severity'],
-               'createdAt': detection['createdAt'],
-               'signals': detection['signals'],
-               'tacticCount': detection['tacticCount'],
-               'tactics': str(detection['tactics']),
-               'assetHostName': detection['assetHostName'],
-               'Alerts and Events': '<br>'.join(sorted(final_alerts)),
-               'assignedUserName': detection['assignedUserName'],
-               'status': detection['status'],
-               'note': detection['note'],
-               'assetId': detection['assetId'],
-               'agentType': detection['agentType'],
-               'resourceType': detection['resourceType']
-               }
+    context_entries_to_keep = ['id', 'displayName', 'score', 'severity',
+                               'createdAt', 'signals', 'status',
+                               'tacticCount', 'tactics', 'assetHostName',
+                               'agentType', 'assetLive', 'assetLocation',
+                               'assetOs', 'assetOsFlavor', 'assetOsVersion',
+                               'assetOsqueryVersion', 'assetStatus',
+                               'assignedUserName', 'lastOccurredAt']
+    if context is not None:
+        for key in list(context):
+            if key not in context_entries_to_keep:
+                context.pop(key, None)
 
-    if detection.get('assetId') is not None:
-        asset_url = 'https://' + DOMAIN + '/ui/assets/' + detection['assetId']
-        context['assetHostName'] = get_href_link(context['assetHostName'], asset_url)
+    human_readable = context.copy()
+    human_readable['displayName'] = get_href_link(context.get('displayName', ""), detection_url)
+    if context.get('assetId') is not None:
+        asset_url = 'https://' + DOMAIN + '/ui/assets/' + context.get('assetId')
+        human_readable['assetHostName'] = get_href_link(context.get('assetHostName', ""), asset_url)
+    human_readable["Alerts and Events"] = '<br>'.join(sorted(final_alerts))
 
     vertical_table = """| Field | Value |\n|-------|-------|\n{}""".\
         format("".join(["| {} | {} |\n".format(key, value) for key, value in context.items()]))
+
+    context['alerts'] = str(query_results.get('alerts').get('items'))
+    context['events'] = str(query_results.get('events').get('items'))
 
     entry = {
         'ContentsFormat': formats['json'],

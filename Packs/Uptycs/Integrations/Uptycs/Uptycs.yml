@@ -1522,8 +1522,8 @@ script:
     description: Get list of detections from Uptycs,
     arguments:
     - name: limit
-      description: Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out).
-      defaultValue: "10"
+      description: Limit the number of entries returned.  Leave empty to return all entries (may run slow or cause a time out).
+      defaultValue: "-1"
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -1549,7 +1549,7 @@ script:
       description: Asset Type of the detection.
       type: textArea
     - name: time_ago
-      description: 'Specifies how far back you want to look.  Format examples: 2 hours, 4 minutes, 6 month, 1 day, etc.'
+      description: 'Default is 1 day. How far back you want to look.  Format examples: 2 hours, 4 minutes, 6 month, 1 day, etc.'
       defaultValue: 1 day
     - name: start_window
       description: Beginning of window to search for detections.
@@ -1561,7 +1561,7 @@ script:
         would be written as "2019-03-15 01:52:36.000".
     outputs:
     - contextPath: Uptycs.Detections.id
-      description: Uptycs id of detection.
+      description: Uptycs ID of detection.
       type: string
     - contextPath: Uptycs.Detections.displayName
       description: Uptycs detection name.
@@ -1627,10 +1627,10 @@ script:
     arguments:
     - name: detection_id
       required: true
-      description: Uptycs id of detection.
+      description: Uptycs ID of detection.
     outputs:
     - contextPath: Uptycs.Detection.id
-      description: Uptycs id of detection.
+      description: Uptycs ID of detection.
       type: string
     - contextPath: Uptycs.Detection.displayName
       description: Uptycs detection name.
@@ -1677,8 +1677,11 @@ script:
     - contextPath: Uptycs.Detection.resourceType
       description: Resource type of the detection.
       type: string
-    - contextPath: Uptycs.Detection.alerts_and_events
-      description: Details of alerts and events assocated for the detection.
+    - contextPath: Uptycs.Detection.alerts
+      description: Details of alerts assocated for the detection.
+      type: string
+    - contextPath: Uptycs.Detection.events
+      description: Details of events assocated for the detection.
       type: string
     description: Get details of a detection from Uptycs.
   dockerimage: demisto/auth-utils:1.0.0.84760
