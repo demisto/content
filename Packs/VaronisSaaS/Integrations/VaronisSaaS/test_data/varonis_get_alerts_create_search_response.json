@@ -1,0 +1,14 @@
+[
+    {
+        "location": "v2/rows/af6a26a1d70e4be182adc148b831f476/",
+        "dataType": "rows"
+    },
+    {
+        "location": "v2/search/af6a26a1d70e4be182adc148b831f476/terminate/",
+        "dataType": "terminate"
+    },
+    {
+        "location": "af6a26a1-d70e-4be1-82ad-c148b831f476",
+        "dataType": "searchId"
+    }
+]
