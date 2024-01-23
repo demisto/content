@@ -1,0 +1,4 @@
+!ctm360-cbs-incident-list dateFrom="23-10-2023 07:00" dateTo="23-10-2023 23:00" order=asc maxHits=2
+!ctm360-cbs-incident-details ticketId="COMX413560321162"
+!ctm360-cbs-incident-request-takedown ticketId="COMX415993788418"
+!ctm360-cbs-incident-close ticketId="COMX41148897294"
