@@ -33,11 +33,7 @@ if [ -n "${CLOUD_SERVERS_FILE}" ]; then
   echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
 fi
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  if [ "${CI_SERVER_HOST}" != "code.pan.run" ]; then # disable-secrets-detection
-    cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-  else
-    echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-  fi
+  cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
 fi
 
 CONF_PATH="./Tests/conf.json"

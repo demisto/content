@@ -5,7 +5,7 @@ import demistomock as demisto
 from CommonServerPython import DemistoException, ThreatIntel, FeedIndicatorType
 from FeedMISP import clean_user_query, build_indicators_iterator, \
     handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, update_indicators_iterator, \
-    update_indicator_fields, get_ip_type
+    update_indicator_fields, get_ip_type, search_query_indicators_pagination, Client
 
 
 def test_build_indicators_iterator_success():
@@ -448,3 +448,33 @@ def test_update_indicator_fields(
 ])
 def test_get_ip_type(indicator, indicator_type):
     assert get_ip_type(indicator) == indicator_type
+
+
+indicators_examples = [
+    ({'response': {'Attribute': ['data1', 'data2']}}, ({'response': {'Attribute': []}}),
+     {'response': {'Attribute': ['data1', 'data2']}}),
+    ({'response': {'Attribute': []}}, ({'response': {'Attribute': []}}),
+     {'response': {'Attribute': []}})
+
+]
+
+
+@pytest.mark.parametrize('returned_result_1, returned_result_2, expected_result', indicators_examples)
+def test_search_query_indicators_pagination(mocker, returned_result_1, returned_result_2, expected_result):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - the search_query_indicators_pagination function runs
+    Then:
+        - Ensure the pagination mechanism return the expected result
+    """
+    client = Client(base_url="example",
+                    authorization="auth",
+                    verify=False,
+                    proxy=False,
+                    timeout=60)
+    mocker.patch.object(Client, '_http_request', side_effect=[returned_result_1, returned_result_2])
+    params_dict = {'param1': 'value1'}
+    result = search_query_indicators_pagination(client, params_dict)
+    assert result == expected_result

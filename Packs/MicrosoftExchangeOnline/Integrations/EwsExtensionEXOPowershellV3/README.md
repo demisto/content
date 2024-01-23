@@ -1427,3 +1427,90 @@ Retrieves information about the AuditBypassEnabled property value for user accou
 | EWS.MailboxAuditBypassAssociation.WhenCreated | Date | The date the mailbox audit bypass association was created. | 
 | EWS.MailboxAuditBypassAssociation.WhenCreatedUTC | Date | The date in UTC format of when the mailbox audit bypass association was created. | 
 
+
+### ews-rule-list
+***
+Get a list of all mailbox rules.
+
+#### Base Command
+
+`ews-rule-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the Inbox rule. | Required | 
+| limit | Maximum number of rules to get. A value of 0 means to get all rules | Optional | 
+
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.Rule.RuleIdentity | String | The rule identity. | 
+| EWS.Rule.Name | String | The rule name. | 
+| EWS.Rule.Enabled | Boolean| Whether the rule is enabled or not. | 
+| EWS.Rule.Priority | String | the rule priority. | 
+
+
+#### Human Readable Output
+
+>### Results of ews-rule-list
+>| Enabled | Name | Priority | RuleIdentity |
+>| --- | --- | --- | --- |
+>| true | CheckActionRequired	 | 1 | 1268829516541722625 |
+>| true | ews phishing test	| 8 | 1845290268845146113 |
+
+### ews-get-rule
+***
+Get a mailbox rule.
+
+#### Base Command
+
+`ews-get-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the Inbox rule. | Required | 
+| identity | The ID of the rule. | Required |
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.Rule.Rule | String | The rule identity. | 
+| EWS.Rule.RuleName | String | The rule name. | 
+| EWS.Rule.IsEnabled | Boolean| Whether the rule is enabled or not. | 
+| EWS.Rule.Priority | String | The rule priority. |
+| EWS.Rule.Description | String | The description of the rule. | 
+| EWS.Rule.StopProcessingRules | Boolean| Whether to stop processing the rule or not. | 
+| EWS.Rule.IsValid | Boolean | Whether the rule is valid or not. | 
+
+
+#### Human Readable Output
+
+>### Results of ews-rule-list
+>| Enabled | Name | Priority | RuleIdentity | Description | IsValid	| StopProcessingRules|
+>| --- | --- | --- | --- | --- | --- | ---|
+>| true | CheckActionRequired | 1 | 1268829516541722625 | If the message: the sender requested any action and my name is in the To box | true| false |
+
+### ews-remove-rule
+***
+Remove a mailbox rule.
+
+#### Base Command
+
+`ews-remove-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mailbox | The mailbox that contains the Inbox rule. | Required | 
+| identity | The ID of the rule. | Required | 
+
+
+#### Context Output
+There are no context outputs for this command.
+
+#### Human Readable Output
+
+>Rule 1845290268845146113 has been deleted successfully

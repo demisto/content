@@ -156,10 +156,10 @@ script:
       description: 'The domain name, for example: ''google.com''.'
       type: String
     - contextPath: PassiveTotal.WHOIS.registrar
-      description: The name of the registrar of the domain
+      description: The name of the registrar of the domain.
       type: String
     - contextPath: PassiveTotal.WHOIS.whoisServer
-      description: WHOIS server name where the details of domain registrations belong
+      description: WHOIS server name where the details of domain registrations belong.
       type: String
     - contextPath: PassiveTotal.WHOIS.registered
       description: The date that the domain was registered.
@@ -186,7 +186,7 @@ script:
       description: Telephone number fetched from whois details of the domain.
       type: String
     - contextPath: PassiveTotal.WHOIS.contactEmail
-      description: Contact Email address of the domain owner
+      description: Contact Email address of the domain owner.
       type: String
     - contextPath: PassiveTotal.WHOIS.registrantEmail
       description: The name of the domain registrant.
@@ -309,7 +309,7 @@ script:
       description: The telephone number of the domain tech.
       type: String
   - arguments:
-    - description: 'Query value to use in the request. For example: riskiq.com, 1.1.1.1'
+    - description: 'Query value to use in the request. For example: riskiq.com, 1.1.1.1.'
       name: query
       required: true
     - auto: PREDEFINED
@@ -613,7 +613,7 @@ script:
       description: The date when a passive DNS record is collected.
       type: String
     - contextPath: PassiveTotal.PDNS.recordType
-      description: The type of the passive DNS record. I.e CNAME, SOA, A, etc
+      description: The type of the passive DNS record. I.e CNAME, SOA, A, etc.
       type: String
     - contextPath: PassiveTotal.PDNS.recordHash
       description: The hash value of the passive DNS record.
@@ -638,7 +638,7 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      description: "Field by which to search. \n\nAllowed values: issuerSurname, subjectOrganizationName, issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName, serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName, issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName, sha1, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName, subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName, subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress"
+      description: "Field by which to search. \n\nAllowed values: issuerSurname, subjectOrganizationName, issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName, serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName, issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName, sha1, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName, subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName, subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress."
       name: field
       predefined:
       - issuerSurname
@@ -900,10 +900,10 @@ script:
       description: 'The domain name, for example: ''google.com''.'
       type: String
     - contextPath: PassiveTotal.Domain.registrar
-      description: The name of the registrar of the domain
+      description: The name of the registrar of the domain.
       type: String
     - contextPath: PassiveTotal.Domain.whoisServer
-      description: WHOIS server name where the details of domain registrations belong
+      description: WHOIS server name where the details of domain registrations belong.
       type: String
     - contextPath: PassiveTotal.Domain.registered
       description: The date that the domain was registered.
@@ -930,7 +930,7 @@ script:
       description: Telephone number fetched from whois details of the domain.
       type: String
     - contextPath: PassiveTotal.Domain.contactEmail
-      description: Contact Email address of the domain owner
+      description: Contact Email address of the domain owner.
       type: String
     - contextPath: PassiveTotal.Domain.registrantEmail
       description: The name of the domain registrant.
@@ -1056,7 +1056,7 @@ script:
       description: Reputation score of the indicator.
       type: Number
     - contextPath: PassiveTotal.Domain.classification
-      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN)
+      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN).
       type: String
     - contextPath: PassiveTotal.Domain.rules.name
       description: Name of the rule that informed the reputation score of the indicator.
@@ -1071,10 +1071,10 @@ script:
       description: Link to the rule.
       type: String
   - arguments:
-    - description: 'Indicator value to search for in articles. For example: riskiq.com, 1.1.1.1'
+    - description: 'Indicator value to search for in articles. For example: riskiq.com, 1.1.1.1.'
       name: query
       required: true
-    - description: 'Type of the indicator. For example: domain, ip, url'
+    - description: 'Type of the indicator. For example: domain, ip, url.'
       name: type
     description: Retrieves information related to articles for a specific indicator.
     name: pt-get-articles
@@ -1299,7 +1299,7 @@ script:
         1. get addresses by cookie domain
         2. get addresses by cookie name
         3. get hosts by cookie domain
-        4. get hosts by cookie name
+        4. get hosts by cookie name.
       name: search_by
       predefined:
       - get addresses by cookie domain
@@ -1322,7 +1322,7 @@ script:
       - first seen
     - auto: PREDEFINED
       defaultValue: desc
-      description: 'Order to return the results in. Valid values: asc, desc'
+      description: 'Order to return the results in. Valid values: asc, desc.'
       name: order
       predefined:
       - desc
@@ -1346,7 +1346,7 @@ script:
       description: The date and time when the cookie was most recently observed.
       type: Date
   - arguments:
-    - description: 'The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1'
+    - description: 'The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1.'
       name: query
       required: true
     description: Retrieves a summary data card associated with the given query.
@@ -1443,7 +1443,7 @@ script:
       description: Link to the cookie records for the indicator.
       type: String
   - arguments:
-    - description: 'The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1'
+    - description: 'The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1.'
       name: query
       required: true
     description: Gets reputation for a given domain, host or IP.
@@ -1456,7 +1456,7 @@ script:
       description: Reputation score of the indicator.
       type: Number
     - contextPath: PassiveTotal.Reputation.classification
-      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN)
+      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN).
       type: String
     - contextPath: PassiveTotal.Reputation.rules.name
       description: Name of the rule that informed the reputation score of the indicator.
@@ -1485,7 +1485,7 @@ script:
       description: Reputation score of the indicator.
       type: Number
     - contextPath: PassiveTotal.IP.classification
-      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN)
+      description: Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN).
       type: String
     - contextPath: PassiveTotal.IP.rules.name
       description: Name of the rule that informed the reputation score of the indicator.
@@ -2286,7 +2286,7 @@ script:
     - contextPath: PassiveTotal.Summary.ThirdPartyObservation.nextPage
       description: Link to the next page.
       type: String
-  dockerimage: demisto/python3:3.10.12.67728
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3
