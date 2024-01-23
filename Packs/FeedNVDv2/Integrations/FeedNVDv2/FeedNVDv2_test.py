@@ -91,7 +91,7 @@ def test_retrieve_cves_command():
       'proxy': 'False',
       'feedTags': '',
       'apiKey': {'identifier': '',
-                'password': '380c5f21-2256-47b8-a43a-6080e445cf39'}
+                'password': ''}
     }
     client = BaseClient(
         base_url=BASE_URL,

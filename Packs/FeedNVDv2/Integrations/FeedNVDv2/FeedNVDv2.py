@@ -94,7 +94,7 @@ def test_module(client: BaseClient, params: Dict[str, Any]):
         client._http_request('GET', full_url='https://services.nvd.nist.gov/rest/'
                              + 'json/cves/2.0?cveId=CVE-2021-44228',  # disable-secrets-detection
                              headers=headers)
-        return_results('ok')
+        return 'ok'
 
     except Exception as e:  # pylint: disable=broad-except
         return_error("Invalid API key specified in integration instance configuration"
@@ -377,7 +377,7 @@ def fetch_indicators_command(client, params):
 # COMMAND CONSTANTS
 
 
-commands = {
+COMMANDS = {
     'test-module': test_module,
     'nvd-get-indicators': fetch_indicators_command,
     'fetch-indicators': fetch_indicators_command
@@ -410,7 +410,7 @@ def main() -> None:
             proxy=proxy,
         )
 
-        commands[command](client, params)  # type: ignore
+        COMMANDS[command](client, params)  # type: ignore
 
     except Exception as e:  # pylint: disable=broad-except
         demisto.error(traceback.format_exc())  # demisto.info the traceback
