@@ -653,18 +653,21 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
-def api_call_try(client, args):
+def api_call_try(client, args) -> (tuple[Dict | None | str , bool]):
     demisto.debug('MAI BELLE before try')
     try:
         raw_incident = client.get_multiple_incidents_extra_data(args.get('incident_id'))
         demisto.info(f'MAI BELLE MAI after new api call{raw_incident} ')
         use_get_incident_extra_data = int(raw_incident.get('incident', {}).get('replay',{}).get('alert_count')) > \
                                       int(raw_incident.get('incident', {}).get('replay',{}).get('number_in_config'))
-        return raw_incident, use_get_incident_extra_data
+        demisto.debug(f'MAI BELLE Mai raw {raw_incident} ***** bool {use_get_incident_extra_data}  ')
+        if raw_incident == "[500] - Internal Server Error":
+            return raw_incident, use_get_incident_extra_data
     except HTTPError as e:
-        demisto.debug(f'MAI BELLE The api call using get_multiple_incidents_extra_data got internal error, switching to\
+        demisto.debug(f'The api call using get_multiple_incidents_extra_data got internal error, bla switching to\
             the old call {e}')
-        return {}, False
+        demisto.debug('!!! what')
+    return None, False
 
 
 
@@ -682,16 +685,17 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    # raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     demisto.debug(f"Performing extra-data request on incident: {incident_id}")
     raw_incident ,use_get_incident_extra_data = api_call_try(client,args) 
-    demisto.debug(f'MAI BELLE Mai bool{use_get_incident_extra_data}  raw {raw_incident}')
-    
-    demisto.debug('MAI BELLE Mai after try- except ') 
-    if  not use_get_incident_extra_data:
+    demisto.debug(f'MAI BELLE Mai bool {use_get_incident_extra_data}  raw {raw_incident}')
+    demisto.debug(f'MAI BELLE Mai raw {raw_incident} | type {type(raw_incident)}')
+    demisto.debug('MAI BELLE get_incident_extra_data_command Mai after try- except ') 
+    if  not raw_incident or raw_incident == {} or  not use_get_incident_extra_data:
         demisto.debug('MAI OLD call')
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
         demisto.debug(f'MAI after OLD api call{raw_incident}' )
+    raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
+    demisto.debug("!!!!!!!!!!!!!!!!!!!!!!!!")
     incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id' , {})
     raw_alerts = raw_incident.get('alerts', {}).get('data')
