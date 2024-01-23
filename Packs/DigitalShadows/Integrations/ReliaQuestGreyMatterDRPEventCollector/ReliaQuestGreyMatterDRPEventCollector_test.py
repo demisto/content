@@ -157,6 +157,7 @@ class TestFetchEvents:
 
         Then:
          - make sure the events are enriched as expected
+         - make sure all the 100 events are fetched
         """
         import ReliaQuestGreyMatterDRPEventCollector
 
