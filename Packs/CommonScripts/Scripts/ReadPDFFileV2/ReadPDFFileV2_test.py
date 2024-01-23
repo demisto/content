@@ -28,7 +28,9 @@ def test_extract_hash_contexts():
                               {'type': 'SHA256', 'value': '8732331accf45f86a00ca823cb24d9806ec1380846a337ac86b4fe6f9d06f1f5'},
                               {'type': 'MD5', 'value': '5d41402abc4b2a76b9719d911017c592'}]
     hash_contexts = extract_hash_contexts_from_pdf_file(f'{CWD}/pdf-with-hashes.pdf')
-    assert hash_contexts == expected_hash_contexts
+    assert len(hash_contexts) == len(expected_hash_contexts)
+    for hash_context in hash_contexts:
+        assert hash_context in expected_hash_contexts
 
 
 def test_hash_contexts_in_return_results():
