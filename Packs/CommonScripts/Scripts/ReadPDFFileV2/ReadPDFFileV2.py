@@ -250,7 +250,8 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
 
 
 def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: list, emails: list, images: list[str],
-                               max_images: int) -> list[dict[str, Any]]:
+                               max_images: int,
+                               file_hashes: dict[str, set[Any]]) -> list[dict[str, Any]]:
     """Builds an entry object for the main script flow"""
     pdf_file = {"EntryID": entry_id}
     # Add Text to file entity
@@ -350,12 +351,20 @@ def get_urls_from_binary_file(file_path: str) -> set:
             binary_file_urls.add(mached_url[0])
     return binary_file_urls
 
-def get_hashes_from_binary_file(file_path: str) -> set[str]:
+def get_hashes_from_file(file_path: str) -> dict[str, set[Any]]:
     demisto.debug('Extracting hashes from binary file')
-    hashes = []
-    with open(file_path, 'rb') as file:
-        hashes = re.findall(hashRegex, str(file.read()))
-    return set(hashes)
+    hashes: dict[str, set[Any]] = {}
+    pdf = PyPDF2.PdfReader(file_path, strict=False)
+    page_count = len(pdf.pages)
+    for page_index in range(page_count):
+        page = pdf.pages[page_index]
+        page_text = page.extract_text()
+        hashes['sha1'] = set(re.findall(sha1Regex, page_text)).union(hashes.get('sha1', set()))
+        hashes['sha256'] = set(re.findall(sha256Regex, page_text)).union(hashes.get('sha256', set()))
+        hashes['sha512'] = set(re.findall(sha512Regex, page_text)).union(hashes.get('sha512', set()))
+        hashes['md5'] = set(re.findall(md5Regex, page_text)).union(hashes.get('md5', set()))
+    
+    return hashes
     
 def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str) -> Tuple[set, set]:
     """
@@ -530,10 +539,6 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
     # Get urls from the binary file:
     binary_file_urls = get_urls_from_binary_file(file_path)
 
-    # Get hashes from the binary file
-    binary_file_hashes = get_hashes_from_binary_file(file_path)
-    print(binary_file_hashes)
-
     # Get URLS + emails:
     annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
     html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder)
@@ -554,6 +559,11 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
 
     return urls_ec, emails_ec
 
+def extract_hashes_from_pdf_file(file_path: str) -> dict[str, set[Any]]:
+     # Get hashes from the binary file
+    file_hashes = get_hashes_from_file(file_path)
+    print(file_hashes)
+    return file_hashes
 
 def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: str = '',
                              user_password: str = '') -> str:
@@ -590,6 +600,9 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
         # Get URLS + emails:
         urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
 
+        # Get Hashes
+        file_hashes = extract_hashes_from_pdf_file(cpy_file_path)
+
         # Get images:
         images = get_images_paths_in_path(working_dir)
         readpdf_entry_object = build_readpdf_entry_object(entry_id,
@@ -598,7 +611,8 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
                                                           urls_ec,
                                                           emails_ec,
                                                           images,
-                                                          max_images=max_images)
+                                                          max_images=max_images,
+                                                          file_hashes)
 
         return_results(readpdf_entry_object)
     else:
