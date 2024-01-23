@@ -158,7 +158,24 @@ class TestFetchEvents:
         Then:
          - make sure the events are enriched as expected
         """
-        from ReliaQuestGreyMatterDRPEventCollector import fetch_events
+        import ReliaQuestGreyMatterDRPEventCollector
+
+        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
+        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value={})
+        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        mocker.patch.object(
+            demisto, 'params',
+            return_value={
+                "url": TEST_URL,
+                "credentials": {
+                    "identifier": "1234",
+                    "password": "1234",
+                },
+                "max_fetch_events": 200
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+
         events_response, events = create_triage_items_events(100, start_time="2020-09-24T16:30:10.016Z")
         triaged_alerts = create_triage_items_from_events(events[0:50], item_type="alert-id")
         triaged_incidents = create_triage_items_from_events(events[50:100], item_type="incident-id")
@@ -180,21 +197,24 @@ class TestFetchEvents:
         assets_response = create_assets(assets)
 
         mocker.patch.object(
-            client,
+            ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
             "_http_request",
             side_effect=[
                 events_response,
-                create_mocked_response([]),  # empty response to stop pagination
                 create_mocked_response(triaged_alerts + triaged_incidents),
                 alerts_response,
                 incidents_response,
-                assets_response
+                assets_response,
+                create_mocked_response([]),  # empty response to stop pagination
             ]
         )
 
-        events, last_run = fetch_events(client, last_run={})
+        ReliaQuestGreyMatterDRPEventCollector.main()
+        assert send_events_mocker.call_count == 1
+        events = send_events_mocker.call_args[0][0]
+        assert len(events) == 100
 
-        assert last_run[FOUND_IDS_LAST_RUN] == [100]
+        assert set_last_run_mocker.call_args[0][0][FOUND_IDS_LAST_RUN] == [100]
         for event in events[0:50]:
             assert event["triage-item"]
             assert event["alert"]
@@ -204,6 +224,3 @@ class TestFetchEvents:
             assert event["triage-item"]
             assert event["incident"]
             assert event["assets"]
-
-    def test_fetch_events_no_last_run_single_iteration_sanity_test(self, mocker, client: ReilaQuestClient):
-        pass

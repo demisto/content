@@ -408,10 +408,13 @@ def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Option
 def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
     new_last_run = last_run.copy()
     try:
-        retry_after = dateparser.parse(last_run.get(RATE_LIMIT_LAST_RUN))
+        if retry_after := last_run.get(RATE_LIMIT_LAST_RUN):
+            retry_after_datetime = dateparser.parse(retry_after)
+        else:
+            retry_after_datetime = None
         now = datetime.now(timezone.utc).astimezone()
         demisto.debug(f'now: {now}, retry-after: {retry_after}')
-        if retry_after and now < retry_after:
+        if retry_after_datetime and now < retry_after_datetime:
             demisto.debug(
                 f'Waiting for the api to recover from rate-limit, need to wait {(retry_after - now).total_seconds()} seconds'
             )
