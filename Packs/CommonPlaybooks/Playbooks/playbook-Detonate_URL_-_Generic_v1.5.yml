@@ -812,7 +812,7 @@ tasks:
       id: 156ee7d3-6235-4011-85fe-32e8d2154de1
       version: -1
       name: Detonate URL - JoeSecurity
-      description: Submit an URL for sandbox analysis.
+      description: Submit a URL for sandbox analysis.
       script: '|||joe-submit-url'
       type: regular
       iscommand: true
