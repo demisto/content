@@ -1,6 +1,6 @@
 Azure Resource Graph is an Azure service designed to extend Azure Resource Management by providing efficient and performant resource exploration with the ability to query at scale across a given set of resources.
 
-## Authorize Cortex XSOAR for Azure Log Analytics (Self-Deployed Configuration)
+## Authorize Cortex XSOAR for Azure Resource Graph (Self-Deployed Configuration)
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, see the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
@@ -10,7 +10,7 @@ For more details about the authentication used in this integration, see [Microso
 - After authorizing the XSOAR App or the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
 - In order to assign a role to the application after consent was given:
   - Go to the Azure Portal UI. 
-  - Go to Subscriptions, and then Access Control (IAM). 
+  - Go to **Subscriptions**, and then **Access Control (IAM)**. 
   - Click "Add role assignment". 
   - Create a new role or select a role that includes permissions for the queries you plan to run.
   - Select the Azure Compute application. By default, Azure AD applications aren't displayed in the available options. To find your application, search for the name and select it.
@@ -27,10 +27,10 @@ Follow these steps for client-credentials configuration.
 4. Enter your Tenant ID in the **Tenant ID** parameter.
 5. Click **Test** to validate the URLs, token, and connection.
 
-## Configure Azure Log Analytics on Cortex XSOAR
+## Configure Azure Resource Graph on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Log Analytics.
+2. Search for Azure Resource Graph.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
