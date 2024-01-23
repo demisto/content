@@ -72,7 +72,7 @@ configuration:
   name: auto_detect_type
   type: 8
   required: false
-- additionalinfo: 192.168.1.1:8080 -> 192.168.1.1
+- additionalinfo: Remove ports from IPv4 type indicators in the fetch command (e.g. 192.168.1.1:8080 -> 192.168.1.1)
   display: Remove ports from IPv4 type indicators
   name: remove_ports
   type: 8

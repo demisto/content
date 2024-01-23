@@ -425,7 +425,7 @@ def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
 def test_remove_ports_threatfox(mocker, remove_ports, expected_result):
     """
     Given
-    Fetch indicators command calling a server with type IPv4 indicators with ports.
+    - Fetch indicators command calling a server with type IPv4 indicators with ports.
 
     When
     - Running fetch indicators command

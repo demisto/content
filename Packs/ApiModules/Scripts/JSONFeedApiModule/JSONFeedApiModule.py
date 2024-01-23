@@ -321,7 +321,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
                      indicator_type: str, indicator_field: str, use_prefix_flat: bool,
                      feedTags: list, auto_detect: bool, mapping_function: Callable = indicator_mapping,
                      create_relationships: bool = False, relationships_func: Callable = None,
-                     remove_ports=False) -> List[dict]:
+                     remove_ports: bool = False) -> List[dict]:
     indicator_list = []
     mapping = feed_config.get('mapping')
     take_value_from_flatten = False
@@ -362,7 +362,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     if feed_config.get('rawjson_include_indicator_type'):
         item['_indicator_type'] = current_indicator_type
 
-    if remove_ports and indicator['type'] == 'IP':
+    if remove_ports and indicator['type'] == 'IP' and indicator['value']:
         indicator['value'] = indicator['value'].split(':')[0]
 
     indicator['rawJSON'] = item
