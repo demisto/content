@@ -685,10 +685,10 @@ def get_incident_extra_data_command(client, args):
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
     demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident ,use_get_incident_extra_data = api_call_try(client,args) 
+    raw_incident ,use_get_incident_extra_data = api_call_try(client,args)  # 500: {},True
     demisto.debug(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MAI BELLE Mai raw {raw_incident} | type {type(raw_incident)}')
     demisto.debug('MAI BELLE get_incident_extra_data_command Mai after try- except ') 
-    if  not raw_incident or raw_incident == {} or  not use_get_incident_extra_data:
+    if  (not raw_incident) or (raw_incident == {}) or  (not use_get_incident_extra_data):
         demisto.debug('MAI OLD call')
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
         demisto.debug(f'MAI after OLD api call{raw_incident}' )
