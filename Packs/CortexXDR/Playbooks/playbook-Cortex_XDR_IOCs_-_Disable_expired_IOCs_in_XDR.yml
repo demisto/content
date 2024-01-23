@@ -235,7 +235,7 @@ tasks:
       id: 87b046d2-ddec-431d-8340-4fa61d6f328e
       version: -1
       name: Check results
-      description: Checks the IOCs got set in the context.
+      description: Checks that the IOCs were  set in the context.
       type: condition
       iscommand: false
       brand: ""
