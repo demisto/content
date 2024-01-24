@@ -3,6 +3,7 @@ args:
   name: target_incident
   required: true
 - description: Whether auto extract the indicators from the notes.
+  auto: PREDEFINED
   name: auto_extract
   predefined:
     - 'true'
