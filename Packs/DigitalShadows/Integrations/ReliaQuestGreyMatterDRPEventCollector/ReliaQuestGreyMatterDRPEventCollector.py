@@ -95,7 +95,7 @@ class ReilaQuestClient(BaseClient):
             if len(events) == 0:
                 break
             amount_of_fetched_events += len(events)
-            end_index = amount_of_fetched_events - limit if amount_of_fetched_events > limit else MAX_PAGE_SIZE
+            end_index = min(amount_of_fetched_events - limit, limit) if amount_of_fetched_events > limit else MAX_PAGE_SIZE
             events = events[0: end_index]
             demisto.info(f'Fetched {len(events)} events')
             demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in events]}')
@@ -207,11 +207,16 @@ def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, List[di
         else:
             demisto.error(f'event {event} does not have triage-item-id or event-created fields, skipping it')
 
-    demisto.info(f'Last event was created in {latest_event_time}')
     event_nums_with_latest_created_time = get_events_with_latest_created_time(events, latest_event_time)
     demisto.info(f'event numbers with latest created time: {event_nums_with_latest_created_time}')
 
-    return _triage_item_ids_to_events, event_nums_with_latest_created_time, latest_event_time.strftime(DATE_FORMAT)
+    if latest_event_time:
+        demisto.info(f'Last event was created in {latest_event_time}')
+        latest_event_time_datetime = latest_event_time.strftime(DATE_FORMAT)
+    else:
+        latest_event_time_datetime = None
+
+    return _triage_item_ids_to_events, event_nums_with_latest_created_time, latest_event_time_datetime
 
 
 def get_events_with_latest_created_time(events: List[Dict], latest_created_event_datetime: Optional[datetime]) -> List[int]:
@@ -273,6 +278,8 @@ def enrich_events_with_incident_or_alert_metadata(
 
     for alert_incident in alerts_incidents:
         _id = alert_incident.get("id")
+        if _id == 110:
+            print()
         for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:
             event[event_type] = alert_incident
         for asset in alert_incident.get("assets") or []:
@@ -395,9 +402,9 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         else:
             retry_after_datetime = None
         now = datetime.now(timezone.utc).astimezone()
-        demisto.debug(f'now: {now}, retry-after: {retry_after}')
+        demisto.info(f'now: {now}, retry-after: {retry_after}')
         if retry_after_datetime and now < retry_after_datetime:
-            demisto.debug(
+            demisto.info(
                 f'Waiting for the api to recover from rate-limit, need to wait {(retry_after - now).total_seconds()} seconds'
             )
             return
