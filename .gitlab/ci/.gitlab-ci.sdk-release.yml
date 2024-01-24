@@ -17,147 +17,147 @@ create-release-branch:
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
     - section_end "Create release branch"
-#
-#trigger-content-private-nightly:
-#  stage: trigger-nightlies
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
-#  needs:
-#    - create-release-branch
-#  artifacts:
-#    expire_in: 48 hrs
-#    paths:
-#      - ${CI_PROJECT_DIR}/artifacts/*
-#    when: always
-#  variables:
-#    BRANCH_NAME: $BRANCH_NAME
-#    CONTENT_CI_TOKEN: $CONTENT_CI_TOKEN
-#    SLACK_CHANNEL: $SLACK_CHANNEL
-#    RELEASE_VERSION: $RELEASE_VERSION
-#    GITHUB_TOKEN: $GITHUB_TOKEN
-#    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-#  script:
-#    - section_start "Trigger content-private nightly build" --collapsed
-#    - python3 ./Utils/trigger_private_build.py --nightly --github-token "${GITHUB_TOKEN}" --slack-channel "${SLACK_CHANNEL}" --sdk-ref $RELEASE_VERSION --artifacts-folder ${ARTIFACTS_FOLDER}
-#    - section_end "Trigger content-private nightly build"
-#
-#trigger-content-internal-dist-nightly:
-#  stage: trigger-nightlies
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
-#  needs:
-#    - create-release-branch
-#  artifacts:
-#    expire_in: 48 hrs
-#    paths:
-#      - ${CI_PROJECT_DIR}/artifacts/*
-#    when: always
-#  variables:
-#    BRANCH_NAME: $BRANCH_NAME
-#    CONTENT_CI_TOKEN: $CONTENT_CI_TOKEN
-#    CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY: $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
-#    SLACK_CHANNEL: $SLACK_CHANNEL
-#    RELEASE_VERSION: $RELEASE_VERSION
-#    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-#  script:
-#    - section_start "Trigger content-internal-dist nightly build" --collapsed
-#    - export GOLD_PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -ch $SLACK_CHANNEL -sdk $RELEASE_VERSION | jq .id)
-#    - echo "GOLD_PIPELINE_ID = " $GOLD_PIPELINE_ID
-#    - echo $GOLD_PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
-#    - echo "content-internal-dist nightly build triggered successfully:"
-#    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID # disable-secrets-detection
-#    - section_end "Trigger content-internal-dist nightly build"
-#
-#trigger-demisto-sdk-nightly:
-#  stage: trigger-nightlies
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
-#  needs:
-#    - create-release-branch
-#  artifacts:
-#    expire_in: 48 hrs
-#    paths:
-#      - ${CI_PROJECT_DIR}/artifacts/*
-#    when: always
-#  variables:
-#    BRANCH_NAME: $BRANCH_NAME
-#    CI_TOKEN: $CI_TOKEN
-#    SLACK_CHANNEL: $SLACK_CHANNEL
-#    RELEASE_VERSION: $RELEASE_VERSION
-#    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-#  script:
-#    - section_start "Trigger SDK nightly build" --collapsed
-#    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g | jq .id)
-#    - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
-#    - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
-#    - echo "demisto-sdk nightly build triggered successfully:"
-#    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/pipelines/"$SDK_PIPELINE_ID # disable-secrets-detection
-#    - section_end "Trigger sdk nightly build"
-#
-#wait-for-content-private-nightly:
-#  stage: wait-for-build-to-finish
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
-#  allow_failure: true
-#  needs:
-#    - trigger-content-private-nightly
-#  artifacts:
-#    expire_in: 48 hrs
-#    paths:
-#      - ${CI_PROJECT_DIR}/artifacts/*
-#  variables:
-#    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-#    GITHUB_TOKEN: $GITHUB_TOKEN
-#  script:
-#    - section_start "Wait for content-private nightly build" --collapsed
-#    - python3 ./Utils/get_private_build_status.py --github-token $GITHUB_TOKEN --artifacts-folder ${ARTIFACTS_FOLDER}
-#    - section_end "Wait for content-private nightly build"
-#
-#wait-for-content-internal-dist-nightly:
-#  stage: wait-for-build-to-finish
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
-#  allow_failure: true
-#  needs:
-#    - trigger-content-internal-dist-nightly
-#  artifacts:
-#    expire_in: 48 hrs
-#    paths:
-#      - ${CI_PROJECT_DIR}/artifacts/*
-#  variables:
-#    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-#  script:
-#    - section_start "Wait for content-internal-dist nightly build" --collapsed
-#    - GOLD_PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt)
-#    - echo "GOLD_PIPELINE_ID =" $GOLD_PIPELINE_ID
-#    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $GOLD_PIPELINE_ID -pid 1738
-#    - section_end "Wait for content-internal-dist nightly build"
-#
-#wait-for-demisto-sdk-nightly:
-#  stage: wait-for-build-to-finish
-#  extends:
-#    - .release-sdk
-#    - .default-job-settings
-#  allow_failure: true
-#  needs:
-#    - trigger-demisto-sdk-nightly
-#  artifacts:
-#    expire_in: 48 hrs
-#    paths:
-#      - ${CI_PROJECT_DIR}/artifacts/*
-#  variables:
-#    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-#  script:
-#    - section_start "Wait for SDK nightly build" --collapsed
-#    - SDK_PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt)
-#    - echo "SDK_PIPELINE_ID =" $SDK_PIPELINE_ID
-#    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $SDK_PIPELINE_ID -pid 1061
-#    - section_end "Wait for SDK nightly build"
+
+trigger-content-private-nightly:
+  stage: trigger-nightlies
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - create-release-branch
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+    when: always
+  variables:
+    BRANCH_NAME: $BRANCH_NAME
+    CONTENT_CI_TOKEN: $CONTENT_CI_TOKEN
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    RELEASE_VERSION: $RELEASE_VERSION
+    GITHUB_TOKEN: $GITHUB_TOKEN
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - section_start "Trigger content-private nightly build" --collapsed
+    - python3 ./Utils/trigger_private_build.py --nightly --github-token "${GITHUB_TOKEN}" --slack-channel "${SLACK_CHANNEL}" --sdk-ref $RELEASE_VERSION --artifacts-folder ${ARTIFACTS_FOLDER}
+    - section_end "Trigger content-private nightly build"
+
+trigger-content-internal-dist-nightly:
+  stage: trigger-nightlies
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - create-release-branch
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+    when: always
+  variables:
+    BRANCH_NAME: $BRANCH_NAME
+    CONTENT_CI_TOKEN: $CONTENT_CI_TOKEN
+    CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY: $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    RELEASE_VERSION: $RELEASE_VERSION
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - section_start "Trigger content-internal-dist nightly build" --collapsed
+    - export GOLD_PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct $CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY -ch $SLACK_CHANNEL -sdk $RELEASE_VERSION | jq .id)
+    - echo "GOLD_PIPELINE_ID = " $GOLD_PIPELINE_ID
+    - echo $GOLD_PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
+    - echo "content-internal-dist nightly build triggered successfully:"
+    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID # disable-secrets-detection
+    - section_end "Trigger content-internal-dist nightly build"
+
+trigger-demisto-sdk-nightly:
+  stage: trigger-nightlies
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - create-release-branch
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+    when: always
+  variables:
+    BRANCH_NAME: $BRANCH_NAME
+    CI_TOKEN: $CI_TOKEN
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    RELEASE_VERSION: $RELEASE_VERSION
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - section_start "Trigger SDK nightly build" --collapsed
+    - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct $CI_TOKEN -ch $SLACK_CHANNEL -sr $RELEASE_VERSION -g | jq .id)
+    - echo "SDK_PIPELINE_ID = " $SDK_PIPELINE_ID
+    - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
+    - echo "demisto-sdk nightly build triggered successfully:"
+    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/pipelines/"$SDK_PIPELINE_ID # disable-secrets-detection
+    - section_end "Trigger sdk nightly build"
+
+wait-for-content-private-nightly:
+  stage: wait-for-build-to-finish
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  allow_failure: true
+  needs:
+    - trigger-content-private-nightly
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+  variables:
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+    GITHUB_TOKEN: $GITHUB_TOKEN
+  script:
+    - section_start "Wait for content-private nightly build" --collapsed
+    - python3 ./Utils/get_private_build_status.py --github-token $GITHUB_TOKEN --artifacts-folder ${ARTIFACTS_FOLDER}
+    - section_end "Wait for content-private nightly build"
+
+wait-for-content-internal-dist-nightly:
+  stage: wait-for-build-to-finish
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  allow_failure: true
+  needs:
+    - trigger-content-internal-dist-nightly
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+  variables:
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - section_start "Wait for content-internal-dist nightly build" --collapsed
+    - GOLD_PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt)
+    - echo "GOLD_PIPELINE_ID =" $GOLD_PIPELINE_ID
+    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $GOLD_PIPELINE_ID -pid 1738
+    - section_end "Wait for content-internal-dist nightly build"
+
+wait-for-demisto-sdk-nightly:
+  stage: wait-for-build-to-finish
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  allow_failure: true
+  needs:
+    - trigger-demisto-sdk-nightly
+  artifacts:
+    expire_in: 48 hrs
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+  variables:
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - section_start "Wait for SDK nightly build" --collapsed
+    - SDK_PIPELINE_ID=$(head -n 1 ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt)
+    - echo "SDK_PIPELINE_ID =" $SDK_PIPELINE_ID
+    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g $GITLAB_API_TOKEN -p $SDK_PIPELINE_ID -pid 1061
+    - section_end "Wait for SDK nightly build"
 
 slack-notify:
   stage: wait-for-build-to-finish
@@ -166,10 +166,9 @@ slack-notify:
     - .default-job-settings
   allow_failure: true
   needs:
-#    - wait-for-demisto-sdk-nightly
-#    - wait-for-content-private-nightly
-#    - wait-for-content-internal-dist-nightly
-    - create-release-branch
+    - wait-for-demisto-sdk-nightly
+    - wait-for-content-private-nightly
+    - wait-for-content-internal-dist-nightly
   variables:
     REVIEWER: $REVIEWER
   script:
@@ -193,7 +192,7 @@ create-release-pull-request:
   script:
     - section_start "Create sdk release pr" --collapsed
     - echo "IS_DRAFT="$IS_DRAFT
-    - python3 ./Tests/sdk_release/create_release_pr.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -d $IS_DRAFT -ro $REVIEWER
+    - python3 ./Tests/sdk_release/create_sdk_pr.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -d $IS_DRAFT -ro $REVIEWER
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The demisto-sdk release PR is ready and waiting for review" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt $GITLAB_API_TOKEN -gu $REVIEWER
     - section_end "Create sdk release pr"
 
@@ -215,7 +214,7 @@ deploy-sdk-to-pypi:
     - section_start "Deploy SDK release" --collapsed
     - python3 ./Tests/sdk_release/create_release.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -d $IS_DRAFT
     - python3 ./Tests/sdk_release/wait_for_release.py -b $RELEASE_VERSION
-    - python3 ./Tests/sdk_release/trigger_update_sdk_workflow.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -r $REVIEWER --artifacts-folder ${ARTIFACTS_FOLDER} -d $IS_DRAFT
+    - python3 ./Tests/sdk_release/create_content_pr.py.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -r $REVIEWER --artifacts-folder ${ARTIFACTS_FOLDER} -d $IS_DRAFT
     - section_end "Deploy SDK release"
 
 wait-for-prs:

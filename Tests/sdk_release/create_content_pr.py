@@ -36,7 +36,7 @@ def options_handler():
 
 
 def main():
-    install_logging("TriggerUpdateSDKWorkflow.log", logger=logging)
+    install_logging("CreateContentPR.log", logger=logging)
 
     options = options_handler()
     release_branch_name = options.release_branch_name
@@ -92,7 +92,7 @@ def main():
     start = time.time()
     elapsed: float = 0
 
-    logging.info('Waiting for sdk and content release pull request creation')
+    logging.info('Waiting for content release pull request creation')
 
     # wait to content pr to create
     while not content_pr and elapsed < TIMEOUT:

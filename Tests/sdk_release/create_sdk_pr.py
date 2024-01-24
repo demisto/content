@@ -33,7 +33,7 @@ def options_handler():
 
 
 def main():
-    install_logging("CreateReleasePR.log", logger=logging)
+    install_logging("CreateSDKPR.log", logger=logging)
 
     options = options_handler()
     access_token = options.access_token
