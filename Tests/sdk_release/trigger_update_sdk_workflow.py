@@ -57,7 +57,8 @@ def main():
     }
 
     data = {
-        'ref': 'master',
+        # 'ref': 'master',
+        'ref': 'sdk-release',  # TODO: remove this line
         'inputs': inputs
     }
 
