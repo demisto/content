@@ -43,11 +43,11 @@ def get_changelog_text(release_branch_name, text_format='markdown'):
                 )
             else:
                 logging.error(f'The format {text_format} is not supported')
-                exit(1)
+                sys.exit(1)
 
         except Exception as e:
             logging.error(f'Error parsing change: {e}')
-            exit(1)
+            sys.exit(1)
 
     return "\n".join(releases)
 

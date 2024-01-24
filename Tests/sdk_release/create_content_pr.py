@@ -75,7 +75,8 @@ def main():
     }
 
     # trigger update-demisto-sdk-version workflow
-    response = requests.request("POST", UPDATE_SDK_VERSION_WORKFLOW, headers=headers, data=json.dumps(data), verify=False)
+    response = requests.request("POST", UPDATE_SDK_VERSION_WORKFLOW, headers=headers,
+                                data=json.dumps(data), verify=False)
     if response.status_code != 204:
         logging.error('Failed to trigger update-demisto-sdk-version workflow')
         logging.error(response.text)
