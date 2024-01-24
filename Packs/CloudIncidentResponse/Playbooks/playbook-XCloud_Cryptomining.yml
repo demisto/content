@@ -1260,7 +1260,8 @@ inputs:
   description: Whether to execute the user remediation flow automatically.
   playbookInputQuery:
 - key: credentialsRemediationType
-  value: {}
+  value:
+    simple: "Reset"
   required: false
   description: |-
     The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
