@@ -292,7 +292,7 @@ tasks:
     task:
       id: 0c9ac239-34cc-46eb-8662-7d573761dc7c
       version: -1
-      name: Are all the inputs provided?
+      name: Are all required inputs provided?
       type: condition
       iscommand: false
       brand: ""
