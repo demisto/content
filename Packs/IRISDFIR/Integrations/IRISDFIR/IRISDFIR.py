@@ -134,8 +134,6 @@ class DFIRIrisAPI:
             cases = response.json()
             if cases:
                 return cases['data']
-            else:
-                return cases['message']
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
 
@@ -156,8 +154,6 @@ class DFIRIrisAPI:
             cases = response.json()
             if cases:
                 return cases['data']
-            else:
-                return cases['message']
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
 
@@ -171,8 +167,6 @@ class DFIRIrisAPI:
             cases = response.json()
             if cases:
                 return cases['data']
-            else:
-                return cases['message']
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
 
@@ -186,8 +180,6 @@ class DFIRIrisAPI:
             cases = response.json()
             if cases:
                 return cases['data']
-            else:
-                return cases['message']
         else:
             raise DemistoException(f"Request failed with status code {response.status_code}.")
 
@@ -262,56 +254,56 @@ def test_module(dfir_iris):
 
 def process_iris_get_last_case_id(dfir_iris, args: Dict[str, Any]) -> CommandResults:
 
-    results_str = dfir_iris.get_last_case_id()
+    results = dfir_iris.get_last_case_id()
 
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
 def process_get_all_cases(dfir_iris, args: Dict[str, Any]) -> CommandResults:
 
-    results_str = dfir_iris.get_all_cases()
+    results = dfir_iris.get_all_cases()
 
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
 def process_close_case(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
-    results_str = dfir_iris.close_case(case_id)
+    results = dfir_iris.close_case(case_id)
 
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
 def process_reopen_case(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
-    results_str = dfir_iris.reopen_case(case_id)
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    results = dfir_iris.reopen_case(case_id)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
@@ -320,15 +312,15 @@ def process_update_case_state(dfir_iris, args: Dict[str, Any]) -> CommandResults
     case_name = args.get("case_name")
     case_state = args.get("case_state")
 
-    results_str = dfir_iris.update_case_state(case_id, case_name, case_state)
+    results = dfir_iris.update_case_state(case_id, case_name, case_state)
 
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
@@ -336,14 +328,14 @@ def process_create_notes_group(dfir_iris, args: Dict[str, Any]) -> CommandResult
     case_id = args.get("case_id")
     group_title = args.get("group_title")
 
-    results_str = dfir_iris.create_notes_group(case_id, group_title)
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    results = dfir_iris.create_notes_group(case_id, group_title)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
@@ -353,42 +345,42 @@ def process_add_new_note_to_group(dfir_iris, args: Dict[str, Any]) -> CommandRes
     note_content = args.get("note_content")
     group_id = args.get("group_id")
 
-    results_str = dfir_iris.add_new_note_to_group(case_id, note_title, note_content, group_id)
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    results = dfir_iris.add_new_note_to_group(case_id, note_title, note_content, group_id)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
 def process_get_list_of_groups_and_notes(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
 
-    results_str = dfir_iris.get_list_of_groups_and_notes(case_id)
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    results = dfir_iris.get_list_of_groups_and_notes(case_id)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
 def process_get_list_of_iocs(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
-    results_str = dfir_iris.get_list_of_iocs(case_id)
+    results = dfir_iris.get_list_of_iocs(case_id)
 
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
@@ -396,14 +388,14 @@ def process_get_ioc_content(dfir_iris, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id")
     ioc_id = args.get("ioc_id")
 
-    results_str = dfir_iris.get_ioc_content(case_id, ioc_id)
-    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+    results = dfir_iris.get_ioc_content(case_id, ioc_id)
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
         readable_output=readable_output,
-        outputs=results_str,
+        outputs=results,
     )
 
 
