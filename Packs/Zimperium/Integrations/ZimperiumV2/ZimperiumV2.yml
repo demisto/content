@@ -19,7 +19,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- display: Fetch Query. e.g, severity=CRITICAL
+- display: Fetch Query. e.g, severity=CRITICAL,teamId=my_id
   name: fetch_query
   type: 0
   required: false
@@ -75,9 +75,57 @@ script:
     description: Search users.
     name: zimperium-users-search
     outputs:
-    - contextPath: Zimperium.Users.id
+    - contextPath: Zimperium.User.id
       description: The user id.
       type: String
+    - contextPath: Zimperium.User.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.User.email
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.firstName
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.languagePreference
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.User.lastLogin
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.User.lastName
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.middleName
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.User.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.User.notificationEmail
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.phone
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.User.role.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.role.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.role.scopeBounds
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.teams.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.teams.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.User.validated
+      description: ''
+      type: Boolean
   - arguments:
     - description: The search criteria for the list of devices reported after this date.
       name: after
@@ -100,25 +148,386 @@ script:
     description: Search devices.
     name: zimperium-devices-search
     outputs:
-    - contextPath: Zimperium.Device
-      description: Application name.
+    - contextPath: Zimperium.Device.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.activationName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.additionalDeviceInfo
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Device.agentType
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.appStatus
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.appVersions
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Device.bundleId
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Device.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.deleted
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.developerOptionsOn
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.deviceOwner.email
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.dormancyProcessed
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.fullType
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.groupId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.lastSeen
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.lockScreenUnprotected
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.model
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.id
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.os.maxOsVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.osVersionId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.os.policyCompliant
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.os.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.versionUpgradeable
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.processed
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.processedAt
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.riskPosture
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.riskPostureName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.teamId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.teamName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.threatState.addOrRemoveCritical
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.threatState.addOrRemoveRisky
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.threatState.criticalThreats
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.threatState.hadCriticalMitigation
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.threatState.hadRiskyMitigation
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.threatState.numberOfRiskyThreats
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.threatState.riskyThreats
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.agentType
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.zappInstance.buildNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.bundleId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.externalTrackingId1
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.externalTrackingId2
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.groupId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.lastSeen
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.zappInstance.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.policiesInfo.deployedAt
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.zappInstance.policiesInfo.downloadedAt
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.zappInstance.policiesInfo.hash
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.policiesInfo.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.serverlessDetection
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.zappInstance.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.zappId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.zbuildNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.zversion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zdeviceId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.appVersions.appVersionId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.appVersions.bundleId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.isJailbroken
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.os.maxOsPatchDate
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.patchDate
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.threatState.numberOfCriticalThreats
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.zappInstance.isUnknownSourceEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.zappInstance.permissionsState.permissionName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.permissionsState.permissionState
+      description: ''
       type: String
   - arguments:
     - description: The device id to search.
       name: device_id
-    - description: Maximum number of results to retrieve in each page. Default is 10.
-      name: page_size
-    - defaultValue: '0'
-      description: Page number.
-      name: page
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page. Default is 10.
-      name: limit
     description: Search devices.
     name: zimperium-device-get-by-id
     outputs:
-    - contextPath: Zimperium.Device
-      description: Application name.
+    - contextPath: Zimperium.Device.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.activationName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.additionalDeviceInfo
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Device.agentType
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.appStatus
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.appVersions
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Device.bundleId
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Device.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.deleted
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.developerOptionsOn
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.deviceOwner.email
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.dormancyProcessed
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.fullType
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.groupId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.lastSeen
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.lockScreenUnprotected
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.model
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.id
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.os.maxOsVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.osVersionId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.os.policyCompliant
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.os.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.os.versionUpgradeable
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.processed
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.processedAt
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.riskPosture
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.riskPostureName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.teamId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.teamName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.threatState.addOrRemoveCritical
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.threatState.addOrRemoveRisky
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.threatState.criticalThreats
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Device.threatState.hadCriticalMitigation
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.threatState.hadRiskyMitigation
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.threatState.numberOfRiskyThreats
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.threatState.riskyThreats
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.agentType
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Device.zappInstance.buildNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.bundleId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.externalTrackingId1
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.externalTrackingId2
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.groupId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.lastSeen
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.zappInstance.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.policiesInfo.deployedAt
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.zappInstance.policiesInfo.downloadedAt
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Device.zappInstance.policiesInfo.hash
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.policiesInfo.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.serverlessDetection
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Device.zappInstance.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.zappId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.zbuildNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zappInstance.zversion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Device.zdeviceId
+      description: ''
       type: String
   - arguments:
     - description: The Id to get the app version JSON report. Can be retrieved using the zimperium-app-version-list command, in the field "Zimperium.AppVersion.id".
@@ -130,6 +539,489 @@ script:
     - contextPath: Zimperium.Report.id
       description: The report id.
       type: Unknown
+    - contextPath: Zimperium.Report.ContentInformation
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.glob
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.platform
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.activity.class
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.activityAlias
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.androidAnalysis.appQueries.packages
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.androidAnalysis.appQueries.providers
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.androidAnalysis.appQueries.schemes
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.elfList
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.androidAnalysis.launcherActivity.class
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.metaData.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.metaData.value
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.permission.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.permission.protectionLevel
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.provider.access
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.provider.class
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.receiver.class
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.receiver.permission
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.sdks.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.sdks.platforms
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.sdks.tags
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.sdks.title
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.sdks.website
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.service.access
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.service.class
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.thirdParty.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.thirdParty.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.thirdParty.referenceURL
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.thirdParty.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.usesFeature.kind
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.usesFeature.required
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Report.report.androidAnalysis.usesLibrary
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.androidAnalysis.usesPermission.dangerous
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Report.report.androidAnalysis.usesPermission.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.androidAnalysis.usesPermission.kind
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.extra.itunesAppID
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.md5
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.packageName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.packageSize
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.appProperties.platform
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.sdkVersion
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.appProperties.sha1
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.sha256
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.appProperties.versionCode
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.certificate.SHA1 fingerprint
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.certificate.SHA256 fingerprint
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.certificate.issuer.CN
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.certificate.issuer.O
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.certificate.owner.CN
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.certificate.owner.O
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.certificate.serialNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.certificate.validFrom
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Report.report.certificate.validTo
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.A.A
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.A.PTR
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.AAAA
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.DMARC
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.MX.pref
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.MX.smtp
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.NS
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.SOA.mname
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.SOA.rname
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.SOA.serial
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.TXT
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.URI.cipher.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.cipher.grade
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.cipher.protocol
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.classificationCategory
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.domain
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.findings.expCheck
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Report.report.communications.URI.findings.hasProblem
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Report.report.communications.URI.findings.validChainOfTrust
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Report.report.communications.URI.location
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.port
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.communications.URI.protocol
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.ASName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.ASNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.allocatedDate
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.bgpPrefix
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.city
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.country
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.ip
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.latitude
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.communications.URI.serverInfo.longitude
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.communications.URI.source
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.URI.uri
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.AAAA.A
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.AAAA.PTR
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.A
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.MX
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.URI.cipher
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.URI.DNS.SOA
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.DNS.A
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.DNS.AAAA
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.DNS.DMARC
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.DNS.MX
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.DNS.NS
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.DNS.SOA
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.DNS.TXT
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.address
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.email.classificationCategory
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.domain
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.email.location
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.email.pwnedListCheck
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.communications.email.sourceDetail
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.email.sourceFile
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.communications.schemes
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.contentInformation.copyright
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.appMarket
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.appName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.appUrl
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.averageRating
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.distribution.marketData.category
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.contentDescriptors
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.currencyType
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.devOtherApps
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.emailAddress
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.numberInstalls
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.distribution.marketData.price
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.ratingCount
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.distribution.marketData.releaseDate
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Report.report.distribution.marketData.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.distribution.marketData.versionCode
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.distribution.marketData.webbsite
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.jsonVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.riskProfile.malwareDetection
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.riskProfile.malwareFamily
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.riskProfile.malwareName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.riskProfile.overallRisk
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.riskProfile.privacyRisk
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.riskProfile.securityRisk
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Report.report.scanDetails.compliance
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.report.scanDetails.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.importance
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.kind
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.location
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.riskType
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.compliance.kind
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.compliance.registrationNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.compliance.riskCategory
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.compliance.riskDescription
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.compliance.webLink
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.compliance.riskName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.compliance.riskSubcategory
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.compliance.riskLevel
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.location.0
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.location.1
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.location.2
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanDetails.location.4
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanVersion.dynamicScan
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Report.report.scanVersion.ruleVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanVersion.scanDateTime
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Report.report.scanVersion.scanEngine
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanVersion.scanSucces
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanVersion.scanTargetOS
+      description: ''
+      type: String
+    - contextPath: Zimperium.Report.report.scanVersion.scoreDateTime
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Report.report.vulnerabilities
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Report.result
+      description: ''
+      type: Number
   - arguments:
     - description: The after date in the criteria that the threat occurred.
       name: after
@@ -168,6 +1060,249 @@ script:
     - contextPath: Zimperium.Threat.id
       description: The id of the threat.
       type: String
+    - contextPath: Zimperium.Threat.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.activationName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.agentType
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.arpTablesInfo.before.ip
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.arpTablesInfo.before.mac
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.categoryId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.classification
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.classificationName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.detectionFiles
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Threat.device.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.device.mamDeviceId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.device.mdmDeviceId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.device.model
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.device.os.id
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.device.os.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.device.os.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.device.zdeviceId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.deviceId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.deviceOwner
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.eventProcessedTimestamp
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.eventReceivedTimestamp
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.generalInfo.actionTriggered
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.generalInfo.bssid
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.generalInfo.deviceTimestamp
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.generalInfo.jailbreakReasons
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.generalInfo.ssid
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.generalInfo.timeInterval
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.groupId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.lastModified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.mitigationEvents
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Threat.nearByNetworks
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Threat.networkStatistics
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Threat.os
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.policiesInfo.deployedAt
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.policiesInfo.downloadedAt
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.policiesInfo.hash
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.policiesInfo.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.processList.parentProcessId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.processList.processId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.processList.processName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.processList.service
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.processList.user
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.responses.eventId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.responses.responseId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.responses.timestamp
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.runningServices
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Threat.severity
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.severityName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.simulated
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.Threat.state
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.suspiciousUrlInfo
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Threat.teamId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.teamName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.threatTypeId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.threatTypeName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.timestamp
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.timestampInfo.timestamp
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.timestampInfo.toTheDay
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.timestampInfo.toTheHour
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.timestampInfo.toTheMinute
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.timestampInfo.toTheSecond
+      description: ''
+      type: Date
+    - contextPath: Zimperium.Threat.vector
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.vectorName
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappInstance.buildNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappInstance.bundleId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappInstance.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappInstance.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappInstance.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappInstance.zbuildNumber
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappInstance.zversion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zappInstanceId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.zeventId
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.arpTablesInfo
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.Threat.locationInfo.geoPoint.lat
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.locationInfo.geoPoint.lon
+      description: ''
+      type: Number
+    - contextPath: Zimperium.Threat.locationInfo.source
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.generalInfo.expectedOsVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.generalInfo.vulnerableOsVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.generalInfo.vulnerableSecurityPatch
+      description: ''
+      type: String
+    - contextPath: Zimperium.Threat.mitigatedAt
+      description: ''
+      type: Date
   - arguments:
     - description: The Bundle ID of the app to get its app version.
       name: bundle_id
@@ -185,6 +1320,72 @@ script:
     - contextPath: Zimperium.AppVersion.id
       description: The id of the threat.
       type: String
+    - contextPath: Zimperium.AppVersion.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.bundleId
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.classification
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.AppVersion.hash
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.platform
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.platformId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.AppVersion.privacy
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.privacyRisk
+      description: ''
+      type: Number
+    - contextPath: Zimperium.AppVersion.processState
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.reportRequestId
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.riskVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.security
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.securityRisk
+      description: ''
+      type: Number
+    - contextPath: Zimperium.AppVersion.source
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.updatedOn
+      description: ''
+      type: Date
+    - contextPath: Zimperium.AppVersion.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.developerName
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.developerSignature
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.filename
+      description: ''
+      type: String
+    - contextPath: Zimperium.AppVersion.managed
+      description: ''
+      type: Boolean
   - arguments:
     - description: The ID of the CVE which is input.
       name: cve_id
@@ -209,6 +1410,42 @@ script:
     - contextPath: Zimperium.DeviceCVE.id
       description: The id of the cve.
       type: Stringv
+    - contextPath: Zimperium.DeviceCVE.os.id
+      description: ''
+      type: Number
+    - contextPath: Zimperium.DeviceCVE.os.maxOsPatchDate
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceCVE.os.maxOsVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceCVE.os.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceCVE.os.osVersionId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.DeviceCVE.os.patchDate
+      description: ''
+      type: Date
+    - contextPath: Zimperium.DeviceCVE.os.policyCompliant
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.DeviceCVE.os.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceCVE.os.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceCVE.os.versionUpgradeable
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.DeviceCVE.teamId
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceCVE.zdeviceId
+      description: ''
+      type: String
   - arguments:
     - description: The name of the version which is input. Can be retrieved using zimperium-devices-search command under "Zimperium.Device.os.version".
       name: os_version
@@ -241,6 +1478,42 @@ script:
     - contextPath: Zimperium.DeviceOsVersion.id
       description: The id of device.
       type: String
+    - contextPath: Zimperium.DeviceOsVersion.os.id
+      description: ''
+      type: Number
+    - contextPath: Zimperium.DeviceOsVersion.os.maxOsPatchDate
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceOsVersion.os.maxOsVersion
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceOsVersion.os.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceOsVersion.os.osVersionId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.DeviceOsVersion.os.patchDate
+      description: ''
+      type: Date
+    - contextPath: Zimperium.DeviceOsVersion.os.policyCompliant
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.DeviceOsVersion.os.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceOsVersion.os.version
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceOsVersion.os.versionUpgradeable
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.DeviceOsVersion.teamId
+      description: ''
+      type: String
+    - contextPath: Zimperium.DeviceOsVersion.zdeviceId
+      description: ''
+      type: String
   - arguments:
     - description: The Device id to get CVE's for.
       name: device_id
@@ -259,6 +1532,21 @@ script:
     - contextPath: Zimperium.CVEDevice.id
       description: The id of the device.
       type: String
+    - contextPath: Zimperium.CVEDevice.activeExploit
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.CVEDevice.exploitPocUrl.exploitPocUrls
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.CVEDevice.severity
+      description: ''
+      type: String
+    - contextPath: Zimperium.CVEDevice.type
+      description: ''
+      type: String
+    - contextPath: Zimperium.CVEDevice.url
+      description: ''
+      type: String
   - arguments:
     - auto: PREDEFINED
       predefined:
@@ -272,78 +1560,586 @@ script:
     - contextPath: Zimperium.PolicyGroup.id
       description: The group id.
       type: String
+    - contextPath: Zimperium.PolicyGroup.content.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.appPolicyId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.appSettingsId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.brandingPolicyId
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyGroup.content.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyGroup.content.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.dormancyPolicyId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.emmConnectionId
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyGroup.content.emmGroupId
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyGroup.content.emmPriority
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyGroup.content.extensionPolicyId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.content.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.knoxPolicyId
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyGroup.content.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyGroup.content.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.networkPolicyId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.osRiskPolicyId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.phishingPolicyId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.privacyId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.team.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.team.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.trmId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyGroup.content.team
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyGroup.empty
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.first
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.last
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.number
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyGroup.numberOfElements
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyGroup.pageable.offset
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyGroup.pageable.pageNumber
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyGroup.pageable.pageSize
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyGroup.pageable.paged
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.pageable.sort.empty
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.pageable.sort.sorted
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.pageable.sort.unsorted
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.pageable.unpaged
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.size
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyGroup.sort.empty
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.sort.sorted
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.sort.unsorted
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyGroup.totalElements
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyGroup.totalPages
+      description: ''
+      type: Number
   - arguments:
     - description: The identifier of the policy. Can be retrieved using zimperium-policy-group-list in the Zimperium.PolicyGroup.privacyId field.
       name: policy_id
       required: true
-    - description: Maximum number of results to retrieve in each page. Default is 10.
-      name: page_size
-    - defaultValue: '0'
-      description: Page number.
-      name: page
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page. Default is 10.
-      name: limit
     description: Get privacy policy by its identifier.
     name: zimperium-policy-privacy-get
     outputs:
     - contextPath: Zimperium.PolicyPrivacy.id
       description: The identifier of the policy.
       type: String
+    - contextPath: Zimperium.PolicyPrivacy.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.assigned
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPrivacy.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPrivacy.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPrivacy.groups.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.groups.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPrivacy.groups.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.groups.emm
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPrivacy.groups.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPrivacy.groups.groupActivations
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPrivacy.groups.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.groups.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPrivacy.groups.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.groups.staticFilesWritten
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPrivacy.groups.userActivations
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPrivacy.groups.zapps
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPrivacy.groups.userActivations.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.jsonHash
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.locationAccuracy
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyPrivacy.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPrivacy.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.protoHash
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.rules.collectibleId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyPrivacy.rules.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPrivacy.rules.shouldCollect
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPrivacy.staticFilesWritten
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPrivacy.team
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPrivacy.teamId
+      description: ''
+      type: Unknown
   - arguments:
     - description: The identifier of the policy. Can be retrieved using zimperium-policy-group-list in the Zimperium.PolicyGroup.trmId field.
       name: policy_id
       required: true
-    - description: Maximum number of results to retrieve in each page. Default is 10.
-      name: page_size
-    - defaultValue: '0'
-      description: Page number.
-      name: page
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page. Default is 10.
-      name: limit
     description: Get threat policy by its identifier.
     name: zimperium-policy-threat-get
     outputs:
     - contextPath: Zimperium.PolicyThreat.id
       description: The identifier of the policy.
       type: String
+    - contextPath: Zimperium.PolicyThreat.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.androidJsonHash
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.androidProtoHash
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.assigned
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyThreat.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyThreat.deploymentDate
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyThreat.emm
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyThreat.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyThreat.groups.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.groups.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyThreat.groups.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.groups.emm
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyThreat.groups.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyThreat.groups.groupActivations
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.groups.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.groups.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyThreat.groups.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.groups.staticFilesWritten
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyThreat.groups.userActivations
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.groups.zapps
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.groups.userActivations.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.iosJsonHash
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.iosProtoHash
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.isDeployed
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyThreat.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyThreat.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.rules.alertUser
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyThreat.rules.customResponses
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.rules.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyThreat.rules.legacyMdmMitigationAction
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.rules.legacyMdmThreatAction
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.rules.mdmMitigationAction
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.rules.mdmMitigationTarget
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.rules.mdmThreatAction
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.rules.mdmThreatTarget
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.rules.responses
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyThreat.rules.severity
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyThreat.rules.shouldCollect
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyThreat.rules.threatTypeId
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyThreat.staticFilesWritten
+      description: ''
+      type: Date
   - arguments:
     - description: The identifier of the policy. Can be retrieved using zimperium-policy-group-list in the Zimperium.PolicyGroup.phishingPolicyId field.
       name: policy_id
       required: true
-    - description: Maximum number of results to retrieve in each page. Default is 10.
-      name: page_size
-    - defaultValue: '0'
-      description: Page number.
-      name: page
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page. Default is 10.
-      name: limit
     description: Get threat policy by its identifier.
     name: zimperium-policy-phishing-get
     outputs:
     - contextPath: Zimperium.PolicyPhising.id
       description: The identifier of the policy.
       type: String
+    - contextPath: Zimperium.PolicyPhising.accessControlList
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPhising.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.allowEndUserControl
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.contentCategoryActionList
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPhising.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPhising.enableDnsPhishingTutorial
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.enableMessageFilterTutorial
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.enableSafariBrowserExtensionTutorial
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.groups.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.groups.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPhising.groups.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.groups.emm
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.groups.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.groups.groupActivations
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPhising.groups.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.groups.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPhising.groups.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.groups.staticFilesWritten
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPhising.groups.userActivations
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPhising.groups.zapps
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPhising.groups.userActivations.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.isDnsEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyPhising.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.phishingDetectionAction
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.phishingPolicyType
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyPhising.team
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPhising.teamId
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyPhising.useLocalVpn
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.useRemoteContentInspection
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyPhising.useUrlSharing
+      description: ''
+      type: Boolean
   - arguments:
     - description: The identifier of the policy. Can be retrieved using zimperium-policy-group-list in the Zimperium.PolicyGroup.appSettingsId field.
       name: app_settings_policy_id
       required: true
-    - description: Maximum number of results to retrieve in each page. Default is 10.
-      name: page_size
-    - defaultValue: '0'
-      description: Page number.
-      name: page
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page. Default is 10.
-      name: limit
     description: List App versions.
     name: zimperium-policy-app-settings-get
     outputs:
     - contextPath: Zimperium.PolicyAppSetting.id
       description: The identifier of the policy.
       type: String
+    - contextPath: Zimperium.PolicyAppSetting.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.appRiskLookupEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.assigned
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.autoActivateKnox
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.autoBatteryOptimizationEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.cogitoEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.cogitoThreshold
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyAppSetting.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyAppSetting.dangerzoneEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.detectionEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.forensicAnalysisEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.groups.accountId
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.groups.created
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyAppSetting.groups.description
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.groups.emm
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.groups.global
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.groups.groupActivations
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyAppSetting.groups.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.groups.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyAppSetting.groups.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.groups.staticFilesWritten
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyAppSetting.groups.userActivations.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.groups.zapps
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyAppSetting.jsonHash
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.modified
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyAppSetting.name
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.phishingDBRefreshMinutes
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyAppSetting.phishingEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.phishingLocalClassifierEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.phishingThreshold
+      description: ''
+      type: Number
+    - contextPath: Zimperium.PolicyAppSetting.privacySummaryEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.protoHash
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyAppSetting.siteInsightEnabled
+      description: ''
+      type: Boolean
+    - contextPath: Zimperium.PolicyAppSetting.staticFilesWritten
+      description: ''
+      type: Date
+    - contextPath: Zimperium.PolicyAppSetting.team
+      description: ''
+      type: Unknown
+    - contextPath: Zimperium.PolicyAppSetting.teamId
+      description: ''
+      type: Unknown
   - arguments:
     - description: Maximum number of results to retrieve in each page. Default is 10.
       name: page_size
@@ -360,6 +2156,22 @@ script:
     outputs:
     - contextPath: Zimperium.PolicyDeviceInactivity.teamId
       description: The ID of the team.
+      type: String
+    - contextPath: Zimperium.PolicyDeviceInactivity.id
+      description: ''
+      type: String
+    - contextPath: Zimperium.PolicyDeviceInactivity.name
+      description: ''
+      type: String
+  - arguments:
+    - description: The identifier of the policy. Can be retrieved using zimperium-policy-device-inactivity-list.
+      name: policy_id
+      required: true
+    description: Get policy device inactivity.
+    name: zimperium-policy-device-inactivity-get
+    outputs:
+    - contextPath: Zimperium.PolicyDeviceInactivity.id
+      description: ''
       type: String
   dockerimage: demisto/python3:3.10.13.72123
   isfetch: true

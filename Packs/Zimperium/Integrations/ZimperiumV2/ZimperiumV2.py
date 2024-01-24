@@ -90,24 +90,18 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/devices/public/v2/devices/start-scroll',
                                   headers=self._headers, params=params)
 
-    def device_by_id(self, size: int, page: int, device_id: str):
+    def device_by_id(self, device_id: str):
         """Search events by sending a GET request.
 
         Args:
-            size: response size.
-            page: response page.
             device_id:
 
         Returns:
             Response from API.
         """
-        params = assign_params(**{
-            'page': page,
-            'size': size,
-        })
 
         return self._http_request(method='GET', url_suffix=f'/devices/public/v2/devices/{device_id}',
-                                  headers=self._headers, params=params)
+                                  headers=self._headers)
 
     def report_get(self, app_version_id: str):
         """Search events by sending a GET request.
@@ -123,8 +117,13 @@ class Client(BaseClient):
                                                            f'{app_version_id}/json',
                                   headers=self._headers)
 
-    def threat_search(self, size: int, page: int, after: str, before: Optional[str] = None, search_params: Optional[Dict] = None,
-                      team_id: Optional[str] = None, operating_system: Optional[str] = None, severity: Optional[List] = None,
+    def threat_search(self, after: str, size: Optional[int] = None,
+                      page: Optional[int] = 0,
+                      before: Optional[str] = None,
+                      search_params: Optional[Dict] = None,
+                      team_id: Optional[str] = None,
+                      operating_system: Optional[str] = None,
+                      severity: Optional[List] = None,
                       sort: Optional[str] = None):
         """Search events by sending a GET request.
 
@@ -271,83 +270,61 @@ class Client(BaseClient):
                                   headers=self._headers,
                                   params=params)
 
-    def policy_privacy(self, size: int, page: int, policy_id: str):
+    def policy_privacy(self, policy_id: str):
         """Search events by sending a GET request.
 
         Args:
             policy_id:
-            size: response size.
-            page: response page.
 
         Returns:
             Response from API.
         """
-        params = assign_params(**{
-            'page': page,
-            'size': size,
-        })
         return self._http_request(method='GET',
                                   url_suffix=f'/mtd-policy/public/v1/privacy/policies/{policy_id}',
-                                  headers=self._headers, params=params)
+                                  headers=self._headers)
 
-    def policy_threat(self, size: int, page: int, policy_id: str):
+    def policy_threat(self, policy_id: str):
         """Search events by sending a GET request.
 
         Args:
             policy_id:
-            size: response size.
-            page: response page.
 
         Returns:
             Response from API.
         """
-        params = assign_params(**{
-            'page': page,
-            'size': size,
-        })
+
         return self._http_request(method='GET',
                                   url_suffix=f'/mtd-policy/public/v1/trm/policies/{policy_id}',
-                                  headers=self._headers, params=params)
+                                  headers=self._headers)
 
-    def policy_phishing(self, size: int, page: int, policy_id: str):
+    def policy_phishing(self, policy_id: str):
         """Search events by sending a GET request.
 
         Args:
             policy_id:
-            size: response size.
-            page: response page.
 
         Returns:
             Response from API.
         """
-        params = assign_params(**{
-            'page': page,
-            'size': size,
-        })
+
         return self._http_request(method='GET',
                                   url_suffix=f'/mtd-policy/public/v1/phishing/policies/{policy_id}',
-                                  headers=self._headers, params=params)
+                                  headers=self._headers)
 
-    def policy_app_settings(self, size: int, page: int, app_settings_policy_id: str):
+    def policy_app_settings(self, app_settings_policy_id: str):
         """Search events by sending a GET request.
 
         Args:
             app_settings_policy_id:
-            size: response size.
-            page: response page.
 
         Returns:
             Response from API.
         """
-        params = assign_params(**{
-            'page': page,
-            'size': size,
-        })
         return self._http_request(method='GET',
                                   url_suffix=f'/mtd-policy/public/v1/app-settings/policies/{app_settings_policy_id}',
-                                  headers=self._headers, params=params)
+                                  headers=self._headers)
 
-    def policy_device_inactivity(self, size: int, page: int, team_id: Optional[str] = None):
+    def policy_device_inactivity_list(self, size: int, page: int, team_id: Optional[str] = None):
         """Search events by sending a GET request.
 
         Args:
@@ -365,6 +342,18 @@ class Client(BaseClient):
         })
         return self._http_request(method='GET', url_suffix='/devices/public/v1/dormancy/policies',
                                   headers=self._headers, params=params)
+
+    def policy_device_inactivity_get(self, policy_id: str):
+        """Search events by sending a GET request.
+
+        Args:
+            policy_id:
+
+        Returns:
+            Response from API.
+        """
+        return self._http_request(method='GET', url_suffix=f'/devices/public/v1/dormancy/policies/{policy_id}',
+                                  headers=self._headers)
 
 
 def test_module(client: Client, first_fetch_time) -> str:
@@ -475,13 +464,8 @@ def device_by_id_command(client: Client, args: Dict) -> CommandResults:
         Outputs.
     """
     device_id = args.get('device_id')
-    page = arg_to_number(args.get('page', '0'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit', '50'))
 
-    size = page_size if page_size else limit
-
-    response = client.device_by_id(size=size, page=page, device_id=device_id)
+    response = client.device_by_id(device_id=device_id)
     bundle_id_item = dict_safe_get(response, ['zappInstance', 'bundleId'])
     response.update({'bundleId': bundle_id_item})
 
@@ -743,7 +727,6 @@ def policy_group_list_command(client: Client, args: Dict) -> CommandResults:
                          headerTransform=pascalToSpace,
                          removeNull=True)
 
-
     command_results = CommandResults(
         outputs_prefix='Zimperium.PolicyGroup',
         outputs=response,
@@ -764,14 +747,9 @@ def policy_privacy_get_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         Outputs.
     """
-    page = arg_to_number(args.get('page', '0'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit', '50'))
     policy_id = args.get('policy_id')
 
-    size = page_size if page_size else limit
-
-    response = client.policy_privacy(size=size, page=page, policy_id=policy_id)
+    response = client.policy_privacy(policy_id=policy_id)
 
     hr = tableToMarkdown(name='Privacy Policy', t=response,
                          headers=['id', 'accountId', 'groups',
@@ -799,14 +777,9 @@ def policy_threat_get_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         Outputs.
     """
-    page = arg_to_number(args.get('page', '0'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit', '50'))
     policy_id = args.get('policy_id')
 
-    size = page_size if page_size else limit
-
-    response = client.policy_threat(size=size, page=page, policy_id=policy_id)
+    response = client.policy_threat(policy_id=policy_id)
 
     hr = tableToMarkdown(name='Threat Policy', t=response,
                          headers=['id', 'accountId', 'groups',
@@ -834,14 +807,9 @@ def policy_phishing_get_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         Outputs.
     """
-    page = arg_to_number(args.get('page', '0'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit', '50'))
     policy_id = args.get('policy_id')
 
-    size = page_size if page_size else limit
-
-    response = client.policy_phishing(size=size, page=page, policy_id=policy_id)
+    response = client.policy_phishing(policy_id=policy_id)
 
     hr = tableToMarkdown(name='Phishing Policy', t=response,
                          headers=['id', 'accountId', 'groups',
@@ -870,14 +838,10 @@ def policy_app_settings_get_command(client: Client, args: Dict) -> CommandResult
     Returns:
         Outputs.
     """
-    page = arg_to_number(args.get('page', '0'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit', '50'))
+
     app_settings_policy_id = args.get('app_settings_policy_id')
 
-    size = page_size if page_size else limit
-
-    response = client.policy_app_settings(size=size, page=page, app_settings_policy_id=app_settings_policy_id)
+    response = client.policy_app_settings(app_settings_policy_id=app_settings_policy_id)
 
     # TODO: whitch outputs?
     hr = tableToMarkdown(name='Policy App Settings', t=response,
@@ -894,7 +858,7 @@ def policy_app_settings_get_command(client: Client, args: Dict) -> CommandResult
     return command_results
 
 
-def policy_device_inactivity_list(client: Client, args: Dict) -> CommandResults:
+def policy_device_inactivity_list_command(client: Client, args: Dict) -> CommandResults:
     """Search threats.
 
     Args:
@@ -911,7 +875,7 @@ def policy_device_inactivity_list(client: Client, args: Dict) -> CommandResults:
 
     size = page_size if page_size else limit
 
-    response = client.policy_device_inactivity(size=size, page=page, team_id=team_id)
+    response = client.policy_device_inactivity_list(size=size, page=page, team_id=team_id)
 
     hr = tableToMarkdown(name='Device Inactivity List', t=response,
                          headers=['id', 'name', 'teamId'],
@@ -927,8 +891,41 @@ def policy_device_inactivity_list(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
+def policy_device_inactivity_get_command(client: Client, args: Dict) -> CommandResults:
+    """Search threats.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    policy_id = args.get('policy_id')
+
+    response = client.policy_device_inactivity_get(policy_id=policy_id)
+
+    hr = tableToMarkdown(name='Device Inactivity List', t=response,
+                         headers=['id', 'name', 'teamId', 'accountId', 'pendingActivationSettings',
+                                  'inactiveAppSettings', 'groups', 'created', 'modified',
+                                  ],
+                         headerTransform=pascalToSpace,
+                         removeNull=True,
+                         date_fields=['created', 'modified']
+                         )
+
+    command_results = CommandResults(
+        outputs_prefix='Zimperium.PolicyDeviceInactivity',
+        outputs=response,
+        outputs_key_field='id',
+        readable_output=hr,
+        raw_response=response,
+    )
+    return command_results
+
+
 def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
-                    first_fetch_time: str, max_fetch: int, look_back: int) -> Tuple[dict, list]:
+                    first_fetch_time: str, max_fetch: int, look_back: int) -> Tuple[list, dict]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -944,49 +941,56 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created
     """
-    pass
-    # if not last_run:  # if first time fetching
-    #     next_run = {
-    #         'time': parse_date_range(first_fetch_time, date_format=DATE_FORMAT)[0],
-    #         'last_event_ids': []
-    #     }
-    # else:
-    #     next_run = last_run
-    #
-    # search_params = {key: value for param in fetch_query for key, value in [param.split('=', 1)]}
-    #
-    # events = client.threat_search(size=max_fetch, page=0, after=, search_params=search_params)
-    # events_data = events.get('content')
-    # incidents = []
-    #
-    # if events_data:
-    #     last_event_ids = last_run.get('last_event_ids', [])
-    #     new_event_ids = []
-    #     last_event_created_time = None
-    #     for event_data in events_data:
-    #         event_data.pop('eventDetail', None)  # deleting eventDetail to not load the context
-    #         event_id = event_data.get('eventId')
-    #
-    #         if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
-    #             last_event_created_time = parse(event_data.get('persistedTime'))
-    #             assert last_event_created_time is not None
-    #             incident = {
-    #                 'name': event_data.get('incidentSummary'),
-    #                 'occurred': last_event_created_time.strftime(timestamp_format),
-    #                 'severity': event_severity_to_dbot_score(event_data.get('severity')),
-    #                 'rawJSON': json.dumps(event_data)
-    #             }
-    #             incidents.extend([incident])
-    #             new_event_ids.extend([event_id])
-    #
-    #     if new_event_ids and last_event_created_time:
-    #         next_run = {
-    #             'time': last_event_created_time.strftime(timestamp_format),
-    #             'last_event_ids': json.dumps(new_event_ids)  # save the event IDs from the last fetch
-    #         }
-    #
-    # demisto.debug(f'Zimperium last fetch data: {str(next_run)}')
-    # return next_run, incidents
+    demisto.debug(f"Last run before the fetch run: {last_run}")
+    start_time, end_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=first_fetch_time,
+        look_back=look_back,
+        date_format=DATE_FORMAT,
+    )
+    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
+
+    search_params = {key: value for param in fetch_query for key, value in [param.split('=', 1)]}
+    demisto.debug(f'The query for fetch: {search_params}')
+
+    res = client.threat_search(after=start_time)
+    incidents_res = res.get('content', [])
+    demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
+
+    incidents_filtered = filter_incidents_by_duplicates_and_limit(
+        incidents_res=incidents_res,
+        last_run=last_run,
+        fetch_limit=max_fetch,
+        id_field='id'
+    )
+    demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
+
+    incidents: list[dict] = []
+    for incident in incidents_filtered:
+        occurred = timestamp_to_datestring(incident.get('timestamp'))
+        incident['timestamp'] = occurred
+        incidents.append({
+            'name': f"Threat on Device ID {incident.get('deviceId')}",
+            'occurred': occurred,
+            'dbotMirrorId': incident.get('id'),
+            'severity': incident.get('severity'),
+            'rawJSON': json.dumps(incident)
+        })
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=incidents,
+        fetch_limit=max_fetch,
+        start_fetch_time=start_time,
+        end_fetch_time=end_time,
+        look_back=look_back,
+        created_time_field='timestamp',
+        id_field='id',
+        date_format=DATE_FORMAT,
+        increase_last_run_time=True
+    )
+    demisto.debug(f"Last run after the fetch run: {last_run}")
+    return incidents, last_run
 
 
 def main():
@@ -1015,7 +1019,7 @@ def main():
             return_results(test_module(client, first_fetch_time_str))
 
         elif command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(
+            incidents, next_run = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
                 fetch_query=fetch_query,
@@ -1073,8 +1077,10 @@ def main():
             return_results(policy_app_settings_get_command(client, args))
 
         elif command == 'zimperium-policy-device-inactivity-list':
-            return_results(policy_device_inactivity_list(client, args))
+            return_results(policy_device_inactivity_list_command(client, args))
 
+        elif command == 'zimperium-policy-device-inactivity-get':
+            return_results(policy_device_inactivity_get_command(client, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

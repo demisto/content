@@ -13,3 +13,4 @@
 !zimperium-policy-phishing-get policy_id="2502c3c5-c4e7-4f91-9657-ac988e22cd0d"
 !zimperium-policy-app-settings-get app_settings_policy_id="9ebab926-6f11-4348-9591-15a695ed0119"
 !zimperium-policy-device-inactivity-list team_id="339b5226-2888-443a-8077-14ad3ba2832d"
+!zimperium-policy-device-inactivity-get policy_id="ff3f8aeb-ccca-4a15-9359-d29a49bef488"
