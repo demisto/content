@@ -6577,7 +6577,7 @@ def main():
     command = demisto.command()
     args = demisto.args()
     demisto.debug(f'Command being called is {command}')
-
+    demisto.debug('Dummy to force playbooks to run')
     try:
         if command == 'test-module':
             result = module_test()
