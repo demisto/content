@@ -16,10 +16,10 @@ commonfields:
 enabled: true
 name: ReadPDFFileV2
 outputs:
-- contextPath: Hash.type
+- contextPath: Hashes.type
   description: The hash type extracted from the PDF file.
   type: String
-- contextPath: Hash.value
+- contextPath: Hashes.value
   description: The hash value extracted from the PDF file.
   type: String
 - contextPath: URL.Data

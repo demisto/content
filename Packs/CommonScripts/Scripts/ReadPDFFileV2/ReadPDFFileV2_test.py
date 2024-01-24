@@ -46,7 +46,7 @@ def test_hash_contexts_in_return_results():
         - Validate that the hash context was added.
     """
     from ReadPDFFileV2 import build_readpdf_entry_context
-    hashes = {'Hash': [
+    hashes = {'Hashes': [
         {'type': 'SHA1', 'value': 'aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d'},
         {'type': 'MD5', 'value': '5d41402abc4b2a76b9719d911017c592'}]}
     entry_context = build_readpdf_entry_context(hashes)
