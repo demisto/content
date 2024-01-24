@@ -275,9 +275,9 @@ script:
     - name: entry_id
       description: "The War Room entry ID of the file."
       required: true
-    description: Check if the file exists in Cortex XSOAR by entry_id.
+    description: Check if the file exists in Cortex XSOAR (Context) by entry_id.
     outputs:
-    - description: Dictionary with EntryID as the key and boolean if the file exists as a value.
+    - description: Dictionary with EntryID as the key and boolean if the file exists as a value in Context.
       contextPath: IsFileExists
 tests:
 - No tests
