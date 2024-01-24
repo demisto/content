@@ -1,4 +1,4 @@
-This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR - Main" and should not be run on its own. This sub-playbook will retrieve IOCs according to the users query input (passed from the main playbook) and push them into XDR, and mark them as "xdr_pushed" or "xdr_not_processed" for further processing.
+This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR - Main" and should not be run on its own. This sub-playbook will retrieve IOCs according to the users query input (passed from the main playbook) and push them into Cortex XDR, and mark them as "xdr_pushed" or "xdr_not_processed" for further processing.
 
 ## Dependencies
 

@@ -1,7 +1,7 @@
 id: Cortex XDR IOCs - Push new IOCs to XDR
 version: -1
 name: Cortex XDR IOCs - Push new IOCs to XDR
-description: This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR - Main" and should not be run on its own. This sub-playbook will retrieve IOCs according to the users query input (passed from the main playbook) and push them into XDR, and mark them as "xdr_pushed" or "xdr_not_processed" for further processing.
+description: This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR - Main" and should not be run on its own. This sub-playbook retrieves IOCs according to the users query input (passed from the main playbook) and pushes them into Cortex XDR, and marks them as "xdr_pushed" or "xdr_not_processed" for further processing.
 tags:
 - XDR
 starttaskid: "0"
@@ -279,7 +279,7 @@ tasks:
       id: ad102589-0a31-4d0c-8b50-e917b1c2d7b1
       version: -1
       name: Check results
-      description: Checks the IOCs got set in the context.
+      description: Checks that the IOCs were set in the context.
       type: condition
       iscommand: false
       brand: ""
@@ -328,7 +328,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -479,7 +479,7 @@ tasks:
       id: 91aaaa08-34dd-49d5-8ace-4ecebbf7d7c6
       version: -1
       name: Has domains or IPs
-      description: Are there domains or IOCs to be pushed into XDR.
+      description: Are there domains or IOCs to be pushed into Cortex XDR.
       type: condition
       iscommand: false
       brand: ""
@@ -702,7 +702,7 @@ tasks:
       id: 02c896e3-325e-45c1-8100-c031b46c348e
       version: -1
       name: Has SHA256
-      description: Are there SHA256 indicators to push into XDR.
+      description: Are there SHA256 indicators to push into Cortex XDR.
       type: condition
       iscommand: false
       brand: ""
