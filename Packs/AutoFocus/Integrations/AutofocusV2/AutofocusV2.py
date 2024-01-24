@@ -258,9 +258,20 @@ if PARAMS.get('mark_as_malicious'):
     verdicts = argToList(PARAMS.get('mark_as_malicious'))
     VERDICTS_TO_DBOTSCORE.update(dict.fromkeys(verdicts, 3))
 
+DEFAULT_BUCKET_INFO = dict.fromkeys((
+    'minute_points',
+    'daily_points',
+    'minute_points_remaining',
+    'daily_points_remaining',
+    'minute_bucket_start',
+    'daily_bucket_start',
+), 'Unavailable')
 
 EXECUTION_METRICS = ExecutionMetrics()
-API_POINTS_TABLE = CommandResults()
+API_POINTS_TABLE = CommandResults(
+    outputs_prefix='AutoFocus.Quota',
+    replace_existing=True
+)
 
 
 ''' HELPER FUNCTIONS '''
@@ -285,19 +296,18 @@ def rerun_command_if_required(api_res: dict, rate_limit_auto_retry: bool, comman
     if not (rate_limit_auto_retry and daily_points_remaining):
         results = CommandResults(
             readable_output=(
-                'Error in API call to AutoFocus:\n'
-                f'Message: {api_res.get("message")}\n'
-                f'Bucket Info: {api_res.get("bucket_info")}'),
+                f'Error in API call to AutoFocus:\nMessage: {api_res.get("message")}\n'),
             entry_type=EntryType.ERROR
         )
     else:
         args['rate_limit_auto_retry'] = 'false'
+        next_run_in_seconds = int(dict_safe_get(api_res, ('bucket_info', 'wait_in_seconds'), 70)) + 1  # type: ignore
         results = CommandResults(
-            readable_output='API Rate limit exceeded.\nRerunning command:',
+            readable_output='API Rate limit exceeded, rerunning command.',
             scheduled_command=ScheduledCommand(
                 command=command,
-                next_run_in_seconds=60,
                 args=args,
+                next_run_in_seconds=next_run_in_seconds,
             )
         )
     return_results(results)
@@ -308,11 +318,13 @@ def save_api_metrics(res_obj: dict):
         API_POINTS_TABLE.readable_output = tableToMarkdown(
             'Autofocus API Points',
             {
-                'Total number of points allowed per day': bucket_info.get('daily_points'),
-                'Remaining number of points per day': bucket_info.get('daily_points_remaining'),
-                'Timestamp for when the current daily allotment started': bucket_info.get('daily_bucket_start'),
+                'Daily points used': '{daily_points}/{daily_points_remaining}',
+                'Daily allotment started': '{daily_bucket_start}',
+                'Minute points used': '{minute_points}/{minute_points_remaining}',
+                'Minute allotment started': '{minute_bucket_start}',
             }
-        )
+        ).format(**(DEFAULT_BUCKET_INFO | bucket_info))
+        API_POINTS_TABLE.outputs = bucket_info
 
 
 def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):

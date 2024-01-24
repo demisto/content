@@ -218,6 +218,24 @@ script:
     - contextPath: AutoFocus.SamplesResults.ID
       description: ID of sample search.
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
   - arguments:
     - auto: PREDEFINED
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
@@ -342,6 +360,24 @@ script:
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Session seen.
       type: Date
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
   - arguments:
     - description: The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes.
       name: af_cookie
@@ -425,6 +461,24 @@ script:
     - contextPath: AutoFocus.SamplesResults.ID
       description: ID of sample search.
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
     polling: true
   - arguments:
     - description: The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes.
@@ -482,6 +536,24 @@ script:
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Session seen.
       type: Date
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
     polling: true
   - arguments:
     - description: The session ID.
@@ -524,6 +596,24 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
     polling: true
   - arguments:
     - description: The SHA256 hash of the sample to analyze.
@@ -583,6 +673,24 @@ script:
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
       description: The mutex created when the programs start is listed with the parent process if the sample generates other program threads when executed in the analysis environment.
       type: Unknown
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
     polling: true
   - arguments:
     - description: The public tag name. Can be retrieved from the top-tags command.
@@ -631,6 +739,24 @@ script:
     - contextPath: AutoFocus.Tag.Description
       description: Tag description.
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
     polling: true
   - arguments:
     - auto: PREDEFINED
@@ -726,6 +852,24 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
   - arguments:
     - description: 'The AF Cookie for retrieving results of previous search. Note: The AF Cookie expires 120 seconds after the search completes.'
       name: af_cookie
@@ -755,6 +899,24 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
     polling: true
   - arguments:
     - default: true

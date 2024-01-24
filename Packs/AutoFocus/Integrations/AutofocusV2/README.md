@@ -125,6 +125,12 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
 | File.Tags | String | The tags of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 ##### Command Example
 ```
@@ -208,6 +214,12 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Tags | String | The tags of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -273,6 +285,12 @@ Returns the results of a previous samples search.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
 | File.Tags | String | The tags of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -401,6 +419,12 @@ Returns the results of a previous session's search.
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Tags | String | The tags of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -513,6 +537,12 @@ Returns session details by session ID.
 | AutoFocus.Sessions.UploadSource | String | The source that uploaded the sample. | 
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -581,6 +611,12 @@ Returns properties, behaviors, and activities observed for a sample. Runs the co
 | AutoFocus.SampleAnalysis.Analysis.Connections | Unknown | The connections to other hosts on the network when the sample was executed. | 
 | AutoFocus.SampleAnalysis.Analysis.Dns | Unknown | The DNS activity observed when the sample was executed. | 
 | AutoFocus.SampleAnalysis.Analysis.Mutex | Unknown | The mutex created when the program's start is listed with the parent process if the sample generates other program threads when executed in the analysis environment. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -946,6 +982,12 @@ Returns details about the given tag.
 | AutoFocus.Tag.TagDefinitionStatus | String | The status of the tag definition. Can be "enabled", "disabled", "removing", or "rescoping". | 
 | AutoFocus.Tag.TagGroup | String | The tag group of the tag. | 
 | AutoFocus.Tag.Description | String | The tag description. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -1022,7 +1064,13 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 | AutoFocus.TopTagsResults.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
 | AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. | 
 | AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. | 
-| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -1071,6 +1119,12 @@ Returns the results of a previous top tags search.
 | AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. | 
 | AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. | 
 | AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
