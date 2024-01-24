@@ -22,6 +22,8 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
     parser.add_argument('-t', '--message_text', help='The message text')
     parser.add_argument('-f', '--file', help='File path with the text to send')
+    parser.add_argument('-gt', '--gitlab_token', help='Gitlab API token')
+    parser.add_argument('-gu', '--github_username', help='Github username to tag in the message')
     parser.add_argument(
         '-ch', '--slack_channel', help='The slack channel in which to send the notification', default=CONTENT_CHANNEL
     )
@@ -30,7 +32,23 @@ def options_handler() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def build_link_to_message(response: SlackResponse) -> str:
+def get_slack_user(gitlab_token, github_username):
+    url = 'https://gitlab.xdr.pan.local/api/v4/projects/1701/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'
+    headers = {'PRIVATE-TOKEN': gitlab_token}
+    response = requests.request('GET', url, headers=headers, verify=False)
+    if response.status_code != 200:
+        logging.error('Failed to retrieve the name_mapping.json file')
+        logging.error(response.text)
+        sys.exit(1)
+
+    slack_user = response.json().get('names', {}).get(github_username)
+    if not slack_user:
+        logging.error(f'The user {github_username} not exists in the name_mapping.json file')
+        sys.exit(1)
+    return slack_user
+
+
+def build_link_to_message(response) -> str:
     if SLACK_WORKSPACE_NAME and response.status_code == requests.codes.ok:
         data: dict = response.data  # type: ignore[assignment]
         channel_id: str = data['channel']
@@ -46,6 +64,12 @@ def main():
     slack_token = options.slack_token
     text = options.message_text
     text_file = options.file
+    gitlab_token = options.gitlab_token
+    github_username = options.github_username
+
+    if github_username and not gitlab_token:
+        logging.error('In order to use the --github_username, --gitlab_token must be provided')
+        exit(1)
 
     if not text and not text_file:
         logging.error('One of the arguments --message_text or --file must be provided, none given')
@@ -66,9 +90,13 @@ def main():
     logging.info(f"Sending Slack message to slack channel:{computed_slack_channel}, "
                  f"allowing failure:{options.allow_failure}")
 
+    if github_username:
+        # tag the slack user in the message
+        text = f'Hi @{get_slack_user(gitlab_token, github_username)} {text}'
+
     try:
         response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, text=text, username=SLACK_USERNAME
+            channel=computed_slack_channel, text=text, username=SLACK_USERNAME, link_names=True
         )
         link = build_link_to_message(response)
         logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
