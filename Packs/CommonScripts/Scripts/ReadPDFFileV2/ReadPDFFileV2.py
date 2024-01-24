@@ -559,7 +559,9 @@ def extract_hash_contexts_from_pdf_file(file_text: str) -> list[dict[str, Any]]:
     """
     hash_contexts: list[dict[str, Any]] = []
     hashes_in_file = get_hashes_from_file(file_text)
-    [hash_contexts.extend(convert_hash_to_context(hash_type, hashes)) for hash_type, hashes in hashes_in_file.items() if hashes]
+    for hash_type, hashes in hashes_in_file.items():
+        if hashes:
+            hash_contexts.extend(convert_hash_to_context(hash_type, hashes))
     return hash_contexts
 
 
