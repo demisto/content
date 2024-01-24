@@ -77,35 +77,35 @@ configuration:
   required: false
 description: |-
   Blueliv ThreatCompass systematically looks for information about companies,products, people, brands, logos, assets, technology and other information, depending on your needs. Blueliv ThreatCompass allows you to monitor and track all this information to keep your data, your
-  organization and its employees safe
+  organization and its employees safe.
 display: Blueliv ThreatCompass
 name: Blueliv ThreatCompass
 script:
   commands:
   - arguments:
-    - description: 'Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss'
+    - description: 'Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss.'
       name: startDate
-    - description: 'Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss'
+    - description: 'Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss.'
       name: finalDate
     - description: Results page to get. For each page, there are {limit} resources.
       name: page
     - defaultValue: '100'
-      description: Maximum number of resources to recover
+      description: Maximum number of resources to recover.
       name: limit
     description: Recovers all resources from the module.
     name: blueliv-resource-all
     outputs:
     - contextPath: BluelivThreatCompass
-      description: List object of recovered resources
+      description: List object of recovered resources.
       type: Unknown
   - arguments:
-    - description: Keywords to search in resources text
+    - description: Keywords to search in resources text.
       name: search
-    - description: 'Comma-separated list of any combination of status: NOT_AVAILABLE, NOT_IMPORTANT, NOT_PROCESSABLE, POSITIVE, NEGATIVE, INFORMATIVE, IMPORTANT'
+    - description: 'Comma-separated list of any combination of status: NOT_AVAILABLE, NOT_IMPORTANT, NOT_PROCESSABLE, POSITIVE, NEGATIVE, INFORMATIVE, IMPORTANT.'
       name: status
-    - description: 'Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss'
+    - description: 'Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss.'
       name: startDate
-    - description: 'Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss'
+    - description: 'Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss.'
       name: finalDate
     - auto: PREDEFINED
       defaultValue: Both
@@ -115,7 +115,7 @@ script:
       - Read
       - Unread
       - Both
-    - description: Maximum number of resources to recover
+    - description: Maximum number of resources to recover.
       name: limit
     - description: Results page to get. For each page, there are {limit} resources.
       name: page
@@ -123,20 +123,20 @@ script:
     name: blueliv-resource-search
     outputs:
     - contextPath: BluelivThreatCompass
-      description: List object of recovered resources
+      description: List object of recovered resources.
       type: Unknown
   - arguments:
-    - description: Resource ID
+    - description: Resource ID.
       name: id
       required: true
-    description: Recovers all the information of a given resource
+    description: Recovers all the information of a given resource.
     name: blueliv-resource-search-by-id
     outputs:
     - contextPath: BluelivThreatCompass
-      description: Object with the information of the recovered resource
+      description: Object with the information of the recovered resource.
       type: Unknown
   - arguments:
-    - description: Resource ID
+    - description: Resource ID.
       name: id
       required: true
     - auto: PREDEFINED
@@ -173,7 +173,7 @@ script:
     description: Marks the result as read or not read.
     name: blueliv-resource-set-read-status
   - arguments:
-    - description: Resource ID
+    - description: Resource ID.
       name: id
       required: true
     - auto: PREDEFINED
@@ -236,7 +236,7 @@ script:
       description: Label type ID.
       type: Number
     - contextPath: BluelivThreatCompass.Label.TypeName
-      description: Label type name
+      description: Label type name.
       type: String
     - contextPath: BluelivThreatCompass.Label.Prioritized
       description: Whether the label is prioritized.
@@ -244,10 +244,12 @@ script:
     - contextPath: BluelivThreatCompass.Label.TextColor
       description: Hexadecimal color of the label text in the GUI.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -12,7 +12,7 @@ filter _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"
     tmp_timestamp_format1 = parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp1)
 | alter 
 // Check the days difference between the current and extracted time.
-    tmp_timeDiff = timestamp_diff(tmp_timestamp_format1, current_time(), "DAY")
+    tmp_timeDiff = timestamp_diff(tmp_timestamp_format1, current_time(), "MILLISECOND")
 | alter 
 // If the number of days between extracted and current time is positive, reduce the current year by 1.
     tmp_verify_year = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_get_current_year),1)),null)
