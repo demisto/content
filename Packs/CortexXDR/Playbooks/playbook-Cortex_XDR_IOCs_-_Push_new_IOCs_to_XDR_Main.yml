@@ -1,7 +1,7 @@
 id: Cortex XDR IOCs - Push new IOCs to XDR (Main)
 version: -1
 name: Cortex XDR IOCs - Push new IOCs to XDR (Main)
-description: This is the *main* playbook for Cortex XDR IOCs sync. The playbook will "sync" IOCs into Cortex XDR by pushing new IOCs in and disabling expired IOCs. The playbook utilizes Cortex XSOAR tags and loops in order to find IOCs using a query provided by the user. The playbook will iterate over the IOCs pushing them in batches into Cortex XDR. In the second phase, the playbook will disable expired IOCs that were previously pushed into Cortex XDR. We recommend running this playbook as a job a few times a day after disabling the integration sync function.
+description: This is the *main* playbook for Cortex XDR IOCs sync. The playbook will "sync" IOCs into Cortex XDR by pushing new IOCs in and disabling expired IOCs. The playbook utilizes Cortex XSOAR tags and loops in order to find IOCs using a query provided by the user. The playbook will iterate over the IOCs pushing them in batches into Cortex XDR. In the second phase, the playbook will disable expired IOCs that were previously pushed into Cortex XDR. We recommend running this playbook as a job a twice a day after disabling the integration sync function.
 tags:
 - XDR
 starttaskid: "0"
