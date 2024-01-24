@@ -112,94 +112,6 @@ class MockClient:
         self.api_client = MockApiClient()
 
 
-class MockLock:
-    def acquire(self):
-        return None
-
-    def release(self):
-        return None
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        return False
-
-
-@pytest.mark.parametrize('use_multithreading', [True, False])
-def test_search_and_install_packs_and_their_dependencies(mocker, use_multithreading: bool):
-    """
-    Given
-    - Valid pack ids.
-    - Invalid pack id.
-    When
-    - Running integrations configuration tests.
-    Then
-    - Ensure packs & their dependency search requests are valid.
-    - Ensure packs & their dependency installation requests are valid.
-    """
-    good_pack_ids = [
-        'HelloWorld',
-        'AzureSentinel'
-    ]
-
-    bad_pack_ids = ['malformed_pack_id']
-
-    client = MockClient()
-
-    import time
-    mocker.patch.object(time, 'sleep')
-
-    mocker.patch.object(script, 'install_packs', return_value=(True, []))
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
-    mocker.patch.object(script, 'is_pack_deprecated', return_value=False)  # Relevant only for post-update unit-tests
-
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
-                                                                                      client=client,
-                                                                                      install_packs_in_batches=use_multithreading,
-                                                                                      production_bucket=True)
-    assert 'HelloWorld' in installed_packs
-    assert 'AzureSentinel' in installed_packs
-    assert 'TestPack' in installed_packs
-    assert success is True
-
-    installed_packs, _ = script.search_and_install_packs_and_their_dependencies(pack_ids=bad_pack_ids,
-                                                                                client=client,
-                                                                                install_packs_in_batches=use_multithreading,
-                                                                                production_bucket=True)
-    assert bad_pack_ids[0] not in installed_packs
-
-
-@pytest.mark.parametrize('error_code,use_multithreading',
-                         [
-                             (400, False), (400, True),
-                             (500, False), (500, True),
-                         ])
-def test_search_and_install_packs_and_their_dependencies_with_error(mocker, error_code, use_multithreading: bool):
-    """
-    Given:
-      The API call to Marketplace API has failed (returned an error code).
-
-    When:
-        Running 'get_pack_dependencies' function.
-
-    Then:
-        Ensure the function returns a 'success' value of 'False'.
-    """
-    client = MockClient()
-    import time
-    mocker.patch.object(time, 'sleep')
-    mocker.patch.object(script, 'install_packs', return_value=(False, []))
-    mocker.patch.object(script, 'fetch_pack_metadata_from_gitlab', return_value={"hidden": False})
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(status=error_code))
-
-    _, success = script.search_and_install_packs_and_their_dependencies(pack_ids=['HelloWorld'],
-                                                                        client=client,
-                                                                        install_packs_in_batches=use_multithreading,
-                                                                        production_bucket=True)
-    assert success is False
-
-
 @timeout_decorator.timeout(3)
 def test_install_nightly_packs_endless_loop(mocker):
     """
@@ -584,7 +496,7 @@ def test_merge_cycles_direct_single_cycle():
         ("PackC", "PackB"),
         ("PackB", "PackC"),
         ("PackD", "PackC"),
-    ]
+    ]  # Cycle between PackB and PackC
     graph.add_edges_from(edges)
     merged_nodes = ("PackB", "PackC")
 
@@ -592,13 +504,10 @@ def test_merge_cycles_direct_single_cycle():
     assert len(graph) == 4
     assert len(graph.edges()) == len(edges)
 
-    merged_nodes_map, merged_graph = script.merge_cycles(graph)
-    merged_node_name = merged_nodes_map["PackB"]
+    merged_graph = script.merge_cycles(graph)
 
-    assert merged_node_name in merged_graph.nodes()
-    assert all(pack in merged_nodes_map for pack in merged_nodes)
+    assert any(script.CYCLE_SEPARATOR in pack for pack in merged_graph.nodes())
     assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
-    assert len(merged_nodes_map) == 2
     assert len(merged_graph) == 3
     assert len(merged_graph.edges()) == 2
 
@@ -619,7 +528,7 @@ def test_merge_cycles_single_wide_cycle():
         ("PackD", "PackC"),
         ("PackB", "PackD"),
         ("PackD", "PackE"),
-    ]
+    ]  # Cycle between PackB, PackC and PackD
     graph.add_edges_from(edges)
     merged_nodes = ("PackB", "PackC", "PackD")
 
@@ -627,13 +536,10 @@ def test_merge_cycles_single_wide_cycle():
     assert len(graph) == 5
     assert len(graph.edges()) == len(edges)
 
-    merged_nodes_map, merged_graph = script.merge_cycles(graph)
-    merged_node_name = merged_nodes_map["PackB"]
+    merged_graph = script.merge_cycles(graph)
 
-    assert merged_node_name in merged_graph.nodes()
-    assert all(pack in merged_nodes_map for pack in merged_nodes)
+    assert any(script.CYCLE_SEPARATOR in pack for pack in merged_graph.nodes())
     assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
-    assert len(merged_nodes_map) == 3
     assert len(merged_graph) == 3
     assert len(merged_graph.edges()) == 2
 
@@ -656,7 +562,7 @@ def test_merge_cycles_node_with_multiple_cycles():
         ("PackD", "PackC"),
         ("PackC", "PackD"),
         ("PackE", "PackD"),
-    ]
+    ]  # Cycle between PackB and PackC, and cycle between PackC and PackD
     graph.add_edges_from(edges)
     merged_nodes = ("PackB", "PackC", "PackD")
 
@@ -664,13 +570,10 @@ def test_merge_cycles_node_with_multiple_cycles():
     assert len(graph) == 5
     assert len(graph.edges()) == len(edges)
 
-    merged_nodes_map, merged_graph = script.merge_cycles(graph)
-    merged_node_name = merged_nodes_map["PackB"]
+    merged_graph = script.merge_cycles(graph)
 
-    assert merged_node_name in merged_graph.nodes()
-    assert all(pack in merged_nodes_map for pack in merged_nodes)
+    assert any(script.CYCLE_SEPARATOR in pack for pack in merged_graph.nodes())
     assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
-    assert len(merged_nodes_map) == 3
     assert len(merged_graph) == 3
     assert len(merged_graph.edges()) == 2
 
@@ -955,9 +858,18 @@ def test_filter_deprecated_packs(mocker: MockFixture):
 
 
 @pytest.mark.parametrize("list_of_packs, expected", [
-    ([["pack1"], ["pack2", "pack3"]], [["pack1", "pack2", "pack3"]]),
-    ([["pack1"], ["pack2", "pack3"], ["pack4"]], [["pack1", "pack2", "pack3", "pack4"]]),
-    ([["pack1"], ["pack2", "pack3"], ["pack4", "pack5", "pack6"]], [["pack1", "pack2", "pack3"], ["pack4", "pack5", "pack6"]])
+    (
+        [["pack1"], ["pack2", "pack3"]],
+        [["pack1", "pack2", "pack3"]]
+    ),
+    (
+        [["pack1"], ["pack2", "pack3"], ["pack4"]],
+        [["pack1", "pack2", "pack3", "pack4"]]
+    ),
+    (
+        [["pack1"], ["pack2", "pack3"], ["pack4", "pack5", "pack6"]],
+        [["pack1", "pack2", "pack3"], ["pack4", "pack5", "pack6"]]
+    )
 ])
 def test_create_batches(mocker: MockFixture, list_of_packs, expected):
     """
@@ -972,3 +884,91 @@ def test_create_batches(mocker: MockFixture, list_of_packs, expected):
     """
     mocker.patch.object(script, "BATCH_SIZE", 5)
     assert script.create_batches(list_of_packs) == expected
+
+
+def test_search_and_install_packs_success(mocker: MockFixture):
+    """
+    Given:
+        A list of pack IDs to install
+
+    When:
+        search_and_install_packs_and_their_dependencies is called with that list of packs
+
+    Then:
+        A success response should be returned, since no deprecated dependencies packs were found
+        and packs were installed successfully
+    """
+    mock_packs = ["pack1", "pack2"]
+    mocker.patch.object(script, "get_env_var", return_value="commit")
+    mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
+    mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
+    mocker.patch.object(script, "save_graph_dot_file_log")
+    mocker.patch.object(
+        script, "get_packs_and_dependencies_to_install", return_value=(True, set())
+    )
+    mocker.patch.object(script, "merge_cycles", return_value=DiGraph())
+    mocker.patch.object(script, "install_packs", return_value=(True, []))
+
+    _, success = script.search_and_install_packs_and_their_dependencies(
+        pack_ids=mock_packs, client=MockClient()
+    )
+
+    assert success is True
+
+
+def test_search_and_install_packs_deprecated_dependencies(mocker: MockFixture):
+    """
+    Given:
+        A list of pack IDs to install
+
+    When:
+        search_and_install_packs_and_their_dependencies is called with that list of packs
+
+    Then:
+        A failure response should be returned, since deprecated dependencies packs were found
+    """
+    mock_packs = ["pack1", "pack2"]
+    mocker.patch.object(script, "get_env_var", return_value="commit")
+    mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
+    mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
+    mocker.patch.object(script, "save_graph_dot_file_log")
+    mocker.patch.object(
+        script, "get_packs_and_dependencies_to_install", return_value=(False, set())
+    )
+    mocker.patch.object(script, "merge_cycles", return_value=DiGraph())
+    mocker.patch.object(script, "install_packs", return_value=(True, []))
+
+    _, success = script.search_and_install_packs_and_their_dependencies(
+        pack_ids=mock_packs, client=MockClient()
+    )
+
+    assert success is False
+
+
+def test_search_and_install_packs_failure_install_packs(mocker: MockFixture):
+    """
+    Given:
+        A list of pack IDs to install
+
+    When:
+        search_and_install_packs_and_their_dependencies is called with that list of packs
+
+    Then:
+        A failure response should be returned, since the install packs call returned a failure
+    """
+    mock_packs = ["pack1", "pack2"]
+    mocker.patch.object(script, "get_env_var", return_value="commit")
+    mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
+    mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
+    mocker.patch.object(script, "save_graph_dot_file_log")
+    mocker.patch.object(
+        script, "get_packs_and_dependencies_to_install", return_value=(False, set())
+    )
+    mocker.patch.object(script, "merge_cycles", return_value=DiGraph())
+    mocker.patch.object(script, "install_packs", return_value=(False, []))
+
+    _, success = script.search_and_install_packs_and_their_dependencies(
+        pack_ids=mock_packs, client=MockClient()
+    )
+
+    assert success is False
