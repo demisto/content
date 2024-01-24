@@ -18,7 +18,7 @@ description: This rule detects more than 100 downloaded files during an hour by 
 drilldown_query_timeframe: ALERT
 execution_mode: SCHEDULED
 global_rule_id: 205317b6-c494-4836-ac31-f80c8204cf4e
-investigation_query_link: 'datamodel dataset = "dropbox_dropbox_raw"
+investigation_query_link: 'datamodel dataset = dropbox_dropbox_raw
 
   | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_download"
 
@@ -37,7 +37,7 @@ suppression_enabled: true
 suppression_fields:
 user_defined_category:
 user_defined_severity:
-xql_query: 'datamodel dataset = "dropbox_dropbox_raw"
+xql_query: 'datamodel dataset = dropbox_dropbox_raw
 
   | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_download"
 
