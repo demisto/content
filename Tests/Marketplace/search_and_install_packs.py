@@ -920,7 +920,7 @@ def search_and_install_packs_and_their_dependencies(
         hostname (str): Hostname of instance. Using for logs.
         multithreading (bool): Whether to use multithreading to install packs in parallel.
             If multithreading is used, installation requests will be sent in batches of each pack and its dependencies.
-        production_bucket (bool): Whether the installation is in post update mode. Defaults to False.
+        production_bucket (bool): Whether the installation is in post update mode. Default is True.
     Returns (list, bool):
         A list of the installed packs IDs.
         A flag that indicates if the operation succeeded or not.
