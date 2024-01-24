@@ -1,3 +1,5 @@
+from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
 import requests
 import json
 import sys
@@ -6,8 +8,6 @@ import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.utils import logging_wrapper as logging
 
 
 def options_handler():
@@ -42,12 +42,12 @@ def main():
     url = "https://api.github.com/repos/demisto/demisto-sdk/git/refs"
 
     payload = json.dumps({
-      "ref": f"refs/heads/{release_branch_name}",
-      "sha": commit_sha
+        "ref": f"refs/heads/{release_branch_name}",
+        "sha": commit_sha
     })
     headers = {
-      'Content-Type': 'application/json',
-      'Authorization': f'Bearer {access_token}'
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {access_token}'
     }
 
     response = requests.request("POST", url, headers=headers, data=payload, verify=False)

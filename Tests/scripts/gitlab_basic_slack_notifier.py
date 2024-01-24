@@ -7,7 +7,6 @@ from distutils.util import strtobool
 import requests
 
 from slack_sdk import WebClient
-from slack_sdk.web import SlackResponse
 
 from Tests.scripts.utils.log_util import install_logging
 
@@ -69,19 +68,19 @@ def main():
 
     if github_username and not gitlab_token:
         logging.error('In order to use the --github_username, --gitlab_token must be provided')
-        exit(1)
+        sys.exit(1)
 
     if not text and not text_file:
         logging.error('One of the arguments --message_text or --file must be provided, none given')
-        exit(1)
+        sys.exit(1)
     elif not text:
         # read the text from the file
         try:
-            file = open(text_file, "r")
+            file = open(text_file)
             text = file.read()
         except Exception as e:
             logging.error(f'Failed to read from file {text_file}, error: {str(e)}')
-            exit(1)
+            sys.exit(1)
         finally:
             file.close()
 
