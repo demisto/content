@@ -15,6 +15,8 @@ urllib3.disable_warnings()
 
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
+UPDATE_SDK_VERSION_WORKFLOW = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'
+
 SLACK_CHANGELOG_FILE = 'CHANGELOG_SLACK.txt'
 
 SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
@@ -52,6 +54,7 @@ def main():
         is_draft = False
         logging.info('preparing to trigger update-demisto-sdk-version workflow')
 
+    # prepare the inputs for trigger update-demisto-sdk-version workflow
     inputs = {
         'reviewer': reviewer,
         # 'release_version': release_branch_name,
@@ -72,8 +75,7 @@ def main():
     }
 
     # trigger update-demisto-sdk-version workflow
-    url = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'
-    response = requests.request("POST", url, headers=headers, data=json.dumps(data), verify=False)
+    response = requests.request("POST", UPDATE_SDK_VERSION_WORKFLOW, headers=headers, data=json.dumps(data), verify=False)
     if response.status_code != 204:
         logging.error('Failed to trigger update-demisto-sdk-version workflow')
         logging.error(response.text)

@@ -90,7 +90,7 @@ def main():
         logging.error(response.text)
         sys.exit(1)
 
-    # create the release PR
+    # create the sdk release PR
     data = {
         'base': 'master',
         'head': release_branch_name,
