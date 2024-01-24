@@ -1,4 +1,4 @@
-This Playbook initiates the steps needed to investigate the PAN-OS logging to Cortex Data Lake problems.
+This Playbook initiates the steps needed to investigate the PAN-OS logging to Strata Logging Service problems.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
