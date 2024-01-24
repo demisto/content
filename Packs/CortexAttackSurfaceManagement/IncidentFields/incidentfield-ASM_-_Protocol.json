@@ -13,7 +13,7 @@
     "locked": false,
     "name": "ASM - Protocol",
     "neverSetAsRequired": false,
-    "openEnded": false,
+    "openEnded": true,
     "ownerOnly": false,
     "required": false,
     "sla": 0,
