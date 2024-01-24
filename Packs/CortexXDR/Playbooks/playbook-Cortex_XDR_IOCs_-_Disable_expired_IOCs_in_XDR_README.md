@@ -30,8 +30,8 @@ Cortex XDR - IOC
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| batch_size |  |  | Optional |
-| query |  |  | Required |
+| batch_size | This parameter will set the batch size to be pushed into Cortex XDR with every iteration of the loop. | 4000 | Optional |
+| query | The query used to search for IOCs from Cortex XSOAR to be pushed into Cortex XDR. This query must include \`-tags:xdr_pushed and -tags:xdr_not_processed\` in order to work properly. | reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:active and -tags:xdr_pushed and -tags:xdr_not_processed | Required |
 
 ## Playbook Outputs
 
