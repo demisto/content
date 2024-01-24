@@ -549,6 +549,14 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
 
 
 def extract_hash_contexts_from_pdf_file(file_path: str) -> list[dict[str, Any]]:
+    """Extracts the hash contexts to be returned as  from the pdf file
+
+    Args:
+        file_path (str): _description_
+
+    Returns:
+        list[dict[str, Any]]: _description_
+    """
     hash_contexts: list[dict[str, Any]] = []
     # Get hashes from the binary file
     hashes_in_file = get_hashes_from_file(file_path)
