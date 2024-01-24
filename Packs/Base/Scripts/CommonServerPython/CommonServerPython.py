@@ -11324,9 +11324,9 @@ def is_scheduled_command_retry():
 
 
 def retry(
-    times = 3,
-    delay = 1,
-    exceptions = Exception,
+    times=3,
+    delay=1,
+    exceptions=Exception,
 ):
     """
     retries to execute a function until an exception isn't raised anymore.
@@ -11341,7 +11341,7 @@ def retry(
         Any: the decorated function result
     """
 
-    def _retry(func: callable):
+    def _retry(func):
         func_name = func.__name__
 
         @wraps(func)
