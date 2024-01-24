@@ -1,3 +1,4 @@
+import dateparser
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -187,7 +188,7 @@ def parse_event_created_time(event_date_string: str) -> datetime:
         return datetime.strptime(event_date_string, '%Y-%m-%dT%H:%M:%SZ')
 
 
-def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, List[dict]], List[int], Optional[str]]:
+def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, list[dict]], list[int], Optional[str]]:
     """
     Maps the triage item IDs to events.
     Triage item ID can refer to multiple events.
@@ -199,7 +200,7 @@ def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, List[di
     if events:
         latest_event_time = parse_event_created_time(events[0]["event-created"])
 
-    _triage_item_ids_to_events = {}
+    _triage_item_ids_to_events: dict[str, list[dict]] = {}
 
     for event in events:
         triage_item_id = event.get("triage-item-id")
@@ -210,7 +211,7 @@ def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, List[di
             _triage_item_ids_to_events[triage_item_id].append(event)
 
             event_time = parse_event_created_time(event_created_time)
-            if event_time > latest_event_time:
+            if event_time and event_time > latest_event_time:  # type: ignore[operator]
                 latest_event_time = event_time
         else:
             demisto.error(f'event {event} does not have triage-item-id or event-created fields, skipping it')
@@ -260,10 +261,11 @@ def enrich_events_with_triage_item(
     demisto.info(f"Fetched the following item IDs: {triage_item_ids}")
     triaged_items = client.triage_items(triage_item_ids)
 
-    alert_ids_to_triage_ids, incident_ids_to_triage_ids = {}, {}
+    alert_ids_to_triage_ids: dict[str, str] = {}
+    incident_ids_to_triage_ids: dict[str, str] = {}
 
     for triaged_item in triaged_items:
-        item_id = triaged_item.get("id")
+        item_id = triaged_item.get("id", "")
         if item_id in triage_item_ids_to_events:
             for event in triage_item_ids_to_events[item_id]:
                 event["triage-item"] = triaged_item
@@ -288,13 +290,13 @@ def enrich_events_with_incident_or_alert_metadata(
 
     for alert_incident in alerts_incidents:
         _id = alert_incident.get("id")
-        for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:
+        for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:  # type: ignore[index]
             event[event_type] = alert_incident
         for asset in alert_incident.get("assets") or []:
             if asset_id := asset.get("id"):
                 if asset_id not in event_ids_to_triage_ids:
                     assets_ids_to_triage_ids[asset_id] = []
-                assets_ids_to_triage_ids[asset_id].append(event_ids_to_triage_ids[_id])
+                assets_ids_to_triage_ids[asset_id].append(event_ids_to_triage_ids[_id])  # type: ignore[index]
 
 
 def enrich_events_with_assets_metadata(
@@ -308,7 +310,7 @@ def enrich_events_with_assets_metadata(
     assets = client.get_asset_ids(asset_ids)
     for asset in assets:
         _id = asset.get("id")
-        for triage_item_id in assets_ids_to_triage_ids[_id]:
+        for triage_item_id in assets_ids_to_triage_ids[_id]:  # type: ignore[index]
             for event in triage_item_ids_to_events[triage_item_id]:
                 if "assets" not in event:
                     event["assets"] = []
@@ -366,7 +368,7 @@ def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Option
     alerts = client.get_alerts_by_ids(alert_ids)
     incidents = client.get_incident_ids(incident_ids)
 
-    assets_ids_to_triage_ids = {}
+    assets_ids_to_triage_ids: dict[str, List[str]] = {}
 
     enrich_events_with_incident_or_alert_metadata(
         alerts,
@@ -435,9 +437,15 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
 def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
     limit = arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
     if start_time := args.get("start_time"):
-        start_time = dateparser.parse(start_time).strftime(DATE_FORMAT)
+        start_time_datetime = dateparser.parse(start_time)
+        if not start_time_datetime:
+            raise ValueError(f'Invalid value for start_time={start_time}')
+        start_time = start_time_datetime.strftime(DATE_FORMAT)
     if end_time := args.get("end_time"):
-        end_time = dateparser.parse(end_time).strftime(DATE_FORMAT)
+        end_time_datetime = dateparser.parse(end_time)
+        if not end_time_datetime:
+            raise ValueError(f'Invalid value for end_time={end_time_datetime}')
+        end_time = end_time_datetime.strftime(DATE_FORMAT)
 
     events = []
 
@@ -463,11 +471,11 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
 def main() -> None:
     params = demisto.params()
     url = params.get("url")
-    account_id = params.get("account_id")
+    account_id = params.get("account_id") or ""
     max_fetch = arg_to_number(params.get("max_fetch_events")) or DEFAULT_MAX_FETCH
     credentials = params.get("credentials") or {}
-    username = credentials.get("identifier")
-    password = credentials.get("password")
+    username = credentials.get("identifier") or ""
+    password = credentials.get("password") or ""
     verify_ssl = not argToBoolean(params.get("insecure", True))
     proxy = argToBoolean(params.get("proxy", False))
 
