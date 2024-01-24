@@ -22,7 +22,7 @@ configuration:
   type: 0
   required: false
   hiddenpassword: true
-  additionalinfo: The BotJID in the Chat subscription section on the Features page of your App Dashboard.test
+  additionalinfo: The BotJID in the Chat subscription section on the Features page of your App Dashboard.
 - display: Bot Client ID ((Team Chat App))
   name: bot_credentials
   type: 9
