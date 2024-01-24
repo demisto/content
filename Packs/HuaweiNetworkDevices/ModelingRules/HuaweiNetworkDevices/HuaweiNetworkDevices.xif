@@ -53,7 +53,6 @@ alter
     ipv6 = arrayindex(regextract(_raw_log,"IPADDRESS\:([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
     //error_code = arrayindex(regextract(_raw_log,"ERRCODE\:(\d+)"),0),
     result = arrayindex(regextract(_raw_log,"RESULT\:(.+?)\;"),0),
-    more_info = arrayindex(regextract(_raw_log,"EXTENDINFO\:(.+?)\;"),0),
     interface = arrayindex(regextract(_raw_log,"INTERFACE\:(\S+)\;"),0),
     access_type = arrayindex(regextract(_raw_log,"ACCESS\sTYPE\:(\S+)\;"),0),
     id = arrayindex(regextract(_raw_log,"CIB\sID\:(\d+)"),0),
@@ -72,7 +71,6 @@ alter
     xdm.network.application_protocol = access_type,
     xdm.event.id = id,
     xdm.source.application.name = if(vpn!= null, concat("VPN Name: ", vpn)),
-    xdm.alert.description = if(more_info !="NULL" and more_info != null, concat(result, ", ", more_info), result),
     xdm.auth.auth_method = auth_protocol;
 
 //****** LINE/4/USERLOGOUT & LINE/4/USERLOGIN & LINE/5/VTYUSERLOGIN & LINE/5/VTYUSERLOGOUT ******
