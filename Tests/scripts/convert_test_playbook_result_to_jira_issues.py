@@ -77,10 +77,12 @@ def create_jira_issue(jira_server: JIRA,
                       ) -> Issue:
     summary = generate_ticket_summary(playbook_id)
     description = generate_description_for_test_playbook(playbook_id, build_number, junit_file_name, table_data, failed)
-    jira_issue, link_to_issue, use_existing_issue, unresolved_transition_id = find_existing_jira_ticket(jira_server, now, max_days_to_reopen, jira_issue)
+    jira_issue, link_to_issue, use_existing_issue, unresolved_transition_id = find_existing_jira_ticket(jira_server, now,
+                                                                                                        max_days_to_reopen,
+                                                                                                        jira_issue)
 
     if jira_issue is not None:
-        transition_jira_ticket_to_unresolved(jira_server,jira_issue,unresolved_transition_id)
+        transition_jira_ticket_to_unresolved(jira_server, jira_issue, unresolved_transition_id)
         jira_server.add_comment(issue=jira_issue, body=description)
     else:
         jira_issue = jira_server.create_issue(project=JIRA_PROJECT_ID,
