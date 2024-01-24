@@ -1,11 +1,11 @@
-id: Cortex ASM - Cortex Endpoint Enrichment_Core_Combo
+id: Cortex ASM - Cortex Endpoint Enrichment
 inputs:
 - description: IP address of service
   key: RemoteIP
   playbookInputQuery:
   required: false
   value: {}
-name: Cortex ASM - Cortex Endpoint Enrichment_Core_Combo
+name: Cortex ASM - Cortex Endpoint Enrichment
 outputs: []
 starttaskid: "0"
 tasks:
@@ -64,7 +64,7 @@ tasks:
       id: fa22e7e1-68bc-4759-8ac4-b1a432d13b3f
       iscommand: true
       name: Core IR Search device
-      script: '|||core-get-endpoints'
+      script: Cortex Core - IR|||core-get-endpoints
       type: regular
       version: -1
     taskid: fa22e7e1-68bc-4759-8ac4-b1a432d13b3f
@@ -238,7 +238,7 @@ tasks:
       val1:
         simple: ASSET-TYPE
       val2:
-        simple: Cortex-XDR-Endpoint
+        simple: CORTEX-Endpoint
       val3:
         simple: n/a
     separatecontext: false
@@ -308,7 +308,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: asm_fields_set_for_xdr
+        simple: asm_fields_set_for_cortex_endpoint
       value:
         simple: "true"
     separatecontext: false
@@ -349,7 +349,7 @@ tasks:
       keys:
         simple: source,record_exists,timestamp
       val1:
-        simple: XDR
+        simple: CORTEX-ENDPOINT
       val2:
         simple: "true"
       val3:
@@ -383,7 +383,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: asm_fields_set_for_xdr
+              simple: asm_fields_set_for_cortex_endpoint
           operator: isTrue
           right:
             value: {}
@@ -437,7 +437,7 @@ tasks:
       keys:
         simple: source,record_exists,timestamp
       val1:
-        simple: XDR
+        simple: CORTEX-ENDPOINT
       val2:
         simple: "false"
       val3:
@@ -482,7 +482,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: Cortex-XDR-ASSET-ID
+        simple: CORTEX-ENDPOINT-ASSET-ID
       val2:
         complex:
           accessor: endpoint_id
@@ -1063,7 +1063,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: Cortex-Endpoint-ASSET-NAME
+        simple: CORTEX-ENDPOINT-ASSET-NAME
       val2:
         complex:
           accessor: endpoint_name
@@ -1283,7 +1283,7 @@ tasks:
       id: 4d75150d-52dc-4fb0-85e4-3bde0caf5830
       iscommand: true
       name: Cortex XDR Search device
-      script: '|||xdr-get-endpoints'
+      script: Cortex XDR - IR|||xdr-get-endpoints
       type: regular
       version: -1
     taskid: 4d75150d-52dc-4fb0-85e4-3bde0caf5830
@@ -1376,6 +1376,8 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      append:
+        simple: "true"
       key:
         simple: Core.Endpoint
       value:
