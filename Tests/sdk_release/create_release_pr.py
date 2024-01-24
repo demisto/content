@@ -86,7 +86,7 @@ def main():
     url = f'{API_SUFFIX}/contents/pyproject.toml'
     response = requests.request('PUT', url, data=json.dumps(data), headers=headers, verify=False)
     if response.status_code != 200:
-        logging.error(f'Failed to commit the pyproject.toml file')
+        logging.error('Failed to commit the pyproject.toml file')
         logging.error(response.text)
         sys.exit(1)
 
@@ -135,7 +135,7 @@ def main():
     response = requests.request('POST', url, data=json.dumps(data), headers=headers, verify=False)
 
     if response.status_code != 204:
-        logging.error(f'Failed to trigger SDK changelog workflow')
+        logging.error('Failed to trigger SDK changelog workflow')
         logging.error(response.text)
         sys.exit(1)
     logging.info('SDK changelog workflow triggered, waiting for it to be finished')
@@ -144,7 +144,7 @@ def main():
     url = f'{API_SUFFIX}/actions/workflows/sdk-release.yml/runs'
     response = requests.request('GET', url, params={'branch': release_branch_name}, headers=headers, verify=False)
     if response.status_code != 200:
-        logging.error(f'Failed to retrieve SDK changelog workflow')
+        logging.error('Failed to retrieve SDK changelog workflow')
         logging.error(response.text)
         sys.exit(1)
 
@@ -167,7 +167,7 @@ def main():
     while status != 'completed' and elapsed < TIMEOUT:
         response = requests.request('GET', url, headers=headers, verify=False)
         if response.status_code != 200:
-            logging.error(f'Failed to retrieve SDK changelog workflow status')
+            logging.error('Failed to retrieve SDK changelog workflow status')
             logging.error(response.text)
             sys.exit(1)
 
@@ -183,7 +183,7 @@ def main():
         sys.exit(1)
 
     if job_data.get('conclusion') != 'success':
-        logging.error(f'Retrieve SDK changelog workflow Failed:')
+        logging.error('Retrieve SDK changelog workflow Failed:')
         logging.error(job_data)
         sys.exit(1)
 

@@ -14,9 +14,9 @@ urllib3.disable_warnings()
 SLACK_CHANGELOG_FILE = 'CHANGELOG_SLACK.txt'
 
 SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
-        ':alert: Please run in the terminal\n' \
-        '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/demisto/content ~/dev/demisto/demisto-sdk`\n' \
-        'Change log\n```\n{}\n```'
+    ':alert: Please run in the terminal\n' \
+    '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/demisto/content ~/dev/demisto/demisto-sdk`\n' \
+    'Change log\n```\n{}\n```'
 
 
 def options_handler():
@@ -63,8 +63,8 @@ def main():
     }
 
     headers = {
-      'Content-Type': 'application/vnd.github+json',
-      'Authorization': f'Bearer {access_token}'
+        'Content-Type': 'application/vnd.github+json',
+        'Authorization': f'Bearer {access_token}'
     }
 
     url = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'

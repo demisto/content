@@ -49,15 +49,15 @@ def main():
 
     if not text and not text_file:
         logging.error('One of the arguments --message_text or --file must be provided, none given')
-        exit(1)
+        sys.exit(1)
     elif not text:
         # read the text from the file
         try:
-            file = open(text_file, "r")
+            file = open(text_file)
             text = file.read()
         except Exception as e:
             logging.error(f'Failed to read from file {text_file}, error: {str(e)}')
-            exit(1)
+            sys.exit(1)
         finally:
             file.close()
 
