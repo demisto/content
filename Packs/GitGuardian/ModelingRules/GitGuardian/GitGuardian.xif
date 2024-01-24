@@ -12,7 +12,7 @@ filter source_log_type = "incident"
 | alter
         description = arraystring(arraymap(description, trim("@element", "[]")), ","),
         first_names = arraystring(arraymap(user_names, arrayindex(regextract("@element", "(\S+)\s?"), 0)), "; "),
-        last_names = arraystring(arraymap(user_names, arrayindex(regextract("@element", "\S+\s?(\S+)"), 0)), "; ")
+        last_names = arraystring(arraymap(user_names, arrayindex(regextract("@element", "\S+\s(\S+)"), 0)), "; ")
 | alter
         xdm.alert.original_alert_id = to_string(id),
         xdm.alert.name = display_name,
@@ -21,10 +21,11 @@ filter source_log_type = "incident"
         xdm.alert.description = arraystring(arraymap(split(replex(description, "\\\"", ""), ","), trim("@element", "\"")), ", "),
         xdm.event.description = concat("Status = ", status, ", ", "Assignee = ", assignee, ", ", "Repo_name = ", repo_name, ", ", "Commit_sha = ", commit_sha),
         xdm.event.type = source_log_type,
+        xdm.event.operation_sub_type = arrayindex(regextract(type, "\.([^\.]+)"), 0),
         xdm.target.file.path = file_path,
         xdm.source.user.username = arraystring(github_logins, "; "),
-        xdm.source.user.first_name = first_names,
-        xdm.source.user.last_name = last_names,
+        xdm.source.user.first_name = if(first_names != "", first_names, null),
+        xdm.source.user.last_name = if(last_names != "", last_names, null),
         xdm.source.user.identifier = arraystring(github_ids, "; "),
         xdm.source.user.employee_id = arraystring(user_ids, "; "),
         xdm.source.user.upn = arraystring(emails, "; "),
