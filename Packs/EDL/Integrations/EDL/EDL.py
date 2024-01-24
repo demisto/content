@@ -264,7 +264,7 @@ def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None
 
 
 @debug_function
-def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
+def create_new_edl(request_args: RequestArguments, extensive_logging: bool = False) -> tuple[str, int]:
     """
     Get indicators from the server using IndicatorsSearcher and format them.
 
@@ -289,7 +289,7 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
-        new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args)
+        new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args, extensive_logging)
         # we collect first all indicators because we need all ips to collapse_ips
         new_iocs_file = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
@@ -298,7 +298,7 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
             # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
             if count + 1 > limit:
                 break
-            elif count < offset:
+            if count < offset:
                 continue
             elif line not in iocs_set:
                 iocs_set.add(line)
@@ -331,7 +331,8 @@ def replace_field_name_to_output_format(fields: str):
 
 @debug_function
 def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
-                             request_args: RequestArguments) -> tuple[IO | IO[str], int]:
+                             request_args: RequestArguments,
+                             extensive_logging: bool = False) -> tuple[IO | IO[str], int]:
     """
     Finds indicators using demisto.searchIndicators, and returns the indicators in file written in the requested format
     Parameters:
@@ -383,8 +384,8 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
             # NG + XSIAM can recover from a shutdown
             if version.get('platform') == 'x2' or is_demisto_version_ge('8'):
                 raise SystemExit('Encountered issue in Elastic Search query. Restarting container and trying again.')
-
-    demisto.debug(f"edl: Completed IOC search & format, found {ioc_counter} IOCs. Their contents: {indicators}")
+    if extensive_logging:
+        demisto.debug(f"edl: Completed IOC search & format, found {ioc_counter} IOCs. Their contents: {indicators}")
     if request_args.out_format == FORMAT_JSON:
         f.write(']')
     elif request_args.out_format == FORMAT_PROXYSG:
@@ -689,7 +690,7 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
 
 
 @debug_function
-def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO, IO[str]]:
+def create_text_out_format(iocs: IO, request_args: RequestArguments, extensive_logging: bool = False) -> Union[IO, IO[str]]:
     """
     Create a list in new file of formatted_indicators
      * IP / CIDR:
@@ -762,17 +763,21 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             new_line = '\n'
     iocs.close()
     if len(ipv4_formatted_indicators) > 0:
-        demisto.debug(f"edl: Original IPv4 indicators: {ipv4_formatted_indicators}")
+        if extensive_logging:
+            demisto.debug(f"edl: Original IPv4 indicators: {ipv4_formatted_indicators}")
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
-        demisto.debug(f"edl: Formatted IPv4 indicators: {ipv4_formatted_indicators}")
+        if extensive_logging:
+            demisto.debug(f"edl: Formatted IPv4 indicators: {ipv4_formatted_indicators}")
         for ip in ipv4_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
 
     if len(ipv6_formatted_indicators) > 0:
-        demisto.debug(f"edl: Original IPv6 indicators: {ipv6_formatted_indicators}")
+        if extensive_logging:
+            demisto.debug(f"edl: Original IPv6 indicators: {ipv6_formatted_indicators}")
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
-        demisto.debug(f"edl: Formatted IPv6 indicators: {ipv6_formatted_indicators}")
+        if extensive_logging:
+            demisto.debug(f"edl: Formatted IPv6 indicators: {ipv6_formatted_indicators}")
         for ip in ipv6_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
@@ -914,8 +919,9 @@ def route_edl() -> Response:
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
+    extensive_logging = argToBoolean(params.get('extensive_logging', False))
     created = datetime.now(timezone.utc)
-    edl_data, original_indicators_count = get_edl_on_demand() if on_demand else create_new_edl(request_args)
+    edl_data, original_indicators_count = get_edl_on_demand() if on_demand else create_new_edl(request_args, extensive_logging)
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     etag = f'"{hashlib.sha1(edl_data.encode()).hexdigest()}"'  # nosec
     edl_size = 0
@@ -1236,7 +1242,6 @@ def main():
         err_msg: str = 'If using credentials, both username and password should be provided.'
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
-
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
