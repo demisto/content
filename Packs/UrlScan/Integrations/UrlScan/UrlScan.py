@@ -602,7 +602,7 @@ def urlscan_submit_command(client):
 
 def urlscan_search_only(client: Client, url: str, command_results: list, execution_metrics: ExecutionMetrics):
     demisto.args()["url"] = url
-    response = urlscan_search(client, "page.url", quote(url, safe=""))
+    response = urlscan_search(client, "page.url", quote(url, safe=""), size=1000)
     if response.get("is_error"):
         execution_metrics.general_error += 1
         error_message = f"The search for the url '{url}' returned an error:\n{response.get('error_string', '')}"
@@ -618,7 +618,7 @@ def urlscan_search_only(client: Client, url: str, command_results: list, executi
     found_result = False
     for result in response.get("results", []):
         page = result.get("page", {})
-        if page.get("url").rstrip("/").endswith(url.rstrip("/")):
+        if page.get("url").rstrip("/") == url.rstrip("/"):
             format_results(
                 client,
                 result["task"]["uuid"],
@@ -639,12 +639,13 @@ def urlscan_search_only(client: Client, url: str, command_results: list, executi
     return
 
 
-def urlscan_search(client, search_type, query):
+def urlscan_search(client, search_type, query, size=None):
 
     if search_type == 'advanced':
         r, _, _ = http_request(client, 'GET', 'search/?q=' + query)
     else:
-        r, _, _ = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
+        url_suffix = 'search/?q=' + search_type + ':"' + query + '"' + (f'&size={size}' if size else '')
+        r, _, _ = http_request(client, 'GET', url_suffix)
 
     return r
 
