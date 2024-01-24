@@ -24,10 +24,13 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 
 ## Troubleshooting
 
-If you are encountering an 504 Gateway error:
+### 504 Gateway error
 
 1. Increase the NGINX Read Timeout in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
 2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
+
+### Deleted or expired indicators showing in EDL export
+Append `expirationStatus:active` to the end of the query.
 
 ## Use Cases
 
