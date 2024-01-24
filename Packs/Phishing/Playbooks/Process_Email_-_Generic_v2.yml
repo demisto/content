@@ -2799,7 +2799,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      entryID:
+      eentryID:
         complex:
           root: File
           filters:
@@ -2820,8 +2820,10 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-      uri:
-        simple: incident/upload/${incident.id}
+      incID:
+        simple: ${incident.id}
+      target:
+        simple: incident attachment
     separatecontext: false
     continueonerrortype: ""
     view: |-
