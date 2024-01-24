@@ -318,9 +318,9 @@ def save_api_metrics(res_obj: dict):
         API_POINTS_TABLE.readable_output = tableToMarkdown(
             'Autofocus API Points',
             {
-                'Daily points used': '{daily_points}/{daily_points_remaining}',
+                'Daily points used': '{daily_points_remaining}/{daily_points}',
                 'Daily allotment started': '{daily_bucket_start}',
-                'Minute points used': '{minute_points}/{minute_points_remaining}',
+                'Minute points used': '{minute_points_remaining}/{minute_points}',
                 'Minute allotment started': '{minute_bucket_start}',
             }
         ).format(**(DEFAULT_BUCKET_INFO | bucket_info))
