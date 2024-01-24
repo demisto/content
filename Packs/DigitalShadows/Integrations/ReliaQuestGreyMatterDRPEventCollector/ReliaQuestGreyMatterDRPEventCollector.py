@@ -86,8 +86,8 @@ class ReilaQuestClient(BaseClient):
                 api docs:
                     Return events with an event-num greater than this value
                     Must be greater than or equal to 0.
-            event_created_before (str): retrieve events occurred before a specific time (included), format:  YYYY-MM-DDThh:mm:ssTZD.
-            event_created_after (str): retrieve events occurred after a specific time (included), format:  YYYY-MM-DDThh:mm:ssTZD.
+            event_created_before (str): retrieve events occurred before a specific time (included),format: YYYY-MM-DDThh:mm:ssTZD.
+            event_created_after (str): retrieve events occurred after a specific time (included), format: YYYY-MM-DDThh:mm:ssTZD.
             limit (int): the maximum number of events to retrieve
         """
         page_size = min(MAX_PAGE_SIZE, limit)
@@ -441,7 +441,11 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
 
     events = []
 
-    for current_events in client.list_triage_item_events(event_created_after=start_time, event_created_before=end_time, limit=limit):
+    for current_events in client.list_triage_item_events(
+        event_created_after=start_time,
+        event_created_before=end_time,
+        limit=limit
+    ):
         current_enriched_events, _ = enrich_events(client, events=current_events)
         events.extend(current_enriched_events)
 

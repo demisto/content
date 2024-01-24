@@ -376,7 +376,6 @@ class TestFetchEvents:
         ReliaQuestGreyMatterDRPEventCollector.main()
         assert send_events_mocker.call_count == 0
 
-
     def test_fetch_events_multiple_events_no_rate_limits(self, mocker):
         import ReliaQuestGreyMatterDRPEventCollector
         from unittest.mock import MagicMock

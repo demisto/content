@@ -11324,17 +11324,18 @@ def is_scheduled_command_retry():
 
 
 def retry(
-    times: int = 3,
-    delay: int = 1,
-    exceptions: Union[tuple[type[Exception], ...], type[Exception]] = Exception,
+    times = 3,
+    delay = 1,
+    exceptions = Exception,
 ):
     """
     retries to execute a function until an exception isn't raised anymore.
 
     Args:
-        times: the amount of times to try and execute the function
-        delay: the number of seconds to wait between each time
-        exceptions: the exceptions that should be caught when executing the function
+        times: (int) the amount of times to try and execute the function
+        delay (int): the number of seconds to wait between each time
+        exceptions (Union[tuple[type[Exception], ...], type[Exception]]):
+            the exceptions that should be caught when executing the function
 
     Returns:
         Any: the decorated function result
