@@ -107,7 +107,7 @@ class ReilaQuestClient(BaseClient):
             end_index = min(amount_of_fetched_events - limit, limit) if amount_of_fetched_events > limit else MAX_PAGE_SIZE
             events = events[0: end_index]
             demisto.info(f'Fetched {len(events)} events')
-            demisto.info(f'Fetched the following event IDs: {[event.get("triage-item-id") for event in events]}')
+            demisto.info(f'Fetched the following event IDs: {[event.get("event-num") for event in events]}')
             yield events
 
     def triage_items(self, triage_item_ids: list[str]) -> List[dict[str, Any]]:
@@ -422,6 +422,9 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
             enriched_events, new_last_run = enrich_events(
                 client, events=dedup_fetched_events(events, last_run=last_run), last_run=last_run
             )
+            if not enriched_events:
+                demisto.info(f'There are no events to fetch when last run is {last_run}, hence exiting')
+                break
             send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT)
             demisto.info(f'Sent the following events {[event.get("event-num") for event in events]} successfully')
     except RateLimitError as rate_limit_error:
@@ -431,7 +434,7 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         )
     finally:
         demisto.setLastRun(new_last_run)
-        demisto.info(f'updated the last run from {last_run} to {new_last_run} successfully')
+        demisto.info(f'Updated the last run from {last_run} to {new_last_run} successfully')
 
 
 def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:

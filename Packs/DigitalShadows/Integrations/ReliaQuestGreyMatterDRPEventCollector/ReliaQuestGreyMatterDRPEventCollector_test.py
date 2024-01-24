@@ -376,6 +376,35 @@ class TestFetchEvents:
         ReliaQuestGreyMatterDRPEventCollector.main()
         assert send_events_mocker.call_count == 0
 
+    def test_fetch_events_no_events_with_last_run(self, mocker):
+        import ReliaQuestGreyMatterDRPEventCollector
+
+        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
+        mocker.patch.object(demisto, "error")
+        mocker.patch.object(demisto, 'getLastRun', return_value={})
+        mocker.patch.object(
+            demisto, 'params',
+            return_value={
+                "url": TEST_URL,
+                "credentials": {
+                    "identifier": "1234",
+                    "password": "1234",
+                },
+                "max_fetch_events": 200
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        mocker.patch.object(
+            ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
+            "_http_request",
+            side_effect=[
+                create_mocked_response(response=[]),
+            ]
+        )
+
+        ReliaQuestGreyMatterDRPEventCollector.main()
+        assert send_events_mocker.call_count == 0
+
     def test_fetch_events_multiple_events_no_rate_limits(self, mocker):
         import ReliaQuestGreyMatterDRPEventCollector
         from unittest.mock import MagicMock
