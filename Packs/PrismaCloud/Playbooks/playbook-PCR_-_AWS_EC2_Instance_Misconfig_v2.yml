@@ -597,12 +597,6 @@ view: |-
     }
   }
 inputs:
-- key: AutoUpdateEC2
-  value:
-    simple: "no"
-  required: false
-  description: Update AWS EC2 instance automatically?
-  playbookInputQuery:
 - key: policyId
   value:
     complex:
@@ -617,7 +611,27 @@ inputs:
               simple: policyId
   required: false
   description: Get the Prisma Cloud policy ID.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AutoUpdateEC2
+  value:
+    simple: "no"
+  required: false
+  description: Update AWS EC2 instance automatically?
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - policyId
+  name: Incident Data
+  description: Relevant data regarding the incident.
+- inputs:
+  - AutoUpdateEC2
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)
