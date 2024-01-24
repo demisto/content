@@ -304,7 +304,7 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
         if emails:
             indicators_map["Email"] = emails
         if hash_contexts:
-            indicators_map['Hashes'] = hash_contexts
+            indicators_map['Hash'] = hash_contexts
     except json.JSONDecodeError:
         pass
     ec = build_readpdf_entry_context(indicators_map)
@@ -333,8 +333,8 @@ def build_readpdf_entry_context(indicators_map: Any) -> dict:
             for email in indicators_map["Email"]:
                 ec_email.append({"Email": email})
             ec["Account"] = ec_email
-        if 'Hashes' in indicators_map:
-            ec['Hashes'] = indicators_map['Hashes']
+        if 'Hash' in indicators_map:
+            ec['Hash'] = indicators_map['Hash']
     return ec
 
 
