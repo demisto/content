@@ -344,7 +344,7 @@ def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
             return mapping["names"].get(name, name)
 
 
-def get_commit_by_sha(commit_sha: str, list_of_commits: list) -> list[ProjectCommit] | None:
+def get_commit_by_sha(commit_sha: str, list_of_commits: list[ProjectCommit]) -> ProjectCommit | None:
     return next((commit for commit in list_of_commits if commit.id == commit_sha), None)
 
 
