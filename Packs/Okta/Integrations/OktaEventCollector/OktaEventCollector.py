@@ -55,8 +55,10 @@ def get_events_command(client: Client, total_events_to_fetch, since,
         demisto.debug(f"stored_events collected: {len(stored_events)}")
         try:
             if next_link:
+                demisto.debug("Running get_events using next_link")
                 response = client.get_events(since=since, limit=num_of_events_to_fetch, next_link_url=next_link)  # type: ignore
             else:
+                demisto.debug("Running get_events using since")
                 response = client.get_events(since=since, limit=num_of_events_to_fetch)  # type: ignore
 
             if events := json.loads(response.text):
@@ -70,11 +72,13 @@ def get_events_command(client: Client, total_events_to_fetch, since,
                     events = remove_duplicates(events, last_object_ids)  # type: ignore
                     demisto.debug(f'Number of events after dedup {len(events)}')
                 if not events:
-                    demisto.debug('Events are empty after dedup will break.')
+                    demisto.debug('Events are empty after dedup - will break. Resetting next_link token.')
+                    next_link = ''
                     break
                 stored_events.extend(events)
             else:
-                demisto.debug('Didnt receive any events from the api.')
+                demisto.debug('Didnt receive any events from the api. Resetting next_link token.')
+                next_link = ''
                 break
         except DemistoException as exc:
             msg = f'something went wrong: {exc}'
@@ -97,8 +101,10 @@ def get_events_command(client: Client, total_events_to_fetch, since,
 
         if url := response.links.get('next'):
             next_link = url.get('url')
+            demisto.debug("next next_link url found and set as current next_link")
         else:
             next_link = ''
+            demisto.debug("next_link set to empty value")
 
     return stored_events, 0, next_link
 
@@ -194,6 +200,7 @@ def main():  # pragma: no cover
                 last_run_after = after.isoformat()  # type: ignore
             else:
                 last_run_after = last_run['after']
+            demisto.debug(f'{last_run=}')
             events, next_link = fetch_events(client, start_time_epoch, events_limit,
                                              last_run_after=last_run_after, last_object_ids=last_object_ids, next_link=next_link)
             demisto.debug(f'sending_events_to_xsiam: {len(events)}')
