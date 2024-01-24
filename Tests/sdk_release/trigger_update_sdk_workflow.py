@@ -4,12 +4,16 @@ import sys
 import os
 import argparse
 import urllib3
+import time
 from create_release import get_changelog_text
+from wait_for_release_prs import get_pr_from_branch
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+TIMEOUT = 60 * 60 * 6  # 6 hours
 
 SLACK_CHANGELOG_FILE = 'CHANGELOG_SLACK.txt'
 
@@ -67,6 +71,7 @@ def main():
       'Authorization': f'Bearer {access_token}'
     }
 
+    # trigger update-demisto-sdk-version workflow
     url = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'
     response = requests.request("POST", url, headers=headers, data=json.dumps(data), verify=False)
     if response.status_code != 204:
@@ -76,13 +81,35 @@ def main():
 
     logging.success('update-demisto-sdk-version workflow triggered successfully')
 
+    # write the changelog text to SLACK_CHANGELOG_FILE
     changelog_text = get_changelog_text(release_branch_name, text_format='slack')
-
     changelog_text = SLACK_RELEASE_MESSAGE.format(release_branch_name, changelog_text)
     changelog_file = os.path.join(artifacts_folder, SLACK_CHANGELOG_FILE)
-
     with open(changelog_file, "w") as f:
         f.write(str(changelog_text))
+
+    # initialize timer
+    start = time.time()
+    elapsed: float = 0
+
+    logging.info('Waiting for sdk and content release pull request creation')
+
+    # wait to content pr to create
+    while not content_pr and elapsed < TIMEOUT:
+        # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+        content_pr = get_pr_from_branch('content', '1.25.0', access_token)  # TODO: remove this line
+
+        if not content_pr:
+            logging.info('content pull request not created yet')
+
+        time.sleep(60)
+        elapsed = time.time() - start
+
+    if elapsed >= TIMEOUT:
+        logging.error('Timeout reached while waiting for content pull requests creation')
+        sys.exit(1)
+
+    logging.success(f'content pull request created: {content_pr.get("html_url")}')
 
 
 if __name__ == "__main__":

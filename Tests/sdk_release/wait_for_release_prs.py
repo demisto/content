@@ -52,29 +52,8 @@ def main():
     access_token = options.access_token
     release_branch_name = options.release_branch_name
 
-    content_pr = None
-
-    # initialize timer
-    start = time.time()
-    elapsed: float = 0
-
-    logging.info('Waiting for sdk and content release pull requests creation')
-
-    # wait to content pr to be open
-    while not content_pr and elapsed < TIMEOUT:
-        # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
-        content_pr = get_pr_from_branch('content', '1.25.0', access_token)  # TODO: remove this line
-
-        if not content_pr:
-            logging.info('content pull request not created yet')
-
-        time.sleep(60)
-        elapsed = time.time() - start
-
-    if elapsed >= TIMEOUT:
-        logging.error('Timeout reached while waiting for content pull requests creation')
-        sys.exit(1)
-
+    # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+    content_pr = get_pr_from_branch('content', '1.25.0', access_token)  # TODO: remove this line
     sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
 
     logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
@@ -84,6 +63,10 @@ def main():
     sdk_pr_id = sdk_pr.get('number')
     content_pr_state = 'open'
     sdk_pr_state = 'open'
+
+    # initialize timer
+    start = time.time()
+    elapsed: float = 0
 
     # wait to content pr and sdk pr to be closed
     while (sdk_pr_state == 'open' or content_pr_state == 'open') and elapsed < TIMEOUT:
