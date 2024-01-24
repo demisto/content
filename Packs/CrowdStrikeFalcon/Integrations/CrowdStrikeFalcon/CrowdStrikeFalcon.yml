@@ -90,7 +90,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs."
+  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234.
+  The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs."
 - display: Fetch incidents
   name: isFetch
   type: 8
