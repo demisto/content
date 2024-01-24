@@ -273,11 +273,12 @@ class Client(BaseClient):
             dbot_score = 3
         elif risk_from_feed >= self.suspicious_threshold:
             dbot_score = 2
-        elif risk_from_feed == 0:
-            dbot_score = 1
-        else: # 0 < risk_from_feed < self.suspicious_threshold
+        elif risk_from_feed > 0:
             dbot_score = 0
+        else:  # risk_from_feed == 0
+            dbot_score = 1 
         return dbot_score
+        
 
     def check_indicator_risk_score(self, risk_score):
         """Checks if the indicator risk score is above risk_score_threshold
