@@ -2635,8 +2635,10 @@ def update_custom_script(
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
+    resp_code: ResultCode = unwrap(resp.result_code)
+    val: str = resp_code.value
     # Add results to message to be sent to the War Room
-    message: dict[str, str] = {"status": unwrap(resp.result_code)}
+    message: dict[str, str] = {"status": val}
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[UPDATE_CUSTOM_SCRIPT_COMMAND],
@@ -2670,8 +2672,10 @@ def delete_custom_script(
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
+    resp_code: ResultCode = unwrap(resp.result_code)
+    val: str = resp_code.value
     # Add results to message to be sent to the War Room
-    message: dict[str, str] = {"status": unwrap(resp.result_code)}
+    message: dict[str, str] = {"status": val}
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[DELETE_CUSTOM_SCRIPT_COMMAND],
