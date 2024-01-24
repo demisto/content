@@ -346,7 +346,7 @@ def validate_input(args: Dict[str, Any]):
         raise e
 
 
-def main():
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
