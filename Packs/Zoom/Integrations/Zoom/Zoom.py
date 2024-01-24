@@ -28,7 +28,7 @@ OBJECTS_TO_KEYS = {
     'messages': 'entitlement',
 }
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
-PLAYGROUND_INVESTIGATION_TYPE = 10
+PLAYGROUND_INVESTIGATION_TYPE = 9
 
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
