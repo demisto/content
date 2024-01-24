@@ -4,6 +4,10 @@ args:
   required: true
 - description: Whether auto extract the indicators from the notes.
   name: auto_extract
+  predefined:
+    - 'true'
+    - 'false'
+  defaultValue: true
 - description: Replicate only notes with these tags (array or comma separated).
   isArray: true
   name: tags

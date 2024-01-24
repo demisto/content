@@ -21,7 +21,8 @@ def copy_notes_to_target_incident(args: dict[str, Any]) -> CommandResults:
 
     tags = argToList(args.get('tags'))
     auto_extract = args.get('auto_extract', False)
-    entries = demisto.executeCommand('getEntries', {'filter': {'tags': tags, "ignoreAutoExtract": not auto_extract}})
+    auto_extract_value = "none" if not auto_extract else "inline"
+    entries = demisto.executeCommand('getEntries', {'filter': {'tags': tags, "auto_extract": auto_extract_value}})
 
     note_entries: list = []
     md: str = ''
@@ -35,7 +36,7 @@ def copy_notes_to_target_incident(args: dict[str, Any]) -> CommandResults:
         if len(note_entries) > 0:
             demisto.executeCommand("addEntries", {"id": target_incident,
                                                   "entries": note_entries,
-                                                  "ignoreAutoExtract": not auto_extract})
+                                                  "auto_extract": auto_extract_value})
             md = f'## {len(note_entries)} notes copied'
         else:
             md = '## No notes found'
