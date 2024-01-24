@@ -298,7 +298,7 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
             # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
             if count + 1 > limit:
                 break
-            elif count < offset:
+            if count < offset:
                 continue
             elif line not in iocs_set:
                 iocs_set.add(line)
