@@ -66,7 +66,6 @@ def main():
     text_file = options.file
     gitlab_token = options.gitlab_token
     github_username = options.github_username
-    allow_failure = strtobool(options.allow_failure)
 
     if github_username and not gitlab_token:
         logging.error('In order to use the --github_username, --gitlab_token must be provided')
@@ -89,7 +88,7 @@ def main():
     slack_client = WebClient(token=slack_token)
 
     logging.info(f"Sending Slack message to slack channel:{computed_slack_channel}, "
-                 f"allowing failure:{allow_failure}")
+                 f"allowing failure:{options.allow_failure}")
 
     if github_username:
         # tag the slack user in the message
@@ -102,7 +101,7 @@ def main():
         link = build_link_to_message(response)
         logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
     except Exception:
-        if allow_failure:
+        if strtobool(options.allow_failure):
             logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
         else:
             logging.exception(f'Failed to send Slack message to channel {computed_slack_channel}')
