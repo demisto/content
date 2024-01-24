@@ -1,6 +1,6 @@
 {
     "id": "incident_ctm360_cyberblindspot_courseofaction",
-    "fromVersion": "5.0.0",
+    "fromVersion": "6.10.0",
     "version": -1,
     "name": "CTM360 CyberBlindspot Course of Action",
     "ownerOnly": false,

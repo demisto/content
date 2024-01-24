@@ -1,7 +1,7 @@
 {
     "id": "CyberBlindspot Incident",
     "version": -1,
-    "fromVersion": "5.0.0",
+    "fromVersion": "6.10.0",
     "vcShouldIgnore": false,
     "locked": false,
     "name": "CyberBlindspot Incident",

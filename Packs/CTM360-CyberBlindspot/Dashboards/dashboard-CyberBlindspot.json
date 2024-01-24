@@ -3,7 +3,7 @@
 	"description": "Dashboard to find metrics regarding the CyberBlindspot module",
 	"isPredefined": false,
 	"version": -1,
-	"fromVersion": "5.0.0",
+	"fromVersion": "6.10.0",
 	"fromDate": "0001-01-01T00:00:00Z",
 	"toDate": "0001-01-01T00:00:00Z",
 	"period": {
