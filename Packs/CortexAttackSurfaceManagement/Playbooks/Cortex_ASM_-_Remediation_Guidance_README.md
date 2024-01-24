@@ -10,11 +10,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Cortex Attack Surface Management
+Cortex Attack Surface Management
 
 ### Scripts
 
-* Set
+Set
 
 ### Commands
 
