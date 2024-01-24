@@ -87,11 +87,13 @@ configuration:
 - additionalinfo: Confidence about the indicator details. The value of confidence to fetch indicators from. The value between 0-100.
   display: Confidence
   name: confidence_from
+  defaultvalue: "0"
   type: 0
   required: false
 - additionalinfo: Severity about the indicator details. The value of severity to fetch indicators from. The value between 0-100.
   display: Severity
   name: severity_from
+  defaultvalue: "0"
   type: 0
   required: false
 - display: ""

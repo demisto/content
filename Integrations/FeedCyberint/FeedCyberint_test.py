@@ -111,3 +111,46 @@ def test_get_indicators_command(
 
     assert expected_url in url_indicators
     assert expected_ip in ip_indicators
+
+
+def test_fetch_indicators_command(
+    requests_mock,
+    mock_client: FeedCyberint.Client,
+):
+    """
+    Scenario:
+    - Test retrieving indicators by filters from feed.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the fetch_indicators_command.
+
+    Then:
+    - Ensure that the IP values is correct.
+    - Ensure that the URL values is correct.
+    """
+    response = load_mock_response()
+
+    requests_mock.get(REQUEST_URL, text=response)
+
+    expected_url = "http://www.tal1.com/"
+    expected_ip = "1.1.1.1"
+
+    params = {
+        "tlp_color": "GREEN",
+        "severity_from": "0",
+        "confidence_from": "0",
+        "feed_name": ["All"],
+        "indicator_type": ["All"],
+        "feedFetchInterval": 300,
+    }
+
+    result = FeedCyberint.fetch_indicators_command(mock_client, params)
+
+    url_indicators = {indicator["value"] for indicator in result if indicator["type"] == "URL"}
+    ip_indicators = {indicator["value"] for indicator in result if indicator["type"] == "IP"}
+
+    assert expected_url in url_indicators
+    assert expected_ip in ip_indicators

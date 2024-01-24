@@ -33,10 +33,10 @@ class Client(BaseClient):
         """
         response = self._http_request(
             method="GET",
-            url_suffix=date_time or get_current_time(),
+            url_suffix=date_time or get_today_time(),
             cookies=self._cookies,
             resp_type="text",
-            timeout=70,
+            timeout=120,
         )
 
         result = []
@@ -127,7 +127,7 @@ def fetch_indicators(
 
             indicators.append(indicator_obj)
 
-        if len(indicators) >= limit:
+        if limit > 0 and len(indicators) >= limit:
             break
 
     return indicators
@@ -146,11 +146,11 @@ def get_indicators_command(client: Client, params: Dict[str, str], args: Dict[st
         Outputs.
     """
 
-    limit = int(args.get("limit", "10"))
-    tlp_color = params.get("tlp_color")
-    severity_from = arg_to_number(params.get("severity_from"))
-    confidence_from = arg_to_number(params.get("confidence_from"))
-    feed_tags = argToList(params.get("feedTags", ""))
+    limit = arg_to_number(args.get("limit")) or 10
+    tlp_color = params.get("tlp_color", "")
+    severity_from = arg_to_number(params.get("severity_from")) or 0
+    confidence_from = arg_to_number(params.get("confidence_from")) or 0
+    feed_tags = argToList(params.get("feedTags"))
     feed_names = argToList(params.get("feed_name"))
     indicator_types = argToList(params.get("indicator_type"))
 
@@ -193,13 +193,13 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     Returns:
         Indicators.
     """
-    tlp_color = params.get("tlp_color")
-    feed_tags = argToList(params.get("feedTags", ""))
-    severity_from = arg_to_number(params.get("severity_from"))
-    confidence_from = arg_to_number(params.get("confidence_from"))
+    tlp_color = params.get("tlp_color", "")
+    feed_tags = argToList(params.get("feedTags"))
+    severity_from = arg_to_number(params.get("severity_from")) or 0
+    confidence_from = arg_to_number(params.get("confidence_from")) or 0
     feed_names = argToList(params.get("feed_name"))
     indicator_types = argToList(params.get("indicator_type"))
-    fetch_interval = arg_to_number(params.get("feedFetchInterval"))
+    fetch_interval = arg_to_number(params.get("feedFetchInterval")) or 240
 
     indicators = []
 
@@ -227,17 +227,35 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     return indicators
 
 
-def get_current_time() -> str:
+def get_today_time() -> str:
+    """Get current date time.
+
+    Returns:
+        str: Today date string.
+    """
     return datetime.now().strftime(DATE_FORMAT)
 
 
 def get_yesterday_time() -> str:
+    """Get yesterday date time.
+
+    Returns:
+        str: Yesterday date string.
+    """
     current_time = datetime.now()
     yesterday = current_time - timedelta(days=1)
     return yesterday.strftime(DATE_FORMAT)
 
 
 def is_x_minutes_ago_yesterday(minutes: int) -> bool:
+    """Check if x minutes ago is yesterday.
+
+    Args:
+        minutes (int): The amount of minutes to reduce from today.
+
+    Returns:
+        bool: True if x minutes ago is yesterday, else False.
+    """
     current_time = datetime.now()
     x_minutes_ago = current_time - timedelta(minutes=minutes)
     yesterday = current_time - timedelta(days=1)
