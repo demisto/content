@@ -12,6 +12,11 @@
     },
     "8.5.0": {
       "core_packs_file": "corepacks-8.5.0.json",
+      "core_packs_file_is_locked": true,
+      "file_version": "1"
+    },
+    "8.6.0": {
+      "core_packs_file": "corepacks-8.6.0.json",
       "core_packs_file_is_locked": false,
       "file_version": "1"
     }
