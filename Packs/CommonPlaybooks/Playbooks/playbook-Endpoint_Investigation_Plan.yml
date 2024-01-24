@@ -1647,7 +1647,7 @@ tasks:
       - "11"
     scriptarguments:
       query:
-        simple: dnsqueryname:${inputs.attackerExternalHost} or destinationhostname:${inputs.attackerExternalHost} or localip:${inputs.attackerRemoteIP} and caseid:${parentIncidentFields.incident_id}
+        simple: (dnsqueryname:${inputs.attackerExternalHost} or localip:${inputs.attackerRemoteIP}) and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1785,7 +1785,7 @@ tasks:
       - "13"
     scriptarguments:
       query:
-        simple: initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256} or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256} or osparentsha256:${inputs.FileSHA256} and caseid:${parentIncidentFields.incident_id}
+        simple: (initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256} or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256} or osparentsha256:${inputs.FileSHA256}) and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
