@@ -1,13 +1,14 @@
 commonfields:
-  id: UploadFile
+  id: UploadFileTest
   version: -1
 enabled: true
-name: UploadFile
+name: UploadFileTest
 fromversion: 6.5.0
 script: '-'
 args:
 - description: File entry ID.
   name: entryID
+  isArray: true
   predefined:
   - ''
   required: true
