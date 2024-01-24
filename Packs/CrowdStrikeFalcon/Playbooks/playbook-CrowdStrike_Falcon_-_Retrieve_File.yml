@@ -101,8 +101,6 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: LastArrayElement
-      nonSensetivePassword:
-        simple: ${inputs.ZipPassword}
       nonsensitive_password:
         complex:
           root: inputs.ZipPassword
@@ -325,6 +323,12 @@ tasks:
             value:
               complex:
                 root: inputs.FileNames
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ZipPassword
             iscontext: true
     continueonerrortype: ""
     view: |-
