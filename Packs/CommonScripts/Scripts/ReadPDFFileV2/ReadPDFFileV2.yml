@@ -9,7 +9,7 @@ args:
   description: Maximum number of images to extract from the PDF file.
   name: maxImages
 comment: |-
-  Load a PDF file's content and metadata into context.
+  Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
 commonfields:
   id: ReadPDFFileV2
   version: -1

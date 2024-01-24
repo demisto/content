@@ -1,4 +1,4 @@
-Loads a PDF file's content and metadata into context.
+Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
 
 
 ## Script Data
