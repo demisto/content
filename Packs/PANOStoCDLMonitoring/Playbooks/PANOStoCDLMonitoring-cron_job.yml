@@ -1,5 +1,5 @@
 description: |-
-  This playbook verifies that your FWs sent logs to the Cortex Data Lake in the last 12 hours. An email notification will be sent if it's not the case.
+  This playbook verifies that your FWs sent logs to the Strata Logging Service in the last 12 hours. An email notification will be sent if it's not the case.
   This playbook is designed to run as a job.
 id: PAN-OS to Cortex Data Lake Monitoring - Cron Job
 inputs:
@@ -23,7 +23,7 @@ inputs:
   required: false
   value:
     simple: ${incident.email}
-name: PAN-OS to Cortex Data Lake Monitoring - Cron Job
+name: PAN-OS to Strata Logging Service Monitoring - Cron Job
 outputs: []
 starttaskid: "0"
 tasks:
@@ -73,7 +73,7 @@ tasks:
     task:
       brand: ""
       description: "Used to verify that all firewalls successfully pushed logs to\
-        \ the Cortex Data Lake for the last 12 hours. It's an easy way to do monitoring\
+        \ the Strata Logging Service for the last 12 hours. It's an easy way to do monitoring\
         \ of the FW connection to CDL.\nYou can use either a list of FW serials or\
         \ Panorama integration to define the list of FW to be monitored. "
       id: 0483f81b-ec93-4673-8b48-96eba2006ff4

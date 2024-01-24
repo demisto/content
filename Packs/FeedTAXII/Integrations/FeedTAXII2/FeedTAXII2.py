@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Tuple
+from typing import Any
 
 """ CONSTANT VARIABLES """
 
@@ -39,11 +39,10 @@ def assert_incremental_feed_params(fetch_full_feed, is_incremental_feed):
 
 def module_test_command(client, limit, fetch_full_feed):
     if client.collections:
-        if fetch_full_feed:
-            if limit and limit != -1:
-                return_error(
-                    "Configuration Error - Max Indicators Per Fetch is disabled when Full Feed Fetch is enabled"
-                )
+        if fetch_full_feed and limit and limit != -1:
+            return_error(
+                "Configuration Error - Max Indicators Per Fetch is disabled when Full Feed Fetch is enabled"
+            )
         demisto.results("ok")
     else:
         return_error("Could not connect to server")
@@ -55,7 +54,7 @@ def fetch_indicators_command(
     limit,
     last_run_ctx,
     fetch_full_feed: bool = False,
-) -> Tuple[list, dict]:
+) -> tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
@@ -169,7 +168,7 @@ def get_indicators_command(
 
     if raw:
         demisto.results({"indicators": [x.get("rawJSON") for x in indicators]})
-        return
+        return None
 
     if indicators:
         return CommandResults(
@@ -187,7 +186,7 @@ def get_collections_command(client):
     :param client: FeedClient
     :return: available collections
     """
-    collections = list()
+    collections = []
     for collection in client.collections:
         collections.append({"Name": collection.title, "ID": collection.id})
     md = tableToMarkdown("TAXII2 Server Collections:", collections, ["Name", "ID"])
@@ -220,9 +219,9 @@ def main():  # pragma: no cover
     password = credentials.get("password")
     proxies = handle_proxy()
     verify_certificate = not params.get("insecure", False)
-    skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get(
+    skip_complex_mode = params.get(
         "observation_operator_mode"
-    )
+    ) == COMPLEX_OBSERVATION_MODE_SKIP
     feed_tags = argToList(params.get("feedTags"))
     tlp_color = params.get('tlp_color', '')
 
@@ -277,6 +276,7 @@ def main():  # pragma: no cover
                 limit = -1
 
             last_run_indicators = get_feed_last_run()
+            demisto.debug(f'Before fetch command last run: {last_run_indicators}')
             (indicators, last_run_indicators) = fetch_indicators_command(
                 client,
                 initial_interval,
@@ -284,6 +284,7 @@ def main():  # pragma: no cover
                 last_run_indicators,
                 fetch_full_feed,
             )
+            demisto.debug(f'After fetch command last run: {last_run_indicators}')
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 

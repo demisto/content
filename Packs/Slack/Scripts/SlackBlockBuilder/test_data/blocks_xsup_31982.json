@@ -1,0 +1,48 @@
+[
+  {
+    "text": {
+      "text": "The risk threshold exceeded for *user*:",
+      "type": "mrkdwn"
+    },
+    "type": "section"
+  },
+  {
+    "text": {
+      "emoji": true,
+      "text": ":splunk: Splunk Notable",
+      "type": "plain_text"
+    },
+    "type": "header"
+  },
+  {
+    "type": "divider"
+  },
+  {
+    "accessory": {
+      "alt_text": "user",
+      "image_url": "https://i.imgur.com/xCvzudW.png",
+      "type": "image"
+    },
+    "text": {
+      "text": "*Risk Object: * *<fakeLink.toUserProfiles.com|ryan.ng>*\n*Severity: * :xsoar_critical: Critical\n*Risk Score: * 100.0",
+      "type": "mrkdwn"
+    },
+    "type": "section"
+  },
+  {
+    "block_id": "button_0",
+    "elements": [
+      {
+        "action_id": "xsoar-button-submit",
+        "text": {
+          "emoji": true,
+          "text": "Submit",
+          "type": "plain_text"
+        },
+        "type": "button",
+        "value": "{\"entitlement\": \"some-guid@1\", \"reply\": null}"
+      }
+    ],
+    "type": "actions"
+  }
+]

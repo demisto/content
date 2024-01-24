@@ -7,7 +7,6 @@ This automation compares a given PAN-OS version (ex. 9.1.1) with a list of PAN-O
 pan-advisories-get-advisors command to see if it is affected by any in the list.
 """
 
-from typing import List
 from dataclasses import dataclass
 
 
@@ -38,7 +37,7 @@ class Advisory:
     _output_prefix = "MatchingSecurityAdvisory"
 
 
-def return_result_dataclass(result: List[Advisory]):
+def return_result_dataclass(result: list[Advisory]):
     """Converts the resultant dataclasses into command results"""
     if not result:
         command_result = CommandResults(
@@ -61,25 +60,25 @@ def return_result_dataclass(result: List[Advisory]):
     return command_result
 
 
-def simplify_affected_version_list(affected_version_list: List[str]):
+def simplify_affected_version_list(affected_version_list: list[str]):
     """
     The affected version list includes the platform prefixed (PAN-OS 9.1.1) - trim the PAN-OS out and return the list.
     """
-    simplified_version_list: List[str] = []
+    simplified_version_list: list[str] = []
     for version_string in affected_version_list:
         simplified_version_list.append(version_string.split(" ")[1])
 
     return simplified_version_list
 
 
-def compare_version_with_advisories(panos_version: str, advisories_list: List[Advisory]):
+def compare_version_with_advisories(panos_version: str, advisories_list: list[Advisory]):
     """
     Given a list of PAN-OS security advisories, compare the given panos-version to see if the version matches the affected list
 
     :param panos_version: The string version of PAN-OS, such as 9.1.1
     :param advisories_list: The list of Security Advisories
     """
-    matched_advisories: List[Advisory] = []
+    matched_advisories: list[Advisory] = []
     for advisory in advisories_list:
         if panos_version in simplify_affected_version_list(advisory.affected_version_list):
             matched_advisories.append(advisory)
@@ -93,9 +92,10 @@ def main():
     Reads advisories from the pan-advisories-get-advisories command and compares them with the provided PAN-OS version to check
     for a match - if so, returns the matching advisories.
     """
+
     advisories_list: list = demisto.args().get("advisories")
 
-    advisories_objects: List[Advisory] = [Advisory(**advisory_dict) for advisory_dict in advisories_list]
+    advisories_objects: list[Advisory] = [Advisory(**advisory_dict) for advisory_dict in advisories_list]
     panos_version: str = demisto.args().get("version")
     matched_advisories = compare_version_with_advisories(panos_version, advisories_list=advisories_objects)
     return_results(return_result_dataclass(matched_advisories))
