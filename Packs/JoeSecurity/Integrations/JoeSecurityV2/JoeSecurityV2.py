@@ -26,7 +26,7 @@ class Client(jbxapi.JoeSandbox):
 
     def analysis_info_list(self, web_ids: List[str]) -> List[Dict[str, Any]]:
         """
-             A wrapper function supporting a list of webids to query.
+             A wrapper function supporting a  list of webids to query.
 
              Args:
                 web_ids: List(str): List of analysis webids to query.
