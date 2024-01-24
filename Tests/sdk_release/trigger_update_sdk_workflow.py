@@ -43,8 +43,10 @@ def main():
 
     if is_draft and is_draft.lower() in ("yes", "true", "y"):
         is_draft = True
+        logging.info('preparing to trigger update-demisto-sdk-version workflow with draft pull request')
     else:
         is_draft = False
+        logging.info('preparing to trigger update-demisto-sdk-version workflow')
 
     inputs = {
         'reviewer': reviewer,

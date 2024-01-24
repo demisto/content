@@ -25,6 +25,7 @@ def options_handler():
 
     parser.add_argument('-t', '--access_token', help='Github access token', required=True)
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
+    parser.add_argument('-ro', '--release_owner', help='Github username of the release owner', required=True)
     parser.add_argument('-d', '--is_draft', help='Is draft pull request')
 
     options = parser.parse_args()
@@ -38,6 +39,7 @@ def main():
     access_token = options.access_token
     release_branch_name = options.release_branch_name
     is_draft = options.is_draft
+    release_owner = options.release_owner
 
     if is_draft and is_draft.lower() in ("yes", "true", "y"):
         is_draft = True
@@ -105,7 +107,17 @@ def main():
 
     pr_url = response.json().get('html_url')
     pr_number = response.json().get('number')
-    logging.info(f'The SDK Pull request created successfully! {pr_url}')
+    logging.success(f'The SDK Pull request created successfully! {pr_url}')
+
+    # request review from the owner
+    data = {'reviewers': [release_owner]}
+    url = f'{API_SUFFIX}/pulls/{pr_number}/requested_reviewers'
+    response = requests.request('POST', url, data=json.dumps(data), headers=headers, verify=False)
+    if response.status_code != 201:
+        logging.error(f'Failed to request review to pull request: {pr_url}')
+        logging.error(response.text)
+
+    logging.success(f'{release_owner} added as reviewer to the release pull request')
 
     # trigger SDK changelog workflow
     logging.info('Triggering SDK changelog workflow')
