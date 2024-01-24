@@ -41,7 +41,7 @@ def __line__():
 
 # 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -11323,6 +11323,46 @@ def is_scheduled_command_retry():
     return True if sm.get('is_polling', False) else False
 
 
+def retry(
+    times: int = 3,
+    delay: int = 1,
+    exceptions: Union[tuple[type[Exception], ...], type[Exception]] = Exception,
+):
+    """
+    retries to execute a function until an exception isn't raised anymore.
+
+    Args:
+        times: the amount of times to try and execute the function
+        delay: the number of seconds to wait between each time
+        exceptions: the exceptions that should be caught when executing the function
+
+    Returns:
+        Any: the decorated function result
+    """
+
+    def _retry(func: callable):
+        func_name = func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for i in range(1, times + 1):
+                demisto.debug("Running func {func_name} for the {time} time".format(func_name=func_name, time=i))
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as error:
+                    demisto.debug(
+                        "Error when executing func {func_name}, error: {error}, time {time}".format(
+                            func_name=func_name, error=error, time=i)
+                    )
+                    if i == times:
+                        raise
+                    time.sleep(delay)  # pylint: disable=sleep-exists
+
+        return wrapper
+
+    return _retry
+
+
 def replace_spaces_in_credential(credential):
     """
     This function is used in case of credential from type: 9 is in the wrong format
@@ -11497,46 +11537,6 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     zipped_data=zipped_data, is_json_response=True)
 
     demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
-
-
-def retry(
-    times: int = 3,
-    delay: int = 1,
-    exceptions: Union[tuple[type[Exception], ...], type[Exception]] = Exception,
-):
-    """
-    retries to execute a function until an exception isn't raised anymore.
-
-    Args:
-        times: the amount of times to try and execute the function
-        delay: the number of seconds to wait between each time
-        exceptions: the exceptions that should be caught when executing the function
-
-    Returns:
-        Any: the decorated function result
-    """
-
-    def _retry(func: callable):
-        func_name = func.__name__
-
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            for i in range(1, times + 1):
-                demisto.debug("Running func {func_name} for the {time} time".format(func_name=func_name, time=i))
-                try:
-                    return func(*args, **kwargs)
-                except exceptions as error:
-                    demisto.debug(
-                        "Error when executing func {func_name}, error: {error}, time {time}".format(
-                            func_name=func_name, error=error, time=i)
-                    )
-                    if i == times:
-                        raise
-                    time.sleep(delay)  # pylint: disable=sleep-exists
-
-        return wrapper
-
-    return _retry
 
 
 ###########################################
