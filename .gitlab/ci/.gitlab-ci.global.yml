@@ -406,7 +406,7 @@
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   services:
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
