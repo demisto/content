@@ -3,7 +3,17 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR Remote PsExec with LOLBIN command execution alert
-description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
+description: |
+  The "Remote PsExec-like LOLBIN Command Execution" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. 
+  The playbook aims to efficiently:
+    - Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).
+    - Enrich any entities and indicators from the alert and find any related campaigns.
+    - Perform command analysis to provide insights and a verdict for the executed command.
+    - Perform further endpoint investigation using Cortex XDR.
+    - Checks for any malicious verdicts found to raise the severity of the alert.
+    - Perform automatic/manual remediation response by blocking any malicious indicators found.
+  The playbook is designed to run as a sub-playbook in "Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling".
+  It depends on the data from the parent playbooks and cannot be used as a standalone version.
 starttaskid: "0"
 tasks:
   "0":
@@ -1091,12 +1101,6 @@ inputs:
     simple: "false"
   required: false
   description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
-  playbookInputQuery:
-- key: LOLBASFeedLimit
-  value:
-    simple: "100"
-  required: false
-  description: LOLBAS Feed results limit.
   playbookInputQuery:
 - key: EndpointIDs
   value:

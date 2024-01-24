@@ -1,0 +1,18 @@
+{
+  "trigger_id": "d150d0519b334c040b1fcc0f34a3ded9",
+  "playbook_id": "Prisma Cloud Remediation - GCP Compute Engine Misconfiguration v2",
+  "suggestion_reason": "Recommended for GCP Compute Engine Misconfiguration alerts",
+  "description": "This trigger is responsible for handling GCP Compute Engine Misconfiguration alerts",
+  "trigger_name": "GCP Compute Engine Misconfiguration",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "GCP Compute Engine Misconfiguration"
+        }
+      ]
+    }
+  }
+}

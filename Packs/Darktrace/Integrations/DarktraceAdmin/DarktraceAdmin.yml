@@ -52,23 +52,23 @@ script:
     arguments:
     - name: initialDate
       required: true
-      description: Specify an initial date for your query (YYYY-MM-DD)
+      description: Specify an initial date for your query (YYYY-MM-DD).
     - name: initialTime
       defaultValue: "00:00:00"
-      description: Specify an initial time for your query (HH:MM:SS) takes 00:00:00 by default
+      description: Specify an initial time for your query (HH:MM:SS) takes 00:00:00 by default.
     - name: endDate
       required: true
-      description: Specify an end date for your query (YYYY-MM-DD)
+      description: Specify an end date for your query (YYYY-MM-DD).
     - name: endTime
       defaultValue: "00:00:00"
-      description: Specify an end time for your query (HH:MM:SS) takes 00:00:00 by default
+      description: Specify an end time for your query (HH:MM:SS) takes 00:00:00 by default.
     - name: query
       required: true
-      description: Enter your advanced search query (e.g. @type:conn)
+      description: Enter your advanced search query (e.g. @type:conn).
     - name: operation
       auto: PREDEFINED
       defaultValue: score
-      description: Spcify the operation to perform on the metric
+      description: Spcify the operation to perform on the metric.
       isArray: true
       predefined:
       - score
@@ -78,17 +78,17 @@ script:
       required: true
     - name: metric
       required: true
-      description: Enter the analysis field (e.g. @fields.source_ip)
+      description: Enter the analysis field (e.g. @fields.source_ip).
     - name: offset
       defaultValue: "0"
-      description: analyses 10k connections at a time, use this parameter to analyse further results
+      description: analyses 10k connections at a time, use this parameter to analyse further results.
     outputs:
     - contextPath: Darktrace.AdvancedSearch
-      description: Advanced Search Results
+      description: Advanced Search Results.
       type: Unknown
   - name: darktrace-get-device-connection-info
     arguments:
-    - description: Device unique identifier
+    - description: Device unique identifier.
       name: deviceId
       required: true
     - auto: PREDEFINED
@@ -102,11 +102,11 @@ script:
       required: true
     - description: Restrict external data to a particular domain name.
       name: externalDomain
-    - description: Internal destination device unique identifier to restrict data to
+    - description: Internal destination device unique identifier to restrict data to.
       name: destinationDeviceId
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Return an entry for all time intervals in the graph data, including zero counts. (Not recommended)
+      description: Return an entry for all time intervals in the graph data, including zero counts. (Not recommended).
       isArray: true
       name: showAllGraphData
       predefined:
@@ -117,13 +117,13 @@ script:
       name: numberOfSimilarDevices
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Return the full device detail objects for all devices referenced by data in an API response
+      description: Return the full device detail objects for all devices referenced by data in an API response.
       isArray: true
       name: fullDeviceDetails
       predefined:
       - 'true'
       - 'false'
-    description: Returns the graphable data for a device (max of 4 weeks of connections retained)
+    description: Returns the graphable data for a device (max of 4 weeks of connections retained).
     outputs:
     - contextPath: Darktrace.DeviceConnectionInfo
       description: Graphable data used in the "Connections Data" view for a specific device that can be accessed from the Threat Visualizer omnisearch in Darktrace. Data returned covers a 4 week period. Parameters are further documented at https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request. It is recommended to run the command to check the relevant fields in context.
@@ -131,19 +131,19 @@ script:
   - name: darktrace-get-external-endpoint-details
     arguments:
     - auto: PREDEFINED
-      description: 'Type of endpoint: IP or hostname'
+      description: 'Type of endpoint: IP or hostname.'
       isArray: true
       name: endpointType
       predefined:
       - IP
       - hostname
       required: true
-    - description: IP or hostname to look up
+    - description: IP or hostname to look up.
       name: endpointValue
       required: true
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Boolean: Include devices that have recently connected to the endpoint'
+      description: 'Boolean: Include devices that have recently connected to the endpoint.'
       isArray: true
       name: devices
       predefined:
@@ -151,7 +151,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Boolean: Return additional info about the devices'
+      description: 'Boolean: Return additional info about the devices.'
       isArray: true
       name: additionalInfo
       predefined:
@@ -159,7 +159,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Boolean: Return rarity data for this endpoint'
+      description: 'Boolean: Return rarity data for this endpoint.'
       name: score
       predefined:
       - 'true'
@@ -167,103 +167,103 @@ script:
     description: Returns details collected by Darktrace about external IP addresses or hostnames.
     outputs:
     - contextPath: Darktrace.ExternalEndpointDetails
-      description: Returned information about the external endpoint
+      description: Returned information about the external endpoint.
       type: Unknown
   - name: darktrace-get-similar-devices
     arguments:
-    - description: Device unique identifier
+    - description: Device unique identifier.
       name: deviceId
       required: true
     - defaultValue: '5'
-      description: Maximum number of results to return
+      description: Maximum number of results to return.
       name: maxResults
       required: true
-    description: Returns a list of similar devices with respect to a specified device
+    description: Returns a list of similar devices with respect to a specified device.
     outputs:
     - contextPath: Darktrace.SimilarDevices.deviceId
       description: Darktrace Device ID of the device with the similar devices.
       type: Number
     - contextPath: Darktrace.SimilarDevices.devices
-      description: List of similar devices and their available information
+      description: List of similar devices and their available information.
       type: Unknown
   - name: darktrace-post-to-watched-list
     arguments:
-    - description: 'Unique or Comma separated list of ips, hostnames or domains to watch (e.g.: 1.1.1.1, malware.com)'
+    - description: 'Unique or Comma separated list of ips, hostnames or domains to watch (e.g.: 1.1.1.1, malware.com).'
       name: endpointsToWatch
       required: true
     - default: true
       defaultValue:
-      description: Provide an optional description for added entries(max length of 256 characters)
+      description: Provide an optional description for added entries(max length of 256 characters).
       name: description
-    description: Post to the list of Darkace Watched Domains to generate alerts when visited
+    description: Post to the list of Darkace Watched Domains to generate alerts when visited.
     outputs:
     - contextPath: Darktrace.Endpoint.Watched
-      description: Whether the device has been successfully tagged
+      description: Whether the device has been successfully tagged.
       type: String
   - name: darktrace-get-tagged-devices
     arguments:
-    - description: Tag name
+    - description: Tag name.
       name: tagName
       required: true
-    description: Get all devices that hold a common tag
+    description: Get all devices that hold a common tag.
     outputs:
     - contextPath: Darktrace.Device.deviceId
-      description: Device unique identifier
+      description: Device unique identifier.
       type: Number
     - contextPath: Darktrace.Device.hostname
-      description: device hostname
+      description: device hostname.
       type: String
     - contextPath: Darktrace.Device.label
-      description: device label
+      description: device label.
       type: String
     - contextPath: Darktrace.Device.credentials
-      description: credentials seen on device
+      description: credentials seen on device.
       type: Unknown
     - contextPath: Darktrace.Device.otherTags
-      description: other tags found on device
+      description: other tags found on device.
       type: Unknown
   - name: darktrace-get-tags-for-device
     arguments:
-    - description: Device unique identifier
+    - description: Device unique identifier.
       name: deviceId
       required: true
-    description: Get all tags for the given device
+    description: Get all tags for the given device.
     outputs:
     - contextPath: Darktrace.Device.tagId
-      description: Tag Id
+      description: Tag Id.
       type: Number
     - contextPath: Darktrace.Device.tagName
-      description: Tag Name
+      description: Tag Name.
       type: String
     - contextPath: Darktrace.Device.tagDescription
-      description: Tag description if present
+      description: Tag description if present.
       type: String
     - contextPath: Darktrace.Device.expiry
-      description: Tag expiration if applicable
+      description: Tag expiration if applicable.
       type: Number
   - name: darktrace-post-tag-to-device
     arguments:
-    - description: Device unique identifier
+    - description: Device unique identifier.
       name: deviceId
       required: true
-    - description: Tag name to be applied (the tag name needs to exist on the Darktrace UI)
+    - description: Tag name to be applied (the tag name needs to exist on the Darktrace UI).
       name: tagName
       required: true
-    description: Post a tag to a device
+    description: Post a tag to a device.
     outputs:
     - contextPath: Darktrace.Device.tagId
-      description: Tag Id
+      description: Tag Id.
       type: Number
     - contextPath: Darktrace.Device.tagName
-      description: Tag Name
+      description: Tag Name.
       type: String
     - contextPath: Darktrace.Device.deviceId
-      description: Device unique identifier
+      description: Device unique identifier.
       type: Number
     - contextPath: Darktrace.Device.response
-      description: POST action message response
+      description: POST action message response.
       type: String
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3

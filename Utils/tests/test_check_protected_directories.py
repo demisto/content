@@ -25,7 +25,8 @@ def test_allowed_path(path_str: str):
     When:   checking if path is allowed
     Then:   make sure the script allows changing this file.
     """
-    assert is_path_change_allowed(Path(CONTENT_ROOT, path_str))
+    assert is_path_change_allowed(Path(CONTENT_ROOT, path_str))  # absolute
+    assert is_path_change_allowed(Path(path_str))  # relative
 
 
 @pytest.mark.parametrize(
@@ -44,7 +45,8 @@ def test_prohibited_path(path: Path):
     When:   checking if path is allowed
     Then:   make sure the script does NOT allow changing this file.
     """
-    assert not is_path_change_allowed(Path(path))
+    assert not is_path_change_allowed(path)  # absolute
+    assert not is_path_change_allowed(path.relative_to(CONTENT_ROOT))  # relative
 
 
 @pytest.mark.parametrize("path", sorted(EXCEPTIONS))
