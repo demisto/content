@@ -11,11 +11,8 @@ create-release-branch:
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
-    REVIEWER: $REVIEWER
   script:
     - section_start "Create release branch" --collapsed
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "Test" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt $GITLAB_API_TOKEN -gu $REVIEWER
-    - exit 1
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version \`"$RELEASE_VERSION"\` has started" --allow-failure "${SLACK_ALLOW_FAILURE}"
     - echo "RELEASE_VERSION="$RELEASE_VERSION
     - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
@@ -172,9 +169,11 @@ slack-notify:
     - wait-for-demisto-sdk-nightly
     - wait-for-content-private-nightly
     - wait-for-content-internal-dist-nightly
+  variables:
+    REVIEWER: $REVIEWER
   script:
     - section_start "Slack notify" --collapsed
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "All nightlies builds has been finished, please check their status and continue with the release" --allow-failure "${SLACK_ALLOW_FAILURE}"
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "All nightlies builds has been finished, please check their status and continue with the release" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt $GITLAB_API_TOKEN -gu $REVIEWER
     - section_end "Slack notify"
 
 create-release-pull-request:
@@ -194,6 +193,7 @@ create-release-pull-request:
     - section_start "Create sdk release pr" --collapsed
     - echo "IS_DRAFT="$IS_DRAFT
     - python3 ./Tests/sdk_release/create_release_pr.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -d $IS_DRAFT -ro $REVIEWER
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The demisto-sdk release PR is ready and waiting for review" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt $GITLAB_API_TOKEN -gu $REVIEWER
     - section_end "Create sdk release pr"
 
 deploy-sdk-to-pypi:
