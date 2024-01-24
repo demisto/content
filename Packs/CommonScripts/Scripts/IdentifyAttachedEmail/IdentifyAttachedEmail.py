@@ -51,11 +51,17 @@ def identify_attached_mail(args):
             entry_ids = entry_ids.strip().replace(r'\"', '"')  # type:ignore
         entry_ids = argToList(entry_ids)
         entries = []  # type: List[str]
-        for ent_id in entry_ids:
-            res = demisto.executeCommand('getEntry', {'id': ent_id})
-            entries.extend(res)
+        
+        if is_xsiam_or_xsoar_saas():
+            entry_ids_str = ",".join(entry_ids)
+            entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
+        else:
+            for ent_id in entry_ids:
+                res = demisto.executeCommand('getEntry', {'id': ent_id})
+                entries.extend(res)
     else:
-        entries = demisto.executeCommand('getEntries', {})
+        entries = demisto.executeCommand('getEntries', {"filter": {"categories": ["attachments"]}})
+
     for e in entries:
         id = is_entry_email(e)
         if id:
