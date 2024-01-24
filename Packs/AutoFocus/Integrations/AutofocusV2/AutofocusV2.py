@@ -407,25 +407,6 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     data.update({'apiKey': API_KEY})
     try:
-
-        # --- TEMP ---
-        # from concurrent.futures import ThreadPoolExecutor
-
-        # with ThreadPoolExecutor() as e:
-        #     for i in e.map(
-        #         lambda _: requests.request(
-        #             method=method,
-        #             url=BASE_URL + url_suffix,
-        #             verify=USE_SSL,
-        #             data=json.dumps(data),
-        #             headers=HEADERS
-        #         ),
-        #         (j for j in range(10_000))
-        #     ):
-        #         ...
-
-        # return_results('Complete. running polling.')
-
         res = requests.request(
             method=method,
             url=BASE_URL + url_suffix,
