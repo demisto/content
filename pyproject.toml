@@ -156,8 +156,6 @@ tabulate = ">=0.8.9,<0.10.0"
 jira = "^3.5.2"
 junitparser = "^3.1.0"
 tenacity = "^8.2.3"
-pygraphviz = "1.11"
-graphviz = "^0.20.1"
 
 [tool.ruff]
 select = [

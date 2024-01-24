@@ -686,10 +686,6 @@ def get_one_page_of_packs_dependencies(
     body = {
         "page": page,
         "size": PAGE_SIZE_DEFAULT,
-        "sort": [
-            {"field": "searchRank", "asc": False},
-            {"field": "updated", "acs": False},
-        ],
     }
 
     def success_handler(response):
@@ -954,7 +950,7 @@ def search_and_install_packs_and_their_dependencies(
     all_packs_dependencies_data = get_all_content_packs_dependencies(client)
 
     graph_dependencies = create_graph(all_packs_dependencies_data)
-    save_graph_dot_file_log(graph_dependencies, "graph_dependencies_all_content.dot")
+    # save_graph_dot_file_log(graph_dependencies, "graph_dependencies_all_content.dot")
 
     no_deprecated_dependencies, all_packs_and_dependencies_to_install = get_packs_and_dependencies_to_install(
         pack_ids,
@@ -968,10 +964,10 @@ def search_and_install_packs_and_their_dependencies(
     graph_dependencies_for_installed_packs = nx.subgraph(
         graph_dependencies, all_packs_and_dependencies_to_install
     ).copy()
-    save_graph_dot_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs.dot")
+    # save_graph_dot_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs.dot")
 
     merged_graph_dependencies = merge_cycles(graph_dependencies_for_installed_packs)
-    save_graph_dot_file_log(merged_graph_dependencies, "merged_graph_dependencies.dot")
+    # save_graph_dot_file_log(merged_graph_dependencies, "merged_graph_dependencies.dot")
 
     logging.debug(
         f"Get the following topological sort: {list(nx.topological_generations(merged_graph_dependencies))}"
