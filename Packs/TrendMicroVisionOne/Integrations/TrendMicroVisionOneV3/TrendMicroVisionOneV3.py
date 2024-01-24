@@ -2583,8 +2583,10 @@ def download_custom_script(
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
         return_error(message=f"{err.message}", error=str(err))
+    resp_text: pytmv1.TextResp = unwrap(resp.response)
+    text: str = resp_text.text
     # Add results to message to be sent to the War Room
-    message: dict[str, str] = {"text": unwrap(resp.response).text}
+    message: dict[str, str] = {"text": text}
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[DOWNLOAD_CUSTOM_SCRIPT_COMMAND],
