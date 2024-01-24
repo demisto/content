@@ -906,7 +906,7 @@ def save_graph_data_file_log(graph: DiGraph, file_name: str) -> None:
     graph_data = {"nodes": list(graph.nodes()), "edges": list(graph.edges())}
     with open(log_file_path, 'w') as f:
         f.write(json.dumps(graph_data))
-        
+
     logging.debug(f"Saving graph data to {log_file_path}")
 
 

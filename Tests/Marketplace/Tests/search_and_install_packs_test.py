@@ -925,7 +925,7 @@ def test_search_and_install_packs_success(mocker: MockFixture):
     mocker.patch.object(script, "get_env_var", return_value="commit")
     mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
     mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
-    mocker.patch.object(script, "save_graph_dot_file_log")
+    mocker.patch.object(script, "save_graph_data_file_log")
     mocker.patch.object(
         script, "get_packs_and_dependencies_to_install", return_value=(True, set())
     )
@@ -954,7 +954,7 @@ def test_search_and_install_packs_deprecated_dependencies(mocker: MockFixture):
     mocker.patch.object(script, "get_env_var", return_value="commit")
     mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
     mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
-    mocker.patch.object(script, "save_graph_dot_file_log")
+    mocker.patch.object(script, "save_graph_data_file_log")
     mocker.patch.object(
         script, "get_packs_and_dependencies_to_install", return_value=(False, set())
     )
@@ -983,7 +983,7 @@ def test_search_and_install_packs_failure_install_packs(mocker: MockFixture):
     mocker.patch.object(script, "get_env_var", return_value="commit")
     mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
     mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
-    mocker.patch.object(script, "save_graph_dot_file_log")
+    mocker.patch.object(script, "save_graph_data_file_log")
     mocker.patch.object(
         script, "get_packs_and_dependencies_to_install", return_value=(False, set())
     )
