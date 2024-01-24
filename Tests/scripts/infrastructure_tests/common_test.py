@@ -76,11 +76,11 @@ def test_get_person_in_charge__no_number_sign(mocker):
 
 def test_pipelines_are_in_correct_order__false(mocker):
     """
-    Given:  
-        Two pipelines that are out of order in respect to their creation time  
-    When:  
-        The function are_pipelines_in_order is called with the two pipelines  
-    Then:  
+    Given:
+        Two pipelines that are out of order in respect to their creation time
+    When:
+        The function are_pipelines_in_order is called with the two pipelines
+    Then:
         It should return False as the pipelines are out of order
     """
     pipeline1 = mocker.Mock()
@@ -94,12 +94,12 @@ def test_pipelines_are_in_correct_order__false(mocker):
 
 def test_pipelines_are_in_correct_order__true(mocker):
     """
-    Given:  
-        Two pipelines that are in order in respect to their creation time  
-    When:  
-        The function are_pipelines_in_order is called with both pipelines  
-    Then:  
-        It should return True as the pipelines are in order  
+    Given:
+        Two pipelines that are in order in respect to their creation time
+    When:
+        The function are_pipelines_in_order is called with both pipelines
+    Then:
+        It should return True as the pipelines are in order
     """
     pipeline1 = mocker.Mock()
     pipeline1.created_at = '2020-01-02T00:00:00Z'
