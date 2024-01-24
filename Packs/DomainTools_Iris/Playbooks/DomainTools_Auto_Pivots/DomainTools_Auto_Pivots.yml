@@ -1,0 +1,2094 @@
+id: DomainTools Auto Pivots
+version: -1
+name: DomainTools Auto Pivots
+description: 'This playbook retrieves the Iris Investigate profile of domain and automatically identifies potential connected infrastructure related to artifacts based on DomainTools Guided Pivot value. '
+tags:
+- Domaintools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d517b724-8a70-4146-8029-cdb6b92b5970
+    type: start
+    task:
+      id: d517b724-8a70-4146-8029-cdb6b92b5970
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 066e8866-1263-4541-839d-e1d68d4e4a5b
+    type: regular
+    task:
+      id: 066e8866-1263-4541-839d-e1d68d4e4a5b
+      version: -1
+      name: Lookup Domain(s)
+      description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If parsing of FQDNs is desired, see domainExtractAndInvestigate.
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domains}
+      include_context:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c33e2f7d-a8c9-4107-895c-8f31efd48e07
+    type: title
+    task:
+      id: c33e2f7d-a8c9-4107-895c-8f31efd48e07
+      version: -1
+      name: Look for High Risk Domains
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: cf6666ec-071b-41da-81f8-c41808bb0398
+    type: regular
+    task:
+      id: cf6666ec-071b-41da-81f8-c41808bb0398
+      version: -1
+      name: Check Pivotable Domains
+      description: 'Get guided pivot counts.'
+      scriptName: CheckPivotableDomains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      domaintools_data:
+        simple: ${DomainTools}
+      max_google_adsense_count:
+        simple: ${inputs.dt_max_google_adsense_count}
+      max_google_analytics_count:
+        simple: ${inputs.dt_max_google_analytics_count}${inputs.dt_max_ssl_email_count}
+      max_ip_address_count:
+        simple: ${inputs.dt_max_ip_address_count}
+      max_mx_domain_count:
+        simple: ${inputs.dt_max_mx_domain_count}
+      max_mx_host_count:
+        simple: ${inputs.dt_max_mx_host_count}
+      max_mx_ip_count:
+        simple: ${inputs.dt_max_mx_ip_count}
+      max_name_server_host_count:
+        simple: ${inputs.dt_max_name_server_host_count}
+      max_name_server_ip_count:
+        simple: ${inputs.dt_max_name_server_ip_count}
+      max_registrant_contact_name_count:
+        simple: ${inputs.dt_max_registrant_contact_name_count}
+      max_registrant_org_count:
+        simple: ${inputs.dt_max_registrant_org_count}
+      max_registrar_count:
+        simple: ${inputs.dt_max_registrar_count}
+      max_soa_email_count:
+        simple: ${inputs.dt_max_soa_email_count}
+      max_ssl_email_count:
+        simple: ${inputs.dt_max_ssl_email_count}
+      max_ssl_info_hash_count:
+        simple: ${inputs.dt_max_ssl_info_hash_count}
+      max_ssl_info_organization_count:
+        simple: ${inputs.dt_max_ssl_info_organization_count}
+      max_ssl_subject_count:
+        simple: ${inputs.dt_max_ssl_subject_count}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b8ddfe87-8d73-4bb4-8c7c-f2cefd1338bf
+    type: regular
+    task:
+      id: b8ddfe87-8d73-4bb4-8c7c-f2cefd1338bf
+      version: -1
+      name: Pivot NameServer Host
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      nameserver_host:
+        complex:
+          root: PivotableDomains.PivotableNameServerHost
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: PivotableDomains.PivotableNameServerHost.pivotable
+                iscontext: true
+          accessor: items.value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 538b72b5-bd59-43c7-863b-a4463921d890
+    type: regular
+    task:
+      id: 538b72b5-bd59-43c7-863b-a4463921d890
+      version: -1
+      name: Pivot NameServer IP
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      nameserver_ip:
+        complex:
+          root: PivotableDomains.PivotableNameServerIp
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: PivotableDomains.PivotableNameServerIp.pivotable
+                iscontext: true
+          accessor: items.value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -267.5,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: fb46caed-8e5c-45c3-8c9e-20114dd46ab2
+    type: condition
+
+    task:
+      id: fb46caed-8e5c-45c3-8c9e-20114dd46ab2
+      version: -1
+      name: Is Pivotable NS Host?
+      description: 'Is NS Host a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Nameserver host:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: Nameserver host
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableNameServerHost.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3116eba1-d42b-4621-848f-7880b0880799
+    type: condition
+    task:
+      id: 3116eba1-d42b-4621-848f-7880b0880799
+      version: -1
+      name: Is Pivotable NS IP?
+      description: 'Is NS IP a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      nameserver ip:
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: nameserver ip
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableNameServerIp.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": -267.5,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9ddf8e07-b134-4094-8e53-2750c84d085a
+    type: condition
+    task:
+      id: 9ddf8e07-b134-4094-8e53-2750c84d085a
+      version: -1
+      name: Is Pivotable Registrant?
+      description: 'Is Registrant a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      registrant:
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: registrant
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableRegistrantContactName.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 182.5,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e2307b78-c2fc-473e-8317-c4efb6550505
+    type: regular
+    task:
+      id: e2307b78-c2fc-473e-8317-c4efb6550505
+      version: -1
+      name: Pivot Registrant Name
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      registrant:
+        simple: ${PivotableDomains.PivotableRegistrantContactName.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 83a90792-329c-43a6-871b-33a4127213c5
+    type: condition
+    task:
+      id: 83a90792-329c-43a6-871b-33a4127213c5
+      version: -1
+      name: Is Pivotable Registrant Org?
+      description: 'Is Registrant org a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Registrant Org:
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: Registrant Org
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableRegistrantOrg.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 632.5,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 22cd10a4-733b-45a9-89b5-95539d38e077
+    type: regular
+    task:
+      id: 22cd10a4-733b-45a9-89b5-95539d38e077
+      version: -1
+      name: Pivot Registrant Org
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      registrant_org:
+        simple: ${PivotableDomains.PivotableRegistrantOrg.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: b225b62f-2d88-4eb8-88d9-79c5954b8306
+    type: condition
+    task:
+      id: b225b62f-2d88-4eb8-88d9-79c5954b8306
+      version: -1
+      name: Is Pivotable SSL Org?
+      description: 'Is SSL org a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      SSL Org:
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: SSL Org
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableSslInfoOrganization.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 488d8628-d5fd-4481-8dd7-7d9fb8cc703a
+    type: regular
+    task:
+      id: 488d8628-d5fd-4481-8dd7-7d9fb8cc703a
+      version: -1
+      name: Pivot SSL Org
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ssl_org:
+        simple: ${PivotableDomains.PivotableSslInfoOrganization.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 1c077ccb-1256-4fca-873d-dd73e1101122
+    type: condition
+    task:
+      id: 1c077ccb-1256-4fca-873d-dd73e1101122
+      version: -1
+      name: Is Pivotable SSL Hash?
+      description: 'Is SSL hash a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      ssl hash:
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: ssl hash
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableSslInfoHash.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f0069e09-6d44-4c9b-826b-bc53566dba59
+    type: regular
+    task:
+      id: f0069e09-6d44-4c9b-826b-bc53566dba59
+      version: -1
+      name: Pivot SSL Hash
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ssl_hash:
+        simple: ${PivotableDomains.PivotableSslInfoHash.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: c03d7a1d-9ac1-488c-884d-d1528ab96298
+    type: condition
+    task:
+      id: c03d7a1d-9ac1-488c-884d-d1528ab96298
+      version: -1
+      name: Is Pivotable SOA Email?
+      description: 'Is SOA email a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      soa email:
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: soa email
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableSoaEmail.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: c1d315ea-f8af-49cf-8ab1-c30c792ed03c
+    type: regular
+    task:
+      id: c1d315ea-f8af-49cf-8ab1-c30c792ed03c
+      version: -1
+      name: Pivot SOA Email
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      email:
+        simple: ${PivotableDomains.PivotableSoaEmail.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: a344a967-a6e7-45b2-8559-f61b1ab03228
+    type: title
+    task:
+      id: a344a967-a6e7-45b2-8559-f61b1ab03228
+      version: -1
+      name: Start Auto Pivoting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+      - "18"
+      - "19"
+      - "21"
+      - "23"
+      - "25"
+      - "27"
+      - "30"
+      - "32"
+      - "40"
+      - "42"
+      - "44"
+      - "46"
+      - "48"
+      - "50"
+      - "52"
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 21de504b-add9-4ea0-8289-17bd63072a76
+    type: condition
+    task:
+      id: 21de504b-add9-4ea0-8289-17bd63072a76
+      version: -1
+      name: Is Pivotable IP?
+      description: 'Is IP address a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      ip:
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: ip
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableIpAddress.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 11298ba2-c21d-4b40-8476-0048cb651613
+    type: regular
+    task:
+      id: 11298ba2-c21d-4b40-8476-0048cb651613
+      version: -1
+      name: Pivot IP
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ip:
+        simple: ${PivotableDomains.PivotableIpAddress.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2b882c45-a316-4e99-8cac-f11d12270e1f
+    type: condition
+    task:
+      id: 2b882c45-a316-4e99-8cac-f11d12270e1f
+      version: -1
+      name: Is Pivotable MX IP
+      description: 'Is MX IP a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      MX IP:
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: MX IP
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableMxIp.pivotable
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 7db1ed88-3582-40dc-8349-d0d16206b4b8
+    type: regular
+    task:
+      id: 7db1ed88-3582-40dc-8349-d0d16206b4b8
+      version: -1
+      name: Pivot MX IP
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      mailserver_ip:
+        simple: ${PivotableDomains.PivotableMxIp.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1170,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 35986446-8d91-4f48-8d47-3d7ffe16e67b
+    type: condition
+    task:
+      id: 35986446-8d91-4f48-8d47-3d7ffe16e67b
+      version: -1
+      name: Is there Any High Risk Score Domain?
+      description: 'Check high risk domains.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DomainTools.Pivots.PivotedDomains.Analytics.OverallRiskScore
+            iscontext: true
+          right:
+            value:
+              simple: inputs.dt_riskscore_threshold
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 930e0874-747f-4eed-8386-5453105bc8f5
+    type: title
+    task:
+      id: 930e0874-747f-4eed-8386-5453105bc8f5
+      version: -1
+      name: Done
+      description: Prints a raw representation of a string or object, visualising things likes tabs and newlines.  For instance, '\n' will be displayed instead of a newline character, or a Windows CR will be displayed as '\r\n'.  This is useful for debugging issues where things aren't behaving as expected, such as when parsing a string with a regular expression.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 2b9385cc-c045-4478-8baf-3889f41d2eba
+    type: regular
+    task:
+      id: 2b9385cc-c045-4478-8baf-3889f41d2eba
+      version: -1
+      name: Add High Risk Domain to Context
+      description: 'Add high risk domain to context.'
+      scriptName: AddDomainRiskScoreToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      domaintools_data:
+        complex:
+          root: DomainTools.Pivots.PivotedDomains
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DomainTools.Pivots.PivotedDomains.Analytics.OverallRiskScore
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.dt_riskscore_threshold
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 3616ae76-1825-47bf-89e4-b382f630c95e
+    type: regular
+    task:
+      id: 3616ae76-1825-47bf-89e4-b382f630c95e
+      version: -1
+      name: Manually Review High Risk Score Domains
+      description: 'Manually review high risk score domains.'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: Analyst
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 990b24ad-dd36-4b96-8793-b36801e2024a
+    type: condition
+    task:
+      id: 990b24ad-dd36-4b96-8793-b36801e2024a
+      version: -1
+      name: 'Should Wait for an Analyst Review? '
+      description: 'Should Wait for an Analyst Review.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: inputs.should_wait_for_analyst_review
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: dbcb5fa6-f951-4a8c-8e55-a1f1cb651373
+    type: condition
+    task:
+      id: dbcb5fa6-f951-4a8c-8e55-a1f1cb651373
+      version: -1
+      name: Is Pivotable MX Host?
+      description: 'Is MX host a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      MX Host:
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: MX Host
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableMxHost.pivotable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: d2fa4809-917f-48d1-85b5-414215c406c8
+    type: regular
+    task:
+      id: d2fa4809-917f-48d1-85b5-414215c406c8
+      version: -1
+      name: Pivot MX Host
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      mailserver_host:
+        simple: ${PivotableDomains.PivotableMxHost.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1630,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: cff54b01-4a0f-420a-80b0-ccac9a99f0d5
+    type: condition
+    task:
+      id: cff54b01-4a0f-420a-80b0-ccac9a99f0d5
+      version: -1
+      name: Is Pivotable MX Domain?
+      description: 'Is MX domain a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      mx domain:
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: mx domain
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableMxDomain.pivotable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2070,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 5bf98c03-d021-4144-80ff-2d8a70e0e49c
+    type: regular
+    task:
+      id: 5bf98c03-d021-4144-80ff-2d8a70e0e49c
+      version: -1
+      name: Pviot MX Domain
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      mailserver_domain:
+        simple: ${PivotableDomains.PivotableMxDomain.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2090,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: dfd744f6-8fb0-4916-80d0-bd594a7a9711
+    type: condition
+    task:
+      id: dfd744f6-8fb0-4916-80d0-bd594a7a9711
+      version: -1
+      name: Is Pivotable Registrar?
+      description: 'is registrar a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      registrar:
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: registrar
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableRegistrar.pivotable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2790,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: d58dd774-b23d-4af1-88be-74dfa104861d
+    type: regular
+    task:
+      id: d58dd774-b23d-4af1-88be-74dfa104861d
+      version: -1
+      name: Pivot Registrar
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      registrar:
+        simple: ${PivotableDomains.PivotableRegistrar.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2790,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 8d9bde15-525e-4748-8a80-01fc3b5e6c41
+    type: condition
+    task:
+      id: 8d9bde15-525e-4748-8a80-01fc3b5e6c41
+      version: -1
+      name: Is Pivotable SSL Subject?
+      description: 'Is SSL subject a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      SSL Subject:
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: SSL Subject
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableSslSubject.pivotable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3220,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: c13bcb3d-56d1-4a53-8241-6a13059262fb
+    type: regular
+    task:
+      id: c13bcb3d-56d1-4a53-8241-6a13059262fb
+      version: -1
+      name: Pivot SSL Subject
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ssl_subject:
+        simple: ${PivotableDomains.PivotableSslSubject.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3220,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: f4abc552-69f0-40c1-8bb9-5be30639fa12
+    type: condition
+    task:
+      id: f4abc552-69f0-40c1-8bb9-5be30639fa12
+      version: -1
+      name: Is Pivotable SSL Email?
+      description: 'Is SSL email a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      SSL Email:
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: SSL Email
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableSslEmail.pivotable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3670,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 3e6e805d-7d01-46b0-8d90-5ca6fc5ce8c2
+    type: regular
+    task:
+      id: 3e6e805d-7d01-46b0-8d90-5ca6fc5ce8c2
+      version: -1
+      name: Pivot SSL Email
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ssl_email:
+        simple: ${PivotableDomains.PivotableSslEmail.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3660,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: ff4b596d-8de9-468a-8f1b-d3c46422b824
+    type: condition
+    task:
+      id: ff4b596d-8de9-468a-8f1b-d3c46422b824
+      version: -1
+      name: Is Pivotable NS Domain?
+      description: 'Is NS domain a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      NS Domain:
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: NS Domain
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableNameServerDomain.pivotable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4100,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 76382550-5490-4c99-837f-a08e8059584e
+    type: regular
+    task:
+      id: 76382550-5490-4c99-837f-a08e8059584e
+      version: -1
+      name: Pivot Nameserver Domain
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      nameserver_domain:
+        simple: ${PivotableDomains.PivotableNameServerDomain.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4080,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 0da04d50-78c2-4b8d-841e-01cbb96f7adf
+    type: condition
+    task:
+      id: 0da04d50-78c2-4b8d-841e-01cbb96f7adf
+      version: -1
+      name: Is Pivotable Google Analytics?
+      description: 'Is Google analytics a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Google Analytics:
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: Google Analytics
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableGoogleAnalytics.pivotable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2510,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 311dd4f0-bf51-4375-8f48-11515620a153
+    type: regular
+    task:
+      id: 311dd4f0-bf51-4375-8f48-11515620a153
+      version: -1
+      name: Pivot Google Analytics
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      google_analytics:
+        simple: ${PivotableDomains.PivotableGoogleAnalytics.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2530,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: c348790d-db73-4e67-8962-ae8a23c1e25f
+    type: condition
+    task:
+      id: c348790d-db73-4e67-8962-ae8a23c1e25f
+      version: -1
+      name: Is Pivotable Adsense?
+      description: 'Is adsense a guided pivot.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Adsense:
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: Adsense
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: PivotableDomains.PivotableAdsense.pivotable
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2950,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 357eb1ab-fcd3-4b67-8b28-345b642cb5e1
+    type: regular
+    task:
+      id: 357eb1ab-fcd3-4b67-8b28-345b642cb5e1
+      version: -1
+      name: Pivot Adsense
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
+      script: DomainTools Iris|||domaintoolsiris-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      adsense:
+        simple: ${PivotableDomains.PivotableAdsense.items.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2960,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_4_#default#": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2625,
+        "width": 7440,
+        "x": -2960,
+        "y": 70
+      }
+    }
+  }
+inputs:
+- key: domains
+  value: {}
+  required: true
+  description: 'The domains to lookup. '
+  playbookInputQuery:
+- key: dt_riskscore_threshold
+  value:
+    simple: "50"
+  required: true
+  description: The risk score threshold to compare.
+  playbookInputQuery:
+- key: should_wait_for_analyst_review
+  value:
+    simple: "false"
+  required: true
+  description: Flags if users should wait for an analyst to review. Default is false. Value can be either true/false only.
+  playbookInputQuery:
+- key: dt_max_name_server_host_count
+  value:
+    simple: "250"
+  required: false
+  description: The max nameserver host pivot count threshold
+  playbookInputQuery:
+- key: dt_max_registrant_contact_name_count
+  value:
+    simple: "200"
+  required: false
+  description: The max registrant contact name pivot count threshold
+  playbookInputQuery:
+- key: dt_max_registrant_org_count
+  value:
+    simple: "200"
+  required: false
+  description: 'The max registrant org pivot count threshold '
+  playbookInputQuery:
+- key: dt_max_ssl_info_organization_count
+  value:
+    simple: "200"
+  required: false
+  description: the max ssl info organization pivot count threshold
+  playbookInputQuery:
+- key: dt_max_ssl_info_hash_count
+  value:
+    simple: "350"
+  required: false
+  description: the max ssl info hash pivot count threshold
+  playbookInputQuery:
+- key: dt_max_soa_email_count
+  value:
+    simple: "200"
+  required: false
+  description: the max soa email pivot count threshold
+  playbookInputQuery:
+- key: dt_max_ip_address_count
+  value:
+    simple: "150"
+  required: false
+  description: the max ip address pivot count threshold
+  playbookInputQuery:
+- key: dt_max_name_server_ip_count
+  value:
+    simple: "250"
+  required: false
+  description: the max nameserver ip pivot count threshold
+  playbookInputQuery:
+- key: dt_max_mx_ip_count
+  value:
+    simple: "200"
+  required: false
+  description: the max MX ip pivot count threshold
+  playbookInputQuery:
+- key: dt_max_ssl_email_count
+  value:
+    simple: "200"
+  required: false
+  description: The max ssl email pivot count threshold
+  playbookInputQuery:
+- key: dt_max_registrar_count
+  value: {}
+  required: false
+  description: The max registrar pivot count threshold
+  playbookInputQuery:
+- key: dt_max_ssl_subject_count
+  value:
+    simple: "200"
+  required: false
+  description: the max ssl subject pivot count threshold
+  playbookInputQuery:
+- key: dt_max_name_server_domain_count
+  value:
+    simple: "200"
+  required: false
+  description: the max name server domain pivot count threshold
+  playbookInputQuery:
+- key: dt_max_mx_host_count
+  value:
+    simple: "200"
+  required: false
+  description: the max MX host pivot count threshold
+  playbookInputQuery:
+- key: dt_max_mx_domain_count
+  value:
+    simple: "200"
+  required: false
+  description: the max MX domain pivot count threshold
+  playbookInputQuery:
+- key: dt_max_google_adsense_count
+  value:
+    simple: "200"
+  required: false
+  description: the max google adsense pivot count threshold
+  playbookInputQuery:
+- key: dt_max_google_analytics_count
+  value: {}
+  required: false
+  description: the max google analytics pivot count threshold
+  playbookInputQuery:
+outputs:
+- contextPath: HighRiskPivotedDomains.Name
+  description: The domain name
+- contextPath: HighRiskPivotedDomains.OverallRiskScore
+  description: The overall risk score of the domain
+- contextPath: DomainTools.Pivots.PivotedDomains.Name
+  description: The DomainTools Domain Name.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.LastEnriched
+  description: The last time DomainTools enriched domain data.
+  type: Date
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.OverallRiskScore
+  description: The DomainTools Overall Risk Score.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.ProximityRiskScore
+  description: The DomainTools Proximity Risk Score.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.ThreatProfileRiskScore.RiskScore
+  description: The DomainTools Threat Profile Risk Score.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.ThreatProfileRiskScore.Threats
+  description: The DomainTools Threat Profile Threats.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.ThreatProfileRiskScore.Evidence
+  description: The DomainTools Threat Profile Evidence.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.WebsiteResponseCode
+  description: The Website Response Code.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.AlexaRank
+  description: The Alexa Rank.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.Tags
+  description: The DomainTools Tags.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantName
+  description: The name of the registrant.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantOrg
+  description: The organization of the registrant.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantContact.Country.value
+  description: The country value of the registrant contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantContact.Country.count
+  description: The Country count of the registrant contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantContact.Email.value
+  description: The Email value of the registrant contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantContact.Email.count
+  description: The Email count of the registrant contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantContact.Name.value
+  description: The name value of the registrant contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantContact.Name.count
+  description: The name count of the registrant contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantContact.Phone.value
+  description: The phone value of the registrant contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.RegistrantContact.Phone.count
+  description: The phone count of the registrant contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.SOAEmail
+  description: The SOA record Email.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.SSLCertificateEmail
+  description: The SSL certificate Email.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdminContact.Country.value
+  description: The country value of the administrator contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdminContact.Country.count
+  description: The country count of the administrator contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdminContact.Email.value
+  description: The Email value of the administrator contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdminContact.Email.count
+  description: The Email count of the administrator contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdminContact.Name.value
+  description: The name value of the administrator contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdminContact.Name.count
+  description: The name count of the administrator contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdminContact.Phone.value
+  description: The phone value of the administrator contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdminContact.Phone.count
+  description: The phone count of the administrator contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.TechnicalContact.Country.value
+  description: The country value of the technical contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.TechnicalContact.Country.count
+  description: The country count of the technical contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.TechnicalContact.Email.value
+  description: The Email value of the technical contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.TechnicalContact.Email.count
+  description: The Email count of the technical contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.TechnicalContact.Name.value
+  description: The name value of the technical contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.TechnicalContact.Name.count
+  description: The name count of the technical contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.TechnicalContact.Phone.value
+  description: The phone value of the technical contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.TechnicalContact.Phone.count
+  description: The phone count of the technical contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.BillingContact.Country.value
+  description: The country value of the billing contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.BillingContact.Country.count
+  description: The country count of the billing contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.BillingContact.Email.value
+  description: The Email value of the billing contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.BillingContact.Email.count
+  description: The Email count of the billing contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.BillingContact.Name.value
+  description: The name value of the billing contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.BillingContact.Name.count
+  description: The name count of the billing contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.BillingContact.Phone.value
+  description: The phone value of the billing contact.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.BillingContact.Phone.count
+  description: The phone count of the billing contact.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.EmailDomains
+  description: The Email domains.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdditionalWhoisEmails.value
+  description: The value of the Additional Whois Emails.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Identity.AdditionalWhoisEmails.count
+  description: The count of the Additional Whois Emails.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Registration.DomainRegistrant
+  description: The registrant of the domain.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Registration.RegistrarStatus
+  description: The status of the registrar.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Registration.DomainStatus
+  description: The active status of the domain.
+  type: Boolean
+- contextPath: DomainTools.Pivots.PivotedDomains.Registration.CreateDate
+  description: The date the domain was created.
+  type: Date
+- contextPath: DomainTools.Pivots.PivotedDomains.Registration.ExpirationDate
+  description: The expiry date of the domain.
+  type: Date
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPAddresses.address.value
+  description: The address value of the IP Addresses.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPAddresses.address.count
+  description: The address count of the IP Addresses.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPAddresses.asn.value
+  description: The ASN value of the IP Addresses.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPAddresses.asn.count
+  description: The ASN count of the IP Addresses.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPAddresses.country_code.value
+  description: The country code value of the IP Addresses.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPAddresses.country_code.count
+  description: The country code count of the IP Addresses.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPAddresses.isp.value
+  description: The ISP value of the IP Addresses.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPAddresses.isp.count
+  description: The ISP count of the IP Addresses.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.IPCountryCode
+  description: The country code of the IP address.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.MailServers.domain.value
+  description: The domain value of the Mail Servers.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.MailServers.domain.count
+  description: The domain count of the Mail Servers.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.MailServers.host.value
+  description: The host value of the Mail Servers.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.MailServers.host.count
+  description: The host count of the Mail Servers.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.MailServers.ip.value
+  description: The IP value of the Mail Servers.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.MailServers.ip.count
+  description: The IP count of the Mail Servers.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.SPFRecord
+  description: The SPF record.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.NameServers.domain.value
+  description: The domain value of the DomainTools Domains NameServers.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.NameServers.domain.count
+  description: The domain count of the DomainTools Domains NameServers.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.NameServers.host.value
+  description: The host value of the DomainTools Domains NameServers.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.NameServers.host.count
+  description: The host count of the DomainTools Domains NameServers.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.NameServers.ip.value
+  description: The IP value of the DomainTools Domains NameServers.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.NameServers.ip.count
+  description: The IP count of the DomainTools Domains NameServers.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.SSLCertificate.hash.value
+  description: The Hash value of the SSL certificate.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.SSLCertificate.hash.count
+  description: The Hash count of the SSL certificate.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.SSLCertificate.organization.value
+  description: The organization value of the SSL certificate.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.SSLCertificate.organization.count
+  description: The organization count of the SSL certificate.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.SSLCertificate.subject.value
+  description: The subject value of the SSL certificate.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.SSLCertificate.subject.count
+  description: The subject count of the SSL certificate.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.RedirectsTo.value
+  description: The Redirects To value of the domain.
+  type: String
+- contextPath: DomainTools.Pivots.PivotedDomains.Hosting.RedirectsTo.count
+  description: The Redirects To count of the domain.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.GoogleAdsenseTrackingCode
+  description: The tracking code of Google Adsense.
+  type: Number
+- contextPath: DomainTools.Pivots.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
+  description: The tracking code of Google Analytics.
+  type: Number
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0

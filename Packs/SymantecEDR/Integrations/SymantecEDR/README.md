@@ -13,10 +13,14 @@ This integration was integrated and tested with version 4.6 of SymantecEDR
     | Client ID | OAuth Client ID and Client Secret to authorize third-party applications to communicate with Symantec EDR. | True |
     | Client Secret |  | True |
     | Fetch incidents |  | False |
+    | Incident data source | Fetch incident type, e.g., 'incident', 'event'. If not selected, incident will be selected. | False |
     | Fetch incidents alerts | Retrieve incident related events from EDR database. An additional API call will be made for each fetched incident. | False |
     | Fetch incident comments | Retrieve incident comments for each fetched incident when checked. An additional API call will be made for each fetched incident. | False |
-    | Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress | If not selected, will fetch Open Incidents. | False |
-    | Priority to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High. | If not selected, will fetch High and Medium incidents. | False |
+    | Incidents "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress | If not selected, will fetch Open incidents. | False |
+    | Incidents "Priority" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High. | If not selected, will fetch High and Medium incidents. | False |
+    | Events "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Unknown, Success | If not selected, will fetch Success events. | False |
+    | Events "Severity" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Info, Warning | If not selected, will fetch Info events. | False |
+    | Query string to fetch incidents/events. For example - log_time:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z]" |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 10 minutes, 12 hours, 7 days) | First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days. | False |
     | Maximum number of incidents to fetch | Maximum Number of Incidents fetch limit. Maximum Default limit is 50. | False |
     | Trust any certificate (not secure) |  | False |
@@ -30,7 +34,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### symantec-edr-endpoint-isolate
 ***
-Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
+Isolates or quarantines endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
 
 
 #### Base Command
@@ -462,7 +466,7 @@ Get File Instances
 
 ### symantec-edr-system-activity-list
 ***
-Get system activities.
+Get system activities or logs.
 
 
 #### Base Command
@@ -654,7 +658,7 @@ Get Audit Events
 
 ### symantec-edr-event-list
 ***
-Get events from EDR on-premise.
+Get events or system alerts from EDR on-premise.
 
 
 #### Base Command
@@ -826,7 +830,7 @@ Get events for incidents.
 | SymantecEDR.IncidentEvent.device_ip | String | The IPv6 or IPv4 address of the endpoint when this association was last updated. | 
 | SymantecEDR.IncidentEvent.device_os_name | String | The operating system running on the device_type that originated the event. The possible values include, but are not limited to, the following:  Windows, Mac OSX, IOS, Android. | 
 | SymantecEDR.IncidentEvent.user_name | String | The username or ID that originated or caused the event. | 
-| SymantecEDR.IncidentEvent.user_domain | String | Event User associated with Domain | 
+| SymantecEDR.IncidentEvent.user_domain | String | Event user associated with the domain | 
 | SymantecEDR.IncidentEvent.user_sid | String | Unique ID of the user that originated the event or the user on whose behalf the event occurred. | 
 | SymantecEDR.IncidentEvent.incident | String | The unique ID of the incident that is related to this event. Applicable events: All events associated with an incident. | 
 | SymantecEDR.IncidentEvent.device_domain | String | The domain where device resides. | 
@@ -853,27 +857,27 @@ Get events for incidents.
 | SymantecEDR.IncidentEvent.process.cmd_line | String | The command line that was used to launch the process. | 
 | SymantecEDR.IncidentEvent.process.signature_level_id | Number | A numeric representation of the signature level. Possible values are: 0 = UNKNOWN, 10 = UNSIGNED, 20 = SIGNED_BUT_UNTRUSTED, 30 = SIGNED, 40 = CLASS3_SIGNED, 50 = SYMC_SIGNED, 60 = MICROSOFT_SIGNED, 70 = MICROSOFT_OS_COMPONENT | 
 | SymantecEDR.IncidentEvent.process.integrity_id | Number | The process integrity level \(Windows only\). Possible values are:  0 = Unknown, 1 = Untrusted,  2 = Low,  3 = Medium,  4 = Medium Plus,  5 = High, 6 = System,  7 = Protected. | 
-| SymantecEDR.IncidentEvent.process.user.name | String | Process User Name | 
-| SymantecEDR.IncidentEvent.process.user.sid | String | Process Unique SID | 
+| SymantecEDR.IncidentEvent.process.user.name | String | Process user name | 
+| SymantecEDR.IncidentEvent.process.user.sid | String | Process unique SID | 
 | SymantecEDR.IncidentEvent.process.file.normalized_path | String | The CSIDL normalized path name;Windows Only. | 
 | SymantecEDR.IncidentEvent.process.file.name | String | The name of the file. | 
-| SymantecEDR.IncidentEvent.process.file.md5 | String | The MD5 Checksum of the file | 
+| SymantecEDR.IncidentEvent.process.file.md5 | String | The MD5 checksum of the file | 
 | SymantecEDR.IncidentEvent.process.file.modified | Date | The process identifier as reported by the operating system. | 
 | SymantecEDR.IncidentEvent.process.file.path | String | The full path to the object. | 
 | SymantecEDR.IncidentEvent.process.file.signature_company_name | String | The name of the company on the certificate. | 
-| SymantecEDR.IncidentEvent.process.file.signature_value_ids | Number | The issuer of the signature. Applicable events: 4096, 4099  | 
+| SymantecEDR.IncidentEvent.process.file.signature_value_ids | Number | The issuer of the signature. Applicable events: 4096, 4099 | 
 | SymantecEDR.IncidentEvent.enriched_data.rule_name | String | The name of the IntelliFilter rule that observes all of the endpoint data recorded events on the client. | 
 | SymantecEDR.IncidentEvent.enriched_data.suspicion_score | Number | Score that determines the suspiciousness of the action captured in the event. 1. Very Low: 1-25 \(Informational\) , 2. Low: 26-50 \(Suspicious\) , 3. Moderate: 51-75 \(Suspicious\) , 4. Severe: 76-87 \(Malicious\), 5. Very Severe: 88-100 \(Malicious\). | 
 | SymantecEDR.IncidentEvent.enriched_data.category_name | String | The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension \(.jpg.exe\) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009 | 
 | SymantecEDR.IncidentEvent.enriched_data.category_id | Number | The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands | 
-| SymantecEDR.IncidentEvent.enriched_data.rule_description | String | Enriched Rule Description | 
-| SymantecEDR.IncidentEvent.event_uuid | String | The Unique event UUID | 
+| SymantecEDR.IncidentEvent.enriched_data.rule_description | String | Enriched rule description | 
+| SymantecEDR.IncidentEvent.event_uuid | String | The unique event UUID | 
 | SymantecEDR.IncidentEvent.attacks.technique_uid | String | The MITRE technique ID for the attack. Possible values are listed in https://attack.mitre.org/techniques/enterprise. | 
 | SymantecEDR.IncidentEvent.attacks.technique_name | String | The MITRE technique name for the attack. | 
 | SymantecEDR.IncidentEvent.attacks.tactic_ids | Number | The MITRE tactic ID\(s\) for the attack. Tactic ID values are: 1 = Initial Access , 2 = Execution , 3 = Persistence , 4 = Privilege Escalation , 5 = Defense Evasion , 6 = Credential Access , 7 = Discovery , 8 = Lateral Movement , 9 = Collection , 10 = Exfltration , 11 = Command and Control | 
 | SymantecEDR.IncidentEvent.attacks.tactic_uids | String | THe tactic Unique IDs. | 
 | SymantecEDR.IncidentEvent.event_source | Number | Indicates the reason of event being related to an incident. Possible values are: 1 - Event triggered the incident , 2 - Event is part of process lineage tracking, 3 - Event is likely related to the incident | 
-| SymantecEDR.IncidentEvent.ref_uid | String | The Event Reference UID | 
+| SymantecEDR.IncidentEvent.ref_uid | String | The event reference UID. | 
 | SymantecEDR.IncidentEvent.correlation_uid | String | Event Correlation UID. | 
 | SymantecEDR.IncidentEvent.uuid | String | The unique id for this event. | 
 | SymantecEDR.IncidentEvent.log_name | String | The index of the event.  Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. | 
@@ -1142,7 +1146,7 @@ Get allow list policies.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecEDR.AllowListPolicy.comment | String | The comment for this allow list policy. If not specified, then defaults to empty string. Example: No monitoring required for control traffic from this IP. | 
-| SymantecEDR.AllowListPolicy.id | String | The unique ID of this allow list policy. This ID can be used in patch or delete request. Note: This is ignored if present in create request | 
+| SymantecEDR.AllowListPolicy.id | String | The unique ID of this allow list policy. This ID can be used in a patch or delete request. Note: This is ignored if present in a create request | 
 | SymantecEDR.AllowListPolicy.target_type | String | The type of this whitelist policy. enum \(ip, domain, url, sha256, incident_trigger_sig_id\). Example: ip. | 
 | SymantecEDR.AllowListPolicy.target_value | String | The value of this allow list policy. Example: 1.1.1.1. | 
 
@@ -1335,7 +1339,7 @@ Deletes a file, i.e., deletes all instances of the file, based on the file hash 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | Device ID of the target computer/endpoint,. | Required | 
-| sha2 | The SHA256 value of the target file,. | Required | 
+| sha2 | The SHA256 value of the target file. | Required | 
 
 
 #### Context Output

@@ -25,13 +25,8 @@ To configure the integration:
  
 #### Self-Deployed Azure App
 
-For more information, see this [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application). 
-
-The **Application Secret** and the **Tenant ID** integration parameters are required for this method.
-
+For more information, see this [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application).
 Run the **msgraph-api-test** command to ensure connectivity to Microsoft.
-
-The integration supports only Application permission type, and does not support Delegated permission type. 
 
 #### Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.

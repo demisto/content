@@ -72,6 +72,8 @@ RPZ_RULES_DICT = {
     }
 }
 
+NETWORK_NOT_FOUND = "A network was not found for this address"
+
 
 class Client(BaseClient):
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, params=None):
@@ -346,7 +348,13 @@ def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dic
         Outputs
     """
     ip = args.get('ip')
-    raw_response = client.get_ip(ip)
+    try:
+        raw_response = client.get_ip(ip)
+    except DemistoException as e:
+        if e.message and NETWORK_NOT_FOUND in e.message:
+            return "No indicators found", {}, {}
+        else:
+            raise
     ip_list = raw_response.get('result')
 
     # If no IP object was returned

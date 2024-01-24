@@ -50,6 +50,12 @@ CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
 LOOK_BACK_HOURS = 48
+UPLOAD_BUCKETS = [
+    (ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE, "XSOAR", True),
+    (ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE, "XSOAR SAAS", True),
+    (ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE, "XSIAM", False),
+    (ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
+]
 
 
 def options_handler() -> argparse.Namespace:
@@ -284,8 +290,9 @@ def unit_tests_results() -> list[dict[str, Any]]:
 
 def bucket_upload_results(bucket_artifact_folder: Path,
                           marketplace_name: str,
-                          should_include_private_packs: bool) -> list[dict[str, Any]]:
-    steps_fields = []
+                          should_include_private_packs: bool) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    slack_msg_append = []
+    threaded_messages = []
     pack_results_path = bucket_artifact_folder / BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
@@ -293,35 +300,68 @@ def bucket_upload_results(bucket_artifact_folder: Path,
         pack_results_path.as_posix(), BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
     )
     if successful_packs:
-        steps_fields += [{
-            'title': f'Successful {marketplace_name} Packs:',
-            'value': ', '.join(sorted({*successful_packs}, key=lambda s: s.lower())),
-            'short': False
-        }]
-
-    if failed_packs:
-        steps_fields += [{
-            'title': f'Failed {marketplace_name} Packs:',
-            'value': ', '.join(sorted({*failed_packs}, key=lambda s: s.lower())),
-            'short': False
-        }]
+        slack_msg_append.append({
+            'fallback': f'Successfully uploaded {len(successful_packs)} Pack(s) to {marketplace_name}',
+            'title': f'Successfully uploaded {len(successful_packs)} Pack(s) to {marketplace_name}',
+            'color': 'good',
+        })
+        threaded_messages.append({
+            'fallback': f'Successfully uploaded {marketplace_name} Pack(s): '
+                        f'{", ".join(sorted({*successful_packs},key=lambda s: s.lower()))} to {marketplace_name}',
+            'title': f'Successfully uploaded {len(successful_packs)} Pack(s) to {marketplace_name}:',
+            'color': 'good',
+            'fields': [{
+                'title': '',
+                'value': ', '.join(sorted({*successful_packs}, key=lambda s: s.lower())),
+                'short': False
+            }]
+        })
 
     if successful_private_packs and should_include_private_packs:
         # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
-        steps_fields += [{
-            'title': 'Successful Private Packs:',
-            'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
-            'short': False
-        }]
+        slack_msg_append.append({
+            'fallback': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private Packs',
+            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private Packs',
+            'color': 'good',
+        })
+        threaded_messages.append({
+            'fallback': f'Successfully uploaded to {marketplace_name} Private Pack(s): '
+                        f'{", ".join(sorted({*successful_private_packs}, key=lambda s: s.lower()))}',
+            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private packs:',
+            'color': 'good',
+            'fields': [{
+                'title': '',
+                'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
+                'short': False
+            }]
+        })
 
-    return steps_fields
+    if failed_packs:
+        slack_msg_append.append({
+            'fallback': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}',
+            'title': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}',
+            'color': 'danger',
+        })
+        threaded_messages.append({
+            'fallback': f'Failed to upload {marketplace_name} Pack(s): '
+                        f'{", ".join(sorted({*failed_packs}, key=lambda s: s.lower()))}',
+            'title': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}:',
+            'color': 'danger',
+            'fields': [{
+                'title': '',
+                'value': ', '.join(sorted({*failed_packs}, key=lambda s: s.lower())),
+                'short': False
+            }]
+        })
+
+    return slack_msg_append, threaded_messages
 
 
 def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None,
-                        shame_message: tuple[str, str] | None) -> list[dict[str, Any]]:
+                        shame_message: tuple[str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     # report failing jobs
     content_fields = []
     if shame_message:
@@ -359,13 +399,14 @@ def construct_slack_msg(triggering_workflow: str,
         content_fields += unit_tests_results()
 
     # report pack updates
-    if 'upload' in triggering_workflow_lower:
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE, "XSOAR", True)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE, "XSOAR SAAS", True)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE, "XSIAM", False)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
-
+    threaded_messages = []
     slack_msg_append = []
+    if 'upload' in triggering_workflow_lower:
+        for bucket in UPLOAD_BUCKETS:
+            slack_msg, threaded_message = bucket_upload_results(*bucket)
+            threaded_messages.extend(threaded_message)
+            slack_msg_append.extend(slack_msg)
+
     has_failed_tests = False
     # report failing test-playbooks and test modeling rules.
     if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR, CONTENT_MERGE}:
@@ -406,14 +447,13 @@ def construct_slack_msg(triggering_workflow: str,
         # No color is needed in case of success, as it's controlled by the color of the test failures' indicator.
 
     title += title_append
-    title += f' - @{CI_SERVER_HOST}' if CI_SERVER_HOST else ''
     return [{
         'fallback': title,
         'color': color,
         'title': title,
         'title_link': pipeline_url,
         'fields': content_fields
-    }] + slack_msg_append
+    }] + slack_msg_append, threaded_messages
 
 
 def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any]]:
@@ -538,7 +578,8 @@ def main():
             computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
             computed_slack_channel = "dmst-build-test"
-    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request, shame_message)
+    slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
+                                                            shame_message)
 
     with contextlib.suppress(Exception):
         output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
@@ -551,6 +592,16 @@ def main():
         response = slack_client.chat_postMessage(
             channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
         )
+
+        if threaded_messages:
+            data: dict = response.data  # type: ignore[assignment]
+            thread_ts: str = data['ts']
+            for slack_msg in threaded_messages:
+                slack_client.chat_postMessage(
+                    channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
+                    thread_ts=thread_ts
+                )
+
         link = build_link_to_message(response)
         logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
     except Exception:

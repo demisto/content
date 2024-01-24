@@ -997,14 +997,8 @@ view: |-
     }
   }
 inputs:
-- key: alert_id
-  value: {}
-  required: false
-  description: The alert ID.
-  playbookInputQuery:
 - key: SOCEmailAddress
-  value:
-    simple:
+  value: {}
   required: false
   description: The SOC email address to use for the alert status notification.
   playbookInputQuery:
@@ -1025,6 +1019,30 @@ inputs:
     simple: "False"
   required: false
   description: Should we automatically handle false positive alerts? Specify true/false.
+  playbookInputQuery:
+- key: cloudProvider
+  value:
+    complex:
+      root: alert
+      accessor: cloudprovider
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
+- key: alert_id
+  value: {}
+  required: false
+  description: The alert ID.
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
   playbookInputQuery:
 - key: autoAccessKeyRemediation
   value:
@@ -1105,14 +1123,6 @@ inputs:
     Disable - for disabling the user.
     Delete - for deleting the user.
   playbookInputQuery:
-- key: cloudProvider
-  value:
-    complex:
-      root: alert
-      accessor: cloudprovider
-  required: false
-  description: The cloud service provider involved.
-  playbookInputQuery:
 - key: GCP-accessKeyRemediationType
   value:
     simple: Disable
@@ -1146,125 +1156,172 @@ inputs:
     Delete - For deleting the user.
     Disable - For disabling the user.
   playbookInputQuery:
-- key: ResolveIP
-  value:
-    simple: "True"
-  required: false
-  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
-  playbookInputQuery:
-- key: InternalRange
-  value: {}
-  required: false
-  description: "A list of internal IP ranges to check IP addresses against. \nFor
-    IP Enrichment - Generic v2 playbook."
-  playbookInputQuery: null
 - key: ShouldOpenTicket
   value:
     simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowShortDescription
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: A short description of the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowImpact
   value: {}
   required: false
   description: The impact for the new ticket. Leave empty for ServiceNow default impact.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowUrgency
   value: {}
   required: false
   description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowSeverity
   value: {}
   required: false
-  description: The severity of the new ticket. Leave empty for ServiceNow default
-    severity.
-  playbookInputQuery: null
+  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  playbookInputQuery:
 - key: serviceNowTicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
-    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
-  playbookInputQuery: null
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery:
 - key: serviceNowCategory
   value: {}
   required: false
   description: The category of the ServiceNow ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: serviceNowAssignmentGroup
   value: {}
   required: false
   description: The group to which to assign the new ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskPriority
   value: {}
   required: false
-  description: The urgency with which the ticket should be addressed. Allowed values
-    are "urgent", "high", "normal", or "low".
-  playbookInputQuery: null
+  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  playbookInputQuery:
 - key: ZendeskRequester
   value: {}
   required: false
   description: The user who requested this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskStatus
   value: {}
   required: false
-  description: The state of the ticket. Allowed values are "new", "open", "pending",
-    "hold", "solved", or "closed".
-  playbookInputQuery: null
+  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  playbookInputQuery:
 - key: ZendeskSubject
   value:
     simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
   required: false
   description: The value of the subject field for this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskTags
   value: {}
   required: false
   description: The array of tags applied to this ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskType
   value: {}
   required: false
-  description: The type of this ticket. Allowed values are "problem", "incident",
-    "question", or "task".
-  playbookInputQuery: null
+  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  playbookInputQuery:
 - key: ZendeskAssigne
   value: {}
   required: false
   description: The agent currently assigned to the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ZendeskCollaborators
   value: {}
   required: false
   description: The users currently CC'ed on the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: description
   value:
     simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
   required: false
   description: The ticket description.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: addCommentPerEndpoint
   value:
     simple: "True"
   required: false
-  description: 'Whether to append a new comment to the ticket for each endpoint in the incident.
-    Possible values: True/False.'
-  playbookInputQuery: null
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  playbookInputQuery:
 - key: CommentToAdd
   value:
     simple: '${alert.name}. Alert ID: ${alert.id}'
   required: false
   description: Comment for the ticket.
-  playbookInputQuery: null
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - SOCEmailAddress
+  - requireAnalystReview
+  - ShouldCloseAutomatically
+  - ShouldHandleFPautomatically
+  - cloudProvider
+  - alert_id
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, user engagements, and ticketing methods.
+- inputs:
+  - ResolveIP
+  - InternalRange
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - autoAccessKeyRemediation
+  - autoBlockIndicators
+  - autoResourceRemediation
+  - autoUserRemediation
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - AWS-accessKeyRemediationType
+  - AWS-resourceRemediationType
+  - AWS-userRemediationType
+  name: AWS Remediation
+  description: AWS Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - Azure-resourceRemediationType
+  - Azure-userRemediationType
+  name: Azure Remediation
+  description: Azure Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - GCP-accessKeyRemediationType
+  - GCP-resourceRemediationType
+  - GCP-userRemediationType
+  name: GCP Remediation
+  description: GCP Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - ShouldOpenTicket
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  - description
+  - addCommentPerEndpoint
+  - CommentToAdd
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

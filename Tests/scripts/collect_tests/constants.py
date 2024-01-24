@@ -33,12 +33,11 @@ ALWAYS_INSTALLED_PACKS_MAPPING = {
     MarketplaceVersions.XPANSE: ALWAYS_INSTALLED_PACKS_XPANSE,
 }
 
-DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = [
+DEFAULT_MARKETPLACES_WHEN_MISSING: tuple[MarketplaceVersions, ...] = (
     MarketplaceVersions.XSOAR,
     MarketplaceVersions.XSOAR_SAAS,
     MarketplaceVersions.MarketplaceV2,
-    MarketplaceVersions.XPANSE
-]
+)
 
 SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {
     # these are not under packs, and are not supported anymore.
