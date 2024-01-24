@@ -48,7 +48,13 @@ class ReilaQuestClient(BaseClient):
         self.account_id = account_id
 
     @retry(times=5, exceptions=(ConnectionError, Timeout))
-    def http_request(self, url_suffix: str, method: str = "GET", headers: dict[str, Any] | None = None, params: dict[str, Any] | None = None) -> List[dict[str, Any]]:
+    def http_request(
+        self,
+        url_suffix: str,
+        method: str = "GET",
+        headers: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None
+    ) -> List[dict[str, Any]]:
         try:
             response = self._http_request(
                 method,
@@ -72,7 +78,9 @@ class ReilaQuestClient(BaseClient):
                 raise error.exception
             raise
 
-    def list_triage_item_events(self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = MAX_PAGE_SIZE):
+    def list_triage_item_events(
+        self, event_created_before: str | None = None, event_created_after: str | None = None, limit: int = MAX_PAGE_SIZE
+    ):
         """
         Args:
                 api docs:
@@ -239,7 +247,9 @@ def get_events_with_latest_created_time(events: List[Dict], latest_created_event
     return latest_created_events
 
 
-def enrich_events_with_triage_item(client: ReilaQuestClient, triage_item_ids_to_events: dict[str, List[dict]]) -> tuple[dict[str, str], dict[str, str]]:
+def enrich_events_with_triage_item(
+    client: ReilaQuestClient, triage_item_ids_to_events: dict[str, List[dict]]
+) -> tuple[dict[str, str], dict[str, str]]:
     """
     Enrich the events with triage-item response and return a mapping between incident|alert IDs to the triage-item-ids
 
@@ -278,8 +288,6 @@ def enrich_events_with_incident_or_alert_metadata(
 
     for alert_incident in alerts_incidents:
         _id = alert_incident.get("id")
-        if _id == 110:
-            print()
         for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:
             event[event_type] = alert_incident
         for asset in alert_incident.get("assets") or []:

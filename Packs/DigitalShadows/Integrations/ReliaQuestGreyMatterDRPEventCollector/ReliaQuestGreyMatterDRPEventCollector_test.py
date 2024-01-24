@@ -5,11 +5,9 @@ import pytest
 import hashlib
 from ReliaQuestGreyMatterDRPEventCollector import DATE_FORMAT, ReilaQuestClient, RateLimitError
 import json
-from freezegun import freeze_time
 from ReliaQuestGreyMatterDRPEventCollector import FOUND_IDS_LAST_RUN, RATE_LIMIT_LAST_RUN, MAX_PAGE_SIZE
 
 TEST_URL = "https://test.com/api"
-
 
 
 @pytest.fixture()
@@ -112,12 +110,15 @@ def create_triage_item_events(num_of_events: int, start_time: str, offset: int =
     return events
 
 
-def create_batched_triage_item_events(num_of_events: int, start_time: str, offset: int = 3, start_event_num: int = 1) -> List[requests.Response]:
+def create_batched_triage_item_events(
+    num_of_events: int, start_time: str, offset: int = 3, start_event_num: int = 1
+) -> List[requests.Response]:
 
     mocked_responses = []
 
     for i in range(start_event_num, start_event_num + num_of_events, 1000):
-        mocked_responses.append(create_mocked_response(create_triage_item_events(min(MAX_PAGE_SIZE, num_of_events - i + 1),start_time=start_time,start_event_num=i,offset=offset)))
+        mocked_responses.append(create_mocked_response(create_triage_item_events(
+            min(MAX_PAGE_SIZE, num_of_events - i + 1), start_time=start_time, start_event_num=i, offset=offset)))
 
     mocked_responses.append(create_mocked_response([]))  # empty response
     return mocked_responses
@@ -348,9 +349,10 @@ class TestFetchEvents:
 
     def test_fetch_events_multiple_events_no_rate_limits(self, mocker):
         import ReliaQuestGreyMatterDRPEventCollector
+        from unittest.mock import MagicMock
 
-        send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
-        set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value={})
+        send_events_mocker: MagicMock = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
+        set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
         mocker.patch.object(demisto, 'getLastRun', return_value={})
         mocker.patch.object(
             demisto, 'params',
@@ -365,12 +367,30 @@ class TestFetchEvents:
         )
         mocker.patch.object(demisto, 'command', return_value='fetch-events')
 
-        mocked_responses = create_batched_events(1500, start_time="2020-09-24T16:30:10.016Z", num_of_alerts=750, num_of_incidents=750)
+        http_mocker = HttpRequestMock(3500, num_of_alerts=1750, num_of_incidents=1750)
 
         mocker.patch.object(
             ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
             "_http_request",
-            side_effect=mocked_responses
+            side_effect=http_mocker.http_request_side_effect
         )
 
         ReliaQuestGreyMatterDRPEventCollector.main()
+
+        assert send_events_mocker.call_count == 4
+        fetched_events = []
+        for call in send_events_mocker.call_args_list:
+            fetched_events.extend(call.args[0])
+
+        assert len(fetched_events) == 3500
+
+        assert set_last_run_mocker.call_args[0][0][FOUND_IDS_LAST_RUN] == [3499, 3500]
+        for event in fetched_events[0:1750]:
+            assert event["triage-item"]
+            assert event["alert"]
+            assert event["assets"]
+
+        for event in fetched_events[1750:3500]:
+            assert event["triage-item"]
+            assert event["incident"]
+            assert event["assets"]
