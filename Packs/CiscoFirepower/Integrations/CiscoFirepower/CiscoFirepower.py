@@ -1336,7 +1336,7 @@ class Client(BaseClient):
         params = assign_params(
             limit=limit,
             offset=offset,
-            filter_string=filter_string,
+            filter=filter_string,
             expanded=expanded_response,
         )
 
