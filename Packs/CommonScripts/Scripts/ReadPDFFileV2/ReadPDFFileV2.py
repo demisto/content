@@ -548,45 +548,51 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
     return urls_ec, emails_ec
 
 
-def extract_hash_contexts_from_pdf_file(file_path: str) -> list[dict[str, Any]]:
-    """Extracts the hash contexts to be returned as  from the pdf file
+def extract_hash_contexts_from_pdf_file(file_text: str) -> list[dict[str, Any]]:
+    """Extracts the hashes from the file's text, and converts them to hash contexts.
 
     Args:
-        file_path (str): _description_
+        file_text (str): The text extracted from the PDF.
 
     Returns:
-        list[dict[str, Any]]: _description_
+        list[dict[str, Any]]: A list of hash contexts.
     """
     hash_contexts: list[dict[str, Any]] = []
-    # Get hashes from the binary file
-    hashes_in_file = get_hashes_from_file(file_path)
-    for hash_type, hashes in hashes_in_file.items():
-        if hashes:
-            hash_contexts.extend(convert_hash_to_context(hash_type, hashes))
+    hashes_in_file = get_hashes_from_file(file_text)
+    [hash_contexts.extend(convert_hash_to_context(hash_type, hashes)) for hash_type, hashes in hashes_in_file.items() if hashes]
     return hash_contexts
 
 
 def convert_hash_to_context(hash_type: str, hashes: set[Any]) -> list[dict[str, Any]]:
-    hash_context: list[dict[str, Any]] = []
-    for hash in hashes:
-        hash_context.append({'type': hash_type,
-                             'value': hash})
+    """Converts the given hashes to hash contexts
+
+    Args:
+        hash_type (str): The hash type of the given hashes.
+        hashes (set[Any]): The set of hashes.
+
+    Returns:
+        list[dict[str, Any]]: A list of hash contexts that have the same hash type.
+    """
+    hash_context: list[dict[str, Any]] = [{'type': hash_type, 'value': hash} for hash in hashes]
     return hash_context
 
 
-def get_hashes_from_file(file_path: str) -> dict[str, set[Any]]:
+def get_hashes_from_file(file_text: str) -> dict[str, set[Any]]:
+    """Extracts all the hashes found in the file's text.
+
+    Args:
+        file_text (str): The file's text.
+
+    Returns:
+        dict[str, set[Any]]: A dictionary that holds the hash types as keys, and each key
+        holds the set of hashes corresponding to that hash type.
+    """
     demisto.debug('Extracting hashes from file')
     hashes: dict[str, set[Any]] = {}
-    with open(file_path, 'rb') as pdf_file:
-        pdf = PyPDF2.PdfReader(pdf_file, strict=False)
-        page_count = len(pdf.pages)
-        for page_index in range(page_count):
-            page = pdf.pages[page_index]
-            page_text = page.extract_text()
-            hashes['SHA1'] = set(re.findall(sha1Regex, page_text)).union(hashes.get('SHA1', set()))
-            hashes['SHA256'] = set(re.findall(sha256Regex, page_text)).union(hashes.get('SHA256', set()))
-            hashes['SHA512'] = set(re.findall(sha512Regex, page_text)).union(hashes.get('SHA512', set()))
-            hashes['MD5'] = set(re.findall(md5Regex, page_text)).union(hashes.get('MD5', set()))
+    hashes['SHA1'] = set(re.findall(sha1Regex, file_text))
+    hashes['SHA256'] = set(re.findall(sha256Regex, file_text))
+    hashes['SHA512'] = set(re.findall(sha512Regex, file_text))
+    hashes['MD5'] = set(re.findall(md5Regex, file_text))
 
     return hashes
 
@@ -618,12 +624,13 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
                                                  dec_file_path=f'{working_dir}/DecWorkingReadPDF.pdf',
                                                  encrypted=encrypted,
                                                  user_password=user_password)
-        # Get hash contexts
-        hash_contexts = extract_hash_contexts_from_pdf_file(cpy_file_path)
 
         # Get text:
         pdf_text_output_path = f"{working_dir}/PDFText.txt"
         text = get_pdf_text(cpy_file_path, pdf_text_output_path)
+
+        # Get hash contexts
+        hash_contexts = extract_hash_contexts_from_pdf_file(text)
 
         # Get URLS + emails:
         urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
