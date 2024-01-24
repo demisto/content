@@ -12,7 +12,7 @@ from typing import Any
 import networkx as nx
 from networkx import DiGraph
 
-import demisto_client
+from demisto_client.demisto_api.api.default_api import DefaultApi as DemistoClient
 from demisto_sdk.commands.common import tools
 from demisto_sdk.commands.common.logger import logger
 from demisto_sdk.commands.content_graph.common import PACK_METADATA_FILENAME
@@ -217,7 +217,7 @@ def handle_malformed_pack_ids(malformed_pack_ids, packs_to_install):
                             f'though it was not in the installation list')
 
 
-def install_packs_from_artifacts(client: demisto_client,
+def install_packs_from_artifacts(client: DemistoClient,
                                  host: str,
                                  test_pack_path: str,
                                  pack_ids_to_install: list) -> bool:
@@ -243,14 +243,14 @@ def install_packs_from_artifacts(client: demisto_client,
     return True
 
 
-def install_packs_private(client: demisto_client,
+def install_packs_private(client: DemistoClient,
                           host: str,
                           pack_ids_to_install: list,
                           test_pack_path: str) -> bool:
     """ Make a packs installation request.
 
     Args:
-        client (demisto_client): The configured client to use.
+        client (DemistoClient): The configured client to use.
         host (str): The server URL.
         pack_ids_to_install (list): List of Pack IDs to install.
         test_pack_path (str): Path where test packs are located.
@@ -268,7 +268,7 @@ def get_error_ids(body: str) -> dict[int, str]:
     return {}
 
 
-def install_packs(client: demisto_client,
+def install_packs(client: DemistoClient,
                   host: str,
                   packs_to_install: list,
                   attempts_count: int = 5,
@@ -282,7 +282,7 @@ def install_packs(client: demisto_client,
        request to install all packs again once more.
 
     Args:
-        client (demisto_client): The configured client to use.
+        client (DemistoClient): The configured client to use.
         host (str): The server URL.
         packs_to_install (list): A list of the packs to install.
         attempts_count (int): The number of attempts to install the packs.
@@ -435,7 +435,7 @@ def get_pack_installation_request_data(pack_id: str, pack_version: str):
 
 
 def install_all_content_packs_for_nightly(
-    client: demisto_client, host: str, service_account: str, pack_ids_to_install: list[str]
+    client: DemistoClient, host: str, service_account: str, pack_ids_to_install: list[str]
 ) -> bool:
     """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
     Retrieving the latest version of each pack from the production bucket.
@@ -461,7 +461,7 @@ def install_all_content_packs_for_nightly(
     return success
 
 
-def install_all_content_packs_from_build_bucket(client: demisto_client, host: str, server_version: str,
+def install_all_content_packs_from_build_bucket(client: DemistoClient, host: str, server_version: str,
                                                 bucket_packs_root_path: str, service_account: str,
                                                 extract_destination_path: str):
     """ Iterates over the packs currently located in the Build bucket. Wrapper for install_packs.
@@ -503,14 +503,14 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
     return install_packs(client, host, all_packs)
 
 
-def upload_zipped_packs(client: demisto_client,
+def upload_zipped_packs(client: DemistoClient,
                         host: str,
                         pack_path: str) -> bool:
     """
     Install packs from zip file.
 
     Args:
-        client (demisto_client): The configured client to use.
+        client (DemistoClient): The configured client to use.
         host (str): The server URL.
         pack_path (str): path to pack zip.
     Returns:
@@ -546,12 +546,12 @@ def upload_zipped_packs(client: demisto_client,
 
 def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
                                                             pack_ids: list,
-                                                            client: demisto_client) -> bool:
+                                                            client: DemistoClient) -> bool:
     """ Searches for the packs from the specified list, searches their dependencies, and then installs them.
     Args:
         test_pack_path (str): Path of where the test packs are located.
         pack_ids (list): A list of the pack ids to search and install.
-        client (demisto_client): The client to connect to.
+        client (DemistoClient): The client to connect to.
 
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
@@ -583,6 +583,7 @@ def create_graph(
     """
     graph_dependencies = nx.DiGraph()
     for pack_id in all_packs_dependencies:
+        graph_dependencies.add_node(pack_id)
         pack_dependencies = all_packs_dependencies[pack_id]["dependencies"]
         for dependence in pack_dependencies:
             if pack_dependencies[dependence]["mandatory"]:
@@ -633,7 +634,7 @@ def split_cycles(list_of_nodes: list[str]) -> list[list[str]]:
     return [node.split(CYCLE_SEPARATOR) for node in list_of_nodes]
 
 
-def get_all_content_packs_dependencies(client: demisto_client) -> dict[str, dict]:
+def get_all_content_packs_dependencies(client: DemistoClient) -> dict[str, dict]:
     """Gets all content packs dependencies from the Marketplace API.
 
     Iterates over all pages of pack results from the Marketplace /search API.
@@ -663,7 +664,7 @@ def get_all_content_packs_dependencies(client: demisto_client) -> dict[str, dict
 
 
 def get_one_page_of_packs_dependencies(
-    client: demisto_client,
+    client: DemistoClient,
     page: int,
     attempts_count: int = 5,
     sleep_interval: int = 60,
@@ -790,6 +791,7 @@ def get_packs_and_dependencies_to_install(
             else:
                 no_deprecated_dependencies = False
         else:
+            all_packs_and_dependencies_to_install.add(pack_id)
             logging.debug(f"No dependencies found for '{pack_id}'")
 
     return no_deprecated_dependencies, all_packs_and_dependencies_to_install
@@ -877,7 +879,7 @@ def create_batches(list_of_packs_and_its_dependency: list):
     return list_of_batches
 
 
-def save_graph_dot_file_log(graph: DiGraph, file_name: str) -> None:
+def save_graph_data_file_log(graph: DiGraph, file_name: str) -> None:
     """Saves a graph visualization as a .dot file to the logs directory.
 
     Args:
@@ -888,20 +890,29 @@ def save_graph_dot_file_log(graph: DiGraph, file_name: str) -> None:
         None: Returns nothing.
 
     Note:
-        The saved .dot file can be read back into a graph object using networkx:
-        `graph = nx.nx_agraph.read_dot(file_path)`
-    """
+        The saved json file can be read back into a graph object using networkx:
+        ```
+        with open(file_path) as f:
+            graph_data = json.loads(f.read())
 
-    file_name = f"{datetime.utcnow().strftime('%H:%M:%S')}_{file_name}"
+        graph_dependencies = nx.DiGraph()
+        graph_dependencies.add_edges_from(graph_data["edges"])
+        graph_dependencies.add_nodes_from(graph_data["nodes"])
+        ```
+    """
+    file_name = f"{datetime.utcnow().strftime('%H:%M:%S')}_{file_name}.json"
     log_file_path = Path(ARTIFACTS_PATH) / 'logs' / file_name
 
-    nx.nx_agraph.write_dot(graph, log_file_path)
-    logging.debug(f"Saving graph view to {log_file_path}")
+    graph_data = {"nodes": list(graph.nodes()), "edges": list(graph.edges())}
+    with open(log_file_path, 'w') as f:
+        f.write(json.dumps(graph_data))
+        
+    logging.debug(f"Saving graph data to {log_file_path}")
 
 
 def search_and_install_packs_and_their_dependencies(
     pack_ids: list,
-    client: demisto_client,
+    client: DemistoClient,
     hostname: str | None = None,
     install_packs_in_batches: bool = False,
     production_bucket: bool = True,
@@ -912,7 +923,7 @@ def search_and_install_packs_and_their_dependencies(
 
     Args:
         pack_ids (list): A list of the pack ids to search and install.
-        client (demisto_client): The client to connect to.
+        client (DemistoClient): The client to connect to.
         hostname (str): Hostname of instance. Using for logs.
         multithreading (bool): Whether to use multithreading to install packs in parallel.
             If multithreading is used, installation requests will be sent in batches of each pack and its dependencies.
@@ -933,7 +944,6 @@ def search_and_install_packs_and_their_dependencies(
         9. Create batches of packs to install if install_packs_in_batches is True.
         10. Install packs using the Demisto client.
     """
-    logging.info(f"Type of client: {type(client)}")
     host = hostname or client.api_client.configuration.host
 
     logging.info(f"Starting search for packs to install on: {host}")
@@ -950,7 +960,7 @@ def search_and_install_packs_and_their_dependencies(
     all_packs_dependencies_data = get_all_content_packs_dependencies(client)
 
     graph_dependencies = create_graph(all_packs_dependencies_data)
-    # save_graph_dot_file_log(graph_dependencies, "graph_dependencies_all_content.dot")
+    save_graph_data_file_log(graph_dependencies, "graph_dependencies_all_content")
 
     no_deprecated_dependencies, all_packs_and_dependencies_to_install = get_packs_and_dependencies_to_install(
         pack_ids,
@@ -964,10 +974,10 @@ def search_and_install_packs_and_their_dependencies(
     graph_dependencies_for_installed_packs = nx.subgraph(
         graph_dependencies, all_packs_and_dependencies_to_install
     ).copy()
-    # save_graph_dot_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs.dot")
+    save_graph_data_file_log(graph_dependencies_for_installed_packs, "graph_dependencies_for_installed_packs")
 
     merged_graph_dependencies = merge_cycles(graph_dependencies_for_installed_packs)
-    # save_graph_dot_file_log(merged_graph_dependencies, "merged_graph_dependencies.dot")
+    save_graph_data_file_log(merged_graph_dependencies, "merged_graph_dependencies")
 
     logging.debug(
         f"Get the following topological sort: {list(nx.topological_generations(merged_graph_dependencies))}"

@@ -748,16 +748,12 @@ def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker: Moc
 
 def test_get_packs_and_dependencies_to_install_no_deprecated(mocker: MockFixture):
     """
-    Given
-    - Pack ID
-    - Dependency IDs
-    - Production bucket flag
-    - Packs dependencies data
-    When
-    - Getting packs and dependencies to install
-    - Mocking search for deprecated dependencies
-    Then
-    - Ensure correct return value with no deprecated dependencies
+    Given:
+        Packs to search for their dependencies
+    When:
+        Calling get_packs_and_dependencies_to_install
+    Then:
+        Ensure correct return value with no deprecated dependencies
     """
     mocker.patch.object(script, 'search_for_deprecated_dependencies',
                         return_value=True)
@@ -776,19 +772,46 @@ def test_get_packs_and_dependencies_to_install_no_deprecated(mocker: MockFixture
     assert result == (True, {pack_id, *dependencies})
 
 
+def test_get_packs_and_dependencies_to_install_no_dependencies(mocker: MockFixture):
+    """
+    Given:
+        Packs to search for their dependencies
+    When:
+        Calling get_packs_and_dependencies_to_install, for pack with no dependencies
+    Then:
+        Ensure that the pack itself added to result
+    """
+    mocker.patch.object(script, 'search_for_deprecated_dependencies',
+                        return_value=True)
+
+    pack_id = "PackA"
+    dependencies = []
+    production_bucket = True
+    dependencies_data = {}
+
+    pack_ids = [pack_id]
+    graph_dependencies = DiGraph()
+    graph_dependencies.add_node(pack_id)
+
+    result = script.get_packs_and_dependencies_to_install(
+        pack_ids, graph_dependencies, production_bucket, dependencies_data)
+
+    assert result == (True, {pack_id, *dependencies})
+
+
 def test_get_packs_and_dependencies_to_install_deprecated(mocker: MockFixture):
     """
-    Given
-    - Pack ID 
-    - Dependency IDs
-    - Production bucket flag
-    - Packs dependencies data
-    When
-    - Getting packs and dependencies to install
-    - Mocking search finding deprecated dependencies
-    Then  
-    - Ensure empty dependencies set returned
-    - Ensure no deprecated dependencies flag set to False
+    Given:
+        - Pack ID
+        - Dependency IDs
+        - Production bucket flag
+        - Packs dependencies data
+    When:
+        - Getting packs and dependencies to install
+        - Mocking search finding deprecated dependencies
+    Then:
+        - Ensure empty dependencies set returned
+        - Ensure no deprecated dependencies flag set to False
     """
     mocker.patch.object(script, 'search_for_deprecated_dependencies',
                         return_value=False)
@@ -809,13 +832,13 @@ def test_get_packs_and_dependencies_to_install_deprecated(mocker: MockFixture):
 
 def test_create_install_request_body():
     """
-    Given
-    - A list of packs to install 
-    - Dependencies data for packs
-    When
-    - Calling create_install_request_body
-    Then 
-    - Validate returned request body contains correct data
+    Given:
+        - A list of packs to install
+        - Dependencies data for packs
+    When:
+        Calling create_install_request_body
+    Then:
+        Validate returned request body contains correct data
     """
     packs_to_install = [['HelloWorld'], ['TestPack']]
     packs_deps_data = {
@@ -831,18 +854,18 @@ def test_create_install_request_body():
 
 def test_filter_deprecated_packs(mocker: MockFixture):
     """
-    Given
-    - A list of pack IDs, some deprecated and some not
-    - Production bucket boolean
-    - Commit hash
+    Given:
+        - A list of pack IDs, some deprecated and some not
+        - Production bucket boolean
+        - Commit hash
 
-    When
-    - Calling filter_deprecated_packs
+    When:
+        Calling filter_deprecated_packs
 
-    Then 
-    - Deprecated packs are filtered from the list
-    - Warning is logged for deprecated packs
-    - List without deprecated packs is returned
+    Then:
+        - Deprecated packs are filtered from the list
+        - Warning is logged for deprecated packs
+        - List without deprecated packs is returned
     """
     pack_ids = ['pack1', 'deprecated_pack', 'pack2']
     production_bucket = True
@@ -873,14 +896,14 @@ def test_filter_deprecated_packs(mocker: MockFixture):
 ])
 def test_create_batches(mocker: MockFixture, list_of_packs, expected):
     """
-    Given
-    - A list of packs and dependencies
+    Given:
+        A list of packs and dependencies
 
-    When
-    - Running create_batches
+    When:
+        Running create_batches
 
-    Then 
-    - Ensure the correct batches are created based on the batch size
+    Then:
+        Ensure the correct batches are created based on the batch size
     """
     mocker.patch.object(script, "BATCH_SIZE", 5)
     assert script.create_batches(list_of_packs) == expected
