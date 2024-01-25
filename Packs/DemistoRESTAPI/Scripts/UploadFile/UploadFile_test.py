@@ -197,6 +197,7 @@ def test_upload_file(mocker):
     command_results = upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
     assert "test_bark" in command_results[0].readable_output
 
+
 def test_upload_file_multiple_entry_ids(mocker):
     """Unit test
     Given
@@ -210,6 +211,7 @@ def test_upload_file_multiple_entry_ids(mocker):
     upload_file_command({'incidentId': '1', 'entryID': '1,2'})
     assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
     assert execute_command_mocker.call_args_list[1][0][1]['entryID'] == '2'
+
 
 RAW_RESPONSE_ERROR = [
     {
