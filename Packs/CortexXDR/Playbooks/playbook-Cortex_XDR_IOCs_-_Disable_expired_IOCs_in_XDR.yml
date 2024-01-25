@@ -430,12 +430,14 @@ view: |-
   }
 inputs:
 - key: batch_size
-  value: {}
+  value: 
+    simple: "4000"
   required: false
   description: ""
   playbookInputQuery:
 - key: query
-  value: {}
+  value: 
+    simple: "expirationStatus:expired and tags:xdr_pushed"
   required: true
   description: ""
   playbookInputQuery:
