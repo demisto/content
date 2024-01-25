@@ -4,14 +4,14 @@ This pack includes XSIAM content.
 ## Manage the fields on the schema
 
 Part 1 - on the Mcafee EPO management console
-  1. click on “Queries & Reports” and find the query of the schema
-  2. click action --> edit
-  3. on the nav bar click on "columns", there you can edit the fields.
-  4. copy the sql.
+  1. Click on **Queries & Reports** and find the query of the schema
+  2. Click **action** --> **edit**
+  3. On the nav bar click on **columns**, there you can edit the fields.
+  4. Copy the SQL.
 
 Part 2 - manage the schema on the mssql
-  1. right click on the table that you want manage the fields and click on design.
-  2. edit the sql and save the new design configurations.
+  1. Right click on the table that you want manage the fields and click on **design**.
+  2. Edit the SQL and save the new design configurations.
 
   * Pay attention: Timestamp parsing is supported for the **EventTimeLocal** field with UTC format. To configure the format:
     1. Access your Mcafee ePO interface.
