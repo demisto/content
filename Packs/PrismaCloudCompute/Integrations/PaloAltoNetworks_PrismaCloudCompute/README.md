@@ -4132,7 +4132,7 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Images > Deploy
 | search            | Term to search for. | Optional | 
 | limit             | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
 | offset            | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
-| all_results       | Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
+| all_results       | Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -4793,7 +4793,7 @@ Retrieves the runtime host audit events.
 | attack_type | AttackTypes is used to filter by runtime audit attack type. | Optional | 
 | limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
 | offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
-| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
@@ -4818,7 +4818,7 @@ Retrieves the runtime host audit events.
 | PrismaCloudCompute.RuntimeHostAuditEvents.profileId | String | The profile ID. | 
 | PrismaCloudCompute.RuntimeHostAuditEvents.provider | String | The provider of the container. | 
 | PrismaCloudCompute.RuntimeHostAuditEvents.region | String | The region of the container. | 
-| PrismaCloudCompute.RuntimeHostAuditEvents.resourceID | String | The resourceID of the event. | 
+| PrismaCloudCompute.RuntimeHostAuditEvents.resourceID | String | The resource ID of the event. | 
 | PrismaCloudCompute.RuntimeHostAuditEvents.ruleName | String | The rule name. | 
 | PrismaCloudCompute.RuntimeHostAuditEvents.severity | String | The severity of the audit event. | 
 | PrismaCloudCompute.RuntimeHostAuditEvents.time | Date | The audit event time. | 
@@ -4886,7 +4886,7 @@ Retrieves the runtime policy for containers protected by Defender. A policy cons
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
 | limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
 | offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
 

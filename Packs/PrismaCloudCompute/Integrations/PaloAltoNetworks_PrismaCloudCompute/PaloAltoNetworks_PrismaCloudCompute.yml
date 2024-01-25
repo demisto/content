@@ -2394,7 +2394,7 @@ script:
       defaultValue: "0"
     - auto: PREDEFINED
       name: all_results
-      description: Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often.
+      description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
       defaultValue: "false"
       predefined:
         - "true"
@@ -2797,7 +2797,7 @@ script:
         defaultValue: "0"
       - auto: PREDEFINED
         name: all_results
-        description: Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often.
+        description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
         defaultValue: "false"
         predefined:
           - "true"
@@ -2861,7 +2861,7 @@ script:
         description: The region of the container.
         type: String
       - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.resourceID
-        description: The resourceID of the event.
+        description: The resource ID of the event.
         type: String
       - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.ruleName
         description: The rule name.
@@ -2883,7 +2883,7 @@ script:
     arguments:
       - auto: PREDEFINED
         name: all_results
-        description: Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often.
+        description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
         defaultValue: "false"
         predefined:
           - "true"
