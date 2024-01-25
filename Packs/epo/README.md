@@ -1,3 +1,4 @@
+<~XSIAM>
 This pack includes XSIAM content.
 
 ## Manage the fields on the schema
@@ -32,4 +33,4 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set:
    - vendor as Mcafee
    - product as EPO
-   
+</~XSIAM>
