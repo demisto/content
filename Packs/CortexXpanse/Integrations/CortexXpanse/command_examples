@@ -5,3 +5,4 @@
 !asm-list-asset-internet-exposure name="acme.com" type=certificate has_active_external_services=no
 !asm-list-external-service domain=acme.com is_active=yes discovery_type=directly_discovery
 !asm-list-alerts limit=2 severity=high sort_by_creation_time=asc
+!asm-list-external-websites authentication="Form" limit=5 

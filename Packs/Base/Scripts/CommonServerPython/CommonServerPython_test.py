@@ -3236,6 +3236,7 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
 
 class TestParseDateRange:
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_utc_time_sanity():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
@@ -3244,6 +3245,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_local_time_sanity():
         local_now = datetime.now()
         local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
@@ -3252,6 +3254,7 @@ class TestParseDateRange:
         assert abs(local_start_time - local_end_time).seconds / 60 == 73
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_with_trailing_spaces():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 days   ', utc=True)
@@ -3269,6 +3272,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_input_format(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3281,6 +3285,7 @@ class TestParseDateRange:
         assert 'date_range must be "number date_range_unit"' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_value_not_a_number(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3293,6 +3298,7 @@ class TestParseDateRange:
         assert 'The time value is invalid' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_value_not_an_integer(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3305,6 +3311,7 @@ class TestParseDateRange:
         assert 'The time value is invalid' in results['Contents']
 
     @staticmethod
+    @freeze_time("2024-01-15 17:00:00 UTC")
     def test_error__invalid_time_unit(mocker):
         mocker.patch.object(sys, 'exit', side_effect=Exception('mock exit'))
         demisto_results = mocker.spy(demisto, 'results')
@@ -3461,6 +3468,7 @@ def test_batch(iterable, sz, expected):
 
 regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.1.1:8080', True),
     (ipv4Regex, '192.168.1.1/24', False),
     (ipv4Regex, '192.168.a.1', False),
     (ipv4Regex, '192.168..1.1', False),
@@ -3492,6 +3500,7 @@ def test_regexes(pattern, string, expected):
 
 IP_TO_INDICATOR_TYPE_PACK = [
     ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1:8080', FeedIndicatorType.IP),
     ('192.168.1.1/32', FeedIndicatorType.CIDR),
     ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
     ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
@@ -3850,6 +3859,7 @@ VALID_URL_INDICATORS = [
     'https[:]//www.test.com/test',  # defanged colon sign
     "hxxp[:]//1[.]1[.]1[.]1/test[.]php",  # Defanged URL with ip as a domain
     "hxxp[:]//test[.]com/test[.]php",  # Defanged URL with a file extension
+    "https://test.com/a/b/c-d-e",  # hyphen in the path
 ]
 
 

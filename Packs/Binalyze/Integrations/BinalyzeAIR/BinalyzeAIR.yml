@@ -97,7 +97,7 @@ script:
       description: Organization Id of endpoint.
       type: number
     description: Acquire evidence from an endpoint.
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.84405
   subtype: python3
 fromversion: 6.2.0
 tests:
