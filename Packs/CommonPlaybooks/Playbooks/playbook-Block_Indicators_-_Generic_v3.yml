@@ -350,6 +350,15 @@ tasks:
       indicatorsValues:
         complex:
           root: IndicatorsToBlock
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: IndicatorsToBlock
+                iscontext: true
+              right:
+                value:
+                  simple: No indicators to block
     separatecontext: false
     view: |-
       {
@@ -822,17 +831,12 @@ tasks:
           - operator: uniq
           - operator: SetIfEmpty
             args:
-              applyIfEmpty:
-                value:
-                  simple: "false"
+              applyIfEmpty: {}
               defaultValue:
                 value:
                   simple: No indicators to block
-          - operator: RemoveEmpty
-            args:
-              empty_values: {}
-              remove_keys: {}
     reputationcalc: 2
+    separatecontext: false
     continueonerrortype: ""
     view: |-
       {
@@ -916,16 +920,11 @@ tasks:
           - operator: uniq
           - operator: SetIfEmpty
             args:
-              applyIfEmpty:
-                value:
-                  simple: "false"
+              applyIfEmpty: {}
               defaultValue:
                 value:
                   simple: No indicators to block
-          - operator: RemoveEmpty
-            args:
-              empty_values: {}
-              remove_keys: {}
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -938,7 +937,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    reputationcalc: 2
     skipunavailable: false
     quietmode: 0
     isoversize: false
