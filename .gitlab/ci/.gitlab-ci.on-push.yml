@@ -137,11 +137,12 @@ validate-content-conf:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
+    - echo "${TEST_VAR_XSOAR8}" | tee -a /etc/host
+    - ping "${TEST_VAR_XSOAR8}"
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
-    - echo "{$TEST_VAR_XSOAR8}" | tee -a /etc/host
 
     - echo "Updating the content graph"
     - mkdir "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
