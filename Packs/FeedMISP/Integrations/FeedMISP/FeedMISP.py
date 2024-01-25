@@ -504,7 +504,7 @@ def test_module(client: Client) -> str:
 
 
 def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[str, str]) -> CommandResults:
-    """ Retrieving indicators from the feed to the war-room.
+    """ Wrapper for fetching indicators from the feed to the war-room.
     Args:
         client: Client object with request
         args: demisto.args()
@@ -543,7 +543,7 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
 
 def fetch_attributes_command(client: Client, params: Dict[str, str]):
     """
-    Wrapper for fetching indicators from the feed to the Indicators tab.
+    Fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
         params: demisto.params()
