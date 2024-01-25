@@ -111,6 +111,7 @@ class Client(BaseClient):
         The token is valid for 10 minutes.
         """
         data = {'username': username, 'password': password}
+        demisto.debug("Sending request to get the auth token")
 
         response = self._http_request('POST', 'login', json_data=data, retries=2)
         try:
@@ -120,6 +121,7 @@ class Client(BaseClient):
         except ValueError as exception:
             raise DemistoException('Could not parse API response.', exception=exception) from exception
 
+        demisto.debug("Successfully got the auth token")
         self._headers[REQUEST_CSPM_AUTH_HEADER] = token
 
     def alert_filter_list_request(self):
@@ -588,11 +590,10 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                            sort_by=['alertTime:asc'],  # adding sort by 'id:asc' doesn't work
                                            limit=limit + len(fetched_ids),
                                            )
-    demisto.debug(f"[test] - Finished request, got response: {response}")
+    demisto.debug(f"Finished request, got response: {response}")
     response_items = response.get('items', [])
     updated_last_run_time_epoch = response_items[-1].get('alertTime') if response_items else now
     incidents = filter_alerts(client, fetched_ids, response_items, limit)
-    demisto.debug(f"[test] - Finished filtering incidents: {len(incidents)=}, {limit=}, {incidents}")
 
     # there is a 'nextPageToken' value even if we already got all the results
     while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
@@ -605,12 +606,11 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                                limit=limit + len(fetched_ids),
                                                page_token=response.get('nextPageToken'),
                                                )
-        demisto.debug(f"[test] - Finished another request, got response: {response}")
+        demisto.debug(f"Finished another request, got response: {response}")
         response_items = response.get('items', [])
         updated_last_run_time_epoch = \
             response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
         incidents.extend(filter_alerts(client, fetched_ids, response_items, limit, len(incidents)))
-        demisto.debug(f"[test] - Finished another filtering incidents: {len(incidents)=}, {limit=}, {incidents}")
 
     return incidents, fetched_ids, updated_last_run_time_epoch
 
