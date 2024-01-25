@@ -376,7 +376,8 @@ class TestDemistoIOCToXDR:
     data_test_demisto_types_to_xdr = [
         ('File', 'HASH'),
         ('IP', 'IP'),
-        ('Domain', 'DOMAIN_NAME')
+        ('Domain', 'DOMAIN_NAME'),
+        ('URL', 'PATH')
     ]
 
     @pytest.mark.parametrize('demisto_type, xdr_type', data_test_demisto_types_to_xdr)
