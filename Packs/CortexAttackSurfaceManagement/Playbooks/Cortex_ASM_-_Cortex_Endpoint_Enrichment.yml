@@ -60,7 +60,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ""
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
       id: fa22e7e1-68bc-4759-8ac4-b1a432d13b3f
       iscommand: true
       name: Core IR Search device
@@ -158,7 +158,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if there is an active instance of the Core - IR integration enabled and Input values are defined to pull enrichment data.
+      description: Checks if there is an active instance of the Core - IR integration enabled and input values are defined to pull enrichment data.
       id: 17e91dd6-4328-46db-85de-8fd0b7e50f84
       iscommand: false
       name: Is Core IR enabled and input value defined?
@@ -1279,7 +1279,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ""
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
       id: 4d75150d-52dc-4fb0-85e4-3bde0caf5830
       iscommand: true
       name: Cortex XDR Search device
@@ -1348,7 +1348,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if there is an active instance of the Cortex XDR integration enabled and Input values are defined to pull enrichment data.
+      description: Checks if there is an active instance of the Cortex XDR integration enabled and input values are defined to pull enrichment data.
       id: 1d11fce0-171c-4e32-8a80-98e125d2e2cb
       iscommand: false
       name: Is Cortex XDR enabled and input value defined?

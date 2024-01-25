@@ -30,7 +30,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemoteIP | IP address of service |  | Optional |
+| RemoteIP | IP address of the service. |  | Optional |
 
 ## Playbook Outputs
 
