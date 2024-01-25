@@ -87,8 +87,8 @@ def main():
     })
 
     headers = {
-      'Content-Type': 'application/vnd.github+json',
-      'Authorization': f'Bearer {access_token}'
+        'Content-Type': 'application/vnd.github+json',
+        'Authorization': f'Bearer {access_token}'
     }
 
     response = requests.request("POST", url, headers=headers, data=data, verify=False)

@@ -21,9 +21,9 @@ UPDATE_SDK_VERSION_WORKFLOW = 'https://api.github.com/repos/demisto/content/acti
 SLACK_CHANGELOG_FILE = 'CHANGELOG_SLACK.txt'
 
 SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
-        ':alert: Please run in the terminal\n' \
-        '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/' \
-        'demisto/content ~/dev/demisto/demisto-sdk`\nChange log\n```\n{}\n```'
+                        ':alert: Please run in the terminal\n' \
+                        '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/' \
+                        'demisto/content ~/dev/demisto/demisto-sdk`\nChange log\n```\n{}\n```'
 
 
 def options_handler():
@@ -71,8 +71,8 @@ def main():
     }
 
     headers = {
-      'Content-Type': 'application/vnd.github+json',
-      'Authorization': f'Bearer {access_token}'
+        'Content-Type': 'application/vnd.github+json',
+        'Authorization': f'Bearer {access_token}'
     }
 
     # trigger update-demisto-sdk-version workflow
@@ -98,7 +98,7 @@ def main():
 
     logging.info('Waiting for content release pull request creation')
 
-    content_pr:dict = {}
+    content_pr: dict = {}
     # wait to content pr to create
     while not content_pr and elapsed < TIMEOUT:
         # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
