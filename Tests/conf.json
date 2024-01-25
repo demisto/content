@@ -5611,7 +5611,7 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-            "integrations": ["Cylance Protect v2", "CrowdstrikeFalcon"],
+            "integrations": "Cylance Protect v2",
             "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         },
         {
