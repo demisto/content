@@ -8,7 +8,7 @@ args:
   predefined:
     - 'true'
     - 'false'
-  defaultValue: true
+  defaultValue: 'true'
 - description: Replicate only notes with these tags (array or comma separated).
   isArray: true
   name: tags
