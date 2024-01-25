@@ -368,19 +368,21 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
+            extracted_error_message = ''
             if resources:
                 if isinstance(resources, list):
-                    reason += f'\n{str(resources)}'
+                    extracted_error_message += f'\n{str(resources)}'
                 else:
                     for host_id, resource in resources.items():
-                        errors = resource.get('errors', [])
+                        errors = resource.get('errors', []) if isinstance(resource, dict) else ''
                         if errors:
                             error_message = errors[0].get('message')
-                            reason += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors'):
+                            extracted_error_message += f'\nHost ID {host_id} - {error_message}'
+            elif res_json.get('errors') and not extracted_error_message:
                 errors = res_json.get('errors', [])
                 for error in errors:
-                    reason += f"\n{error.get('message')}"
+                    extracted_error_message += f"\n{error.get('message')}"
+            reason += extracted_error_message
             err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
                 code=res.status_code,
                 reason=reason
