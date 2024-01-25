@@ -155,7 +155,9 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
     indicators_iterator = []
     try:
         attributes_list: List[Dict[str, Any]] = attributes['response']['Attribute']
+        demisto.debug(f'build_indicators_iterator attributes_list{attributes_list}')
         for attribute in attributes_list:
+            demisto.debug(f'build_indicators_iterator attribute{attribute}')
             if indicator_type := get_attribute_indicator_type(attribute):
                 indicators_iterator.append({
                     'value': attribute,
@@ -335,18 +337,6 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
         if int(indicators_iterator[index]['value']['timestamp']) > last_timestamp:
             return indicators_iterator[index:]
     return []
-
-
-def search_query_indicators_pagination(client: Client, params_dict: Dict[str, Any]) -> Dict[str, Any]:
-    params_dict['page'] = 1
-    response: Dict[str, Dict[str, List]] = {'response': {'Attribute': []}}
-    search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
-    while len(search_query_per_page):
-        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators: {len(search_query_per_page)}')
-        response['response']['Attribute'].extend(search_query_per_page)
-        params_dict['page'] += 1
-        search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
-    return response
 
 
 def fetch_indicators(client: Client,
@@ -581,69 +571,28 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     params_dict['page'] = 1
     params_dict['limit'] = 2000
     search_query_per_page = client.search_query(params_dict)
-    demisto.debug(f' EYAL yesterdayok 1 {search_query_per_page}')
-    while len(search_query_per_page):
-        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators: {(search_query_per_page)}')
+    while len(search_query_per_page.get("response", {}).get("Attribute", [])):
+        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators:
+                      {len(search_query_per_page.get("response", {}).get("Attribute", []))}')
         if error_message := search_query_per_page.get('Error'):
             raise DemistoException(error_message)
         indicators_iterator = build_indicators_iterator(search_query_per_page, params.get('url'))
-        demisto.debug(f' EYAL yesterday ok 2  build_indicators_iterator {indicators_iterator}')
-        added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, True) or []
-        demisto.debug(f' EYAL yesterday ok 2  added_indicators_iterator {indicators_iterator}')
-        demisto.debug('what is it ')
-        for indicator in added_indicators_iterator:
+        for indicator in indicators_iterator:
             value_ = indicator['value']['value']
             type_ = indicator['type']
             raw_type = indicator.pop('raw_type')
-            demisto.debug('what is it 2')
             indicator_obj = build_indicator(value_, type_, indicator, reputation)
-            demisto.debug(f'what is it indicator_obj {indicator_obj}')
             update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
             galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
             create_and_add_relationships(indicator_obj, galaxy_indicators)
 
             indicators.append(indicator_obj)
-            demisto.debug('what is it indicator_obj OKOK 4')
         demisto.createIndicators(indicators)
         params_dict['page'] += 1
         search_query_per_page = client.search_query(params_dict)
     demisto.setLastRun({
          'params': params_dict,
-         'timestamp': ''})
-    demisto.debug('EYAL yesterday')   
-        
-        
-#        response['response']['Attribute'].extend(search_query_per_page)
-#        params_dict['page'] += 1
-#        search_query_per_page = client.search_query(params_dict).get('response', {}).get('Attribute')
-#        if error_message := response.get('Error'):
-#            raise DemistoException(error_message)
-#        indicators_iterator = build_indicators_iterator(response, params.get('url'))
-#        added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, True)
-#        demisto.debug(f' DROR MAY WOW ok 2  {indicators}')
-#
-#        if not added_indicators_iterator:
-#            return []
-#
-#        for indicator in added_indicators_iterator:
-#            value_ = indicator['value']['value']
-#            type_ = indicator['type']
-#            raw_type = indicator.pop('raw_type')
-#
-#            indicator_obj = build_indicator(value_, type_, indicator, reputation)
-#
-#            update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
-#            galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
-#            create_and_add_relationships(indicator_obj, galaxy_indicators)
-#
-#            indicators.append(indicator_obj)
-#        demisto.debug(f' DROR MAY WOW ok 3 {indicators}')
-#        for iter_ in batch(indicators, batch_size=1000):
-#            demisto.createIndicators(iter_)
-#        demisto.debug(f' ok {indicators}')
-#        demisto.debug(f' DROR MAY WOW ok 4 {indicators}')
-#    demisto.debug(f'indictors DROR {indicators}')
-    
+         'timestamp': search_query_per_page.get("response", {}).get("Attribute", [])[-1].get('timestamp')})
     
 
 def main():
@@ -652,7 +601,7 @@ def main():
     timeout = arg_to_number(params.get('timeout')) or 60
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    command = demisto.command()
+    command = 'fetch-indicators'
     args = demisto.args()
 
     demisto.debug(f'Command being called is {command}')
