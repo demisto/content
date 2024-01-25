@@ -1,8 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import json
 
 ''' IMPORTS '''
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any
+from collections.abc import Callable
 
 import urllib3
 
@@ -12,6 +14,9 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
+INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
+RESULTS_LIMIT_DEFAULT = 50
+REQUEST_PARAMS_RETURN_AS_OBJECT = {'_return_as_object': '1'}
 REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
 REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
 REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
@@ -75,9 +80,12 @@ RPZ_RULES_DICT = {
 NETWORK_NOT_FOUND = "A network was not found for this address"
 
 
-class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, params=None):
-        super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
+class InfoBloxNIOSClient(BaseClient):
+
+    GET_HOST_RECORDS_ENDPOINT = "record:host"
+
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, params=None):
+        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.params = params
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
@@ -91,7 +99,7 @@ class Client(BaseClient):
         except DemistoException as error:
             raise parse_demisto_exception(error, 'text')
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
         is successful.
 
@@ -100,7 +108,7 @@ class Client(BaseClient):
         """
         return self.list_response_policy_zones()
 
-    def list_response_policy_zones(self, max_results: Optional[str] = None) -> Dict:
+    def list_response_policy_zones(self, max_results: str | None = None) -> dict:
         """List all response policy zones.
         Args:
                 max_results:  maximum number of results
@@ -112,7 +120,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ip(self, ip: Optional[str]) -> Dict:
+    def get_ip(self, ip: str | None) -> dict:
         """Get ip information.
         Args:
             ip: ip to retrieve.
@@ -128,7 +136,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_related_objects_by_ip(self, ip: Optional[str], max_results: Optional[str]) -> Dict:
+    def search_related_objects_by_ip(self, ip: str | None, max_results: str | None) -> dict:
         """Search ip related objects.
         Args:
             ip: ip to retrieve.
@@ -144,8 +152,8 @@ class Client(BaseClient):
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
-    def list_response_policy_zone_rules(self, zone: Optional[str], view: Optional[str], max_results: Optional[str],
-                                        next_page_id: Optional[str]) -> Dict:
+    def list_response_policy_zone_rules(self, zone: str | None, view: str | None, max_results: str | None,
+                                        next_page_id: str | None) -> dict:
         """List response policy zones rules by a given zone name.
         Args:
             zone: response policy zone name.
@@ -165,9 +173,9 @@ class Client(BaseClient):
 
         return self._http_request('GET', suffix, params=request_params)
 
-    def create_response_policy_zone(self, fqdn: Optional[str], rpz_policy: Optional[str],
-                                    rpz_severity: Optional[str], substitute_name: Optional[str],
-                                    rpz_type: Optional[str]) -> Dict:
+    def create_response_policy_zone(self, fqdn: str | None, rpz_policy: str | None,
+                                    rpz_severity: str | None, substitute_name: str | None,
+                                    rpz_type: str | None) -> dict:
         """Creates new response policy zone
         Args:
             fqdn: The name of this DNS zone.
@@ -184,7 +192,7 @@ class Client(BaseClient):
         suffix = 'zone_rp'
         return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
 
-    def delete_response_policy_zone(self, ref_id: Optional[str]) -> Dict:
+    def delete_response_policy_zone(self, ref_id: str | None) -> dict:
         """Delete new response policy zone
         Args:
             ref_id: Zone reference id to delete.
@@ -195,9 +203,9 @@ class Client(BaseClient):
         suffix = ref_id
         return self._http_request('DELETE', suffix)
 
-    def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
-                        rp_zone: Optional[str], view: Optional[str], substitute_name: Optional[str],
-                        comment: Optional[str] = None) -> Dict:
+    def create_rpz_rule(self, rule_type: str | None, object_type: str | None, name: str | None,
+                        rp_zone: str | None, view: str | None, substitute_name: str | None,
+                        comment: str | None = None) -> dict:
         """Creates new response policy zone rule.
         Args:
             rule_type: Type of rule to create.
@@ -210,7 +218,7 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
-        canonical: Optional[str] = ''
+        canonical: str | None = ''
         if rule_type == 'Passthru':
             canonical = 'rpz-passthru' if object_type == 'Client IP address' else name
         elif rule_type == 'Block (No data)':
@@ -232,7 +240,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def create_substitute_record_rule(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
+    def create_substitute_record_rule(self, suffix: str | None, **kwargs: str | int | None) -> dict:
         """Creates new response policy zone substitute rule.
         Args:
             suffix: The infoblox object to be used as a url path.
@@ -262,7 +270,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def change_rule_status(self, reference_id: Optional[str], disable: Optional[bool]) -> Dict:
+    def change_rule_status(self, reference_id: str | None, disable: bool | None) -> dict:
         """Changes a given rule status.
         Args:
             reference_id: Rule reference ID
@@ -274,7 +282,7 @@ class Client(BaseClient):
         suffix = reference_id
         return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
 
-    def get_object_fields(self, object_type: Optional[str]) -> Dict:
+    def get_object_fields(self, object_type: str | None) -> dict:
         """Retrieve a given object fields.
         Args:
             object_type: Infoblox object type
@@ -285,8 +293,8 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_rule(self, object_type: Optional[str], rule_name: Optional[str],
-                    output_fields: Optional[str]) -> Dict:
+    def search_rule(self, object_type: str | None, rule_name: str | None,
+                    output_fields: str | None) -> dict:
         """Search rule by its name
         Args:
             object_type: Infoblox object type
@@ -301,7 +309,7 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def delete_rpz_rule(self, reference_id: Optional[str]) -> Dict:
+    def delete_rpz_rule(self, reference_id: str | None) -> dict:
         """Deletes a rule by its reference id
         Args:
             reference_id: Rule reference ID
@@ -311,6 +319,28 @@ class Client(BaseClient):
 
         suffix = reference_id
         return self._http_request('DELETE', suffix)
+
+    def get_host_records(self, name: str | None, extattrs: list[dict] | None) -> dict:
+        """
+        Get the host records.
+
+        Args:
+        - `name` (``str``): Name of the host record to search for.
+        - `extattrs` (``list[dict]``): List of extra attribute dicts with "name" and "value" keys.
+
+        Returns:
+        - Response JSON
+        """
+
+        params = assign_params(name=name)
+
+        if extattrs:
+            params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
+
+            for e in extattrs:
+                params.update(e)
+
+        return self._http_request('GET', self.GET_HOST_RECORDS_ENDPOINT, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -330,15 +360,55 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
     return DemistoException(err_msg)
 
 
+def transform_ext_attrs(ext_attrs: str) -> list[dict]:
+    """
+    Helper function to transform the extension attributes.
+    The user supplies a string of key/value pairs separated by commas.
+
+    This function parses that string and returns a list of dictionaries with "name" and "value" keys.
+
+    Args:
+    - ext_attrs (str): The string of key/value pairs separated by commas
+
+    For example:
+
+    ```python
+    >>>> transform_ext_attrs("Site=Tel-Aviv")
+    [{"Site": "Tel-Aviv"}]
+
+    >>>> transform_ext_attrs("IB Discovery Owned=EMEA,Site=Tel-Aviv")
+
+    [{"*IB Discovery Owned": "EMEA", "*Site": "Tel-Aviv"}]
+    ```
+    """
+
+    l_ext_attrs = []
+
+    for ext_attr in ext_attrs.split(","):
+        try:
+            key, value = ext_attr.split("=")
+            if key and value:
+                l_ext_attrs.append({f"*{key.strip()}": value.strip()})
+        except ValueError:
+            demisto.error(f"Unable to parse ext_attrs: {ext_attrs}")
+            continue
+
+    return l_ext_attrs
+
+
 ''' COMMANDS '''
 
+# TODO change return type to CommandResults
 
-def test_module_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
+
+def test_module_command(client: InfoBloxNIOSClient, *_) -> tuple[str, dict, dict]:
     client.test_module()
     return 'ok', {}, {}
 
+# TODO change return type to CommandResults
 
-def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dict]:
+
+def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -368,8 +438,10 @@ def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dic
     human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def search_related_objects_by_ip_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -397,8 +469,10 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     human_readable = tableToMarkdown(title, fixed_keys_obj_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def list_response_policy_zone_rules_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -440,8 +514,10 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def list_response_policy_zones_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -467,8 +543,10 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     human_readable = tableToMarkdown(title, fixed_keys_zone_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -494,8 +572,10 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def delete_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -511,8 +591,10 @@ def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
         f'{deleted_rule_ref_id}'
     return human_readable, {}, raw_response
 
+# TODO change return type to CommandResults
 
-def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -545,8 +627,10 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_a_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -572,8 +656,10 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_aaaa_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -599,8 +685,10 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_mx_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -628,8 +716,10 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_naptr_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -659,8 +749,10 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_ptr_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -690,8 +782,10 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_srv_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -721,8 +815,10 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_txt_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -748,8 +844,10 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_ipv4_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -775,8 +873,10 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def create_ipv6_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -802,8 +902,10 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def enable_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -824,8 +926,10 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def disable_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -846,8 +950,10 @@ def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def get_object_fields_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -872,8 +978,10 @@ def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     human_readable = tableToMarkdown(title, name_list, headers=['Field Names'], headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
+# TODO change return type to CommandResults
 
-def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+
+def search_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -902,7 +1010,7 @@ def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, raw_response
 
 
-def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -918,6 +1026,53 @@ def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return title, {}, raw_response
 
 
+def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
+    """
+    Get host records.
+
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `Tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+
+    hostname = args.get("host_name", None)
+    extension_attributes = args.get("extattrs", None)
+    max_records = args.get("max_records", RESULTS_LIMIT_DEFAULT)
+
+    # We need to add an asterisk (*) to the extension attributes
+    if extension_attributes:
+        extension_attributes = transform_ext_attrs(extension_attributes)
+
+    raw = client.get_host_records(name=hostname, extattrs=extension_attributes)
+    records = raw.get("result", [])[:max_records]
+
+    demisto.debug(f"Found {len(records)} host records")
+
+    if not hostname:
+        title = f"Host records (first {max_records})"
+    else:
+        title = f"Host records for {hostname} (first {max_records})"
+
+    human_readable = tableToMarkdown(title, records)
+
+    demisto.debug(f"returning human readable: {str(human_readable)}")
+    demisto.debug(f"returning records: {str(records)}")
+    demisto.debug(f"returning raw: {str(raw)}")
+
+    if records:
+        context = {
+            f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}(val._ref && val._ref === obj._ref)": records
+        }
+    else:
+        human_readable = "No host records found"
+        context = {}
+
+    return human_readable, context, raw
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -928,15 +1083,18 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     user = demisto.get(params, 'credentials.identifier')
     password = demisto.get(params, 'credentials.password')
-    default_request_params = {
-        '_return_as_object': '1'
-    }
-    client = Client(base_url, verify=verify, proxy=proxy, auth=(user, password), params=default_request_params)
+    client = InfoBloxNIOSClient(
+        base_url,
+        verify=verify,
+        proxy=proxy,
+        auth=(user, password),
+        params=REQUEST_PARAMS_RETURN_AS_OBJECT
+    )
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     # Switch case
-    commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+    commands: dict[str, Callable[[InfoBloxNIOSClient, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]] = {
         'test-module': test_module_command,
         f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
@@ -959,6 +1117,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
         f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-host-info': get_host_records_command
     }
     try:
         if command in commands:

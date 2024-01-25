@@ -1,5 +1,15 @@
+from pathlib import Path
 import pytest
-from Infoblox import NETWORK_NOT_FOUND, Client, get_ip_command
+from Infoblox import (
+    INTEGRATION_CONTEXT_NAME,
+    INTEGRATION_HOST_RECORDS_CONTEXT_NAME,
+    NETWORK_NOT_FOUND,
+    RESULTS_LIMIT_DEFAULT,
+    InfoBloxNIOSClient,
+    get_host_records_command,
+    get_ip_command,
+    transform_ext_attrs
+)
 import demistomock as demisto
 import json
 
@@ -51,7 +61,7 @@ GET_USER_LIST = {
 REQUEST_PARAM_ZONE = '?_return_as_object=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C' \
                      'substitute_name%2Ccomment%2Cdisable'
 
-client = Client('https://example.com/v1/', params={'_return_as_object': '1'})
+client = InfoBloxNIOSClient('https://example.com/v1/', params={'_return_as_object': '1'})
 
 
 class TestHelperFunctions:
@@ -74,10 +84,95 @@ class TestHelperFunctions:
 
     def test_parse_demisto_exception_api_error(self):
         from Infoblox import parse_demisto_exception
+
         api_err = f'Error in API call [400] - Bad Request\n {json.dumps(API_ERROR_OBJ)}'
         parsed_err = parse_demisto_exception(DemistoException(api_err))
         assert str(parsed_err) == str(
             DemistoException("Duplicate object 'test123.com' of type zone exists in the database."))
+
+    def test_transform_ext_attrs_2_attrs(self):
+        """
+        Test transform_ext_attrs with 2 comma-separated values.
+
+        Given:
+        - An input.
+
+        When:
+        - The input has 2 comma-separated key-value pairs.
+
+        Then:
+        - A list of 2 dictionaries is returned with the key-value pairs as expected.
+        """
+
+        input = "IB Discovery Owned=EMEA,Site=Tel-Aviv"
+
+        actual = transform_ext_attrs(input)
+        expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
+        assert actual == expected
+
+    def test_transform_ext_attrs_2_attrs_whitespace(self):
+        """
+        Test transform_ext_attrs with 2 comma-separated values
+        and whitespace in the key/value.
+
+        Given:
+        - An input.
+
+        When:
+        - The input has 2 comma-separated key-value pairs.
+        - The input includes spaces in the key
+        - The input includes spaces in the value
+
+        Then:
+        - A list of 2 dictionaries is returned with the key-value pairs as expected.
+        """
+
+        input = " IB Discovery Owned=EMEA,Site= Tel-Aviv"
+        actual = transform_ext_attrs(input)
+        expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
+        assert actual == expected
+
+    def test_transform_ext_attrs_2_attrs_comma_attr_end(self):
+        """
+        Test transform_ext_attrs with 2 comma-separated values
+        and comma in the end of value.
+
+        Given:
+        - An input.
+
+        When:
+        - The input has 2 comma-separated key-value pairs.
+        - The input includes a comma in the value.
+
+        Then:
+        - A list of 2 dictionaries is returned with the key-value pairs as expected.
+        """
+
+        input = "IB Discovery Owned=EMEA,Site=Tel-Aviv, Yafo"
+        actual = transform_ext_attrs(input)
+        expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
+        assert actual == expected
+
+    def test_transform_ext_attrs_2_attrs_comma_attr_beginning(self):
+        """
+        Test transform_ext_attrs with 2 comma-separated values
+        and comma in the beginning of value.
+
+        Given:
+        - An input.
+
+        When:
+        - The input has 2 comma-separated key-value pairs.
+        - The input includes a comma in the value.
+
+        Then:
+        - A list of 2 dictionaries is returned with the key-value pairs as expected.
+        """
+
+        input = "IB Discovery Owned=EMEA,Site=,Tel-Aviv"
+        actual = transform_ext_attrs(input)
+        expected = [{'*IB Discovery Owned': 'EMEA'}]
+        assert actual == expected
 
 
 class TestZonesOperations:
@@ -152,3 +247,65 @@ def test_get_ip_command_raise_error(mocker, mock_exception):
 
     with pytest.raises(mock_exception, match="test"):
         get_ip_command(client, {"ip": "1.1.1.1"})
+
+
+class TestHostRecordsOperations:
+
+    CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}(val._ref && val._ref === obj._ref)"
+
+    def test_get_all_records(self, requests_mock):
+        """
+        Test to get all records.
+
+        Given:
+        - Mock response for get all host records API call.
+
+        When:
+        - Get all host records API call is made.
+
+        Then:
+        - Ensure records are returned as expected.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files"
+                         / self.__class__.__name__ / "get_records.json").read_text()
+
+        requests_mock.get(
+            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT + "?_return_as_object=1",
+            json=json.loads(mock_response)
+        )
+
+        hr, records, _ = get_host_records_command(client, {})
+
+        assert len(records.get(self.CONTEXT_KEY)) == 4
+        assert f"Host records (first {RESULTS_LIMIT_DEFAULT})" in hr
+        assert "extattrs" not in hr
+
+    def test_get_records_from_hostname(self, requests_mock):
+        """
+        Test to get host records by hostname.
+
+        Given:
+        - Mock response for get host records by hostname API call.
+
+        When:
+        - Get host records by hostname API call is made with hostname "host1".
+
+        Then:
+        - Ensure only matching record is returned.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files"
+                         / self.__class__.__name__ / "get_record_by_hostname.json").read_text()
+        host_name = "ciac-3607.test"
+
+        requests_mock.get(
+            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT + f"?_return_as_object=1&name={host_name}",
+            json=json.loads(mock_response)
+        )
+
+        hr, records, _ = get_host_records_command(client, {"host_name": host_name})
+
+        assert len(records.get(self.CONTEXT_KEY)) == 1
+        assert "Host records for ciac-3607.test" in hr
+        assert "extattrs" not in hr

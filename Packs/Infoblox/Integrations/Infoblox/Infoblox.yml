@@ -51,16 +51,16 @@ script:
     - contextPath: Infoblox.IP.IsConflict
       description: Whether the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery (if set to true).
       type: string
-    - contextPath: Infoblox.IP. Objects
+    - contextPath: Infoblox.IP.Objects
       description: The objects associated with the IP address.
       type: string
     - contextPath: Infoblox.IP.Types
       description: The current status of the address.
       type: string
-    - contextPath: Infoblox.IP. Names
+    - contextPath: Infoblox.IP.Names
       description: The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname.
       type: string
-    - contextPath: Infoblox.IP. Extattrs
+    - contextPath: Infoblox.IP.Extattrs
       description: Extra attributes relevant for this object.
       type: string
     - contextPath: Infoblox.IP.IpAddress
@@ -694,6 +694,20 @@ script:
       required: true
     description: Deletes a given response policy zone.
     name: infoblox-delete-response-policy-zone
+  - name: infoblox-list-host-info
+    description: Get all host records.
+    arguments:
+    - name: host_name
+      description: The hostname to retrieve records for, e.g. localhost.test.
+      required: false
+    - name: extattrs
+      description: comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue"
+    - name: max_results
+      description: The maximum number of records to return. Default is 50.
+      defaultvalue: 50
+    outputs:
+      - contextPath: Infoblox.Host
+        description: The retrieved InfoBlox host records
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: ''
