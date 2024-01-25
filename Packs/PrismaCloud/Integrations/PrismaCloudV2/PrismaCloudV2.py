@@ -590,8 +590,8 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                            sort_by=['alertTime:asc'],  # adding sort by 'id:asc' doesn't work
                                            limit=limit + len(fetched_ids),
                                            )
-    demisto.debug(f"Finished request, got response: {response}")
     response_items = response.get('items', [])
+    demisto.debug(f"Finished request, got {len(response_items)} items")
     updated_last_run_time_epoch = response_items[-1].get('alertTime') if response_items else now
     incidents = filter_alerts(client, fetched_ids, response_items, limit)
 
@@ -606,8 +606,8 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                                limit=limit + len(fetched_ids),
                                                page_token=response.get('nextPageToken'),
                                                )
-        demisto.debug(f"Finished another request, got response: {response}")
         response_items = response.get('items', [])
+        demisto.debug(f"Finished request, got {len(response_items)} items.")
         updated_last_run_time_epoch = \
             response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
         incidents.extend(filter_alerts(client, fetched_ids, response_items, limit, len(incidents)))
