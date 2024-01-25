@@ -518,7 +518,7 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
     """
     for item in response_items:
         for member in item.get('members', []):  # members is a list of dict or strs
-            if isinstance(member, str):
+            if isinstance(member, str | int):
                 continue
             if item_namespace := member.get('namespaces', []):
                 item['namespaces'] = item_namespace
@@ -2240,6 +2240,9 @@ def main() -> None:
         error_msg = str(e)
         if hasattr(e, 'res'):
             error_msg += get_response_status_header(e.res)  # type: ignore[attr-defined]
+            if hasattr(e.res, 'status_code') and e.res.status_code == 401:  # type: ignore[attr-defined]
+                error_msg = 'Authentication failed. ' \
+                            'Check that the Server URL parameter is correct and validate your credentials.\n' + error_msg
         return_error(error_msg, error=e)
 
 

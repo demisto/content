@@ -969,7 +969,7 @@ def main():
     new_email_body = custom_fields.get('emailnewbody')
     email_selected_thread = custom_fields.get('emailselectedthread')
     subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
-    body_type = args.get("bodyType")
+    body_type = args.get('bodyType') or args.get('body_type') or 'html'
 
     argToBoolean(args.get('reputation_calc_async', False))
 
