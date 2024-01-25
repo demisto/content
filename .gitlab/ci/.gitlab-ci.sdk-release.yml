@@ -11,11 +11,13 @@ create-release-branch:
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
+    SDK_BRANCH_NAME: $SDK_BRANCH_NAME
   script:
     - section_start "Create release branch" --collapsed
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version \`"$RELEASE_VERSION"\` has started" --allow-failure "${SLACK_ALLOW_FAILURE}"
     - echo "RELEASE_VERSION="$RELEASE_VERSION
-    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
+    - echo "SDK_BRANCH_NAME="$SDK_BRANCH_NAME
+    - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -n $RELEASE_VERSION -b $SDK_BRANCH_NAME
     - section_end "Create release branch"
 
 trigger-content-private-nightly:
