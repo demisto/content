@@ -216,6 +216,33 @@ def test_http_request_rate_limit(mocker, client: ReilaQuestClient):
         client.http_request("suffix")
 
 
+def test_http_request_connection_errors(mocker, client: ReilaQuestClient):
+    """
+    Given:
+     - connection error exceptions
+     - request that succeeded after connection errors
+
+    When:
+     - running http_request
+
+    Then:
+     - make sure the retry mechanism is triggered and the response is returned properly
+    """
+    from requests.exceptions import ConnectionError, Timeout
+
+    sleep_mocker = mocker.patch("CommonServerPython.time.sleep")
+    mocked_responses = [
+        Timeout, ConnectionError, create_mocked_response(response={"test": "test"})
+    ]
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=mocked_responses
+    )
+    assert client.http_request("suffix") == {"test": "test"}
+    assert sleep_mocker.called
+
+
 @pytest.mark.parametrize(
     "limit, num_of_events",
     [
@@ -348,6 +375,16 @@ class TestFetchEvents:
         assert set_last_run_mocker.call_args[0][0][RATE_LIMIT_LAST_RUN] == "2024-01-18T10:22:00Z"
 
     def test_fetch_events_no_events(self, mocker):
+        """
+        Given:
+         - flow where there is no last run or no events
+
+        When:
+         - running the entire fetch-events flow
+
+        Then:
+         - make sure that there aren't any events fetched
+        """
         import ReliaQuestGreyMatterDRPEventCollector
 
         send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
@@ -377,6 +414,16 @@ class TestFetchEvents:
         assert send_events_mocker.call_count == 0
 
     def test_fetch_events_no_events_with_last_run(self, mocker):
+        """
+        Given:
+         - flow where there is last run from previous fetch, but no more events in the api
+
+        When:
+         - running the entire fetch-events flow
+
+        Then:
+         - make sure that there aren't any events fetched and the last run is kept the same
+        """
         import ReliaQuestGreyMatterDRPEventCollector
 
         send_events_mocker = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
@@ -410,6 +457,16 @@ class TestFetchEvents:
         assert set_last_run_mocker.call_args[0][0] == {FOUND_IDS_LAST_RUN: [1], FETCHED_TIME_LAST_RUN: "2024-01-18T10:22:00Z"}
 
     def test_fetch_events_multiple_events_no_rate_limits(self, mocker):
+        """
+        Given:
+         - flow where there are multiple events and no last run
+
+        When:
+         - running the entire fetch-events flow
+
+        Then:
+         - make sure that all events are enriched and fetched, make sure the send_events_to_xsiam is called multiple times
+        """
         import ReliaQuestGreyMatterDRPEventCollector
         from unittest.mock import MagicMock
 

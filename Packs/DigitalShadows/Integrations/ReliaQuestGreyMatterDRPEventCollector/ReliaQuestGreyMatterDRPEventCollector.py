@@ -84,9 +84,6 @@ class ReilaQuestClient(BaseClient):
     ):
         """
         Args:
-                api docs:
-                    Return events with an event-num greater than this value
-                    Must be greater than or equal to 0.
             event_created_before (str): retrieve events occurred before a specific time (included),format: YYYY-MM-DDThh:mm:ssTZD.
             event_created_after (str): retrieve events occurred after a specific time (included), format: YYYY-MM-DDThh:mm:ssTZD.
             limit (int): the maximum number of events to retrieve
@@ -180,6 +177,9 @@ def test_module(client: ReilaQuestClient) -> str:
 
 
 def parse_event_created_time(event_date_string: str) -> datetime:
+    """
+    Parses the event date into the correct format
+    """
     try:
         return datetime.strptime(event_date_string, DATE_FORMAT)
     except ValueError:
@@ -350,6 +350,9 @@ def dedup_fetched_events(
 
 
 def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Optional[dict[str, Any]] = None):
+    """
+    Enrich the events with more data from the api.
+    """
     if not last_run:
         last_run = {}
 
@@ -405,6 +408,14 @@ def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Option
 
 
 def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
+    """
+    Fetch flow:
+     - Check if there was any rate-limit error, if not continue the fetch normally
+     - Each 1000 events will be fetched with send_events_to_xsiam to avoid rate-limits
+     - find the events with latest time and save it in the last run, do a dedup on those events
+     - in case of a rate-limit error, the api returns the "retry-after" argument to inform the
+        client when a new request can be made, keep it in the last-run and wait until this time has reached
+    """
     new_last_run = last_run.copy()
     try:
         if retry_after := last_run.get(RATE_LIMIT_LAST_RUN):

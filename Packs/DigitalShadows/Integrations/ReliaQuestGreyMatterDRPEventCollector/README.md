@@ -2,10 +2,10 @@ Digital Shadows minimizes digital risk by identifying unwanted exposure and prot
 
 This integration fetches event items which can be either incident/alerts, for more information refer [here](https://portal-digitalshadows.com/learn/searchlight-api/key-words/triage)
 
-## Configure Relia Quest GreyMatter DRP EventCollector On XSIAM
+## Configure Relia Quest GreyMatter DRP Event Collector On XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
-2. Search for Saas Security Event Collector.
+2. Search for Relia Quest GreyMatter DRP Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                      | **Description** | **Required** |

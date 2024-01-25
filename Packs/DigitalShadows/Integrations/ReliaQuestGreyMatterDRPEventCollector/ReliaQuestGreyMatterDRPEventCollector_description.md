@@ -10,5 +10,4 @@ Please contact your Digital Shadows representative to obtain API credentials.
 To authenticate the integration, it is required to have username, password and account-id, to get the account-id refer to [here](https://portal-digitalshadows.com/api/stored-objects/portal/searchlight-api-docs/SearchLightAPI_APIKey_AccountId2.pdf)
 
 ## Limitations
-* The Relia Quest product can return rate-limits when doing too many http-requests, increasing the **Maximum number of events per fetch** parameter to high numbers can cause rate-limits. The integration knows to recover from those rate-limits automatically in some cases, but not in all of them. For more information about rate-limits refer [here](https://portal-digitalshadows.com/learn/searchlight-api/overview/rate-limiting)
-* The maximum **recommended** number of events to fetch per a single fetch is 1000. Increasing it can lead to unwanted rate-limits.
+* The Relia Quest product can return rate-limits when doing too many http-requests, increasing the **Maximum number of events per fetch** parameter to large numbers can cause rate-limits. The integration knows to recover from those rate-limits automatically, but it can cause slowness in events fetching. For more information about rate-limits refer [here](https://portal-digitalshadows.com/learn/searchlight-api/overview/rate-limiting)
