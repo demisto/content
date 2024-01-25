@@ -567,7 +567,7 @@ def load_client_cert_and_key(ssl_context: ssl.SSLContext, params: dict[str, Any]
         return True
 
 
-def main():
+def main():     # pragma: no cover
     params = demisto.params()
     mail_server_url = params.get('MailServerURL')
     port = int(params.get('port'))
