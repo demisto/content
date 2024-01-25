@@ -1,4 +1,5 @@
 # Check Point Firewall
+<~XSIAM>
 This pack includes Cortex XSIAM content. 
 ## Configuration on Server Side
 You need to configure Check Point to forward Syslog messages in CEF format.
@@ -23,3 +24,4 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - Checkpoint
    - product as product - Firewall
+</~XSIAM>
