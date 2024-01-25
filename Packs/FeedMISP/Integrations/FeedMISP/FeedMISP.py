@@ -556,7 +556,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_types)
-    indicators = []
     params_dict['page'] = 1
     params_dict['limit'] = 2000
     timestamp = ''
@@ -566,6 +565,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))}\
                         page: {params_dict["page"]}')
         indicators_iterator = build_indicators_iterator(search_query_per_page, params.get('url'))
+        indicators = []
         for indicator in indicators_iterator:
             value_ = indicator['value']['value']
             type_ = indicator['type']
