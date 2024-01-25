@@ -112,7 +112,7 @@ class Client(BaseClient):
         """
         data = {'username': username, 'password': password}
 
-        response = self._http_request('POST', 'login', json_data=data)
+        response = self._http_request('POST', 'login', json_data=data, retries=2)
         try:
             token = response.get('token')
             if not token:
