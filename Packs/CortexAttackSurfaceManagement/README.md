@@ -137,7 +137,7 @@ A playbook that given the IP address enriches Azure information relevant to ASM 
 
 This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) systems for enrichment purposes.
 
-! TODO ADD LINK AFTER PR
+![Cortex ASM - Cortex Endpoint Enrichment](https://raw.githubusercontent.com/demisto/content/935a77339c2b1ecde3b9ea64992018bd625c61ed/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Enrichment.png)
 
 #### Cortex ASM - Detect Service
 
