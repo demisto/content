@@ -235,8 +235,8 @@ def get_object_id_by_ip(client, list_type, object_ip):
             if response:
                 demisto.debug(f"debug-log: response from {page=} has {len(response.get('data'))} objects")
             all_objects.extend(response.get('data'))
-    except Exception:
-        demisto.debug("debug-log: exception raised while trying to paginate in get_object_id_by_ip")
+    except Exception as e:
+        demisto.debug("debug-log: exception raised while trying to paginate in get_object_id_by_ip: str (e)")
 
     demisto.debug(f"debug-log: found total of {len(all_objects)} objects.")
 
