@@ -348,14 +348,14 @@ def fetch_indicators(client: Client,
                      reputation: Optional[str],
                      feed_tags: Optional[List],
                      limit: int = -1,
-                     page:int = 0,
+                     page: int = 0,
                      is_fetch: bool = True) -> List[Dict]:
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
     if limit and limit not in params_dict:
         params_dict['limit'] = limit
     if page:
         params_dict['page'] = page
-    response = search_query_indicators_pagination(client, params_dict) if is_fetch else client.search_query(params_dict)
+    response = client.search_query(params_dict)
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
     indicators_iterator = build_indicators_iterator(response, url)
@@ -367,13 +367,6 @@ def fetch_indicators(client: Client,
 
     if limit > 0:
         added_indicators_iterator = added_indicators_iterator[:limit]
-
-    if is_fetch:
-        # fetching command, need to update last run dict
-        demisto.setLastRun({
-            'params': params_dict,
-            'timestamp': added_indicators_iterator[len(added_indicators_iterator) - 1]['value']['timestamp']
-        })
 
     for indicator in added_indicators_iterator:
         value_ = indicator['value']['value']
@@ -515,7 +508,7 @@ def test_module(client: Client) -> str:
 
 
 def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[str, str]) -> CommandResults:
-    """Wrapper for retrieving indicators from the feed to the war-room.
+    """ Retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
         args: demisto.args()
@@ -558,7 +551,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     Args:
         client: Client object with request
         params: demisto.params()
-    Returns: List of indicators.
+    Returns:.
     """
     tlp_color = params.get('tlp_color')
     reputation = params.get('feedReputation')
@@ -572,7 +565,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     params_dict['limit'] = 2000
     search_query_per_page = client.search_query(params_dict)
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
-        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators:
+        demisto.debug(f'search_query_per_page: {params_dict["page"]} number of indicators:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))}')
         if error_message := search_query_per_page.get('Error'):
             raise DemistoException(error_message)
@@ -591,9 +584,9 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         params_dict['page'] += 1
         search_query_per_page = client.search_query(params_dict)
     demisto.setLastRun({
-         'params': params_dict,
-         'timestamp': search_query_per_page.get("response", {}).get("Attribute", [])[-1].get('timestamp')})
-    
+        'params': params_dict,
+        'timestamp': search_query_per_page.get("response", {}).get("Attribute", [])[-1].get('timestamp')})
+
 
 def main():
     params = demisto.params()
@@ -620,7 +613,7 @@ def main():
             return_results(get_attributes_command(client, args, params))
         elif command == 'fetch-indicators':
             fetch_attributes_command(client, params)
-            
+
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
