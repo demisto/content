@@ -28,14 +28,11 @@ def upload_file_command(args: dict) -> list[CommandResults]:
             readable += f'. Comment is:{body}'
         command_results.append(CommandResults(readable_output=readable, raw_response=response))
     return command_results
-    return readable, response
 
 
 def main():
     try:
-        # readable, response = upload_file_command(demisto.args())
         return_results(upload_file_command(demisto.args()))
-        # return_outputs(readable, {}, response)
     except Exception as err:
         return_error(str(err))
 
