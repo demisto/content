@@ -15,8 +15,10 @@ from Tests.scripts.utils.log_util import install_logging
 CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
+# disable-secrets-detection-start
 NAME_MAPPING_URL = 'https://gitlab.xdr.pan.local/api/v4/projects/1701' \
-                   '/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'  # disable-secrets-detection
+                   '/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'
+# disable-secrets-detection-end
 
 
 def options_handler() -> argparse.Namespace:

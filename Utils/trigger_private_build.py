@@ -194,7 +194,7 @@ def main():
             }
         }
         if sdk_ref:
-            payload['inputs']['sdk_ref'] = sdk_ref
+            payload['inputs']['sdk_ref'] = sdk_ref  # type: ignore
         logging.info('Triggering nightly build for content-private repo')
         res = requests.post(TRIGGER_NIGHTLY_URL,
                             headers={'Accept': 'application/vnd.github.everest-preview+json',
