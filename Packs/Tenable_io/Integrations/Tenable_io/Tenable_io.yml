@@ -2,8 +2,6 @@ category: Vulnerability Management
 sectionOrder:
 - Connect
 - Collect
-#- Collect - events
-#- Collect - assets
 commonfields:
   id: Tenable.io
   version: -1
