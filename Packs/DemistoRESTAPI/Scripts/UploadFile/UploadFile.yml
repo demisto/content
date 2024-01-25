@@ -1,17 +1,17 @@
 commonfields:
-  id: UploadFileTest
+  id: UploadFile
   version: -1
 enabled: true
-name: UploadFileTest
+name: UploadFile
 fromversion: 6.5.0
 script: '-'
 args:
 - description: File entry ID.
   name: entryID
-  isArray: true
   predefined:
   - ''
   required: true
+  isArray: true
 - description: Incident ID to upload the file to.
   name: incID
   required: true
@@ -31,7 +31,7 @@ args:
   - 'incident attachment'
 comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.13.85667
 tags:
 - DemistoAPI
 timeout: '0'
