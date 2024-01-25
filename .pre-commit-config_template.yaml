@@ -61,13 +61,9 @@ repos:
   - id: xsoar-linter
     name: xsoar-linter
     description: Run xsoar-linter on the code in content packs
-    entry: pylint
-    language: python
-    args:
-    - -E
-    - --disable=all
-    - --fail-under=-100 # With this flag, the linter will fail only if the score is less than -100, which isn't possible with warnings.
-    - --fail-on=E # we want the pylint to fail on Errors and fatals
+    entry: demisto-sdk xsoar-linter
+    files: Packs\/.*\.py$
+    language: system
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
