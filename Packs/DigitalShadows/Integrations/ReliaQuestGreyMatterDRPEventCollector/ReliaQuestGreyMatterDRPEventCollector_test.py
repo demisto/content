@@ -5,7 +5,7 @@ import pytest
 import hashlib
 from ReliaQuestGreyMatterDRPEventCollector import DATE_FORMAT, ReilaQuestClient, RateLimitError
 import json
-from ReliaQuestGreyMatterDRPEventCollector import FOUND_IDS_LAST_RUN, RATE_LIMIT_LAST_RUN, MAX_PAGE_SIZE, FETCHED_TIME_LAST_RUN
+from ReliaQuestGreyMatterDRPEventCollector import FOUND_IDS_LAST_RUN, RATE_LIMIT_LAST_RUN, MAX_PAGE_SIZE, LAST_FETCHED_EVENT_NUM
 
 TEST_URL = "https://test.com/api"
 
@@ -430,7 +430,7 @@ class TestFetchEvents:
         set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun')
         mocker.patch.object(demisto, "error")
         mocker.patch.object(
-            demisto, 'getLastRun', return_value={FOUND_IDS_LAST_RUN: [1], FETCHED_TIME_LAST_RUN: "2024-01-18T10:22:00Z"}
+            demisto, 'getLastRun', return_value={FOUND_IDS_LAST_RUN: [1], LAST_FETCHED_EVENT_NUM: "2024-01-18T10:22:00Z"}
         )
         mocker.patch.object(
             demisto, 'params',
@@ -454,7 +454,7 @@ class TestFetchEvents:
 
         ReliaQuestGreyMatterDRPEventCollector.main()
         assert send_events_mocker.call_count == 0
-        assert set_last_run_mocker.call_args[0][0] == {FOUND_IDS_LAST_RUN: [1], FETCHED_TIME_LAST_RUN: "2024-01-18T10:22:00Z"}
+        assert set_last_run_mocker.call_args[0][0] == {FOUND_IDS_LAST_RUN: [1], LAST_FETCHED_EVENT_NUM: "2024-01-18T10:22:00Z"}
 
     def test_fetch_events_multiple_events_no_rate_limits(self, mocker):
         """
