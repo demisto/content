@@ -270,7 +270,7 @@ def fetch_incidents(client: IMAPClient,
         time_to_fetch_from = parse(f'{first_fetch_time} UTC', settings={'TIMEZONE': 'UTC'})
 
     # Otherwise use the mail UID
-    uid_to_fetch_from = last_run.get('last_uid', 1)
+    uid_to_fetch_from = last_run.get('last_uid', 0)
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
@@ -301,7 +301,7 @@ def fetch_mails(client: IMAPClient,
                 limit: int = 200,
                 save_file: bool = False,
                 message_id: int = None,
-                uid_to_fetch_from: int = 1) -> tuple[list, list, int]:
+                uid_to_fetch_from: int = 0) -> tuple[list, list, int]:
     """
     This function will fetch the mails from the IMAP server.
 
@@ -334,7 +334,7 @@ def fetch_mails(client: IMAPClient,
         demisto.debug(f'Searching for email messages with criteria: {messages_query}')
         messages_uids = client.search(messages_query)
         # first fetch takes last page only (workaround as first_fetch filter is date accurate)
-        messages_uids = messages_uids[limit * -1:] if uid_to_fetch_from == 1 else messages_uids[:limit]
+        messages_uids = messages_uids[limit * -1:] if uid_to_fetch_from == 0 else messages_uids[:limit]
 
     mails_fetched = []
     messages_fetched = []
