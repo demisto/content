@@ -11356,7 +11356,8 @@ def retry(
                 except exceptions as error:
                     demisto.debug(
                         "Error when executing func {func_name}, error: {error}, time {time}".format(
-                            func_name=func_name, error=error, time=i)
+                            func_name=func_name, error=error, time=i
+                        )
                     )
                     if i == times:
                         raise

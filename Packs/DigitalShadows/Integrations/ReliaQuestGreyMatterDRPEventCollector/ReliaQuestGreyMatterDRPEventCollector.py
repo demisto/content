@@ -48,7 +48,7 @@ class ReilaQuestClient(BaseClient):
         super().__init__(base_url=url, verify=verify_ssl, proxy=proxy, auth=(username, password))
         self.account_id = account_id
 
-    @retry(times=5, exceptions=(ConnectionError, Timeout))
+    @retry(times=5, exceptions=(ConnectionError, Timeout, DemistoException))
     def http_request(
         self,
         url_suffix: str,
