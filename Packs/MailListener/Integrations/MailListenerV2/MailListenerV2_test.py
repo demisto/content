@@ -276,7 +276,7 @@ def test_fetch_mail__default_uid(mocker,):
     mocker.patch.object(IMAPClient, 'fetch')
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
-    assert search_mocker.call_args[0][0] == [] # default uid is 0 so no search query is passed
+    assert search_mocker.call_args[0][0] == []  # default uid is 0 so no search query is passed
 
 
 def test_invalid_mail_object_handling(mocker):
