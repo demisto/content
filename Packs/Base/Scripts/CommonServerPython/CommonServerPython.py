@@ -11331,16 +11331,19 @@ def retry(
     """
     retries to execute a function until an exception isn't raised anymore.
 
-    Args:
-        times: (int) the amount of times to try and execute the function
-        delay (int): the number of seconds to wait between each time
-        exceptions (Union[tuple[type[Exception], ...], type[Exception]]):
-            the exceptions that should be caught when executing the function
+    :type times: ``int``
+    :param times: The number of times to trigger the retry mechanism.
 
-    Returns:
-        Any: the decorated function result
+    :type delay: ``int``
+    :param delay: The time to sleep between each time
+
+    :type exceptions: ``Exception``
+    :param exceptions: The exceptions that should be caught when executing
+        the function (Union[tuple[type[Exception], ...], type[Exception]])
+
+    :return: Any
+    :rtype: ``Any``
     """
-
     def _retry(func):
         func_name = func.__name__
 

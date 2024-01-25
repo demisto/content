@@ -8,15 +8,15 @@ This integration fetches event items which can be either incident/alerts, for mo
 2. Search for Relia Quest GreyMatter DRP Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                      | **Description** | **Required** |
-    |------------------------------------| --- | --- |
-    | Server URL                         | URL for the Relia Quest API instance. | True |
-    | Account ID                         | The account ID for the Reila Quest instance. | True |
-    | Maximum number of events per fetch | The maximum number of events to fetch every time fetch is being executed. | True |
+    | **Parameter**                      | **Description**                                                                                                                                                    | **Required** |
+    |------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+    | Server URL                         | URL for the Relia Quest API instance.                                                                                                                              | True |
+    | Account ID                         | The account ID for the Reila Quest instance.                                                                                                                       | True |
+    | Maximum number of events per fetch | The maximum number of events to fetch every time fetch is being executed. Default is 200.                                                                          | True |
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
-    | Use system proxy settings          | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
-    | Username                           | The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to Saas-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched. | False |
-    | Password                           | In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events. Note - the default value is the recommended value to prevent timeouts. Default is 150. | False |
+    | Use system proxy settings          | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server.                          | False |
+    | Username                           | The username to authenticate Relia Quest Event Collector.                                                                                                          | False |
+    | Password                           | The password to autheticate Relia Quest Event Collector                                                                                                            | False |
 5. Click **Test** to validate the URLs, token, and connection.
 
 
@@ -29,4 +29,3 @@ To authenticate the integration, it is required to have username, password and a
 
 ## Limitations
 * The Relia Quest product can return rate-limits when doing too many http-requests, increasing the **Maximum number of events per fetch** parameter to high numbers can cause rate-limits. The integration knows to recover from those rate-limits automatically in some cases, but not in all of them. For more information about rate-limits refer [here](https://portal-digitalshadows.com/learn/searchlight-api/overview/rate-limiting)
-* The maximum **recommended** number of events to fetch per a single fetch is 1000. Increasing it can lead to unwanted rate-limits.
