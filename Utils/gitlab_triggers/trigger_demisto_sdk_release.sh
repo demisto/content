@@ -88,7 +88,6 @@ source "${SCRIPT_DIR}/trigger_build_url.sh"
 export URL=$(
 curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[SDK_RELEASE]=true" \
-    --form "variables[BRANCH_NAME]=${_branch}" \
     --form "variables[CI_TOKEN]=${_ci_token}" \
     --form "variables[REVIEWER]=${_reviewer}" \
     --form "variables[RELEASE_VERSION]=${_release_version}" \
