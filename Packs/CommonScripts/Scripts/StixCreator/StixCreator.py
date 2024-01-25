@@ -9,7 +9,7 @@ import uuid
 from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
 from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
 from stix2 import Tool, CourseOfAction
-from stix2.exceptions import InvalidValueError
+from stix2.exceptions import InvalidValueError, MissingPropertiesError
 from typing import Any
 from collections.abc import Callable
 
@@ -370,13 +370,13 @@ def main():
                     demisto.info(f"Export failure exception: {traceback.format_exc()}")
                     continue
 
-                except InvalidValueError:
+                except (InvalidValueError, MissingPropertiesError):
                     demisto.info(
                         f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
                     demisto.info(f"Export failure exception: {traceback.format_exc()}")
                     continue
 
-            except InvalidValueError:
+            except (InvalidValueError, MissingPropertiesError):
                 demisto.info(
                     f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
                 demisto.info(f"Export failure exception: {traceback.format_exc()}")
