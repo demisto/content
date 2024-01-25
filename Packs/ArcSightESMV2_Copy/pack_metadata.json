@@ -1,0 +1,21 @@
+{
+    "name": "ArcSight ESM v2_copy",
+    "description": "For ArcSight ESM 7.6.4, there is a bug with as-delete-enteries command, this integration fixed it.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Samer Amr",
+    "url": "",
+    "email": "",
+    "created": "2024-01-25T22:35:09Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "sameramreldesouky"
+    ]
+}
