@@ -187,7 +187,7 @@ GET_INDICATOR_INPUTS = [
 
 @pytest.mark.parametrize('indicator_type, build_iterator_answer, value, type', GET_INDICATOR_INPUTS)
 def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, value, type):
-    client = Client(indicator_type=indicator_type, api_token='123', services='fusion')
+    client = Client(indicator_type=indicator_type, api_token='123', services='fusion')  # type: ignore
     args = {
         'indicator_type': indicator_type,
         'limit': 1
@@ -244,17 +244,28 @@ def test_get_indicators_command_by_risk_rules(mocker, indicator_type, risk_rules
 
 
 CALCULATE_DBOT_SCORE_INPUTS = [
-    ('97', '65', 3),
-    ('90', '91', 3),
-    ('50', '65', 2),
-    ('0', '65', 0),
-    ('0', '0', 3),
+    ('90', '65', '25', 3),
+    ('45', '65', '25', 2),
+    ('15', '65', '25', 0),
+    ('0', '65', '25', 1),
+    ('90', '95', '25', 2),
+    ('45', '30', '25', 3),
+    ('15', '26', '25', 0),
+    ('0', '0', '25', 3),
+    ('90', '98', '91', 0),
+    ('45', '65', '40', 2),
+    ('15', '10', '5', 3),
+    ('0', '65', '0', 2),
+    ('65', '65', '25', 3),
+    ('25', '65', '25', 2),
+    ('50', '51', '50', 2),
 ]
 
 
-@pytest.mark.parametrize('risk_from_feed, threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
-def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
-    client = Client(indicator_type='ip', api_token='123', services=['fusion'], threshold=threshold)
+@pytest.mark.parametrize('risk_from_feed, malicious_threshold, suspicious_threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
+def test_calculate_dbot_score(risk_from_feed, malicious_threshold, suspicious_threshold, expected_score):
+    client = Client(indicator_type='ip', api_token='123', services=[
+                    'fusion'], malicious_threshold=malicious_threshold, suspicious_threshold=suspicious_threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
 
