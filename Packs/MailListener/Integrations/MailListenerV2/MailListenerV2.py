@@ -338,7 +338,7 @@ def fetch_mails(client: IMAPClient,
         messages_uids = client.search(messages_query)
         demisto.debug(f"client returned {len(messages_uids)} message ids: {messages_uids=}")
 
-        if len(messages_uids) > limit: # If there's any reason to shorten the list
+        if len(messages_uids) > limit:  # If there's any reason to shorten the list
             if uid_to_fetch_from == 0:
                 # first fetch takes last page only (workaround as first_fetch filter is date accurate)
                 messages_uids = messages_uids[-limit:]
@@ -347,7 +347,7 @@ def fetch_mails(client: IMAPClient,
                 messages_uids = messages_uids[:limit]
                 demisto.debug(f"limiting to the first {limit=} messages")
         demisto.debug(f"{messages_uids=}")
-    
+
     fetched_email_objects = []
     demisto.debug(f'Messages to fetch: {messages_uids}')
 
@@ -375,7 +375,7 @@ def fetch_mails(client: IMAPClient,
             fetched_email_objects.append(email_message_object)
             demisto.debug(f"{mail_id=}: Collecting {email_message_object.id=} since it's > {uid_to_fetch_from=}")
         else:
-            demisto.debug(f"{mail_id=}: Skipping {email_message_object.id=} since it's <= {uid_to_fetch_from=}." 
+            demisto.debug(f"{mail_id=}: Skipping {email_message_object.id=} since it's <= {uid_to_fetch_from=}."
                           f"{email_message_object.date=}")
     if messages_uids:
         demisto.debug(f"messages_uids NOT empty, setting last_message_in_current_batch={messages_uids[-1]=}")
@@ -383,7 +383,7 @@ def fetch_mails(client: IMAPClient,
     else:
         demisto.debug(f"messages_uids empty, setting last_message_in_current_batch={uid_to_fetch_from=}")
         last_message_in_current_batch = uid_to_fetch_from
-    
+
     ids_fetched = [mail.id for mail in fetched_email_objects]
     demisto.debug(f"fetched {len(fetched_email_objects)} emails, {ids_fetched=}")
     return fetched_email_objects, ids_fetched, last_message_in_current_batch
