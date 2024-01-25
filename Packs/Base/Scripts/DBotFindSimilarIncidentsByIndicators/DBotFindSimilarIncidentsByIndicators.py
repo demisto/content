@@ -23,6 +23,13 @@ TYPE_COLUMN = "type"
 REPUTATION_COLUMN = "Reputation"
 INVOLVED_INCIDENTS_COUNT_COLUMN = "involvedIncidentsCount"
 
+INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY = [
+    INDICATOR_ID_FIELD, INDICATOR_TYPE_FIELD, INVESTIGATION_IDS_FIELD, SCORE_FIELD, VALUE_FIELD
+]
+MUTUAL_INDICATORS_HEADERS = [
+    INDICATOR_LINK_COLUMN, VALUE_FIELD, TYPE_COLUMN, REPUTATION_COLUMN, INVOLVED_INCIDENTS_COUNT_COLUMN
+]
+
 # Similar incidents fields/columns
 INCIDENT_ID_FIELD = "id"
 CREATED_FIELD = "created"
@@ -61,21 +68,13 @@ class FrequencyIndicators(BaseEstimator, TransformerMixin):
     FrequencyIndicators class for indicator frequencies computation
     """
 
-    def __init__(self, incident_field: str, normalize_function: Any, actual_incident: pd.DataFrame) -> None:
+    def __init__(self, incident_field: str, actual_incident: pd.DataFrame) -> None:
         self.column_name = incident_field
-        self.normalize_function = normalize_function
         self.frequency: dict = {}
-        if self.normalize_function:
-            actual_incident = actual_incident[self.column_name].apply(self.normalize_function)
-        else:
-            actual_incident = actual_incident[self.column_name]
-        self.vocabulary = actual_incident.iloc[0].split(" ")
+        self.vocabulary = actual_incident[self.column_name].iloc[0].split(" ")
 
     def fit(self, x: pd.DataFrame) -> 'FrequencyIndicators':
-        if self.normalize_function:
-            x = x[self.column_name].apply(self.normalize_function)
-        else:
-            x = x[self.column_name]
+        x = x[self.column_name]
         size = len(x) + 1
         frequencies = Counter(flatten_list([t.split(" ") for t in x.values]))
         frequencies.update(Counter(self.vocabulary))
@@ -83,11 +82,7 @@ class FrequencyIndicators(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, x: pd.DataFrame) -> pd.DataFrame:
-        if self.normalize_function:
-            x = x[self.column_name].apply(self.normalize_function)
-        else:
-            x = x[self.column_name]
-        return x.apply(self.compute_term_score)
+        return x[self.column_name].apply(self.compute_term_score)
 
     def compute_term_score(self, indicators_values_string: str) -> float:
         x = indicators_values_string.split(" ")
@@ -96,30 +91,28 @@ class FrequencyIndicators(BaseEstimator, TransformerMixin):
 
 
 class FrequencyIndicatorsTransformer:
-    def __init__(self, p_incidents_df: pd.DataFrame, p_actual_incident: pd.DataFrame):
+    def __init__(self, incidents_df: pd.DataFrame, actual_incident: pd.DataFrame):
         """
-        :param p_incidents_df: DataFrame of related incidents
-        :param p_actual_incident: DataFrame of the actual incident
+        :param incidents_df: DataFrame of related incidents
+        :param actual_incident: DataFrame of the actual incident
         """
-        self.actual_incident = p_actual_incident
-        self.incidents_df = p_incidents_df
+        self.incidents_df = incidents_df
+        self.actual_incident = actual_incident
         self.transformed_column = INDICATORS_COLUMN
         self.scoring_function = lambda x: x
-        self.normalize_function = None
 
     def fit_transform(self):
         transformer = FrequencyIndicators(
             self.transformed_column,
-            self.normalize_function,
             self.actual_incident,
         )
-        X_vect = transformer.fit_transform(self.incidents_df)
+        x_vector = transformer.fit_transform(self.incidents_df)
         incident_vect = transformer.transform(self.actual_incident)
-        return X_vect, incident_vect
+        return x_vector, incident_vect
 
     def get_score(self):
-        X_vect, _ = self.fit_transform()
-        distance = self.scoring_function(X_vect)
+        x_vector, _ = self.fit_transform()
+        distance = self.scoring_function(x_vector)
         self.incidents_df[SIMILARITY_SCORE_COLUMN] = np.round(distance, ROUND_SCORING)
         return self.incidents_df
 
@@ -127,19 +120,19 @@ class FrequencyIndicatorsTransformer:
 class Model:
     def __init__(
         self,
-        p_incident_to_match: pd.DataFrame,
-        p_incidents_df: pd.DataFrame,
+        incident_to_match: pd.DataFrame,
+        incidents_df: pd.DataFrame,
         similarity_threshold: float,
         max_incidents: int,
     ) -> None:
         """
-        :param p_incident_to_match: Dataframe with one incident
-        :param p_incidents_df: Dataframe with all the incidents
+        :param incident_to_match: Dataframe with one incident
+        :param incidents_df: Dataframe with all the incidents
         :param similarity_threshold: The similarity threshold
         :param max_incidents: Maximum number of incidents to return
         """
-        self.incident_to_match = p_incident_to_match
-        self.incidents_df = p_incidents_df
+        self.incident_to_match = incident_to_match
+        self.incidents_df = incidents_df
         self.threshold = similarity_threshold
         self.max_incidents = max_incidents
 
@@ -171,24 +164,24 @@ class Model:
 def get_indicators_of_actual_incident(
     incident_id: str,
     indicator_types: list[str],
-    min_nb_of_indicators: int,
-    max_indicators_for_white_list: int,
+    min_number_of_indicators: int,
+    max_incidents_per_indicator: int,
 ) -> dict[str, dict]:
-    """ Given an incident ID, returns a map between IDs of its related indicators to their data
+    """ Given an incident ID, returns a map between IDs of its related indicators and their data
 
     :param incident_id: ID of actual incident
     :param indicators_types: list of indicators type accepted
-    :param min_nb_of_indicators: Min number of indicators in the actual incident
-    :param max_indicators_for_white_list: Max incidents in indicators for white list
+    :param min_number_of_indicators: Min number of indicators in the actual incident
+    :param max_incidents_per_indicator: Max incidents in indicators for white list
     :return: a map from indicator ids of the actual incident to their data
     """
     indicators = execute_command("findIndicators", {"query": f"investigationIDs:{incident_id}"}, fail_on_error=True)
     if not indicators:
         return {}
-    indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_indicators_for_white_list]
+    indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
     if indicator_types:
         indicators = [x for x in indicators if x[INDICATOR_TYPE_FIELD].lower() in indicator_types]
-    if len(indicators) < min_nb_of_indicators:
+    if len(indicators) < min_number_of_indicators:
         return {}
 
     indicators_data = {ind[INDICATOR_ID_FIELD]: ind for ind in indicators}
@@ -231,25 +224,35 @@ def get_related_incidents(
     return incident_ids
 
 
-def get_mutual_indicators(
+def get_indicators_of_related_incidents(
     incident_ids: list[str],
-    indicators_of_actual_incident: dict[str, dict],
+    max_incidents_per_indicator: int,
 ) -> list[dict]:
-    if not incident_ids or not indicators_of_actual_incident:
+    if not incident_ids:
         demisto.debug("No mutual indicators were found.")
         return []
 
-    mutual_indicators = execute_command(
+    indicators = execute_command(
         "GetIndicatorsByQuery",
         args={
-            "query": f"id:({' '.join(indicators_of_actual_incident)}) investigationIDs:({' '.join(incident_ids)})",
-            "limit": "150",
-            "populateFields": ",".join([
-                INDICATOR_ID_FIELD, INDICATOR_TYPE_FIELD, INVESTIGATION_IDS_FIELD, SCORE_FIELD, VALUE_FIELD
-            ]),
+            "query": f"investigationIDs:({' '.join(incident_ids)})",
+            "populateFields": ",".join(INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY),
         },
         fail_on_error=True,
     )
+    indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
+    indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in indicators]
+    demisto.debug(f"Found {len(indicators_ids)} related indicators: {indicators_ids}")
+    return indicators
+
+
+def get_mutual_indicators(
+    related_indicators: list[dict],
+    indicators_of_actual_incident: dict[str, dict],
+) -> list[dict]:
+    mutual_indicators = [
+        ind for ind in related_indicators if ind[INDICATOR_ID_FIELD] in indicators_of_actual_incident
+    ]
     mutual_indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in mutual_indicators]
     demisto.debug(f"Found {len(mutual_indicators_ids)} mutual indicators: {mutual_indicators_ids}")
     return mutual_indicators
@@ -282,7 +285,7 @@ def mutual_indicators_results(mutual_indicators: list[dict], incident_ids: list[
     readable_output = tableToMarkdown(
         "Mutual Indicators",
         indicators_df.to_dict(orient="records"),
-        headers=[INDICATOR_LINK_COLUMN, VALUE_FIELD, TYPE_COLUMN, REPUTATION_COLUMN, INVOLVED_INCIDENTS_COUNT_COLUMN],
+        headers=MUTUAL_INDICATORS_HEADERS,
         headerTransform=pascalToSpace,
     )
     return CommandResults(
@@ -389,6 +392,7 @@ def format_similar_incidents(
     :return: a formatted, enriched DataFrame of the similar incidents.
     """
     if similar_incidents.empty:
+        demisto.debug("No similar incidents found.")
         return similar_incidents
 
     # format and enrich DataFrame
@@ -421,7 +425,7 @@ def similar_incidents_results(
         outputs_prefix="DBotFindSimilarIncidentsByIndicators",
         raw_response=outputs,
         readable_output=tableToMarkdown(
-            "Similar incidents",
+            "Similar Incidents",
             outputs,
             headers=FIRST_COLUMNS_INCIDENTS_DISPLAY + additional_headers,
             headerTransform=str.title,
@@ -469,8 +473,8 @@ def actual_incident_results(
 def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[CommandResults]:
     # get_indicators_of_actual_incident() args
     indicators_types = argToList(args.get("indicatorsTypes"), transform=str.lower)
-    min_nb_of_indicators = int(args["minNumberOfIndicators"])
-    max_indicators_for_white_list = int(args["maxIncidentsInIndicatorsForWhiteList"])
+    min_number_of_indicators = int(args["minNumberOfIndicators"])
+    max_incidents_per_indicator = int(args["maxIncidentsInIndicatorsForWhiteList"])
 
     # get_related_incidents() args
     query = args.get("query") or ""
@@ -489,14 +493,15 @@ def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[C
     indicators_of_actual_incident = get_indicators_of_actual_incident(
         incident_id,
         indicators_types,
-        min_nb_of_indicators,
-        max_indicators_for_white_list,
+        min_number_of_indicators,
+        max_incidents_per_indicator,
     )
 
     incident_ids = get_related_incidents(indicators_of_actual_incident, query, from_date)
-    mutual_indicators = get_mutual_indicators(incident_ids, indicators_of_actual_incident)
+    related_indicators = get_indicators_of_related_incidents(incident_ids, max_incidents_per_indicator)
+    mutual_indicators = get_mutual_indicators(related_indicators, indicators_of_actual_incident)
     actual_incident_df = create_actual_incident_df(indicators_of_actual_incident)
-    related_incidents_df = create_related_incidents_df(mutual_indicators, incident_ids, incident_id)
+    related_incidents_df = create_related_incidents_df(related_indicators, incident_ids, incident_id)
 
     similar_incidents = Model(
         actual_incident_df,

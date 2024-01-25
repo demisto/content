@@ -15,12 +15,12 @@ IND_E = {"id": "e", "investigationIDs": ["2", "3", "4"], "value": "value_e", "in
 IND_F = {"id": "f", "investigationIDs": ["2", "3", "4", "5"], "value": "value_f", "indicator_type": "File", "score": 1}
 INDICATORS_LIST = [IND_A, IND_B, IND_C, IND_D, IND_E, IND_F]
 
-INC_1 = {"id": "1", "created": "2022-01-01", "status": 0, "name": "inc_a"}
-INC_2 = {"id": "2", "created": "2022-01-01", "status": 1, "name": "inc_b"}
-INC_3 = {"id": "3", "created": "2024-01-01", "status": 2, "name": "inc_c"}
-INC_4 = {"id": "4", "created": "2024-01-01", "status": 3, "name": "inc_d"}
-INC_5 = {"id": "5", "created": "2024-01-01", "status": 2, "name": "inc_e"}
-INC_6 = {"id": "6", "created": "2024-01-01", "status": 1, "name": "inc_f"}
+INC_1 = {"id": "1", "created": "2022-01-01", "status": 0, "name": "inc_a"}  # A D
+INC_2 = {"id": "2", "created": "2022-01-01", "status": 1, "name": "inc_b"}  # A B E F
+INC_3 = {"id": "3", "created": "2024-01-01", "status": 2, "name": "inc_c"}  # A B E F
+INC_4 = {"id": "4", "created": "2024-01-01", "status": 3, "name": "inc_d"}  # E F
+INC_5 = {"id": "5", "created": "2024-01-01", "status": 2, "name": "inc_e"}  # C F
+INC_6 = {"id": "6", "created": "2024-01-01", "status": 1, "name": "inc_f"}  # C D
 INCIDENTS_LIST = [INC_1, INC_2, INC_3, INC_4, INC_5, INC_6]
 
 
@@ -40,13 +40,9 @@ def mock_execute_command(command: str, args: dict):
                 if not from_date or parse(i["created"]) >= parse(from_date)
             ]
         case "GetIndicatorsByQuery":
-            match = re.search(r"id:\(([^\)]*)\)", query)
-            indicator_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
             match = re.search(r"investigationIDs:\(([^\)]*)\)", query)
             incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
-            res = [
-                i for i in INDICATORS_LIST if i["id"] in indicator_ids and set(i["investigationIDs"]) & incident_ids
-            ]
+            res = [i for i in INDICATORS_LIST if set(i["investigationIDs"]) & incident_ids]
             res = [{k: v for k, v in i.items() if k in args["populateFields"] or k == "id"} for i in res]
         case "GetIncidentsByQuery":
             match = re.search(r"incident\.id:\((.*)\)", query)
@@ -84,8 +80,8 @@ def test_get_indicators_of_actual_incident(indicator_types: list, expected_indic
     res: dict = get_indicators_of_actual_incident(
         incident_id=INC_2["id"],
         indicator_types=indicator_types,
-        min_nb_of_indicators=2,
-        max_indicators_for_white_list=3,
+        min_number_of_indicators=2,
+        max_incidents_per_indicator=3,
     )
     assert set(res.keys()) == expected_ids
 
@@ -103,8 +99,8 @@ def test_get_indicators_of_actual_incident__below_minimal_num_of_indicators() ->
     res: dict = get_indicators_of_actual_incident(
         incident_id=INC_2["id"],
         indicator_types=["domain"],
-        min_nb_of_indicators=2,
-        max_indicators_for_white_list=3,
+        min_number_of_indicators=2,
+        max_incidents_per_indicator=3,
     )
     assert not res
 
@@ -163,16 +159,19 @@ def test_get_related_incidents_playground() -> None:
 def test_get_mutual_indicators(incidents: list[dict], indicators: list[dict], expected_indicators: list[dict]) -> None:
     """
     Given:
-    - Different sets of incidents and indicators
+    - Different sets of incidents
+    - A list of indicators of the actual incident
     When:
-    - Running get_mutual_indicators() on each set
+    - Running get_indicators_of_related_incidents() with max_incidents_per_indicator=10
+    - Running get_mutual_indicators() on the result and the indicators of the actual incident
     Then:
     - Ensure the expected mutual indicators (which must be a subset of the given indicators)
       of the given incidents are returned
     """
     incident_ids = [inc["id"] for inc in incidents]
-    indicators = {ind["id"]: ind for ind in indicators}
-    assert get_mutual_indicators(incident_ids, indicators) == expected_indicators
+    indicators_of_actual_incidents = {ind["id"]: ind for ind in indicators}
+    related_incidents = get_indicators_of_related_incidents(incident_ids, max_incidents_per_indicator=10)
+    assert get_mutual_indicators(related_incidents, indicators_of_actual_incidents) == expected_indicators
 
 
 def test_find_similar_incidents_by_indicators_end_to_end() -> None:
@@ -212,9 +211,9 @@ def test_find_similar_incidents_by_indicators_end_to_end() -> None:
 
     similar_incidents = command_results_list[2].outputs["similarIncident"]
     expected_similar_incidents_to_similarity = {
-        INC_1["id"]: 0.3,  # INC_1 shares only indicator IND_A with INC_2
-        INC_3["id"]: 1.0,  # INC_3 shares all three mutual indicators with INC_2
-        INC_4["id"]: 0.3,  # INC_4 shares only indicator IND_E with INC_2
+        INC_1["id"]: 0.3,  # ([A] D) / [A B E]
+        INC_3["id"]: 1.0,  # [A B E] / [A B E]
+        INC_4["id"]: 0.3,  # ([E]) / [A B E]
     }
     assert len(similar_incidents) == len(expected_similar_incidents_to_similarity)
     for inc in similar_incidents:
@@ -317,11 +316,10 @@ def test_find_similar_incidents_by_indicators_end_to_end__no_results() -> None:
 def test_score():
     """ Runs some sanity tests for the FrequencyIndicators transformer
     """
-    normalize_function = None
     incident = pd.DataFrame({"indicators": ["1 2 3 4 5 6"]})
     # Check if incident is rare then the score is higher
     incidents_1 = pd.DataFrame({"indicators": ["1 2", "1 3", "1 3"]})
-    tfidf = FrequencyIndicators("indicators", normalize_function, incident)
+    tfidf = FrequencyIndicators("indicators", incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
@@ -329,7 +327,7 @@ def test_score():
     assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
     # Check if same rarity then same scores
     incidents_1 = pd.DataFrame({"indicators": ["1 2", "3 4"]})
-    tfidf = FrequencyIndicators("indicators", normalize_function, incident)
+    tfidf = FrequencyIndicators("indicators", incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
@@ -337,7 +335,7 @@ def test_score():
     assert (all(scores[i] >= 0 for i in range(len(scores) - 1)))
     # Check if more indicators in commun them better score
     incidents_1 = pd.DataFrame({"indicators": ["1 2 3", "4 5", "6"]})
-    tfidf = FrequencyIndicators("indicators", normalize_function, incident)
+    tfidf = FrequencyIndicators("indicators", incident)
     tfidf.fit(incidents_1)
     res = tfidf.transform(incidents_1)
     scores = res.values.tolist()
