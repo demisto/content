@@ -98,7 +98,7 @@ def main():
 
     logging.info('Waiting for content release pull request creation')
 
-    content_pr = {}
+    content_pr:dict = {}
     # wait to content pr to create
     while not content_pr and elapsed < TIMEOUT:
         # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
