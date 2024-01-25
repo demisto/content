@@ -16,8 +16,10 @@ from Tests.scripts.utils import logging_wrapper as logging
 urllib3.disable_warnings()
 
 API_SUFFIX = 'https://api.github.com/repos/demisto/demisto-sdk'
+
 SDK_WORKFLOW_SUFFIX = 'https://github.com/demisto/demisto-sdk/actions/runs/'
-TIMEOUT = 60 * 60 * 6  # 6 hours
+
+TIMEOUT = 60 * 60  # 1 hour
 
 
 def options_handler():
@@ -139,8 +141,10 @@ def main():
         logging.error(response.text)
         sys.exit(1)
     logging.info('SDK changelog workflow triggered, waiting for it to be finished')
+    # wait 10 seconds before checking the workflows
     time.sleep(10)
 
+    # get all the workflows for sdk-release.yml in the release branch
     url = f'{API_SUFFIX}/actions/workflows/sdk-release.yml/runs'
     response = requests.request('GET', url, params={'branch': release_branch_name}, headers=headers, verify=False)
     if response.status_code != 200:
@@ -148,7 +152,7 @@ def main():
         logging.error(response.text)
         sys.exit(1)
 
-    # get the latest workflow
+    # get the latest workflow id
     workflow_runs = response.json().get('workflow_runs', [])
     workflow_id = max(
         workflow_runs,
@@ -161,9 +165,10 @@ def main():
     start = time.time()
     elapsed: float = 0
 
-    # wait to the workflow to finished
     status = ''
     url = f'{API_SUFFIX}/actions/runs/{workflow_id}/jobs'
+
+    # wait to the workflow to finished
     while status != 'completed' and elapsed < TIMEOUT:
         response = requests.request('GET', url, headers=headers, verify=False)
         if response.status_code != 200:
@@ -179,7 +184,7 @@ def main():
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
-        logging.error('Timeout reached while waiting for SDK changelog workflow to complete')
+        logging.critical('Timeout reached while waiting for SDK changelog workflow to complete')
         sys.exit(1)
 
     if job_data.get('conclusion') != 'success':

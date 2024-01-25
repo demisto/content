@@ -31,7 +31,7 @@ def main():
 
     logging.info(f"Preparing to create release branch {release_branch_name} from {sdk_branch_name}")
 
-    # get master branch sha value
+    # get the sha value from the branch
     url = f"https://api.github.com/repos/demisto/demisto-sdk/branches/{sdk_branch_name}"
     response = requests.request("GET", url)
 

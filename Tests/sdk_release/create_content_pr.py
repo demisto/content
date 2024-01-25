@@ -13,7 +13,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-TIMEOUT = 60 * 60 * 6  # 6 hours
+TIMEOUT = 60 * 60  # 1 hour
 
 UPDATE_SDK_VERSION_WORKFLOW = 'https://api.github.com/repos/demisto/content/actions' \
                               '/workflows/update-demisto-sdk-version.yml/dispatches'
@@ -58,15 +58,14 @@ def main():
     # prepare the inputs for trigger update-demisto-sdk-version workflow
     inputs = {
         'reviewer': reviewer,
-        # 'release_version': release_branch_name,
-        'release_version': '1.25.0',  # TODO: remove this line
-        'release_changes': get_changelog_text(release_branch_name),
-        'is_draft': is_draft
+        'release_version': release_branch_name,
+        # 'is_draft': is_draft
+        'release_changes': get_changelog_text(release_branch_name)
     }
 
     data = {
-        # 'ref': 'master',
-        'ref': 'sdk-release',  # TODO: remove this line
+        'ref': 'master',
+        # 'ref': 'sdk-release',
         'inputs': inputs
     }
 
@@ -92,17 +91,16 @@ def main():
     with open(changelog_file, "w") as f:
         f.write(str(changelog_text))
 
+    logging.info('Waiting for content release pull request creation')
+
     # initialize timer
     start = time.time()
     elapsed: float = 0
 
-    logging.info('Waiting for content release pull request creation')
-
     content_pr: dict = {}
     # wait to content pr to create
     while not content_pr and elapsed < TIMEOUT:
-        # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
-        content_pr = get_pr_from_branch('content', '1.25.0', access_token)  # TODO: remove this line
+        content_pr = get_pr_from_branch('content', release_branch_name, access_token)
 
         if not content_pr:
             logging.info('content pull request not created yet')

@@ -18,16 +18,17 @@ def get_pipeline_status(pipeline_id, project_id, token):
     url = f'{GITLAB_SERVER_URL}/api/v4/projects/{project_id}/pipelines/{pipeline_id}/jobs'
     res = requests.get(url, headers={'Authorization': f'Bearer {token}'})
     if res.status_code != 200:
-        logging.error(f'Failed to get status of pipeline {pipeline_id}, request failed with error: {str(res.content)}')
-        sys.exit(1)
+        logging.error(f'Failed to get status of pipeline {pipeline_id}')
+        logging.error(res.text)
+        return ''
 
     try:
         jobs_info = json.loads(res.content)
         pipeline_status = jobs_info[0].get('pipeline', {}).get('status')
 
     except Exception as e:
-        logging.error(f'Unable to parse pipeline status response: {e}')
-        sys.exit(1)
+        logging.error(f'Unable to parse pipeline status response: {res.content}, error: {str(e)}')
+        return ''
 
     return pipeline_status
 
@@ -36,13 +37,14 @@ def get_pipeline_info(pipeline_id, project_id, token):
     url = f'{GITLAB_SERVER_URL}/api/v4/projects/{project_id}/pipelines/{pipeline_id}'
     res = requests.get(url, headers={'Authorization': f'Bearer {token}'})
     if res.status_code != 200:
-        logging.error(f'Failed to get status of pipeline {pipeline_id}, request failed with error: {str(res.content)}')
+        logging.error(f'Failed to get status of pipeline {pipeline_id}')
+        logging.error(res.text)
         sys.exit(1)
 
     try:
         pipeline_info = json.loads(res.content)
     except Exception as e:
-        logging.error(f'Unable to parse pipeline status response: {e}')
+        logging.error(f'Unable to parse pipeline status response: {res.content}, error: {str(e)}')
         sys.exit(1)
 
     return pipeline_info
@@ -71,7 +73,7 @@ def main():
     while pipeline_status not in ['failed', 'success', 'canceled'] and elapsed < TIMEOUT:
         logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
         pipeline_status = get_pipeline_status(pipeline_id, project_id, token)
-        time.sleep(300)
+        time.sleep(300)  # 5 minutes
 
         elapsed = time.time() - start
 
@@ -82,7 +84,7 @@ def main():
     pipeline_url = get_pipeline_info(pipeline_id, project_id, token).get('web_url')
 
     if pipeline_status != 'success':
-        logging.info(f'The pipeline status is {pipeline_status}. See pipeline here: {pipeline_url}')
+        logging.error(f'The pipeline status is {pipeline_status}. See pipeline here: {pipeline_url}')
         sys.exit(1)
 
     logging.success(f'The pipeline has finished. See pipeline here: {pipeline_url}')

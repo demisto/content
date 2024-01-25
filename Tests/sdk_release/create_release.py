@@ -14,7 +14,7 @@ REGEX = re.compile(r"^(.*) \[(#\d+)\]\((http.*)\)")
 
 
 def get_changelog_text(release_branch_name, text_format='markdown'):
-    # get release changelog
+    # get release changelog file
     url = f"https://raw.githubusercontent.com/demisto/demisto-sdk/{release_branch_name}/CHANGELOG.md"
     response = requests.request("GET", url, verify=False)
     if response.status_code != 200:
@@ -77,6 +77,7 @@ def main():
         is_draft = False
         logging.info(f"Preparing to release Demisto SDK version {release_branch_name}")
 
+    # release the sdk version
     url = 'https://api.github.com/repos/demisto/demisto-sdk/releases'
     data = json.dumps({
         'tag_name': f'v{release_branch_name}',
@@ -90,7 +91,6 @@ def main():
         'Content-Type': 'application/vnd.github+json',
         'Authorization': f'Bearer {access_token}'
     }
-
     response = requests.request("POST", url, headers=headers, data=data, verify=False)
     if response.status_code != 201:
         logging.error(f'Failed to create release {release_branch_name} for demisto SDK')

@@ -10,7 +10,9 @@ from Tests.scripts.utils import logging_wrapper as logging
 urllib3.disable_warnings()
 
 PRS_LIST_TEMPLATE = 'https://api.github.com/repos/demisto/{}/pulls?head=demisto:{}'
+
 PR_BY_ID_TEMPLATE = 'https://api.github.com/repos/demisto/{}/pulls/{}'
+
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
 
@@ -18,6 +20,8 @@ def get_pr_from_branch(repository, branch, access_token):
     url = PRS_LIST_TEMPLATE.format(repository, branch)
     res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'}, verify=False)
     if res.status_code != 200:
+        logging.error(f'Failed to retrieve pull request from branch {branch}')
+        logging.error(res.text)
         sys.exit(1)
 
     prs_list = res.json()
@@ -30,6 +34,8 @@ def get_pr_by_id(repository, pr_id, access_token):
     url = PR_BY_ID_TEMPLATE.format(repository, pr_id)
     res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'}, verify=False)
     if res.status_code != 200:
+        logging.error(f'Failed to retrieve pull request with id {pr_id}')
+        logging.error(res.text)
         sys.exit(1)
 
     return res.json()
@@ -52,10 +58,9 @@ def main():
     access_token = options.access_token
     release_branch_name = options.release_branch_name
 
-    # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
-    content_pr = get_pr_from_branch('content', '1.25.0', access_token)  # TODO: remove this line
+    # get the sdk and content pull requests
+    content_pr = get_pr_from_branch('content', release_branch_name, access_token)
     sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
-
     logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
     logging.info(f'content pull request created: {content_pr.get("html_url")}')
 
@@ -79,22 +84,22 @@ def main():
         logging.info(f'content pr state is {content_pr_state}')
         logging.info(f'sdk pr state is {sdk_pr_state}')
 
-        time.sleep(300)
+        time.sleep(300)  # 5 minutes
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
-        logging.error('Timeout reached while waiting for SDK and content pull requests to be merged')
+        logging.critical('Timeout reached while waiting for SDK and content pull requests to be merged')
         sys.exit(1)
 
     # check that content pr is merged
     if not content_pr.get('merged'):
         logging.error(f'content pull request not merged yet {content_pr.get("html_url")}')
-        # sys.exit(1)  # TODO: revert this line
+        sys.exit(1)
 
     # check that sdk pr is merged
     if not sdk_pr.get('merged'):
         logging.error(f'demisto-sdk pull request not merged yet {sdk_pr.get("html_url")}')
-        # sys.exit(1)  # TODO: revert this line
+        sys.exit(1)
 
     logging.success('SDK and content pull requests merged successfully!')
 

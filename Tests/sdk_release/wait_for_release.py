@@ -23,7 +23,7 @@ def options_handler():
 
 
 def main():
-    install_logging("WaitForRelease.log", logger=logging)
+    install_logging("WaitForSDKRelease.log", logger=logging)
 
     options = options_handler()
     release_branch_name = options.release_branch_name
@@ -34,8 +34,6 @@ def main():
 
     demisto_sdk_versions = ''
 
-    release_branch_name = '1.25.3'  # TODO: remove this line
-
     while f'demisto_sdk-{release_branch_name}' not in demisto_sdk_versions and elapsed < TIMEOUT:
         res = requests.get(ARTIFACTS_URL, verify=False)
         if res.status_code != 200:
@@ -44,12 +42,12 @@ def main():
 
         demisto_sdk_versions = res.text
         logging.info(f'The release {release_branch_name} is not yet in the artifacts')
-        time.sleep(300)
+        time.sleep(300)  # 5 minutes
 
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
-        logging.error('Timeout reached while waiting for SDK release artifacts')
+        logging.critical('Timeout reached while waiting for SDK release artifacts')
         sys.exit(1)
 
     logging.success(f'SDK release version {release_branch_name} is out')
