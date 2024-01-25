@@ -1,0 +1,14 @@
+[MODEL: dataset = tenable_io_vulnerabilities_raw]
+alter 
+    xdm.target.host.hostname = replace(json_extract(asset,"$.hostname"),"\"",""),
+    xdm.target.host.ipv4_addresses = arraycreate(replace(json_extract(asset,"$.ipv4"),"\"","")),
+    xdm.target.host.device_id = replace(json_extract(asset,"$.uuid"),"\"",""),
+    xdm.target.host.os = replace(arrayindex(json_extract_array(asset,"$.operating_system"),0),"\"",""),
+    xdm.alert.description = replace(json_extract(plugin,"$.description"),"\"",""),
+    xdm.alert.name = replace(json_extract(plugin,"$.name"),"\"",""),
+    xdm.alert.severity = severity,
+    xdm.event.description = output,
+    xdm.source.host.fqdn = replace(json_extract(asset,"$.fqdn"),"\"",""),
+    xdm.target.host.fqdn = replace(json_extract(asset,"$.fqdn"),"\"",""),
+    xdm.alert.category = replace(json_extract(plugin,"$.family"),"\"",""),
+    xdm.alert.original_alert_id = json_extract_scalar(plugin,"$.id");
