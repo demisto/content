@@ -3,13 +3,13 @@ This pack includes XSIAM content.
 <~XSIAM>
 ## Manage the fields on the schema
 
-part 1 - on the Mcafee EPO management console
+Part 1 - on the Mcafee EPO management console
   1. click on “Queries & Reports” and find the query of the schema
   2. click action --> edit
   3. on the nav bar click on "columns", there you can edit the fields.
   4. copy the sql.
 
-part 2 - manage the schema on the mssql
+Part 2 - manage the schema on the mssql
   1. right click on the table that you want manage the fields and click on design.
   2. edit the sql and save the new design configurations.
 
