@@ -563,7 +563,7 @@ script:
     name: splunk-kv-store-collection-data-list
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection).
+      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection.
       type: Unknown
   - arguments:
     - default: true
@@ -666,7 +666,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.83421
+  dockerimage: demisto/splunksdk-py3:1.0.0.84781
   isfetch: true
   ismappable: true
   isremotesyncin: true

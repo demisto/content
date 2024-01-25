@@ -9,7 +9,7 @@ filter _raw_log ~= "<\d+>(\w+\s*\d+\s\d+:\d+:\d+)\s"
 | alter 
     tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time1_1)
 | alter 
-    tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "DAY")
+    tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "MILLISECOND")
 // Check if the date is a future date
 | alter 
     tmp_Year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_Year),1)),null)

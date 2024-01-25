@@ -2160,6 +2160,8 @@ def fetch_incidents(client: Client) -> list:
     if query:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
+    if client.use_display_value:
+        query_params['sysparm_display_value'] = True  # type: ignore[assignment]
 
     demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
     demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
@@ -2342,8 +2344,9 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
 
-    user_assigned = check_assigned_to_field(client, assigned_to)
-    ticket['assigned_to'] = user_assigned
+    if ticket:
+        user_assigned = check_assigned_to_field(client, assigned_to)
+        ticket['assigned_to'] = user_assigned
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'), no_record_found_res={'result': {}})

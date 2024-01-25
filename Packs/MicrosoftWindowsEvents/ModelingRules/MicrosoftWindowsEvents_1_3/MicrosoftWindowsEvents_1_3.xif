@@ -29,7 +29,7 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         new_value =  event_data -> ["New Value"],
         old_value = event_data -> ["Old Value"], 
         file_path = arrayindex(regextract(message , "Path:\s*(.+?\\\w+);?\s+\w+\s+\w+"), 0),
-        process_name = coalesce(event_data -> ProcessName, arrayindex(regextract(message, "Process Name:\s*(\S+)"), 0)), 
+        process_name_format = coalesce(event_data -> ProcessName, arrayindex(regextract(message, "Process Name:\s*(\S+)"), 0)), 
         product_name = event_data -> ["Product Name"], // microsoft defender event ids 1000 - 1005 
         product_version = event_data -> ["Product Version"], // microsoft defender event ids 1000 - 1005 
         rule_name1 = arraystring(regextract(message, "Rule\s+Name\:\s+(.*)\b\s+Modifying\s*User:"), ""),
@@ -105,9 +105,9 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         xdm.source.process.executable.directory = arraystring(regextract(message, "Modifying\s*Application:\s+(\S+)"), ""),
         xdm.source.process.executable.filename = if(check_Script_Name != null and check_Script_Name != "", check_Script_Name, null),
         xdm.source.process.executable.md5 = process_md5,
-        xdm.source.process.executable.path = coalesce(get_message_instance_exe_path, process_name, if(channel="Application", event_data -> Module), if(check_Script_Path != null and check_Script_Path != "", check_Script_Path), if(check_Command_Path != null and check_Command_Path != "", check_Command_Path), process_path, file_path),
+        xdm.source.process.executable.path = coalesce(get_message_instance_exe_path, process_name_format, if(channel="Application", event_data -> Module), if(check_Script_Path != null and check_Script_Path != "", check_Script_Path), if(check_Command_Path != null and check_Command_Path != "", check_Command_Path), process_path, file_path),
         xdm.source.process.executable.sha256 = process_sha256,
-        xdm.source.process.name = coalesce(check_fw_process_name, get_message_instance_exe_process, arrayindex(regextract(process_name, "\\([^\\]+)$"), 0), if(channel="System", process_name), process_name),
+        xdm.source.process.name = coalesce(check_fw_process_name, get_message_instance_exe_process, arrayindex(regextract(process_name_format, "\\([^\\]+)$"), 0), if(channel="System", process_name_format), process_name),
         xdm.source.process.pid = to_integer(coalesce(check_message_processID, to_string(process_pid), if(channel="System", event_data -> ProcessID))),
         xdm.source.process.thread_id = to_integer(process_thread_id),
         xdm.source.user.domain = user_domain,

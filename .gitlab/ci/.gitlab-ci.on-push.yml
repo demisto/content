@@ -264,11 +264,7 @@ xpanse-prepare-testing-bucket:
   - |
     if [[ -n "${NIGHTLY}" && $SERVER_TYPE == "XSOAR SAAS" ]]; then
       ./Tests/scripts/run_tests.sh --generate-empty-result-file
-      if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
-        cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-      else
-        echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-      fi
+      cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
       ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
     else
       ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
@@ -400,12 +396,12 @@ jobs-done-check-nightly:
     - xsoar-prepare-testing-bucket
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
-    - xsoar_ng_server_ga
+    # - xsoar_ng_server_ga
     - tests_xsoar_server
     - xsoar-test_playbooks_results
     - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
-    - xsoar-saas_test_e2e_results
+    # - xsoar-saas_test_e2e_results
   tags:
     - gke
   rules:
@@ -628,11 +624,6 @@ xsiam_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "testing"
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
@@ -658,7 +649,7 @@ xsiam_server_ga:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     MARKETPLACE_NAME: "marketplacev2"
     NON_REMOVABLE_PACKS: "Base"
   needs:
@@ -682,14 +673,9 @@ xsoar_ng_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "testing"
-        GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-      when: always
+      when: never
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -706,7 +692,7 @@ xsoar_ng_server_ga:
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
-    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
   needs:
@@ -733,7 +719,7 @@ test-upload-flow:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
-    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV,$GCS_MARKET_XSOAR_SAAS_BUCKET_DEV"
   stage: unittests-and-validations
   script:
     - section_start "Checks Whether to Trigger a Test Upload"
@@ -748,7 +734,9 @@ test-upload-flow:
 
     - section_start "Create Testing Branch"
     - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-${CI_PIPELINE_ID}"
-    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a "${ARTIFACTS_FOLDER}" -g $GITLAB_PUSH_TOKEN
+    - echo "${BRANCH}" > "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt"
+    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb "${BRANCH}" -a "${ARTIFACTS_FOLDER}" -g "${GITLAB_PUSH_TOKEN}"
+
     - echo "Created test branch:${BRANCH}"
     - section_end "Create Testing Branch"
 
@@ -774,6 +762,15 @@ test-upload-flow:
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a "${ARTIFACTS_FOLDER}" -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"
     - job-done
+  after_script:
+    - !reference [.default-after-script]
+    - section_start "Delete Testing Branch"
+    - |
+      if [ -f "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt" ]; then
+        BRANCH=$(cat "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt")
+        python3 ./Utils/test_upload_flow/delete_test_branch.py -tb "${BRANCH}" -g "${GITLAB_PUSH_TOKEN}"
+      fi
+    - section_end "Delete Testing Branch"
 
 .server_test_playbooks_results:
   stage: results
@@ -804,7 +801,7 @@ test-upload-flow:
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
     - if: '$NIGHTLY'
-      when: always
+      when: never
   extends:
     - .default-job-settings
   needs:

@@ -12,6 +12,7 @@ from packaging.version import Version
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Utils.github_workflow_scripts.utils import get_env_var
+from demisto_sdk.commands.common.constants import MarketplaceVersions
 
 versions_dict = {}
 pack_items_dict = {}
@@ -35,7 +36,7 @@ def json_write(file_path: str, data: list | dict):
         f.write(json.dumps(data, indent=4))
 
 
-def get_pack_content_paths(pack_path: Path, marketplace='xsoar'):
+def get_pack_content_paths(pack_path: Path, marketplace=MarketplaceVersions.XSOAR.value):
     """
     Gets a dict of all the paths of the given pack content items as it is in the bucket.
     To get these paths we are running the `demisto-sdk prepare-content` command and saving the result
@@ -137,7 +138,7 @@ def create_new_pack(pack_id: str):
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
 
-    return dest_path, '1.0.0', get_pack_content_paths(dest_path)
+    return dest_path, '1.0.0', get_pack_content_paths(dest_path, marketplace=MarketplaceVersions.XSOAR_SAAS.value)
 
 
 @add_changed_pack
@@ -261,7 +262,8 @@ def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str
     parent = modeling_rule.parent
     pack_path = modeling_rule.parent.parent
     modeling_rule.rename(parent.joinpath(new_name))
-    return pack_path, get_current_version(pack_path), get_pack_content_paths(pack_path, marketplace='marketplacev2')
+    return pack_path, get_current_version(pack_path), get_pack_content_paths(pack_path,
+                                                                             marketplace=MarketplaceVersions.MarketplaceV2.value)
 
 
 @add_changed_pack
@@ -324,6 +326,9 @@ def do_changes_on_branch(packs_path: Path):
 
     # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket - TestUploadFlowXSOAR
     create_new_pack(pack_id='TestUploadFlowXSOAR')
+
+    # case 14: Verify new only-XSOAR-SaaS pack uploaded only to XSOAR SAAS bucket - TestUploadFlowXsoarSaaS
+    create_new_pack(pack_id='TestUploadFlowXsoarSaaS')
 
     logging.info("Finished making test changes on the branch")
 
