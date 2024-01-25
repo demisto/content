@@ -15,6 +15,7 @@ args:
   default: true
   description: Incident ID to get tasks from.
 - name: states
+  isArray: true
   description: 'Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks).'
 - name: name
   description: 'The name of the Task to search.'
