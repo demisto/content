@@ -133,6 +133,7 @@ GET_OBJECT_ID_PARAMETERS = [
     ),
 ]
 
+
 @pytest.mark.parametrize('args,expected_output', IP_ADDRESSES_TO_ADD)
 def test_add_ip_objects_command(mocker, args, expected_output):
     """
