@@ -360,7 +360,7 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
     return DemistoException(err_msg)
 
 
-def transform_ext_attrs(ext_attrs: str) -> list[dict]:
+def transform_ext_attrs(ext_attrs: str) -> list[dict] | None:
     """
     Helper function to transform the extension attributes.
     The user supplies a string of key/value pairs separated by commas.
@@ -368,7 +368,11 @@ def transform_ext_attrs(ext_attrs: str) -> list[dict]:
     This function parses that string and returns a list of dictionaries with "name" and "value" keys.
 
     Args:
-    - ext_attrs (str): The string of key/value pairs separated by commas
+    - `ext_attrs` (`str`): The string of key/value pairs separated by commas.
+
+    Returns:
+    - `list[dict]` or `None`: A `list[dict]` representing the extension attributes.
+    Returns `None` in case there were no delimiters present.
 
     For example:
 
@@ -377,14 +381,19 @@ def transform_ext_attrs(ext_attrs: str) -> list[dict]:
     [{"Site": "Tel-Aviv"}]
 
     >>>> transform_ext_attrs("IB Discovery Owned=EMEA,Site=Tel-Aviv")
-
     [{"*IB Discovery Owned": "EMEA", "*Site": "Tel-Aviv"}]
     ```
     """
 
-    l_ext_attrs = []
+    # In case there are no delimiters present in the input
+    if "," not in ext_attrs and "=" not in ext_attrs:
+        return None
 
-    for ext_attr in ext_attrs.split(","):
+    l_ext_attrs: list[dict] = []
+
+    attributes = ext_attrs.split(",")
+
+    for ext_attr in attributes:
         try:
             key, value = ext_attr.split("=")
             if key and value:

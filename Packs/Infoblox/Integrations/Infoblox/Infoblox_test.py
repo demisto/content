@@ -174,6 +174,44 @@ class TestHelperFunctions:
         expected = [{'*IB Discovery Owned': 'EMEA'}]
         assert actual == expected
 
+    def test_transform_ext_attrs_no_delimiter(self):
+        """
+        Test transform_ext_attrs when the input has no delimiter (comma).
+
+        Given:
+        - An input.
+
+        When:
+        - The input has no delimiter.
+
+        Then:
+        - Return a list with 1 entry.
+        """
+
+        input = "Site=Tel-Aviv"
+        actual = transform_ext_attrs(input)
+        expected = [{'*Site': 'Tel-Aviv'}]
+        assert actual == expected
+
+    def test_transform_ext_attrs_no_delimiter_no_equal_sign(self):
+        """
+        Test transform_ext_attrs when the input has no delimiter (comma)
+        and no equal sign.
+
+        Given:
+        - An input.
+
+        When:
+        - The input has no delimiter and no equal sign.
+
+        Then:
+        - Return an empty list.
+        """
+
+        input = "SiteTel-Aviv"
+        actual = transform_ext_attrs(input)
+        assert not actual
+
 
 class TestZonesOperations:
 
@@ -309,3 +347,32 @@ class TestHostRecordsOperations:
         assert len(records.get(self.CONTEXT_KEY)) == 1
         assert "Host records for ciac-3607.test" in hr
         assert "extattrs" not in hr
+
+    def test_get_records_from_extattr(self, requests_mock):
+        """
+        Test to get host records by extension attribute.
+
+        Given:
+        - Mock response for get host records by hostname API call.
+
+        When:
+        - An extension attribute is specified.
+
+        Then:
+        - Ensure only matching record is returned.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files"
+                         / self.__class__.__name__ / "get_record_extattrs.json").read_text()
+        input = "Site=Tel-Aviv"
+
+        requests_mock.get(
+            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B=extattrs&*{input}",
+            json=json.loads(mock_response)
+        )
+
+        hr, records, _ = get_host_records_command(client, {"extattrs": input})
+
+        assert len(records.get(self.CONTEXT_KEY)) == 1
+        assert "Host records" in hr
+        assert "extattrs" in hr
