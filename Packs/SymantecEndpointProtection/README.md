@@ -1,5 +1,6 @@
 # Symantec Endpoint Protection
-This pack includes Cortex XSIAM content. 
+This pack includes Cortex XSIAM content.
+<~XSIAM>
 ## Configuration on Server Side
 
 1. Log in to Symantec Endpoint Protection Manager.
@@ -25,3 +26,4 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - symantec
    - product as product - ep
+</~XSIAM>

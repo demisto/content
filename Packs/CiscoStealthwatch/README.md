@@ -10,8 +10,7 @@ Finding the latest threat is like looking for a needle in a haystack. Stealwatch
 - Runs queries on Cisco Stealthwatch flows and returns its results to the context.
 - Maps logs to "One Data Model".
 
-
-
+<~XSIAM>
 ## Configuration on Server Side
 You need to configure Cisco Stealthwatch to forward Syslog messages in custom LEEF format.
 
@@ -65,3 +64,4 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 **Note**: The name of the dataset will be assigned automatically as "lancope_stealthwatch_raw".
+</~XSIAM>
