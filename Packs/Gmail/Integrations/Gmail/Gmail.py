@@ -351,6 +351,7 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
+    demisto.debug(f"get_email_context {body=} {parsed_body=}")
 
     context_gmail = {
         'Type': 'Gmail',
@@ -402,10 +403,12 @@ def get_email_context(email_data, mailbox):
         context_gmail['Body'] = html_to_text(context_gmail['Body'])
         context_email['Body/HTML'] = context_gmail['Html']
         context_email['Body/Text'] = context_gmail['Body']
+        demisto.debug(f"In text/html {context_gmail['Body']=}")
 
     if 'multipart' in context_gmail['Format']:  # type: ignore
         context_gmail['Body'], context_gmail['Html'], context_gmail['Attachments'] = parse_mail_parts(
             email_data.get('payload', {}).get('parts', []))
+        demisto.debug(f"In multipart {context_gmail['Body']=}")
         context_gmail['Attachment Names'] = ', '.join(
             [attachment['Name'] for attachment in context_gmail['Attachments']])  # type: ignore
         context_email['Body/Text'], context_email['Body/HTML'], context_email['Attachments'] = parse_mail_parts(
