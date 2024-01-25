@@ -32,6 +32,7 @@ configuration:
   display: Maximum Number of Incidents per Fetch
   defaultvalue: "25"
   type: 0
+  required: true
   additionalinfo: Default is 25. Maximum is 200.
   required: false
 - display: Fetch incidents
