@@ -1236,7 +1236,7 @@ tasks:
       - "2"
     scriptarguments:
       query:
-        simple: (mitreattcktechnique:*T1204* or mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1059.001* or mitreattcktechnique:*T1059.002* or mitreattcktechnique:*T1059.004* or mitreattcktechnique:*T1059.005* ) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
+        simple: (mitreattcktechnique:*T1204* or mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1059.001* or mitreattcktechnique:*T1059.002* or mitreattcktechnique:*T1059.004* or mitreattcktechnique:*T1059.005*) and agentid:${inputs.agentID} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1647,7 +1647,7 @@ tasks:
       - "11"
     scriptarguments:
       query:
-        simple: (dnsqueryname:${inputs.attackerExternalHost} or localip:${inputs.attackerRemoteIP}) and caseid:${parentIncidentFields.incident_id}
+        simple: (dnsqueryname:${inputs.attackerExternalHost} or localip:${inputs.attackerRemoteIP} ) and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
