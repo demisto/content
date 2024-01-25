@@ -138,7 +138,7 @@ validate-content-conf:
   stage: prepare-testing-bucket
   script:
     - echo "${TEST_VAR_XSOAR8}" | tee -a /etc/host
-    - ping "${TEST_VAR_XSOAR8}"
+    - curl -v "${TEST_VAR_XSOAR8_API}" --insecure
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
