@@ -203,8 +203,8 @@ deploy-sdk-to-pypi:
   extends:
     - .release-sdk
     - .default-job-settings
-  needs:
-    - create-release-pull-request
+#  needs:
+#    - create-release-pull-request
   when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
