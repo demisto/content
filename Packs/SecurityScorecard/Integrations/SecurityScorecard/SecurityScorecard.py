@@ -1,5 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 
 import requests
 import traceback
@@ -94,6 +96,31 @@ class SecurityScorecardClient(BaseClient):
             params=request_params
         )
 
+    def get_company_events(self, domain: str, date_from: str, date_to: str) -> Dict[str, Any]:
+
+        request_params: Dict[str, Any] = assign_params(
+            date_from=date_from,
+            date_to=date_to
+        )
+
+        return self.http_request_wrapper(
+            method='GET',
+            url_suffix=f'companies/{domain}/history/events',
+            params=request_params
+        )
+
+    def get_company_event_findings(self, domain: str, date: str, issue_type: str, status: str) -> Dict[str, Any]:
+
+        request_params: Dict[str, Any] = assign_params(
+            group_status=status
+        )
+
+        return self.http_request_wrapper(
+            method='GET',
+            url_suffix=f'companies/{domain}/history/events/{date}/issues/{issue_type}',
+            params=request_params
+        )
+
     def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
         request_params: Dict[str, Any] = assign_params(
@@ -126,6 +153,13 @@ class SecurityScorecardClient(BaseClient):
             method='GET',
             url_suffix=f'companies/{domain}/history/factors/score',
             params=request_params
+        )
+
+    def get_issue_metadata(self, issue_type: str) -> Dict[str, Any]:
+
+        return self.http_request_wrapper(
+            method='GET',
+            url_suffix=f'metadata/issue-types/{issue_type}'
         )
 
     def create_grade_change_alert(
@@ -265,6 +299,7 @@ def get_last_run(
     last_run: str = demisto.getLastRun().get("last_run"),
     first_fetch: str = demisto.params().get("first_fetch", "2 days")
 ) -> datetime:
+
     """
     Helper function to return the last incident fetch runtime as a `datetime` object.
     It uses the datetime of last_run from the demisto instance and first_fetch parameter.
@@ -395,7 +430,7 @@ def test_module(
 
     client.fetch_alerts(page_size=1, page=1)
     demisto.debug("Test module successful")
-    return ('ok')
+    return('ok')
 
 # region Methods
 # ---------------
@@ -621,6 +656,7 @@ def company_factor_score_get_command(
 
 
 def company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+
     """Retrieve company historical scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
@@ -658,6 +694,163 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: Dic
     )
 
     return results
+
+
+def company_events_get_command(
+    client: SecurityScorecardClient,
+    args: Dict[str, Any]
+) -> CommandResults:
+    """Retrieve company events
+
+    See https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-history-events
+
+    Args:
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``args`` (``Dict[str, Any]``): The domain and severity filter TODO!!!!!!
+
+    Returns:
+        ``CommandResults``: The results of the command.
+    """
+
+    domain = args.get("domain")
+    date_from = args.get("date_from")
+    date_to = args.get("date_to")
+
+    response = client.get_company_events(domain=domain, date_to=date_to, date_from=date_from)  # type: ignore
+
+    entries = response['entries']
+
+    events = []
+    for entry in entries:
+        event = {
+            "ssc_event_id": entry.get("id"),
+            "date": entry.get("date"),
+            "status": entry.get("group_status"),
+            "issue_count": entry.get("issue_count"),
+            "score_impact": entry.get("total_score_impact"),
+            "issue_type": entry.get("issue_type"),
+            "severity": entry.get("severity"),
+            "factor": entry.get("factor"),
+            "ssc_detail_url": entry.get("detail_url")
+        }
+
+        events.append(event)
+
+    markdown = tableToMarkdown(
+        f"Domain {domain} Events",
+        events,
+        headers=['ssc_event_id','date','status','factor','issue_type','severity','issue_count','score_impact','ssc_detail_url']
+    )
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Company.Events",
+        outputs=entries,
+        raw_response=response,
+        outputs_key_field='ssc_event_id'
+    )
+
+    return results
+
+
+def company_event_findings_get_command(
+    client: SecurityScorecardClient,
+    args: Dict[str, Any]
+) -> CommandResults:
+    """Retrieve company events
+
+    See https://securityscorecard.readme.io/reference/get_companies-...
+
+    Args:
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``args`` (``Dict[str, Any]``): The domain and severity filter TODO !!!!
+
+    Returns:
+        ``CommandResults``: The results of the command.
+    """
+
+    domain = args.get("domain")
+    date = args.get("date")
+    issue_type = args.get("issue_type")
+    status = args.get("status")
+
+    response = client.get_company_event_findings(domain=domain, date=date, issue_type=issue_type, status=status)  # type: ignore
+
+    entries = response['entries']
+
+    events = []
+    for entry in entries:
+
+        # some issue types have domains, IPs and/or ports, but not all of them do
+        if "domain" in entry:
+            domain = entry.get("domain")
+        elif "target" in entry:
+            domain = entry.get("target")
+        else:
+            domain = ""
+
+
+        if "ip" in entry:
+            ip = entry.get("ip")
+        elif "src_ip" in entry:
+            ip = entry.get("src_ip")
+        elif "ip_address" in entry:
+            ip = entry.get("ip_address")
+        elif "connection_attributes" in entry:
+            ip = entry.get("connection_attributes").get("dst_ip")
+        else:
+            ip = ""
+
+        if "protocol" in entry:
+            protocol = entry.get("protocol")
+        elif "scheme" in entry:
+            protocol = entry.get("scheme")
+        elif "connection_attributes" in entry:
+            protocol = entry.get("connection_attributes").get("protocol")
+        else:
+            protocol = ""
+
+        if "port" in entry:
+            port = entry.get("port")
+        elif "connection_attributes" in entry:
+            port = entry.get("connection_attributes").get("dst_port")
+        else:
+            port = ""
+
+        event = {
+            "parent_domain": entry.get("parent_domain"),
+            "count": entry.get("count"),
+            "status": entry.get("group_status"),
+            "first_seen_time": entry.get("first_seen_time"),
+            "last_seen_time": entry.get("last_seen_time"),
+            # the following details may or may not be populated
+            "port": entry.get("port",""),
+            "domain_name": domain,
+            "ip_address": ip,
+            "protocol": protocol,
+            "observations": entry.get("observations"),
+            "issue_type": issue_type
+
+        }
+
+        events.append(event)
+
+    markdown = tableToMarkdown(
+        f"Domain {domain} Findings for {issue_type}",
+        events,
+        headers=['parent_domain','issue_type','count','status','first_seen_time','last_seen_time','port','domain_name','ip_address','protocol','observations']
+    )
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Company.Findings",
+        outputs=entries,
+        raw_response=response,
+        outputs_key_field='issue_id'
+    )
+
+    return results
+
 
 
 def company_history_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
@@ -709,6 +902,40 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
         outputs=entries,
         raw_response=response,
         outputs_key_field='date'
+    )
+
+    return results
+
+
+def issue_metadata_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
+    """Retrieve description and recommendation for an issue.
+
+    See https://securityscorecard.readme.io/reference/get_metadata-issue-types-type-1
+
+    Args:
+        ``client`` (``SecurityScorecardClient``): SecurityScorecard client
+        ``args`` (``Dict[str, str]``): The domain to get the score for.
+
+    Returns:
+        ``CommandResults``: The results of the command.
+    """
+
+    issue_type = args.get("issue_type")
+
+    metadata = client.get_issue_metadata(issue_type=issue_type)  # type: ignore
+
+    markdown = tableToMarkdown(
+        f"Issue Type {issue_type}",
+        metadata,
+        headers=['key', 'severity', 'factor', 'title', 'short_description', 'long_description', 'recommendation']
+    )
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SecurityScorecard.Metadata.Issues",
+        outputs=metadata,
+        raw_response=metadata,
+        outputs_key_field='key'
     )
 
     return results
@@ -960,6 +1187,7 @@ def company_services_get_command(client: SecurityScorecardClient, args: Dict[str
 
 
 def fetch_alerts(client: SecurityScorecardClient):
+
     """
     Fetch incidents/alerts from SecurityScorecard API
 
@@ -1086,7 +1314,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR"}
+        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "2.0"}
 
         client = SecurityScorecardClient(
             base_url=base_url,
@@ -1112,6 +1340,10 @@ def main() -> None:
             return_results(company_factor_score_get_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-company-history-score-get':
             return_results(company_history_score_get_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-company-events-get':
+            return_results(company_events_get_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-company-findings-get':
+            return_results(company_event_findings_get_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-company-history-factor-score-get':
             return_results(company_history_factor_score_get_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-alert-grade-change-create':
@@ -1124,6 +1356,8 @@ def main() -> None:
             return_results(alerts_list_command(client=client, args=args))
         elif demisto.command() == 'securityscorecard-company-services-get':
             return_results(company_services_get_command(client=client, args=args))
+        elif demisto.command() == 'securityscorecard-issue-metadata':
+            return_results(issue_metadata_get_command(client=client, args=args))
 
     # Log exceptions and return errors
     except Exception as e:
@@ -1135,3 +1369,4 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+

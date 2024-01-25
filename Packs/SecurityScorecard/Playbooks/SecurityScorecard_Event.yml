@@ -1,0 +1,226 @@
+id: dadf8d27-cdb0-42ad-8e19-4f659a1a6038
+version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: SecurityScorecard Event
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 36954ed2-4d7c-4527-8f77-55bf3a362474
+    type: start
+    task:
+      id: 36954ed2-4d7c-4527-8f77-55bf3a362474
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4ad9436e-66a9-446c-8a27-9bccff7581b7
+    type: regular
+    task:
+      id: 4ad9436e-66a9-446c-8a27-9bccff7581b7
+      version: -1
+      name: createNewIncident
+      description: Create a new incident
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      details:
+        simple: |-
+          ${inputs.events}
+          ${SecurityScorecard.Company.Findings}
+      name:
+        simple: SecurityScorecard Issue
+      severity:
+        simple: ${inputs.events.severity}
+      type:
+        simple: Vulnerability
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d920080a-469d-43e9-8a01-7e5328cde84d
+    type: condition
+    task:
+      id: d920080a-469d-43e9-8a01-7e5328cde84d
+      version: -1
+      name: Finding is Valid
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${inputs.events.group_status}
+            iscontext: true
+          right:
+            value:
+              simple: active
+      - - operator: inList
+          left:
+            value:
+              simple: ${inputs.events.severity}
+            iscontext: true
+          right:
+            value:
+              simple: low,medium,high
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7742bde3-f649-499f-8fc5-00ea045eefe6
+    type: title
+    task:
+      id: 7742bde3-f649-499f-8fc5-00ea045eefe6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 14216db3-c8a6-4a8c-8667-190ba838458f
+    type: regular
+    task:
+      id: 14216db3-c8a6-4a8c-8667-190ba838458f
+      version: -1
+      name: securityscorecard-company-findings-get
+      script: SecurityScorecard|||securityscorecard-company-findings-get
+      type: regular
+      iscommand: true
+      brand: SecurityScorecard
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      date:
+        complex:
+          root: inputs.events
+          accessor: date
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: T
+          - operator: FirstArrayElement
+      domain:
+        simple: .com
+      issue_type:
+        simple: ${inputs.events.issue_type}
+      status:
+        simple: active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_#default#": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1140,
+        "width": 700,
+        "x": 130,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: events
+  value: {}
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs: []

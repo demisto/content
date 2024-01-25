@@ -1,0 +1,156 @@
+id: 5c4dd719-35cf-453a-8712-9b755e3057dc
+version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: SecurityScorecard Sync
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 04a3cbb5-c900-468d-8465-07c8b012cd4f
+    type: start
+    task:
+      id: 04a3cbb5-c900-468d-8465-07c8b012cd4f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 21fcc2a7-c1a1-4d3d-8489-c88d736560a7
+    type: title
+    task:
+      id: 21fcc2a7-c1a1-4d3d-8489-c88d736560a7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7925cdbc-30b3-4668-8f21-161b21e07d79
+    type: playbook
+    task:
+      id: 7925cdbc-30b3-4668-8f21-161b21e07d79
+      version: -1
+      name: SecurityScorecard Events
+      playbookName: SecurityScorecard Events
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      date:
+        simple: "2024-01-01T00:00:00.000Z"
+      domain:
+        simple: ${SecurityScorecard.Portfolio.Company.domain}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ef15c106-eccb-47cc-87d3-7bd0c608053b
+    type: regular
+    task:
+      id: ef15c106-eccb-47cc-87d3-7bd0c608053b
+      version: -1
+      name: securityscorecard-portfolio-list-companies
+      description: Lists all companies in Portfolio.
+      script: SecurityScorecard|||securityscorecard-portfolio-list-companies
+      type: regular
+      iscommand: true
+      brand: SecurityScorecard
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 450,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: portfolio_id
+  value:
+    simple: cb118cfa-f654-59ab-9e9e-937f6c86aa41
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs: []
