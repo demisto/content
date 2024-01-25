@@ -1,6 +1,6 @@
-<~XSIAM>
+# McAfee ePO
 This pack includes XSIAM content.
-
+<~XSIAM>
 ## Manage the fields on the schema
 
 part 1 - on the Mcafee EPO management console

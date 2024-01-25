@@ -1,6 +1,6 @@
 # Check Point Firewall
-<~XSIAM>
 This pack includes Cortex XSIAM content. 
+<~XSIAM>
 ## Configuration on Server Side
 You need to configure Check Point to forward Syslog messages in CEF format.
 
