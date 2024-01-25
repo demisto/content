@@ -5,7 +5,7 @@ import demistomock as demisto
 from CommonServerPython import DemistoException, ThreatIntel, FeedIndicatorType
 from FeedMISP import clean_user_query, build_indicators_iterator, \
     handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, update_indicators_iterator, \
-    update_indicator_fields, get_ip_type, search_query_indicators_pagination, Client
+    update_indicator_fields, get_ip_type, Client, fetch_attributes_command
 
 
 def test_build_indicators_iterator_success():
@@ -450,31 +450,72 @@ def test_get_ip_type(indicator, indicator_type):
     assert get_ip_type(indicator) == indicator_type
 
 
-indicators_examples = [
-    ({'response': {'Attribute': ['data1', 'data2']}}, ({'response': {'Attribute': []}}),
-     {'response': {'Attribute': ['data1', 'data2']}}),
-    ({'response': {'Attribute': []}}, ({'response': {'Attribute': []}}),
-     {'response': {'Attribute': []}})
-
-]
-
-
-@pytest.mark.parametrize('returned_result_1, returned_result_2, expected_result', indicators_examples)
-def test_search_query_indicators_pagination(mocker, returned_result_1, returned_result_2, expected_result):
+def test_search_query_indicators_pagination(mocker):
     """
     Given:
         - All relevant arguments for the command
     When:
         - the search_query_indicators_pagination function runs
     Then:
-        - Ensure the pagination mechanism return the expected result
+        - Ensure the pagination mechanism return the expected result (good http response is returned)
     """
     client = Client(base_url="example",
                     authorization="auth",
                     verify=False,
                     proxy=False,
                     timeout=60)
+    returned_result_1 = {'response':
+                         {'Attribute': [{'id': '1', 'event_id': '1', 'object_id': '0',
+                                         'object_relation': None, 'category': 'Payload delivery',
+                                         'type': 'sha256', 'to_ids': True, 'uuid': '5fd0c620',
+                                         'timestamp': '1607517728', 'distribution': '5', 'sharing_group_id': '0',
+                                         'comment': 'malspam', 'deleted': False, 'disable_correlation': False,
+                                         'first_seen': None, 'last_seen': None,
+                                         'value': 'val1', 'Event': {}},
+                                        {'id': '2', 'event_id': '2', 'object_id': '0',
+                                         'object_relation': None, 'category': 'Payload delivery',
+                                         'type': 'sha256', 'to_ids': True, 'uuid': '5fd0c620',
+                                         'timestamp': '1607517728', 'distribution': '5', 'sharing_group_id': '0',
+                                         'comment': 'malspam', 'deleted': False, 'disable_correlation': False, 'first_seen': None,
+                                         'last_seen': None, 'value': 'val2', 'Event': {}}]}}
+    returned_result_2 = {'response': {'Attribute': []}}
     mocker.patch.object(Client, '_http_request', side_effect=[returned_result_1, returned_result_2])
-    params_dict = {'param1': 'value1'}
-    result = search_query_indicators_pagination(client, params_dict)
-    assert result == expected_result
+    params_dict = {
+        'type': 'attribute',
+        'filters': {'category': ['Payload delivery']},
+    }
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'createIndicators')
+    fetch_attributes_command(client, params_dict)
+    last_run_call_args = demisto.setLastRun.call_args[0][0]
+    indicators = demisto.createIndicators.call_args[0][0]
+    assert 'timestamp' in last_run_call_args
+    assert 'params' in last_run_call_args
+    assert len(indicators) == 2
+
+
+def test_search_query_indicators_pagination_bad_case(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - the search_query_indicators_pagination function runs
+    Then:
+        - Ensure the pagination mechanism raises an error (bad http response is returned)
+    """
+    from CommonServerPython import DemistoException
+    client = Client(base_url="example",
+                    authorization="auth",
+                    verify=False,
+                    proxy=False,
+                    timeout=60)
+    returned_result = {'Error': 'failed api call'}
+    expected_result = "Error in API call - check the input parameters and the API Key. Error: failed api call"
+    mocker.patch.object(Client, '_http_request', return_value=returned_result)
+    params_dict = {
+        'type': 'attribute',
+        'filters': {'category': ['Payload delivery']}
+    }
+    with pytest.raises(DemistoException) as e:
+        fetch_attributes_command(client, params_dict)
+    assert str(e.value) == expected_result
