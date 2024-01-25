@@ -15,14 +15,15 @@ urllib3.disable_warnings()
 
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
-UPDATE_SDK_VERSION_WORKFLOW = 'https://api.github.com/repos/demisto/content/actions/workflows/update-demisto-sdk-version.yml/dispatches'
+UPDATE_SDK_VERSION_WORKFLOW = 'https://api.github.com/repos/demisto/content/actions' \
+                              '/workflows/update-demisto-sdk-version.yml/dispatches'
 
 SLACK_CHANGELOG_FILE = 'CHANGELOG_SLACK.txt'
 
 SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
         ':alert: Please run in the terminal\n' \
-        '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/demisto/content ~/dev/demisto/demisto-sdk`\n' \
-        'Change log\n```\n{}\n```'
+        '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/' \
+        'demisto/content ~/dev/demisto/demisto-sdk`\nChange log\n```\n{}\n```'
 
 
 def options_handler():

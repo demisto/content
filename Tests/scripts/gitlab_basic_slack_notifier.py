@@ -15,6 +15,8 @@ from Tests.scripts.utils.log_util import install_logging
 CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
+NAME_MAPPING_URL = 'https://gitlab.xdr.pan.local/api/v4/projects/1701' \
+                   '/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'  # disable-secrets-detection
 
 
 def options_handler() -> argparse.Namespace:
@@ -33,9 +35,8 @@ def options_handler() -> argparse.Namespace:
 
 
 def get_slack_user(gitlab_token, github_username):
-    url = 'https://gitlab.xdr.pan.local/api/v4/projects/1701/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'
     headers = {'PRIVATE-TOKEN': gitlab_token}
-    response = requests.request('GET', url, headers=headers, verify=False)
+    response = requests.request('GET', NAME_MAPPING_URL, headers=headers, verify=False)
     if response.status_code != 200:
         logging.error('Failed to retrieve the name_mapping.json file')
         logging.error(response.text)
@@ -48,7 +49,7 @@ def get_slack_user(gitlab_token, github_username):
     return slack_user
 
 
-def build_link_to_message(response) -> str:
+def build_link_to_message(response: SlackResponse) -> str:
     if SLACK_WORKSPACE_NAME and response.status_code == requests.codes.ok:
         data: dict = response.data  # type: ignore[assignment]
         channel_id: str = data['channel']
