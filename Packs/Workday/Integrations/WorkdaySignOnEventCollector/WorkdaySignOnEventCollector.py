@@ -121,7 +121,7 @@ class Client(BaseClient):
         Returns:
             A digest password in base64.
         """
-        hash_object = hashlib.sha3_256(nonce + create_time.encode("utf-8") + password.encode("utf-8"))  # nosec
+        hash_object = hashlib.sha1(nonce + create_time.encode("utf-8") + password.encode("utf-8"))  # nosec
         digest_string = hash_object.digest()
         return base64.b64encode(digest_string).decode("ascii")
 
