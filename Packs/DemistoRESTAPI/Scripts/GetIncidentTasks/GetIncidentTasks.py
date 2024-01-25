@@ -85,27 +85,6 @@ def is_task_match(task: dict, name: str | None, tag: str | None, states: list[st
     return name_match and tag_match and state_match
 
 
-def format_title(name: str | None, tag: str | None, states: str) -> str:
-    """_summary_
-
-    Args:
-        name (str | None): The name of the task
-        tag (str | None): The tag assigned to the task
-        states (str): A list of possible states that the task can have
-
-    Returns:
-        str: Formatted title for the war room
-    """
-    items: list[str] = []
-    if name is not None:
-        items.append(f'name "{name}" ')
-    if tag:
-        items.append(f'tag "{tag}" ')
-    if states:
-        items.append(f'states "{states}" ')
-    return f'Tasks with {"and ".join(items)}'.strip()
-
-
 ''' COMMAND FUNCTION '''
 
 
@@ -145,7 +124,7 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
                           outputs_key_field='id',
                           outputs=res,
                           readable_output=tableToMarkdown(
-                              f'{format_title(name, tag,args.get("states", ""))}(Incident  # {inc_id})',
+                              f'Incident #{inc_id} Playbook Tasks',
                               res,
                               ['id', 'name', 'state', 'owner', 'scriptId']))
 

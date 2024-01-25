@@ -19,10 +19,8 @@ args:
   description: 'Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks).'
 - name: name
   description: 'The name of the Task to search.'
-  type: string
 - name: tag
   description: 'The tag to search.'
-  type: string
 outputs:
 - contextPath: Tasks
   description: The entire task object.
