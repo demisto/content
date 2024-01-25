@@ -437,7 +437,7 @@ inputs:
   playbookInputQuery:
 - key: query
   value: 
-    simple: "expirationStatus:expired and tags:xdr_pushed"
+    simple: "expirationStatus:expired and tags:xdr_pushed and -tags:xdr_disabled"
   required: true
   description: ""
   playbookInputQuery:
