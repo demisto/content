@@ -81,6 +81,7 @@ else
         else
           exit_on_error 1 "Poetry version $(poetry --version) doesn't match the required version: ${POETRY_VERSION}"
         fi
+        cp /builds/xdr/cortex-content/content/poetry-installer-error-*.log ${ARTIFACTS_FOLDER}
         exit_on_error $error_code "Failed to install Poetry version:${POETRY_VERSION}"
     fi
 fi
