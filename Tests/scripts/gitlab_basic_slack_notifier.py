@@ -13,8 +13,11 @@ from Tests.scripts.utils.log_util import install_logging
 
 
 CONTENT_CHANNEL = 'dmst-build-test'
+
 SLACK_USERNAME = 'Content GitlabCI'
+
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
+
 # disable-secrets-detection-start
 NAME_MAPPING_URL = 'https://gitlab.xdr.pan.local/api/v4/projects/1701' \
                    '/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'
@@ -26,7 +29,7 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
     parser.add_argument('-t', '--message_text', help='The message text')
     parser.add_argument('-f', '--file', help='File path with the text to send')
-    parser.add_argument('-gt', '--gitlab_token', help='Gitlab API token')
+    parser.add_argument('-gt', '--gitlab_token', help='Gitlab API token, required when using the --github_username argument')
     parser.add_argument('-gu', '--github_username', help='Github username to tag in the message')
     parser.add_argument(
         '-ch', '--slack_channel', help='The slack channel in which to send the notification', default=CONTENT_CHANNEL

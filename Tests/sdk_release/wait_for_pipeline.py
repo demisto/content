@@ -27,7 +27,7 @@ def get_pipeline_status(pipeline_id, project_id, token):
         pipeline_status = jobs_info[0].get('pipeline', {}).get('status')
 
     except Exception as e:
-        logging.error(f'Unable to parse pipeline status response: {res.content}, error: {str(e)}')
+        logging.error(f'Unable to parse pipeline status response: {res.text}, error: {str(e)}')
         return ''
 
     return pipeline_status
@@ -44,7 +44,7 @@ def get_pipeline_info(pipeline_id, project_id, token):
     try:
         pipeline_info = json.loads(res.content)
     except Exception as e:
-        logging.error(f'Unable to parse pipeline status response: {res.content}, error: {str(e)}')
+        logging.error(f'Unable to parse pipeline status response: {res.text}, error: {str(e)}')
         sys.exit(1)
 
     return pipeline_info
