@@ -281,6 +281,7 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
         Tuple[datetime, bool]: occurred datetime, can be used for incrementing search date
     """
     headers = demisto.get(email_data, 'payload.headers')
+    output = None
     if not headers or not isinstance(headers, list):
         demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
     else:
@@ -292,18 +293,28 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
                 if val:
                     res = get_date_from_email_header(val)
                     if res:
-                        demisto.debug(f"Using occurred date: {res} from header: {name} value: {val}")
-                        return res, True
+                        output = datetime.fromtimestamp(res.timestamp(), tz=timezone.utc)
+                        demisto.debug(f"The timing from header: {name} value: {val} the result: {res}, the UTC time is {output}")
+                        break
     internalDate = email_data.get('internalDate')
-    demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
+    demisto.info(f"trying internalDate: {internalDate}")
     if internalDate and internalDate != '0':
         # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
         # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
         timestamp_len = len(str(int(time.time())))
         if len(str(internalDate)) > timestamp_len:
             internalDate = (str(internalDate)[:timestamp_len])
-        return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
-        # we didn't get a date from anywhere
+            internalDate_dt = datetime.fromtimestamp(int(internalDate), tz=timezone.utc)
+            demisto.debug(f"{internalDate=} {internalDate_dt=}")
+            if output and internalDate_dt:
+                # check which time is earlier, return it
+                output = internalDate_dt if internalDate_dt < output else output
+            elif internalDate_dt and not output:
+                output = internalDate_dt
+    if output:
+        demisto.debug(f"The final occurred time is {output}")
+        return output, True
+    # we didn't get a date from anywhere
     demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
     return datetime.now(tz=timezone.utc), False
 
@@ -340,11 +351,6 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
-    base_time = email_data.get('internalDate')
-    if not base_time or not get_date_from_email_header(base_time):
-        # we have an invalid date. use the occurred in rfc 2822
-        demisto.debug(f'Using Date base time from occurred: {occurred} instead of date header: [{base_time}]')
-        base_time = format_datetime(occurred)
 
     context_gmail = {
         'Type': 'Gmail',
@@ -367,7 +373,7 @@ def get_email_context(email_data, mailbox):
         # only for incident
         'Cc': headers.get('cc', []),
         'Bcc': headers.get('bcc', []),
-        'Date': base_time,
+        'Date': occurred,
         'Html': None,
     }
 
