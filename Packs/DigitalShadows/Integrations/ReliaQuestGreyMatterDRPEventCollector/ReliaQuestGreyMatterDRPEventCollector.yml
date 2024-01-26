@@ -49,6 +49,9 @@ script:
       description: 'The maximum number of events to retrieve.'
       required: false
       defaultValue: '200'
+    - name: event_num_after
+      description: 'Fetch events that were created after a specific event-number'
+      required: false
     description: Manual command to fetch reila-quest events and display them.
     name: relia-quest-get-events
     outputs:

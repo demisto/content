@@ -397,7 +397,8 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
 
     events: list[dict] = []
 
-    for current_events in client.list_triage_item_events(
+    for current_events, _ in client.list_triage_item_events(
+        event_num_after=arg_to_number(args.get("event_num_after")),
         event_created_after=start_time,
         event_created_before=end_time,
         limit=limit
