@@ -8,15 +8,15 @@ This integration fetches event items which can be either incident/alerts, for mo
 2. Search for Relia Quest GreyMatter DRP Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                      | **Description**                                                                                                                                                    | **Required** |
-    |------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-    | Server URL                         | URL for the Relia Quest API instance.                                                                                                                              | True |
-    | Account ID                         | The account ID for the Reila Quest instance.                                                                                                                       | True |
-    | Maximum number of events per fetch | The maximum number of events to fetch every time fetch is being executed. Default is 200.                                                                          | True |
-    | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
-    | Use system proxy settings          | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server.                          | False |
-    | Username                           | The username to authenticate Relia Quest Event Collector.                                                                                                          | False |
-    | Password                           | The password to autheticate Relia Quest Event Collector                                                                                                            | False |
+    | **Parameter**                      | **Description**                                                                                                                                                    | **Required**                                                                        |
+    |------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+    | Server URL                         | URL for the Relia Quest API instance.                                                                                                                              | True                                                                                |
+    | Account ID                         | The account ID for the Reila Quest instance.                                                                                                                       | True                                                                                |
+    | Maximum number of events per fetch | Maximum number of events per fetch | The maximum number of events to fetch every time fetch is executed. Default is 200. | True |
+    | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False                                                                               |
+    | Use system proxy settings          | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server.                          | False                                                                               |
+    | Username                           | The username to authenticate Relia Quest Event Collector.                                                                                                          | False                                                                               |
+    | Password                           | The password to authenticate Relia Quest Event Collector                                                                                                            | False                                                                               |
 5. Click **Test** to validate the URLs, token, and connection.
 
 
