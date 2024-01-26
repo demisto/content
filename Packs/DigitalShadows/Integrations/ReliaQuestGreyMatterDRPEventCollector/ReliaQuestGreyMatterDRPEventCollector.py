@@ -437,8 +437,9 @@ def main() -> None:
     demisto.info(f'Command being called is {command}')
     try:
 
-        client = ReilaQuestClient(url, account_id=account_id, username=username,
-                                  password=password, verify_ssl=verify_ssl, proxy=proxy)
+        client = ReilaQuestClient(
+            url, account_id=account_id, username=username, password=password, verify_ssl=verify_ssl, proxy=proxy
+        )
         if command == 'test-module':
             return_results(test_module(client))
         elif command == "fetch-events":
