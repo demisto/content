@@ -98,20 +98,22 @@ class ReilaQuestClient(BaseClient):
             params["event-created-before"] = event_created_before
         if event_created_after:
             params["event-created-after"] = event_created_after
-        if event_num_after:
-            params["event-num-after"] = event_num_after
 
         amount_of_fetched_events = 0
+        latest_event = None
         while amount_of_fetched_events < limit:
+            params["event-num-after"] = latest_event or event_num_after
             events = self.http_request("/triage-item-events", params=params)
             if len(events) == 0:
                 break
             amount_of_fetched_events += len(events)
             end_index = min(amount_of_fetched_events - limit, limit) if amount_of_fetched_events > limit else MAX_PAGE_SIZE
             events = events[:end_index]
+            event_numbers = [event.get("event-num") for event in events]
+            latest_event = max(event_numbers)
             demisto.info(f'Fetched {len(events)} events')
-            demisto.info(f'Fetched the following event IDs: {[event.get("event-num") for event in events]}')
-            yield events
+            demisto.info(f'Fetched the following event IDs: {event_numbers}')
+            yield events, latest_event
 
     def triage_items(self, triage_item_ids: list[str]) -> List[dict[str, Any]]:
         """
@@ -288,14 +290,11 @@ def enrich_events_with_assets_metadata(
                 event["assets"].append(asset)
 
 
-def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Optional[dict[str, Any]] = None):
+def enrich_events(client: ReilaQuestClient, events: list[dict]) -> list[dict]:
     """
     Enrich the events with more data from the api.
     """
-    if not last_run:
-        last_run = {}
-
-    triage_item_ids_to_events, largest_event = get_triage_item_ids_to_events(events)
+    triage_item_ids_to_events, largest_event_num = get_triage_item_ids_to_events(events)
 
     alert_ids_to_triage_ids, incident_ids_to_triage_ids = enrich_events_with_triage_item(
         client, triage_item_ids_to_events=triage_item_ids_to_events
@@ -338,11 +337,7 @@ def enrich_events(client: ReilaQuestClient, events: list[dict], last_run: Option
     for event in triage_item_ids_to_events.values():
         enriched_events.extend(event)
 
-    # if largest_event is None, no new events were fetched, keep the same event num that is already in the last run
-    new_last_run = {
-        LAST_FETCHED_EVENT_NUM: largest_event or last_run.get(LAST_FETCHED_EVENT_NUM),
-    }
-    return enriched_events, new_last_run
+    return enriched_events
 
 
 def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
@@ -367,14 +362,15 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
                 f'Waiting for the api to recover from rate-limit, need to wait {(retry_after - now).total_seconds()} seconds'
             )
             return
-        for events in client.list_triage_item_events(event_num_after=last_run.get(LAST_FETCHED_EVENT_NUM), limit=max_fetch):
-            enriched_events, new_last_run = enrich_events(
-                client, last_run=last_run
-            )
+        for events, largest_event in client.list_triage_item_events(
+            event_num_after=last_run.get(LAST_FETCHED_EVENT_NUM), limit=max_fetch
+        ):
+            enriched_events = enrich_events(client, events=events)
             if not enriched_events:
                 demisto.info(f'There are no events to fetch when last run is {last_run}, hence exiting')
                 break
             send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT)
+            new_last_run.update({LAST_FETCHED_EVENT_NUM: largest_event})
             demisto.info(f'Sent the following events {[event.get("event-num") for event in events]} successfully')
     except RateLimitError as rate_limit_error:
         demisto.error(str(rate_limit_error))
