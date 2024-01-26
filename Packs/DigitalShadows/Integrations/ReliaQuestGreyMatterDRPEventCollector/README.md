@@ -23,9 +23,8 @@ This integration fetches event items which can be either incident/alerts, for mo
 ## Relia quest GreyMatter DRP EventCollector Authentication
 Requests to all operation endpoints require HTTP Basic authentication, using dedicated (high entropy) API credentials. These normally consist of a six character key, and a 32 character 'secret'. Note that you will not be able to use your normal email/password login details with the HTTP Basic authentication mechanism.
 
-Please contact your Digital Shadows representative to obtain API credentials.
+Contact your Digital Shadows representative to obtain API credentials.
 
-To authenticate the integration, it is required to have username, password and account-id, to get the account-id refer to [here](https://portal-digitalshadows.com/api/stored-objects/portal/searchlight-api-docs/SearchLightAPI_APIKey_AccountId2.pdf)
-
+To authenticate the integration, you must have a username, password and account ID. To get the account ID, see [here](https://portal-digitalshadows.com/api/stored-objects/portal/searchlight-api-docs/SearchLightAPI_APIKey_AccountId2.pdf).
 ## Limitations
-* The Relia Quest product can return rate-limits when doing too many http-requests, increasing the **Maximum number of events per fetch** parameter to high numbers can cause rate-limits. The integration knows to recover from those rate-limits automatically in some cases, but not in all of them. For more information about rate-limits refer [here](https://portal-digitalshadows.com/learn/searchlight-api/overview/rate-limiting)
+The Relia Quest product can return rate-limits when doing too many http-requests. Increasing the Maximum number of events per fetch parameter to high numbers can cause rate-limits. The integration knows how to recover from those rate-limits automatically in some cases, but not in all of them. For more information about rate-limits, see  [here](https://portal-digitalshadows.com/learn/searchlight-api/overview/rate-limiting)

@@ -39,7 +39,7 @@ script:
   commands:
   - arguments:
     - name: start_time
-      description: 'From which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z, if not provided will retrieve the oldest events available.'
+      description: 'From which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z. If not provided, will retrieve the oldest events available.'
       required: false
       defaultValue: '3 days ago'
     - name: end_time
