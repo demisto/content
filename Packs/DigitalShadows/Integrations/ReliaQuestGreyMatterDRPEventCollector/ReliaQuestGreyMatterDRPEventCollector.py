@@ -201,17 +201,14 @@ def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, list[di
                 _triage_item_ids_to_events[triage_item_id] = []
             _triage_item_ids_to_events[triage_item_id].append(event)
         else:
-            demisto.error(f'event {event} does not have triage-item-id or event-created fields, skipping it')
+            demisto.error(f'event {event} does not have triage-item-id fields, skipping it')
 
-    largest_event = get_largest_event_num(events)
-    demisto.info(f'event numbers with latest created time: {largest_event}')
-
-    return _triage_item_ids_to_events, largest_event
+    return _triage_item_ids_to_events, get_largest_event_num(events)
 
 
 def get_largest_event_num(events: List[Dict]) -> int | None:
     """
-    Get the latest event number
+    Get the latest event number that was fetched
     """
     if not events:
         return None
@@ -260,7 +257,9 @@ def enrich_events_with_incident_or_alert_metadata(
     event_type: str,
     assets_ids_to_triage_ids: dict[str, List[str]]
 ):
-
+    """
+    Enrich events with incident/alerts metadata
+    """
     for alert_incident in alerts_incidents:
         _id = alert_incident.get("id")
         for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:  # type: ignore[index]
@@ -277,6 +276,9 @@ def enrich_events_with_assets_metadata(
     assets_ids_to_triage_ids: dict[str, List[str]],
     triage_item_ids_to_events: dict[str, List[dict]],
 ):
+    """
+    Enrich events with assets metadata
+    """
     asset_ids = list(assets_ids_to_triage_ids.keys())
     demisto.info(f'Fetched the following asset-IDs {asset_ids}')
 
@@ -343,9 +345,10 @@ def enrich_events(client: ReilaQuestClient, events: list[dict]) -> list[dict]:
 def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: int = DEFAULT_MAX_FETCH):
     """
     Fetch flow:
-     - Check if there was any rate-limit error, if not continue the fetch normally
-     - Each 1000 events will be fetched with send_events_to_xsiam to avoid rate-limits
-     - find the events with latest time and save it in the last run, do a dedup on those events
+     - Check if there was any rate-limit error, if not continue the fetch normally, if yes, exit gracefully and wait for
+       the api to recover
+     - each iteration maximum of 1000 events will be fetched from the api until max_fetch is reached
+     - find the largest event fetched, keep it in the last run and use it to continue pagination to the new events
      - in case of a rate-limit error, the api returns the "retry-after" argument to inform the
         client when a new request can be made, keep it in the last-run and wait until this time has reached
     """
@@ -384,11 +387,13 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
 
 def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
     limit = arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
+
     if start_time := args.get("start_time"):
         start_time_datetime = dateparser.parse(start_time)
         if not start_time_datetime:
             raise ValueError(f'Invalid value for start_time={start_time}')
         start_time = start_time_datetime.strftime(DATE_FORMAT)
+
     if end_time := args.get("end_time"):
         end_time_datetime = dateparser.parse(end_time)
         if not end_time_datetime:
@@ -403,7 +408,7 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
         event_created_before=end_time,
         limit=limit
     ):
-        current_enriched_events, _ = enrich_events(client, events=current_events)
+        current_enriched_events = enrich_events(client, events=current_events)
         events.extend(current_enriched_events)
 
     return CommandResults(

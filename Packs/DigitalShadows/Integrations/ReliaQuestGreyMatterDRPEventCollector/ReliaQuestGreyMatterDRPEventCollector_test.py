@@ -90,20 +90,6 @@ def create_triage_item_events(num_of_events: int, start_event_num: int = 1) -> L
     ]
 
 
-def create_batched_triage_item_events(
-    num_of_events: int, start_event_num: int = 1
-) -> List[requests.Response]:
-
-    mocked_responses = []
-
-    for i in range(start_event_num, start_event_num + num_of_events, 1000):
-        mocked_responses.append(create_mocked_response(create_triage_item_events(
-            min(MAX_PAGE_SIZE, num_of_events - i + 1), start_event_num=i)))
-
-    mocked_responses.append(create_mocked_response([]))  # empty response
-    return mocked_responses
-
-
 def create_triage_items_from_events(triage_item_ids: List[str], item_type: str) -> List[Dict]:
     if item_type not in {"incident-id", "alert-id"}:
         raise ValueError(f'item-type {item_type} must be one of incident-id/alert-id')
@@ -243,12 +229,12 @@ def test_list_triage_item_events(client: ReilaQuestClient, mocker, limit: int, n
     Then:
      - make sure the right amount of events is returned
     """
-    mocked_responses = create_batched_triage_item_events(num_of_events)
+    http_mocker = HttpRequestMock(num_of_events, num_of_alerts=0, num_of_incidents=0)
 
     mocker.patch.object(
         client,
         "_http_request",
-        side_effect=mocked_responses
+        side_effect=http_mocker.http_request_side_effect
     )
     fetched_events = []
     for events, latest_event in client.list_triage_item_events(limit=limit):
@@ -435,7 +421,7 @@ class TestFetchEvents:
         assert send_events_mocker.call_count == 0
         assert set_last_run_mocker.call_args[0][0] == {LAST_FETCHED_EVENT_NUM: 1}
 
-    def test_fetch_events_multiple_events_no_rate_limits(self, mocker):
+    def test_fetch_events_multiple_events_no_rate_limits_no_last_run(self, mocker):
         """
         Given:
          - flow where there are multiple events and no last run
@@ -445,6 +431,7 @@ class TestFetchEvents:
 
         Then:
          - make sure that all events are enriched and fetched, make sure the send_events_to_xsiam is called multiple times
+         - make sure last run saves the largest event number
         """
         import ReliaQuestGreyMatterDRPEventCollector
         from unittest.mock import MagicMock
@@ -492,3 +479,96 @@ class TestFetchEvents:
             assert event["triage-item"]
             assert event["incident"]
             assert event["assets"]
+
+    def test_fetch_events_multiple_events_no_rate_limits_with_last_run(self, mocker):
+        """
+        Given:
+         - flow where there are multiple events and last run indicates on latest event
+
+        When:
+         - running the entire fetch-events flow
+
+        Then:
+         - make sure that all events are enriched and fetched, make sure the send_events_to_xsiam is called multiple times
+         - make sure that the latest event-num is now larger = 10000
+        """
+        import ReliaQuestGreyMatterDRPEventCollector
+        from unittest.mock import MagicMock
+
+        send_events_mocker: MagicMock = mocker.patch.object(ReliaQuestGreyMatterDRPEventCollector, 'send_events_to_xsiam')
+        set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
+        mocker.patch.object(demisto, 'getLastRun', return_value={LAST_FETCHED_EVENT_NUM: 5000})
+        mocker.patch.object(
+            demisto, 'params',
+            return_value={
+                "url": TEST_URL,
+                "credentials": {
+                    "identifier": "1234",
+                    "password": "1234",
+                },
+                "max_fetch_events": 10000
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+
+        http_mocker = HttpRequestMock(5000, num_of_alerts=2500, num_of_incidents=2500)
+
+        mocker.patch.object(
+            ReliaQuestGreyMatterDRPEventCollector.ReilaQuestClient,
+            "_http_request",
+            side_effect=http_mocker.http_request_side_effect
+        )
+
+        ReliaQuestGreyMatterDRPEventCollector.main()
+
+        assert send_events_mocker.call_count == 5
+        fetched_events = []
+        for call in send_events_mocker.call_args_list:
+            fetched_events.extend(call.args[0])
+
+        assert len(fetched_events) == 5000
+
+        assert set_last_run_mocker.call_args[0][0][LAST_FETCHED_EVENT_NUM] == 10000
+        for event in fetched_events[0:2500]:
+            assert event["triage-item"]
+            assert event["alert"]
+            assert event["assets"]
+
+        for event in fetched_events[2500:5000]:
+            assert event["triage-item"]
+            assert event["incident"]
+            assert event["assets"]
+
+
+def test_get_events_command(mocker, client: ReilaQuestClient):
+    """
+    Given:
+     - 5000 events
+
+    When:
+     - running the get_events_command
+
+    Then:
+     - make sure that all events are enriched and fetched (5000)
+    """
+    from ReliaQuestGreyMatterDRPEventCollector import get_events_command
+    http_mocker = HttpRequestMock(5000, num_of_alerts=2500, num_of_incidents=2500)
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=http_mocker.http_request_side_effect
+    )
+
+    command_results = get_events_command(client, args={"limit": 10000})
+    events = command_results.outputs
+    assert len(events) == 5000
+
+    for event in events[0:2500]:
+        assert event["triage-item"]
+        assert event["alert"]
+        assert event["assets"]
+
+    for event in events[2500:5000]:
+        assert event["triage-item"]
+        assert event["incident"]
+        assert event["assets"]
