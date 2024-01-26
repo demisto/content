@@ -158,7 +158,7 @@ script:
       description: The directory path where to upload.
       defaultValue: /
     description: Upload a file from data to the repository.
-    name: wrf-upload-as-file
+    name: wfr-upload-as-file
   - arguments:
     - description: The entry ID list of files.
       isArray: true

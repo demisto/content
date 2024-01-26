@@ -4110,14 +4110,14 @@ def command_upload_as_file(args: dict[str, str], settings: Settings) -> str:
     """
     client = new_client(detect_service_ip_port(settings), settings)
 
-    file_data = args.get('data', '')
+    input_data = args.get('data', '')
     encoding = args.get('encoding', 'utf-8')
     match encoding:
         case 'utf-8':
-            file_data = file_data.encode(encoding)
+            file_data = input_data.encode(encoding)
 
         case 'base64':
-            file_data = base64.b64decode(file_data)
+            file_data = base64.b64decode(input_data)
 
         case _:
             raise ValueError(f'Invalid encoding name: {encoding}')
@@ -4314,7 +4314,7 @@ def main() -> None:
         'wfr-cleanup': command_cleanup,
         'wfr-reset': command_reset,
         'wfr-upload-file': command_upload_file,
-        'wrf-upload-as-file': command_upload_as_file,
+        'wfr-upload-as-file': command_upload_as_file,
         'wfr-upload-files': command_upload_files,
         'wfr-list-files': command_list_files,
         'wfr-remove-files': command_remove_files,
