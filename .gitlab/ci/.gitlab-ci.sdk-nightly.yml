@@ -526,9 +526,12 @@ demisto-sdk-nightly:trigger-slack-notify:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: "Demisto SDK Nightly"
     JOB_NAME: "demisto-sdk-nightly:fan-in"
+    DEMISTO_SDK_NIGHTLY: "true"
+    OVERRIDE_SDK_REF: $OVERRIDE_SDK_REF
+    SDK_REF: $SDK_REF
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: "true"
-    SLACK_ALLOW_FAILURE: 'false'
+    SLACK_ALLOW_FAILURE: "false"
     CI_PROJECT_ID: $CI_PROJECT_ID
     CI_SERVER_URL: $CI_SERVER_URL
     JIRA_SERVER_URL: $JIRA_SERVER_URL
