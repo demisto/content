@@ -4,7 +4,7 @@ from CommonServerPython import *
 import pytest
 import hashlib
 from ReliaQuestGreyMatterDRPEventCollector import (
-    ReilaQuestClient, RateLimitError, RATE_LIMIT_LAST_RUN, MAX_PAGE_SIZE, LAST_FETCHED_EVENT_NUM
+    ReilaQuestClient, RateLimitError, RATE_LIMIT_LAST_RUN, LAST_FETCHED_EVENT_NUM
 )
 import json
 
