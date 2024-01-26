@@ -1,19 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
+"""Symantec Threat Intel Insight
 
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
+This is an integration that allows to query the Symantec Threat Intel Insight Reputation information
 """
 
 from CommonServerUserPython import *  # noqa
@@ -57,12 +46,6 @@ ThreatLevel = {
 
 class Client(BaseClient):
     """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
     """
     _session_token = None
 
@@ -184,7 +167,7 @@ def execute_network_command(client: Client, args: List[str]) -> List[dict]:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, oauth: str) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -200,12 +183,13 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if client.authenticate(oauth_token=oauth):
+            message = 'ok'
         else:
-            raise e
+            message = 'Authentication Error: make sure API Key is correctly set'
+    except Exception as e:
+        raise e
+
     return message
 
     # https://xsoar.pan.dev/docs/integrations/context-and-outputs#return-info-file
@@ -289,6 +273,8 @@ def file_reputation_command(client: Client, args: Dict[str, Any]) -> List[Comman
     values = argToList(arg=args.get('file', ''))
     results = []
     for file in values:
+        if not re.match('^[A-Fa-f0-9]{64}$', file):
+            continue
         file_result = parse_response(client.broadcom_file_insight(file))
         if file_result:
             results.append(file_result)
@@ -318,24 +304,10 @@ def file_reputation_command(client: Client, args: Dict[str, Any]) -> List[Comman
 
 def main() -> None:
     """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
     base_url = urljoin(demisto.params()['url'], '/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
 
     oauth = demisto.params().get('credentials', {}).get('password')
@@ -347,24 +319,25 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy)
 
-        if not client.authenticate(oauth_token=oauth):
-            raise Exception('Failed to Authenticate')
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, oauth)
             return_results(result)
 
         elif demisto.command() == 'url':
+            client.authenticate(oauth)
             return_results(url_reputation_command(client, demisto.args()))
 
         elif demisto.command() == 'ip':
+            client.authenticate(oauth)
             return_results(ip_reputation_command(client, demisto.args()))
 
         elif demisto.command() == 'domain':
+            client.authenticate(oauth)
             return_results(domain_reputation_command(client, demisto.args()))
 
         elif demisto.command() == 'file':
+            client.authenticate(oauth)
             return_results(file_reputation_command(client, demisto.args()))
         else:
             raise NotImplementedError(demisto.command())
