@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5fa1225f-131b-4c9d-832f-338722ac047f
+    taskid: 707ae055-ad09-4095-8efe-52e6f420c6d6
     type: start
     task:
-      id: 5fa1225f-131b-4c9d-832f-338722ac047f
+      id: 707ae055-ad09-4095-8efe-52e6f420c6d6
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 20ad4f89-e670-4b43-80cf-a4888a6b82b2
+    taskid: afac9400-fc75-453d-846f-273e3bbf13cc
     type: condition
     task:
-      id: 20ad4f89-e670-4b43-80cf-a4888a6b82b2
+      id: afac9400-fc75-453d-846f-273e3bbf13cc
       version: -1
       name: Is there an IP address?
       description: Determines if the IP address has been supplied to proceed with cloud enrichment.
@@ -91,10 +91,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f93f45c8-aa94-4fe5-8bef-8ad97a22a46e
+    taskid: 2956f9c9-4e87-450a-8ba6-7f9ebe1b0d52
     type: title
     task:
-      id: f93f45c8-aa94-4fe5-8bef-8ad97a22a46e
+      id: 2956f9c9-4e87-450a-8ba6-7f9ebe1b0d52
       version: -1
       name: ServiceNow Enrichment
       type: title
@@ -122,10 +122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 9ea3d130-fcb0-4c1e-8093-f5e928a35e2c
+    taskid: ccfecc2c-304e-4628-838a-be37eb08e210
     type: condition
     task:
-      id: 9ea3d130-fcb0-4c1e-8093-f5e928a35e2c
+      id: ccfecc2c-304e-4628-838a-be37eb08e210
       version: -1
       name: Was there a result?
       description: Determines if there was a result from the previous command to continue cloud enrichment.
@@ -165,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ea46932c-26bb-4eba-8c75-cb7edb665041
+    taskid: fa0c0f0c-d963-436c-8d42-be65f5678b2d
     type: condition
     task:
-      id: ea46932c-26bb-4eba-8c75-cb7edb665041
+      id: fa0c0f0c-d963-436c-8d42-be65f5678b2d
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -321,10 +321,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4b7c065c-1645-475e-82e9-134466b3311a
+    taskid: e71df879-5af3-4121-8f31-faa72ced0d55
     type: condition
     task:
-      id: 4b7c065c-1645-475e-82e9-134466b3311a
+      id: e71df879-5af3-4121-8f31-faa72ced0d55
       version: -1
       name: Is Cortex ASM enabled and is there a service?
       description: Determines if the "Cortex Attack Surface Management" integration instance is configured and that there is a service to continue with enrichment.
@@ -389,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 87bcf045-5ff4-441a-8fdc-6d2fde11ea2f
+    taskid: e424f88e-a401-416a-83c0-e6c9217e38b8
     type: title
     task:
-      id: 87bcf045-5ff4-441a-8fdc-6d2fde11ea2f
+      id: e424f88e-a401-416a-83c0-e6c9217e38b8
       version: -1
       name: Cloud Enrichment
       type: title
@@ -420,10 +420,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 7a6bce8f-6f25-43d2-8be5-fb23ab7283f9
+    taskid: 90713529-2cdf-4dbf-8f9f-9d359fd604c6
     type: title
     task:
-      id: 7a6bce8f-6f25-43d2-8be5-fb23ab7283f9
+      id: 90713529-2cdf-4dbf-8f9f-9d359fd604c6
       version: -1
       name: Complete
       type: title
@@ -436,7 +436,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 5400
+          "y": 5960
         }
       }
     note: false
@@ -448,15 +448,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: e56c97e9-a3dd-49a6-8ed8-b835f91dbc25
+    taskid: 7117f72b-178d-4f7f-837a-b81dda158360
     type: playbook
     task:
-      id: e56c97e9-a3dd-49a6-8ed8-b835f91dbc25
+      id: 7117f72b-178d-4f7f-837a-b81dda158360
       version: -1
       name: Cortex ASM - ServiceNow CMDB Enrichment
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - ServiceNow CMDB Enrichment
       description: ''
       playbookId: Cortex ASM - ServiceNow CMDB Enrichment
     nexttasks:
@@ -489,10 +490,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: e3e8a728-84c1-4d63-8aad-e60aab99b120
+    taskid: 5145cb80-4830-4c71-8825-e449be9e5cdc
     type: title
     task:
-      id: e3e8a728-84c1-4d63-8aad-e60aab99b120
+      id: 5145cb80-4830-4c71-8825-e449be9e5cdc
       version: -1
       name: Tenable.io Enrichment
       type: title
@@ -520,10 +521,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 84bc054b-4058-4c71-8cd2-aaa734c83402
+    taskid: 1bd916b2-fada-4a0e-82af-498ee53be767
     type: playbook
     task:
-      id: 84bc054b-4058-4c71-8cd2-aaa734c83402
+      id: 1bd916b2-fada-4a0e-82af-498ee53be767
       version: -1
       name: Cortex ASM - Tenable.io Enrichment
       description: Given the IP address this playbook enriches Tenable.io information relevant to ASM alerts.
@@ -563,10 +564,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 2b6ef937-100f-467a-889a-32bb6b83710a
+    taskid: 767d896c-a426-4936-8b95-9d17d79a9a59
     type: regular
     task:
-      id: 2b6ef937-100f-467a-889a-32bb6b83710a
+      id: 767d896c-a426-4936-8b95-9d17d79a9a59
       version: -1
       name: Get external service information
       description: Get service details according to the service ID.
@@ -606,10 +607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: f2a1cdca-419c-433c-88e0-00f5ac631547
+    taskid: 417cd33b-1bae-4810-89d9-9c8bf20da579
     type: regular
     task:
-      id: f2a1cdca-419c-433c-88e0-00f5ac631547
+      id: 417cd33b-1bae-4810-89d9-9c8bf20da579
       version: -1
       name: Set protocol
       description: commands.local.cmd.set.incident
@@ -643,10 +644,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 448b3a3f-64c5-4b77-8550-9ec2ff09aea4
+    taskid: ed952f0e-11c6-4885-882d-6e8ff891c607
     type: regular
     task:
-      id: 448b3a3f-64c5-4b77-8550-9ec2ff09aea4
+      id: ed952f0e-11c6-4885-882d-6e8ff891c607
       version: -1
       name: Infer whether service is used for development (vs. production)
       description: Identify whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
@@ -688,7 +689,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 5050
+          "y": 5610
         }
       }
     note: false
@@ -700,10 +701,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: e22d0ccc-44d5-46d8-8648-190d52268c78
+    taskid: eee181a6-dd94-4a76-8931-14c08bd4f629
     type: playbook
     task:
-      id: e22d0ccc-44d5-46d8-8648-190d52268c78
+      id: eee181a6-dd94-4a76-8931-14c08bd4f629
       version: -1
       name: Cortex ASM - Azure Enrichment
       description: Given the IP address, this playbook enriches Azure information relevant to ASM alerts.
@@ -735,10 +736,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: c9bba7ee-442b-437c-8316-3c599707185b
+    taskid: cfc67225-41c6-4c9d-8da6-049af541962a
     type: title
     task:
-      id: c9bba7ee-442b-437c-8316-3c599707185b
+      id: cfc67225-41c6-4c9d-8da6-049af541962a
       version: -1
       name: Splunk Enrichment
       type: title
@@ -766,10 +767,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: a9d7fb00-b67a-4d74-8915-6e849f6366c2
+    taskid: 77e554f5-6d68-4c68-8b01-a5b02728d97c
     type: playbook
     task:
-      id: a9d7fb00-b67a-4d74-8915-6e849f6366c2
+      id: 77e554f5-6d68-4c68-8b01-a5b02728d97c
       version: -1
       name: Cortex ASM - Splunk Enrichment
       description: 'Given the IP address this playbook enriches information from Splunk results relevant to ASM alerts. '
@@ -809,10 +810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: d3c45152-0535-44fc-8f2d-a28f06a5c471
+    taskid: 26a8fb38-eece-4f85-8772-a5bea1ef5bf3
     type: playbook
     task:
-      id: d3c45152-0535-44fc-8f2d-a28f06a5c471
+      id: 26a8fb38-eece-4f85-8772-a5bea1ef5bf3
       version: -1
       name: Cortex ASM - Rapid7 Enrichment
       description: Given the IP address this playbook enriches Rapid7 InsightVM (Nexpose) information relevant to ASM alerts.
@@ -852,10 +853,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 411105a3-e645-42c5-8637-ecd3784e4593
+    taskid: ff4cb6f6-4a95-480d-8372-274be35cd716
     type: title
     task:
-      id: 411105a3-e645-42c5-8637-ecd3784e4593
+      id: ff4cb6f6-4a95-480d-8372-274be35cd716
       version: -1
       name: Rapid7 Enrichment
       type: title
@@ -883,10 +884,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: bf976633-c7b8-4075-8f63-830a84cab884
+    taskid: e0c3749d-a1a8-48d0-839f-f46bced5908a
     type: title
     task:
-      id: bf976633-c7b8-4075-8f63-830a84cab884
+      id: e0c3749d-a1a8-48d0-839f-f46bced5908a
       version: -1
       name: Qualys Enrichment
       type: title
@@ -914,10 +915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: e7ab981a-519f-41a0-8499-dbeb13ef70c4
+    taskid: d89b0824-c2db-4763-8a5f-6abc308a1bbc
     type: playbook
     task:
-      id: e7ab981a-519f-41a0-8499-dbeb13ef70c4
+      id: d89b0824-c2db-4763-8a5f-6abc308a1bbc
       version: -1
       name: Cortex ASM - Qualys Enrichment
       description: Given the IP address this playbook enriches information from Qualys assets.
@@ -927,7 +928,7 @@ tasks:
       playbookId: Cortex ASM - Qualys Enrichment
     nexttasks:
       '#none#':
-      - "79"
+      - "90"
     scriptarguments:
       QualysIP:
         complex:
@@ -945,7 +946,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3840
+          "y": 3860
         }
       }
     note: false
@@ -957,10 +958,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 43377e97-39a4-4ee3-8f8b-6c39af532a33
+    taskid: 68c813fd-d7ac-42c7-816d-491602271006
     type: playbook
     task:
-      id: 43377e97-39a4-4ee3-8f8b-6c39af532a33
+      id: 68c813fd-d7ac-42c7-816d-491602271006
       version: -1
       name: Cortex ASM - GCP Enrichment
       description: Given the IP address this playbook enriches GCP information relevant to ASM alerts.
@@ -983,17 +984,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 6d0525dd-f109-4a03-8b75-a3d2db9dabe3
+    taskid: 2c9ccf25-d6d7-4190-8c99-1fc8070543b8
     type: playbook
     task:
-      id: 6d0525dd-f109-4a03-8b75-a3d2db9dabe3
+      id: 2c9ccf25-d6d7-4190-8c99-1fc8070543b8
       version: -1
       name: Cortex ASM - Service Ownership
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
       playbookId: Cortex ASM - Service Ownership
+      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1003,7 +1004,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 5220
+          "y": 5780
         }
       }
     note: false
@@ -1015,10 +1016,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: bf6a1631-c357-4ae9-8c37-eec1d5fc7c3d
+    taskid: 30f84900-27fd-424d-8051-a91c4d87af6d
     type: playbook
     task:
-      id: bf6a1631-c357-4ae9-8c37-eec1d5fc7c3d
+      id: 30f84900-27fd-424d-8051-a91c4d87af6d
       version: -1
       name: Cortex ASM - Prisma Cloud Enrichment
       description: Given the IP address this playbook enriches information from Prisma Cloud.
@@ -1028,7 +1029,7 @@ tasks:
       playbookId: Cortex ASM - Prisma Cloud Enrichment
     nexttasks:
       '#none#':
-      - "80"
+      - "91"
     scriptarguments:
       cloudProvider:
         complex:
@@ -1050,7 +1051,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4045
+          "y": 4190
         }
       }
     note: false
@@ -1062,10 +1063,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: c8d382d0-12af-4e41-81dd-aef65e0cde8f
+    taskid: eed7577f-162a-4042-8eaa-c4384adef815
     type: condition
     task:
-      id: c8d382d0-12af-4e41-81dd-aef65e0cde8f
+      id: eed7577f-162a-4042-8eaa-c4384adef815
       version: -1
       name: Are there any emails in tags?
       description: Checks if there is email in the tags.
@@ -1113,7 +1114,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4270
+          "y": 4780
         }
       }
     note: false
@@ -1125,10 +1126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 2e3d5561-b1e2-46f4-8cfb-f3e07a737620
+    taskid: f0de2cb0-8219-45d8-8f48-7b60800debd4
     type: title
     task:
-      id: 2e3d5561-b1e2-46f4-8cfb-f3e07a737620
+      id: f0de2cb0-8219-45d8-8f48-7b60800debd4
       version: -1
       name: Service Owner from Tags
       type: title
@@ -1144,7 +1145,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4490
+          "y": 5050
         }
       }
     note: false
@@ -1156,10 +1157,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 56a5283e-5956-4cb1-8130-5959e0654cf3
+    taskid: 89126ba3-8333-4af3-8f83-616e09d691fd
     type: regular
     task:
-      id: 56a5283e-5956-4cb1-8130-5959e0654cf3
+      id: 89126ba3-8333-4af3-8f83-616e09d691fd
       version: -1
       name: Get current time
       description: |
@@ -1177,7 +1178,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4630
+          "y": 5190
         }
       }
     note: false
@@ -1189,10 +1190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 699057fc-8021-4305-8cf3-2084ff511aa8
+    taskid: 78f5637d-4f48-41ab-841b-895674d3abcb
     type: regular
     task:
-      id: 699057fc-8021-4305-8cf3-2084ff511aa8
+      id: 78f5637d-4f48-41ab-841b-895674d3abcb
       version: -1
       name: Set service owners from Tag grid field
       description: |-
@@ -1259,7 +1260,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 4820
+          "y": 5380
         }
       }
     note: false
@@ -1271,16 +1272,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 2d12b868-962c-49b1-8631-7f2b820a7013
+    taskid: 050b5d22-2fb0-4814-8276-f08c52d61550
     type: playbook
     task:
-      id: 2d12b868-962c-49b1-8631-7f2b820a7013
+      id: 050b5d22-2fb0-4814-8276-f08c52d61550
       version: -1
       name: Cortex ASM - AWS Enrichment
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Given the IP address this playbook enriches AWS information relevant to ASM alerts.'
       playbookId: Cortex ASM - AWS Enrichment
     nexttasks:
       '#none#':
@@ -1289,6 +1290,12 @@ tasks:
       RemoteIP:
         complex:
           root: inputs.RemoteIP
+      ASMRuleID:
+        complex:
+          accessor: asmattacksurfaceruleid
+          root: alert
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1306,10 +1313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 6136b7ed-f6ac-4589-8573-cb1bd021c310
+    taskid: 3461edd7-5812-4d17-8400-790a579d22f9
     type: regular
     task:
-      id: 6136b7ed-f6ac-4589-8573-cb1bd021c310
+      id: 3461edd7-5812-4d17-8400-790a579d22f9
       version: -1
       name: Sleep for 1 hour
       description: Sleep for X seconds
@@ -1343,10 +1350,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 42250c7f-aede-45d9-8d65-f4e408360d40
+    taskid: 38d3fe39-1010-4002-8b80-ac576f6ff0de
     type: condition
     task:
-      id: 42250c7f-aede-45d9-8d65-f4e408360d40
+      id: 38d3fe39-1010-4002-8b80-ac576f6ff0de
       version: -1
       name: Was there a result?
       description: Determines if there was a result from the previous command to continue cloud enrichment.
@@ -1386,10 +1393,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 17bcfe9b-d0b1-4988-83cf-aae0dbc4cd4b
+    taskid: c6dcc51d-3f02-4487-83a9-8792a9ffe086
     type: regular
     task:
-      id: 17bcfe9b-d0b1-4988-83cf-aae0dbc4cd4b
+      id: c6dcc51d-3f02-4487-83a9-8792a9ffe086
       version: -1
       name: Get external service information
       description: Get service details according to the service ID.
@@ -1429,17 +1436,17 @@ tasks:
     isautoswitchedtoquietmode: false
   '88':
     id: '88'
-    taskid: e12eb211-9e8b-4829-8eec-2ee5667361ca
+    taskid: 125cd39f-8428-4912-814d-24dccb282501
     type: playbook
     task:
-      id: e12eb211-9e8b-4829-8eec-2ee5667361ca
+      id: 125cd39f-8428-4912-814d-24dccb282501
       version: -1
       name: Cortex ASM - On Prem Enrichment
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
       playbookId: Cortex ASM - On Prem Enrichment
+      description: ''
     nexttasks:
       '#none#':
       - '3'
@@ -1472,17 +1479,17 @@ tasks:
     isautoswitchedtoquietmode: false
   '89':
     id: '89'
-    taskid: 34eeacf7-2293-44bb-8ac3-557d042a5f41
+    taskid: e59153b9-d279-4431-85cd-6995de62fd4c
     type: playbook
     task:
-      id: 34eeacf7-2293-44bb-8ac3-557d042a5f41
+      id: e59153b9-d279-4431-85cd-6995de62fd4c
       version: -1
       name: Cortex ASM - ServiceNow ITSM Enrichment
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
       playbookId: Cortex ASM - ServiceNow ITSM Enrichment
+      description: ''
     nexttasks:
       '#none#':
       - '62'
@@ -1545,6 +1552,108 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "90":
+    continueonerrortype: ""
+    id: "90"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "79"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cc19c840-2c26-4065-851e-67a9ef8b327c
+      iscommand: false
+      name: Prisma Cloud Enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: cc19c840-2c26-4065-851e-67a9ef8b327c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 4030
+        }
+      }
+  "91":
+    continueonerrortype: ""
+    id: "91"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "93"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 160f232f-015d-41f0-8607-f5907e0ac530
+      iscommand: false
+      name: Active Directory Enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: 160f232f-015d-41f0-8607-f5907e0ac530
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 4380
+        }
+      }
+  "93":
+    continueonerrortype: ""
+    id: "93"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "80"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      serviceowner:
+        simple: ${alert.asmserviceowner.email}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook to enriches Service owner in Azure directory.
+      id: 3a35a0de-0312-4243-8dd6-31f69c85dc65
+      iscommand: false
+      name: Cortex ASM - Active Directory Enrichment
+      playbookId: Cortex ASM - Active Directory Enrichment
+      type: playbook
+      version: -1
+    taskid: 3a35a0de-0312-4243-8dd6-31f69c85dc65
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 4550
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -1557,7 +1666,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5595,
+        "height": 6155,
         "width": 1620,
         "x": 110,
         "y": -130
@@ -1573,6 +1682,11 @@ inputs:
   required: false
   description: IP address of service
   playbookInputQuery:
+- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+  key: AWSAssumeRoleName
+  playbookInputQuery:
+  required: false
+  value: {}
 outputs:
 - contextPath: ASM.ExternalService.externally_detected_providers
   description: Providers of the external service.

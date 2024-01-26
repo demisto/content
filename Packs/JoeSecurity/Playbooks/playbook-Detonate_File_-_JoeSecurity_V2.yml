@@ -291,8 +291,8 @@ tasks:
     scriptarguments:
       webid:
         complex:
-          root: Joe.Submission
-          accessor: submission_id
+          root: Joe.Analysis
+          accessor: webid
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -372,7 +372,16 @@ tasks:
       - - operator: match
           left:
             value:
-              simple: File.Type
+              simple: inputs.File.Type
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:EXE|DLL|PIF|CMD|BAT|COM|SCR|CPL|PDF|DOCX|DOC|DOCM|XLSX|XLS|XLSM|XLSB|PPT|PPX|PPTM|HWP|JTD|RFT|XPI|CRX|EML|MSG|CHM|JS|JSE|VBS|VBE|LNK|JAR|PS1|ZIP|7Z|RAR|ZLIB|ASPX|APS|PNG|JPEG|GIF|HTML|HTM|XHTML|SHTML|WORD)\b
+          ignorecase: true
+        - operator: match
+          left:
+            value:
+              simple: inputs.File.Extension
             iscontext: true
           right:
             value:
@@ -419,9 +428,9 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "1500"
+    simple: "900"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  description: The default duration after which to stop polling and to resume the playbook (in seconds).
   playbookInputQuery:
 - key: Systems
   value: {}

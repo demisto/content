@@ -51,6 +51,11 @@ configuration:
   name: fetch_time
   type: 0
   required: false
+- defaultvalue: '10000'
+  display: Fetch Limit
+  name: fetch_limit
+  type: 0
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -63,7 +68,6 @@ configuration:
   type: 18
   required: false
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
   options:
@@ -73,10 +77,10 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  display: Traffic Light Protocol Color
+  required: true
+  defaultvalue: F - Reliability cannot be judged
+- display: 'Traffic Light Protocol Color'
   name: tlp_color
   options:
   - RED
@@ -85,26 +89,27 @@ configuration:
   - WHITE
   type: 15
   required: false
-- defaultvalue: indicatorType
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- defaultvalue: 'indicatorType'
   display: ''
   name: feedExpirationPolicy
+  type: 17
+  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  type: 17
-  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
   required: false
-- defaultvalue: '240'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   required: false
+  defaultvalue: '1'
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
@@ -130,20 +135,20 @@ configuration:
   name: default_type
   type: 0
   required: false
-- additionalinfo: A comma-separated list of indexes. If empty, searches all indexes.
-  display: Index from Which To Fetch Indicators
+- display: Index from Which To Fetch Indicators
   name: fetch_index
   type: 0
   required: false
-- defaultvalue: Simple-Date
-  display: Time Field Type
+  additionalinfo: A comma-separated list of indexes. If empty, searches all indexes.
+- display: Time Field Type
   name: time_method
+  type: 15
+  required: false
+  defaultvalue: Simple-Date
   options:
   - Simple-Date
   - Timestamp-Seconds
   - Timestamp-Milliseconds
-  type: 15
-  required: false
 - additionalinfo: Used for sorting and limiting data. If empty, results are not sorted.
   display: Index Time Field
   name: time_field
@@ -167,7 +172,7 @@ script:
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
     name: es-get-indicators
-  dockerimage: demisto/elasticsearch:1.0.0.77444
+  dockerimage: demisto/elasticsearch:1.0.0.83352
   feed: true
   runonce: false
   script: '-'

@@ -12,8 +12,7 @@ from demisto_client.demisto_api.rest import ApiException
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
 
-CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
+CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '1061')
 
 
 def load_json_file(directory: str, file_name: str):

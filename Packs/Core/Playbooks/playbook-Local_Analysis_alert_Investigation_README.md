@@ -41,14 +41,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Containment Plan
 * Handle False Positive Alerts
-* Wildfire Detonate and Analyze File
 * Ticket Management - Generic
+* Wildfire Detonate and Analyze File
+* Enrichment for Verdict
 * Endpoint Investigation Plan
 * Recovery Plan
-* Containment Plan
-* Enrichment for Verdict
-* Eradication Plan
 
 ### Integrations
 
@@ -61,12 +60,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* core-retrieve-files
-* internal-wildfire-get-report
 * core-retrieve-file-details
 * core-report-incorrect-wildfire
 * setParentIncidentFields
 * closeInvestigation
+* core-report-incorrect-wildfire
+* internal-wildfire-get-report
+* setParentIncidentFields
+* core-retrieve-files
 
 ## Playbook Inputs
 
@@ -85,7 +86,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SHA256 | The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256. | alert | Optional |
 | Path | The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path. | alert | Optional |
 | Query | The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file. | alert | Optional |
-| ShouldOpenTicket | Whether to open a ticket automatically in a ticketing system. \(True/False\). | True | Optional |
+| ShouldOpenTicket | Whether to open a ticket automatically in a ticketing system. \(True/False\). | False | Optional |
 | serviceNowShortDescription | A short description of the ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
 | serviceNowImpact | The impact for the new ticket. Leave empty for ServiceNow default impact. |  | Optional |
 | serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |

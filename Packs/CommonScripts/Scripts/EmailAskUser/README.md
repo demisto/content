@@ -19,6 +19,7 @@ Add the EmailAskUser script and set as follows:
 * Option 2 – The second option to choose from.
 * Subject -  The email subject.
 * Task – The ID of the task in the playbook, to trigger when a reply is received. The task ID is found when you look at the task and as represented as `#<number>` on the task. The task ID is located in the lower-left corner of the task. You can also use a task *tag* (see Example below).
+* attachCIDs - A comma-separated list of CIDs to embed attachments within the actual email.
 
 ### Step 2 - A conditional task
 Add a conditional task to receive the reply from the email. This task is triggered when a reply from the email is received according to its task ID that is set as the Task parameter in the EmailAskUser script (see above).

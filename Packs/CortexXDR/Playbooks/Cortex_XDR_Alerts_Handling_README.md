@@ -1,13 +1,4 @@
-This playbook is used to loop over every alert in a Cortex XDR incident. 
-Supported alert categories:
-- Malware
-- Port Scan
-- Cloud Cryptojacking
-- Cloud Token Theft
-- RDP Brute-Force
-- First SSO Access
-- Cloud IAM User Access Investigation.
-- Remote PsExec with LOLBIN command execution alert.
+Deprecated. Use Cortex XDR - Alerts Handling v2 instead. When using the v2 version, enabling globally shared context for that playbook is required because outputs are no longer declared.
 
 ## Dependencies
 
@@ -15,16 +6,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - First SSO Access
-* Cortex XDR - Malware Investigation
-* Cortex XDR - Port Scan - Adjusted
 * Cortex XDR Remote PsExec with LOLBIN command execution alert
-* Cortex XDR - Cloud IAM User Access Investigation
-* GenericPolling
-* Cortex XDR - Cloud Data Exfiltration Response
-* Cortex XDR - XCloud Cryptojacking
-* Cortex XDR - XCloud Token Theft Response
 * Cortex XDR - Possible External RDP Brute-Force
+* Cortex XDR - Malware Investigation
+* Cortex XDR - Cloud Data Exfiltration Response
+* Cortex XDR - Port Scan - Adjusted
+* Cortex XDR - First SSO Access
+* Cortex XDR - XCloud Token Theft Response
+* GenericPolling
+* Cortex XDR - Cloud IAM User Access Investigation
+* Cortex XDR - XCloud Cryptojacking
 
 ### Integrations
 
@@ -46,6 +37,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | incident_id | Incident ID. | PaloAltoNetworksXDR.Incident.incident_id | Optional |
 | alert_id | Alert ID. | PaloAltoNetworksXDR.Incident.alerts.alert_id | Optional |
+| InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
 

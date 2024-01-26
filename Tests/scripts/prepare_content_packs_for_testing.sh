@@ -4,7 +4,7 @@
 set -e
 
 CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-CI_BUILD_ID=${CI_BUILD_ID:-00000}
+CI_JOB_ID=${CI_JOB_ID:-00000}
 PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
 EXTRACT_FOLDER=$(mktemp -d)
 
@@ -93,7 +93,7 @@ if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_BUCKET_UPLOAD}" ]; then
   echo "Finished updating content packs successfully."
 else
   # upload-flow build - production / force / specific packs
-  GCS_PRIVATE_BUCKET="${TEST_XDR_PREFIX}marketplace-dist-private"
+  GCS_PRIVATE_BUCKET="marketplace-dist-private"
   if [ -n "${PACKS_TO_UPLOAD}" ] && [ $FORCE_BUCKET_UPLOAD == "false" ]; then
     # In case there are given pack ids to upload and it is not a force
     echo "Upload the following specific packs: ${PACKS_TO_UPLOAD}"

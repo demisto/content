@@ -3,7 +3,17 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR Remote PsExec with LOLBIN command execution alert
-description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
+description: |
+  The "Remote PsExec-like LOLBIN Command Execution" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. 
+  The playbook aims to efficiently:
+    - Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).
+    - Enrich any entities and indicators from the alert and find any related campaigns.
+    - Perform command analysis to provide insights and a verdict for the executed command.
+    - Perform further endpoint investigation using Cortex XDR.
+    - Checks for any malicious verdicts found to raise the severity of the alert.
+    - Perform automatic/manual remediation response by blocking any malicious indicators found.
+  The playbook is designed to run as a sub-playbook in "Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling".
+  It depends on the data from the parent playbooks and cannot be used as a standalone version.
 starttaskid: "0"
 tasks:
   "0":
@@ -50,7 +60,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "40"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -64,110 +74,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 7f23cbc7-1205-479f-8e37-fad0c534c899
-    type: playbook
-    task:
-      id: 7f23cbc7-1205-479f-8e37-fad0c534c899
-      version: -1
-      name: Entity Enrichment - Generic v4
-      description: Enrich entities using one or more integrations.
-      playbookName: Entity Enrichment - Generic v4
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      CVE:
-        complex:
-          root: CVE
-          accessor: ID
-      Domain:
-        complex:
-          root: Domain
-          accessor: Name
-          transformers:
-          - operator: uniq
-      Email:
-        complex:
-          root: Account
-          accessor: Email.Address
-          transformers:
-          - operator: uniq
-      Hostname:
-        complex:
-          root: Endpoint
-          accessor: Hostname
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          root: IP
-          accessor: Address
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
-      RasterizeURL:
-        simple: "True"
-      ResolveIP:
-        simple: "False"
-      SHA1:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-          transformers:
-          - operator: uniq
-      UseReputationCommand:
-        simple: "False"
-      Username:
-        complex:
-          root: Account
-          accessor: Username
-          transformers:
-          - operator: uniq
-      VerifyURL:
-        simple: "False"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -291,7 +197,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+      - "41"
     scriptarguments:
       Commandline:
         complex:
@@ -902,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 62e7c905-d334-4ea2-8576-17236fcc5069
+    taskid: ad3a79b5-0ec4-4f46-88d4-1ad86271a10c
     type: regular
     task:
-      id: 62e7c905-d334-4ea2-8576-17236fcc5069
+      id: ad3a79b5-0ec4-4f46-88d4-1ad86271a10c
       version: -1
       name: Set Command-Line Verdict to Layout
       description: commands.local.cmd.set.incident
@@ -930,7 +836,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 870
         }
       }
     note: false
@@ -1039,6 +945,155 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 67b37cd8-b7af-4a96-8818-c1631bb52882
+    type: playbook
+    task:
+      id: 67b37cd8-b7af-4a96-8818-c1631bb52882
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 5625d789-4fb5-4cb9-8b80-29e14d551e34
+    type: condition
+    task:
+      id: 5625d789-4fb5-4cb9-8b80-29e14d551e34
+      version: -1
+      name: Has command line verdict?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: commandlineverdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1091,12 +1146,6 @@ inputs:
     simple: "false"
   required: false
   description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
-  playbookInputQuery:
-- key: LOLBASFeedLimit
-  value:
-    simple: "100"
-  required: false
-  description: LOLBAS Feed results limit.
   playbookInputQuery:
 - key: EndpointIDs
   value:

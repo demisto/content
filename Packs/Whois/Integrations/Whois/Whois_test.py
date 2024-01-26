@@ -1,28 +1,32 @@
 import datetime
-import pickle
-import Whois
-import demistomock as demisto
+import json
 import pathlib
-import pytest
+import pickle
+import socket
+import subprocess
+import sys
+import tempfile
+import time
 from typing import Any
 
-from CommonServerPython import DBotScoreReliability, EntryType, ExecutionMetrics, ErrorTypes
+import ipwhois
+import pytest
+import Whois
+from pytest_mock import MockerFixture
 from Whois import (
-    ipwhois_exception_mapping,
-    whois_exception_mapping,
-    increment_metric,
     WhoisInvalidDomain,
-    whois_command,
     domain_command,
     get_domain_from_query,
+    get_root_server,
+    increment_metric,
     ip_command,
-    get_root_server
+    ipwhois_exception_mapping,
+    whois_command,
+    whois_exception_mapping,
 )
-import ipwhois
-import socket
-from pytest_mock import MockerFixture
 
-import json
+import demistomock as demisto
+from CommonServerPython import DBotScoreReliability, EntryType, ErrorTypes, ExecutionMetrics
 
 INTEGRATION_NAME = 'Whois'
 
@@ -68,6 +72,16 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5://localhost:1180'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'results')
+
+    with capfd.disabled():
+        with pytest.raises(SystemExit) as err:
+            Whois.main()
+        assert err.type == SystemExit
+        assert demisto.results.call_count == 1  # type: ignore
+        # call_args is tuple (args list, kwargs). we only need the first one
+        results = demisto.results.call_args[0]  # type: ignore
+        assert len(results) == 1
+        assert "Exception thrown calling command" in results[0]['Contents']
 
     with capfd.disabled():
         with pytest.raises(SystemExit) as err:
@@ -372,6 +386,7 @@ def test_get_raw_response_with_non_recursive_data_query(mocker: MockerFixture):
           queried, without the response of the refer server.
     """
     import socket
+
     from Whois import get_whois_raw
 
     def connect_mocker(curr_server):

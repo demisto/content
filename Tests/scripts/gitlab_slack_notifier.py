@@ -24,6 +24,8 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit, \
+    create_shame_message, slack_link
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -37,8 +39,9 @@ ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE = ARTIFACTS_FOLDER_XSOAR / "server_type_XSOAR
 ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE = ARTIFACTS_FOLDER_XSOAR / "server_type_XSOAR SAAS"
 ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE = ARTIFACTS_FOLDER_XPANSE / "server_type_XPANSE"
 ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE = ARTIFACTS_FOLDER_XSIAM / "server_type_XSIAM"
-GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
-GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
+GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
+GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 1061
+GITLAB_SSL_VERIFY = bool(strtobool(os.getenv('GITLAB_SSL_VERIFY', 'true')))
 CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
@@ -48,10 +51,18 @@ CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
 CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
+LOOK_BACK_HOURS = 48
+UPLOAD_BUCKETS = [
+    (ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE, "XSOAR", True),
+    (ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE, "XSOAR SAAS", True),
+    (ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE, "XSIAM", False),
+    (ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
+]
 
 
 def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
+    parser.add_argument('-n', '--name-mapping_path', help='Path to name mapping file.', required=True)
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
     parser.add_argument('-p', '--pipeline_id', help='The pipeline id to check the status of', required=True)
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
@@ -173,10 +184,7 @@ def failed_test_data_to_slack_link(failed_test: str, jira_ticket_data: dict[str,
         return slack_link(jira_ticket_data['url'], f"{failed_test} [{jira_ticket_data['key']}]")
     return failed_test
 
-
-def slack_link(url: str, text: str) -> str:
-    return f"<{url}|{text}>"
-
+    failed_test_to_jira_mapping = read_test_modeling_rule_to_jira_mapping(artifact_folder)
 
 def test_playbooks_results_to_slack_msg(instance_role: str,
                                         succeeded_tests: set[str],
@@ -187,6 +195,7 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
                                         test_playbook_tickets_converted: bool,
                                         title: str,
                                         pipeline_url: str) -> tuple[list[dict[str, Any]], bool]:
+
     if failed_tests:
         title = (f"{title} ({instance_role}) - Test Playbooks - Passed:{len(succeeded_tests)}, Failed:{len(failed_tests)}, "
                  f"Skipped - {len(skipped_tests)}, Skipped Integrations - {len(skipped_integrations)}")
@@ -251,17 +260,18 @@ def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str)
     test_playbook_slack_msg = []
     for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
         succeeded_tests, failed_tests, skipped_tests, skipped_integrations = get_playbook_tests_data(instance_directory)
-        instance_slack_msg, instance_has_failed_tests = test_playbooks_results_to_slack_msg(instance_role,
-                                                                                            succeeded_tests,
-                                                                                            failed_tests,
-                                                                                            skipped_integrations,
-                                                                                            skipped_tests,
-                                                                                            test_playbook_to_jira_mapping,
-                                                                                            test_playbook_tickets_converted,
-                                                                                            title,
-                                                                                            pipeline_url)
-        test_playbook_slack_msg += instance_slack_msg
-        has_failed_tests |= instance_has_failed_tests
+        if succeeded_tests or failed_tests:  # Handling case where no playbooks had run
+            instance_slack_msg, instance_has_failed_tests = test_playbooks_results_to_slack_msg(instance_role,
+                                                                                                succeeded_tests,
+                                                                                                failed_tests,
+                                                                                                skipped_integrations,
+                                                                                                skipped_tests,
+                                                                                                test_playbook_to_jira_mapping,
+                                                                                                test_playbook_tickets_converted,
+                                                                                                title,
+                                                                                                pipeline_url)
+            test_playbook_slack_msg += instance_slack_msg
+            has_failed_tests |= instance_has_failed_tests
 
     return test_playbook_slack_msg, has_failed_tests
 
@@ -280,8 +290,9 @@ def unit_tests_results() -> list[dict[str, Any]]:
 
 def bucket_upload_results(bucket_artifact_folder: Path,
                           marketplace_name: str,
-                          should_include_private_packs: bool) -> list[dict[str, Any]]:
-    steps_fields = []
+                          should_include_private_packs: bool) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    slack_msg_append = []
+    threaded_messages = []
     pack_results_path = bucket_artifact_folder / BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
@@ -289,34 +300,68 @@ def bucket_upload_results(bucket_artifact_folder: Path,
         pack_results_path.as_posix(), BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
     )
     if successful_packs:
-        steps_fields += [{
-            'title': f'Successful {marketplace_name} Packs:',
-            'value': ', '.join(sorted({*successful_packs}, key=lambda s: s.lower())),
-            'short': False
-        }]
-
-    if failed_packs:
-        steps_fields += [{
-            'title': f'Failed {marketplace_name} Packs:',
-            'value': ', '.join(sorted({*failed_packs}, key=lambda s: s.lower())),
-            'short': False
-        }]
+        slack_msg_append.append({
+            'fallback': f'Successfully uploaded {len(successful_packs)} Pack(s) to {marketplace_name}',
+            'title': f'Successfully uploaded {len(successful_packs)} Pack(s) to {marketplace_name}',
+            'color': 'good',
+        })
+        threaded_messages.append({
+            'fallback': f'Successfully uploaded {marketplace_name} Pack(s): '
+                        f'{", ".join(sorted({*successful_packs},key=lambda s: s.lower()))} to {marketplace_name}',
+            'title': f'Successfully uploaded {len(successful_packs)} Pack(s) to {marketplace_name}:',
+            'color': 'good',
+            'fields': [{
+                'title': '',
+                'value': ', '.join(sorted({*successful_packs}, key=lambda s: s.lower())),
+                'short': False
+            }]
+        })
 
     if successful_private_packs and should_include_private_packs:
         # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
-        steps_fields += [{
-            'title': 'Successful Private Packs:',
-            'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
-            'short': False
-        }]
+        slack_msg_append.append({
+            'fallback': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private Packs',
+            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private Packs',
+            'color': 'good',
+        })
+        threaded_messages.append({
+            'fallback': f'Successfully uploaded to {marketplace_name} Private Pack(s): '
+                        f'{", ".join(sorted({*successful_private_packs}, key=lambda s: s.lower()))}',
+            'title': f'Successfully uploaded {len(successful_private_packs)} Pack(s) to {marketplace_name} Private packs:',
+            'color': 'good',
+            'fields': [{
+                'title': '',
+                'value': ', '.join(sorted({*successful_private_packs}, key=lambda s: s.lower())),
+                'short': False
+            }]
+        })
 
-    return steps_fields
+    if failed_packs:
+        slack_msg_append.append({
+            'fallback': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}',
+            'title': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}',
+            'color': 'danger',
+        })
+        threaded_messages.append({
+            'fallback': f'Failed to upload {marketplace_name} Pack(s): '
+                        f'{", ".join(sorted({*failed_packs}, key=lambda s: s.lower()))}',
+            'title': f'Failed to upload {len(failed_packs)} Pack(s) to {marketplace_name}:',
+            'color': 'danger',
+            'fields': [{
+                'title': '',
+                'value': ', '.join(sorted({*failed_packs}, key=lambda s: s.lower())),
+                'short': False
+            }]
+        })
+
+    return slack_msg_append, threaded_messages
 
 
 def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
-                        pull_request: GithubPullRequest | None) -> list[dict[str, Any]]:
+                        pull_request: GithubPullRequest | None,
+                        shame_message: tuple[str, str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     # report failing jobs
     content_fields = []
 
@@ -347,13 +392,14 @@ def construct_slack_msg(triggering_workflow: str,
         content_fields += unit_tests_results()
 
     # report pack updates
-    if 'upload' in triggering_workflow_lower:
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE, "XSOAR", True)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE, "XSOAR SAAS", True)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE, "XSIAM", False)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
-
+    threaded_messages = []
     slack_msg_append = []
+    if 'upload' in triggering_workflow_lower:
+        for bucket in UPLOAD_BUCKETS:
+            slack_msg, threaded_message = bucket_upload_results(*bucket)
+            threaded_messages.extend(threaded_message)
+            slack_msg_append.extend(slack_msg)
+
     has_failed_tests = False
     # report failing test-playbooks and test modeling rules.
     if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR, CONTENT_MERGE}:
@@ -394,14 +440,20 @@ def construct_slack_msg(triggering_workflow: str,
         # No color is needed in case of success, as it's controlled by the color of the test failures' indicator.
 
     title += title_append
-    title += f' - @{CI_SERVER_HOST}' if CI_SERVER_HOST else ''
-    return [{
+    slack_msg_start = []
+    if shame_message:
+        shame_title, shame_value, shame_color = shame_message
+        slack_msg_start.append({
+            "title": f"{shame_title}\n{shame_value}",
+            "color": shame_color
+        })
+    return slack_msg_start + [{
         'fallback': title,
         'color': color,
         'title': title,
         'title_link': pipeline_url,
         'fields': content_fields
-    }] + slack_msg_append
+    }] + slack_msg_append, threaded_messages
 
 
 def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any]]:
@@ -470,11 +522,12 @@ def main():
     options = options_handler()
     triggering_workflow = options.triggering_workflow  # ci workflow type that is triggering the slack notifier
     pipeline_id = options.pipeline_id
+    commit_sha = options.current_sha
     project_id = options.gitlab_project_id
     server_url = options.url
     ci_token = options.ci_token
     computed_slack_channel = options.slack_channel
-    gitlab_client = Gitlab(server_url, private_token=ci_token)
+    gitlab_client = Gitlab(server_url, private_token=ci_token, ssl_verify=GITLAB_SSL_VERIFY)
     slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
 
@@ -508,7 +561,35 @@ def main():
         logging.info("Not a pull request build, skipping PR comment")
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
-    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request)
+    shame_message = None
+    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+        # We check if the previous build failed and this one passed, or wise versa.
+        list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
+                                                                       project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
+        current_commit = get_commit_by_sha(commit_sha, list_of_commits)
+        if current_commit:
+            current_commit_index = list_of_commits.index(current_commit)
+            # If the current commit is the last commit in the list, there is no previous commit,
+            # since commits are in ascending order
+            if current_commit_index != len(list_of_commits) - 1:
+                previous_commit = list_of_commits[current_commit_index + 1]
+                current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
+                previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
+                if current_pipeline and previous_pipeline:
+                    pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
+                    logging.info(
+                        f"Checking pipeline {current_pipeline}, the commit is {current_commit} "
+                        f"and the pipeline change status is: {pipeline_changed_status}"
+                    )
+                    if pipeline_changed_status is not None:
+                        shame_message = create_shame_message(
+                            current_commit, pipeline_changed_status, options.name_mapping_path
+                        )
+                        computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+        else:
+            computed_slack_channel = "dmst-build-test"
+    slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
+                                                            shame_message)
 
     with contextlib.suppress(Exception):
         output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
@@ -519,8 +600,18 @@ def main():
 
     try:
         response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
+            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
         )
+
+        if threaded_messages:
+            data: dict = response.data  # type: ignore[assignment]
+            thread_ts: str = data['ts']
+            for slack_msg in threaded_messages:
+                slack_client.chat_postMessage(
+                    channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
+                    thread_ts=thread_ts
+                )
+
         link = build_link_to_message(response)
         logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
     except Exception:
