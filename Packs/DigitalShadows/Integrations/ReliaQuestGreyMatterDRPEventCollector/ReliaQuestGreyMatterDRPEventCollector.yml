@@ -50,7 +50,7 @@ script:
       required: false
       defaultValue: '200'
     - name: event_num_after
-      description: 'Fetch events that were created after a specific event-number'
+      description: 'Fetch events that were created after a specific event-number.'
       required: false
     description: Manual command to fetch reila-quest events and display them.
     name: relia-quest-get-events
@@ -66,5 +66,7 @@ script:
   isfetchevents: true
 fromversion: 8.0.0
 supportlevelheader: xsoar
+marketplaces:
+  - marketplacev2
 tests:
 - No tests (auto formatted)
