@@ -395,7 +395,7 @@ def get_events_command(client: ReilaQuestClient, args: dict) -> CommandResults:
             raise ValueError(f'Invalid value for end_time={end_time_datetime}')
         end_time = end_time_datetime.strftime(DATE_FORMAT)
 
-    events = []
+    events: list[dict] = []
 
     for current_events in client.list_triage_item_events(
         event_created_after=start_time,
