@@ -1,0 +1,1067 @@
+id: 0dd77ed3-4e8e-40ac-8f38-c2c144738b9d
+version: 11
+vcShouldKeepItemLegacyProdMachine: false
+name: XDR IOCs - Push new IOCs to XDR (subplaybook)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d606315d-fa6f-409d-8015-85cb752ae0e4
+    type: start
+    task:
+      id: d606315d-fa6f-409d-8015-85cb752ae0e4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: fe5fc582-8f59-4c48-8938-e14c53cea47b
+    type: regular
+    task:
+      id: fe5fc582-8f59-4c48-8938-e14c53cea47b
+      version: -1
+      name: Set Done to True
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Done
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 38b49b6e-546b-46da-83d8-e8118c35a532
+    type: regular
+    task:
+      id: 38b49b6e-546b-46da-83d8-e8118c35a532
+      version: -1
+      name: xdr-iocs-push
+      description: Push modified IOCs to Cortex XDR.
+      script: '|||xdr-iocs-push'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      execution-timeout:
+        simple: "800"
+      indicator:
+        complex:
+          root: ${vetted_iocs}
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 27eeaa77-e8c7-43e9-899a-a1be36f8cf6b
+    type: regular
+    task:
+      id: 27eeaa77-e8c7-43e9-899a-a1be36f8cf6b
+      version: -1
+      name: Add xdr_pushed tag
+      description: Appends values to the specified indicator field. Supported field
+        types are tags and multi-select.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: xdr_pushed
+      indicatorsValues:
+        simple: ${vetted_iocs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 1b94f42a-5810-41f7-8460-486dc4efb384
+    type: regular
+    task:
+      id: 1b94f42a-5810-41f7-8460-486dc4efb384
+      version: -1
+      name: Get Indicators
+      description: Gets a list of indicator objects and the associated indicator outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      scriptName: GetIndicatorsByQuery
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        simple: ${inputs.batch_size}
+      populateFields:
+        simple: value,sha256,md5,indicator_type
+      query:
+        complex:
+          root: inputs.query
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 693eb4b1-aa8c-4b66-8b69-efc6b7a5916d
+    type: regular
+    task:
+      id: 693eb4b1-aa8c-4b66-8b69-efc6b7a5916d
+      version: -1
+      name: Read File
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 2cf845f6-d4f5-4fe7-85c0-f70e8dabb903
+    type: regular
+    task:
+      id: 2cf845f6-d4f5-4fe7-85c0-f70e8dabb903
+      version: -1
+      name: Set IOCs in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: iocs
+      value:
+        complex:
+          root: FileData
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1b14eba3-3ee5-4e65-8d2d-940e4f260688
+    type: condition
+    task:
+      id: 1b14eba3-3ee5-4e65-8d2d-940e4f260688
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "21"
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${iocs}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 538cc0c6-77d2-4d30-8621-fc763ae61f61
+    type: regular
+    task:
+      id: 538cc0c6-77d2-4d30-8621-fc763ae61f61
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Done
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: d78af1c4-5a9d-4aa1-8cf2-1b3e77367dc9
+    type: title
+    task:
+      id: d78af1c4-5a9d-4aa1-8cf2-1b3e77367dc9
+      version: -1
+      name: Hashes
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+      - "32"
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -195,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 1a09930d-33d5-48c8-847c-d6ca19f7f2f5
+    type: title
+    task:
+      id: 1a09930d-33d5-48c8-847c-d6ca19f7f2f5
+      version: -1
+      name: IPs and Domains
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 843b53d5-5b6c-4ded-80dd-38f5591e85fe
+    type: regular
+    task:
+      id: 843b53d5-5b6c-4ded-80dd-38f5591e85fe
+      version: -1
+      name: Set IPs and Domains in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: vetted_iocs
+      value:
+        complex:
+          root: iocs
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: iocs.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 03e85713-2b38-499c-8395-c37ac5c6b880
+    type: condition
+    task:
+      id: 03e85713-2b38-499c-8395-c37ac5c6b880
+      version: -1
+      name: Has domains or IPs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: iocs.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+        - operator: isEqualString
+          left:
+            value:
+              simple: iocs.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 479ece91-95fc-4d21-87de-927563e933df
+    type: title
+    task:
+      id: 479ece91-95fc-4d21-87de-927563e933df
+      version: -1
+      name: No Domains or IPs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 274c8647-1336-47a2-8884-48a4f82ff8ef
+    type: title
+    task:
+      id: 274c8647-1336-47a2-8884-48a4f82ff8ef
+      version: -1
+      name: Iteration finished
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 1baf8fbf-ea79-49ab-86f5-d4edecee7f72
+    type: title
+    task:
+      id: 1baf8fbf-ea79-49ab-86f5-d4edecee7f72
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 2c83653d-4c2e-4029-8d35-4a09caaa5d3c
+    type: title
+    task:
+      id: 2c83653d-4c2e-4029-8d35-4a09caaa5d3c
+      version: -1
+      name: Domains and IPs done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: ee889588-824f-4134-8135-0c162906362e
+    type: regular
+    task:
+      id: ee889588-824f-4134-8135-0c162906362e
+      version: -1
+      name: Set SHA256 in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: vetted_iocs
+      value:
+        complex:
+          root: iocs
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: iocs.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: sha256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 1724e463-9100-44af-8935-54916cb5abae
+    type: condition
+    task:
+      id: 1724e463-9100-44af-8935-54916cb5abae
+      version: -1
+      name: Has SHA256
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: iocs.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: File
+      - - operator: isExists
+          left:
+            value:
+              simple: iocs.sha256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 716b6074-3a80-480d-86e9-49a641c8621c
+    type: regular
+    task:
+      id: 716b6074-3a80-480d-86e9-49a641c8621c
+      version: -1
+      name: Set MD5 in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: vetted_iocs
+      value:
+        complex:
+          root: iocs
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: iocs.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: md5
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 1e20a578-a121-4183-8f78-a7372de60f36
+    type: condition
+    task:
+      id: 1e20a578-a121-4183-8f78-a7372de60f36
+      version: -1
+      name: Has MD5
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: iocs.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: File
+      - - operator: isExists
+          left:
+            value:
+              simple: iocs.md5
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 7f32e2b7-7e95-43e2-8e43-93806ae43e36
+    type: title
+    task:
+      id: 7f32e2b7-7e95-43e2-8e43-93806ae43e36
+      version: -1
+      name: Hashes Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -195,
+          "y": 1785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 3daaaaf1-86cc-4854-8eed-794651099933
+    type: title
+    task:
+      id: 3daaaaf1-86cc-4854-8eed-794651099933
+      version: -1
+      name: Change to only MD5 if no sha256?
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 97f11ceb-98e4-4d18-8818-2f5e9101e49d
+    type: condition
+    task:
+      id: 97f11ceb-98e4-4d18-8818-2f5e9101e49d
+      version: -1
+      name: Does not have valid SHA256 or MD5 context entry
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: iocs.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: File
+      - - operator: isNotExists
+          left:
+            value:
+              simple: iocs.sha256
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: iocs.md5
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -910,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 273ac321-cae1-493d-8344-9f1d789f5593
+    type: regular
+    task:
+      id: 273ac321-cae1-493d-8344-9f1d789f5593
+      version: -1
+      name: Add xdr_not_processed tag
+      description: Appends values to the specified indicator field. Supported field
+        types are tags and multi-select.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: xdr_not_processed
+      indicatorsValues:
+        simple: ${not_processed_iocs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -910,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 76161f3e-aa5d-44c8-888b-da95cb39b6b1
+    type: regular
+    task:
+      id: 76161f3e-aa5d-44c8-888b-da95cb39b6b1
+      version: -1
+      name: Set SHA256 in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: not_processed_iocs
+      value:
+        complex:
+          root: iocs
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: iocs.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: iocs.md5
+                iscontext: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: iocs.sha256
+                iscontext: true
+          accessor: value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -910,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+locked: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2555,
+        "width": 3060,
+        "x": -910,
+        "y": 20
+      }
+    }
+  }
+inputs:
+- key: batch_size
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: query
+  value: {}
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs: []

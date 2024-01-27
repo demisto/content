@@ -1,0 +1,280 @@
+id: 7439da06-9536-47aa-8662-7bbad9f97f08
+version: 17
+vcShouldKeepItemLegacyProdMachine: false
+name: XDR IOCs - Push new IOCs to XDR
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7e04ea4f-697f-4b3a-802b-5e38a86dec45
+    type: start
+    task:
+      id: 7e04ea4f-697f-4b3a-802b-5e38a86dec45
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6a1c9f8f-62e0-44f1-80fc-8a31c500762f
+    type: playbook
+    task:
+      id: 6a1c9f8f-62e0-44f1-80fc-8a31c500762f
+      version: -1
+      name: XDR IOCs
+      playbookName: XDR IOCs - Push new IOCs to XDR (subplaybook)
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      batch_size:
+        simple: ${inputs.batch_size}
+      query:
+        complex:
+          root: inputs.query
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Done}
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      exitCondition: ""
+      wait: 10
+      max: 40
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0c7ea9b7-41bc-4c95-85e9-fb75300a943b
+    type: regular
+    task:
+      id: 0c7ea9b7-41bc-4c95-85e9-fb75300a943b
+      version: -1
+      name: Set Done Flag
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Done
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f96a3728-4183-4db1-87eb-909787366c45
+    type: title
+    task:
+      id: f96a3728-4183-4db1-87eb-909787366c45
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 27ad06b1-274c-4263-8bda-229164014d6f
+    type: regular
+    task:
+      id: 27ad06b1-274c-4263-8bda-229164014d6f
+      version: -1
+      name: Reset Done Flag
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Done
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9fcdc3e9-ea42-4f68-8b4f-32d591e81935
+    type: playbook
+    task:
+      id: 9fcdc3e9-ea42-4f68-8b4f-32d591e81935
+      version: -1
+      name: XDR IOCs - Disable expired IOCs in XDR (subplaybook)
+      playbookName: XDR IOCs - Disable expired IOCs in XDR (subplaybook)
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      batch_size:
+        simple: ${inputs.batch_size}
+      query:
+        complex:
+          root: inputs.query_expired
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Done
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      exitCondition: ""
+      wait: 10
+      max: 40
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+locked: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 950,
+        "width": 380,
+        "x": 50,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: batch_size
+  value:
+    simple: "4000"
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: query
+  value:
+    simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:active
+      and (aggregatedReliability:"A - Completely reliable" or aggregatedReliability:"A+
+      - 3rd party enrichment" or aggregatedReliability:"A++ - Reputation script")
+      and -tags:xdr_pushed and -tags:xdr_not_processed
+  required: true
+  description: ""
+  playbookInputQuery: null
+- key: query_expired
+  value:
+    simple: reputation:Bad and (type:File or type:Domain or type:IP) and expirationStatus:expired
+      and (aggregatedReliability:"A - Completely reliable" or aggregatedReliability:"A+
+      - 3rd party enrichment" or aggregatedReliability:"A++ - Reputation script")
+      and tags:xdr_pushed and -tags:xdr_disabled
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
