@@ -238,7 +238,7 @@ tasks:
       val1:
         simple: ASSET-TYPE
       val2:
-        simple: CORTEX-Endpoint
+        simple: Cortex Endpoint
       val3:
         simple: n/a
     separatecontext: false
