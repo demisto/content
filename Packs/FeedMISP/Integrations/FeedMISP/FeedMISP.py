@@ -558,6 +558,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_types)
     params_dict['page'] = 1
     params_dict['limit'] = 2000
+    if demisto.getLastRun().get('timestamp'):
+        params_dict['from'] = demisto.getLastRun().get('timestamp')
     timestamp = ''
     search_query_per_page = client.search_query(params_dict)
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
