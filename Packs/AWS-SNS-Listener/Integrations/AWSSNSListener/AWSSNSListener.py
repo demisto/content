@@ -8,9 +8,9 @@ from fastapi import FastAPI, Request
 from fastapi.security import HTTPBasic
 from fastapi.security.api_key import APIKeyHeader
 import requests
+import base64
+from M2Crypto import X509
 PARAMS: dict = demisto.params()
-# import base64
-# from M2Crypto import X509
 
 
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
@@ -40,83 +40,148 @@ def handle_teams_proxy_and_ssl():
 PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
 
 
-# def valid_sns_message(sns_payload):
+def valid_sns_message(sns_payload):
+    demisto.error('DANF in valid_sns_message')
 
-#     # Can only be one of these types.
-#     if sns_payload["Type"] not in ["SubscriptionConfirmation", "Notification", "UnsubscribeConfirmation"]:
-#         demisto.error('not a valid SNS message')
-#         return False
+    # Can only be one of these types.
+    if sns_payload["Type"] not in ["SubscriptionConfirmation", "Notification", "UnsubscribeConfirmation"]:
+        demisto.error('not a valid SNS message')
+        return False
 
-#     # Amazon SNS currently supports signature version 1.
-#     if sns_payload["SignatureVersion"] != "1":
-#         demisto.error('not using SignatureVersion 1')
-#         return False
+    # Amazon SNS currently supports signature version 1.
+    if sns_payload["SignatureVersion"] != "1":
+        demisto.error('not using SignatureVersion 1')
+        return False
 
-#     # Fields for a standard notification.
-#     fields = ["Message", "MessageId", "Subject", "Timestamp", "TopicArn", "Type"]
+    # Fields for a standard notification.
+    fields = ["Message", "MessageId", "Subject", "Timestamp", "TopicArn", "Type"]
 
-#     # Fields for subscribe or unsubscribe.
-#     if sns_payload["Type"] in ["SubscriptionConfirmation", "UnsubscribeConfirmation"]:
-#         fields = ["Message", "MessageId", "SubscribeURL", "Timestamp", "Token", "TopicArn", "Type"]
+    # Fields for subscribe or unsubscribe.
+    if sns_payload["Type"] in ["SubscriptionConfirmation", "UnsubscribeConfirmation"]:
+        fields = ["Message", "MessageId", "SubscribeURL", "Timestamp", "Token", "TopicArn", "Type"]
 
-#     # Build the string to be signed.
-#     string_to_sign = ""
-#     for field in fields:
-#         string_to_sign += field + "\n" + sns_payload[field] + "\n"
+    # Build the string to be signed.
+    string_to_sign = ""
+    for field in fields:
+        string_to_sign += field + "\n" + sns_payload[field] + "\n"
 
-#     # Decode the signature from base64.
-#     decoded_signature = base64.b64decode(sns_payload["Signature"])
+    # Decode the signature from base64.
+    decoded_signature = base64.b64decode(sns_payload["Signature"])
+    demisto.error('DANF after base64')
 
-#     # Retrieve the certificate.
-#     certificate = X509.load_cert_string(requests.get(sns_payload["SigningCertURL"]).text)
+    # Retrieve the certificate.
+    certificate = X509.load_cert_string(requests.get(sns_payload["SigningCertURL"]).text)
+    demisto.error('DANF after load cert string')
 
-#     # Extract the public key.
-#     public_key = certificate.get_pubkey()
+    # Extract the public key.
+    public_key = certificate.get_pubkey()
+    demisto.error('DANF after get pubkey')
 
-#     public_key.reset_context(md="sha1")
-#     public_key.verify_init()
+    public_key.reset_context(md="sha1")
+    demisto.error('DANF after reset context sha1')
+    public_key.verify_init()
+    demisto.error('DANF after verify init')
 
-#     # Sign the string.
-#     public_key.verify_update(string_to_sign.encode())
+    # Sign the string.
+    public_key.verify_update(string_to_sign.encode())
+    demisto.error('DANF after verify update')
 
-#     # Verify the signature matches.
-#     verification_result = public_key.verify_final(decoded_signature)
+    # Verify the signature matches.
+    verification_result = public_key.verify_final(decoded_signature)
+    demisto.error('DANF after verify final')
 
-#     # M2Crypto uses EVP_VerifyFinal() from openssl as the underlying verification function.
-#     # 1 indicates success, anything else is either a failure or an error.
-#     if verification_result != 1:
-#         demisto.error('Signature verification failed.')
-#         return False
+    # M2Crypto uses EVP_VerifyFinal() from openssl as the underlying verification function.
+    # 1 indicates success, anything else is either a failure or an error.
+    if verification_result != 1:
+        demisto.error('Signature verification failed.')
+        return False
 
-#     demisto.error('Signature verification succeeded.')
-#     return True
+    demisto.error('DANF Signature verification succeeded.')
+    return True
 
 
 @app.post('/')
 async def handle_post(request: Request):
     data = ''
-    demisto.error(f'DANF in request: {request}')
+    demisto.error('AWS-SNS-Listener got request')
     try:
         headers = dict(request.headers)
         type = headers['x-amz-sns-message-type']
         payload = await request.json()
         dump = json.dumps(payload)
     except Exception as e:
-        demisto.error(f'DANF Failed to extract request {e}')
-        return "DANF error"
+        demisto.error(f'Error in request parsing: {e}')
+        return f'Error in request parsing: {e}'
     # if not valid_sns_message(payload):
-    #     demisto.error('Validation of SNS message failed.')
-    #     return
+    #     return 'Validation of SNS message failed.'
+        # demisto.error('DANF in valid_sns_message')
+
+    # Can only be one of these types.
+    if type not in ["SubscriptionConfirmation", "Notification", "UnsubscribeConfirmation"]:
+        demisto.error('DANF not a valid SNS message')
+        # return False
+
+    # Amazon SNS currently supports signature version 1.
+    if payload["SignatureVersion"] != "1":
+        demisto.error('DANF not using SignatureVersion 1')
+        # return False
+
+    # Fields for a standard notification.
+    fields = ["Message", "MessageId", "Subject", "Timestamp", "TopicArn", "Type"]
+
+    # Fields for subscribe or unsubscribe.
+    if payload["Type"] in ["SubscriptionConfirmation", "UnsubscribeConfirmation"]:
+        fields = ["Message", "MessageId", "SubscribeURL", "Timestamp", "Token", "TopicArn", "Type"]
+
+    # Build the string to be signed.
+    string_to_sign = ""
+    for field in fields:
+        string_to_sign += field + "\n" + payload[field] + "\n"
+
+    # Decode the signature from base64.
+    decoded_signature = base64.b64decode(payload["Signature"])
+    demisto.error('DANF after base64')
+
+    # Retrieve the certificate.
+    try:
+        certificate = X509.load_cert_string(requests.get(payload['SigningCertURL']).text)  # another request i need to get approved from Andrey Etush
+    except Exception as e:
+        demisto.error(f'DANF X509 error is: {e}')
+        return 'X509 error'
+    demisto.error('DANF after load cert string')
+
+    # Extract the public key.
+    public_key = certificate.get_pubkey()
+    demisto.error('DANF after get pubkey')
+
+    public_key.reset_context(md="sha1")
+    demisto.error('DANF after reset context sha1')
+    public_key.verify_init()
+    demisto.error('DANF after verify init')
+
+    # Sign the string.
+    public_key.verify_update(string_to_sign.encode())
+    demisto.error('DANF after verify update')
+
+    # Verify the signature matches.
+    verification_result = public_key.verify_final(decoded_signature)
+    demisto.error('DANF after verify final')
+
+    # M2Crypto uses EVP_VerifyFinal() from openssl as the underlying verification function.
+    # 1 indicates success, anything else is either a failure or an error.
+    if verification_result != 1:
+        demisto.error('Signature verification failed.')
+        return 'Signature verification failed.'
+
+    demisto.error('DANF Signature verification succeeded.')
     if type == 'SubscriptionConfirmation':
-        demisto.error('DANF SubscriptionConfirmation request')
+        demisto.info('SubscriptionConfirmation request')
         subscribe_url = payload['SubscribeURL']
-        demisto.error(f'DANF SubscribeURL: {payload["SubscribeURL"]}')
         try:
             response = requests.get(subscribe_url, verify=True, proxies=PROXIES)
         except Exception as e:
-            demisto.error(f'DANF error is SubscribeURL: {e}')
-            return f"fail to send sub url {e}"
-
+            demisto.error(f'Error in SubscribeURL: {e}')
+            return f'Error in SubscribeURL: {e}'
         demisto.debug(f'Response from subscribe url: {response}')
         return response
     elif type == 'Notification':
