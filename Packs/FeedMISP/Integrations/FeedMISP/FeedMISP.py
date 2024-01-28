@@ -210,7 +210,7 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
     indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, Any]:
+def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int) -> Dict[str, Any]:
     """
     Creates a dictionary in the format required by MISP to be used as a query.
     Args:
@@ -226,7 +226,9 @@ def build_params_dict(tags: List[str], attribute_type: List[str]) -> Dict[str, A
         'tags': {
             'OR': tags if tags else [],
         },
-    }
+        'limit' : limit,
+        'page' : page
+    }   
     return params
 
 
@@ -335,36 +337,15 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
     return []
 
 
-def fetch_indicators(client: Client,
-                     tags: List[str],
+def build_indicators(response: Dict[str, Any],
                      attribute_type: List[str],
-                     query: Optional[str],
                      tlp_color: Optional[str],
                      url: Optional[str],
                      reputation: Optional[str],
-                     feed_tags: Optional[List],
-                     limit: int = -1,
-                     page: int = 0,
-                     is_fetch: bool = True) -> List[Dict]:
-    params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
-    if limit and limit not in params_dict:
-        params_dict['limit'] = limit
-    if page:
-        params_dict['page'] = page
-    response = client.search_query(params_dict)
-    if error_message := response.get('Error'):
-        raise DemistoException(error_message)
+                     feed_tags: Optional[List]) -> List[Dict]:
     indicators_iterator = build_indicators_iterator(response, url)
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, is_fetch)
     indicators = []
-
-    if not added_indicators_iterator:
-        return []
-
-    if limit > 0:
-        added_indicators_iterator = added_indicators_iterator[:limit]
-
-    for indicator in added_indicators_iterator:
+    for indicator in indicators_iterator:
         value_ = indicator['value']['value']
         type_ = indicator['type']
         raw_type = indicator.pop('raw_type')
@@ -520,8 +501,12 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
     page = arg_to_number(args.get('page', '1')) or 0
-    indicators = fetch_indicators(client, tags, attribute_type,
-                                  query, tlp_color, params.get('url'), reputation, feed_tags, limit, page, False)
+    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type= attribute_type, limit= limit,
+                                                                          page= page)
+    response = client.search_query(params_dict)
+    if error_message := response.get('Error'):
+        raise DemistoException(error_message)
+    indicators = build_indicators(response, attribute_type, tlp_color, params.get('url'), reputation, feed_tags)
     hr_indicators = []
     for indicator in indicators:
         hr_indicators.append({
@@ -547,7 +532,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     Args:
         client: Client object with request
         params: demisto.params()
-    Returns:.
+    Returns: List of indicators.
+
     """
     tlp_color = params.get('tlp_color')
     reputation = params.get('feedReputation')
@@ -555,40 +541,22 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_types)
-    params_dict['page'] = 1
-    params_dict['limit'] = 2000
-    if demisto.getLastRun().get('timestamp'):
-        params_dict['from'] = demisto.getLastRun().get('timestamp')
-    timestamp = ''
+    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type= attribute_types, limit= 2000,
+                                                                          page= 1)
     search_query_per_page = client.search_query(params_dict)
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))}\
                         page: {params_dict["page"]}')
-        indicators_iterator = build_indicators_iterator(search_query_per_page, params.get('url'))
-        indicators = []
-        for indicator in indicators_iterator:
-            value_ = indicator['value']['value']
-            type_ = indicator['type']
-            raw_type = indicator.pop('raw_type')
-            indicator_obj = build_indicator(value_, type_, indicator, reputation)
-            update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
-            galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
-            create_and_add_relationships(indicator_obj, galaxy_indicators)
-            indicators.append(indicator_obj)
+        indicators = build_indicators(search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
         demisto.createIndicators(indicators)
-        timestamp = search_query_per_page.get("response", {}).get("Attribute", [])[-1].get('timestamp') \
-            if search_query_per_page.get("response", {}).get("Attribute", []) != [] else ""
         params_dict['page'] += 1
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
     params_dict.pop("limit", None)
     params_dict.pop("page", None)
-    demisto.setLastRun({
-        'params': params_dict,
-        'timestamp': timestamp})
+    demisto.setLastRun({'params': params_dict})
 
 
 def main():
