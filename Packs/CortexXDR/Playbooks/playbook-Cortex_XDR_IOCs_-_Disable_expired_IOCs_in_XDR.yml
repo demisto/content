@@ -1,5 +1,7 @@
 id: Cortex XDR IOCs - Disable expired IOCs in XDR
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR IOCs - Disable expired IOCs in XDR
 description: This is a *sub-playbook* of "Cortex XDR IOCs - Push new IOCs to XDR (Main)". This playbook disables indicators in Cortex XDR after they expire from Cortex XSOAR using a loop and querying on the "xdr_pushed" tag.
 tags:
@@ -65,7 +67,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 895
+          "y": 545
         }
       }
     note: false
@@ -77,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 74baff5c-9092-48a2-8c27-25cdb27e9165
+    taskid: fc9a2471-17ec-4be1-8dcc-f6cacebe4e2d
     type: regular
     task:
-      id: 74baff5c-9092-48a2-8c27-25cdb27e9165
+      id: fc9a2471-17ec-4be1-8dcc-f6cacebe4e2d
       version: -1
       name: Add xdr_disabled tag
       description: Appends values to the specified indicator field. Supported field types are tags and multi-select.
@@ -97,14 +99,14 @@ tasks:
       fieldValue:
         simple: xdr_disabled
       indicatorsValues:
-        simple: ${iocs.value}
+        simple: ${foundIndicators.value}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
@@ -116,28 +118,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 50643eb9-1f05-4f8d-8f9a-09ddd8021424
+    taskid: 62ee64c8-2e9d-4324-89f0-d7e329b996c9
     type: regular
     task:
-      id: 50643eb9-1f05-4f8d-8f9a-09ddd8021424
+      id: 62ee64c8-2e9d-4324-89f0-d7e329b996c9
       version: -1
       name: Get Indicators
-      description: Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
-      scriptName: GetIndicatorsByQuery
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+      - "13"
     scriptarguments:
-      limit:
-        simple: ${inputs.batch_size}
-      populateFields:
-        simple: value,sha256,md5,indicator_type
       query:
         complex:
           root: inputs.query
+      size:
+        simple: inputs.batch
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -154,85 +159,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 098aeccf-911a-44e5-8695-30e90be4608c
-    type: regular
-    task:
-      id: 098aeccf-911a-44e5-8695-30e90be4608c
-      version: -1
-      name: Read File
-      description: Load the contents of a file into context.
-      scriptName: ReadFile
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      entryID:
-        simple: ${File.EntryID}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: f726d557-b7ed-450b-8d45-be9a15aa0d65
-    type: regular
-    task:
-      id: f726d557-b7ed-450b-8d45-be9a15aa0d65
-      version: -1
-      name: Set IOCs in context
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      key:
-        simple: iocs
-      value:
-        complex:
-          root: FileData
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 87b046d2-ddec-431d-8340-4fa61d6f328e
+    taskid: 09e13e67-74d6-44d5-8185-04e67f65c602
     type: condition
     task:
-      id: 87b046d2-ddec-431d-8340-4fa61d6f328e
+      id: 09e13e67-74d6-44d5-8185-04e67f65c602
       version: -1
       name: Check results
       description: Checks that the IOCs were  set in the context.
@@ -251,7 +183,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${iocs}
+              simple: foundIndicators
             iscontext: true
           right:
             value: {}
@@ -260,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 370
         }
       }
     note: false
@@ -302,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1245
+          "y": 895
         }
       }
     note: false
@@ -330,7 +262,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
@@ -361,7 +293,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1085
+          "y": 735
         }
       }
     note: false
@@ -373,10 +305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 49251589-6db7-4c7a-8cfb-125eb93b2ada
+    taskid: b0de033e-0e54-4d89-8bb2-9c328699e971
     type: regular
     task:
-      id: 49251589-6db7-4c7a-8cfb-125eb93b2ada
+      id: b0de033e-0e54-4d89-8bb2-9c328699e971
       version: -1
       name: Disable IOCs using xdr-iocs-disable
       description: Disables IOCs in the Cortex XDR server.
@@ -392,8 +324,8 @@ tasks:
         simple: "800"
       indicator:
         complex:
-          root: ${iocs
-          accessor: value}
+          root: foundIndicators
+          accessor: value
           transformers:
           - operator: join
             args:
@@ -406,7 +338,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 545
         }
       }
     note: false
@@ -421,7 +353,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1085,
         "width": 810,
         "x": 50,
         "y": 50
@@ -430,27 +362,27 @@ view: |-
   }
 inputs:
 - key: batch_size
-  value: 
+  value:
     simple: "4000"
   required: false
   description: ""
   playbookInputQuery:
 - key: query
-  value: 
-    simple: "expirationStatus:expired and tags:xdr_pushed and -tags:xdr_disabled"
+  value:
+    simple: expirationStatus:expired and tags:xdr_pushed and -tags:xdr_disabled
   required: true
   description: ""
   playbookInputQuery:
 outputs: []
 tests:
-- Cortex XDR - IOC - Test without fetch
-- Test Playbook - Cortex XDR - Retrieve File by sha256
 - Test XDR Playbook general commands
+- Test Playbook - Cortex XDR - Endpoint Investigation
 - Test XDR Playbook
 - Test Playbook - Cortex XDR - Get File Path from alerts by hash
 - Cortex XDR - XQL Query - Test
+- Test Playbook - Cortex XDR - Retrieve File by sha256
 - Test Playbook - Cortex XDR Malware - Incident Enrichment
 - Cortex XDR - IOC - Test
 - Test Playbook - Cortex XDR - False Positive Incident Handling
-- Test Playbook - Cortex XDR - Endpoint Investigation
+- Cortex XDR - IOC - Test without fetch
 fromversion: 6.10.0
