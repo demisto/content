@@ -212,6 +212,7 @@ def test_upload_file_multiple_entry_ids(mocker):
     assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
     assert execute_command_mocker.call_args_list[1][0][1]['entryID'] == '2'
 
+
 def test_upload_file_one_entry_id(mocker):
     """Unit test
     Given
