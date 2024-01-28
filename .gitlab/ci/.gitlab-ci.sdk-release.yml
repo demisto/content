@@ -14,7 +14,7 @@ create-release-branch:
     SDK_BRANCH_NAME: $SDK_BRANCH_NAME
   script:
     - section_start "Create release branch" --collapsed
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version \`"$RELEASE_VERSION"\` has started" --allow-failure "${SLACK_ALLOW_FAILURE}"
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version \`"$RELEASE_VERSION"\` has started" --allow-failure "${SLACK_ALLOW_FAILURE}" -ch $SLACK_CHANNEL
     - python3 ./Tests/sdk_release/create_release_branch.py -t $GITHUB_TOKEN -n $RELEASE_VERSION -b $SDK_BRANCH_NAME
     - section_end "Create release branch"
 
@@ -162,9 +162,10 @@ slack-notify:
     - wait-for-content-internal-dist-nightly
   variables:
     REVIEWER: $REVIEWER
+    SLACK_CHANNEL: $SLACK_CHANNEL
   script:
     - section_start "Slack notify" --collapsed
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "All nightlies builds has been finished, please check their status and continue with the release" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt $GITLAB_API_TOKEN -gu $REVIEWER
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "All nightlies builds has been finished, please check their status and continue with the release" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt $GITLAB_API_TOKEN -gu $REVIEWER -ch $SLACK_CHANNEL
     - section_end "Slack notify"
 
 create-release-pull-request:
@@ -180,10 +181,11 @@ create-release-pull-request:
     GITHUB_TOKEN: $GITHUB_TOKEN
     IS_DRAFT: $IS_DRAFT
     REVIEWER: $REVIEWER
+    SLACK_CHANNEL: $SLACK_CHANNEL
   script:
     - section_start "Create sdk release pr" --collapsed
     - python3 ./Tests/sdk_release/create_sdk_pr.py -t $GITHUB_TOKEN -b $RELEASE_VERSION -d $IS_DRAFT -ro $REVIEWER
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The demisto-sdk release PR is ready and waiting for review" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt $GITLAB_API_TOKEN -gu $REVIEWER
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The demisto-sdk release PR is ready and waiting for review" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt $GITLAB_API_TOKEN -gu $REVIEWER -ch $SLACK_CHANNEL
     - section_end "Create sdk release pr"
 
 deploy-sdk-to-pypi:
@@ -219,8 +221,9 @@ wait-for-prs:
     GITHUB_TOKEN: $GITHUB_TOKEN
     IS_DRAFT: $IS_DRAFT
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+    SLACK_CHANNEL: $SLACK_CHANNEL
   script:
     - section_start "Wait for prs to be merged" --collapsed
     - python3 ./Tests/sdk_release/wait_for_release_prs.py -t $GITHUB_TOKEN -b $RELEASE_VERSION
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -f ${ARTIFACTS_FOLDER}/CHANGELOG_SLACK.txt --allow-failure "${SLACK_ALLOW_FAILURE}"
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -f ${ARTIFACTS_FOLDER}/CHANGELOG_SLACK.txt --allow-failure "${SLACK_ALLOW_FAILURE}" -ch $SLACK_CHANNEL
     - section_end "Wait for prs to be merged"
