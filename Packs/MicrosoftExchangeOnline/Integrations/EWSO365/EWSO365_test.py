@@ -3,20 +3,35 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch
 
-import demistomock as demisto
-
 import pytest
+from EWSO365 import (
+    SMTP,
+    SMTPUTF8,
+    EWSClient,
+    ExpandGroup,
+    GetSearchableMailboxes,
+    add_additional_headers,
+    create_message,
+    email,
+    fetch_emails_as_incidents,
+    fetch_last_emails,
+    find_folders,
+    get_expanded_group,
+    get_item_as_eml,
+    get_searchable_mailboxes,
+    handle_attached_email_with_incorrect_id,
+    handle_html,
+    handle_transient_files,
+    parse_incident_from_item,
+    parse_item_as_dict
+)
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
 
-from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_emails_as_incidents,
-                     add_additional_headers, fetch_last_emails, find_folders,
-                     get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item, parse_item_as_dict, get_item_as_eml,
-                     create_message)
+import demistomock as demisto
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -824,3 +839,15 @@ class TestEmailModule(unittest.TestCase):
         )
         mock_message.assert_called_once()
         self.assertIsInstance(result, MagicMock)
+
+
+@pytest.mark.parametrize("headers, expected_formatted_headers", [
+    ([("Message-ID", '<valid_header>')], [("Message-ID", '<valid_header>')]),
+    ([("Message-ID", '<[valid_header]>')], [("Message-ID", '<valid_header>')]),
+])
+def test_handle_attached_email_with_incorrect_id(headers, expected_formatted_headers):
+    mime_content = b'\xc400'
+    email_policy = SMTP
+    attached_email = email.message_from_bytes(mime_content, policy=email_policy)
+    attached_email._headers = headers
+    assert handle_attached_email_with_incorrect_id(attached_email)._headers == expected_formatted_headers
