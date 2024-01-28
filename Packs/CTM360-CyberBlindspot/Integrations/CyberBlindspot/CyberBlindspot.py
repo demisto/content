@@ -687,29 +687,24 @@ def main() -> None:
     :return:
     :rtype:
     """
-    log(DEBUG, "at main func")
-
-    api_key = demisto.params().get('api_key', {}).get('password')
-    base_url = CBS_BASE_URL
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    proxy = demisto.params().get('proxy', False)
-
-    log(DEBUG, f'Command being called is {demisto.command()}')
-
     try:
 
-        headers: Dict = {'api-key': api_key}
+        log(DEBUG, "at main func")
+        demisto_args = demisto.args()
+        demisto_params = demisto.params()
+        demisto_command = demisto.command()
+
+        log(DEBUG, f'Command being called is {demisto_command}')
+        log(DEBUG, f'Demisto Args are {demisto_args=}')
+        log(DEBUG, f'Demisto Args are {demisto_params=}')
 
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy
+            base_url=CBS_BASE_URL,
+            verify=not demisto_params.get('insecure', False),
+            headers={'api-key': demisto_params.get('api_key', {}).get('password')},
+            proxy=demisto_params.get('proxy', False)
         )
 
-        command = demisto.command()
-        args = demisto.args()
         cbs_commands: dict[str, Any] = {
             'test-module': test_module,
             'get-mapping-fields': get_mapping_fields_command,
@@ -722,10 +717,9 @@ def main() -> None:
             'ctm360-cbs-incident-close': ctm360_cbs_incident_close_command,
         }
 
-        if command == 'fetch-incidents':
+        if demisto_command == 'fetch-incidents':
             log(DEBUG, "at fetch command")
             last_run = demisto.getLastRun()
-            demisto_params = demisto.params()
             last_fetched_timestamp = last_run.get('last_fetched_timestamp', '')
             last_fetch_hashes = last_run.get('last_fetch_hashes', [])
             first_fetch = demisto_params.get('first_fetch', '7 days')
@@ -765,6 +759,8 @@ def main() -> None:
                     timestamp=True
                 ) if demisto_params.get('date_to', '') else int(now.timestamp() * 1000)
 
+            log(INFO, f'Will be fetching {MAX_FETCH} incidents.')
+
             log(DEBUG, f'LastRun was {last_fetched_timestamp if last_fetched_timestamp else "NOT FOUND"}')
             log(DEBUG, f'last run\'s calculated hashes were {last_run.get("last_fetch_hashes")}')
 
@@ -777,13 +773,13 @@ def main() -> None:
             log(DEBUG, f'{incidents=}')
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == 'test-module':
-            return_results(test_module(client, demisto.params()))
+        elif demisto_command == 'test-module':
+            return_results(test_module(client, demisto_params))
         else:
-            if getfullargspec(cbs_commands[command]).args:
-                return_results(cbs_commands[command](client, args))
+            if getfullargspec(cbs_commands[demisto_command]).args:
+                return_results(cbs_commands[demisto_command](client, demisto_args))
             else:
-                return_results(cbs_commands[command]())
+                return_results(cbs_commands[demisto_command]())
 
     # Log exceptions and return errors
     except Exception as e:
