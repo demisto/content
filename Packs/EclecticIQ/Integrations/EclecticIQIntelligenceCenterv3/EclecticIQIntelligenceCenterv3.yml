@@ -150,10 +150,10 @@ configuration:
   display: Tags
   type: 0
   additionalinfo: Supports CSV values.
-- name: tlp_color
-  display: Traffic Light Protocol Color
+- display: Traffic Light Protocol Color
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  name: tlp_color
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -724,7 +724,7 @@ script:
   - arguments: []
     name: eclecticiq-get-indicators
     description: Get last block of Indicators from configured to fetch Outgoing feed.
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.86272
   feed: true
   isFetchSamples: true
   runonce: false
