@@ -23,8 +23,8 @@ from selenium.common.exceptions import (InvalidArgumentException,
                                         NoSuchElementException,
                                         TimeoutException)
 
-# pypdf_logger = logging.getLogger("PyPDF2")
-# pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
+pypdf_logger = logging.getLogger("PyPDF2")
+pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
 
 # Chrome respects proxy env params
 handle_proxy()
