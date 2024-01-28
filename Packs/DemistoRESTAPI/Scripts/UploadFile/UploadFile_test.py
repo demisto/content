@@ -201,7 +201,7 @@ def test_upload_file(mocker):
 def test_upload_file_multiple_entry_ids(mocker):
     """Unit test
     Given
-    - Command args with multiple entry IDs
+    - Command args with multiple entry IDs.
     When
     - Running the upload_file_command function.
     Then
@@ -211,6 +211,20 @@ def test_upload_file_multiple_entry_ids(mocker):
     upload_file_command({'incidentId': '1', 'entryID': '1,2'})
     assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
     assert execute_command_mocker.call_args_list[1][0][1]['entryID'] == '2'
+
+def test_upload_file_one_entry_id(mocker):
+    """Unit test
+    Given
+    - Command args with one entry ID.
+    When
+    - Running the upload_file_command function.
+    Then
+    - Validate that the API request was called only one entry ID.
+    """
+    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
+    upload_file_command({'incidentId': '1', 'entryID': '1'})
+    assert len(execute_command_mocker.call_args_list) == 1
+    assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
 
 
 RAW_RESPONSE_ERROR = [
