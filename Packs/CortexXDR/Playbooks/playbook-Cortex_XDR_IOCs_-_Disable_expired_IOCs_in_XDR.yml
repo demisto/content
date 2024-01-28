@@ -142,7 +142,8 @@ tasks:
         complex:
           root: inputs.query
       size:
-        simple: inputs.batch
+        complex:
+          root: inputs.batch_size
     separatecontext: false
     continueonerrortype: ""
     view: |-
