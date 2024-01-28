@@ -105,14 +105,13 @@ class RequestArguments:
     CTX_URL_TRUNCATE_KEY = 'url_truncate'
     CTX_MAXIMUM_CIDR = 'maximum_cidr_size'
     CTX_NO_TLD = 'no_wildcard_tld'
+    raw = "raw"
 
     FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
     FILTER_FIELDS_ON_FORMAT_MWG = "name,type,sourceBrands"
     FILTER_FIELDS_ON_FORMAT_PROXYSG = "name,type,proxysgcategory"
     FILTER_FIELDS_ON_FORMAT_CSV = "name,type"
     FILTER_FIELDS_ON_FORMAT_JSON = "name,type"
-
-    DEBUG_SEARCH_INDICATORS = "debug_search_indicators"
 
     def __init__(self,
                  query: str = '',
@@ -292,7 +291,7 @@ def create_new_edl(request_args: RequestArguments, extensive_logging: bool = Fal
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
         new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args, extensive_logging)
-        if request_args.DEBUG_SEARCH_INDICATORS:
+        if request_args.raw:
             return new_iocs_file.read(), original_indicators_count
 
         # we collect first all indicators because we need all ips to collapse_ips
@@ -310,7 +309,9 @@ def create_new_edl(request_args: RequestArguments, extensive_logging: bool = Fal
                 formatted_indicators += line
 
     else:
-        new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args)
+        new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args, extensive_logging)
+        if request_args.raw:
+            return new_iocs_file.read(), original_indicators_count
         new_iocs_file.seek(0)
         formatted_indicators = new_iocs_file.read()
     new_iocs_file.close()
