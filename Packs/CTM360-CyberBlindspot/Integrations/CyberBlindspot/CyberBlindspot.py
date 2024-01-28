@@ -246,10 +246,6 @@ def convert_time_string(
     """
     try:
         output = dateparser.parse(time_string, [input_format_string], **parser_args)
-        # if input_format_string:
-        #     output = arg_to_datetime(parse_date_string(time_string, input_format_string).isoformat(), **parser_args)
-        # else:
-        #     output = arg_to_datetime(time_string, **parser_args)
         if not isinstance(output, datetime):
             raise ValueError("The passed date string and/or format string is not valid")
         if is_utc:
@@ -310,9 +306,6 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     """
     mapped_incident = {
         'name': unmapped_incident.get('remarks'),
-        # 'occurred': convert_time_string(
-        #     unmapped_incident.get('created_date', ''),
-        #     CBS_INCOMING_DATE_FORMAT, DATE_FORMAT),
         'occurred': convert_time_string(
             unmapped_incident.get('created_date', ''),
             CBS_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True),
@@ -481,7 +474,6 @@ def get_remote_data_command(client: Client, args: dict):
     updated_incident = {}
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
-    # last_update = dateparser.parse(remote_args.last_update)
     last_update = parse_date_string(remote_args.last_update)
     last_update_ts = last_update.timestamp() * 1000 if isinstance(last_update, datetime) else -1
 
@@ -550,7 +542,6 @@ def get_remote_data_command(client: Client, args: dict):
         return GetRemoteDataResponse([], [])
     log(DEBUG, f'Updated incident {remote_incident_id}')
     mapped_updated_incident = map_and_create_incident(updated_incident)
-    # del mapped_updated_incident['occurred']
     return GetRemoteDataResponse(mirrored_object=mapped_updated_incident, entries=entries)
 
 
@@ -566,7 +557,6 @@ def get_modified_remote_data_command(client: Client, args):
     """
     modified_incident_ids: list = []
     remote_args = GetModifiedRemoteDataArgs(args)
-    # settings = {'TIMEZONE': 'UTC', 'TO_TIMEZONE': 'UTC'}
     last_timestamp = convert_time_string(remote_args.last_update, '', timestamp=True)
     log(DEBUG, f'Performing get-modified-remote-data command with : {last_timestamp}({remote_args.last_update})')
 
