@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 from EWSO365 import (
     SMTP,
-    SMTPUTF8,
     EWSClient,
     ExpandGroup,
     GetSearchableMailboxes,
@@ -838,7 +837,7 @@ class TestEmailModule(unittest.TestCase):
             name="file.txt", content="data", is_inline=True, content_id="12345"
         )
         mock_message.assert_called_once()
-        self.assertIsInstance(result, MagicMock)
+        assert isinstance(result, MagicMock)
 
 
 @pytest.mark.parametrize("headers, expected_formatted_headers", [

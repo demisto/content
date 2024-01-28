@@ -2180,8 +2180,6 @@ def parse_incident_from_item(item):     # pragma: no cover
                             attached_email_headers = []
                             demisto.debug("before the bug")
                             attached_email = handle_attached_email_with_incorrect_id(attached_email)
-                            if attached_email._headers:
-                                demisto.debug(f'{attached_email._headers=}')
                             for h, v in attached_email.items():
                                 if not isinstance(v, str):
                                     try:
@@ -2225,7 +2223,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                         except UnicodeDecodeError:
                             # In case the detected encoding fails apply the default encoding
                             demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                                        f'using utf-8.\nAttached email:\n{attached_email}')
+                                         f'using utf-8.\nAttached email:\n{attached_email}')
                             try:
                                 data = attached_email_bytes.decode('utf-8')
                             except UnicodeDecodeError:
