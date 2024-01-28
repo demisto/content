@@ -5,7 +5,8 @@ import secrets
 import string
 from itertools import zip_longest
 from urllib.error import HTTPError
-
+import requests
+from requests.exceptions import RequestException
 from CoreIRApiModule import *
 
 # Disable insecure warnings
@@ -661,7 +662,7 @@ def api_call_try(client, args) -> (tuple[Dict | None | str, bool]):
             int(raw_incident.get('incident', {}).get('replay', {}).get('number_in_config'))
         demisto.debug(f'MAI BELLE Mai raw {raw_incident} ***** bool {use_get_incident_extra_data}  ')
         return raw_incident, use_get_incident_extra_data
-    except HTTPError as e:
+    except RequestException as error:
         demisto.debug(f'The api call using get_multiple_incidents_extra_data got internal error, bla switching to\
             the old call {e}')
         demisto.debug('!!! what')
@@ -1262,7 +1263,7 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
-    command = 'fetch-incidents'  # demisto.command()
+    command = 'xdr-get-incident-extra-data'  # demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
 
