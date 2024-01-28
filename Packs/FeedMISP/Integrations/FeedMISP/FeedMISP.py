@@ -308,35 +308,6 @@ def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any], reputatio
     return indicator_obj
 
 
-def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
-                               params_dict: Dict[str, Any],
-                               is_fetch: bool) -> Optional[List[Dict[str, Any]]]:
-    """
-    sorts the indicators by their timestamp and returns a list of only new indicators received from MISP
-    Args:
-        params_dict: user's params sent to misp
-        indicators_iterator: list of indicators
-        is_fetch: flag for wether funciton was called for fetching command or a get
-    Returns: Sorted list of new indicators
-    """
-    last_run = demisto.getLastRun()
-    indicators_iterator.sort(key=lambda indicator: indicator['value']['timestamp'])
-
-    if last_run is None:
-        return indicators_iterator
-    if params_dict != last_run.get('params'):
-        if is_fetch:
-            demisto.setLastRun(None)
-        return indicators_iterator
-
-    last_timestamp = int(last_run.get('timestamp'))
-
-    for index in range(len(indicators_iterator)):
-        if int(indicators_iterator[index]['value']['timestamp']) > last_timestamp:
-            return indicators_iterator[index:]
-    return []
-
-
 def build_indicators(response: Dict[str, Any],
                      attribute_type: List[str],
                      tlp_color: Optional[str],
@@ -554,9 +525,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    params_dict.pop("limit", None)
-    params_dict.pop("page", None)
-    demisto.setLastRun({'params': params_dict})
 
 
 def main():
