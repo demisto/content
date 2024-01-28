@@ -400,8 +400,8 @@ def test_module(client: Client, params) -> str:
             raise DemistoException('Invalid "API Key" Value')
         incidents = client.test_configuration(args)
         if max_fetch and len(incidents) > max_fetch:
-            log(INFO, 'Result count does not adhere to "Max Fetch" value')
-            raise DemistoException('Result count does not adhere to "Max Fetch" value')
+            log(INFO, f'Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.')
+            incidents = incidents[::max_fetch - 1]
         message = 'ok'
     except DemistoException as e:
         expected_words = [
@@ -440,6 +440,11 @@ def fetch_incidents(
         tuple[dict, list[dict]]: The next run object and the list of incidents minus incidents from last run
     """
     incidents = client.fetch_incidents(params)
+
+    max_fetch = arg_to_number(params.get('max_hits')) or MAX_FETCH
+    if max_fetch and len(incidents) > max_fetch:
+        log(INFO, f'Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.')
+        incidents = incidents[::max_fetch - 1]
 
     if not incidents and not last_run:
         log(INFO, 'No incidents returned, and no last run data was found')
