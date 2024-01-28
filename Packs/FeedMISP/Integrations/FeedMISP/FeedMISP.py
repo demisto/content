@@ -578,8 +578,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
             create_and_add_relationships(indicator_obj, galaxy_indicators)
             indicators.append(indicator_obj)
         demisto.createIndicators(indicators)
-        demisto.debug(f'number of indicators: {len(indicators)}, page: {params_dict["page"]}')
-        timestamp = search_query_per_page.get("response", {}).get("Attribute", [])[-1].get('timestamp')
+        timestamp = search_query_per_page.get("response", {}).get("Attribute", [])[-1].get('timestamp') \
+            if search_query_per_page.get("response", {}).get("Attribute", []) != [] else ""
         params_dict['page'] += 1
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
@@ -597,7 +597,7 @@ def main():
     timeout = arg_to_number(params.get('timeout')) or 60
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    command = 'fetch-indicators'
+    command = demisto.command()
     args = demisto.args()
 
     demisto.debug(f'Command being called is {command}')

@@ -75,11 +75,6 @@ configuration:
   defaultvalue: "240"
   type: 19
   required: false
-- defaultvalue: 5000
-  display: Number of top indicators to fetch from the feed.
-  name: limit
-  type: 0
-  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
