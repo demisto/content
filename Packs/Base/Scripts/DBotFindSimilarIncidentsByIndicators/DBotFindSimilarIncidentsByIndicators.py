@@ -175,7 +175,9 @@ def get_indicators_of_actual_incident(
     :param max_incidents_per_indicator: Max incidents in indicators for white list
     :return: a map from indicator ids of the actual incident to their data
     """
-    indicators = execute_command("findIndicators", {"query": f"investigationIDs:{incident_id}"}, fail_on_error=True)
+    args = {"query": f"investigationIDs:{incident_id}"}
+    demisto.debug(f"Executing findIndicators with {args=}")
+    indicators = execute_command("findIndicators", args, fail_on_error=True)
     if not indicators:
         return {}
     indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
@@ -210,15 +212,13 @@ def get_related_incidents(
         demisto.debug(f"Found {len(incident_ids)} related incidents: {incident_ids}")
         return incident_ids
 
-    res = execute_command(
-        "GetIncidentsByQuery",
-        args={
-            "query": f"{query + ' AND ' if query else ''}incident.id:({' '.join(incident_ids)})",
-            "populateFields": INCIDENT_ID_FIELD,
-            "fromDate": from_date,
-        },
-        fail_on_error=True,
-    )
+    args = {
+        "query": f"{query + ' AND ' if query else ''}incident.id:({' '.join(incident_ids)})",
+        "populateFields": INCIDENT_ID_FIELD,
+        "fromDate": from_date,
+    }
+    demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
+    res = execute_command("GetIncidentsByQuery", args, fail_on_error=True)
     incident_ids = [incident[INCIDENT_ID_FIELD] for incident in json.loads(res)]
     demisto.debug(f"Found {len(incident_ids)} related incidents: {incident_ids}")
     return incident_ids
@@ -232,14 +232,12 @@ def get_indicators_of_related_incidents(
         demisto.debug("No mutual indicators were found.")
         return []
 
-    indicators = execute_command(
-        "GetIndicatorsByQuery",
-        args={
-            "query": f"investigationIDs:({' '.join(incident_ids)})",
-            "populateFields": ",".join(INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY),
-        },
-        fail_on_error=True,
-    )
+    args = {
+        "query": f"investigationIDs:({' '.join(incident_ids)})",
+        "populateFields": ",".join(INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY),
+    }
+    demisto.debug(f"Executing GetIndicatorsByQuery with {args=}")
+    indicators = execute_command("GetIndicatorsByQuery", args, fail_on_error=True)
     indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
     indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in indicators]
     demisto.debug(f"Found {len(indicators_ids)} related indicators: {indicators_ids}")
@@ -344,14 +342,13 @@ def enrich_incidents(
         return incidents
 
     incident_ids = incidents.id.tolist() if INCIDENT_ID_FIELD in incidents.columns else incidents.index
-    res = execute_command(
-        "GetIncidentsByQuery",
-        args={
-            "query": f"incident.id:({' '.join(incident_ids)})",
-            "populateFields": ",".join(fields_to_display),
-        },
-        fail_on_error=True,
-    )
+
+    args = {
+        "query": f"incident.id:({' '.join(incident_ids)})",
+        "populateFields": ",".join(fields_to_display),
+    }
+    demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
+    res = execute_command("GetIncidentsByQuery", args, fail_on_error=True)
     incidents_map: dict[str, dict] = {incident[INCIDENT_ID_FIELD]: incident for incident in json.loads(res)}
     if CREATED_FIELD in fields_to_display:
         incidents[CREATED_FIELD] = [
