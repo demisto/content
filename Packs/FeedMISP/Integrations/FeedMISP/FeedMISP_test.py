@@ -455,7 +455,7 @@ def test_search_query_indicators_pagination(mocker):
     Given:
         - All relevant arguments for the command
     When:
-        - the search_query_indicators_pagination function runs
+        - the fetch_attributes_command function runs
     Then:
         - Ensure the pagination mechanism return the expected result (good http response is returned)
     """
@@ -499,7 +499,7 @@ def test_search_query_indicators_pagination_bad_case(mocker):
     Given:
         - All relevant arguments for the command
     When:
-        - the search_query_indicators_pagination function runs
+        - the fetch_attributes_command function runs
     Then:
         - Ensure the pagination mechanism raises an error (bad http response is returned)
     """
