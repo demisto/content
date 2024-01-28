@@ -299,6 +299,7 @@ references:
             command: |
                 USERNAME=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
+                $CONTRIB_REPO="content"
                 python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO
 
   comment_on_contrib_pr: &comment_on_contrib_pr
