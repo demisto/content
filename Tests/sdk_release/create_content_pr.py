@@ -19,7 +19,8 @@ UPDATE_SDK_VERSION_WORKFLOW = 'https://api.github.com/repos/demisto/content/acti
                               '/workflows/update-demisto-sdk-version.yml/dispatches'
 
 SLACK_CHANGELOG_FILE = 'CHANGELOG_SLACK.txt'
-
+SLACK_MERGE_PRS_FILE = 'SLACK_MERGE_PRS_REQUEST.txt'
+SLACK_MERGE_PRS_MESSAGE = 'Please merge the demisto-sdk and content pull requests:\n{}\n{}'
 SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
                         ':alert: Please run in the terminal\n' \
                         '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/' \
@@ -113,6 +114,13 @@ def main():
         sys.exit(1)
 
     logging.success(f'content pull request created: {content_pr.get("html_url")}')
+
+    # write the SLACK_MERGE_PRS_FILE
+    sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
+    slack_message = SLACK_MERGE_PRS_MESSAGE.format(content_pr.get("html_url"), sdk_pr.get("html_url"))
+    slack_merge_prs_file = os.path.join(artifacts_folder, SLACK_MERGE_PRS_FILE)
+    with open(slack_merge_prs_file, "w") as f:
+        f.write(str(slack_message))
 
 
 if __name__ == "__main__":

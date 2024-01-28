@@ -16,7 +16,7 @@ if [ "$#" -lt "1" ]; then
   [-ct, --ci-token]      The ci gitlab trigger token.
   [-rv, --release-version]      The release version.
   [-ch, --slack-channel] A Slack channel to send notifications to. Default is dmst-sdk-release.
-  [-b, --branch]         The branch name. Default is master branch.
+  [-b, --branch]         The content branch name to run the .gitlab-ci.sdk-release.yml workflow. Default is master branch.
   [-r, --reviewer]         Github username of the release owner.
   [-d, --is-draft]         Whether to create draft release form not. Default is FALSE.
   [-s, --sdk-branch-name]         From which branch in demisto-sdk we want to create the release. Default is master.
