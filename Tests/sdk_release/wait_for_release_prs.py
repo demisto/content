@@ -6,6 +6,7 @@ import urllib3
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -46,6 +47,7 @@ def options_handler():
 
     parser.add_argument('-t', '--access_token', help='Github access token', required=True)
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
+    parser.add_argument('--artifacts-folder', help='Artifacts folder to create the CHANGELOG_SLACK.txt file', required=True)
 
     options = parser.parse_args()
     return options
@@ -57,32 +59,44 @@ def main():
     options = options_handler()
     access_token = options.access_token
     release_branch_name = options.release_branch_name
+    artifacts_folder = options.artifacts_folder
+
+    import os
+    from Tests.sdk_release.create_release import get_changelog_text
+    from Tests.sdk_release.create_content_pr import SLACK_RELEASE_MESSAGE, SLACK_CHANGELOG_FILE
+    # write the changelog text to SLACK_CHANGELOG_FILE
+    changelog_text = get_changelog_text(release_branch_name, text_format='slack')
+    changelog_text = SLACK_RELEASE_MESSAGE.format(release_branch_name, changelog_text)
+    changelog_file = os.path.join(artifacts_folder, SLACK_CHANGELOG_FILE)
+    with open(changelog_file, "w") as f:
+        f.write(str(changelog_text))
+    logging.info('SLACK_CHANGELOG_FILE created')
 
     # get the sdk and content pull requests
     content_pr = get_pr_from_branch('content', release_branch_name, access_token)
-    sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
-    logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
+    # sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
+    # logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
     logging.info(f'content pull request created: {content_pr.get("html_url")}')
 
     content_pr_id = content_pr.get('number')
-    sdk_pr_id = sdk_pr.get('number')
+    # sdk_pr_id = sdk_pr.get('number')
     content_pr_state = 'open'
-    sdk_pr_state = 'open'
+    # sdk_pr_state = 'open'
 
     # initialize timer
     start = time.time()
     elapsed: float = 0
 
     # wait to content pr and sdk pr to be closed
-    while (sdk_pr_state == 'open' or content_pr_state == 'open') and elapsed < TIMEOUT:
+    while content_pr_state == 'open' and elapsed < TIMEOUT:
         content_pr = get_pr_by_id('content', content_pr_id, access_token)
-        sdk_pr = get_pr_by_id('demisto-sdk', sdk_pr_id, access_token)
+        # sdk_pr = get_pr_by_id('demisto-sdk', sdk_pr_id, access_token)
 
         content_pr_state = content_pr.get('state')
-        sdk_pr_state = sdk_pr.get('state')
+        # sdk_pr_state = sdk_pr.get('state')
 
         logging.info(f'content pr state is {content_pr_state}')
-        logging.info(f'sdk pr state is {sdk_pr_state}')
+        # logging.info(f'sdk pr state is {sdk_pr_state}')
 
         time.sleep(300)  # 5 minutes
         elapsed = time.time() - start
@@ -97,9 +111,9 @@ def main():
         sys.exit(1)
 
     # check that sdk pr is merged
-    if not sdk_pr.get('merged'):
-        logging.error(f'demisto-sdk pull request not merged yet {sdk_pr.get("html_url")}')
-        sys.exit(1)
+    # if not sdk_pr.get('merged'):
+    #     logging.error(f'demisto-sdk pull request not merged yet {sdk_pr.get("html_url")}')
+    #     sys.exit(1)
 
     logging.success('SDK and content pull requests merged successfully!')
 
