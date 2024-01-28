@@ -106,10 +106,10 @@ def test_get_managed_device_physical_memory_command(mocker):
     mocker.patch.object(client, 'get_managed_device_physical_memory', return_value=(response_client, '1'))
     mocker.patch('MicrosoftGraphDeviceManagement.build_device_object', return_value={'ID': '1111111-1111-1111-1111-11111111',
                                                                                      'Name': 'Test',
-                                                                                     'physicalMemoryInBytes': 1})
+                                                                                     'PhysicalMemoryInBytes': 1})
     outputs = mocker.patch('MicrosoftGraphDeviceManagement.return_outputs')
     get_managed_device_physical_memory_command(client, {"device_id": '1'})
-    assert outputs.call_args.args[0] == '### Managed device Test\n|physicalMemoryInBytes|\n|---|\n| 1 |\n'
+    assert outputs.call_args.args[0] == '### Managed device Test\n|PhysicalMemoryInBytes|\n|---|\n| 1 |\n'
 
 
 def test_get_managed_device_physical_memory_command_error(mocker):
