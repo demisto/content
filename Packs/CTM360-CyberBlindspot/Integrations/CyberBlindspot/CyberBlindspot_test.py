@@ -499,9 +499,9 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_last_fe
             "incident_list_cmd_result_valid.json",
         ),
         (
-            "empty_list.json",
+            False,
             {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
-            "empty_list.json",
+            False,
         ),
     ],
 )
@@ -516,9 +516,10 @@ def test_ctm360_cbs_incident_list_command(response_file_name, mock_args, mock_as
         - Fetch the list of incidents from the remote server.
     """
     from CyberBlindspot import ctm360_cbs_incident_list_command
-    mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_file_name))
+    patched_response = load_mock_response(response_file_name) if response_file_name else []
+    mocker.patch.object(mock_client, "fetch_incidents", return_value=patched_response)
     cmd_results = ctm360_cbs_incident_list_command(mock_client, mock_args)
-    expected_results = load_mock_response(mock_asserts_file)
+    expected_results = load_mock_response(mock_asserts_file) if mock_asserts_file else []
     cmd_results = cmd_results.to_context().get('Contents')
     if cmd_results and expected_results:
         cmd_results = [{k: v for k, v in item.items() if k != 'rawJson'} for item in cmd_results]
@@ -548,7 +549,7 @@ def test_ctm360_cbs_incident_list_command(response_file_name, mock_args, mock_as
             },
         ),
         (
-            "empty_object.json",
+            False,
             {"ticketId": "COMX165756654321"},
             {},
         ),
@@ -565,7 +566,8 @@ def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock
     """
     from CyberBlindspot import ctm360_cbs_incident_details_command
 
-    mocker.patch.object(mock_client, "fetch_incident", return_value=load_mock_response(response_file_name))
+    patched_response = load_mock_response(response_file_name) if response_file_name else {}
+    mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
     cmd_results = ctm360_cbs_incident_details_command(mock_client, mock_args)
     assert cmd_results.to_context().get('Contents') == mock_asserts
 
