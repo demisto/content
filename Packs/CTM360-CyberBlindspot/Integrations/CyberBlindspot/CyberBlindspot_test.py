@@ -333,7 +333,7 @@ def test_to_snake_case(mock_input, mock_assert):
                 'mirror_direction': 'None',
                 'max_fetch': '-1',
             },
-            DemistoException('Invalid "Max Fetch" Value')
+            DemistoException('Invalid "Max Fetch" Value. Should be between 1 to 200')
         ),
         (
             {
