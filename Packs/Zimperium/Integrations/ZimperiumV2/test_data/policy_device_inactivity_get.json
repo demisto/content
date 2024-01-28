@@ -1,0 +1,36 @@
+{
+    "id": "ff",
+    "accountId": "25",
+    "name": "InactivityTest",
+    "teamId": "33",
+    "pendingActivationSettings": {
+        "enabled": false,
+        "timeBeforeWarningSeconds": 259200,
+        "timeBeforeWarningDisplayUnits": "DAYS",
+        "timeBetweenWarningsSeconds": 86400,
+        "timeBetweenWarningsDisplayUnits": "DAYS",
+        "maxWarningsCount": 2,
+        "sendEmailIos": false,
+        "sendEmailAndroid": false
+    },
+    "inactiveAppSettings": {
+        "enabled": false,
+        "timeBeforeWarningSeconds": 259200,
+        "timeBeforeWarningDisplayUnits": "DAYS",
+        "timeBetweenWarningsSeconds": 86400,
+        "timeBetweenWarningsDisplayUnits": "DAYS",
+        "maxWarningsCount": 2,
+        "notifyDevicesIos": false,
+        "notifyDevicesAndroid": false,
+        "sendEmailIos": false,
+        "sendEmailAndroid": false
+    },
+    "groups": [
+        {
+            "id": "1d",
+            "name": "GroupTest"
+        }
+    ],
+    "created": 1702305515652,
+    "modified": 1702305515652
+}

@@ -39,13 +39,13 @@ class Client(BaseClient):
         return access_token
 
     def users_search(self, size: int, page: int, team_id: Optional[str] = None, user_id: Optional[str] = None):
-        """Search events by sending a GET request.
+        """Search users by sending a GET request.
 
         Args:
             size: response size.
             page: response page.
-            user_id:
-            team_id:
+            user_id: the id of the user to search.
+            team_id: the id of the team filter by.
 
         Returns:
             Response from API.
@@ -62,17 +62,16 @@ class Client(BaseClient):
 
     def device_search(self, size: int, page: int, after: Optional[str] = None, before: Optional[str] = None,
                       team_name: Optional[str] = None, model: Optional[str] = None, bundle_id: Optional[str] = None):
-        """Search events by sending a GET request.
+        """Search devices by sending a GET request.
 
         Args:
             size: response size.
             page: response page.
-            after:
-            before:
-            device_id:
-            team_name:
-            model:
-            bundle_id:
+            after: the time after which to search devices.
+            before: the time before which to search devices.
+            team_name: the team device related to.
+            model: device model.
+            bundle_id: related bundle id.
 
         Returns:
             Response from API.
@@ -91,10 +90,10 @@ class Client(BaseClient):
                                   headers=self._headers, params=params)
 
     def device_by_id(self, device_id: str):
-        """Search events by sending a GET request.
+        """Get device by ID by sending a GET request.
 
         Args:
-            device_id:
+            device_id: the device id to get.
 
         Returns:
             Response from API.
@@ -104,7 +103,7 @@ class Client(BaseClient):
                                   headers=self._headers)
 
     def report_get(self, app_version_id: str):
-        """Search events by sending a GET request.
+        """ Generates JSON report using GET request.
 
         Args:
             app_version_id: The Id to get the app version JSON report.
@@ -125,18 +124,18 @@ class Client(BaseClient):
                       operating_system: Optional[str] = None,
                       severity: Optional[List] = None,
                       sort: Optional[str] = None):
-        """Search events by sending a GET request.
+        """Search threats by sending a GET request.
 
         Args:
             size: response size.
             page: response page.
-            after:
-            before:
-            search_params:
-            team_id:
-            operating_system:
-            severity:
-            sort:
+            after: threats after this date.
+            before: threats before this date.
+            search_params: params to query.
+            team_id: threats related to team.
+            operating_system: os of device with a threat.
+            severity: threat severity.
+            sort: field to sort by.
         Returns:
             Response from API.
         """
@@ -151,7 +150,8 @@ class Client(BaseClient):
             'severityName': severity,
             'sort': sort
         }
-        params.update(search_params)
+        if search_params:
+            params.update(search_params)
 
         params = assign_params(**params)
 
@@ -159,7 +159,7 @@ class Client(BaseClient):
                                   params=params)
 
     def app_version_list(self, size: int, page: int, bundle_id: Optional[str] = None):
-        """Search events by sending a GET request.
+        """List App Versions by sending a GET request.
 
         Args:
             bundle_id: The Bundle ID of the app to get its app version.
@@ -179,15 +179,15 @@ class Client(BaseClient):
 
     def device_cve_get(self, cve_id: str, size: int, page: int, after: Optional[str] = None, before: Optional[str] = None,
                        team_id: Optional[str] = None):
-        """Search events by sending a GET request.
+        """Get Devices that has CVE with cve_id  a GET request.
 
         Args:
-            cve_id:
+            cve_id: the ID of the CVE which is input.
             size: response size.
             page: response page.
-            after:
-            before:
-            team_id:
+            after: the date from when the data can be retrieved.
+            before: the date until when the data can be retrieved.
+            team_id: filter the data to the respective team.
         Returns:
             Response from API.
         """
@@ -205,7 +205,7 @@ class Client(BaseClient):
                                   params=params)
 
     def policy_group_list(self, module: Optional[str] = 'ZIPS'):
-        """Search events by sending a GET request.
+        """List policy groups by sending a GET request.
 
         Returns:
             Response from API.
@@ -219,17 +219,17 @@ class Client(BaseClient):
     def devices_os_version(self, os_version: str, size: int, page: int, deleted: Optional[bool] = None,
                            os_patch_date: Optional[str] = None,
                            after: Optional[str] = None, before: Optional[str] = None, team_id: Optional[str] = None):
-        """Search events by sending a GET request.
+        """Search devices by os version by sending a GET request.
 
         Args:
-            os_version:
-            deleted:
-            os_patch_date:
+            os_version: os version of the device.
+            deleted: is device deleted.
+            os_patch_date: os patch date.
             size: response size.
             page: response page.
-            after:
-            before:
-            team_id:
+            after: the date from when the data can be retrieved.
+            before: the date until when the data can be retrieved.
+            team_id: filter devices related to the team id.
         Returns:
             Response from API.
         """
@@ -250,10 +250,10 @@ class Client(BaseClient):
                                   params=params)
 
     def cve_devices_get(self, size: int, page: int, device_id: str):
-        """Search events by sending a GET request.
+        """Get the CVEs associated with a specific device
 
         Args:
-            device_id:
+            device_id: the device to query.
             size: response size.
             page: response page.
         Returns:
@@ -271,10 +271,10 @@ class Client(BaseClient):
                                   params=params)
 
     def policy_privacy(self, policy_id: str):
-        """Search events by sending a GET request.
+        """Get a privacy policy by id.
 
         Args:
-            policy_id:
+            policy_id: the policy id to query.
 
         Returns:
             Response from API.
@@ -284,10 +284,10 @@ class Client(BaseClient):
                                   headers=self._headers)
 
     def policy_threat(self, policy_id: str):
-        """Search events by sending a GET request.
+        """Get a threat policy by id.
 
         Args:
-            policy_id:
+            policy_id: the policy id to query.
 
         Returns:
             Response from API.
@@ -298,10 +298,10 @@ class Client(BaseClient):
                                   headers=self._headers)
 
     def policy_phishing(self, policy_id: str):
-        """Search events by sending a GET request.
+        """Get the phishing policy by id.
 
         Args:
-            policy_id:
+            policy_id: the policy id to query.
 
         Returns:
             Response from API.
@@ -312,10 +312,10 @@ class Client(BaseClient):
                                   headers=self._headers)
 
     def policy_app_settings(self, app_settings_policy_id: str):
-        """Search events by sending a GET request.
+        """Get the policy app settings by id.
 
         Args:
-            app_settings_policy_id:
+            app_settings_policy_id: the policy id to query.
 
         Returns:
             Response from API.
@@ -325,10 +325,10 @@ class Client(BaseClient):
                                   headers=self._headers)
 
     def policy_device_inactivity_list(self, size: int, page: int, team_id: Optional[str] = None):
-        """Search events by sending a GET request.
+        """List the device inactivity policies.
 
         Args:
-            team_id:
+            team_id: filter the data to its respective team.
             size: response size.
             page: response page.
 
@@ -344,10 +344,10 @@ class Client(BaseClient):
                                   headers=self._headers, params=params)
 
     def policy_device_inactivity_get(self, policy_id: str):
-        """Search events by sending a GET request.
+        """Get the device inactivity policy by id.
 
         Args:
-            policy_id:
+            policy_id: the policy id to query.
 
         Returns:
             Response from API.
@@ -434,7 +434,7 @@ def devices_search_command(client: Client, args: Dict) -> CommandResults:
     hr_output = content.copy()
 
     for item in hr_output:
-        bundle_id_item = dict_safe_get(content, ['zappInstance', 'bundleId'])
+        bundle_id_item = item.get('zappInstance', [{}])[0].get('bundleId')
         item.update({'bundleId': bundle_id_item})
 
     hr = tableToMarkdown(name='Device search', t=hr_output,
@@ -454,7 +454,7 @@ def devices_search_command(client: Client, args: Dict) -> CommandResults:
 
 
 def device_by_id_command(client: Client, args: Dict) -> CommandResults:
-    """Search devices.
+    """Get device by ID.
 
     Args:
         client: Client object with request.
@@ -466,7 +466,7 @@ def device_by_id_command(client: Client, args: Dict) -> CommandResults:
     device_id = args.get('device_id')
 
     response = client.device_by_id(device_id=device_id)
-    bundle_id_item = dict_safe_get(response, ['zappInstance', 'bundleId'])
+    bundle_id_item = response.get('zappInstance', [{}])[0].get('bundleId')
     response.update({'bundleId': bundle_id_item})
 
     hr = tableToMarkdown(name='Device', t=response,
@@ -486,7 +486,7 @@ def device_by_id_command(client: Client, args: Dict) -> CommandResults:
 
 
 def report_get_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """Get report by ID.
 
     Args:
         client: Client object with request.
@@ -595,7 +595,7 @@ def app_version_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def device_cve_get_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """Retrieve the devices associated with a specific CVE
 
     Args:
         client: Client object with request.
@@ -635,7 +635,7 @@ def device_cve_get_command(client: Client, args: Dict) -> CommandResults:
 
 
 def devices_os_version_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """Search devices by os version.
 
     Args:
         client: Client object with request.
@@ -710,7 +710,7 @@ def cve_devices_get_command(client: Client, args: Dict) -> CommandResults:
 
 
 def policy_group_list_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """List policies groups.
 
     Args:
         client: Client object with request.
@@ -729,7 +729,7 @@ def policy_group_list_command(client: Client, args: Dict) -> CommandResults:
 
     command_results = CommandResults(
         outputs_prefix='Zimperium.PolicyGroup',
-        outputs=response,
+        outputs=response.get('content'),
         outputs_key_field='id',
         readable_output=hr,
         raw_response=response,
@@ -738,7 +738,7 @@ def policy_group_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def policy_privacy_get_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """Get privacy policy by id.
 
     Args:
         client: Client object with request.
@@ -768,7 +768,7 @@ def policy_privacy_get_command(client: Client, args: Dict) -> CommandResults:
 
 
 def policy_threat_get_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """Get threat policy by id.
 
     Args:
         client: Client object with request.
@@ -798,7 +798,7 @@ def policy_threat_get_command(client: Client, args: Dict) -> CommandResults:
 
 
 def policy_phishing_get_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """Get phishing policy by id.
 
     Args:
         client: Client object with request.
@@ -829,7 +829,7 @@ def policy_phishing_get_command(client: Client, args: Dict) -> CommandResults:
 
 
 def policy_app_settings_get_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """Get policy app settings by id.
 
     Args:
         client: Client object with request.
@@ -859,7 +859,7 @@ def policy_app_settings_get_command(client: Client, args: Dict) -> CommandResult
 
 
 def policy_device_inactivity_list_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """List device inactivity policies
 
     Args:
         client: Client object with request.
@@ -892,7 +892,7 @@ def policy_device_inactivity_list_command(client: Client, args: Dict) -> Command
 
 
 def policy_device_inactivity_get_command(client: Client, args: Dict) -> CommandResults:
-    """Search threats.
+    """Get device inactivity policy by id.
 
     Args:
         client: Client object with request.
@@ -905,7 +905,7 @@ def policy_device_inactivity_get_command(client: Client, args: Dict) -> CommandR
 
     response = client.policy_device_inactivity_get(policy_id=policy_id)
 
-    hr = tableToMarkdown(name='Device Inactivity List', t=response,
+    hr = tableToMarkdown(name='Device Inactivity', t=response,
                          headers=['id', 'name', 'teamId', 'accountId', 'pendingActivationSettings',
                                   'inactiveAppSettings', 'groups', 'created', 'modified',
                                   ],
@@ -930,30 +930,31 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
     This function will execute each interval (default is 1 minute).
 
     Args:
-        client (Client): Zimperium V2 client
-        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
-        fetch_query: fetch query to search
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
-        max_fetch: max events to fetch
-        look_back: Minutes to look back when fetching
+        client (Client): Zimperium V2 client.
+        last_run (dict): the last fetch object.
+        fetch_query(str): fetch query to search.
+        first_fetch_time (time): If last_run is None then fetch all incidents since first_fetch_time.
+        max_fetch(int): max events to fetch.
+        look_back(int): minutes to look back when fetching.
 
     Returns:
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created
-    """
+    # """
     demisto.debug(f"Last run before the fetch run: {last_run}")
+    limit = last_run.get('limit', max_fetch)
     start_time, end_time = get_fetch_run_time_range(
         last_run=last_run,
         first_fetch=first_fetch_time,
         look_back=look_back,
         date_format=DATE_FORMAT,
     )
-    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
+    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}, with {limit=}")
 
     search_params = {key: value for param in fetch_query for key, value in [param.split('=', 1)]}
     demisto.debug(f'The query for fetch: {search_params}')
 
-    res = client.threat_search(after=start_time)
+    res = client.threat_search(after=start_time, search_params=search_params, size=limit)
     incidents_res = res.get('content', [])
     demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
 
@@ -968,9 +969,10 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
     incidents: list[dict] = []
     for incident in incidents_filtered:
         occurred = timestamp_to_datestring(incident.get('timestamp'))
+        demisto.debug(f'Looking on: {incident.get("id")}, {occurred=}')
         incident['timestamp'] = occurred
         incidents.append({
-            'name': f"Threat on Device ID {incident.get('deviceId')}",
+            'name': f"Threat {incident.get('id')} on Device ID {incident.get('deviceId')}",
             'occurred': occurred,
             'dbotMirrorId': incident.get('id'),
             'severity': incident.get('severity'),
@@ -979,7 +981,7 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
 
     last_run = update_last_run_object(
         last_run=last_run,
-        incidents=incidents,
+        incidents=incidents_filtered,
         fetch_limit=max_fetch,
         start_fetch_time=start_time,
         end_fetch_time=end_time,
@@ -1002,7 +1004,7 @@ def main():
 
     # fetch params
     max_fetch = arg_to_number(params.get('max_fetch', 50)) or 50
-    fetch_query = params.get('fetch_query')
+    fetch_query = params.get('fetch_query') or ''
     first_fetch = params.get('fetch_time', '7 days').strip()
     look_back = arg_to_number(params.get('look_back')) or 1
 

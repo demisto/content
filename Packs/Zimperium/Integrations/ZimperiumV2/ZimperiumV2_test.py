@@ -1,149 +1,335 @@
 import pytest
-from Zimperium import Client, events_search, users_search, user_get_by_id, devices_search, device_get_by_id, \
-    devices_get_last_updated, app_classification_get, file_reputation, fetch_incidents, report_get
-from test_data.response_constants import RESPONSE_SEARCH_EVENTS, RESPONSE_SEARCH_USERS, RESPONSE_USER_GET_BY_ID, \
-    RESPONSE_SEARCH_DEVICES, RESPONSE_DEVICE_GET_BY_ID, RESPONSE_APP_CLASSIFICATION_GET, \
-    RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, RESPONSE_GET_LAST_UPDATED_DEVICES, RESPONSE_REPORT_GET_ITUNES_ID, \
-    RESPONSE_MULTIPLE_EVENTS_FETCH
-from test_data.result_constants import EXPECTED_SEARCH_EVENTS, EXPECTED_SEARCH_USERS, EXPECTED_USER_GET_BY_ID, \
-    EXPECTED_SEARCH_DEVICES, EXPECTED_DEVICE_GET_BY_ID, EXPECTED_GET_LAST_UPDATED_DEVICES, \
-    EXPECTED_APP_CLASSIFICATION_GET, EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET, EXPECTED_REPORT_GET_ITUNESID
+import io
+from CommonServerPython import *
+from ZimperiumV2 import Client, users_search_command, devices_search_command, device_by_id_command, report_get_command, threat_search_command, app_version_list_command, device_cve_get_command, devices_os_version_command, cve_devices_get_command, policy_group_list_command, policy_privacy_get_command, policy_threat_get_command, policy_phishing_get_command, policy_app_settings_get_command, policy_device_inactivity_list_command, policy_device_inactivity_get_command
+SERVER_URL = 'https://test_url.com/api'
 
 
-@pytest.mark.parametrize('command, args, http_response, context', [
-    (events_search, {'query': 'eventId==*', 'size': '10', 'page': '0', 'verbose': 'true'}, RESPONSE_SEARCH_EVENTS,
-     EXPECTED_SEARCH_EVENTS),
-    (users_search, {'query': 'objectId==*', 'size': '10', 'page': '0'}, RESPONSE_SEARCH_USERS, EXPECTED_SEARCH_USERS),
-    (user_get_by_id, {'object_id': '1B9182C7-8C12-4499-ADF0-A338DEFDFC33'}, RESPONSE_USER_GET_BY_ID,
-     EXPECTED_USER_GET_BY_ID),
-    (devices_search, {'query': 'deviceId==*', 'size': '10', 'page': '0'}, RESPONSE_SEARCH_DEVICES,
-     EXPECTED_SEARCH_DEVICES),
-    (device_get_by_id, {'zdid': "87a587de-283f-48c9-9ff2-047c8b025b6d"}, RESPONSE_DEVICE_GET_BY_ID,
-     EXPECTED_DEVICE_GET_BY_ID),
-    (devices_get_last_updated, {'from_last_update': "5 days"}, RESPONSE_GET_LAST_UPDATED_DEVICES,
-     EXPECTED_GET_LAST_UPDATED_DEVICES),
-    (app_classification_get, {'app_hash': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"},
-     RESPONSE_APP_CLASSIFICATION_GET, EXPECTED_APP_CLASSIFICATION_GET),
-    (app_classification_get, {'app_name': "Duo"},
-     RESPONSE_MULTIPLE_APP_CLASSIFICATION_GET, EXPECTED_MULTIPLE_APP_CLASSIFICATION_GET),
-    (report_get, {'itunes_id': '331177714'}, RESPONSE_REPORT_GET_ITUNES_ID, EXPECTED_REPORT_GET_ITUNESID),
-])
-def test_zimperium_commands(command, args, http_response, context, mocker):
-    """Unit test
-    Given
-    - demisto args
-    - raw response of the http request
-    When
-    - mock the http request result
-    Then
-    - convert the result to human readable table
-    - create the context
-    - validate the expected_result and the created context
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+@pytest.fixture()
+def client(requests_mock):
+    requests_mock.post(f'{SERVER_URL}/auth/v1/api_keys/login', json={'accessToken': 'token'})
+    return Client(base_url=SERVER_URL, client_id='test', client_secret='test', verify=True)
+
+
+def test_users_search_command(client, requests_mock):
     """
-    client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
-    mocker.patch.object(Client, '_http_request', return_value=http_response)
-    command_results = command(client, args)
-    assert command_results.outputs == context
+        When: Running zimperium-users-search
+        Given: team_id and user_id
+        Then: validate the command result returned.
+        """
+    args = {'team_id': '3', 'user_id': '01'}
+    mock_response_users_search = util_load_json(
+        './test_data/users_search.json')
+
+    requests_mock.get(f'{SERVER_URL}/auth/public/v1/users/01', json=mock_response_users_search)
+    results = users_search_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.User'
+    assert results.outputs_key_field == 'id'
+    assert results.raw_response == mock_response_users_search
+    assert results.outputs.get('id') == '01'
 
 
-def test_file_reputation(mocker):
-    """Unit test
-    Given
-    - file reputation command
-    - command args
-    - command raw response
-    When
-    - mock the Client's http_request.
-    Then
-    - run the file reputation command using the Client
-    Validate The contents of the outputs and indicator of the results
+def test_device_by_id_command(client, requests_mock):
     """
-    client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
-    mocker.patch.object(Client, '_http_request', return_value=RESPONSE_APP_CLASSIFICATION_GET)
-    command_results_list = file_reputation(client,
-                                           args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
+        When: running zimperium-device-get-by-id
+        Given: team_name
+        Then: validate the command result returned.
+        """
+    args = {'device_id': '1'}
+    mock_response_device_search = util_load_json(
+        './test_data/device_by_id_get.json')
 
-    assert command_results_list[0].indicator.dbot_score.score == 1
+    requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/1', json=mock_response_device_search)
+    results = device_by_id_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.Device'
+    assert results.outputs.get('id') == '1'
+    assert results.outputs_key_field == 'id'
+    assert 'Device' in results.readable_output
 
 
-def test_file_reputation_404(mocker):
-    """Unit test
-    Given
-    - file reputation command
-    - command args
-    - command raw response
-    When
-    - Sending HTTP request and getting 404 status code (not found)
-    Then
-    - run the file reputation command using the Client
-    - Ensure we set the file reputation as unknown
+def test_devices_search_command(client, requests_mock):
     """
-    client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
+        When: running zimperium-devices-search
+        Given: team_name
+        Then: validate the command result returned.
+        """
+    args = {'team_name': 'Default'}
+    mock_response_device_search = util_load_json(
+        './test_data/device_search.json')
 
-    def error_404_mock(message, error):
-        raise Exception('Error in API call [404]')
+    requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/start-scroll', json=mock_response_device_search)
+    results = devices_search_command(client=client, args=args)
 
-    mocker.patch('Zimperium.Client.app_classification_get_request', side_effect=error_404_mock)
+    assert results.outputs_prefix == 'Zimperium.Device'
+    assert results.outputs[0].get('id') == mock_response_device_search.get('content', [''])[0].get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Device search' in results.readable_output
 
-    command_results_list = file_reputation(client,
-                                           args={'file': "aad9b2fd4606467f06931d72048ee1dff137cbc9b601860a88ad6a2c092"})
-    assert command_results_list[0].indicator.dbot_score.score == 0
 
-
-def test_fetch_incidents(mocker):
-    """Unit test
-    Given
-    - fetch incidents command
-    - command args
-    - command raw response
-    When
-    - mock the Client's http_request.
-    Then
-    - run the fetch incidents command using the Client
-    Validate The length of the results and the incident name.
+def test_report_get_command(client, requests_mock):
     """
-    client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
-    mocker.patch.object(Client, '_http_request', return_value=RESPONSE_MULTIPLE_EVENTS_FETCH)
-    _, incidents = fetch_incidents(client, last_run={}, fetch_query='', first_fetch_time='3 days', max_fetch='50')
-    assert len(incidents) == 14
-    assert incidents[0].get('name') == "Detected network scan after connecting to Free Wi-Fi. No active attacks were" \
-                                       " detected and this network will continue to be monitored. It is safe to" \
-                                       " continue to use this network."
+        When: running zimperium-report-get comand.
+        Given: The app version id.
+        Then: validate the command result returned.
+        """
+    args = {'app_version_id': '6'}
+    mock_response_report_get = util_load_json(
+        './test_data/report_get.json')
+
+    requests_mock.get(f'{SERVER_URL}/devices/public/v1/appVersions/6/json', json=mock_response_report_get)
+    results = report_get_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.Report'
+    assert results.outputs.get('platform') == 'android'
+    assert 'Report' in results.readable_output
+    assert results.raw_response == mock_response_report_get
 
 
-def test_fetch_incidents_last_event_ids(mocker):
-    """Unit test
-    Given
-    - fetch incidents command
-    - command args
-    - command raw response
-    When
-    - mock the last_event_ids and time.
-    - mock the Client's http_request.
-    Then
-    - run the fetch incidents command using the Client
-    Validate that no incidents will be returned.
+def test_threat_search_command(client, requests_mock):
     """
-    client = Client(base_url="https://domain.zimperium.com/", api_key="api_key", verify=False)
-    mocker.patch.object(Client, '_http_request', return_value=RESPONSE_MULTIPLE_EVENTS_FETCH)
-    last_run = {
-        'time': "whatever",
-        'last_event_ids': [
-            '421931cc-13bf-422a-890b-9958011e4926',
-            '239be3f7-ead8-4157-b24c-35590811ca19',
-            '102065eb-7ffa-4a70-b35f-bc8ca655f9ee',
-            '431638cf-21fc-4fba-86b2-0e2a4850705b',
-            'bef068eb-5482-469c-990a-5ea363e029a0',
-            'c37d7379-589e-4976-8cf2-6f2876ba7e6a',
-            '4f1a77cf-fb76-4753-b09b-422fa8a9e102',
-            '4a688920-372d-45b6-934d-284d5ecacb29',
-            '22b960e7-554a-413a-bcbf-2da75bbb2731',
-            '5f9609a6-974c-4c0d-b007-7934ddf76cff',
-            '461d1b55-53f2-4b89-b337-c24367b525ef',
-            '55a43106-9c1c-47e2-9f9f-ce212304f4c0',
-            '7dc89a3d-6fd0-4090-ac4c-f19e33402576',
-            'e696ad05-32d5-43e8-95c3-5060b0ee468e',
-        ]
-    }
-    _, incidents = fetch_incidents(client, last_run=last_run, fetch_query='', first_fetch_time='3 days', max_fetch='50')
-    assert len(incidents) == 0
+        When: running zimperium-threat-search command
+        Given: time to search threats after it, threats related to some team_id
+        Then: validate the command result returned.
+    """
+    args = {'after': '3 month', 'team_id': '3'}
+    mock_response_threat_search = util_load_json(
+        './test_data/threat_search.json')
+
+    requests_mock.get(f'{SERVER_URL}/threats/public/v1/threats', json=mock_response_threat_search)
+    results = threat_search_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.Threat'
+    assert results.outputs[0].get('id') == mock_response_threat_search.get('content', [''])[0].get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Threat search' in results.readable_output
+    assert results.raw_response == mock_response_threat_search
+
+
+def test_app_version_list_command(client, requests_mock):
+    """
+        When: running zimperium-app-version-list
+        Given: bundle id to filter by.
+        Then: validate the command result returned.
+        """
+    args = {'bundle_id': 'bundle.id'}
+    mock_response_app_version_list = util_load_json(
+        './test_data/app_version_list.json')
+
+    requests_mock.get(f'{SERVER_URL}/devices/public/v1/appVersions', json=mock_response_app_version_list)
+    results = app_version_list_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.AppVersion'
+    assert results.outputs[0].get('id') == mock_response_app_version_list.get('content', [''])[0].get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'App Version List' in results.readable_output
+    assert results.raw_response == mock_response_app_version_list
+
+
+def test_device_cve_get_command(client, requests_mock):
+    """
+        When: running zimperium-devices-cve-get
+        Given: bundle id to filter by.
+        Then: validate the command result returned.
+        """
+    args = {'cve_id': 'cve_1'}
+    mock_response_app_version_list = util_load_json(
+        './test_data/device_cve_get.json')
+
+    requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/data-cve-filter', json=mock_response_app_version_list)
+    results = device_cve_get_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.DeviceCVE'
+    assert results.outputs[0].get('id') == mock_response_app_version_list.get('content', [''])[0].get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Device CVE' in results.readable_output
+    assert results.raw_response == mock_response_app_version_list
+
+
+def test_devices_os_version_command(client, requests_mock):
+    """
+        When: running zimperium-devices-os-version command.
+        Given: os_vesrion of the device to filter by.
+        Then: validate the command result returned.
+        """
+    args = {'os_version': '9'}
+    mock_response_devices_os_version = util_load_json(
+        './test_data/devices_os_version.json')
+
+    requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/data-version-filter', json=mock_response_devices_os_version)
+    results = devices_os_version_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.DeviceOsVersion'
+    assert results.outputs[0].get('id') == mock_response_devices_os_version.get('content', [''])[0].get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Device Os Version' in results.readable_output
+    assert results.raw_response == mock_response_devices_os_version
+
+
+def test_cve_devices_get_command(client, requests_mock):
+    """
+        When: running zimperium-cve-devices-get command.
+        Given: device_id to filter by.
+        Then: validate the command result returned.
+        """
+    args = {'device_id':
+            '2a'}
+    mock_response_cve_devices_get = util_load_json(
+        './test_data/cve_devices_get.json')
+
+    requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/2a/cves', json=mock_response_cve_devices_get)
+    results = cve_devices_get_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.CVEDevice'
+    assert results.outputs[0].get('id') == mock_response_cve_devices_get.get('content', [''])[0].get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Device CVE' in results.readable_output
+    assert results.raw_response == mock_response_cve_devices_get
+
+
+def test_policy_group_list_command(client, requests_mock):
+    """
+        When: running zimperium-policy-group-list command
+        Given: no arguments
+        Then: validate the command result returned.
+        """
+    args = {}
+    mock_response_policy_group_list = util_load_json(
+        './test_data/policy_group_list.json')
+
+    requests_mock.get(f'{SERVER_URL}/mtd-policy/public/v1/groups/page', json=mock_response_policy_group_list)
+    results = policy_group_list_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.PolicyGroup'
+    assert results.outputs[0].get('id') == mock_response_policy_group_list.get('content', [''])[0].get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Policy Group List' in results.readable_output
+    assert results.raw_response == mock_response_policy_group_list
+
+
+def test_policy_privacy_get_command(client, requests_mock):
+    """
+        When: running zimperium-policy-privacy-get command
+        Given: no args
+        Then: validate the command result returned.
+        """
+    args = {'policy_id': 'a2'}
+    mock_response_policy_privacy = util_load_json(
+        './test_data/policy_privacy.json')
+
+    requests_mock.get(f'{SERVER_URL}/mtd-policy/public/v1/privacy/policies/a2', json=mock_response_policy_privacy)
+    results = policy_privacy_get_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.PolicyPrivacy'
+    assert results.outputs.get('id') == mock_response_policy_privacy.get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Privacy Policy' in results.readable_output
+    assert results.raw_response == mock_response_policy_privacy
+
+
+def test_policy_threat_get_command(client, requests_mock):
+    """
+        When: running zimperium-policy-threat-get command.
+        Given: policy_id to get information about.
+        Then: validate the command result returned.
+        """
+    args = {'policy_id': 'e2'}
+    mock_response_policy_threat = util_load_json(
+        './test_data/policy_threat.json')
+
+    requests_mock.get(f'{SERVER_URL}/mtd-policy/public/v1/trm/policies/e2', json=mock_response_policy_threat)
+    results = policy_threat_get_command(client=client, args=args)
+    assert results.outputs_prefix == 'Zimperium.PolicyThreat'
+    assert results.outputs.get('id') == mock_response_policy_threat.get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Threat Policy' in results.readable_output
+    assert results.raw_response == mock_response_policy_threat
+
+
+def test_policy_phishing_get_command(client, requests_mock):
+    """
+        When: running zimperium-policy-phishing-get command.
+        Given: policy_id to get information about.
+        Then: validate the command result returned.
+        """
+    args = {'policy_id': '25'}
+    mock_response_policy_phishing = util_load_json(
+        './test_data/policy_phishing.json')
+
+    requests_mock.get(f'{SERVER_URL}/mtd-policy/public/v1/phishing/policies/25', json=mock_response_policy_phishing)
+    results = policy_phishing_get_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.PolicyPhising'
+    assert results.outputs.get('id') == mock_response_policy_phishing.get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Phishing Policy' in results.readable_output
+    assert results.raw_response == mock_response_policy_phishing
+
+
+def test_policy_app_settings_get_command(client, requests_mock):
+    """
+        When: running zimperium-policy-app-settings-get command.
+        Given: policy_id to get information about.
+        Then: validate the command result returned.
+        """
+    args = {'app_settings_policy_id': '9e'}
+    mock_response_policy_app_settings = util_load_json(
+        './test_data/policy_app_settings.json')
+
+    requests_mock.get(f'{SERVER_URL}/mtd-policy/public/v1/app-settings/policies/9e', json=mock_response_policy_app_settings)
+    results = policy_app_settings_get_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.PolicyAppSetting'
+    assert results.outputs.get('id') == mock_response_policy_app_settings.get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Policy App Settings' in results.readable_output
+    assert results.raw_response == mock_response_policy_app_settings
+
+
+def test_policy_device_inactivity_list_command(client, requests_mock):
+    """
+        When: running zimperium-policy-device-inactivity-list command.
+        Given: team_id to filter by.
+        Then: validate the command result returned.
+        """
+    args = {'team_id': '33'}
+    mock_response_policy_device_inactivity_list = util_load_json(
+        './test_data/policy_device_inactivity_list.json')
+
+    requests_mock.get(f'{SERVER_URL}/devices/public/v1/dormancy/policies', json=mock_response_policy_device_inactivity_list)
+    results = policy_device_inactivity_list_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.PolicyDeviceInactivity'
+    assert results.outputs[0].get('id') == mock_response_policy_device_inactivity_list[0].get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Device Inactivity' in results.readable_output
+    assert results.raw_response == mock_response_policy_device_inactivity_list
+
+
+def test_policy_device_inactivity_get_command(client, requests_mock):
+    """
+        When: running zimperium-policy-device-inactivity-get command.
+        Given: policy_id to get information about.
+        Then: validate the command result returned.
+        """
+    args = {'policy_id': 'ff'}
+    mock_response_policy_device_inactivity_get = util_load_json(
+        './test_data/policy_device_inactivity_get.json')
+
+    requests_mock.get(f'{SERVER_URL}/devices/public/v1/dormancy/policies/ff', json=mock_response_policy_device_inactivity_get)
+    results = policy_device_inactivity_get_command(client=client, args=args)
+
+    assert results.outputs_prefix == 'Zimperium.PolicyDeviceInactivity'
+    assert results.outputs.get('id') == mock_response_policy_device_inactivity_get.get('id')
+    assert results.outputs_key_field == 'id'
+    assert 'Device Inactivity' in results.readable_output
+    assert results.raw_response == mock_response_policy_device_inactivity_get
+
+
+# TODO: fetch test

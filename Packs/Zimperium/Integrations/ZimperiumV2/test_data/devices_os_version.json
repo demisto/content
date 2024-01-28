@@ -1,0 +1,46 @@
+{
+    "content": [
+        {
+            "id": "2a",
+            "zdeviceId": "a8",
+            "teamId": "33",
+            "os": {
+                "id": 1,
+                "name": "android",
+                "type": "Android",
+                "version": "9",
+                "patchDate": "2019-08-05",
+                "versionUpgradeable": true,
+                "maxOsVersion": "13",
+                "maxOsPatchDate": "20",
+                "osVersionId": 57062,
+                "policyCompliant": false
+            }
+        }
+    ],
+    "pageable": {
+        "sort": {
+            "unsorted": true,
+            "sorted": false,
+            "empty": true
+        },
+        "pageSize": 20,
+        "pageNumber": 0,
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "totalPages": 1,
+    "totalElements": 1,
+    "last": true,
+    "first": true,
+    "numberOfElements": 1,
+    "sort": {
+        "unsorted": true,
+        "sorted": false,
+        "empty": true
+    },
+    "size": 20,
+    "number": 0,
+    "empty": false
+}
