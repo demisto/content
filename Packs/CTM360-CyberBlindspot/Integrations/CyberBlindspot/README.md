@@ -12,7 +12,7 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from CyberBlindspot to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CyberBlindspot\), or Incoming and Outgoing \(from/to Cortex XSOAR and CyberBlindspot\). | False |
     | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
     | API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
-    | Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | False |
+    | Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | True |
     | Fetch incidents |  | False |
     | Date From | Set the date/time incidents should be fetched from \(setting this will always get incidents from this date/time. Normally<br/>you should not set it and rely on \`First Fetch\`\). Format should be \[%d-%m-%Y %H:%M\], i.e.: '22-01-2024 13:15'<br/> | False |
     | Date To | Set the date/time incidents should be fetched up to \(setting this will always get incidents before this date/time. Normally<br/>you should not set it and rely on \`First Fetch\`\). Format should be \[%d-%m-%Y %H:%M\], i.e.: '22-01-2024 13:15'<br/> | False |
