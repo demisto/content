@@ -388,8 +388,8 @@ def test_module(client: Client, params) -> str:
             log(INFO, 'Invalid "First Fetch" Value')
             raise DemistoException('Invalid "First Fetch" Value')
         if max_fetch and (max_fetch <= 0 or max_fetch > 200):
-            log(INFO, 'Invalid "Max Fetch" Value')
-            raise DemistoException('Invalid "Max Fetch" Value')
+            log(INFO, 'Invalid "Max Fetch" Value. Should be between 1 to 200')
+            raise DemistoException('Invalid "Max Fetch" Value. Should be between 1 to 200')
         else:
             args['max_hits'] = max_fetch
         if date_from and not dateparser.parse(date_from, [CBS_OUTGOING_DATE_FORMAT]):
