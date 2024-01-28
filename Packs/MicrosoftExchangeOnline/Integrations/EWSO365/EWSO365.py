@@ -1,65 +1,60 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-
+import email
+import hashlib
+import json
+import logging
+import os
 import random
 import string
 import subprocess
-from xml.sax import SAXParseException
-
-import dateparser
-import chardet
-
-
-
 import sys
 import traceback
-import json
-import os
-import hashlib
-from io import StringIO
-import logging
 import warnings
-import email
 from email.policy import SMTP, SMTPUTF8
-from requests.exceptions import ConnectionError
+from io import StringIO
 from multiprocessing import Process
+from xml.sax import SAXParseException
+
+import chardet
+import dateparser
 import exchangelib
-from exchangelib.errors import (
-    ErrorItemNotFound,
-    ResponseMessageError,
-    RateLimitError,
-    ErrorInvalidIdMalformed,
-    ErrorFolderNotFound,
-    ErrorMailboxStoreUnavailable,
-    ErrorMailboxMoveInProgress,
-    ErrorNameResolutionNoResults,
-    MalformedResponseError,
-)
-from exchangelib.items import Item, Message, Contact
-from exchangelib.services.common import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child, MNS, TNS
 from exchangelib import (
     IMPERSONATION,
+    OAUTH2,
     Account,
+    Body,
+    Configuration,
     EWSDateTime,
     EWSTimeZone,
-    Configuration,
+    ExtendedProperty,
     FileAttachment,
-    Version,
     Folder,
     HTMLBody,
-    Body,
-    ItemAttachment,
-    OAUTH2,
-    OAuth2AuthorizationCodeCredentials,
     Identity,
-    ExtendedProperty
+    ItemAttachment,
+    OAuth2AuthorizationCodeCredentials,
+    Version,
 )
-from oauthlib.oauth2 import OAuth2Token
-from exchangelib.version import EXCHANGE_O365
+from exchangelib.errors import (
+    ErrorFolderNotFound,
+    ErrorInvalidIdMalformed,
+    ErrorItemNotFound,
+    ErrorMailboxMoveInProgress,
+    ErrorMailboxStoreUnavailable,
+    ErrorNameResolutionNoResults,
+    MalformedResponseError,
+    RateLimitError,
+    ResponseMessageError,
+)
+from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.services.common import EWSAccountService, EWSService
+from exchangelib.util import MNS, TNS, add_xml_child, create_element
+from exchangelib.version import EXCHANGE_O365
+from oauthlib.oauth2 import OAuth2Token
+from requests.exceptions import ConnectionError
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *
 
 # Ignore warnings print to stdout
@@ -2220,23 +2215,24 @@ def parse_incident_from_item(item):     # pragma: no cover
                                             if "There may be at most" not in str(err):
                                                 raise err
                             demisto.debug('the bug is solved')
-                            attached_email_bytes = attached_email.as_bytes()
-                            chardet_detection = chardet.detect(attached_email_bytes)
-                            encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
-                            try:
-                                # Trying to decode using the detected encoding
-                                data = attached_email_bytes.decode(encoding)
-                            except UnicodeDecodeError:
-                                # In case the detected encoding fails apply the default encoding
-                                demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                                            f'using utf-8.\nAttached email:\n{attached_email}')
-                                try:
-                                    data = attached_email_bytes.decode('utf-8')
-                                except UnicodeDecodeError:
-                                    demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
-                                    data = attached_email_bytes  # type: ignore
 
-                            file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
+                        attached_email_bytes = attached_email.as_bytes()
+                        chardet_detection = chardet.detect(attached_email_bytes)
+                        encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+                        try:
+                            # Trying to decode using the detected encoding
+                            data = attached_email_bytes.decode(encoding)
+                        except UnicodeDecodeError:
+                            # In case the detected encoding fails apply the default encoding
+                            demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                                        f'using utf-8.\nAttached email:\n{attached_email}')
+                            try:
+                                data = attached_email_bytes.decode('utf-8')
+                            except UnicodeDecodeError:
+                                demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
+                                data = attached_email_bytes  # type: ignore
+
+                        file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
 
                     except Exception as e:
                         raise DemistoException(f'An error while handling attachment.item.headers object. Error: {e}')
