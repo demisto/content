@@ -226,9 +226,9 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
         'tags': {
             'OR': tags if tags else [],
         },
-        'limit' : limit,
-        'page' : page
-    }   
+        'limit': limit,
+        'page': page
+    }
     return params
 
 
@@ -501,8 +501,8 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
     page = arg_to_number(args.get('page', '1')) or 0
-    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type= attribute_type, limit= limit,
-                                                                          page= page)
+    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_type, limit=limit,
+                                                                          page=page)
     response = client.search_query(params_dict)
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
@@ -541,8 +541,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type= attribute_types, limit= 2000,
-                                                                          page= 1)
+    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_types, limit=2000,
+                                                                          page=1)
     search_query_per_page = client.search_query(params_dict)
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
