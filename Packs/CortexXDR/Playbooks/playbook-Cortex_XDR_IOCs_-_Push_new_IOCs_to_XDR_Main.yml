@@ -211,7 +211,7 @@ tasks:
       batch_size:
         simple: ${inputs.batch_size}
       query:
-        simple: expirationStatus:expired tags:xdr_pushed and -tags:xdr_disabled
+        simple: expirationStatus:expired and tags:xdr_pushed and -tags:xdr_disabled
     separatecontext: false
     continueonerrortype: ""
     loop:
