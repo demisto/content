@@ -63,7 +63,7 @@ repos:
     description: Run xsoar-linter on the code in content packs
     entry: demisto-sdk xsoar-linter
     files: ^Packs\/.*\.py$
-    exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data
+    exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
     require_serial: true
     language: system
   - id: pylint-in-docker
