@@ -44,6 +44,7 @@ ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
     'RULES_ENRCH_FLG',
 ]
+print("SDSD")
 ADVANCED_PARAMETER_INT_NAMES = [
     'EVENTS_INTERVAL_SECS',
     'MAX_SEARCHES_QUEUE',
@@ -553,6 +554,7 @@ class Client(BaseClient):
         )
 
     def searches_list(self, range_: str, filter_: Optional[str] = None):
+        print("SDSD")
         return self.http_request(
             method='GET',
             url_suffix='/ariel/searches',
