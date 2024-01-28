@@ -2,7 +2,7 @@ id: Palo Alto Networks - Hunting And Threat Detection
 version: -1
 fromversion: 5.0.0
 name: Palo Alto Networks - Hunting And Threat Detection
-description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
+description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Strata Logging Service, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
 starttaskid: "0"
 tasks:
   "0":
@@ -406,8 +406,8 @@ tasks:
     task:
       id: 65f14834-0f81-4756-8d67-74d7c7469e1c
       version: -1
-      name: Search in Cortex Data Lake threat logs
-      description: Searches the Cortex Data Lake Threat table, which is the threat logs table for PAN-OS/Panorama.
+      name: Search in Strata Logging Service threat logs
+      description: Searches the Strata Logging Service Threat table, which is the threat logs table for PAN-OS/Panorama.
       script: '|||cdl-query-threat-logs'
       type: regular
       iscommand: true
@@ -444,7 +444,7 @@ tasks:
     continueonerrortype: ""
     evidencedata:
       description:
-        simple: Cortex Data Lake threat logs search results
+        simple: Strata Logging Service threat logs search results
       customfields: {}
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -455,8 +455,8 @@ tasks:
     task:
       id: dfdcd4ea-d29d-4f46-874f-de63890673b1
       version: -1
-      name: Is IP address detected in Cortex Data Lake threat logs?
-      description: Is the IP address detected in Cortex Data Lake threat logs?
+      name: Is IP address detected in Strata Logging Service threat logs?
+      description: Is the IP address detected in Strata Logging Service threat logs?
       type: condition
       iscommand: false
       brand: ""
@@ -622,8 +622,8 @@ tasks:
     task:
       id: 7e4d2773-3226-4789-8463-0107cea679d4
       version: -1
-      name: Search in Cortex Data Lake Traffic logs
-      description: Searches the Cortex Data Lake traffic table. Traffic logs contain entries for the end of each network session
+      name: Search in Strata Logging Service Traffic logs
+      description: Searches the Strata Logging Service traffic table. Traffic logs contain entries for the end of each network session
       script: '|||cdl-query-traffic-logs'
       type: regular
       iscommand: true
@@ -660,7 +660,7 @@ tasks:
     continueonerrortype: ""
     evidencedata:
       description:
-        simple: Cortex Data Lake traffic logs search results
+        simple: Strata Logging Service traffic logs search results
       customfields: {}
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -671,8 +671,8 @@ tasks:
     task:
       id: c99f4352-e1a8-4d7e-8c19-3c216fa0a81f
       version: -1
-      name: Is IP detected in Cortex Data Lake traffic logs?
-      description: Is the IP address detected in Cortex Data Lake traffic logs?
+      name: Is IP detected in Strata Logging Service traffic logs?
+      description: Is the IP address detected in Strata Logging Service traffic logs?
       type: condition
       iscommand: false
       brand: ""
@@ -844,8 +844,8 @@ tasks:
     task:
       id: 7c2c68cf-3958-4f59-8a8d-8c1782cd838b
       version: -1
-      name: Search for the hash in Cortex Data Lake Threat logs
-      description: Searches the Cortex Data Lake threat table, which is the threat logs table for PAN-OS/Panorama.
+      name: Search for the hash in Strata Logging Service Threat logs
+      description: Searches the Strata Logging Service threat table, which is the threat logs table for PAN-OS/Panorama.
       script: '|||cdl-query-threat-logs'
       type: regular
       iscommand: true
@@ -875,7 +875,7 @@ tasks:
     continueonerrortype: ""
     evidencedata:
       description:
-        simple: Cortex Data Lake threat logs search results
+        simple: Strata Logging Service threat logs search results
       customfields: {}
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -886,8 +886,8 @@ tasks:
     task:
       id: 70857f98-123d-4ce5-839c-369b0ccb5457
       version: -1
-      name: Is hash detected by Cortex Data Lake Threat logs?
-      description: Is the hash detected by Cortex Data Lake Threat logs?
+      name: Is hash detected by Strata Logging Service Threat logs?
+      description: Is the hash detected by Strata Logging Service Threat logs?
       type: condition
       iscommand: false
       brand: ""
@@ -962,8 +962,8 @@ tasks:
     task:
       id: 36f20578-0fb4-491e-8604-b42ea3277700
       version: -1
-      name: Search domain in Cortex Data Lake URL logs
-      description: Searches the Cortex Data Lake URL log table.
+      name: Search domain in Strata Logging Service URL logs
+      description: Searches the Strata Logging Service URL log table.
       script: '|||cdl-query-url-logs'
       type: regular
       iscommand: true
@@ -995,7 +995,7 @@ tasks:
     continueonerrortype: ""
     evidencedata:
       description:
-        simple: Cortex Data Lake URL logs search results
+        simple: Strata Logging Service URL logs search results
       customfields: {}
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1340,8 +1340,8 @@ tasks:
     task:
       id: fb2fc09c-71c0-4a5f-8c6f-bc1390d6ad43
       version: -1
-      name: Is Cortex Data Lake enabled?
-      description: Is Cortex Data Lake enabled?
+      name: Is Strata Logging Service enabled?
+      description: Is Strata Logging Service enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -1400,8 +1400,8 @@ tasks:
     task:
       id: 3d0b0175-d39a-41f7-80c8-39ad83ce6402
       version: -1
-      name: Is Cortex Data Lake enabled?
-      description: Is Cortex Data Lake enabled?
+      name: Is Strata Logging Service enabled?
+      description: Is Strata Logging Service enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -1766,8 +1766,8 @@ tasks:
     task:
       id: 61c46324-3bf4-4bbe-810a-1b8619d74ba6
       version: -1
-      name: Is domain detected by Cortex Data Lake URL logs?
-      description: Is the domain detected by Cortex Data Lake URL logs?
+      name: Is domain detected by Strata Logging Service URL logs?
+      description: Is the domain detected by Strata Logging Service URL logs?
       type: condition
       iscommand: false
       brand: ""
@@ -1850,7 +1850,7 @@ tasks:
     task:
       id: 3a493326-906a-43e6-85dc-d8a0c428818c
       version: -1
-      name: Cortex Data Lake IP searches
+      name: Strata Logging Service IP searches
       type: title
       iscommand: false
       brand: ""
@@ -1881,8 +1881,8 @@ tasks:
     task:
       id: 067f91b0-9593-4a0f-857e-cd712daec23e
       version: -1
-      name: Is Cortex Data Lake enabled?
-      description: Is Cortex Data Lake enabled?
+      name: Is Strata Logging Service enabled?
+      description: Is Strata Logging Service enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -1940,7 +1940,7 @@ tasks:
     task:
       id: 99bd8837-39bf-484e-867d-d55a6dce53e0
       version: -1
-      name: Cortex Data Lake domain search
+      name: Strata Logging Service domain search
       type: title
       iscommand: false
       brand: ""
@@ -2424,7 +2424,7 @@ tasks:
     task:
       id: c35b5e37-813f-472e-8ec8-ee41b091b463
       version: -1
-      name: Cortex Data Lake hash search
+      name: Strata Logging Service hash search
       type: title
       iscommand: false
       brand: ""

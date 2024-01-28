@@ -647,7 +647,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    tenant_id: str = integration_context.get('tenant_id') or demisto.params().get("tenant_id")
+    tenant_id = integration_context.get('tenant_id')
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
