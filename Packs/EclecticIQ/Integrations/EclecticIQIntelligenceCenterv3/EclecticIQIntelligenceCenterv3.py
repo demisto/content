@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-''' IMPORTS '''
+
+""" IMPORTS """
 
 import csv
 import io
@@ -12,76 +13,76 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-''' GLOBALS/PARAMS '''
+""" GLOBALS/PARAMS """
 
-PASSWORD = demisto.params().get('eiq_token')
-URL = demisto.params().get('url')
-SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
-API_VERSION = demisto.params().get('eiq_api_version')
-USE_SSL = not demisto.params().get('insecure', False)
+PASSWORD = demisto.params().get("eiq_token")
+URL = demisto.params().get("url")
+SERVER = URL[:-1] if (URL and URL.endswith("/")) else URL
+API_VERSION = demisto.params().get("eiq_api_version")
+USE_SSL = not demisto.params().get("insecure", False)
 HEADERS = {}  # type: Dict[str, str]
-IP_THRESHOLD = demisto.params().get('ip_threshold', '').lower()
-URL_THRESHOLD = demisto.params().get('url_threshold', '').lower()
-FILE_THRESHOLD = demisto.params().get('file_threshold', '').lower()
-EMAIL_THRESHOLD = demisto.params().get('email_threshold', '').lower()
-DOMAIN_THRESHOLD = demisto.params().get('domain_threshold', '').lower()
-GROUP_NAME = demisto.params().get('group_name')
-SIGHTINGS_AUTO_CREATE = demisto.params().get('sightings_auto_creation')
+IP_THRESHOLD = demisto.params().get("ip_threshold", "").lower()
+URL_THRESHOLD = demisto.params().get("url_threshold", "").lower()
+FILE_THRESHOLD = demisto.params().get("file_threshold", "").lower()
+EMAIL_THRESHOLD = demisto.params().get("email_threshold", "").lower()
+DOMAIN_THRESHOLD = demisto.params().get("domain_threshold", "").lower()
+GROUP_NAME = demisto.params().get("group_name")
+SIGHTINGS_AUTO_CREATE = demisto.params().get("sightings_auto_creation")
 
-''' EclecticIQ lib '''
+""" EclecticIQ lib """
 
 API_PATHS = {
-    'v1': {
-        'group_id_search': '/api/v1/sources/',
-        'feeds_list': '/private/outgoing-feed-download/',
-        'outgoing_feeds': '/private/outgoing-feeds/',
-        'feed_content_blocks': '/private/outgoing-feed-download/',
-        'groups': '/private/groups/',
-        'entities': '/private/entities/',
-        'observable_search': '/api/v1/observables',
-        'observable_search_raw': '/private/search-history/search-observable',
-        'entity_search': '/api/v1/entities',
-        'taxonomy_get': '/api/v1/taxonomies',
-        'observables': '/private/search-all',
-        'tasks': '/private/tasks/',
-        'dataset': '/private/intel-sets/',
-        'relationships': '/api/v1/relationships',
-        'task_status': '/private/task-runs/',
-        'incoming_feeds': '/private/incoming-feeds/',
-        'observables_batch_delete': '/private/extracts/batch-delete/',
-        'status': '/private/status',
-        'enrichers': '/private/enricher-tasks/',
-        'enrichers-run': '/private/enricher-tasks/batch-run'
+    "v1": {
+        "group_id_search": "/api/v1/sources/",
+        "feeds_list": "/private/outgoing-feed-download/",
+        "outgoing_feeds": "/private/outgoing-feeds/",
+        "feed_content_blocks": "/private/outgoing-feed-download/",
+        "groups": "/private/groups/",
+        "entities": "/private/entities/",
+        "observable_search": "/api/v1/observables",
+        "observable_search_raw": "/private/search-history/search-observable",
+        "entity_search": "/api/v1/entities",
+        "taxonomy_get": "/api/v1/taxonomies",
+        "observables": "/private/search-all",
+        "tasks": "/private/tasks/",
+        "dataset": "/private/intel-sets/",
+        "relationships": "/api/v1/relationships",
+        "task_status": "/private/task-runs/",
+        "incoming_feeds": "/private/incoming-feeds/",
+        "observables_batch_delete": "/private/extracts/batch-delete/",
+        "status": "/private/status",
+        "enrichers": "/private/enricher-tasks/",
+        "enrichers-run": "/private/enricher-tasks/batch-run",
     },
-    'v2': {
-        'group_id_search': '/api/v2/sources/',
-        'feeds_list': '/private/outgoing-feed-download/',
-        'outgoing_feeds': '/api/v2/outgoing-feeds/',
-        'feed_content_blocks': '/private/outgoing-feed-download/',
-        'groups': '/private/groups/',
-        'entities': '/private/entities/',
-        'observable_search': '/api/v2/observables',
-        'observable_search_raw': '/private/search-history/search-observable',
-        'entity_search': '/api/v2/entities',
-        'taxonomy_get': '/api/v2/taxonomies',
-        'observables': '/private/search-all',
-        'tasks': '/private/tasks/',
-        'dataset': '/private/intel-sets/',
-        'relationships': '/api/v2/relationships',
-        'task_status': '/private/task-runs/',
-        'incoming_feeds': '/private/incoming-feeds/',
-        'observables_batch_delete': '/private/extracts/batch-delete/',
-        'status': '/private/status',
-        'enrichers': '/private/enricher-tasks/',
-        'enrichers-run': '/private/enricher-tasks/batch-run'
-    }
+    "v2": {
+        "group_id_search": "/api/v2/sources/",
+        "feeds_list": "/private/outgoing-feed-download/",
+        "outgoing_feeds": "/api/v2/outgoing-feeds/",
+        "feed_content_blocks": "/private/outgoing-feed-download/",
+        "groups": "/private/groups/",
+        "entities": "/private/entities/",
+        "observable_search": "/api/v2/observables",
+        "observable_search_raw": "/private/search-history/search-observable",
+        "entity_search": "/api/v2/entities",
+        "taxonomy_get": "/api/v2/taxonomies",
+        "observables": "/private/search-all",
+        "tasks": "/private/tasks/",
+        "dataset": "/private/intel-sets/",
+        "relationships": "/api/v2/relationships",
+        "task_status": "/private/task-runs/",
+        "incoming_feeds": "/private/incoming-feeds/",
+        "observables_batch_delete": "/private/extracts/batch-delete/",
+        "status": "/private/status",
+        "enrichers": "/private/enricher-tasks/",
+        "enrichers-run": "/private/enricher-tasks/batch-run",
+    },
 }
 
 USER_AGENT = "script"
 
 
 def extract_uuid_from_url(url):
-    match = re.search(r'[\da-z\-]{36}', url)
+    match = re.search(r"[\da-z\-]{36}", url)
 
     if match:
         return match.group()
@@ -90,7 +91,7 @@ def extract_uuid_from_url(url):
 
 
 def observable_id_from_url(url):
-    match = re.search(r'(observables\/)([\d]+)', url)
+    match = re.search(r"(observables\/)([\d]+)", url)
 
     if match:
         return match.group(2)
@@ -99,7 +100,7 @@ def observable_id_from_url(url):
 
 
 def taxonomie_id_from_url(url):
-    match = re.search(r'(taxonomies\/)([\d]+)', url)
+    match = re.search(r"(taxonomies\/)([\d]+)", url)
 
     if match:
         return match.group(2)
@@ -108,14 +109,14 @@ def taxonomie_id_from_url(url):
 
 
 def format_ts(dt):
-    return dt.replace(microsecond=0).isoformat() + 'Z'
+    return dt.replace(microsecond=0).isoformat() + "Z"
 
 
 def format_ts_human(dt):
-    return dt.replace(microsecond=0).isoformat() + 'Z'
+    return dt.replace(microsecond=0).isoformat() + "Z"
 
 
-class xsoar_logger(object):
+class xsoar_logger:
     def info(self, message):
         demisto.info(message)
 
@@ -132,19 +133,20 @@ class xsoar_logger(object):
         demisto.error(message)
 
 
-class EclecticIQ_api(object):
-    def __init__(self,
-                 baseurl,
-                 eiq_api_version,
-                 username,
-                 password,
-                 verify_ssl=True,
-                 proxy_ip=None,
-                 proxy_username=None,
-                 proxy_password=None,
-                 logger=None,
-                 init_cred_test=True
-                 ):
+class EclecticIQ_api:
+    def __init__(
+        self,
+        baseurl,
+        eiq_api_version,
+        username,
+        password,
+        verify_ssl=True,
+        proxy_ip=None,
+        proxy_username=None,
+        proxy_password=None,
+        logger=None,
+        init_cred_test=True,
+    ):
         self.eiq_logging = xsoar_logger()
         self.eiq_username = username
         self.eiq_password = password
@@ -157,9 +159,9 @@ class EclecticIQ_api(object):
         self.eiq_api_version = eiq_api_version
         self.taxonomie_dict = {}
         self.headers = {
-            'user-agent': USER_AGENT,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            "user-agent": USER_AGENT,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
         }
         self.get_outh_token(test_credentials=init_cred_test)
 
@@ -174,10 +176,7 @@ class EclecticIQ_api(object):
     def set_verify_ssl(self, ssl_status):
         if ssl_status in ["1", "True", "true", True]:
             return True
-        elif ssl_status in ["0", "False", "false", False]:
-            return False
-        else:
-            return True
+        return ssl_status not in ["0", "False", "false", False]
 
     def sanitize_eiq_url(self, eiq_url):
         # TD
@@ -186,47 +185,62 @@ class EclecticIQ_api(object):
     def set_eiq_proxy(self):
         if self.proxy_ip and self.proxy_username and self.proxy_password:
             return {
-                'http': 'http://' + self.proxy_username + ':' + self.proxy_password + '@' + self.proxy_ip + '/',
-                'https': 'http://' + self.proxy_username + ':' + self.proxy_password + '@' + self.proxy_ip + '/',
+                "http": "http://"
+                + self.proxy_username
+                + ":"
+                + self.proxy_password
+                + "@"
+                + self.proxy_ip
+                + "/",
+                "https": "http://"
+                + self.proxy_username
+                + ":"
+                + self.proxy_password
+                + "@"
+                + self.proxy_ip
+                + "/",
             }
         elif self.proxy_ip:
             return {
-                'http': 'http://' + self.proxy_ip + '/',
-                'https': 'http://' + self.proxy_ip + '/',
+                "http": "http://" + self.proxy_ip + "/",
+                "https": "http://" + self.proxy_ip + "/",
             }
         else:
             return None
 
     def get_outh_token(self, test_credentials=True):
-        self.eiq_logging.info('Authenticating using username: ' + str(self.eiq_username))
+        self.eiq_logging.info(
+            "Authenticating using username: " + str(self.eiq_username)
+        )
 
         try:
-            self.headers['Authorization'] = 'Bearer ' + str(self.eiq_password)
+            self.headers["Authorization"] = "Bearer " + str(self.eiq_password)
 
             if test_credentials:
                 r = requests.get(
-                    str(self.baseurl) + '/private',
+                    str(self.baseurl) + "/private",
                     headers=self.headers,
                     verify=self.verify_ssl,
                     proxies=self.proxies,
-                    timeout=30
+                    timeout=30,
                 )
 
                 if r and r.status_code in [100, 200, 201, 202]:
-                    self.eiq_logging.info('Authentication successful')
+                    self.eiq_logging.info("Authentication successful")
                 else:
                     if not r:
-                        msg = 'Could not perform auth request to EclecticIQ'
+                        msg = "Could not perform auth request to EclecticIQ"
                         self.eiq_logging.exception(msg)
                         raise Exception(msg)
                     try:
                         err = r.json()
-                        detail = err['errors'][0]['detail']
-                        msg = ('EclecticIQ VA returned an error, code:[{0}], reason:[{1}], URL: [{2}], details:[{3}]'
-                               .format(r.status_code, r.reason, r.url, detail))
+                        detail = err["errors"][0]["detail"]
+                        msg = (
+                            f"EclecticIQ VA returned an error, "
+                            f"code:[{r.status_code}], reason:[{r.reason}], URL: [{r.url}], details:[{detail}]"
+                        )
                     except Exception:
-                        msg = ('EclecticIQ VA returned an error, code:[{0}], reason:[{1}], URL: [{2}]'.format(
-                               r.status_code, r.reason, r.url))
+                        msg = f"EclecticIQ VA returned an error, code:[{r.status_code}], reason:[{r.reason}], URL: [{r.url}]"
                     raise Exception(msg)
 
         except Exception:
@@ -238,7 +252,7 @@ class EclecticIQ_api(object):
 
         r = None
         try:
-            if method == 'post':
+            if method == "post":
                 r = requests.post(
                     url,
                     headers=self.headers,
@@ -246,9 +260,9 @@ class EclecticIQ_api(object):
                     data=json.dumps(data),
                     verify=self.verify_ssl,
                     proxies=self.proxies,
-                    timeout=30
+                    timeout=30,
                 )
-            elif method == 'put':
+            elif method == "put":
                 r = requests.put(
                     url,
                     headers=self.headers,
@@ -256,9 +270,9 @@ class EclecticIQ_api(object):
                     data=json.dumps(data),
                     verify=self.verify_ssl,
                     proxies=self.proxies,
-                    timeout=30
+                    timeout=30,
                 )
-            elif method == 'get':
+            elif method == "get":
                 r = requests.get(
                     url,
                     headers=self.headers,
@@ -266,9 +280,9 @@ class EclecticIQ_api(object):
                     data=json.dumps(data),
                     verify=self.verify_ssl,
                     proxies=self.proxies,
-                    timeout=30
+                    timeout=30,
                 )
-            elif method == 'delete':
+            elif method == "delete":
                 r = requests.delete(
                     url,
                     headers=self.headers,
@@ -276,83 +290,92 @@ class EclecticIQ_api(object):
                     data=json.dumps(data),
                     verify=self.verify_ssl,
                     proxies=self.proxies,
-                    timeout=30
+                    timeout=30,
                 )
             else:
                 self.eiq_logging.error("Unknown method: " + str(method))
                 raise Exception
         except Exception as e:
-            self.eiq_logging.exception('Could not perform request to EclecticIQ VA: {0}: {1}. Exception: {2}'
-                                       .format(method, url, e))
+            self.eiq_logging.exception(
+                "Could not perform request to EclecticIQ VA: {}: {}. Exception: {}".format(
+                    method, url, e
+                )
+            )
 
         if r and r.status_code in [100, 200, 201, 202, 204]:
             return r
         else:
             if r is None:
-                msg = ('Could not perform request to EclecticIQ VA: {0}: {1}. Check network connectivity.'.format(method, url))
+                msg = f"Could not perform request to EclecticIQ VA: {method}: {url}. Check network connectivity."
                 self.eiq_logging.exception(msg)
                 raise Exception(msg)
             elif r.status_code in [401]:
-                msg = ('Wrong credentials. Status code:{0}'.format(r.status_code))
+                msg = f"Wrong credentials. Status code:{r.status_code}"
                 self.eiq_logging.exception(msg)
                 raise Exception(msg)
             elif not r:
-                msg = ('Could not perform request to EclecticIQ VA: {0}: {1}.'.format(method, url))
+                msg = f"Could not perform request to EclecticIQ VA: {method}: {url}."
                 self.eiq_logging.exception(msg)
                 raise Exception(msg)
 
             try:
                 err = r.json()
-                detail = err['errors'][0]['detail']
-                msg = ('EclecticIQ VA returned an error, code:{0}, reason:[{1}], URL: [{2}], details:[{3}]'.format(
-                    r.status_code,
-                    r.reason,
-                    r.url,
-                    detail))
+                detail = err["errors"][0]["detail"]
+                msg = "EclecticIQ VA returned an error, code:{}, reason:[{}], URL: [{}], details:[{}]".format(
+                    r.status_code, r.reason, r.url, detail
+                )
             except Exception:
-                msg = ('EclecticIQ VA returned an error, code:{0}, reason:[{1}], URL: [{2}]').format(
-                    r.status_code,
-                    r.reason,
-                    r.url)
+                msg = (
+                    "EclecticIQ VA returned an error, code:{}, reason:[{}], URL: [{}]"
+                ).format(r.status_code, r.reason, r.url)
             raise Exception(msg)
 
     def get_source_group_uid(self, group_name):
         # get source group UID.
-        self.eiq_logging.debug("Requesting source id for specified group, name=[" + str(group_name) + "]")
+        self.eiq_logging.debug(
+            "Requesting source id for specified group, name=[" + str(group_name) + "]"
+        )
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['groups'],
-            params='filter[name]=' + str(group_name))
+            "get",
+            path=API_PATHS[self.eiq_api_version]["groups"],
+            params="filter[name]=" + str(group_name),
+        )
 
-        if not r.json()['data']:
+        if not r.json()["data"]:
             self.eiq_logging.error(
-                'Something went wrong fetching the group id. '
-                'Please note the source group name is case sensitive! '
-                'Received response:' + str(r.json()))
+                "Something went wrong fetching the group id. "
+                "Please note the source group name is case sensitive! "
+                "Received response:" + str(r.json())
+            )
             return "error_in_fetching_group_id"
         else:
-            self.eiq_logging.debug('Source group id received')
-            self.eiq_logging.debug('Source group id is: ' + str(r.json()['data'][0]['source']))
-            return r.json()['data'][0]['source']
+            self.eiq_logging.debug("Source group id received")
+            self.eiq_logging.debug(
+                "Source group id is: " + str(r.json()["data"][0]["source"])
+            )
+            return r.json()["data"][0]["source"]
 
     def get_source_group_order_id(self, group_name):
         # get source group UID.
-        self.eiq_logging.debug("Requesting source id for specified group, name=[" + str(group_name) + "]")
+        self.eiq_logging.debug(
+            "Requesting source id for specified group, name=[" + str(group_name) + "]"
+        )
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['groups'],
-            params='filter[name]=' + str(group_name))
+            "get",
+            path=API_PATHS[self.eiq_api_version]["groups"],
+            params="filter[name]=" + str(group_name),
+        )
 
-        return r.json()['data'][0]['id']
+        return r.json()["data"][0]["id"]
 
     def get_enrichers_list(self):
         # get enrichers list
         self.eiq_logging.debug("Requesting availble Enrichers list from platform.")
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['enrichers'])
+            "get", path=API_PATHS[self.eiq_api_version]["enrichers"]
+        )
 
-        return r.json()['data']
+        return r.json()["data"]
 
     def get_active_enrichers_list(self):
         enrichers_list = []
@@ -367,29 +390,24 @@ class EclecticIQ_api(object):
 
     def enrich_observable(self, enricher_id, observable_id):
         # To enrich Observable
-        self.eiq_logging.debug("Enriching observable.{0}".format(observable_id))
+        self.eiq_logging.debug(f"Enriching observable.{observable_id}")
         run_dict = {
-            "data":
-                {
-                    "enricher_tasks": [enricher_id],
-                    "extracts": [observable_id]}}
+            "data": {"enricher_tasks": [enricher_id], "extracts": [observable_id]}
+        }
 
         r = self.send_api_request(
-            'post',
-            path=API_PATHS[self.eiq_api_version]['enrichers-run'],
-            data=run_dict)
+            "post", path=API_PATHS[self.eiq_api_version]["enrichers-run"], data=run_dict
+        )
 
-        return r.json()['data']
+        return r.json()["data"]
 
     def get_status(self):
         # get platform status
         self.eiq_logging.info("Requesting Platform status")
 
-        r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['status'])
+        r = self.send_api_request("get", path=API_PATHS[self.eiq_api_version]["status"])
 
-        return r.json()['data']
+        return r.json()["data"]
 
     def get_status_red_component(self):
         status = self.get_status()
@@ -406,9 +424,19 @@ class EclecticIQ_api(object):
 
         return result
 
-    def create_incoming_feed(self, feed_title, content_type, password, username, collection_name="null",
-                             polling_service_url="null", taxii_version="null", transport_type="null", basic_auth="false"):
-        self.eiq_logging.info("Creating Incoming Feed {0}".format(feed_title))
+    def create_incoming_feed(
+        self,
+        feed_title,
+        content_type,
+        password,
+        username,
+        collection_name="null",
+        polling_service_url="null",
+        taxii_version="null",
+        transport_type="null",
+        basic_auth="false",
+    ):
+        self.eiq_logging.info(f"Creating Incoming Feed {feed_title}")
         # To create Incoming feed
 
         # TD "null" doesnt work, if lines are not commented it leads to 500 error
@@ -428,24 +456,25 @@ class EclecticIQ_api(object):
                     "polling_service_url": polling_service_url,
                     "ssl_authentication_mode": "false",
                     "taxii_version": taxii_version,
-                    "verify_ssl": "false"
+                    "verify_ssl": "false",
                 },
-                "transport_type": transport_type
+                "transport_type": transport_type,
             }
         }
 
         r = self.send_api_request(
-            'post',
-            path=API_PATHS[self.eiq_api_version]['incoming_feeds'],
-            data=create_feed_dict)
+            "post",
+            path=API_PATHS[self.eiq_api_version]["incoming_feeds"],
+            data=create_feed_dict,
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
 
         return result
 
     def download_incoming_feed(self, feed_id, feed_provider_task):
         # To download incmoing feed
-        self.eiq_logging.info("Downloading Incoming Feed {0}".format(feed_id))
+        self.eiq_logging.info(f"Downloading Incoming Feed {feed_id}")
 
         run_task_download_feed = {
             "data": {
@@ -461,48 +490,53 @@ class EclecticIQ_api(object):
                 # },
                 # "task_name": "eiq.incoming-transports.taxii",
                 "task_type": "provider_task",
-                "trigger": "null"
+                "trigger": "null",
             }
         }
 
         r = self.send_api_request(
-            'post',
-            path=API_PATHS[self.eiq_api_version]['tasks'] + str(feed_provider_task) + "/run",
-            data=run_task_download_feed)
+            "post",
+            path=API_PATHS[self.eiq_api_version]["tasks"]
+            + str(feed_provider_task)
+            + "/run",
+            data=run_task_download_feed,
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
         return result
 
     def delete_outgoing_feed(self, feed_id):
         # To delete Outgoing feed
-        self.eiq_logging.info("Delete Outgoing Feed {0}".format(feed_id))
+        self.eiq_logging.info(f"Delete Outgoing Feed {feed_id}")
 
         self.send_api_request(
-            'delete',
-            path=API_PATHS[self.eiq_api_version]['outgoing_feeds'] + str(feed_id))
+            "delete",
+            path=API_PATHS[self.eiq_api_version]["outgoing_feeds"] + str(feed_id),
+        )
 
         result = "Outgoing Feed deleted"
         return result
 
     def delete_incoming_feed(self, feed_id):
         # To delete Incoming feed
-        self.eiq_logging.info("Delete Incoming Feed {0}".format(feed_id))
+        self.eiq_logging.info(f"Delete Incoming Feed {feed_id}")
 
         self.send_api_request(
-            'delete',
+            "delete",
             params="with_linked_data=true",
-            path=API_PATHS[self.eiq_api_version]['incoming_feeds'] + str(feed_id))
+            path=API_PATHS[self.eiq_api_version]["incoming_feeds"] + str(feed_id),
+        )
 
         result = "Incoming Feed deleted"
         return result
 
     def delete_data_set(self, data_set_id):
         # To delete dataset
-        self.eiq_logging.info("Delete Dataset {0}".format(data_set_id))
+        self.eiq_logging.info(f"Delete Dataset {data_set_id}")
 
         self.send_api_request(
-            'delete',
-            path=API_PATHS[self.eiq_api_version]['dataset'] + str(data_set_id))
+            "delete", path=API_PATHS[self.eiq_api_version]["dataset"] + str(data_set_id)
+        )
 
         result = "Dataset deleted"
         return result
@@ -510,56 +544,50 @@ class EclecticIQ_api(object):
     def create_dataset(self, title, search_query):
         # To create Dataset
 
-        self.eiq_logging.info("Creating Dataset {0}".format(title))
+        self.eiq_logging.info(f"Creating Dataset {title}")
 
         create_dataset = {
             "data": {
                 "is_dynamic": True,
                 "name": title,
                 "search_query": search_query,
-                "workspaces": [
-                    1
-                ]
+                "workspaces": [1],
             }
         }
 
         r = self.send_api_request(
-            'post',
-            path=API_PATHS[self.eiq_api_version]['dataset'],
-            data=create_dataset)
+            "post", path=API_PATHS[self.eiq_api_version]["dataset"], data=create_dataset
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
 
         return result
 
-    def create_outgoing_feed(self, content_type, intel_set_id, feed_title, transport_type, update_strategy, access_group_name):
+    def create_outgoing_feed(
+        self,
+        content_type,
+        intel_set_id,
+        feed_title,
+        transport_type,
+        update_strategy,
+        access_group_name,
+    ):
         # create Outgoing feed
 
-        self.eiq_logging.info("Creating Outgoing Feed {0}".format(feed_title))
+        self.eiq_logging.info(f"Creating Outgoing Feed {feed_title}")
 
-        authorized_group_order_id = str(self.get_source_group_order_id(access_group_name))
+        authorized_group_order_id = str(
+            self.get_source_group_order_id(access_group_name)
+        )
 
         create_outgoing_feed = {
             "data": {
                 "allowed_extract_states": [
-                    {
-                        "classification": "bad",
-                        "confidence": "high"
-                    },
-                    {
-                        "classification": "bad",
-                        "confidence": "medium"
-                    },
-                    {
-                        "classification": "bad",
-                        "confidence": "low"
-                    },
-                    {
-                        "classification": "good"
-                    },
-                    {
-                        "classification": "unknown"
-                    }
+                    {"classification": "bad", "confidence": "high"},
+                    {"classification": "bad", "confidence": "medium"},
+                    {"classification": "bad", "confidence": "low"},
+                    {"classification": "good"},
+                    {"classification": "unknown"},
                 ],
                 "allowed_link_types": [
                     "parameter",
@@ -574,13 +602,11 @@ class EclecticIQ_api(object):
                     "test-mechanism",
                     "identity",
                     "malicious-infrastructure",
-                    "targeted-victim"
+                    "targeted-victim",
                 ],
                 "anonymize_replace_actions": [],
                 "anonymize_skip_paths": [],
-                "content_configuration": {
-                    "producer_override_enabled": False
-                },
+                "content_configuration": {"producer_override_enabled": False},
                 "content_type": content_type,
                 "deselected_enrichers": [],
                 "do_sign_content": False,
@@ -640,7 +666,7 @@ class EclecticIQ_api(object):
                     "malware",
                     "hash-sha512",
                     "cwe",
-                    "process"
+                    "process",
                 ],
                 # "execution_schedule": "null",
                 "extract_types": [
@@ -699,13 +725,11 @@ class EclecticIQ_api(object):
                     "uri",
                     "uri-hash-sha256",
                     "winregistry",
-                    "yara"
+                    "yara",
                 ],
                 # "half_life_filter": "null",
                 "include_without_link_type": True,
-                "intel_sets": [
-                    str(intel_set_id)
-                ],
+                "intel_sets": [str(intel_set_id)],
                 "is_active": False,
                 "name": feed_title,
                 "require_valid_data": False,
@@ -713,52 +737,53 @@ class EclecticIQ_api(object):
                 # "tlp_color_filter": "null",
                 # "tlp_color_override": "null",
                 "transport_configuration": {
-                    "authorized_groups": [
-                        authorized_group_order_id
-                    ],
-                    "is_public": False
+                    "authorized_groups": [authorized_group_order_id],
+                    "is_public": False,
                 },
                 "transport_type": transport_type,
                 "update_strategy": update_strategy,
                 "whitelist_sources": [],
                 "whitelist_tags": [],
-                "whitelist_taxonomy_nodes": []
+                "whitelist_taxonomy_nodes": [],
             }
         }
 
         r = self.send_api_request(
-            'post',
-            path=API_PATHS[self.eiq_api_version]['outgoing_feeds'],
-            data=create_outgoing_feed)
+            "post",
+            path=API_PATHS[self.eiq_api_version]["outgoing_feeds"],
+            data=create_outgoing_feed,
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
 
         return result
 
     def enable_outgoing_feed(self, outgoing_feed_full_info):
         # enable outgoing feed
 
-        self.eiq_logging.info("Enable Outgoing Feed id={0}".format(outgoing_feed_full_info["id"]))
+        self.eiq_logging.info(
+            "Enable Outgoing Feed id={}".format(outgoing_feed_full_info["id"])
+        )
 
-        enable_outgoing_feed_payload = {
-            "data": outgoing_feed_full_info
-        }
+        enable_outgoing_feed_payload = {"data": outgoing_feed_full_info}
 
         enable_outgoing_feed_payload["data"]["is_active"] = True
 
         r = self.send_api_request(
-            'put',
-            path=API_PATHS[self.eiq_api_version]['outgoing_feeds'] + str(outgoing_feed_full_info["id"]),
-            data=enable_outgoing_feed_payload)
+            "put",
+            path=API_PATHS[self.eiq_api_version]["outgoing_feeds"]
+            + str(outgoing_feed_full_info["id"]),
+            data=enable_outgoing_feed_payload,
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
 
         return result
 
     def run_outgoing_feed(self, feed_id):
         # run outgoing feed
 
-        self.eiq_logging.info("Run Outgoing Feed {0}".format(feed_id))
+        self.eiq_logging.info(f"Run Outgoing Feed {feed_id}")
 
         outgoing_feed_full_info = self.get_full_feed_info(feed_id=feed_id)
 
@@ -778,42 +803,45 @@ class EclecticIQ_api(object):
                 # },
                 "task_name": "eiq.outgoing-feeds.feed_update",
                 "task_type": "utility_task",
-                "trigger": "null"
+                "trigger": "null",
             }
         }
 
         r = self.send_api_request(
-            'post',
-            path=API_PATHS[self.eiq_api_version]['tasks'] + str(outgoing_feed_full_info["update_task"]) + "/run",
-            data=run_task_outgoing_feed)
+            "post",
+            path=API_PATHS[self.eiq_api_version]["tasks"]
+            + str(outgoing_feed_full_info["update_task"])
+            + "/run",
+            data=run_task_outgoing_feed,
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
         return result
 
     def get_task_status(self, task_id):
         # get task status
 
-        self.eiq_logging.info("Requesting status of task: {0}".format(task_id))
+        self.eiq_logging.info(f"Requesting status of task: {task_id}")
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['task_status'] + task_id)
+            "get", path=API_PATHS[self.eiq_api_version]["task_status"] + task_id
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
 
         return result
 
     def get_incoming_feed_blobs_pending(self, feed_id):
         # to get incmoing feed blobs
-        self.eiq_logging.info("Requesting Incoming feed run status: {0}".format(feed_id))
+        self.eiq_logging.info(f"Requesting Incoming feed run status: {feed_id}")
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['incoming_feeds'])
+            "get", path=API_PATHS[self.eiq_api_version]["incoming_feeds"]
+        )
 
         result = None
 
-        for feed in (json.loads(r.text))['data']:
+        for feed in (json.loads(r.text))["data"]:
             if feed["id"] == feed_id:
                 result = feed["n_blobs_pending"]
 
@@ -822,43 +850,50 @@ class EclecticIQ_api(object):
     def get_full_feed_info(self, feed_id):
         # to get outgoing feed full info
 
-        self.eiq_logging.info("Requesting full feed info for feed id={0}".format(feed_id))
+        self.eiq_logging.info(f"Requesting full feed info for feed id={feed_id}")
 
         if feed_id == "*":
             feed_id = ""
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['outgoing_feeds'] + str(feed_id))
+            "get", path=API_PATHS[self.eiq_api_version]["outgoing_feeds"] + str(feed_id)
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
 
         return result
 
     def get_incoming_feed_full_info(self, feed_id):
         # to get incmoing feed full info
 
-        self.eiq_logging.info("Requesting full feed info for incoming feed id={0}".format(feed_id))
+        self.eiq_logging.info(
+            f"Requesting full feed info for incoming feed id={feed_id}"
+        )
 
         if feed_id == "*":
             feed_id = ""
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['incoming_feeds'] + str(feed_id))
+            "get", path=API_PATHS[self.eiq_api_version]["incoming_feeds"] + str(feed_id)
+        )
 
-        result = (json.loads(r.text))['data']
+        result = (json.loads(r.text))["data"]
 
         return result
 
     def get_feed_info(self, feed_ids):
-        self.eiq_logging.info("Requesting feed info for feed id={0}".format(feed_ids))
-        feed_ids = (feed_ids.replace(" ", "")).split(',')
+        self.eiq_logging.info(f"Requesting feed info for feed id={feed_ids}")
+        feed_ids = (feed_ids.replace(" ", "")).split(",")
         result = []
 
         if self.eiq_api_version == "FC":
             for k in feed_ids:
-                feed_result = {'id': k, 'created_at': '', 'update_strategy': 'REPLACE', 'packaging_status': 'SUCCESS'}
+                feed_result = {
+                    "id": k,
+                    "created_at": "",
+                    "update_strategy": "REPLACE",
+                    "packaging_status": "SUCCESS",
+                }
                 result.append(feed_result)
             self.feeds_info = result
             return result
@@ -867,115 +902,161 @@ class EclecticIQ_api(object):
             feed_result = {}
             try:
                 r = self.send_api_request(
-                    'get',
-                    path=API_PATHS[self.eiq_api_version]['outgoing_feeds'] + k)
+                    "get", path=API_PATHS[self.eiq_api_version]["outgoing_feeds"] + k
+                )
             except Exception:
-                self.eiq_logging.error('Feed id={0} information cannot be requested.'.format(k))
+                self.eiq_logging.error(f"Feed id={k} information cannot be requested.")
                 continue
 
-            if not r.json()['data']:
+            if not r.json()["data"]:
                 self.eiq_logging.error(
-                    'Feed id={0} information cannot be requested. Received response:' + str(r.json())).format(k)
+                    "Feed id={0} information cannot be requested. Received response:"
+                    + str(r.json())
+                ).format(k)
                 return "error_in_fetching_feed_info"
             else:
-                self.eiq_logging.debug('Feed id={0} information requested'.format(k))
-                feed_result['id'] = r.json()['data']['id']
-                feed_result['created_at'] = r.json()['data']['created_at']
-                feed_result['update_strategy'] = r.json()['data']['update_strategy']
-                feed_result['packaging_status'] = r.json()['data']['packaging_status']
-                feed_result['name'] = r.json()['data']['name']
+                self.eiq_logging.debug(f"Feed id={k} information requested")
+                feed_result["id"] = r.json()["data"]["id"]
+                feed_result["created_at"] = r.json()["data"]["created_at"]
+                feed_result["update_strategy"] = r.json()["data"]["update_strategy"]
+                feed_result["packaging_status"] = r.json()["data"]["packaging_status"]
+                feed_result["name"] = r.json()["data"]["name"]
                 result.append(feed_result)
                 self.eiq_logging.debug(
-                    'Feed id={0} information retrieved successfully. Received response:'.format(k) + str(
-                        json.dumps(feed_result)))
+                    f"Feed id={k} information retrieved successfully. Received response:"
+                    + str(json.dumps(feed_result))
+                )
 
         return result
 
     def download_block_list(self, block):
-        self.eiq_logging.debug("Downloading block url{0}".format(block))
+        self.eiq_logging.debug(f"Downloading block url{block}")
 
         if self.eiq_api_version == "FC":
-            block = (str(block)).replace(self.baseurl, '')
+            block = (str(block)).replace(self.baseurl, "")
 
-        r = self.send_api_request('get', path=str(block))
+        r = self.send_api_request("get", path=str(block))
         data = r.text
 
         return data
 
     def get_feed_content_blocks(self, feed, feed_last_run=None):
-        self.eiq_logging.debug("Requesting block list for feed id={0}".format(feed['id']))
+        self.eiq_logging.debug(
+            "Requesting block list for feed id={}".format(feed["id"])
+        )
 
         if feed_last_run is None:
             feed_last_run = {}
-            feed_last_run['last_ingested'] = None
-            feed_last_run['created_at'] = None
+            feed_last_run["last_ingested"] = None
+            feed_last_run["created_at"] = None
 
-        if feed['packaging_status'] == 'SUCCESS' and feed['update_strategy'] == 'REPLACE':
+        if (
+            feed["packaging_status"] == "SUCCESS"
+            and feed["update_strategy"] == "REPLACE"
+        ):
             self.eiq_logging.debug("Requesting block list for REPLACE feed.")
 
             r = self.send_api_request(
-                'get',
-                path=API_PATHS[self.eiq_api_version]['feed_content_blocks'] + "{0}/runs/latest".format(feed['id']))
+                "get",
+                path=API_PATHS[self.eiq_api_version]["feed_content_blocks"]
+                + "{}/runs/latest".format(feed["id"]),
+            )
 
-            data = r.json()['data']['content_blocks']
-            if feed_last_run['last_ingested'] == data[-1]:
+            data = r.json()["data"]["content_blocks"]
+            if feed_last_run["last_ingested"] == data[-1]:
                 self.eiq_logging.info(
-                    "Received list contains {0} blocks for feed id={1}.".format(len(data), feed['id']))
+                    "Received list contains {} blocks for feed id={}.".format(
+                        len(data), feed["id"]
+                    )
+                )
                 return []
-            self.eiq_logging.info("Received list contains {0} blocks for feed id={1}.".format(len(data), feed['id']))
+            self.eiq_logging.info(
+                "Received list contains {} blocks for feed id={}.".format(
+                    len(data), feed["id"]
+                )
+            )
             return data
 
-        elif feed['packaging_status'] == 'SUCCESS' and (feed['update_strategy'] in ['APPEND', 'DIFF']):
-            self.eiq_logging.debug("Requesting block list for {0} feed.".format(feed['update_strategy']))
+        elif feed["packaging_status"] == "SUCCESS" and (
+            feed["update_strategy"] in ["APPEND", "DIFF"]
+        ):
+            self.eiq_logging.debug(
+                "Requesting block list for {} feed.".format(feed["update_strategy"])
+            )
 
             r = self.send_api_request(
-                'get',
-                path=API_PATHS[self.eiq_api_version]['feed_content_blocks'] + "{0}".format(feed['id']) + "/")
+                "get",
+                path=API_PATHS[self.eiq_api_version]["feed_content_blocks"]
+                + "{}".format(feed["id"])
+                + "/",
+            )
 
-            data = r.json()['data']['content_blocks']
+            data = r.json()["data"]["content_blocks"]
 
-            if (feed['created_at'] != feed_last_run['created_at']) or feed_last_run['last_ingested'] is None:
+            if (feed["created_at"] != feed_last_run["created_at"]) or feed_last_run[
+                "last_ingested"
+            ] is None:
                 self.eiq_logging.info(
-                    "Received list contains {0} blocks for {1} feed:{2}. Feed created time changed or first run, "
-                    "reingestion of all the feed content.".format(len(data), feed['update_strategy'], feed['id']))
+                    f"Received list contains {len(data)} blocks for {feed['update_strategy']} feed:{feed['id']}."
+                    " Feed created time changed or first run, "
+                    "reingestion of all the feed content."
+                )
                 return data
             else:
                 try:
-                    last_ingested_index = data.index(feed_last_run['last_ingested'])
+                    last_ingested_index = data.index(feed_last_run["last_ingested"])
                     diff_data = data[last_ingested_index + 1:]
-                    self.eiq_logging.info("Received list contains {0} blocks for {1} feed:{2}."
-                                          .format(len(diff_data), feed['update_strategy'], feed['id']))
+                    self.eiq_logging.info(
+                        "Received list contains {} blocks for {} feed:{}.".format(
+                            len(diff_data), feed["update_strategy"], feed["id"]
+                        )
+                    )
                     return diff_data
                 except ValueError:
-                    self.eiq_logging.error("Value of last ingested block not available in Feed {0}.".format(feed['id']))
+                    self.eiq_logging.error(
+                        "Value of last ingested block not available in Feed {}.".format(
+                            feed["id"]
+                        )
+                    )
                     return None
 
-        elif feed['packaging_status'] == 'RUNNING':
-            self.eiq_logging.info("Feed id={0} is running now. Collecting data is not possible.".format(feed['id']))
+        elif feed["packaging_status"] == "RUNNING":
+            self.eiq_logging.info(
+                "Feed id={} is running now. Collecting data is not possible.".format(
+                    feed["id"]
+                )
+            )
+            return None
         else:
             self.eiq_logging.info(
-                "Feed id={0} update strategy is not supported. Use Replace or Diff".format(feed['id']))
+                "Feed id={} update strategy is not supported. Use Replace or Diff".format(
+                    feed["id"]
+                )
+            )
+            return None
 
     def get_group_name(self, group_id):
-        self.eiq_logging.info("Getting group name by id:{0}".format(group_id))
+        self.eiq_logging.info(f"Getting group name by id:{group_id}")
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['group_id_search'] + str(group_id))
+            "get",
+            path=API_PATHS[self.eiq_api_version]["group_id_search"] + str(group_id),
+        )
 
         response = json.loads(r.text)
         result = {}
 
-        result['name'] = response['data'].get('name', 'N/A')
-        result['type'] = response['data'].get('source_type', 'N/A')
+        result["name"] = response["data"].get("name", "N/A")
+        result["type"] = response["data"].get("source_type", "N/A")
 
         return result
 
     def get_observable_by_id(self, id):
-        self.eiq_logging.info("Searching Observable with ID:{0}".format(id))
+        self.eiq_logging.info(f"Searching Observable with ID:{id}")
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['observable_search'] + "/" + str(id))
+            "get",
+            path=API_PATHS[self.eiq_api_version]["observable_search"] + "/" + str(id),
+        )
 
         observable_response = json.loads(r.text)
 
@@ -1002,93 +1083,118 @@ class EclecticIQ_api(object):
             Otherwise returns None.
 
         """
-        self.eiq_logging.info("Searching Observable:{0}, type:{1}".format(value, type))
+        self.eiq_logging.info(f"Searching Observable:{value}, type:{type}")
 
         params = {}
-        params['filter[value]'] = value
+        params["filter[value]"] = value
 
         if type is not None:
-            params['filter[type]'] = type
+            params["filter[type]"] = type
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['observable_search'],
-            params=params)
+            "get",
+            path=API_PATHS[self.eiq_api_version]["observable_search"],
+            params=params,
+        )
 
         observable_response = json.loads(r.text)
 
-        if observable_response['count'] == 1:
+        if observable_response["count"] == 1:
             result = {}
-            result['created'] = str(observable_response['data'][0]['created_at'])[:16]
-            result['last_updated'] = str(observable_response['data'][0]['last_updated_at'])[:16]
-            result['maliciousness'] = observable_response['data'][0]['meta']['maliciousness']
-            result['type'] = observable_response['data'][0]['type']
-            result['value'] = observable_response['data'][0]['value']
-            result['id'] = str(observable_response['data'][0]['id'])
-            result['source_name'] = ""
+            result["created"] = str(observable_response["data"][0]["created_at"])[:16]
+            result["last_updated"] = str(
+                observable_response["data"][0]["last_updated_at"]
+            )[:16]
+            result["maliciousness"] = observable_response["data"][0]["meta"][
+                "maliciousness"
+            ]
+            result["type"] = observable_response["data"][0]["type"]
+            result["value"] = observable_response["data"][0]["value"]
+            result["id"] = str(observable_response["data"][0]["id"])
+            result["source_name"] = ""
 
-            for k in observable_response['data'][0]['sources']:
+            for k in observable_response["data"][0]["sources"]:
                 source_lookup_data = self.get_group_name(extract_uuid_from_url(k))
-                result['source_name'] += str(source_lookup_data['type']) + ': ' + str(source_lookup_data['name']) + '; '
+                result["source_name"] += (
+                    str(source_lookup_data["type"])
+                    + ": "
+                    + str(source_lookup_data["name"])
+                    + "; "
+                )
 
-            result['platform_link'] = self.baseurl + "/main/intel/all/browse/observable?tab=overview&id=" + result['id']
+            result["platform_link"] = (
+                self.baseurl
+                + "/main/intel/all/browse/observable?tab=overview&id="
+                + result["id"]
+            )
 
             return result
 
-        elif observable_response['count'] > 1:
-            self.eiq_logging.info("Finding duplicates for observable:{0}, type:{1}, return first one".format(value, type))
+        elif observable_response["count"] > 1:
+            self.eiq_logging.info(
+                f"Finding duplicates for observable:{value}, type:{type}, return first one"
+            )
             result = {}
-            result['created'] = str(observable_response['data'][0]['created_at'])[:16]
-            result['last_updated'] = str(observable_response['data'][0]['last_updated_at'])[:16]
-            result['maliciousness'] = observable_response['data'][0]['meta']['maliciousness']
-            result['type'] = observable_response['data'][0]['type']
-            result['value'] = observable_response['data'][0]['value']
-            result['id'] = str(observable_response['data'][0]['id'])
-            result['source_name'] = ""
+            result["created"] = str(observable_response["data"][0]["created_at"])[:16]
+            result["last_updated"] = str(
+                observable_response["data"][0]["last_updated_at"]
+            )[:16]
+            result["maliciousness"] = observable_response["data"][0]["meta"][
+                "maliciousness"
+            ]
+            result["type"] = observable_response["data"][0]["type"]
+            result["value"] = observable_response["data"][0]["value"]
+            result["id"] = str(observable_response["data"][0]["id"])
+            result["source_name"] = ""
 
-            for k in observable_response['data'][0]['sources']:
+            for k in observable_response["data"][0]["sources"]:
                 source_lookup_data = self.get_group_name(extract_uuid_from_url(k))
-                result['source_name'] += str(source_lookup_data['type']) + ': ' + str(source_lookup_data['name']) + '; '
+                result["source_name"] += (
+                    str(source_lookup_data["type"])
+                    + ": "
+                    + str(source_lookup_data["name"])
+                    + "; "
+                )
 
-            result['platform_link'] = self.baseurl + "/main/intel/all/browse/observable?tab=overview&id=" + result['id']
+            result["platform_link"] = (
+                self.baseurl
+                + "/main/intel/all/browse/observable?tab=overview&id="
+                + result["id"]
+            )
 
             return result
 
         else:
-
             return None
 
     def get_all_observables(self):
         self.eiq_logging.info("Searching all Observable.")
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['observable_search'])
+            "get", path=API_PATHS[self.eiq_api_version]["observable_search"]
+        )
 
         return json.loads(r.text)
 
     def batch_delete_observables(self, observables_list):
         self.eiq_logging.info("Searching all Observable.")
 
-        observables_to_delete = {
-            "data": {
-                "observables": observables_list
-            }
-        }
+        observables_to_delete = {"data": {"observables": observables_list}}
 
         r = self.send_api_request(
-            'delete',
-            path=API_PATHS[self.eiq_api_version]['observables_batch_delete'],
-            data=observables_to_delete)
+            "delete",
+            path=API_PATHS[self.eiq_api_version]["observables_batch_delete"],
+            data=observables_to_delete,
+        )
 
         return json.loads(r.text)
 
     def delete_entity(self, entity_id):
-        self.eiq_logging.info("Deleteing entity. id: {0}".format(entity_id))
+        self.eiq_logging.info(f"Deleteing entity. id: {entity_id}")
 
         self.send_api_request(
-            'delete',
-            path=API_PATHS[self.eiq_api_version]['entities'] + str(entity_id))
+            "delete", path=API_PATHS[self.eiq_api_version]["entities"] + str(entity_id)
+        )
 
         return "deleted"
 
@@ -1102,17 +1208,18 @@ class EclecticIQ_api(object):
         self.eiq_logging.info("Get all the taxonomy titles from Platform.")
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['taxonomy_get'],
-            params={"limit": 500})
+            "get",
+            path=API_PATHS[self.eiq_api_version]["taxonomy_get"],
+            params={"limit": 500},
+        )
 
         taxonomy = json.loads(r.text)
         taxonomy_dict = {}
 
-        for i in taxonomy['data']:
+        for i in taxonomy["data"]:
             try:
-                id = str(i['id'])
-                name = i['name']
+                id = str(i["id"])
+                name = i["name"]
 
                 taxonomy_dict[id] = name
             except KeyError:
@@ -1124,7 +1231,9 @@ class EclecticIQ_api(object):
             return False
 
     def get_entity_realtionships(self, source_id=None, target_id=None):
-        self.eiq_logging.info("Get realtionshsip for entity. Source id: {0}, Destination id: {1}".format(source_id, target_id))
+        self.eiq_logging.info(
+            f"Get realtionshsip for entity. Source id: {source_id}, Destination id: {target_id}"
+        )
         params = {}
 
         if source_id:
@@ -1135,43 +1244,60 @@ class EclecticIQ_api(object):
             direction = "target"
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['relationships'],
-            params=params)
+            "get", path=API_PATHS[self.eiq_api_version]["relationships"], params=params
+        )
 
         parsed_response = json.loads(r.text)
         result = []
 
-        if len(parsed_response['data']) > 0:
-            for i in parsed_response['data']:
+        if len(parsed_response["data"]) > 0:
+            for i in parsed_response["data"]:
                 relation = {}
                 if direction == "source":
                     r = self.send_api_request(
-                        'get',
-                        path=(API_PATHS[self.eiq_api_version]['entity_search'] + "/"
-                              + str(extract_uuid_from_url(i["data"]["target"]))))
+                        "get",
+                        path=(
+                            API_PATHS[self.eiq_api_version]["entity_search"]
+                            + "/"
+                            + str(extract_uuid_from_url(i["data"]["target"]))
+                        ),
+                    )
                 elif direction == "target":
                     r = self.send_api_request(
-                        'get',
-                        path=(API_PATHS[self.eiq_api_version]['entity_search'] + "/"
-                              + str(extract_uuid_from_url(i["data"]["source"]))))
+                        "get",
+                        path=(
+                            API_PATHS[self.eiq_api_version]["entity_search"]
+                            + "/"
+                            + str(extract_uuid_from_url(i["data"]["source"]))
+                        ),
+                    )
 
                 related_entity_parsed_response = json.loads(r.text)
 
                 if self.eiq_api_version == "v1":
                     relation["relation_title"] = i["meta"].get("title")
-                    relation["entity_type"] = related_entity_parsed_response["data"]["type"]
+                    relation["entity_type"] = related_entity_parsed_response["data"][
+                        "type"
+                    ]
                 elif self.eiq_api_version == "v2":
                     relation["relation_title"] = i["data"].get("key")
-                    relation["entity_type"] = related_entity_parsed_response["data"]["data"]["type"]
+                    relation["entity_type"] = related_entity_parsed_response["data"][
+                        "data"
+                    ]["type"]
 
-                relation["entity_title"] = related_entity_parsed_response["data"]["data"]["title"]
+                relation["entity_title"] = related_entity_parsed_response["data"][
+                    "data"
+                ]["title"]
                 relation["entity_id"] = related_entity_parsed_response["data"]["id"]
-                relation["observables_count"] = len(related_entity_parsed_response["data"]["observables"])
+                relation["observables_count"] = len(
+                    related_entity_parsed_response["data"]["observables"]
+                )
                 result.append(relation)
         return result
 
-    def get_entity_by_id(self, entity_id, observables_lookup=True, relationships_lookup=True):
+    def get_entity_by_id(
+        self, entity_id, observables_lookup=True, relationships_lookup=True
+    ):
         """Method lookups specific entity by Id.
 
         Args:
@@ -1205,78 +1331,113 @@ class EclecticIQ_api(object):
             Otherwise returns False.
 
         """
-        self.eiq_logging.info("Looking up Entity {0}.".format(entity_id))
+        self.eiq_logging.info(f"Looking up Entity {entity_id}.")
 
         try:
             r = self.send_api_request(
-                'get',
-                path=API_PATHS[self.eiq_api_version]['entity_search'] + "/" + str(entity_id))
+                "get",
+                path=API_PATHS[self.eiq_api_version]["entity_search"]
+                + "/"
+                + str(entity_id),
+            )
             parsed_response = json.loads(r.text)
 
             if len(self.taxonomie_dict) == 0:
                 self.taxonomie_dict = self.get_taxonomy_dict()
 
-            result = dict()
+            result = {}
 
-            result['entity_title'] = parsed_response['data']['data'].get('title', 'N/A')
-            result['created_at'] = str(parsed_response['data'].get('created_at', 'N/A'))[:16]
-            source = self.get_group_name(extract_uuid_from_url(parsed_response['data']['sources'][0]))
-            result['source_name'] = source['type'] + ': ' + source['name']
-            result['tags_list'] = []
-            result['confidence'] = parsed_response['data']['data'].get('confidence', 'N/A')
-            result['description'] = parsed_response['data']['data'].get('description', 'N/A')
-            result['impact'] = parsed_response['data']['data'].get('impact', 'N/A')
+            result["entity_title"] = parsed_response["data"]["data"].get("title", "N/A")
+            result["created_at"] = str(
+                parsed_response["data"].get("created_at", "N/A")
+            )[:16]
+            source = self.get_group_name(
+                extract_uuid_from_url(parsed_response["data"]["sources"][0])
+            )
+            result["source_name"] = source["type"] + ": " + source["name"]
+            result["tags_list"] = []
+            result["confidence"] = parsed_response["data"]["data"].get(
+                "confidence", "N/A"
+            )
+            result["description"] = parsed_response["data"]["data"].get(
+                "description", "N/A"
+            )
+            result["impact"] = parsed_response["data"]["data"].get("impact", "N/A")
 
             if self.eiq_api_version == "v1":
-                result['entity_type'] = parsed_response['data'].get('type', 'N/A')
+                result["entity_type"] = parsed_response["data"].get("type", "N/A")
             elif self.eiq_api_version == "v2":
-                result['entity_type'] = parsed_response['data']['data'].get('type', 'N/A')
+                result["entity_type"] = parsed_response["data"]["data"].get(
+                    "type", "N/A"
+                )
 
             try:
-                for i in parsed_response['data']['meta']['tags']:
-                    result['tags_list'].append(i)
+                for i in parsed_response["data"]["meta"]["tags"]:
+                    result["tags_list"].append(i)
             except KeyError:
                 pass
 
             try:
-                for i in parsed_response['data']['meta']['taxonomies']:
-                    result['tags_list'].append(self.taxonomie_dict.get(taxonomie_id_from_url(i)))
+                for i in parsed_response["data"]["meta"]["taxonomies"]:
+                    result["tags_list"].append(
+                        self.taxonomie_dict.get(taxonomie_id_from_url(i))
+                    )
             except KeyError:
                 pass
 
             if observables_lookup:
-                result['observables_list'] = []
+                result["observables_list"] = []
                 try:
-                    for i in parsed_response['data']["observables"]:
-                        observable_data = self.get_observable_by_id(observable_id_from_url(i))
-                        result['observables_list'].append({'value': observable_data['data']['value'],
-                                                           'type': observable_data['data']['type'],
-                                                           'maliciousness': observable_data['data']['meta']['maliciousness']})
+                    for i in parsed_response["data"]["observables"]:
+                        observable_data = self.get_observable_by_id(
+                            observable_id_from_url(i)
+                        )
+                        result["observables_list"].append(
+                            {
+                                "value": observable_data["data"]["value"],
+                                "type": observable_data["data"]["type"],
+                                "maliciousness": observable_data["data"]["meta"][
+                                    "maliciousness"
+                                ],
+                            }
+                        )
                 except (KeyError, TypeError):
                     pass
 
             if relationships_lookup:
-                entity_is_source_relationships = self.get_entity_realtionships(source_id=entity_id)
-                entity_is_target_relationships = self.get_entity_realtionships(target_id=entity_id)
-                result['relationships_list'] = []
+                entity_is_source_relationships = self.get_entity_realtionships(
+                    source_id=entity_id
+                )
+                entity_is_target_relationships = self.get_entity_realtionships(
+                    target_id=entity_id
+                )
+                result["relationships_list"] = []
 
                 for i in entity_is_source_relationships:
-                    result['relationships_list'].append({"source_entity_title": result['entity_title'],
-                                                         "source_entity_type": result['entity_type'],
-                                                         "target_entity_title": i['entity_title'],
-                                                         "target_entity_type": i['entity_type'],
-                                                         "target_entity_id": i['entity_id'],
-                                                         "target_entity_observables_count": i['observables_count'],
-                                                         "relationship_title": i['relation_title']})
+                    result["relationships_list"].append(
+                        {
+                            "source_entity_title": result["entity_title"],
+                            "source_entity_type": result["entity_type"],
+                            "target_entity_title": i["entity_title"],
+                            "target_entity_type": i["entity_type"],
+                            "target_entity_id": i["entity_id"],
+                            "target_entity_observables_count": i["observables_count"],
+                            "relationship_title": i["relation_title"],
+                        }
+                    )
 
                 for i in entity_is_target_relationships:
-                    result['relationships_list'].append({"source_entity_title": i['entity_title'],
-                                                         "source_entity_type": i['entity_type'],
-                                                         "target_entity_title": result['entity_title'],
-                                                         "target_entity_type": result['entity_type'],
-                                                         "source_entity_id": i['entity_id'],
-                                                         "source_entity_observables_count": i['observables_count'],
-                                                         "relationship_title": i['relation_title']})
+                    result["relationships_list"].append(
+                        {
+                            "source_entity_title": i["entity_title"],
+                            "source_entity_type": i["entity_type"],
+                            "target_entity_title": result["entity_title"],
+                            "target_entity_type": result["entity_type"],
+                            "source_entity_id": i["entity_id"],
+                            "source_entity_observables_count": i["observables_count"],
+                            "relationship_title": i["relation_title"],
+                        }
+                    )
 
         except Exception as e:
             if "Status code: 404" in str(e):
@@ -1307,8 +1468,11 @@ class EclecticIQ_api(object):
             Otherwise returns False.
 
         """
-        self.eiq_logging.info("Searching Entity:{0} with extracted observable:{1}, type:{2}"
-                              .format(entity_value, observable_value, entity_type))
+        self.eiq_logging.info(
+            "Searching Entity:{} with extracted observable:{}, type:{}".format(
+                entity_value, observable_value, entity_type
+            )
+        )
 
         params = {}
 
@@ -1320,29 +1484,28 @@ class EclecticIQ_api(object):
             else:
                 entity_value = entity_value.replace('"', '\\"')
 
-            params['filter[data.title]'] = entity_value
+            params["filter[data.title]"] = entity_value
 
         if observable_value is not None:
             observable_data = self.lookup_observable(value=observable_value)
 
             try:
-                params['filter[observables]'] = observable_data["id"]
+                params["filter[observables]"] = observable_data["id"]
             except Exception:
                 return False
 
         if entity_type is not None:
-            params['filter[type]'] = entity_type
+            params["filter[type]"] = entity_type
 
         r = self.send_api_request(
-            'get',
-            path=API_PATHS[self.eiq_api_version]['entity_search'],
-            params=params)
+            "get", path=API_PATHS[self.eiq_api_version]["entity_search"], params=params
+        )
 
         search_response = json.loads(r.text)
 
-        if len(search_response['data']) > 0:
+        if len(search_response["data"]) > 0:
             parsed_result = []
-            for entity in search_response['data']:
+            for entity in search_response["data"]:
                 parsed_entity = self.get_entity_by_id(entity["id"])
                 parsed_result.append(parsed_entity)
 
@@ -1354,26 +1517,36 @@ class EclecticIQ_api(object):
         self.eiq_logging.info("Searching in elastic")
 
         r = self.send_api_request(
-            'post',
-            path=API_PATHS[self.eiq_api_version]['entity_search'] + "?size=" + str(page_size),
-            data=search_payload)
+            "post",
+            path=API_PATHS[self.eiq_api_version]["entity_search"]
+            + "?size="
+            + str(page_size),
+            data=search_payload,
+        )
 
         search_response = json.loads(r.text)
 
-        if len(search_response['hits']['hits']) > 0:
+        if len(search_response["hits"]["hits"]) > 0:
             if latency_check:
                 search_response["latency"] = r.elapsed.total_seconds()
                 return search_response
 
             else:
-                return search_response['hits']['hits']
+                return search_response["hits"]["hits"]
         else:
             return False
 
-    def create_entity(self, observable_dict, source_group_name, entity_title, entity_description,
-                      entity_confidence='Medium', entity_tags=[], entity_type='eclecticiq-sighting',
-                      entity_impact_value="None"):
-
+    def create_entity(
+        self,
+        observable_dict,
+        source_group_name,
+        entity_title,
+        entity_description,
+        entity_confidence="Medium",
+        entity_tags=[],
+        entity_type="eclecticiq-sighting",
+        entity_impact_value="None",
+    ):
         """Method creates entity in Platform.
 
         Args:
@@ -1396,8 +1569,11 @@ class EclecticIQ_api(object):
             Return created entity id if successful otherwise returns False.
 
         """
-        self.eiq_logging.info("Creating Entity in EclecticIQ Platform. Type:{0}, title:{1}"
-                              .format(entity_type, entity_title))
+        self.eiq_logging.info(
+            "Creating Entity in EclecticIQ Platform. Type:{}, title:{}".format(
+                entity_type, entity_title
+            )
+        )
 
         group_id = self.get_source_group_uid(source_group_name)
 
@@ -1407,101 +1583,116 @@ class EclecticIQ_api(object):
         threat_start = format_ts(datetime.utcnow())
 
         observable_dict_to_add = []
-        record: dict[str, Any]= {}
+        record: dict[str, Any] = {}
 
         for i in observable_dict:
             record = {}
 
-            if entity_type == 'eclecticiq-sighting':
-                record['link_type'] = "sighted"
+            if entity_type == "eclecticiq-sighting":
+                record["link_type"] = "sighted"
             else:
-                record['link_type'] = "observed"
+                record["link_type"] = "observed"
 
-            if i.get('observable_maliciousness', "") in ["low", "medium", "high"]:
-                record['confidence'] = i['observable_maliciousness']
+            if i.get("observable_maliciousness", "") in ["low", "medium", "high"]:
+                record["confidence"] = i["observable_maliciousness"]
 
-            if i.get('observable_classification', "") in ["bad", "good", "unknown"]:
-                record['classification'] = i['observable_classification']
+            if i.get("observable_classification", "") in ["bad", "good", "unknown"]:
+                record["classification"] = i["observable_classification"]
 
-            if i.get('observable_value', ""):
-                record['value'] = i['observable_value']
+            if i.get("observable_value", ""):
+                record["value"] = i["observable_value"]
             else:
                 continue
 
-            if i.get('observable_type', "") in ["asn", "country", "cve", "domain", "email", "email-subject", "file",
-                                                "handle",
-                                                "hash-md5", "hash-sha1", "hash-sha256", "hash-sha512", "industry",
-                                                "ipv4",
-                                                "ipv6", "malware", "name", "organization", "port", "snort", "uri",
-                                                "yara"]:
-                record['kind'] = i['observable_type']
+            if i.get("observable_type", "") in [
+                "asn",
+                "country",
+                "cve",
+                "domain",
+                "email",
+                "email-subject",
+                "file",
+                "handle",
+                "hash-md5",
+                "hash-sha1",
+                "hash-sha256",
+                "hash-sha512",
+                "industry",
+                "ipv4",
+                "ipv6",
+                "malware",
+                "name",
+                "organization",
+                "port",
+                "snort",
+                "uri",
+                "yara",
+            ]:
+                record["kind"] = i["observable_type"]
             else:
                 continue
 
             observable_dict_to_add.append(record)
 
-        entity = {"data": {
+        entity = {
             "data": {
-                "confidence": {
-                    "type": "confidence",
-                    "value": entity_confidence
+                "data": {
+                    "confidence": {"type": "confidence", "value": entity_confidence},
+                    "description": entity_description,
+                    "description_structuring_format": "html",
+                    "impact": {
+                        "type": "statement",
+                        "value": entity_impact_value,
+                        "value_vocab": "{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0",
+                    },
+                    "type": entity_type,
+                    "title": entity_title,
+                    "security_control": {
+                        "type": "information-source",
+                        "time": {
+                            "type": "time",
+                            "start_time": today_begin,
+                            "start_time_precision": "second",
+                        },
+                    },
                 },
-                "description": entity_description,
-                "description_structuring_format": "html",
-                "impact": {
-                    "type": "statement",
-                    "value": entity_impact_value,
-                    "value_vocab": "{http://stix.mitre.org/default_vocabularies-1}HighMediumLowVocab-1.0",
+                "meta": {
+                    "manual_extracts": observable_dict_to_add,
+                    "taxonomy": [],
+                    "estimated_threat_start_time": threat_start,
+                    "tags": entity_tags,
+                    "ingest_time": threat_start,
                 },
-                "type": entity_type,
-                "title": entity_title,
-                "security_control": {
-                    "type": "information-source",
-                    "time": {
-                        "type": "time",
-                        "start_time": today_begin,
-                        "start_time_precision": "second"
-                    }
-                },
-            },
-            "meta": {
-                "manual_extracts": observable_dict_to_add,
-                "taxonomy": [],
-                "estimated_threat_start_time": threat_start,
-                "tags": entity_tags,
-                "ingest_time": threat_start
-            },
-            "sources": [{
-                "source_id": group_id
-            }]
-        }}
+                "sources": [{"source_id": group_id}],
+            }
+        }
 
         r = self.send_api_request(
-            'post',
-            path=API_PATHS[self.eiq_api_version]['entities'],
-            data=entity)
+            "post", path=API_PATHS[self.eiq_api_version]["entities"], data=entity
+        )
 
         entity_response = json.loads(r.text)
 
         try:
-            return entity_response['data']['id']
+            return entity_response["data"]["id"]
         except KeyError:
             return False
 
     def get_observable(self, observable):
-        self.eiq_logging.info('EclecticIQ_api: Searching for Observable: {0}'.format(observable))
-        path = API_PATHS[self.eiq_api_version]['observables'] + '?q=extracts.value:' + observable
-        r = self.send_api_request(
-            'get',
-            path=path)
+        self.eiq_logging.info(f"EclecticIQ_api: Searching for Observable: {observable}")
+        path = (
+            API_PATHS[self.eiq_api_version]["observables"]
+            + "?q=extracts.value:"
+            + observable
+        )
+        r = self.send_api_request("get", path=path)
         return r.json()
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def maliciousness_to_dbotscore(maliciousness, threshold):
-
     """
 
     Translates EclecticIQ obversable maliciousness confidence level to DBotScore based on given threshold
@@ -1519,14 +1710,14 @@ def maliciousness_to_dbotscore(maliciousness, threshold):
         Translated DBot Score
 
     """
-    maliciousness_list = ['unknown', 'safe', 'low', 'medium', 'high']
+    maliciousness_list = ["unknown", "safe", "low", "medium", "high"]
 
     maliciousness_dictionary = {
-        'unknown': 0,
-        'safe': 1,
-        'low': 2,
-        'medium': 2,
-        'high': 3
+        "unknown": 0,
+        "safe": 1,
+        "low": 2,
+        "medium": 2,
+        "high": 3,
     }
 
     for i in maliciousness_list[maliciousness_list.index(threshold):]:
@@ -1535,7 +1726,7 @@ def maliciousness_to_dbotscore(maliciousness, threshold):
     return maliciousness_dictionary[maliciousness]
 
 
-''' COMMANDS + REQUESTS FUNCTIONS '''
+""" COMMANDS + REQUESTS FUNCTIONS """
 
 
 def test_module():
@@ -1549,7 +1740,7 @@ def test_module():
     """
 
     eiq.lookup_observable("8.8.8.8", "ipv4")
-    demisto.results('ok')
+    demisto.results("ok")
 
 
 def ip_command():
@@ -1564,31 +1755,44 @@ def ip_command():
     entry
         Reputation of given IPv4
     """
-    observable_value = demisto.args()['ip']
+    observable_value = demisto.args()["ip"]
     response_eiq = eiq.lookup_observable(observable_value, "ipv4")
-    ip_result = parse_reputation_results(response_eiq, observable_value, "ip", IP_THRESHOLD, "IP")
+    ip_result = parse_reputation_results(
+        response_eiq, observable_value, "ip", IP_THRESHOLD, "IP"
+    )
 
     if SIGHTINGS_AUTO_CREATE:
-        observable_dict = [{
-            'observable_type': response_eiq["type"],
-            'observable_value': observable_value,
-            'observable_maliciousness': 'medium',
-            'observable_classification': 'bad'
-        }]
+        observable_dict = [
+            {
+                "observable_type": response_eiq["type"],
+                "observable_value": observable_value,
+                "observable_maliciousness": "medium",
+                "observable_classification": "bad",
+            }
+        ]
 
-        eiq.create_entity(observable_dict=observable_dict, source_group_name=GROUP_NAME,
-                          entity_title='XSOAR automatic Sighting for ' + observable_value, entity_description='')
+        eiq.create_entity(
+            observable_dict=observable_dict,
+            source_group_name=GROUP_NAME,
+            entity_title="XSOAR automatic Sighting for " + observable_value,
+            entity_description="",
+        )
 
     return_results(ip_result)
 
 
-def parse_reputation_results(response_eiq, observable_value, demisto_observable_type, observable_threshold,
-                             demisto_observable_alias):
+def parse_reputation_results(
+    response_eiq,
+    observable_value,
+    demisto_observable_type,
+    observable_threshold,
+    demisto_observable_alias,
+):
     command_results = []
     indicator: Any = None
     if response_eiq is not None:
         score = 0
-        maliciousness = response_eiq.get('maliciousness')
+        maliciousness = response_eiq.get("maliciousness")
         score = maliciousness_to_dbotscore(maliciousness, observable_threshold)
 
         if demisto_observable_type == "ip":
@@ -1597,11 +1801,12 @@ def parse_reputation_results(response_eiq, observable_value, demisto_observable_
                 dbot_score=Common.DBotScore(
                     observable_value,
                     DBotScoreType.IP,
-                    'EclecticIQ',
+                    "EclecticIQ",
                     score,
-                    'EclecticIQ maliciousness confidence level: ' + maliciousness)
+                    "EclecticIQ maliciousness confidence level: " + maliciousness,
+                ),
             )
-            prefix = 'EclecticIQ.IP'
+            prefix = "EclecticIQ.IP"
 
         elif demisto_observable_type == "url":
             indicator = Common.URL(
@@ -1609,11 +1814,12 @@ def parse_reputation_results(response_eiq, observable_value, demisto_observable_
                 dbot_score=Common.DBotScore(
                     observable_value,
                     DBotScoreType.URL,
-                    'EclecticIQ',
+                    "EclecticIQ",
                     score,
-                    'EclecticIQ maliciousness confidence level: ' + maliciousness)
+                    "EclecticIQ maliciousness confidence level: " + maliciousness,
+                ),
             )
-            prefix = 'EclecticIQ.URL'
+            prefix = "EclecticIQ.URL"
 
         elif demisto_observable_type == "domain":
             indicator = Common.Domain(
@@ -1621,59 +1827,72 @@ def parse_reputation_results(response_eiq, observable_value, demisto_observable_
                 dbot_score=Common.DBotScore(
                     observable_value,
                     DBotScoreType.DOMAIN,
-                    'EclecticIQ',
+                    "EclecticIQ",
                     score,
-                    'EclecticIQ maliciousness confidence level: ' + maliciousness)
+                    "EclecticIQ maliciousness confidence level: " + maliciousness,
+                ),
             )
-            prefix = 'EclecticIQ.Domain'
+            prefix = "EclecticIQ.Domain"
 
-        elif demisto_observable_type == "file" and bool(re.search(r"\w{40}", observable_value)):  # SHA1
+        elif demisto_observable_type == "file" and bool(
+            re.search(r"\w{40}", observable_value)
+        ):  # SHA1
             indicator = Common.File(
                 sha1=observable_value,
                 dbot_score=Common.DBotScore(
                     observable_value,
                     DBotScoreType.FILE,
-                    'EclecticIQ',
+                    "EclecticIQ",
                     score,
-                    'EclecticIQ maliciousness confidence level: ' + maliciousness)
+                    "EclecticIQ maliciousness confidence level: " + maliciousness,
+                ),
             )
-            prefix = 'EclecticIQ.File'
+            prefix = "EclecticIQ.File"
 
-        elif demisto_observable_type == "file" and bool(re.search(r"\w{64}", observable_value)):  # SHA256
+        elif demisto_observable_type == "file" and bool(
+            re.search(r"\w{64}", observable_value)
+        ):  # SHA256
             indicator = Common.File(
                 sha256=observable_value,
                 dbot_score=Common.DBotScore(
                     observable_value,
                     DBotScoreType.FILE,
-                    'EclecticIQ',
+                    "EclecticIQ",
                     score,
-                    'EclecticIQ maliciousness confidence level: ' + maliciousness)
+                    "EclecticIQ maliciousness confidence level: " + maliciousness,
+                ),
             )
-            prefix = 'EclecticIQ.File'
+            prefix = "EclecticIQ.File"
 
-        elif demisto_observable_type == "file" and bool(re.search(r"\w{32}", observable_value)):  # MD5
+        elif demisto_observable_type == "file" and bool(
+            re.search(r"\w{32}", observable_value)
+        ):  # MD5
             indicator = Common.File(
                 md5=observable_value,
                 dbot_score=Common.DBotScore(
                     observable_value,
                     DBotScoreType.FILE,
-                    'EclecticIQ',
+                    "EclecticIQ",
                     score,
-                    'EclecticIQ maliciousness confidence level: ' + maliciousness)
+                    "EclecticIQ maliciousness confidence level: " + maliciousness,
+                ),
             )
-            prefix = 'EclecticIQ.File'
+            prefix = "EclecticIQ.File"
 
-        elif demisto_observable_type == "file" and bool(re.search(r"\w{128}", observable_value)):  # SHA512
+        elif demisto_observable_type == "file" and bool(
+            re.search(r"\w{128}", observable_value)
+        ):  # SHA512
             indicator = Common.File(
                 sha512=observable_value,
                 dbot_score=Common.DBotScore(
                     observable_value,
                     DBotScoreType.FILE,
-                    'EclecticIQ',
+                    "EclecticIQ",
                     score,
-                    'EclecticIQ maliciousness confidence level: ' + maliciousness)
+                    "EclecticIQ maliciousness confidence level: " + maliciousness,
+                ),
             )
-            prefix = 'EclecticIQ.File'
+            prefix = "EclecticIQ.File"
 
         elif demisto_observable_type == "email":
             indicator = Common.EMAIL(
@@ -1681,62 +1900,79 @@ def parse_reputation_results(response_eiq, observable_value, demisto_observable_
                 dbot_score=Common.DBotScore(
                     observable_value,
                     DBotScoreType.EMAIL,
-                    'EclecticIQ',
+                    "EclecticIQ",
                     score,
-                    'EclecticIQ maliciousness confidence level: ' + maliciousness)
+                    "EclecticIQ maliciousness confidence level: " + maliciousness,
+                ),
             )
-            prefix = 'EclecticIQ.Email'
+            prefix = "EclecticIQ.Email"
 
         raw_result = response_eiq
 
         entry_context = {
-            'Observable': observable_value,
-            'Created': response_eiq.get('created'),
-            'LastUpdated': response_eiq.get('last_updated'),
-            'SourceName': response_eiq.get('source_name'),
-            'Maliciousness': maliciousness
+            "Observable": observable_value,
+            "Created": response_eiq.get("created"),
+            "LastUpdated": response_eiq.get("last_updated"),
+            "SourceName": response_eiq.get("source_name"),
+            "Maliciousness": maliciousness,
         }
 
-        outputs_key_field = 'Observable'
+        outputs_key_field = "Observable"
 
-        human_readable_title = 'EclecticIQ ' + demisto_observable_alias + ' reputation - {}'.format(observable_value)
+        human_readable_title = (
+            "EclecticIQ "
+            + demisto_observable_alias
+            + f" reputation - {observable_value}"
+        )
         human_readable = tableToMarkdown(human_readable_title, response_eiq)
 
         command_results.append(
-            CommandResults(readable_output=human_readable,
-                           raw_response=raw_result,
-                           outputs_prefix=prefix,
-                           outputs=entry_context,
-                           outputs_key_field=outputs_key_field,
-                           indicator=indicator
-                           )
+            CommandResults(
+                readable_output=human_readable,
+                raw_response=raw_result,
+                outputs_prefix=prefix,
+                outputs=entry_context,
+                outputs_key_field=outputs_key_field,
+                indicator=indicator,
+            )
         )
 
     else:
-        human_readable = "### Observable: " + str(observable_value) + ' not found in EcelcticIQ IC.'
-        raw_result = {"result": "Observable not found in EcelcticIQ IC.", "observable": str(observable_value)}
+        human_readable = (
+            "### Observable: " + str(observable_value) + " not found in EcelcticIQ IC."
+        )
+        raw_result = {
+            "result": "Observable not found in EcelcticIQ IC.",
+            "observable": str(observable_value),
+        }
 
         if demisto_observable_type == "ip":
-            prefix = 'EclecticIQ.IP'
+            prefix = "EclecticIQ.IP"
         elif demisto_observable_type == "url":
-            prefix = 'EclecticIQ.URL'
+            prefix = "EclecticIQ.URL"
         elif demisto_observable_type == "domain":
-            prefix = 'EclecticIQ.Domain'
-        elif demisto_observable_type == "file" and bool(re.search(r"\w{40}", observable_value)):  # SHA1
-            prefix = 'EclecticIQ.File'
-        elif demisto_observable_type == "file" and bool(re.search(r"\w{64}", observable_value)):  # SHA256
-            prefix = 'EclecticIQ.File'
-        elif demisto_observable_type == "file" and bool(re.search(r"\w{32}", observable_value)):  # MD5
-            prefix = 'EclecticIQ.File'
-        elif demisto_observable_type == "file" and bool(re.search(r"\w{128}", observable_value)):  # SHA512
-            prefix = 'EclecticIQ.File'
+            prefix = "EclecticIQ.Domain"
+        elif demisto_observable_type == "file" and bool(
+            re.search(r"\w{40}", observable_value)
+        ):  # SHA1
+            prefix = "EclecticIQ.File"
+        elif demisto_observable_type == "file" and bool(
+            re.search(r"\w{64}", observable_value)
+        ):  # SHA256
+            prefix = "EclecticIQ.File"
+        elif demisto_observable_type == "file" and bool(
+            re.search(r"\w{32}", observable_value)
+        ):  # MD5
+            prefix = "EclecticIQ.File"
+        elif demisto_observable_type == "file" and bool(
+            re.search(r"\w{128}", observable_value)
+        ):  # SHA512
+            prefix = "EclecticIQ.File"
         elif demisto_observable_type == "email":
-            prefix = 'EclecticIQ.Email'
+            prefix = "EclecticIQ.Email"
 
         command_results.append(
-            CommandResults(readable_output=human_readable,
-                           raw_response=raw_result
-                           )
+            CommandResults(readable_output=human_readable, raw_response=raw_result)
         )
 
     return command_results
@@ -1754,20 +1990,28 @@ def url_command():
     entry
         Reputation of given URL
     """
-    observable_value = demisto.args()['url']
+    observable_value = demisto.args()["url"]
     response_eiq = eiq.lookup_observable(observable_value, "uri")
-    url_result = parse_reputation_results(response_eiq, observable_value, "url", URL_THRESHOLD, "URL")
+    url_result = parse_reputation_results(
+        response_eiq, observable_value, "url", URL_THRESHOLD, "URL"
+    )
 
     if SIGHTINGS_AUTO_CREATE:
-        observable_dict = [{
-            'observable_type': response_eiq["type"],
-            'observable_value': observable_value,
-            'observable_maliciousness': 'medium',
-            'observable_classification': 'bad'
-        }]
+        observable_dict = [
+            {
+                "observable_type": response_eiq["type"],
+                "observable_value": observable_value,
+                "observable_maliciousness": "medium",
+                "observable_classification": "bad",
+            }
+        ]
 
-        eiq.create_entity(observable_dict=observable_dict, source_group_name=GROUP_NAME,
-                          entity_title='XSOAR automatic Sighting for ' + observable_value, entity_description='')
+        eiq.create_entity(
+            observable_dict=observable_dict,
+            source_group_name=GROUP_NAME,
+            entity_title="XSOAR automatic Sighting for " + observable_value,
+            entity_description="",
+        )
 
     return_results(url_result)
 
@@ -1785,20 +2029,30 @@ def file_command():
         Reputation of given file hash
     """
 
-    observable_value = demisto.args()['file']
-    response_eiq = eiq.lookup_observable(observable_value, ["hash-md5", "hash-sha1", "hash-sha256", "hash-sha512"])
-    file_result = parse_reputation_results(response_eiq, observable_value, "file", FILE_THRESHOLD, "File")
+    observable_value = demisto.args()["file"]
+    response_eiq = eiq.lookup_observable(
+        observable_value, ["hash-md5", "hash-sha1", "hash-sha256", "hash-sha512"]
+    )
+    file_result = parse_reputation_results(
+        response_eiq, observable_value, "file", FILE_THRESHOLD, "File"
+    )
 
     if SIGHTINGS_AUTO_CREATE:
-        observable_dict = [{
-            'observable_type': response_eiq["type"],
-            'observable_value': observable_value,
-            'observable_maliciousness': 'medium',
-            'observable_classification': 'bad'
-        }]
+        observable_dict = [
+            {
+                "observable_type": response_eiq["type"],
+                "observable_value": observable_value,
+                "observable_maliciousness": "medium",
+                "observable_classification": "bad",
+            }
+        ]
 
-        eiq.create_entity(observable_dict=observable_dict, source_group_name=GROUP_NAME,
-                          entity_title='XSOAR automatic Sighting for ' + observable_value, entity_description='')
+        eiq.create_entity(
+            observable_dict=observable_dict,
+            source_group_name=GROUP_NAME,
+            entity_title="XSOAR automatic Sighting for " + observable_value,
+            entity_description="",
+        )
 
     return_results(file_result)
 
@@ -1816,20 +2070,28 @@ def email_command():
         Reputation of given email address
     """
 
-    observable_value = demisto.args()['email']
+    observable_value = demisto.args()["email"]
     response_eiq = eiq.lookup_observable(observable_value, "email")
-    email_result = parse_reputation_results(response_eiq, observable_value, "email", FILE_THRESHOLD, "Email")
+    email_result = parse_reputation_results(
+        response_eiq, observable_value, "email", FILE_THRESHOLD, "Email"
+    )
 
     if SIGHTINGS_AUTO_CREATE:
-        observable_dict = [{
-            'observable_type': response_eiq["type"],
-            'observable_value': observable_value,
-            'observable_maliciousness': 'medium',
-            'observable_classification': 'bad'
-        }]
+        observable_dict = [
+            {
+                "observable_type": response_eiq["type"],
+                "observable_value": observable_value,
+                "observable_maliciousness": "medium",
+                "observable_classification": "bad",
+            }
+        ]
 
-        eiq.create_entity(observable_dict=observable_dict, source_group_name=GROUP_NAME,
-                          entity_title='XSOAR automatic Sighting for ' + observable_value, entity_description='')
+        eiq.create_entity(
+            observable_dict=observable_dict,
+            source_group_name=GROUP_NAME,
+            entity_title="XSOAR automatic Sighting for " + observable_value,
+            entity_description="",
+        )
 
     return_results(email_result)
 
@@ -1846,33 +2108,45 @@ def domain_command():
     entry
         Reputation of given domain address
     """
-    observable_value = demisto.args()['domain']
+    observable_value = demisto.args()["domain"]
     response_eiq = eiq.lookup_observable(observable_value, "domain")
-    domain_result = parse_reputation_results(response_eiq, observable_value, "domain", DOMAIN_THRESHOLD, "Domain")
+    domain_result = parse_reputation_results(
+        response_eiq, observable_value, "domain", DOMAIN_THRESHOLD, "Domain"
+    )
 
     if SIGHTINGS_AUTO_CREATE:
-        observable_dict = [{
-            'observable_type': response_eiq["type"],
-            'observable_value': observable_value,
-            'observable_maliciousness': 'medium',
-            'observable_classification': 'bad'
-        }]
+        observable_dict = [
+            {
+                "observable_type": response_eiq["type"],
+                "observable_value": observable_value,
+                "observable_maliciousness": "medium",
+                "observable_classification": "bad",
+            }
+        ]
 
-        eiq.create_entity(observable_dict=observable_dict, source_group_name=GROUP_NAME,
-                          entity_title='XSOAR automatic Sighting for ' + observable_value, entity_description='')
+        eiq.create_entity(
+            observable_dict=observable_dict,
+            source_group_name=GROUP_NAME,
+            entity_title="XSOAR automatic Sighting for " + observable_value,
+            entity_description="",
+        )
 
     return_results(domain_result)
 
 
 def get_entity():
-    observable_value = demisto.args().get('observable_value', None)
-    entity_value = demisto.args().get('entity_title', None)
-    entity_type = demisto.args()['entity_type']
+    observable_value = demisto.args().get("observable_value", None)
+    entity_value = demisto.args().get("entity_title", None)
+    entity_type = demisto.args()["entity_type"]
 
     if entity_type == "all":
         entity_type = None
 
-    query_result = eiq.search_entity(entity_value=entity_value, entity_type=entity_type, observable_value=observable_value)
+    query_result = eiq.search_entity(
+        entity_value=entity_value,
+        entity_type=entity_type,
+        observable_value=observable_value,
+    )
 
     if (type(query_result) is dict) or (type(query_result) is list):
         output_result = []
@@ -1884,48 +2158,62 @@ def get_entity():
             output_result.append(record)
 
         total_count = len(query_result)
-        human_readable_title = "Total " + str(total_count) + " entities found in EclecticIQ Intelligence Center."
+        human_readable_title = (
+            "Total "
+            + str(total_count)
+            + " entities found in EclecticIQ Intelligence Center."
+        )
 
         human_readable = tableToMarkdown(human_readable_title, output_result)
 
-        return_results(CommandResults(readable_output=human_readable,
-                                      raw_response=query_result,
-                                      outputs_prefix="EclecticIQ.Entity",
-                                      outputs=output_result,
-                                      outputs_key_field='entity_title'))
+        return_results(
+            CommandResults(
+                readable_output=human_readable,
+                raw_response=query_result,
+                outputs_prefix="EclecticIQ.Entity",
+                outputs=output_result,
+                outputs_key_field="entity_title",
+            )
+        )
 
     elif query_result is False:
         return_results("No entities found in EclecticIQ Intelligence Center.")
 
 
 def get_entity_by_id():
-    entity_id = demisto.args().get('entity_id', None)
+    entity_id = demisto.args().get("entity_id", None)
     query_result = eiq.get_entity_by_id(entity_id)
 
-    if type(query_result).__name__ == "Exception" and "Status code:404" in str(query_result):
-        return_results('No entities found in EclecticIQ Platform.')
+    if type(query_result).__name__ == "Exception" and "Status code:404" in str(
+        query_result
+    ):
+        return_results("No entities found in EclecticIQ Platform.")
 
     elif (type(query_result) is dict) or (type(query_result) is list):
         human_readable_title = "Entities found in EclecticIQ Intelligence Center."
         human_readable = tableToMarkdown(human_readable_title, query_result)
 
-        return_results(CommandResults(readable_output=human_readable,
-                                      raw_response=query_result,
-                                      outputs_prefix="EclecticIQ.EntityById",
-                                      outputs=query_result,
-                                      outputs_key_field='entity_title'))
+        return_results(
+            CommandResults(
+                readable_output=human_readable,
+                raw_response=query_result,
+                outputs_prefix="EclecticIQ.EntityById",
+                outputs=query_result,
+                outputs_key_field="entity_title",
+            )
+        )
 
 
 def create_sighting():
     args = demisto.args()
-    observable_value = args.get('observable_value', "")
-    observable_type = args.get('observable_type', "")
-    observable_maliciousness = args.get('observable_maliciousness', "")
-    sighting_title = args.get('sighting_title', "")
-    sighting_description = args.get('sighting_description', "")
-    sighting_confidence = args.get('sighting_confidence', "")
-    sighting_impact = args.get('sighting_impact', "")
-    sighting_tag = argToList(args.get('sighting_tag'))
+    observable_value = args.get("observable_value", "")
+    observable_type = args.get("observable_type", "")
+    observable_maliciousness = args.get("observable_maliciousness", "")
+    sighting_title = args.get("sighting_title", "")
+    sighting_description = args.get("sighting_description", "")
+    sighting_confidence = args.get("sighting_confidence", "")
+    sighting_impact = args.get("sighting_impact", "")
+    sighting_tag = argToList(args.get("sighting_tag"))
 
     if sighting_tag == [""]:
         del sighting_tag[:]
@@ -1933,44 +2221,59 @@ def create_sighting():
     observable_record = {}
 
     observable_record = convert_maliciousness(observable_maliciousness)
-    observable_record['observable_type'] = observable_type
-    observable_record['observable_value'] = observable_value
+    observable_record["observable_type"] = observable_type
+    observable_record["observable_value"] = observable_value
 
     observable_list = []
     observable_list.append(observable_record)
 
-    sighting_id = eiq.create_entity(observable_dict=observable_list, source_group_name=GROUP_NAME, entity_title=sighting_title,
-                                    entity_description=sighting_description, entity_confidence=sighting_confidence,
-                                    entity_tags=sighting_tag, entity_impact_value=sighting_impact)
+    sighting_id = eiq.create_entity(
+        observable_dict=observable_list,
+        source_group_name=GROUP_NAME,
+        entity_title=sighting_title,
+        entity_description=sighting_description,
+        entity_confidence=sighting_confidence,
+        entity_tags=sighting_tag,
+        entity_impact_value=sighting_impact,
+    )
 
-    raw_result = {"entity_id": sighting_id,
-                  "sighting_details": {
-                                       "sighting_title": sighting_title,
-                                       "observable_value": observable_value,
-                                       "observable_type": observable_type,
-                                       "observable_maliciousness": observable_maliciousness
-                                       }
-                  }
+    raw_result = {
+        "entity_id": sighting_id,
+        "sighting_details": {
+            "sighting_title": sighting_title,
+            "observable_value": observable_value,
+            "observable_type": observable_type,
+            "observable_maliciousness": observable_maliciousness,
+        },
+    }
 
-    entry_context = {'SightingId': sighting_id,
-                     "SightingDetails": {
-                         "SightingTitle": sighting_title,
-                         "ObservableValue": observable_value,
-                         "ObservableType": observable_type,
-                         "ObservableMaliciousness": observable_maliciousness}}
+    entry_context = {
+        "SightingId": sighting_id,
+        "SightingDetails": {
+            "SightingTitle": sighting_title,
+            "ObservableValue": observable_value,
+            "ObservableType": observable_type,
+            "ObservableMaliciousness": observable_maliciousness,
+        },
+    }
 
-    human_readable_title = f'EclecticIQ Sighting Created, Entity ID - {raw_result["entity_id"]}'
+    human_readable_title = (
+        f'EclecticIQ Sighting Created, Entity ID - {raw_result["entity_id"]}'
+    )
     human_readable = tableToMarkdown(human_readable_title, raw_result)
 
-    return_results(CommandResults(readable_output=human_readable,
-                                  raw_response=raw_result,
-                                  outputs_prefix="EclecticIQ.Sightings",
-                                  outputs=entry_context,
-                                  outputs_key_field='SightingId'))
+    return_results(
+        CommandResults(
+            readable_output=human_readable,
+            raw_response=raw_result,
+            outputs_prefix="EclecticIQ.Sightings",
+            outputs=entry_context,
+            outputs_key_field="SightingId",
+        )
+    )
 
 
 def convert_maliciousness(observable_dict):
-
     maliciousness_to_meta = {
         "Malicious (High confidence)": {
             "classification": "bad",
@@ -1987,19 +2290,20 @@ def convert_maliciousness(observable_dict):
         "Safe": {
             "classification": "good",
         },
-        "Unknown": {
-        },
+        "Unknown": {},
     }
 
     record = {}
-
-    record["observable_maliciousness"] = maliciousness_to_meta[observable_dict].get("confidence", "")  # type: ignore[attr-defined]
-    record["observable_classification"] = maliciousness_to_meta[observable_dict].get("classification", "")  # type: ignore[attr-defined]
+    meta_data = maliciousness_to_meta[observable_dict]
+    record["observable_maliciousness"] = meta_data.get("confidence", "")  # type: ignore[attr-defined]
+    record["observable_classification"] = meta_data.get("classification", "")  # type: ignore[attr-defined]
 
     return record
 
 
-def prepare_entity_observables(observable1value, observable1type, observable1malicousness, observable_dict):
+def prepare_entity_observables(
+    observable1value, observable1type, observable1malicousness, observable_dict
+):
     """Method duplicate _prepare_observables method with difference in params names.
     Been added for backward compatibility.
 
@@ -2021,8 +2325,7 @@ def prepare_entity_observables(observable1value, observable1type, observable1mal
         "Safe": {
             "classification": "good",
         },
-        "Unknown": {
-        }
+        "Unknown": {},
     }
 
     maliciousness_to_meta_dict = {
@@ -2041,17 +2344,16 @@ def prepare_entity_observables(observable1value, observable1type, observable1mal
         "safe": {
             "classification": "good",
         },
-        "unknown": {
-        }
+        "unknown": {},
     }
 
     result = []
 
-    record = dict(observable_type=observable1type,
-                  observable_value=observable1value)
+    record = {"observable_type": observable1type, "observable_value": observable1value}
 
-    record["observable_maliciousness"] = maliciousness_to_meta[observable1malicousness].get("confidence", "")  # type: ignore[attr-defined]
-    record["observable_classification"] = maliciousness_to_meta[observable1malicousness].get("classification", "")  # type: ignore[attr-defined]
+    meta_data = maliciousness_to_meta[observable1malicousness]
+    record["observable_maliciousness"] = meta_data.get("confidence", "")  # type: ignore[attr-defined]
+    record["observable_classification"] = meta_data.get("classification", "")  # type: ignore[attr-defined]
 
     result.append(record)
 
@@ -2059,13 +2361,13 @@ def prepare_entity_observables(observable1value, observable1type, observable1mal
         observable_dict = json.loads(observable_dict)
 
         for observable in observable_dict:
-            record = dict(
-                observable_type=observable["type"],
-                observable_value=observable["value"])
-
-            record["observable_maliciousness"] = maliciousness_to_meta_dict[observable["maliciousness"]].get("confidence", "")  # type: ignore[attr-defined]
-            record["observable_classification"] = maliciousness_to_meta_dict[observable["maliciousness"]]\
-            .get("classification", "")  # type: ignore[attr-defined]
+            record = {
+                "observable_type": observable["type"],
+                "observable_value": observable["value"],
+            }
+            meta_data = maliciousness_to_meta_dict[observable["maliciousness"]]
+            record["observable_maliciousness"] = meta_data.get("confidence", "")  # type: ignore[attr-defined]
+            record["observable_classification"] = meta_data.get("classification", "")  # type: ignore[attr-defined]
 
             result.append(record)
 
@@ -2074,15 +2376,15 @@ def prepare_entity_observables(observable1value, observable1type, observable1mal
 
 def create_indicator():
     args = demisto.args()
-    observable_value = args.get('observable_value', "")
-    observable_type = args.get('observable_type', "")
-    observable_maliciousness = args.get('observable_maliciousness', "")
-    indicator_title = args.get('indicator_title', "")
-    indicator_description = args.get('indicator_description', "")
-    indicator_confidence = args.get('indicator_confidence', "")
-    indicator_impact = args.get('indicator_impact', "")
-    indicator_tag = argToList(args.get('indicator_tag'))
-    observable_dictionary = args.get('observable_dictionary', {})
+    observable_value = args.get("observable_value", "")
+    observable_type = args.get("observable_type", "")
+    observable_maliciousness = args.get("observable_maliciousness", "")
+    indicator_title = args.get("indicator_title", "")
+    indicator_description = args.get("indicator_description", "")
+    indicator_confidence = args.get("indicator_confidence", "")
+    indicator_impact = args.get("indicator_impact", "")
+    indicator_tag = argToList(args.get("indicator_tag"))
+    observable_dictionary = args.get("observable_dictionary", {})
 
     if indicator_tag == [""]:
         del indicator_tag[:]
@@ -2091,38 +2393,58 @@ def create_indicator():
         observable_dictionary = {}
 
     observable_list = []
-    observable_list = prepare_entity_observables(observable_value, observable_type,
-                                                 observable_maliciousness, observable_dictionary)
+    observable_list = prepare_entity_observables(
+        observable_value,
+        observable_type,
+        observable_maliciousness,
+        observable_dictionary,
+    )
 
-    indicator_id = eiq.create_entity(observable_dict=observable_list, source_group_name=GROUP_NAME, entity_title=indicator_title,
-                                     entity_description=indicator_description, entity_confidence=indicator_confidence,
-                                     entity_tags=indicator_tag, entity_impact_value=indicator_impact, entity_type='indicator')
+    indicator_id = eiq.create_entity(
+        observable_dict=observable_list,
+        source_group_name=GROUP_NAME,
+        entity_title=indicator_title,
+        entity_description=indicator_description,
+        entity_confidence=indicator_confidence,
+        entity_tags=indicator_tag,
+        entity_impact_value=indicator_impact,
+        entity_type="indicator",
+    )
 
-    raw_result = {"entity_id": indicator_id,
-                  "indicator_title": indicator_title,
-                  "observables_list": observable_list}
+    raw_result = {
+        "entity_id": indicator_id,
+        "indicator_title": indicator_title,
+        "observables_list": observable_list,
+    }
 
     entry_context = {
-        'IndicatorId': indicator_id,
+        "IndicatorId": indicator_id,
         "IndicatorTitle": indicator_title,
-        "ObservablesList": observable_list}
+        "ObservablesList": observable_list,
+    }
 
-    human_readable_title = 'EclecticIQ Indicator Created, Entity ID - {}'.format(raw_result["entity_id"])
+    human_readable_title = "EclecticIQ Indicator Created, Entity ID - {}".format(
+        raw_result["entity_id"]
+    )
     human_readable = tableToMarkdown(human_readable_title, raw_result)
 
-    return_results(CommandResults(readable_output=human_readable,
-                                  raw_response=raw_result,
-                                  outputs_prefix="EclecticIQ.Indicators",
-                                  outputs=entry_context,
-                                  outputs_key_field='IndicatorId'))
+    return_results(
+        CommandResults(
+            readable_output=human_readable,
+            raw_response=raw_result,
+            outputs_prefix="EclecticIQ.Indicators",
+            outputs=entry_context,
+            outputs_key_field="IndicatorId",
+        )
+    )
 
 
 def get_indicators():
-    feed_ids = demisto.params().get('feedId', "")
+    feed_ids = demisto.params().get("feedId", "")
 
     if len(feed_ids) > 0:
         feeds_info = eiq.get_feed_info(feed_ids)
-        indicators_to_add = []
+        indicators_to_add: list[dict] = []
 
         for item in feeds_info:
             item["id"] = str(item["id"])
@@ -2131,24 +2453,34 @@ def get_indicators():
             blocks = eiq.get_feed_content_blocks(item)
 
             for block in blocks:
-                demisto.debug('Feed id={0} preparing data to ingest block {1}.'.format(str(item['id']), block))
+                demisto.debug(
+                    "Feed id={} preparing data to ingest block {}.".format(
+                        str(item["id"]), block
+                    )
+                )
                 data_from_block = eiq.download_block_list(block)
-                indicators_to_add = indicators_to_add + export_csv_to_indicators_get(item['id'], data_from_block)
+                indicators_to_add = indicators_to_add + export_csv_to_indicators_get(
+                    item["id"], data_from_block
+                )
                 break
 
-        human_readable = tableToMarkdown("Indicators collected from first block of feed:" + str(feeds_info), indicators_to_add)
+        human_readable = tableToMarkdown(
+            "Indicators collected from first block of feed:" + str(feeds_info),
+            indicators_to_add,
+        )
 
         return_results(CommandResults(readable_output=human_readable))
     else:
-        human_readable = tableToMarkdown("Feed ID to fetch is not configured in the Integreation settings.", {})
+        human_readable = tableToMarkdown(
+            "Feed ID to fetch is not configured in the Integreation settings.", {}
+        )
         return_results(CommandResults(readable_output=human_readable))
 
 
 def export_csv_to_indicators_get(feed_id, text, flag=False):
-
-    demisto.info('Getting Indicators from feed #{0}'.format(str(feed_id)))
+    demisto.info(f"Getting Indicators from feed #{str(feed_id)}")
     text = io.StringIO(text)
-    csvreader = csv.DictReader(text, delimiter=',')
+    csvreader = csv.DictReader(text, delimiter=",")
 
     indicators_to_add = []
 
@@ -2163,33 +2495,36 @@ def export_csv_to_indicators_get(feed_id, text, flag=False):
         "ipv4": "IP",
         "ipv4-cidr": "CIDR",
         "ipv6": "IPv6",
-        "uri": "URL"}
+        "uri": "URL",
+    }
 
     maliciousness_dictionary = {
-        '': 0,
-        'unknown': 0,
-        'safe': 1,
-        'low': 2,
-        'medium': 2,
-        'high': 3}
+        "": 0,
+        "unknown": 0,
+        "safe": 1,
+        "low": 2,
+        "medium": 2,
+        "high": 3,
+    }
 
-    if 'diff' not in csvreader.fieldnames:
+    if "diff" not in csvreader.fieldnames:  # type: ignore[operator]
         demisto.info("Update method is 'replace' or 'append'.")
         # If there is no "diff" column in the CSV
         # So the update method is set to "replace", this means we
         # delete everything from this feed and then recreate it.
         for row in csvreader:
-            if row['type'] in indicator_types_mapper:
+            if row["type"] in indicator_types_mapper:
                 indicator_obj = {
                     "value": row["value"],
-                    "type": indicator_types_mapper[row['type']],
-                    "eclecticiqentityid": row['entity.id'],
-                    "eclecticiqentitytitle": row['entity.title'],
-                    "eclecticiqentitytype": row['entity.type'],
+                    "type": indicator_types_mapper[row["type"]],
+                    "eclecticiqentityid": row["entity.id"],
+                    "eclecticiqentitytitle": row["entity.title"],
+                    "eclecticiqentitytype": row["entity.type"],
                     "eclecticiqfeedid": str(feed_id),
-                    "eclecticiqsource": row['source.names'],
-                    "eclecticiqentitydescription": row.get('entity.description', ""),
-                    "score": maliciousness_dictionary[row['meta.confidence']]}
+                    "eclecticiqsource": row["source.names"],
+                    "eclecticiqentitydescription": row.get("entity.description", ""),
+                    "score": maliciousness_dictionary[row["meta.confidence"]],
+                }
 
                 indicators_to_add.append(indicator_obj)
 
@@ -2197,7 +2532,7 @@ def export_csv_to_indicators_get(feed_id, text, flag=False):
 
 
 def fetch_indicators():
-    feed_ids = demisto.params().get('feedId', "")
+    feed_ids = demisto.params().get("feedId", "")
 
     if len(feed_ids) > 0:
         feeds_info = eiq.get_feed_info(feed_ids)
@@ -2209,36 +2544,53 @@ def fetch_indicators():
             demisto.debug("Feed id {} is starting to fetch.".format(item["id"]))
 
             flag = False
-            state = context.get(item["id"], {'created_at': None, "feed_name": None,
-                                             "update_strategy": None, "last_ingested": None})
+            state = context.get(
+                item["id"],
+                {
+                    "created_at": None,
+                    "feed_name": None,
+                    "update_strategy": None,
+                    "last_ingested": None,
+                },
+            )
 
-            if not state['created_at'] or item['created_at'] != state['created_at']:
+            if not state["created_at"] or item["created_at"] != state["created_at"]:
                 # check created_at field between platform and IBM
                 # if they are different
                 # delete all from this feed and ingest again
                 flag = True
 
-            if item['update_strategy'] == "REPLACE":
+            if item["update_strategy"] == "REPLACE":
                 flag = True
 
             if flag is True:
                 context = demisto.getLastRun()
-                context[item["id"]] = {'created_at': item["created_at"], "feed_name": item["name"],
-                                       "update_strategy": item["update_strategy"], "last_ingested": None}
+                context[item["id"]] = {
+                    "created_at": item["created_at"],
+                    "feed_name": item["name"],
+                    "update_strategy": item["update_strategy"],
+                    "last_ingested": None,
+                }
                 demisto.setLastRun(context)
                 blocks = eiq.get_feed_content_blocks(item, state)
             else:
                 state = context[item["id"]]
                 blocks = eiq.get_feed_content_blocks(item, state)
 
-            demisto.info('Starting Ingestion of feed #{0}'.format(item['id']))
+            demisto.info("Starting Ingestion of feed #{}".format(item["id"]))
 
-            indicators_to_add = []
+            indicators_to_add: list[dict] = []
 
             for block in blocks:
-                demisto.debug('Feed id={0} preparing data to ingest block {1}.'.format(str(item['id']), block))
+                demisto.debug(
+                    "Feed id={} preparing data to ingest block {}.".format(
+                        str(item["id"]), block
+                    )
+                )
                 data_from_block = eiq.download_block_list(block)
-                indicators_to_add = indicators_to_add + export_csv_to_indicators(item['id'], data_from_block, flag)
+                indicators_to_add = indicators_to_add + export_csv_to_indicators(
+                    item["id"], data_from_block, flag
+                )
 
                 flag = False
                 context[item["id"]]["last_ingested"] = block
@@ -2247,16 +2599,17 @@ def fetch_indicators():
             for b in batch(indicators_to_add, batch_size=2000):
                 demisto.createIndicators(b)
 
-            demisto.info('Feed id={0} was fully ingested/updated.'.format(str(item['id'])))
+            demisto.info(
+                "Feed id={} was fully ingested/updated.".format(str(item["id"]))
+            )
     else:
-        demisto.error('Fetching enabled but Feed IDs not configured.')
+        demisto.error("Fetching enabled but Feed IDs not configured.")
 
 
 def export_csv_to_indicators(feed_id, text, flag=False):
-
-    demisto.info('Exporting to Indicators feed #{0}'.format(str(feed_id)))
+    demisto.info(f"Exporting to Indicators feed #{str(feed_id)}")
     text = io.StringIO(text)
-    csvreader = csv.DictReader(text, delimiter=',')
+    csvreader = csv.DictReader(text, delimiter=",")
 
     indicators_to_add = []
 
@@ -2271,39 +2624,46 @@ def export_csv_to_indicators(feed_id, text, flag=False):
         "ipv4": "IP",
         "ipv4-cidr": "CIDR",
         "ipv6": "IPv6",
-        "uri": "URL"}
+        "uri": "URL",
+    }
 
     maliciousness_dictionary = {
-        '': 0,
-        'unknown': 0,
-        'safe': 1,
-        'low': 2,
-        'medium': 2,
-        'high': 3}
+        "": 0,
+        "unknown": 0,
+        "safe": 1,
+        "low": 2,
+        "medium": 2,
+        "high": 3,
+    }
 
-    if 'diff' not in csvreader.fieldnames:
-        demisto.info("Update method is 'replace' or 'append' so check for changes and update.")
+    if "diff" not in csvreader.fieldnames:  # type: ignore[operator]
+        demisto.info(
+            "Update method is 'replace' or 'append' so check for changes and update."
+        )
         # If there is no "diff" column in the CSV
         # So the update method is set to "replace", this means we
         # delete everything from this feed and then recreate it.
         for row in csvreader:
-            if row['type'] in indicator_types_mapper:
+            if row["type"] in indicator_types_mapper:
                 raw_json = {}
                 raw_json = row
 
                 indicator_obj = {
                     "value": row["value"],
-                    "type": indicator_types_mapper[row['type']],
+                    "type": indicator_types_mapper[row["type"]],
                     "rawJSON": raw_json,
                     "fields": {
-                        "eclecticiqentityid": row['entity.id'],
-                        "eclecticiqentitytitle": row['entity.title'],
-                        "eclecticiqentitytype": row['entity.type'],
+                        "eclecticiqentityid": row["entity.id"],
+                        "eclecticiqentitytitle": row["entity.title"],
+                        "eclecticiqentitytype": row["entity.type"],
                         "eclecticiqfeedid": str(feed_id),
-                        "eclecticiqsource": row['source.names'],
-                        "eclecticiqentitydescription": row.get('entity.description', "")
+                        "eclecticiqsource": row["source.names"],
+                        "eclecticiqentitydescription": row.get(
+                            "entity.description", ""
+                        ),
                     },
-                    "score": maliciousness_dictionary[row['meta.confidence']]}
+                    "score": maliciousness_dictionary[row["meta.confidence"]],
+                }
 
                 indicators_to_add.append(indicator_obj)
 
@@ -2311,88 +2671,110 @@ def export_csv_to_indicators(feed_id, text, flag=False):
 
 
 def request_get():
-    uri = demisto.args().get('uri', "")
+    uri = demisto.args().get("uri", "")
 
-    raw_response = eiq.send_api_request('get', uri)
+    raw_response = eiq.send_api_request("get", uri)
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
     entry_context["ReplyBody"] = raw_response.json()
 
-    human_readable_title = ('### EclecticIQ GET action to endpoint ' + uri + ' exectued. Reply status: '
-                            + str(raw_response.status_code))
+    human_readable_title = (
+        "### EclecticIQ GET action to endpoint "
+        + uri
+        + " exectued. Reply status: "
+        + str(raw_response.status_code)
+    )
 
-    return_results(CommandResults(readable_output=human_readable_title,
-                                  raw_response=raw_response.json(),
-                                  outputs_prefix="EclecticIQ.GET",
-                                  outputs=entry_context,
-                                  outputs_key_field='URI'))
+    return_results(
+        CommandResults(
+            readable_output=human_readable_title,
+            raw_response=raw_response.json(),
+            outputs_prefix="EclecticIQ.GET",
+            outputs=entry_context,
+            outputs_key_field="URI",
+        )
+    )
 
 
 def request_post():
-    uri = demisto.args().get('uri', "")
-    body = json.loads(demisto.args().get('body', '{}'))
+    uri = demisto.args().get("uri", "")
+    body = json.loads(demisto.args().get("body", "{}"))
 
-    raw_response = eiq.send_api_request('post', uri, data=body)
+    raw_response = eiq.send_api_request("post", uri, data=body)
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
     entry_context["ReplyBody"] = raw_response.json()
 
-    human_readable_title = f'### EclecticIQ POST action to endpoint {uri} exectued. Reply status: {raw_response.status_code}'
+    human_readable_title = f"### EclecticIQ POST action to endpoint {uri} exectued. Reply status: {raw_response.status_code}"
 
-    return_results(CommandResults(readable_output=human_readable_title,
-                                  raw_response=raw_response.json(),
-                                  outputs_prefix="EclecticIQ.POST",
-                                  outputs=entry_context,
-                                  outputs_key_field='URI'))
+    return_results(
+        CommandResults(
+            readable_output=human_readable_title,
+            raw_response=raw_response.json(),
+            outputs_prefix="EclecticIQ.POST",
+            outputs=entry_context,
+            outputs_key_field="URI",
+        )
+    )
 
 
 def request_delete():
-    uri = demisto.args().get('uri', "")
+    uri = demisto.args().get("uri", "")
 
-    raw_response = eiq.send_api_request('delete', uri)
+    raw_response = eiq.send_api_request("delete", uri)
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
 
-    human_readable_title = f'### EclecticIQ DELETE action to endpoint {uri} exectued. Reply status: {raw_response.status_code}'
+    human_readable_title = f"### EclecticIQ DELETE action to endpoint {uri} exectued. Reply status: {raw_response.status_code}"
 
-    return_results(CommandResults(readable_output=human_readable_title,
-                                  raw_response=entry_context,
-                                  outputs_prefix="EclecticIQ.DELETE",
-                                  outputs=entry_context,
-                                  outputs_key_field='URI'))
+    return_results(
+        CommandResults(
+            readable_output=human_readable_title,
+            raw_response=entry_context,
+            outputs_prefix="EclecticIQ.DELETE",
+            outputs=entry_context,
+            outputs_key_field="URI",
+        )
+    )
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 
 COMMANDS = {
-    'test-module': test_module,
-    'url': url_command,
-    'ip': ip_command,
-    'email': email_command,
-    'file': file_command,
-    'domain': domain_command,
-    'fetch-indicators': fetch_indicators,
-    'eclecticiq-get-entity': get_entity,
-    'eclecticiq-get-entity-by-id': get_entity_by_id,
-    'eclecticiq-create-sighting': create_sighting,
-    'eclecticiq-create-indicator': create_indicator,
-    'eclecticiq-get-indicators': get_indicators,
-    'eclecticiq-request-get': request_get,
-    'eclecticiq-request-post': request_post,
-    'eclecticiq-request-delete': request_delete
+    "test-module": test_module,
+    "url": url_command,
+    "ip": ip_command,
+    "email": email_command,
+    "file": file_command,
+    "domain": domain_command,
+    "fetch-indicators": fetch_indicators,
+    "eclecticiq-get-entity": get_entity,
+    "eclecticiq-get-entity-by-id": get_entity_by_id,
+    "eclecticiq-create-sighting": create_sighting,
+    "eclecticiq-create-indicator": create_indicator,
+    "eclecticiq-get-indicators": get_indicators,
+    "eclecticiq-request-get": request_get,
+    "eclecticiq-request-post": request_post,
+    "eclecticiq-request-delete": request_delete,
 }
 
 try:
-    eiq = EclecticIQ_api(baseurl=SERVER, eiq_api_version=API_VERSION, username="", password=PASSWORD, verify_ssl=USE_SSL)
+    eiq = EclecticIQ_api(
+        baseurl=SERVER,
+        eiq_api_version=API_VERSION,
+        username="",
+        password=PASSWORD,
+        verify_ssl=USE_SSL,
+    )
 
-    LOG('Command being called is {}'.format(demisto.command()))
+    LOG(f"Command being called is {demisto.command()}")
     command_func = COMMANDS.get(demisto.command())
     if command_func is not None:
         command_func()
 
 except Exception as e:
-    return_error('Error has occurred in EclecticIQ integration: {}.'.format(str(e)))
+    return_error(f"Error has occurred in EclecticIQ integration: {str(e)}.")
