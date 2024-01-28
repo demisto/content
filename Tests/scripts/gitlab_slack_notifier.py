@@ -547,11 +547,11 @@ def main():
                 verify=False,
             )
             author = pull_request.data.get('user', {}).get('login')
-            if triggering_workflow in {BUCKET_UPLOAD}:
-                logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
-            else:
+            if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR}:
                 # This feature is only supported for content nightly and content pr workflows.
                 computed_slack_channel = f"{computed_slack_channel}{author}"
+            else:
+                logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
             logging.info(f"Sending slack message to channel {computed_slack_channel} for "
                          f"Author:{author} of PR#{pull_request.data.get('number')}")
         except Exception:
