@@ -380,8 +380,7 @@ class Client(CoreClient):
         incident = reply.get('reply')
 
         return incident
-    
-    
+
     def get_multiple_incidents_extra_data(self, incident_id):
         """
         Returns incident by id
@@ -406,7 +405,7 @@ class Client(CoreClient):
         incident = reply.get('reply')
 
         return incident
-    
+
     #
 
     def save_modified_incidents_to_integration_context(self):
@@ -653,13 +652,13 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
-def api_call_try(client, args) -> (tuple[Dict | None | str , bool]):
+def api_call_try(client, args) -> (tuple[Dict | None | str, bool]):
     demisto.debug('MAI BELLE before try')
     try:
         raw_incident = client.get_multiple_incidents_extra_data(args.get('incident_id'))
         demisto.info(f'MAI BELLE MAI after new api call{raw_incident} ')
-        use_get_incident_extra_data = int(raw_incident.get('incident', {}).get('replay',{}).get('alert_count')) > \
-                                      int(raw_incident.get('incident', {}).get('replay',{}).get('number_in_config'))
+        use_get_incident_extra_data = int(raw_incident.get('incident', {}).get('replay', {}).get('alert_count')) > \
+            int(raw_incident.get('incident', {}).get('replay', {}).get('number_in_config'))
         demisto.debug(f'MAI BELLE Mai raw {raw_incident} ***** bool {use_get_incident_extra_data}  ')
         return raw_incident, use_get_incident_extra_data
     except HTTPError as e:
@@ -667,7 +666,6 @@ def api_call_try(client, args) -> (tuple[Dict | None | str , bool]):
             the old call {e}')
         demisto.debug('!!! what')
     return None, False
-
 
 
 def get_incident_extra_data_command(client, args):
@@ -685,17 +683,17 @@ def get_incident_extra_data_command(client, args):
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
     demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident ,use_get_incident_extra_data = api_call_try(client,args)  # 500: {},True
-    demisto.debug(f'!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MAI BELLE Mai raw {raw_incident} | type {type(raw_incident)}')
-    demisto.debug('MAI BELLE get_incident_extra_data_command Mai after try- except ') 
-    if  (not raw_incident) or (raw_incident == {}) or  (not use_get_incident_extra_data):
+    raw_incident, use_get_incident_extra_data = api_call_try(client, args)  # 500: {},True
+    demisto.debug(f'&&!MAI BELLE Mai raw {raw_incident} | type {type(raw_incident)}')
+    demisto.debug('MAI BELLE get_incident_extra_data_command Mai after try- except ')
+    if (not raw_incident) or (raw_incident == {}) or (not use_get_incident_extra_data):
         demisto.debug('MAI OLD call')
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-        demisto.debug(f'MAI after OLD api call{raw_incident}' )
+        demisto.debug(f'MAI after OLD api call{raw_incident}')
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     demisto.debug("!!!!!!!!!!!!!!!!!!!!!!!!")
     incident = raw_incident.get('incident', {})
-    incident_id = incident.get('incident_id' , {})
+    incident_id = incident.get('incident_id', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
@@ -1264,7 +1262,7 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
-    command = demisto.command()
+    command = 'fetch-incidents'  # demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
 
@@ -1276,7 +1274,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    
+
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
