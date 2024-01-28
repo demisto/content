@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-from typing import Dict, Any, List
+from typing import Any
 import traceback
 
 ''' STANDALONE FUNCTION '''
@@ -13,17 +13,18 @@ def remove_id_and_version_from_entry(entry):
     entry.pop('Version', None)
 
 
-def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
+def copy_notes_to_target_incident(args: dict[str, Any]) -> CommandResults:
 
     target_incident = args.get('target_incident', None)
     if not target_incident:
         raise ValueError('Target Incident ID not specified')
 
     tags = argToList(args.get('tags'))
+    auto_extract = args.get('auto_extract', False)
+    auto_extract_value = "none" if not auto_extract else "inline"
+    entries = demisto.executeCommand('getEntries', {'filter': {'tags': tags, "auto_extract": auto_extract_value}})
 
-    entries = demisto.executeCommand('getEntries', {'filter': {'tags': tags}})
-
-    note_entries: List = []
+    note_entries: list = []
     md: str = ''
 
     if isinstance(entries, list) and len(entries) > 0:
@@ -33,7 +34,9 @@ def copy_notes_to_target_incident(args: Dict[str, Any]) -> CommandResults:
                 note_entries.append(entry)
 
         if len(note_entries) > 0:
-            demisto.executeCommand("addEntries", {"id": target_incident, "entries": note_entries})
+            demisto.executeCommand("addEntries", {"id": target_incident,
+                                                  "entries": note_entries,
+                                                  "auto_extract": auto_extract_value})
             md = f'## {len(note_entries)} notes copied'
         else:
             md = '## No notes found'

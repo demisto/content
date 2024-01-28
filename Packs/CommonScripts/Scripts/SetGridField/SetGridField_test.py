@@ -215,7 +215,7 @@ def test_main_does_not_raises_error_in_xsoar(mocker):
                                                        "overwrite": "True",
                                                        "unpack_nested_elements": "False"})
     mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None})
-    mocker.patch.object(SetGridField, 'is_xsiam', return_value=False)
+    mocker.patch.object(SetGridField, 'is_xsiam_or_xsoar_saas', return_value=False)
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
     mocker.patch.object(SetGridField, 'build_grid_command', return_value=[{"name": "name", "readable_name": "readable_name"}])
     mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_for_execute_command)
@@ -238,7 +238,7 @@ def test_main_raises_error_in_xsiam(mocker):
                                                        'columns': "col1,col2", "sort_by": "col1",
                                                        "overwrite": "True",
                                                        "unpack_nested_elements": "False"})
-    mocker.patch.object(SetGridField, 'is_xsiam', return_value=True)
+    mocker.patch.object(SetGridField, 'is_xsiam_or_xsoar_saas', return_value=True)
     mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None})
     mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
     mocker.patch.object(SetGridField, 'build_grid_command', return_value=[{"name": "name", "readable_name": "readable_name"}])
@@ -259,7 +259,7 @@ def test_get_current_table_exception(mocker):
     """
 
     import SetGridField
-    mocker.patch.object(SetGridField, 'is_xsiam', return_value=False)
+    mocker.patch.object(SetGridField, 'is_xsiam_or_xsoar_saas', return_value=False)
     mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None, "isPlayground": True})
     with pytest.raises(Exception):
         SetGridField.get_current_table("grid_id")
