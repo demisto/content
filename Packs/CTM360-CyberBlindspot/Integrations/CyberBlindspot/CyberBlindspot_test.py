@@ -3,10 +3,8 @@ import logging
 from datetime import datetime
 from dateparser import parse
 from CommonServerPython import DemistoException, IncidentStatus
-from CyberBlindspot import LOGGING_PREFIX, CBS_INCOMING_DATE_FORMAT, CBS_OUTGOING_DATE_FORMAT
+from CyberBlindspot import LOGGING_PREFIX, CBS_INCOMING_DATE_FORMAT, CBS_OUTGOING_DATE_FORMAT, ABSOLUTE_MAX_FETCH
 
-"""MOCK PARAMETERS """
-MAX_HITS = 200
 """CONSTANTS"""
 BASE_URL = "https://example.com:443"
 
@@ -333,7 +331,7 @@ def test_to_snake_case(mock_input, mock_assert):
                 'mirror_direction': 'None',
                 'max_fetch': '-1',
             },
-            DemistoException('Invalid "Max Fetch" Value. Should be between 1 to 200')
+            DemistoException(f'Invalid "Max Fetch" Value. Should be between 1 to {ABSOLUTE_MAX_FETCH}')
         ),
         (
             {
