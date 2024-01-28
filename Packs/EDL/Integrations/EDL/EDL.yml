@@ -263,6 +263,7 @@ configuration:
   advanced: true
   required: false
 - name: extensive_logging
+  display: 'Advanced: Enable Extensive Logging'
   type: 8
   additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
   section: Connect

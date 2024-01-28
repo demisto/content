@@ -112,6 +112,8 @@ class RequestArguments:
     FILTER_FIELDS_ON_FORMAT_CSV = "name,type"
     FILTER_FIELDS_ON_FORMAT_JSON = "name,type"
 
+    DEBUG_SEARCH_INDICATORS = "debug_search_indicators"
+
     def __init__(self,
                  query: str = '',
                  out_format: str = FORMAT_TEXT,
@@ -290,6 +292,9 @@ def create_new_edl(request_args: RequestArguments, extensive_logging: bool = Fal
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
         new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args, extensive_logging)
+        if request_args.DEBUG_SEARCH_INDICATORS:
+            return new_iocs_file.read(), original_indicators_count
+
         # we collect first all indicators because we need all ips to collapse_ips
         new_iocs_file = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
@@ -384,8 +389,9 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
             # NG + XSIAM can recover from a shutdown
             if version.get('platform') == 'x2' or is_demisto_version_ge('8'):
                 raise SystemExit('Encountered issue in Elastic Search query. Restarting container and trying again.')
+    demisto.debug(f"edl: Completed IOC search & format, found {ioc_counter} IOCs")
     if extensive_logging:
-        demisto.debug(f"edl: Completed IOC search & format, found {ioc_counter} IOCs. Their contents: {indicators}")
+        demisto.debug(f"edl: Contents of search indicators: {indicators}")
     if request_args.out_format == FORMAT_JSON:
         f.write(']')
     elif request_args.out_format == FORMAT_PROXYSG:
@@ -763,9 +769,11 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments, extensive_l
             new_line = '\n'
     iocs.close()
     if len(ipv4_formatted_indicators) > 0:
+        demisto.debug(f"edl: length of ipv4_formatted_indicators: {len(ipv4_formatted_indicators)}")
         if extensive_logging:
             demisto.debug(f"edl: Original IPv4 indicators: {ipv4_formatted_indicators}")
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
+        demisto.debug(f"edl: length of formatted IPv4 indicators: {len(ipv4_formatted_indicators)}")
         if extensive_logging:
             demisto.debug(f"edl: Formatted IPv4 indicators: {ipv4_formatted_indicators}")
         for ip in ipv4_formatted_indicators:
@@ -773,9 +781,11 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments, extensive_l
             new_line = '\n'
 
     if len(ipv6_formatted_indicators) > 0:
+        demisto.debug(f"edl: length of ipv6_formatted_indicators: {len(ipv6_formatted_indicators)}")
         if extensive_logging:
             demisto.debug(f"edl: Original IPv6 indicators: {ipv6_formatted_indicators}")
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
+        demisto.debug(f"edl: length of formatted IPv6 indicators: {len(ipv6_formatted_indicators)}")
         if extensive_logging:
             demisto.debug(f"edl: Formatted IPv6 indicators: {ipv6_formatted_indicators}")
         for ip in ipv6_formatted_indicators:
