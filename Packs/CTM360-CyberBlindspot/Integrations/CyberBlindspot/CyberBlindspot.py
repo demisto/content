@@ -22,8 +22,8 @@ DEBUG = 'debug'
 MAX_RETRIES = 5
 MIRROR_LIMIT = 1000
 ABSOLUTE_MAX_FETCH = 200
-MAX_FETCH = demisto.params().get('max_fetch', 0)
-MAX_FETCH = min(max(int(MAX_FETCH if MAX_FETCH else 0), 25), ABSOLUTE_MAX_FETCH)
+MAX_FETCH = arg_to_number(demisto.params().get('max_fetch') or 25)
+MAX_FETCH = min(MAX_FETCH, ABSOLUTE_MAX_FETCH)
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 CBS_OUTGOING_DATE_FORMAT = '%d-%m-%Y %H:%M'
 CBS_INCOMING_DATE_FORMAT = '%d-%m-%Y %I:%M:%S %p'
@@ -381,8 +381,8 @@ def test_module(client: Client, params) -> str:
             log(INFO, 'Invalid "First Fetch" Value')
             raise DemistoException('Invalid "First Fetch" Value')
         if max_fetch and (max_fetch <= 0 or max_fetch > 200):
-            log(INFO, 'Invalid "Max Fetch" Value')
-            raise DemistoException('Invalid "Max Fetch" Value')
+            log(INFO, 'Invalid "Max Fetch" Value. Should be between 1 to 200')
+            raise DemistoException('Invalid "Max Fetch" Value. Should be between 1 to 200')
         else:
             args['max_hits'] = max_fetch
         if date_from and not dateparser.parse(date_from, [CBS_OUTGOING_DATE_FORMAT]):
