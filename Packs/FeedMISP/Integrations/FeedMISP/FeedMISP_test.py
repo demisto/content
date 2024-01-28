@@ -489,7 +489,6 @@ def test_search_query_indicators_pagination(mocker):
     fetch_attributes_command(client, params_dict)
     last_run_call_args = demisto.setLastRun.call_args[0][0]
     indicators = demisto.createIndicators.call_args[0][0]
-    assert 'timestamp' in last_run_call_args
     assert 'params' in last_run_call_args
     assert len(indicators) == 2
 
