@@ -29,7 +29,6 @@ To ingest feeds via a URL, you could use one of the following content packs:
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Feed Fetch Interval |  | False |
-    | limit | Number of top indicators to fetch from the feed. | 2000 |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | MISP Attribute Tags | Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1,tag2,tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags' | False |
     | MISP Attribute Types | Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1,type2,type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list' | False |
