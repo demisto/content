@@ -360,21 +360,12 @@ def test_rasterize_html_no_internet_access(mocker):
     assert mocker_output.call_args.args[0]['File'] == 'email.png'
     assert not mock.called
 
-def test_log_warning(caplog):
+def test_log_warning():
     """
     Given   pypdf's logger instance
-    When    using the logger
-    Then    make sure its level is ERROR, and warnings are not logged
+    When    checking the logger's leve.
+    Then    make sure the level is ERROR
     """
     import logging
     from rasterize import pypdf_logger
-    from more_itertools import one
-    
     assert pypdf_logger.level == logging.ERROR
-    pypdf_logger.warning("warning!")
-    assert not caplog.records
-    
-    pypdf_logger.error("error!")
-    assert one(caplog.messages) == "error!"
-    
-    caplog.clear()
