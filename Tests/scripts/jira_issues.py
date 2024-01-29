@@ -65,8 +65,7 @@ def jira_color_text(text: str, color: str) -> str:
 def find_jira_ticket_unresolved_transition(jira_server: JIRA, jira_issue: Issue | None):
     unresolved_transition = None
     #  Get the available transitions for the issue
-    transitions = jira_server.transitions(jira_issue)
-    for transition in transitions:
+    for transition in jira_server.transitions(jira_issue):
         if transition['name'] == JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME:
             unresolved_transition = transition
             break
@@ -93,8 +92,7 @@ def find_existing_jira_ticket(jira_server: JIRA,
             if use_existing_issue := (resolution_date
                                       and (now - resolution_date)
                                       <= timedelta(days=max_days_to_reopen)):  # type: ignore[assignment]
-                unresolved_transition_id = find_jira_ticket_unresolved_transition(jira_server, jira_issue)
-                if unresolved_transition_id:
+                if unresolved_transition_id := find_jira_ticket_unresolved_transition(jira_server, jira_issue):
                     jira_issue_to_use = searched_issue
                 else:
                     logging.error(f"Failed to find the '{JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}' "
