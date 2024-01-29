@@ -196,8 +196,8 @@ deploy-sdk-to-pypi:
   extends:
     - .release-sdk
     - .default-job-settings
-  needs:
-    - create-release-pull-request
+#  needs:
+#    - create-release-pull-request
   when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
@@ -209,7 +209,6 @@ deploy-sdk-to-pypi:
     - section_start "Deploy SDK release" --collapsed
 #    - python3 ./Tests/sdk_release/create_release.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -d "${IS_DRAFT}"
 #    - python3 ./Tests/sdk_release/wait_for_release.py -b "${RELEASE_VERSION}"
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version \`"$RELEASE_VERSION"\` has started:\n"$CI_PIPELINE_URL" --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "${SLACK_CHANNEL}"
     - python3 ./Tests/sdk_release/create_content_pr.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -r "${REVIEWER}" --artifacts-folder "${ARTIFACTS_FOLDER}" -d "${IS_DRAFT}"
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -f "${ARTIFACTS_FOLDER}"/SLACK_MERGE_PRS_REQUEST.txt --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "${SLACK_CHANNEL}" -gu "${REVIEWER}"
     - section_end "Deploy SDK release"
