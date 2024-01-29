@@ -24,7 +24,7 @@ This section describes the configuration that needs to be done on a Huawei S Ser
 **<IP address>** is the IP address of the Broker-VM.
 **<local>** is the syslog facility, for example, local0.
 
-1. Type the following command to exit the configuration:
+7. Type the following command to exit the configuration:
     ```<bash>
     quit
 
@@ -45,5 +45,8 @@ You can configure the specific vendor and product for this instance.
    | :---          | :---        
    | `Vendor`      | Enter **Huawei**.
    | `Product`     | Enter **Network Devices**.
+
+
+* Timestamp parsing support is under the a assumption that a UTC +0000 format is being used.
 
 </~XSIAM>
