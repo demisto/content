@@ -49,6 +49,9 @@ script:
     - name: extended_attrs
       description: Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue"
       required: false
+    - name: max_results
+      description: The maximum results to return. Default is 50, maximum is 1000.
+      defaultvalue: 50
     description: Get IP info.
     name: infoblox-get-ip
     outputs:
@@ -726,6 +729,11 @@ script:
     - name: max_results
       description: The maximum number of records to return. Default is 50, maximum is 1000.
       defaultvalue: 50
+    # TODO add argument
+    # - name: additional_return_fields
+    #   description: Comma separated list of additional fields to return for each host, e.g. extattrs,aliases
+    #   defaultvalue: "extattrs"
+    #   required: false
     outputs:
       - contextPath: Infoblox.Host
         description: The retrieved InfoBlox host records

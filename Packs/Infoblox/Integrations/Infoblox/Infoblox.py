@@ -587,7 +587,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
 
     # If no IP object was returned
     if not ip_list:
-        return f'{INTEGRATION_NAME} - Could not find any data corresponds to: {ip}', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find any data', {}, {}
 
     # TODO check why we're only taking the first IP address when the service
     # returns a list
@@ -1175,8 +1175,11 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
         for e in extended_attributes_params:
             client.set_param(e)
 
-    max_results = arg_to_number(args.get('max_records', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
+    max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
     client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
+
+    # TODO
+    # add additional_return_fields
 
     raw = client.get_host_records(name=hostname)
     records = raw.get("result", [])
