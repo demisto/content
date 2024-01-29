@@ -2,13 +2,11 @@ import argparse
 import logging
 import os
 import sys
-from distutils.util import strtobool
-
 import requests
-
+from distutils.util import strtobool
 from slack_sdk import WebClient
 from slack_sdk.web import SlackResponse
-
+from Utils.github_workflow_scripts.utils import get_env_var
 from Tests.scripts.utils.log_util import install_logging
 
 
@@ -17,11 +15,10 @@ CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
 
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
+CI_API_V4_URL = get_env_var('CI_API_V4_URL', 'https://gitlab.xdr.pan.local/api/v4')  # disable-secrets-detection
 
-# disable-secrets-detection-start
-NAME_MAPPING_URL = 'https://gitlab.xdr.pan.local/api/v4/projects/1701' \
-                   '/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'
-# disable-secrets-detection-end
+
+NAME_MAPPING_URL = f'{CI_API_V4_URL}/projects/1701/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'
 
 
 def options_handler() -> argparse.Namespace:

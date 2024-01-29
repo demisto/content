@@ -65,7 +65,7 @@ trigger-content-internal-dist-nightly:
     - export GOLD_PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct "${CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY}" -ch "${SLACK_CHANNEL}" -sdk "${RELEASE_VERSION}" | jq .id)
     - echo $GOLD_PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
     - echo "content-internal-dist nightly build triggered successfully:"
-    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID # disable-secrets-detection
+    - echo $CI_SERVER_URL"/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID
     - section_end "Trigger content-internal-dist nightly build"
 
 trigger-demisto-sdk-nightly:
@@ -90,7 +90,7 @@ trigger-demisto-sdk-nightly:
     - export SDK_PIPELINE_ID=$(./Utils/trigger_nightly_sdk_build.sh -ct "${CI_TOKEN}" -ch "${SLACK_CHANNEL}" -sr "${RELEASE_VERSION}" -g | jq .id)
     - echo $SDK_PIPELINE_ID > ${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt
     - echo "demisto-sdk nightly build triggered successfully:"
-    - echo "https://gitlab.xdr.pan.local/xdr/cortex-content/content/-/pipelines/"$SDK_PIPELINE_ID # disable-secrets-detection
+    - echo $CI_PROJECT_URL"/-/pipelines/"$SDK_PIPELINE_ID
     - section_end "Trigger sdk nightly build"
 
 wait-for-content-private-nightly:
@@ -130,7 +130,7 @@ wait-for-content-internal-dist-nightly:
   script:
     - section_start "Wait for content-internal-dist nightly build" --collapsed
     - GOLD_PIPELINE_ID=$(head -n 1 "${ARTIFACTS_FOLDER}"/GOLD_PIPELINE_ID.txt)
-    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${GITLAB_API_TOKEN}" -p "${GOLD_PIPELINE_ID}" -pid 1738
+    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${GITLAB_API_TOKEN}" -p "${GOLD_PIPELINE_ID}" -pid "${GOLD_PROJECT_ID}"
     - section_end "Wait for content-internal-dist nightly build"
 
 wait-for-demisto-sdk-nightly:
@@ -150,7 +150,7 @@ wait-for-demisto-sdk-nightly:
   script:
     - section_start "Wait for SDK nightly build" --collapsed
     - SDK_PIPELINE_ID=$(head -n 1 "${ARTIFACTS_FOLDER}"/SDK_PIPELINE_ID.txt)
-    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${GITLAB_API_TOKEN}" -p "${SDK_PIPELINE_ID}" -pid 1061
+    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${GITLAB_API_TOKEN}" -p "${SDK_PIPELINE_ID}" -pid "${CI_PROJECT_ID}"
     - section_end "Wait for SDK nightly build"
 
 slack-notify:

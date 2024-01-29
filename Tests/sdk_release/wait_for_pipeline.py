@@ -6,11 +6,12 @@ import time
 import requests
 import urllib3
 from Tests.scripts.utils.log_util import install_logging
+from Utils.github_workflow_scripts.utils import get_env_var
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-GITLAB_SERVER_URL = 'https://gitlab.xdr.pan.local'  # disable-secrets-detection
+GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
 
