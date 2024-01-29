@@ -32,18 +32,6 @@ def mock_execute_command(command: str, args: dict):
     query: str = args.get("query") or ""
     from_date: str = args.get("fromDate") or ""
     match command:
-        case "findIndicators":
-            if match := re.search("investigationIDs:(.*)", query):
-                incident_id = match.group(1)
-            res = [
-                i for i in get_related_indicators(incident_id)
-                if not from_date or parse(i["created"]) >= parse(from_date)
-            ]
-        case "GetIndicatorsByQuery":
-            match = re.search(r"investigationIDs:\(([^\)]*)\)", query)
-            incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
-            res = [i for i in INDICATORS_LIST if set(i["investigationIDs"]) & incident_ids]
-            res = [{k: v for k, v in i.items() if k in args["populateFields"] or k == "id"} for i in res]
         case "GetIncidentsByQuery":
             match = re.search(r"incident\.id:\((.*)\)", query)
             incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
@@ -56,9 +44,19 @@ def mock_execute_command(command: str, args: dict):
     return [{"Contents": res, "Type": "json"}]
 
 
+def mock_search_indicators(**kwargs):
+    match = re.search(r"investigationIDs:\(([^\)]*)\)", kwargs.get("query"))
+    incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
+    res = [i for i in INDICATORS_LIST if set(i["investigationIDs"]) & incident_ids]
+    if populate_fields := argToList(kwargs.get("populateFields")):
+        res = [{k: v for k, v in i.items() if k in populate_fields or k == "id"} for i in res]
+    return {"iocs": res, "total": len(res)}
+
+
 @pytest.fixture(autouse=True)
 def setup(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=mock_execute_command)
+    mocker.patch.object(demisto, "searchIndicators", side_effect=mock_search_indicators)
 
 
 @pytest.mark.parametrize("indicator_types, expected_indicators", [
