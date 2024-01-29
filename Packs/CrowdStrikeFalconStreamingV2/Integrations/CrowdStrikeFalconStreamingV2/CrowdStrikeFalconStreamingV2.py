@@ -255,16 +255,13 @@ class EventStream:
                         timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
                     ) as res:
                         demisto.updateModuleHealth('')
-                        demisto.debug(f'Fetched event: {res.content}')
                         buffer = b''
                         async for chunk in res.content.iter_any():
                             buffer += chunk
                             lines = buffer.splitlines(True)
-                            demisto.debug(f'{lines=}')
 
                             for line in lines[:-1]:
                                 stripped_line = line.decode().strip()
-                                demisto.debug(f'The current line after decoding {stripped_line=}')
                                 if stripped_line:
                                     events_fetched += 1
                                     try:
