@@ -304,7 +304,6 @@ alter
     xdm.source.interface = og_port,
     xdm.alert.description = concat(des1," ",des2);
 
-//NETWORK IP PROTOCOL doesnt work :(((((())))))
 // ***** SECE/4/SPECIFY_SIP_ATTACK events *****
 alter 
     log_ref = arrayindex(regextract(_raw_log,"[^\d\s]+\/\w+\/\w+"),0)
